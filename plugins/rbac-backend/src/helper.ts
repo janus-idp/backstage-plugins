@@ -14,7 +14,11 @@ import {
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
-import { createAuditRoleOptions, RoleEvents } from './audit-log/audit-logger';
+import {
+  HANDLE_RBAC_DATA_STAGE,
+  RBAC_BACKEND,
+  RoleEvents,
+} from './audit-log/audit-logger';
 import { EnforcerDelegate } from './service/enforcer-delegate';
 
 export function policyToString(policy: string[]): string {
@@ -69,17 +73,21 @@ export async function removeTheDifference(
     1,
     roleEntityRef,
   );
-  const roleEvent =
+  const message = remainingMembers.length > 0 ? 'Updated role' : 'Deleted role';
+  const eventName =
     remainingMembers.length > 0
       ? RoleEvents.UPDATE_ROLE
       : RoleEvents.DELETE_ROLE;
-  const auditOptions = createAuditRoleOptions(
-    roleEvent,
-    roleMetadata,
-    modifiedBy,
-    groupPolicies.map(gp => gp[0]),
-  );
-  await aLog.auditLog(auditOptions);
+  await aLog.auditLog({
+    actorId: RBAC_BACKEND,
+    message,
+    eventName,
+    metadata: {
+      ...roleMetadata,
+      members: groupPolicies.map(gp => gp[0]),
+    },
+    stage: HANDLE_RBAC_DATA_STAGE,
+  });
 }
 
 export function transformArrayToPolicy(policyArray: string[]): RoleBasedPolicy {

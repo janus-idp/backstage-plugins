@@ -9,8 +9,7 @@ import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import fs from 'fs';
 
 import {
-  createAuditPermissionOptions,
-  createAuditRoleOptions,
+  HANDLE_RBAC_DATA_STAGE,
   PermissionEvents,
   RBAC_BACKEND,
   RoleEvents,
@@ -309,13 +308,13 @@ export class CSVFileWatcher {
       try {
         await this.enforcer.addOrUpdatePolicy(policy, 'csv-file');
 
-        const auditOptions = createAuditPermissionOptions(
-          [policy],
-          PermissionEvents.CREATE_OR_UPDATE_POLICY,
-          'csv-file',
-          RBAC_BACKEND,
-        );
-        await this.aLog.auditLog(auditOptions);
+        await this.aLog.auditLog({
+          actorId: RBAC_BACKEND,
+          message: `Created or updated policy`,
+          eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,
+          metadata: { policies: [policy] },
+          stage: HANDLE_RBAC_DATA_STAGE,
+        });
       } catch (e) {
         this.logger.warn(
           `Failed to add or update policy ${policy} after modification ${this.csvFileName}. Cause: ${e}`,
@@ -333,13 +332,13 @@ export class CSVFileWatcher {
     try {
       await this.enforcer.removePolicies(this.csvFilePolicies.removedPolicies);
 
-      const auditOptions = createAuditPermissionOptions(
-        this.csvFilePolicies.removedPolicies,
-        PermissionEvents.DELETE_POLICY,
-        'csv-file',
-        RBAC_BACKEND,
-      );
-      await this.aLog.auditLog(auditOptions);
+      await this.aLog.auditLog({
+        actorId: RBAC_BACKEND,
+        message: `Deleted policies`,
+        eventName: PermissionEvents.DELETE_POLICY,
+        metadata: { policies: this.csvFilePolicies.removedPolicies },
+        stage: HANDLE_RBAC_DATA_STAGE,
+      });
     } catch (e) {
       this.logger.warn(
         `Failed to remove policies ${JSON.stringify(
@@ -397,16 +396,20 @@ export class CSVFileWatcher {
           roleMetadata,
         );
 
-        const roleEvent = currentMetadata
+        const eventName = currentMetadata
           ? RoleEvents.UPDATE_ROLE
           : RoleEvents.CREATE_ROLE;
-        const auditOptions = createAuditRoleOptions(
-          roleEvent,
-          roleMetadata,
-          RBAC_BACKEND,
-          [groupPolicy[0]],
-        );
-        await this.aLog.auditLog(auditOptions);
+        const message = currentMetadata ? 'Updated role' : 'Created role';
+        await this.aLog.auditLog({
+          actorId: RBAC_BACKEND,
+          message,
+          eventName,
+          metadata: {
+            ...roleMetadata,
+            members: [groupPolicy[0]],
+          },
+          stage: HANDLE_RBAC_DATA_STAGE,
+        });
       } catch (e) {
         this.logger.warn(
           `Failed to add or update group policy ${groupPolicy} after modification ${this.csvFileName}. Cause: ${e}`,
@@ -445,18 +448,20 @@ export class CSVFileWatcher {
           isUpdate.length > 1,
         );
 
-        const roleEvent = (await this.roleMetadataStorage.findRoleMetadata(
-          roleEntityRef,
-        ))
+        const eventName = metadata
           ? RoleEvents.UPDATE_ROLE
-          : RoleEvents.DELETE_ROLE;
-        const auditOptions = createAuditRoleOptions(
-          roleEvent,
-          metadata,
-          RBAC_BACKEND,
-          [groupPolicy[0]],
-        );
-        await this.aLog.auditLog(auditOptions);
+          : RoleEvents.CREATE_ROLE;
+        const message = metadata ? 'Updated role' : 'Created role';
+        await this.aLog.auditLog({
+          actorId: RBAC_BACKEND,
+          message,
+          eventName,
+          metadata: {
+            ...metadata,
+            members: [groupPolicy[0]],
+          },
+          stage: HANDLE_RBAC_DATA_STAGE,
+        });
       } catch (e) {
         this.logger.warn(
           `Failed to remove group policy ${groupPolicy} after modification ${this.csvFileName}. Cause: ${e}`,
