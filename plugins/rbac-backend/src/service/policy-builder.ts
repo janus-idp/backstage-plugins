@@ -14,6 +14,7 @@ import { newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
 import { Logger } from 'winston';
 
+import { DefaultAuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
@@ -85,7 +86,12 @@ export class PolicyBuilder {
 
     await migrate(databaseManager);
 
-    const conditionStorage = new DataBaseConditionalStorage(databaseClient);
+    const defAuditLog = new DefaultAuditLogger({
+      logger: env.logger,
+      authService: auth,
+      httpAuthService: httpAuth,
+    });
+    const conditionStorage = new DataBaseConditionalStorage(databaseClient, defAuditLog);
 
     const policyMetadataStorage = new DataBasePolicyMetadataStorage(
       databaseClient,
@@ -105,6 +111,7 @@ export class PolicyBuilder {
       identity: env.identity,
       policy: await RBACPermissionPolicy.build(
         env.logger,
+        defAuditLog,
         env.config,
         conditionStorage,
         enforcerDelegate,
@@ -138,6 +145,7 @@ export class PolicyBuilder {
       conditionStorage,
       pluginIdProvider,
       roleMetadataStorage,
+      defAuditLog,
     );
     return server.serve();
   }
