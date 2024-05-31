@@ -4,7 +4,6 @@ import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import * as fs from 'fs-extra';
 import * as yaml from 'yaml';
 
-import { convertLabelsToObject } from '../../utils/convertLabelsToObject';
 import { getObjectToAnnotate } from '../../utils/getObjectToAnnotate';
 import { resolveSpec, Value } from '../../utils/resolveSpec';
 
@@ -14,8 +13,8 @@ import { resolveSpec, Value } from '../../utils/resolveSpec';
  */
 
 export const createAnnotatorAction = (
-  actionId: string,
-  actionDescription: string,
+  actionId: string = 'catalog:annotate',
+  actionDescription?: string,
   loggerInfoMsg?: string,
   annotateEntityObject?: {
     annotations?: { [key: string]: string };
@@ -24,27 +23,38 @@ export const createAnnotatorAction = (
   },
 ) => {
   return createTemplateAction<{
-    labels?: string;
-    annotations?: string;
+    labels?: { [key: string]: string };
+    annotations?: { [key: string]: string };
+    spec?: { [key: string]: string };
     entityFilePath?: string;
-    objectYaml?: object;
+    objectYaml?: { [key: string]: string };
     writeToFile?: string;
   }>({
     id: actionId,
-    description: actionDescription,
+    description:
+      actionDescription ||
+      'Creates a new scaffolder action to annotate the entity object with specified label(s), annotation(s) and spec property(ies).',
     schema: {
       input: {
         type: 'object',
         properties: {
           labels: {
             title: 'Labels',
-            description: 'Labels that will be applied to the object',
-            type: 'string',
+            description:
+              'Labels that will be applied to the `metadata.labels` of the entity object',
+            type: 'object',
           },
           annotations: {
             title: 'Annotations',
-            description: 'Annotations that will be applied to the object',
-            type: 'string',
+            description:
+              'Annotations that will be applied to the `metadata.annotations` of the entity object',
+            type: 'object',
+          },
+          spec: {
+            title: 'Spec',
+            description:
+              'Key-Value pair(s) that will be applied to the `spec` of the entity object',
+            type: 'object',
           },
           entityFilePath: {
             title: 'Entity File Path',
@@ -58,7 +68,8 @@ export const createAnnotatorAction = (
           },
           writeToFile: {
             title: 'Write To File',
-            description: 'Path to the file you want to write',
+            description:
+              'Path to the file you want to write. Default path `./catalog-info.yaml`',
             type: 'string',
           },
         },
@@ -92,45 +103,45 @@ export const createAnnotatorAction = (
           annotations: {
             ...(objToAnnotate.metadata.annotations || {}),
             ...(annotateEntityObject?.annotations || {}),
-            ...convertLabelsToObject(ctx.input?.annotations),
+            ...(ctx.input?.annotations || {}),
           },
           labels: {
             ...(objToAnnotate.metadata.labels || {}),
             ...(annotateEntityObject?.labels || {}),
-            ...convertLabelsToObject(ctx.input?.labels),
+            ...(ctx.input?.labels || {}),
           },
         },
         spec: {
           ...(objToAnnotate.spec || {}),
           ...resolveSpec(annotateEntityObject?.spec, ctx),
+          ...(ctx.input?.spec || {}),
         },
       };
 
       const result = yaml.stringify(annotatedObj);
-      ctx.logger.info(loggerInfoMsg || 'Annotating your object');
       if (
-        Object.keys(annotateEntityObject || {}).length > 0 &&
         Object.keys(
           annotateEntityObject?.labels ||
             annotateEntityObject?.annotations ||
             annotateEntityObject?.spec ||
+            ctx.input?.labels ||
+            ctx.input?.annotations ||
+            ctx.input?.spec ||
             {},
         ).length > 0
       ) {
+        ctx.logger.info(loggerInfoMsg || 'Annotating your object');
+
         await fs.writeFile(
-          resolveSafeChildPath(ctx.workspacePath, './catalog-info.yaml'),
+          resolveSafeChildPath(
+            ctx.workspacePath,
+            ctx.input?.writeToFile || './catalog-info.yaml',
+          ),
           result,
           'utf8',
         );
       }
 
-      if (ctx.input?.writeToFile) {
-        await fs.writeFile(
-          resolveSafeChildPath(ctx.workspacePath, ctx.input.writeToFile),
-          result,
-          'utf8',
-        );
-      }
       ctx.output('annotatedObject', result);
     },
   });
