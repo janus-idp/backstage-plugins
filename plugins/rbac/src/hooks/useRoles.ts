@@ -131,27 +131,29 @@ export const useRoles = (
                 policies as RoleBasedPolicy[],
               );
 
-            return [
-              ...acc,
-              {
-                id: role.name,
-                name: role.name,
-                description: role.metadata?.description ?? '-',
-                members: role.memberReferences,
-                permissions: role.conditionalPoliciesCount + permissions,
-                modifiedBy: '-',
-                lastModified: '-',
-                actionsPermissionResults: {
-                  delete: deletePermissionResult,
-                  edit: {
-                    allowed:
-                      editPermissionResult.allowed && canReadUsersAndGroups,
-                    loading: editPermissionResult.loading,
+              return [
+                ...acc,
+                {
+                  id: role.name,
+                  name: role.name,
+                  description: role.metadata?.description ?? '-',
+                  members: role.memberReferences,
+                  permissions: role.conditionalPoliciesCount + permissions,
+                  modifiedBy: '-',
+                  lastModified: '-',
+                  actionsPermissionResults: {
+                    delete: deletePermissionResult,
+                    edit: {
+                      allowed:
+                        editPermissionResult.allowed && canReadUsersAndGroups,
+                      loading: editPermissionResult.loading,
+                    },
                   },
                 },
-              },
-            ];
-          }, [])
+              ];
+            },
+            [],
+          )
         : [],
     [
       newRoles,
