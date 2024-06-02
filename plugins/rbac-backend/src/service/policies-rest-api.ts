@@ -378,7 +378,7 @@ export class PoliciesServer {
         await this.enforcer.updatePolicies(
           processedOldPolicy,
           processedNewPolicy,
-          'rest'
+          'rest',
         );
 
         await this.aLog.auditLog({
@@ -468,11 +468,18 @@ export class PoliciesServer {
         throw new NotAllowedError(); // 403
       }
       const roleRaw: Role = request.body;
-      const err = validateRole(roleRaw);
+      let err = validateRole(roleRaw);
       if (err) {
         throw new InputError( // 400
           `Invalid role definition. Cause: ${err.message}`,
         );
+      }
+
+      const rMetadata = await this.roleMetadata.findRoleMetadata(roleRaw.name);
+
+      err = await validateSource('rest', rMetadata);
+      if (err) {
+        throw new NotAllowedError(`Unable to add role: ${err.message}`);
       }
 
       const roles = this.transformRoleToArray(roleRaw);
@@ -578,15 +585,10 @@ export class PoliciesServer {
       if (!oldMetadata) {
         throw new NotFoundError(`Unable to find metadata for ${roleEntityRef}`);
       }
-      if (oldMetadata.source === 'csv-file') {
-        throw new Error(
-          `Role ${roleEntityRef} can be modified only using csv policy file.`,
-        );
-      }
-      if (oldMetadata.source === 'configuration') {
-        throw new Error(
-          `Role ${roleEntityRef} can be modified only using application config`,
-        );
+
+      err = await validateSource('rest', oldMetadata);
+      if (err) {
+        throw new NotAllowedError(`Unable to edit role: ${err.message}`);
       }
 
       if (
@@ -647,11 +649,7 @@ export class PoliciesServer {
         }
       }
 
-      await this.enforcer.updateGroupingPolicies(
-        oldRole,
-        newRole,
-        newMetadata,
-      );
+      await this.enforcer.updateGroupingPolicies(oldRole, newRole, newMetadata);
 
       let message = `Updated ${oldMetadata.roleEntityRef}.`;
       if (newMetadata.roleEntityRef !== oldMetadata.roleEntityRef) {
@@ -708,15 +706,9 @@ export class PoliciesServer {
 
         const currentMetadata =
           await this.roleMetadata.findRoleMetadata(roleEntityRef);
-        if (currentMetadata?.source === 'csv-file') {
-          throw new Error(
-            `Role ${roleEntityRef} can be modified only using csv policy file.`,
-          );
-        }
-        if (currentMetadata?.source === 'configuration') {
-          throw new Error(
-            `Pre-defined role ${roleEntityRef} is reserved and can not be modified.`,
-          );
+        const err = await validateSource('rest', currentMetadata);
+        if (err) {
+          throw new NotAllowedError(`Unable to delete role: ${err.message}`);
         }
 
         const user = await identity.getIdentity({ request });
@@ -725,6 +717,7 @@ export class PoliciesServer {
           source: 'rest',
           modifiedBy: user?.identity.userEntityRef!,
         };
+
         await this.enforcer.removeGroupingPolicies(
           roleMembers,
           metadata,
@@ -926,13 +919,18 @@ export class PoliciesServer {
       if (!condition) {
         throw new NotFoundError(`Condition with id ${id} was not found`);
       }
+      const conditionToDelete: RoleConditionalPolicyDecision<PermissionAction> =
+        {
+          ...condition,
+          permissionMapping: condition.permissionMapping.map(pm => pm.action),
+        };
 
       await this.conditionalStorage.deleteCondition(id);
 
       await this.aLog.auditLog({
         message: `Delete conditional permission policy`,
         eventName: ConditionEvents.DELETE_CONDITION,
-        metadata: { condition },
+        metadata: { condition: conditionToDelete },
         stage: SEND_RESPONSE_STAGE,
         request,
         response: { status: 204 },

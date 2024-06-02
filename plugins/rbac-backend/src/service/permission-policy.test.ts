@@ -131,6 +131,8 @@ const auditLoggerMock = {
   auditErrorLog: jest.fn().mockImplementation(),
 };
 
+const modifiedBy = 'user:default/some-admin';
+
 describe('RBACPermissionPolicy Tests', () => {
   beforeEach(() => {
     roleMetadataStorageMock.updateRoleMetadata = jest.fn().mockImplementation();
@@ -1133,6 +1135,7 @@ describe('RBACPermissionPolicy Tests', () => {
             return {
               roleEntityRef: 'role:default/catalog-writer',
               source: 'legacy',
+              modifiedBy,
             };
           },
         ),
@@ -1218,6 +1221,7 @@ describe('RBACPermissionPolicy Tests', () => {
             return {
               roleEntityRef: 'role:default/catalog-writer',
               source: 'legacy',
+              modifiedBy,
             };
           },
         );
@@ -1356,6 +1360,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
           return {
             roleEntityRef: 'role:default/catalog-writer',
             source: 'legacy',
+            modifiedBy,
           };
         },
       ),
@@ -1380,7 +1385,6 @@ describe('Policy checks for resourced permissions defined by name', () => {
   it('should allow access to resourced permission assigned by name', async () => {
     catalogApi.getEntities.mockReturnValue({ items: [] });
 
-    const modifiedBy = `user:default/tom`;
     await enfDelegate.addGroupingPolicy(
       ['user:default/tor', 'role:default/catalog_reader'],
       {
@@ -1408,7 +1412,6 @@ describe('Policy checks for resourced permissions defined by name', () => {
   it('should allow access to resourced permission assigned by name, because it has higher priority then permission for the same resource assigned by resource type', async () => {
     catalogApi.getEntities.mockReturnValue({ items: [] });
 
-    const modifiedBy = `user:default/tom`;
     await enfDelegate.addGroupingPolicy(
       ['user:default/tor', 'role:default/catalog_reader'],
       {
@@ -1439,7 +1442,6 @@ describe('Policy checks for resourced permissions defined by name', () => {
   it('should deny access to resourced permission assigned by name, because it has higher priority then permission for the same resource assigned by resource type', async () => {
     catalogApi.getEntities.mockReturnValue({ items: [] });
 
-    const modifiedBy = `user:default/tom`;
     await enfDelegate.addGroupingPolicy(
       ['user:default/tor', 'role:default/catalog_reader'],
       {
@@ -1484,7 +1486,6 @@ describe('Policy checks for resourced permissions defined by name', () => {
       return { items: [groupEntityMock] };
     });
 
-    const modifiedBy = `user:default/tom`;
     await enfDelegate.addGroupingPolicy(
       ['group:default/team-a', 'role:default/catalog_user'],
       {
@@ -1535,7 +1536,6 @@ describe('Policy checks for resourced permissions defined by name', () => {
       return { items: [groupParentMock, groupEntityMock] };
     });
 
-    const modifiedBy = `user:default/tom`;
     await enfDelegate.addGroupingPolicy(
       ['group:default/team-b', 'role:default/catalog_user'],
       {

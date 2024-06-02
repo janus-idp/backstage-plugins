@@ -17,6 +17,8 @@ import {
   validateSource,
 } from './policies-validation';
 
+const modifiedBy = 'user:default/some-admin';
+
 const roleMetadataStorageMock: RoleMetadataStorage = {
   findRoleMetadata: jest
     .fn()
@@ -28,6 +30,7 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
         return {
           roleEntityRef: 'role:default/catalog-reader',
           source: 'rest',
+          modifiedBy,
         };
       },
     ),
@@ -231,6 +234,7 @@ describe('rest data validation', () => {
     const roleMeta: RoleMetadataDao = {
       roleEntityRef: 'role:default/catalog-reader',
       source: 'rest',
+      modifiedBy,
     };
 
     it('should not return an error whenever the source that is passed matches the source of the role', async () => {
@@ -245,6 +249,7 @@ describe('rest data validation', () => {
       const roleMetaLegacy: RoleMetadataDao = {
         roleEntityRef: 'role:default/legacy-reader',
         source: 'legacy',
+        modifiedBy,
       };
 
       const source: Source = 'rest';
@@ -274,6 +279,7 @@ describe('rest data validation', () => {
     const roleMeta: RoleMetadataDao = {
       roleEntityRef: 'role:default/catalog-reader',
       source: 'rest',
+      modifiedBy,
     };
 
     it('should not return an error during validation', async () => {
