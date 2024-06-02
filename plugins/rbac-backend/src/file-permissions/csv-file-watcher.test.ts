@@ -32,6 +32,7 @@ import { policyToString } from '../helper';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
+import { ADMIN_ROLE_AUTHOR } from '../service/permission-policy';
 import {
   CSV_PERMISSION_POLICY_FILE_AUTHOR,
   CSVFileWatcher,
@@ -87,6 +88,8 @@ const loggerMock: any = {
   info: jest.fn().mockImplementation(),
 };
 
+const modifiedBy = 'user:default/some-admin';
+
 const roleMetadataStorageMock: RoleMetadataStorage = {
   findRoleMetadata: jest
     .fn()
@@ -96,17 +99,26 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
         _trx: Knex.Knex.Transaction,
       ): Promise<RoleMetadataDao> => {
         if (roleEntityRef === legacyPermission[0]) {
-          return { roleEntityRef: legacyPermission[0], source: 'legacy' };
+          return {
+            roleEntityRef: legacyPermission[0],
+            source: 'legacy',
+            modifiedBy,
+          };
         } else if (roleEntityRef === restPermission[0]) {
-          return { roleEntityRef: restPermission[0], source: 'rest' };
+          return {
+            roleEntityRef: restPermission[0],
+            source: 'rest',
+            modifiedBy,
+          };
         }
         if (roleEntityRef === configPermission[0]) {
           return {
             roleEntityRef: configPermission[0],
             source: 'configuration',
+            modifiedBy,
           };
         }
-        return { roleEntityRef: '', source: 'csv-file' };
+        return { roleEntityRef: '', source: 'csv-file', modifiedBy };
       },
     ),
   createRoleMetadata: jest.fn().mockImplementation(),
@@ -573,10 +585,12 @@ describe('CSVFileWatcher', () => {
       await enforcerDelegate.addGroupingPolicy(configRole, {
         roleEntityRef: configRole[1],
         source: 'configuration',
+        modifiedBy: ADMIN_ROLE_AUTHOR,
       });
       await enforcerDelegate.addGroupingPolicy(restRole, {
         roleEntityRef: restRole[1],
         source: 'rest',
+        modifiedBy,
       });
 
       csvFileWatcher.parse = jest.fn().mockImplementation(() => {
