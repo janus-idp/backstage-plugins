@@ -19,7 +19,7 @@ openapi_generate() {
     awk '/\/{\(.*?\)}\/g/ {print $0 " // NOSONAR"} !/\/{\(.*?\)}\/g/ {print}' "${REQ_FILE}" > ${TMPFILE} && mv ${TMPFILE} "${REQ_FILE}"
 
     # Docs generation
-    npx --yes @openapitools/openapi-generator-cli@v2.13.1 generate -g asciidoc -i ./src/openapi/openapi.yaml -o ./src/generated/docs/index.adoc
+    npx --yes @openapitools/openapi-generator-cli@v2.7.0 generate -g asciidoc -i ./src/openapi/openapi.yaml -o ./src/generated/docs/index.adoc
     
     npx --yes --package=js-yaml-cli@0.6.0 -- yaml2json -f ${OPENAPI_SPEC_FILE}
 
