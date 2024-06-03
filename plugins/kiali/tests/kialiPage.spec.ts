@@ -173,13 +173,18 @@ test.describe('Kiali page', () => {
       const ns = visibleNamespaces[0];
       const ns_card = await page.locator(`data-test=overview-card-${ns.name}`);
       const icon = await ns_card.locator('data-test=labels-info-icon');
-      icon.hover();
+      await icon.hover();
+      let list = await page.locator('data-test=namespace-labels');
+
+      // Wait for the list to appear
+      await page.waitForSelector('data-test=namespace-labels');
+
       for (const [key, value] of Object.entries(ns.labels)) {
-        await expect(
-          page.locator('data-test=namespace-labels > li'),
-        ).toHaveText(`${key}=${value}`);
+        await icon.hover({ force: true }).then(async () => {
+          await expect(list).toContainText(`${key}=${value}`);
+        });
       }
-      await expect(page.locator('#labels_info')).toContainText(
+      await expect(ns_card.locator('#labels_info')).toContainText(
         `${Object.entries(ns.labels).length} labels`,
       );
     });
