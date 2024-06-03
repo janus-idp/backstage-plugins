@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [4.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.0.0...@janus-idp/backstage-plugin-rbac-backend@4.0.1) (2024-06-03)
+
+
+### Bug Fixes
+
+* **rbac:** add support for scaling ([#1757](https://github.com/janus-idp/backstage-plugins/issues/1757)) ([caddc83](https://github.com/janus-idp/backstage-plugins/commit/caddc832e0df5199a455539d3538635448691c2d))
+
 ## @janus-idp/backstage-plugin-rbac-backend [4.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@3.3.0...@janus-idp/backstage-plugin-rbac-backend@4.0.0) (2024-05-31)
 
 
