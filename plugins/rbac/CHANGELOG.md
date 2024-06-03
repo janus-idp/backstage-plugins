@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.20.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.9...@janus-idp/backstage-plugin-rbac@1.20.10) (2024-06-03)
+
+
+### Bug Fixes
+
+* **rbac:** add proper empty page for RBAC plugin ([#1728](https://github.com/janus-idp/backstage-plugins/issues/1728)) ([79e62a6](https://github.com/janus-idp/backstage-plugins/commit/79e62a6f120a7390af2e2bdc1e6dc6962c0e3780))
+
 ## @janus-idp/backstage-plugin-rbac [1.20.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.8...@janus-idp/backstage-plugin-rbac@1.20.9) (2024-05-31)
 
 ## @janus-idp/backstage-plugin-rbac [1.20.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.7...@janus-idp/backstage-plugin-rbac@1.20.8) (2024-05-31)
