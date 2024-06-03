@@ -6358,6 +6358,13 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
+"@janus-idp/backstage-plugin-topology-common@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@janus-idp/backstage-plugin-topology-common/-/backstage-plugin-topology-common-1.0.0.tgz#d8336a3dd7938905328bd15a76714dcc455b5f66"
+  integrity sha512-BGMVMR7ghMip4hpsvAGkx/MKlgfcGZuvqWAKiNpB9U0ek8mawmc2Jg6iBnZA4ERt8lSorU9gg9xe/NJoOdvZzA==
+  dependencies:
+    "@backstage/plugin-permission-common" "^0.7.13"
+
 "@janus-idp/cli@1.8.2":
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/@janus-idp/cli/-/cli-1.8.2.tgz#3f6afa73cb6392aca64dc09cb76980c2f03117fb"
