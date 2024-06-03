@@ -17,9 +17,7 @@
   "npm": {
     "minimumReleaseAge": "1 day"
   },
-  "major": {
-    "dependencyDashboardApproval": true
-  },
+  "dependencyDashboardApproval": true,
   "packageRules": [
     {
       "description": "Do automerge and pin actions in GH workflows, except for versions starting with 0",
