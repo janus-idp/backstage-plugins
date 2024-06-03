@@ -90,11 +90,19 @@ export const useRoles = (
   React.useEffect(() => {
     const fetchAllPermissionPolicies = async () => {
       if (!Array.isArray(roles)) return;
+      const failedFetchConditionRoles: string[] = [];
       const conditionPromises = roles.map(async role => {
         try {
           const conditionalPolicies = await rbacApi.getRoleConditions(
             role.name,
           );
+
+          if ((conditionalPolicies as any as Response)?.statusText) {
+            failedFetchConditionRoles.push(role.name);
+            throw new Error(
+              (conditionalPolicies as any as Response).statusText,
+            );
+          }
           return {
             ...role,
             conditionalPoliciesCount: Array.isArray(conditionalPolicies)
@@ -103,7 +111,7 @@ export const useRoles = (
           };
         } catch (error) {
           setRoleConditionError(
-            `Error fetching role conditions for role ${role.name}, please try again later.`,
+            `Error fetching role conditions for ${failedFetchConditionRoles.length > 1 ? 'roles' : 'role'} ${failedFetchConditionRoles.join(', ')}, please try again later.`,
           );
           return {
             ...role,
@@ -116,9 +124,7 @@ export const useRoles = (
       setNewRoles(updatedRoles);
     };
 
-    if (Array.isArray(roles) && roles.length > 0) {
-      fetchAllPermissionPolicies();
-    }
+    fetchAllPermissionPolicies();
   }, [roles, rbacApi]);
 
   const data: RolesData[] = React.useMemo(
