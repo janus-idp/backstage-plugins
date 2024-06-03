@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-aap-backend [1.6.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.6.12...@janus-idp/backstage-plugin-aap-backend@1.6.13) (2024-06-03)
+
 ## @janus-idp/backstage-plugin-aap-backend [1.6.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.6.11...@janus-idp/backstage-plugin-aap-backend@1.6.12) (2024-06-03)
 
 
