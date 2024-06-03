@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-openshift-image-registry [1.5.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.5.8...@janus-idp/backstage-plugin-openshift-image-registry@1.5.9) (2024-06-03)
+
 ## @janus-idp/backstage-plugin-openshift-image-registry [1.5.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.5.7...@janus-idp/backstage-plugin-openshift-image-registry@1.5.8) (2024-06-03)
 
 
