@@ -851,7 +851,7 @@ export class PoliciesServer {
       const body = { id: id };
 
       await this.aLog.auditLog({
-        message: `Create conditional permission policy`,
+        message: `Created conditional permission policy`,
         eventName: ConditionEvents.CREATE_CONDITION,
         metadata: { condition: conditionToCreate },
         stage: SEND_RESPONSE_STAGE,
@@ -928,7 +928,7 @@ export class PoliciesServer {
       await this.conditionalStorage.deleteCondition(id);
 
       await this.aLog.auditLog({
-        message: `Delete conditional permission policy`,
+        message: `Deleted conditional permission policy`,
         eventName: ConditionEvents.DELETE_CONDITION,
         metadata: { condition: conditionToDelete },
         stage: SEND_RESPONSE_STAGE,

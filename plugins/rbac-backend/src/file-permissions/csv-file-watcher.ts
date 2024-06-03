@@ -453,7 +453,9 @@ export class CSVFileWatcher {
         const eventName = isRolePresent
           ? RoleEvents.UPDATE_ROLE
           : RoleEvents.DELETE_ROLE;
-        const message = isRolePresent ? 'Updated role' : 'Deleted role';
+        const message = isRolePresent
+          ? 'Updated role: deleted members'
+          : 'Deleted role';
         await this.aLog.auditLog({
           actorId: RBAC_BACKEND,
           message,

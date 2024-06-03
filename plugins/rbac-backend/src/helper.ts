@@ -65,7 +65,10 @@ export async function removeTheDifference(
     1,
     roleEntityRef,
   );
-  const message = remainingMembers.length > 0 ? 'Updated role' : 'Deleted role';
+  const message =
+    remainingMembers.length > 0
+      ? 'Updated role: deleted members'
+      : 'Deleted role';
   const eventName =
     remainingMembers.length > 0
       ? RoleEvents.UPDATE_ROLE
