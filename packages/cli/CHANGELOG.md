@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.10...@janus-idp/cli@1.9.0) (2024-06-03)
+
+
+### Features
+
+* add method for janus-cli package metadata (simpler PR) - RHIDP-1502 ([#1753](https://github.com/janus-idp/backstage-plugins/issues/1753)) ([b81a849](https://github.com/janus-idp/backstage-plugins/commit/b81a8499acc4fe9c585dd5179fbca1304c62520c))
+
 ## @janus-idp/cli [1.8.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.9...@janus-idp/cli@1.8.10) (2024-05-29)
 
 
