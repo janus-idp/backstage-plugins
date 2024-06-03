@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
+import { ErrorPage } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 
@@ -25,7 +26,13 @@ export const Router = ({ useHeader = true }: { useHeader?: boolean }) => {
   const isRBACPluginEnabled = config.getOptionalBoolean('permission.enabled');
 
   if (!isRBACPluginEnabled) {
-    return null;
+    return (
+      <ErrorPage
+        status="404"
+        statusMessage="Enable the RBAC backend plugin to use this feature."
+        additionalInfo="To enable RBAC, set `permission.enabled` to `true` in the app-config file."
+      />
+    );
   }
 
   return (
