@@ -400,7 +400,7 @@ The table below shows which Pull Request titles get you which release:
 
 ## Creating new plugins - DEPRECATED!
 
-**As of June 2014, new plugins should be contributed to the new [Backstage Community Plugins](https://github.com/backstage/community-plugins/blob/main/CONTRIBUTING.md#get-started) repo.**
+**As of June 2024, new plugins should be contributed to the new [Backstage Community Plugins](https://github.com/backstage/community-plugins/blob/main/CONTRIBUTING.md#get-started) repo.**
 
 **The rest of this section is DEPRECATED and will be removed in future.**
 
