@@ -32,7 +32,7 @@ export interface ConditionalStorage {
   createCondition(
     conditionalDecision: RoleConditionalPolicyDecision<PermissionInfo>,
   ): Promise<number>;
-  findUniqueCondition(
+  findConflictedCondition(
     roleEntityRef: string,
     resourceType: string,
     queryPermissionNames: string[],
@@ -57,7 +57,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     actions?: PermissionAction[],
     permissionNames?: string[],
   ): Promise<RoleConditionalPolicyDecision<PermissionInfo>[]> {
-    const daoRaws = await this.knex?.table(CONDITIONAL_TABLE).where(builder => {
+    const daoRaws = await this.knex.table(CONDITIONAL_TABLE).where(builder => {
       if (pluginId) {
         builder.where('pluginId', pluginId);
       }
@@ -100,7 +100,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
   async createCondition(
     conditionalDecision: RoleConditionalPolicyDecision<PermissionInfo>,
   ): Promise<number> {
-    const condition = await this.findUniqueCondition(
+    const condition = await this.findConflictedCondition(
       conditionalDecision.roleEntityRef,
       conditionalDecision.resourceType,
       conditionalDecision.permissionMapping.map(permInfo => permInfo.name),
@@ -115,7 +115,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
 
     const conditionRaw = this.toDAO(conditionalDecision);
     const result = await this.knex
-      ?.table(CONDITIONAL_TABLE)
+      .table(CONDITIONAL_TABLE)
       .insert<ConditionalPolicyDecisionDAO>(conditionRaw)
       .returning('id');
     if (result && result?.length > 0) {
@@ -125,13 +125,13 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     throw new Error(`Failed to create the condition.`);
   }
 
-  async findUniqueCondition(
+  async findConflictedCondition(
     roleEntityRef: string,
     resourceType: string,
     queryPermissionNames: string[],
   ): Promise<RoleConditionalPolicyDecision<PermissionInfo> | undefined> {
     const daoRaws = await this.knex
-      ?.table(CONDITIONAL_TABLE)
+      .table<ConditionalPolicyDecisionDAO>(CONDITIONAL_TABLE)
       .where('roleEntityRef', roleEntityRef)
       .where('resourceType', resourceType);
 
@@ -144,12 +144,8 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
         const conditionPermissionNames = condition.permissionMapping.map(
           permInfo => permInfo.name,
         );
-        const isContainTheSamePermissions = queryPermissionNames.every(name =>
+        return queryPermissionNames.some(name =>
           conditionPermissionNames.includes(name),
-        );
-        return (
-          isContainTheSamePermissions &&
-          conditionPermissionNames.length === queryPermissionNames.length
         );
       });
     }
@@ -160,7 +156,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     id: number,
   ): Promise<RoleConditionalPolicyDecision<PermissionInfo> | undefined> {
     const daoRaw = await this.knex
-      ?.table(CONDITIONAL_TABLE)
+      .table(CONDITIONAL_TABLE)
       .where('id', id)
       .first();
 
@@ -215,7 +211,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     const conditionRaw = this.toDAO(conditionalDecision);
     conditionRaw.id = id;
     const result = await this.knex
-      ?.table(CONDITIONAL_TABLE)
+      .table(CONDITIONAL_TABLE)
       .where('id', conditionRaw.id)
       .update<ConditionalPolicyDecisionDAO>(conditionRaw)
       .returning('id');

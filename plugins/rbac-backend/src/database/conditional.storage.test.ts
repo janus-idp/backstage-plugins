@@ -308,7 +308,7 @@ describe('DataBaseConditionalStorage', () => {
           conditionDao1,
         );
 
-        const condition = await db.findUniqueCondition(
+        const condition = await db.findConflictedCondition(
           'role:default/test',
           'catalog-entity',
           ['catalog.entity.read'],
@@ -323,7 +323,7 @@ describe('DataBaseConditionalStorage', () => {
       async databasesId => {
         const { db } = await createDatabase(databasesId);
 
-        const condition = await db.findUniqueCondition(
+        const condition = await db.findConflictedCondition(
           'role:default/test',
           'catalog-entity',
           ['read'],
