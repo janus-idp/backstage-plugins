@@ -64,7 +64,8 @@ export class RoleMemberList {
       const members: string[] = await client
         .table('casbin_rule')
         .where('v1', this.name)
-        .pluck('v0');
+        .pluck('v0')
+        .distinct();
 
       roleMemberList.addMembers(members);
     } catch (error) {
