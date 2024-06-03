@@ -1,5 +1,4 @@
 import { getVoidLogger } from '@backstage/backend-common';
-import { DatabaseService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
@@ -114,9 +113,7 @@ const policyMetadataStorageMock: PolicyMetadataStorage = {
   removePolicyMetadata: jest.fn().mockImplementation(),
 };
 
-const dbManagerMock: DatabaseService = {
-  getClient: jest.fn().mockImplementation(),
-};
+const dbManagerMock = Knex.knex({ client: MockClient });
 
 const csvPermFile = resolve(
   __dirname,
@@ -2188,12 +2185,14 @@ async function createEnforcer(
   config: ConfigReader,
 ): Promise<Enforcer> {
   const catalogDBClient = Knex.knex({ client: MockClient });
+  const rbacDBClient = Knex.knex({ client: MockClient });
   const enf = await newEnforcer(theModel, adapter);
 
   const rm = new BackstageRoleManager(
     catalogApi,
     logger,
     catalogDBClient,
+    rbacDBClient,
     config,
     mockAuthService,
   );

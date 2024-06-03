@@ -1,4 +1,3 @@
-import { DatabaseService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 
@@ -175,9 +174,7 @@ const policyMetadataStorageMock: PolicyMetadataStorage = {
   removePolicyMetadata: jest.fn().mockImplementation(),
 };
 
-const dbManagerMock: DatabaseService = {
-  getClient: jest.fn().mockImplementation(),
-};
+const dbManagerMock = Knex.knex({ client: MockClient });
 
 const mockAuthService = mockServices.auth();
 
@@ -663,6 +660,7 @@ async function createEnforcer(
   log: Logger,
 ): Promise<Enforcer> {
   const catalogDBClient = Knex.knex({ client: MockClient });
+  const rbacDBClient = Knex.knex({ client: MockClient });
   const enf = await newEnforcer(theModel, adapter);
 
   const config = newConfigReader();
@@ -671,6 +669,7 @@ async function createEnforcer(
     catalogApi,
     log,
     catalogDBClient,
+    rbacDBClient,
     config,
     mockAuthService,
   );
