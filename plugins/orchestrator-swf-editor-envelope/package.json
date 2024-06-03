@@ -13,7 +13,8 @@
     ]
   },
   "backstage": {
-    "role": "web-library"
+    "role": "web-library",
+    "supported-versions": "1.26.5"
   },
   "scripts": {
     "build": "scripts/build",
@@ -54,11 +55,22 @@
   "files": [
     "dist"
   ],
-  "repository": "github:janus-idp/backstage-plugins",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/orchestrator-swf-editor-envelope"
+  },
   "keywords": [
+    "support:tech-preview",
+    "lifecycle:active",
     "backstage",
     "plugin"
   ],
-  "homepage": "https://janus-idp.io/",
-  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
+  "homepage": "https://red.ht/rhdh",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "maintainers": [
+    "@janus-idp/maintainers-plugins",
+    "@janus-idp/orchestrator-codeowners"
+  ],
+  "author": "The Backstage Community"
 }
