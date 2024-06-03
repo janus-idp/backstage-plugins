@@ -44,6 +44,7 @@
     "@backstage/backend-plugin-api": "^0.6.17",
     "@backstage/errors": "^1.2.4",
     "@backstage/types": "^1.1.1",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "lodash": "^4.17.21"
   }
 }

@@ -27,11 +27,14 @@ export type AuditResponse = {
   status: number;
   body?: any;
 };
-
 export type AuditLogSuccessStatus = { status: 'succeeded' };
 export type AuditLogFailureStatus = {
   status: 'failed';
   errors: ErrorLike[];
+};
+export type AuditLogUnknownFailureStatus = {
+  status: 'failed';
+  errors: unknown[];
 };
 
 export type AuditLogStatus = AuditLogSuccessStatus | AuditLogFailureStatus;
@@ -58,7 +61,7 @@ export type AuditLogDetailsOptions = {
   response?: AuditResponse;
   actorId?: string;
   request?: Request;
-} & ({ status: 'succeeded' } | { status: 'failed'; errors: unknown[] });
+} & (AuditLogSuccessStatus | AuditLogUnknownFailureStatus);
 
 export type AuditLogOptions = {
   eventName: string;
@@ -69,11 +72,7 @@ export type AuditLogOptions = {
   metadata?: JsonValue;
   response?: AuditResponse;
   request?: Request;
-};
-
-export type AuditErrorLogOptions = Omit<AuditLogOptions, 'level'> & {
-  errors: unknown[];
-};
+} & (AuditLogSuccessStatus | AuditLogUnknownFailureStatus);
 
 export type AuditLoggerOptions = {
   logger: LoggerService;
@@ -100,18 +99,11 @@ export interface AuditLogger {
   ): Promise<AuditLogDetails>;
 
   /**
-   * Generates an Audit Log and logs it at the info level
+   * Generates an Audit Log and logs it at the level passed by the user.
+   * Supports `info`, `debug`, `warn` or `error` level. Defaults to `info` if no level is passed.
    *
    * Secrets in the metadata field and request body, params and query field should be redacted by the user before passing in the request object
    * @public
    */
   auditLog(options: AuditLogOptions): Promise<void>;
-
-  /**
-   * Generates an Audit Log for an error and logs it at the error level
-   *
-   * Secrets in the metadata field and request body, params and query field should be redacted by the user before passing in the request object
-   * @public
-   */
-  auditErrorLog(options: AuditErrorLogOptions): Promise<void>;
 }
