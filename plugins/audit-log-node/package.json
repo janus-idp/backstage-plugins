@@ -39,7 +39,7 @@
     "directory": "plugins/audit-log-node"
   },
   "keywords": [
-    "support:tech-preview",
+    "support:production",
     "lifecycle:active",
     "backstage",
     "plugin"
