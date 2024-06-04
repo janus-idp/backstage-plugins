@@ -54,7 +54,7 @@
     "husky": "8.0.3",
     "lint-staged": "15.2.5",
     "multi-semantic-release": "3.0.2",
-    "prettier": "3.2.5",
+    "prettier": "3.3.0",
     "turbo": "1.13.3",
     "typescript": "5.4.5"
   },
