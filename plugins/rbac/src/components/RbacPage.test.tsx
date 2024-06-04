@@ -40,6 +40,7 @@ describe('RbacPage', () => {
       error: {
         rolesError: '',
         policiesError: '',
+        roleConditionError: '',
       },
       retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
