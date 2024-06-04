@@ -333,7 +333,7 @@ export class CSVFileWatcher {
     try {
       await this.enforcer.removePolicies(this.csvFilePolicies.removedPolicies);
 
-      await this.aLog.auditLog({
+      await this.auditLogger.auditLog({
         actorId: RBAC_BACKEND,
         message: `Deleted policies`,
         eventName: PermissionEvents.DELETE_POLICY,
