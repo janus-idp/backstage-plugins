@@ -66,7 +66,7 @@ const getAdminRoleMetadata = (): RoleMetadataDao => {
 const useAdminsFromConfig = async (
   admins: Config[],
   enf: EnforcerDelegate,
-  aLog: AuditLogger,
+  auditLogger: AuditLogger,
   roleMetadataStorage: RoleMetadataStorage,
   knex: Knex,
 ) => {
