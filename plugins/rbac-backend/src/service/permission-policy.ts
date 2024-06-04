@@ -179,7 +179,7 @@ const setAdminPermissions = async (
   await addAdminPermission(
     [ADMIN_ROLE_NAME, 'policy-entity', 'update', 'allow'],
     enf,
-    aLog,
+    auditLogger,
   );
   // needed for rbac frontend.
   await addAdminPermission(
