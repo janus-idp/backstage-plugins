@@ -164,7 +164,6 @@ const auditLoggerMock = {
   getActorId: jest.fn().mockImplementation(),
   createAuditLogDetails: jest.fn().mockImplementation(),
   auditLog: jest.fn().mockImplementation(() => Promise.resolve()),
-  auditErrorLog: jest.fn().mockImplementation(() => Promise.resolve()),
 };
 
 const mockHttpAuth = mockServices.httpAuth();
@@ -326,7 +325,7 @@ describe('REST policies api', () => {
     app.use(errorHandler());
     conditionalStorage.getCondition.mockReset();
     validateRoleConditionMock.mockReset();
-    auditLoggerMock.auditLog.mockReset();
+    auditLoggerMock.auditLog.mockClear();
     jest.clearAllMocks();
   });
 

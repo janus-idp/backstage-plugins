@@ -82,6 +82,7 @@ export async function removeTheDifference(
       members: groupPolicies.map(gp => gp[0]),
     },
     stage: HANDLE_RBAC_DATA_STAGE,
+    status: 'succeeded',
   });
 }
 

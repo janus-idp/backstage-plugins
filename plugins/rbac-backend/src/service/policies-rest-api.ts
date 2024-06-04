@@ -185,6 +185,7 @@ export class PoliciesServer {
         message: `Return list permission policies`,
         eventName: PermissionEvents.GET_POLICY,
         stage: SEND_RESPONSE_STAGE,
+        status: 'succeeded',
         request,
         response: { status: 200, body },
       });
@@ -215,6 +216,7 @@ export class PoliciesServer {
             message: `Return permission policy`,
             eventName: PermissionEvents.GET_POLICY,
             stage: SEND_RESPONSE_STAGE,
+            status: 'succeeded',
             request,
             response: { status: 200, body },
           });
@@ -259,6 +261,7 @@ export class PoliciesServer {
           eventName: PermissionEvents.DELETE_POLICY,
           metadata: { policies: processedPolicies, source: 'rest' },
           stage: SEND_RESPONSE_STAGE,
+          status: 'succeeded',
           request,
           response: { status: 204 },
         });
@@ -299,6 +302,7 @@ export class PoliciesServer {
         eventName: PermissionEvents.CREATE_POLICY,
         metadata: { policies: processedPolicies, source: 'rest' },
         stage: SEND_RESPONSE_STAGE,
+        status: 'succeeded',
         request,
         response: { status: 201 },
       });
@@ -386,6 +390,7 @@ export class PoliciesServer {
           eventName: PermissionEvents.UPDATE_POLICY,
           metadata: { policies: processedNewPolicy, source: 'rest' },
           stage: SEND_RESPONSE_STAGE,
+          status: 'succeeded',
           request,
           response: { status: 200 },
         });
@@ -415,6 +420,7 @@ export class PoliciesServer {
         message: `Return list roles`,
         eventName: RoleEvents.GET_ROLE,
         stage: SEND_RESPONSE_STAGE,
+        status: 'succeeded',
         request,
         response: { status: 200, body },
       });
@@ -446,6 +452,7 @@ export class PoliciesServer {
           message: `Return ${body[0].name}`,
           eventName: RoleEvents.GET_ROLE,
           stage: SEND_RESPONSE_STAGE,
+          status: 'succeeded',
           request,
           response: { status: 200, body },
         });
@@ -524,6 +531,7 @@ export class PoliciesServer {
           members: roles.map(gp => gp[0]),
         },
         stage: SEND_RESPONSE_STAGE,
+        status: 'succeeded',
         request,
         response: { status: 201 },
       });
@@ -663,6 +671,7 @@ export class PoliciesServer {
           members: newRole.map(gp => gp[0]),
         },
         stage: SEND_RESPONSE_STAGE,
+        status: 'succeeded',
         request,
         response: { status: 200 },
       });
@@ -732,6 +741,7 @@ export class PoliciesServer {
             members: roleMembers.map(gp => gp[0]),
           },
           stage: SEND_RESPONSE_STAGE,
+          status: 'succeeded',
           request,
           response: { status: 204 },
         });
@@ -757,6 +767,7 @@ export class PoliciesServer {
         message: `Return list plugin policies`,
         eventName: ListPluginPoliciesEvents.GET_PLUGINS_POLICIES,
         stage: SEND_RESPONSE_STAGE,
+        status: 'succeeded',
         request,
         response: { status: 200, body },
       });
@@ -781,6 +792,7 @@ export class PoliciesServer {
         message: `Return list conditional rules and schemas`,
         eventName: ListConditionEvents.GET_CONDITION_RULES,
         stage: SEND_RESPONSE_STAGE,
+        status: 'succeeded',
         request,
         response: { status: 200, body },
       });
@@ -818,6 +830,7 @@ export class PoliciesServer {
         message: `Return list conditional permission policies`,
         eventName: ConditionEvents.GET_CONDITION,
         stage: SEND_RESPONSE_STAGE,
+        status: 'succeeded',
         request,
         response: { status: 200, body },
       });
@@ -855,6 +868,7 @@ export class PoliciesServer {
         eventName: ConditionEvents.CREATE_CONDITION,
         metadata: { condition: conditionToCreate },
         stage: SEND_RESPONSE_STAGE,
+        status: 'succeeded',
         request,
         response: { status: 201, body },
       });
@@ -892,6 +906,7 @@ export class PoliciesServer {
         message: `Return conditional permission policy by id`,
         eventName: ConditionEvents.GET_CONDITION,
         stage: SEND_RESPONSE_STAGE,
+        status: 'succeeded',
         request,
         response: { status: 200, body },
       });
@@ -932,6 +947,7 @@ export class PoliciesServer {
         eventName: ConditionEvents.DELETE_CONDITION,
         metadata: { condition: conditionToDelete },
         stage: SEND_RESPONSE_STAGE,
+        status: 'succeeded',
         request,
         response: { status: 204 },
       });
@@ -972,6 +988,7 @@ export class PoliciesServer {
         eventName: ConditionEvents.UPDATE_CONDITION,
         metadata: { conditionId: id, condition: conditionToUpdate },
         stage: SEND_RESPONSE_STAGE,
+        status: 'succeeded',
         request,
         response: { status: 200 },
       });

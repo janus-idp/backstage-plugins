@@ -128,7 +128,6 @@ const auditLoggerMock = {
   getActorId: jest.fn().mockImplementation(),
   createAuditLogDetails: jest.fn().mockImplementation(),
   auditLog: jest.fn().mockImplementation(),
-  auditErrorLog: jest.fn().mockImplementation(),
 };
 
 const modifiedBy = 'user:default/some-admin';
@@ -2565,6 +2564,7 @@ function verifyAuditLogForNonResourcedPermission(
       userEntityRef: expectedUser,
     },
     stage: 'evaluatePermissionAccess',
+    status: 'succeeded',
   });
 
   const message = resourceType
@@ -2582,6 +2582,7 @@ function verifyAuditLogForNonResourcedPermission(
       userEntityRef: expectedUser ?? 'user without entity',
     },
     stage: 'evaluatePermissionAccess',
+    status: 'succeeded',
   });
 }
 
@@ -2603,6 +2604,7 @@ function verifyAuditLogForResourcedPermission(
       userEntityRef: user,
     },
     stage: 'evaluatePermissionAccess',
+    status: 'succeeded',
   });
   expect(auditLoggerMock.auditLog).toHaveBeenNthCalledWith(2, {
     actorId: user,
@@ -2618,5 +2620,6 @@ function verifyAuditLogForResourcedPermission(
       userEntityRef: user,
     },
     stage: 'evaluatePermissionAccess',
+    status: 'succeeded',
   });
 }

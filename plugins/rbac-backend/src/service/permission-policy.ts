@@ -116,6 +116,7 @@ const useAdminsFromConfig = async (
       members: addedRoleMembers.map(gp => gp[0]),
     },
     stage: HANDLE_RBAC_DATA_STAGE,
+    status: 'succeeded',
   });
 
   const configPoliciesMetadata =
@@ -152,6 +153,7 @@ const addAdminPermission = async (
     eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,
     metadata: { policies: [policy], source: 'configuration' },
     stage: HANDLE_RBAC_DATA_STAGE,
+    status: 'succeeded',
   });
 };
 
@@ -367,10 +369,11 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       await this.aLog.auditLog(auditOptions);
       return { result };
     } catch (error) {
-      await this.aLog.auditErrorLog({
+      await this.aLog.auditLog({
         message: 'Permission policy check failed',
         eventName: EvaluationEvents.PERMISSION_EVALUATION_FAILED,
         stage: EVALUATE_PERMISSION_ACCESS_STAGE,
+        status: 'failed',
         errors: [error],
       });
       return { result: AuthorizeResult.DENY };

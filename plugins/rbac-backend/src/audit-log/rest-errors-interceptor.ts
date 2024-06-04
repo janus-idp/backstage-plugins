@@ -91,10 +91,11 @@ export function auditError(auditLogger: AuditLogger): ErrorRequestHandler {
       if (methodEvents) {
         const { event, message } = methodEvents;
         auditLogger
-          .auditErrorLog({
+          .auditLog({
             message,
             eventName: event,
             stage: RESPONSE_ERROR,
+            status: 'failed',
             request: req,
             errors: [err],
           })

@@ -18,7 +18,6 @@ const auditLoggerMock = {
   getActorId: jest.fn().mockImplementation(),
   createAuditLogDetails: jest.fn().mockImplementation(),
   auditLog: jest.fn().mockImplementation(),
-  auditErrorLog: jest.fn().mockImplementation(),
 };
 
 describe('helper.ts', () => {
