@@ -279,7 +279,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     superUserList?: string[],
   ) {
     this.enforcer = enforcer;
-    this.aLog = aLog;
+    this.auditLogger = auditLogger;
     this.conditionStorage = conditionStorage;
     this.superUserList = superUserList;
   }
