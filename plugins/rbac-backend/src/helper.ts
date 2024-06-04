@@ -42,7 +42,7 @@ export async function removeTheDifference(
   source: Source,
   roleEntityRef: string,
   enf: EnforcerDelegate,
-  aLog: AuditLogger,
+  auditLogger: AuditLogger,
   modifiedBy: string,
 ): Promise<void> {
   originalGroup.sort((a, b) => a.localeCompare(b));
