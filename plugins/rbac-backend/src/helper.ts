@@ -73,7 +73,7 @@ export async function removeTheDifference(
     remainingMembers.length > 0
       ? RoleEvents.UPDATE_ROLE
       : RoleEvents.DELETE_ROLE;
-  await aLog.auditLog({
+  await auditLogger.auditLog({
     actorId: RBAC_BACKEND,
     message,
     eventName,
