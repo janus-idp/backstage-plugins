@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-web-terminal [1.5.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.5.6...@janus-idp/backstage-plugin-web-terminal@1.5.7) (2024-06-04)
+
 ## @janus-idp/backstage-plugin-web-terminal [1.5.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.5.5...@janus-idp/backstage-plugin-web-terminal@1.5.6) (2024-06-03)
 
 ## @janus-idp/backstage-plugin-web-terminal [1.5.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.5.4...@janus-idp/backstage-plugin-web-terminal@1.5.5) (2024-06-03)
