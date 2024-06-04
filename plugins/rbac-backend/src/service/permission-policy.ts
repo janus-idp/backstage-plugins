@@ -245,7 +245,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       roleMetadataStorage,
       knex,
     );
-    await setAdminPermissions(enforcerDelegate, aLog);
+    await setAdminPermissions(enforcerDelegate, auditLogger);
 
     if (
       (!adminUsers || adminUsers.length === 0) &&
