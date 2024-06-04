@@ -82,7 +82,12 @@ const eventMap: {
 
 // Audit log REST api errors interceptor.
 export function auditError(auditLogger: AuditLogger): ErrorRequestHandler {
-  return (err: Error, req: Request, _resp: Response, next: NextFunction) => {
+  return async (
+    err: Error,
+    req: Request,
+    _resp: Response,
+    next: NextFunction,
+  ) => {
     const matchedPath = Object.keys(eventMap).find(path =>
       req.path.startsWith(path),
     );
@@ -90,17 +95,19 @@ export function auditError(auditLogger: AuditLogger): ErrorRequestHandler {
       const methodEvents = eventMap[matchedPath][req.method];
       if (methodEvents) {
         const { event, message } = methodEvents;
-        auditLogger
-          .auditLog({
+        try {
+          await auditLogger.auditLog({
             message,
             eventName: event,
             stage: RESPONSE_ERROR,
             status: 'failed',
             request: req,
             errors: [err],
-          })
-          .then(() => next(err))
-          .catch(auditLogError => next(auditLogError));
+          });
+          next(err);
+        } catch (auditLogError) {
+          next(auditLogError);
+        }
         return;
       }
     }
