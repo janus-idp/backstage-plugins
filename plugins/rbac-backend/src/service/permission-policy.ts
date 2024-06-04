@@ -202,7 +202,7 @@ const evaluatePermMsg = (
 
 export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly enforcer: EnforcerDelegate;
-  private readonly aLog: AuditLogger;
+  private readonly auditLogger: AuditLogger;
   private readonly conditionStorage: ConditionalStorage;
   private readonly superUserList?: string[];
 
