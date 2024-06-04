@@ -159,7 +159,7 @@ const addAdminPermission = async (
 
 const setAdminPermissions = async (
   enf: EnforcerDelegate,
-  aLog: AuditLogger,
+  auditLogger: AuditLogger,
 ) => {
   await addAdminPermission(
     [ADMIN_ROLE_NAME, 'policy-entity', 'read', 'allow'],
