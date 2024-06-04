@@ -107,7 +107,7 @@ const useAdminsFromConfig = async (
     getAdminRoleMetadata(),
   );
 
-  await aLog.auditLog({
+  await auditLogger.auditLog({
     actorId: RBAC_BACKEND,
     message: `Created or updated role`,
     eventName: RoleEvents.CREATE_OR_UPDATE_ROLE,
