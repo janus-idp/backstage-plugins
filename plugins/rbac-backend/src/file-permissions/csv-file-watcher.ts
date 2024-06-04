@@ -459,7 +459,7 @@ export class CSVFileWatcher {
         const message = isRolePresent
           ? 'Updated role: deleted members'
           : 'Deleted role';
-        await this.aLog.auditLog({
+        await this.auditLogger.auditLog({
           actorId: RBAC_BACKEND,
           message,
           eventName,
