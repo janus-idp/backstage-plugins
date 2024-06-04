@@ -25,9 +25,11 @@ const auditLogFormat = winston.format((info, opts) => {
   const { isAuditLog, ...newInfo } = info;
 
   if (isAuditLog) {
-    return opts.isAuditLog ? newInfo : false;
+    // keep `isAuditLog` field
+    return opts.isAuditLog ? info : false;
   }
 
+  // remove `isAuditLog` field from non audit log events
   return !opts.isAuditLog ? newInfo : false;
 });
 
