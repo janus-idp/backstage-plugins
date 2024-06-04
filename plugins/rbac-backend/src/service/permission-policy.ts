@@ -185,7 +185,7 @@ const setAdminPermissions = async (
   await addAdminPermission(
     [ADMIN_ROLE_NAME, 'catalog-entity', 'read', 'allow'],
     enf,
-    aLog,
+    auditLogger,
   );
 };
 
