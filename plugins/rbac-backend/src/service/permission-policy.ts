@@ -143,7 +143,7 @@ const useAdminsFromConfig = async (
 const addAdminPermission = async (
   policy: string[],
   enf: EnforcerDelegate,
-  aLog: AuditLogger,
+  auditLogger: AuditLogger,
 ) => {
   await enf.addOrUpdatePolicy(policy, 'configuration');
 
