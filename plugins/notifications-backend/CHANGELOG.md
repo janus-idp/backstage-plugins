@@ -1,3 +1,5 @@
+## @janus-idp/plugin-notifications-backend [1.4.17](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.4.16...@janus-idp/plugin-notifications-backend@1.4.17) (2024-06-04)
+
 ## @janus-idp/plugin-notifications-backend [1.4.16](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.4.15...@janus-idp/plugin-notifications-backend@1.4.16) (2024-06-03)
 
 

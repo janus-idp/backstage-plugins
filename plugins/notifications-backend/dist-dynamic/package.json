@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/plugin-notifications-backend-dynamic",
-  "version": "1.4.16",
+  "version": "1.4.17",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
@@ -10,7 +10,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "supported-versions": "1.26.5"
   },
   "exports": {
     ".": {
@@ -42,6 +43,22 @@
     "config.d.ts",
     "users.yaml",
     "alpha"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/notifications-backend"
+  },
+  "maintainers": [
+    "@janus-idp/maintainers-plugins",
+    "@janus-idp/notifications"
+  ],
+  "author": "The Backstage Community",
+  "homepage": "https://red.ht/rhdh",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "keywords": [
+    "support:tech-preview",
+    "lifecycle:active"
   ],
   "bundleDependencies": true,
   "peerDependencies": {
