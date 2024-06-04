@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-matomo [1.4.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-matomo@1.4.7...@janus-idp/backstage-plugin-matomo@1.4.8) (2024-06-04)
+
 ## @janus-idp/backstage-plugin-matomo [1.4.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-matomo@1.4.6...@janus-idp/backstage-plugin-matomo@1.4.7) (2024-06-03)
 
 
