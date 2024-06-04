@@ -366,7 +366,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         request,
         { result },
       );
-      await this.aLog.auditLog(auditOptions);
+      await this.auditLogger.auditLog(auditOptions);
       return { result };
     } catch (error) {
       await this.aLog.auditLog({
