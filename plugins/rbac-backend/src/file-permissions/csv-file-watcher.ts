@@ -308,7 +308,7 @@ export class CSVFileWatcher {
       try {
         await this.enforcer.addOrUpdatePolicy(policy, 'csv-file');
 
-        await this.aLog.auditLog({
+        await this.auditLogger.auditLog({
           actorId: RBAC_BACKEND,
           message: `Created or updated policy`,
           eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,
