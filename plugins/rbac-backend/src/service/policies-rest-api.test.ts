@@ -141,7 +141,7 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
 const conditionalStorage = {
   filterConditions: jest.fn().mockImplementation(),
   createCondition: jest.fn().mockImplementation(),
-  findUniqueCondition: jest.fn().mockImplementation(),
+  checkConflictedConditions: jest.fn().mockImplementation(),
   getCondition: jest.fn().mockImplementation(),
   deleteCondition: jest.fn().mockImplementation(),
   updateCondition: jest.fn().mockImplementation(),

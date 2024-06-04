@@ -66,7 +66,7 @@ const catalogApi = {
 const conditionalStorage: ConditionalStorage = {
   filterConditions: jest.fn().mockImplementation(() => []),
   createCondition: jest.fn().mockImplementation(),
-  findUniqueCondition: jest.fn().mockImplementation(),
+  checkConflictedConditions: jest.fn().mockImplementation(),
   getCondition: jest.fn().mockImplementation(),
   deleteCondition: jest.fn().mockImplementation(),
   updateCondition: jest.fn().mockImplementation(),
@@ -1881,7 +1881,6 @@ describe('Policy checks for conditional policies', () => {
     );
 
     catalogApi.getEntities.mockReset();
-    (conditionalStorage.findUniqueCondition as jest.Mock).mockReset();
   });
 
   it('should execute condition policy', async () => {
