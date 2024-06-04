@@ -405,7 +405,7 @@ export class CSVFileWatcher {
           ? RoleEvents.UPDATE_ROLE
           : RoleEvents.CREATE_ROLE;
         const message = currentMetadata ? 'Updated role' : 'Created role';
-        await this.aLog.auditLog({
+        await this.auditLogger.auditLog({
           actorId: RBAC_BACKEND,
           message,
           eventName,
