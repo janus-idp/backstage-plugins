@@ -135,7 +135,7 @@ const useAdminsFromConfig = async (
     'configuration',
     ADMIN_ROLE_NAME,
     enf,
-    aLog,
+    auditLogger,
     ADMIN_ROLE_AUTHOR,
   );
 };
