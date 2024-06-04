@@ -143,10 +143,11 @@ export function createPermissionEvaluationOptions(
   }
 
   return {
+    actorId: userEntityRef,
     message,
     eventName,
-    stage: EVALUATE_PERMISSION_ACCESS_STAGE,
     metadata: auditInfo,
-    actorId: userEntityRef,
+    stage: EVALUATE_PERMISSION_ACCESS_STAGE,
+    status: 'succeeded',
   };
 }

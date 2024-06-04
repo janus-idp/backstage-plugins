@@ -314,6 +314,7 @@ export class CSVFileWatcher {
           eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,
           metadata: { policies: [policy], source: 'csv-file' },
           stage: HANDLE_RBAC_DATA_STAGE,
+          status: 'succeeded',
         });
       } catch (e) {
         this.logger.warn(
@@ -341,6 +342,7 @@ export class CSVFileWatcher {
           source: 'csv-file',
         },
         stage: HANDLE_RBAC_DATA_STAGE,
+        status: 'succeeded',
       });
     } catch (e) {
       this.logger.warn(
@@ -409,6 +411,7 @@ export class CSVFileWatcher {
           eventName,
           metadata: { ...roleMetadata, members: [groupPolicy[0]] },
           stage: HANDLE_RBAC_DATA_STAGE,
+          status: 'succeeded',
         });
       } catch (e) {
         this.logger.warn(
@@ -462,6 +465,7 @@ export class CSVFileWatcher {
           eventName,
           metadata: { ...metadata, members: [groupPolicy[0]] },
           stage: HANDLE_RBAC_DATA_STAGE,
+          status: 'succeeded',
         });
       } catch (e) {
         this.logger.warn(
