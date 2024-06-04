@@ -266,7 +266,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
     return new RBACPermissionPolicy(
       enforcerDelegate,
-      aLog,
+      auditLogger,
       conditionalStorage,
       superUserList,
     );
