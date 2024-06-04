@@ -47,7 +47,6 @@ const transports = {
     new winston.transports.Console({
       format: winston.format.combine(
         auditLogFormat({ isAuditLog: true }),
-        winston.format.colorize(),
         defaultFormat,
         winston.format.simple(),
       ),
