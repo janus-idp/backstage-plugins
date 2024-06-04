@@ -32,7 +32,11 @@ import { policyToString } from '../helper';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
-import { CSVFileWatcher } from './csv-file-watcher';
+import { ADMIN_ROLE_AUTHOR } from '../service/permission-policy';
+import {
+  CSV_PERMISSION_POLICY_FILE_AUTHOR,
+  CSVFileWatcher,
+} from './csv-file-watcher';
 
 const legacyPermission = [
   'role:default/legacy',
@@ -81,7 +85,10 @@ const catalogApi = {
 const loggerMock: any = {
   warn: jest.fn().mockImplementation(),
   debug: jest.fn().mockImplementation(),
+  info: jest.fn().mockImplementation(),
 };
+
+const modifiedBy = 'user:default/some-admin';
 
 const roleMetadataStorageMock: RoleMetadataStorage = {
   findRoleMetadata: jest
@@ -92,17 +99,26 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
         _trx: Knex.Knex.Transaction,
       ): Promise<RoleMetadataDao> => {
         if (roleEntityRef === legacyPermission[0]) {
-          return { roleEntityRef: legacyPermission[0], source: 'legacy' };
+          return {
+            roleEntityRef: legacyPermission[0],
+            source: 'legacy',
+            modifiedBy,
+          };
         } else if (roleEntityRef === restPermission[0]) {
-          return { roleEntityRef: restPermission[0], source: 'rest' };
+          return {
+            roleEntityRef: restPermission[0],
+            source: 'rest',
+            modifiedBy,
+          };
         }
         if (roleEntityRef === configPermission[0]) {
           return {
             roleEntityRef: configPermission[0],
             source: 'configuration',
+            modifiedBy,
           };
         }
-        return { roleEntityRef: '', source: 'csv-file' };
+        return { roleEntityRef: '', source: 'csv-file', modifiedBy };
       },
     ),
   createRoleMetadata: jest.fn().mockImplementation(),
@@ -178,6 +194,12 @@ const dbManagerMock = Knex.knex({ client: MockClient });
 
 const mockAuthService = mockServices.auth();
 
+const auditLoggerMock = {
+  getActorId: jest.fn().mockImplementation(),
+  createAuditLogDetails: jest.fn().mockImplementation(),
+  auditLog: jest.fn().mockImplementation(),
+};
+
 const currentPermissionPolicies = [
   ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
   ['role:default/legacy', 'catalog-entity', 'update', 'allow'],
@@ -239,7 +261,9 @@ describe('CSVFileWatcher', () => {
       enforcerDelegate,
       loggerMock,
       roleMetadataStorageMock,
+      auditLoggerMock,
     );
+    auditLoggerMock.auditLog.mockReset();
   });
 
   afterEach(() => {
@@ -303,6 +327,7 @@ describe('CSVFileWatcher', () => {
       await enforcerDelegate.addGroupingPolicy(legacyRole, {
         roleEntityRef: legacyRole[1],
         source: 'legacy',
+        modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
       });
 
       await csvFileWatcher.initialize(csvFileName, false);
@@ -559,10 +584,12 @@ describe('CSVFileWatcher', () => {
       await enforcerDelegate.addGroupingPolicy(configRole, {
         roleEntityRef: configRole[1],
         source: 'configuration',
+        modifiedBy: ADMIN_ROLE_AUTHOR,
       });
       await enforcerDelegate.addGroupingPolicy(restRole, {
         roleEntityRef: restRole[1],
         source: 'rest',
+        modifiedBy,
       });
 
       csvFileWatcher.parse = jest.fn().mockImplementation(() => {

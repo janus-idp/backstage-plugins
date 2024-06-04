@@ -4,9 +4,20 @@ import { parse } from 'csv-parse/sync';
 import { difference } from 'lodash';
 import { Logger } from 'winston';
 
+import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+
 import fs from 'fs';
 
-import { RoleMetadataStorage } from '../database/role-metadata';
+import {
+  HANDLE_RBAC_DATA_STAGE,
+  PermissionEvents,
+  RBAC_BACKEND,
+  RoleEvents,
+} from '../audit-log/audit-logger';
+import {
+  RoleMetadataDao,
+  RoleMetadataStorage,
+} from '../database/role-metadata';
 import {
   metadataStringToPolicy,
   policyToString,
@@ -39,6 +50,7 @@ export class CSVFileWatcher {
     private readonly enforcer: EnforcerDelegate,
     private readonly logger: Logger,
     private readonly roleMetadataStorage: RoleMetadataStorage,
+    private readonly auditLogger: AuditLogger,
   ) {
     this.csvFileName = '';
     this.currentContent = [];
@@ -295,6 +307,15 @@ export class CSVFileWatcher {
       }
       try {
         await this.enforcer.addOrUpdatePolicy(policy, 'csv-file');
+
+        await this.auditLogger.auditLog({
+          actorId: RBAC_BACKEND,
+          message: `Created or updated policy`,
+          eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,
+          metadata: { policies: [policy], source: 'csv-file' },
+          stage: HANDLE_RBAC_DATA_STAGE,
+          status: 'succeeded',
+        });
       } catch (e) {
         this.logger.warn(
           `Failed to add or update policy ${policy} after modification ${this.csvFileName}. Cause: ${e}`,
@@ -311,6 +332,18 @@ export class CSVFileWatcher {
   async removePermissionPolicies(): Promise<void> {
     try {
       await this.enforcer.removePolicies(this.csvFilePolicies.removedPolicies);
+
+      await this.auditLogger.auditLog({
+        actorId: RBAC_BACKEND,
+        message: `Deleted policies`,
+        eventName: PermissionEvents.DELETE_POLICY,
+        metadata: {
+          policies: this.csvFilePolicies.removedPolicies,
+          source: 'csv-file',
+        },
+        stage: HANDLE_RBAC_DATA_STAGE,
+        status: 'succeeded',
+      });
     } catch (e) {
       this.logger.warn(
         `Failed to remove policies ${JSON.stringify(
@@ -352,11 +385,33 @@ export class CSVFileWatcher {
       }
 
       try {
-        await this.enforcer.addOrUpdateGroupingPolicy(groupPolicy, {
+        const roleMetadata: RoleMetadataDao = {
           source: 'csv-file',
           roleEntityRef: groupPolicy[1],
           author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
           modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+        };
+
+        const currentMetadata = await this.roleMetadataStorage.findRoleMetadata(
+          roleMetadata.roleEntityRef,
+        );
+
+        await this.enforcer.addOrUpdateGroupingPolicy(
+          groupPolicy,
+          roleMetadata,
+        );
+
+        const eventName = currentMetadata
+          ? RoleEvents.UPDATE_ROLE
+          : RoleEvents.CREATE_ROLE;
+        const message = currentMetadata ? 'Updated role' : 'Created role';
+        await this.auditLogger.auditLog({
+          actorId: RBAC_BACKEND,
+          message,
+          eventName,
+          metadata: { ...roleMetadata, members: [groupPolicy[0]] },
+          stage: HANDLE_RBAC_DATA_STAGE,
+          status: 'succeeded',
         });
       } catch (e) {
         this.logger.warn(
@@ -374,24 +429,44 @@ export class CSVFileWatcher {
    */
   async removeRoles(): Promise<void> {
     for (const groupPolicy of this.csvFilePolicies.removedGroupPolicies) {
+      const roleEntityRef = groupPolicy[1];
       // this requires knowledge of whether or not it is an update
       const isUpdate = await this.enforcer.getFilteredGroupingPolicy(
         1,
-        groupPolicy[1],
+        roleEntityRef,
       );
 
       // Need to update the time
       try {
+        const metadata: RoleMetadataDao = {
+          source: 'csv-file',
+          roleEntityRef,
+          author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+          modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+        };
+
         await this.enforcer.removeGroupingPolicy(
           groupPolicy,
-          {
-            source: 'csv-file',
-            roleEntityRef: groupPolicy[1],
-            author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
-            modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
-          },
+          metadata,
           isUpdate.length > 1,
         );
+
+        const isRolePresent =
+          await this.roleMetadataStorage.findRoleMetadata(roleEntityRef);
+        const eventName = isRolePresent
+          ? RoleEvents.UPDATE_ROLE
+          : RoleEvents.DELETE_ROLE;
+        const message = isRolePresent
+          ? 'Updated role: deleted members'
+          : 'Deleted role';
+        await this.auditLogger.auditLog({
+          actorId: RBAC_BACKEND,
+          message,
+          eventName,
+          metadata: { ...metadata, members: [groupPolicy[0]] },
+          stage: HANDLE_RBAC_DATA_STAGE,
+          status: 'succeeded',
+        });
       } catch (e) {
         this.logger.warn(
           `Failed to remove group policy ${groupPolicy} after modification ${this.csvFileName}. Cause: ${e}`,

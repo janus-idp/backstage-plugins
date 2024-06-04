@@ -1,6 +1,27 @@
 import { createBackend } from '@backstage/backend-defaults';
+import { dynamicPluginsSchemasServiceFactory } from '@backstage/backend-dynamic-feature-service';
+import { PackageRoles } from '@backstage/cli-node';
+
+import * as path from 'path';
+
+import { customLogger } from './logger/customLogger';
 
 const backend = createBackend();
+
+backend.add(
+  dynamicPluginsSchemasServiceFactory({
+    schemaLocator(pluginPackage) {
+      const platform = PackageRoles.getRoleInfo(
+        pluginPackage.manifest.backstage.role,
+      ).platform;
+      return path.join(
+        platform === 'node' ? 'dist' : 'dist-scalprum',
+        'configSchema.json',
+      );
+    },
+  }),
+);
+backend.add(customLogger());
 
 backend.add(import('@backstage/plugin-app-backend/alpha'));
 backend.add(import('@backstage/plugin-proxy-backend/alpha'));
