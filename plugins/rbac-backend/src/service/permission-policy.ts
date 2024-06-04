@@ -147,7 +147,7 @@ const addAdminPermission = async (
 ) => {
   await enf.addOrUpdatePolicy(policy, 'configuration');
 
-  await aLog.auditLog({
+  await auditLogger.auditLog({
     actorId: RBAC_BACKEND,
     message: `Created or updated policy`,
     eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,
