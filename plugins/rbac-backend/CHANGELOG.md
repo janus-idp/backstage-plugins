@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [4.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.0.1...@janus-idp/backstage-plugin-rbac-backend@4.0.2) (2024-06-04)
+
+
+### Bug Fixes
+
+* **rbac:** fix handling condition action conflicts ([#1781](https://github.com/janus-idp/backstage-plugins/issues/1781)) ([966b2b2](https://github.com/janus-idp/backstage-plugins/commit/966b2b200e0ade0ce600901a7853a4a94751df22))
+
 ## @janus-idp/backstage-plugin-rbac-backend [4.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.0.0...@janus-idp/backstage-plugin-rbac-backend@4.0.1) (2024-06-03)
 
 
