@@ -39,7 +39,7 @@ const transports = {
       format: winston.format.combine(
         auditLogFormat({ isAuditLog: false }),
         defaultFormat,
-        winston.format.simple(),
+        winston.format.json(),
       ),
     }),
   ],
