@@ -208,7 +208,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
   public static async build(
     logger: Logger,
-    aLog: AuditLogger,
+    auditLogger: AuditLogger,
     configApi: ConfigApi,
     conditionalStorage: ConditionalStorage,
     enforcerDelegate: EnforcerDelegate,
