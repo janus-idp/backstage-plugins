@@ -369,7 +369,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       await this.auditLogger.auditLog(auditOptions);
       return { result };
     } catch (error) {
-      await this.aLog.auditLog({
+      await this.auditLogger.auditLog({
         message: 'Permission policy check failed',
         eventName: EvaluationEvents.PERMISSION_EVALUATION_FAILED,
         stage: EVALUATE_PERMISSION_ACCESS_STAGE,
