@@ -274,7 +274,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
   private constructor(
     enforcer: EnforcerDelegate,
-    aLog: AuditLogger,
+    auditLogger: AuditLogger,
     conditionStorage: ConditionalStorage,
     superUserList?: string[],
   ) {
