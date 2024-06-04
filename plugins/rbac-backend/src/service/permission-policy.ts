@@ -174,7 +174,7 @@ const setAdminPermissions = async (
   await addAdminPermission(
     [ADMIN_ROLE_NAME, 'policy-entity', 'delete', 'allow'],
     enf,
-    aLog,
+    auditLogger,
   );
   await addAdminPermission(
     [ADMIN_ROLE_NAME, 'policy-entity', 'update', 'allow'],
