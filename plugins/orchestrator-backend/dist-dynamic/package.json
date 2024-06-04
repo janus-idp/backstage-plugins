@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-backend-dynamic",
-  "version": "1.9.4",
+  "version": "1.9.5",
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
@@ -10,7 +10,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "supported-versions": "1.26.5"
   },
   "exports": {
     ".": {
@@ -23,10 +24,16 @@
     },
     "./package.json": "./package.json"
   },
-  "homepage": "https://janus-idp.io/",
-  "repository": "github:janus-idp/backstage-plugins",
+  "homepage": "https://red.ht/rhdh",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/orchestrator-backend"
+  },
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "keywords": [
+    "support:tech-preview",
+    "lifecycle:active",
     "backstage",
     "plugin",
     "orchestrator",
@@ -55,6 +62,11 @@
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {},
+  "maintainers": [
+    "@janus-idp/maintainers-plugins",
+    "@janus-idp/orchestrator-codeowners"
+  ],
+  "author": "The Backstage Community",
   "bundleDependencies": true,
   "peerDependencies": {
     "@backstage/backend-app-api": "^0.7.2",
