@@ -260,7 +260,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       enforcerDelegate,
       logger,
       roleMetadataStorage,
-      aLog,
+      auditLogger,
     );
     await csvFile.initialize(policiesFile, allowReload);
 
