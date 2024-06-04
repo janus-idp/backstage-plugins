@@ -241,7 +241,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     await useAdminsFromConfig(
       adminUsers || [],
       enforcerDelegate,
-      aLog,
+      auditLogger,
       roleMetadataStorage,
       knex,
     );
