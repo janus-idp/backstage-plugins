@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.20.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.11...@janus-idp/backstage-plugin-rbac@1.20.12) (2024-06-04)
+
+
+### Bug Fixes
+
+* **rbac:** fix role list view permission policies column value ([#1714](https://github.com/janus-idp/backstage-plugins/issues/1714)) ([07200e4](https://github.com/janus-idp/backstage-plugins/commit/07200e42d62c51c2ff59e812521ad0c82cb62ea8))
+
 ## @janus-idp/backstage-plugin-rbac [1.20.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.10...@janus-idp/backstage-plugin-rbac@1.20.11) (2024-06-03)
 
 
