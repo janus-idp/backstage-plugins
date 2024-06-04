@@ -296,7 +296,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       userEntityRef,
       request,
     );
-    this.aLog.auditLog(auditOptions);
+    this.auditLogger.auditLog(auditOptions);
 
     try {
       let status = false;
