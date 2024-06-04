@@ -50,7 +50,7 @@ export class CSVFileWatcher {
     private readonly enforcer: EnforcerDelegate,
     private readonly logger: Logger,
     private readonly roleMetadataStorage: RoleMetadataStorage,
-    private readonly aLog: AuditLogger,
+    private readonly auditLogger: AuditLogger,
   ) {
     this.csvFileName = '';
     this.currentContent = [];
