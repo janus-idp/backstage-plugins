@@ -314,7 +314,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
           request,
           { result: AuthorizeResult.DENY },
         );
-        await this.aLog.auditLog(auditOptions);
+        await this.auditLogger.auditLog(auditOptions);
         return { result: AuthorizeResult.DENY };
       }
 
