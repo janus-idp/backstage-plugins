@@ -123,16 +123,16 @@ export function registerScriptCommand(program: Command) {
     )
     .option(
       '--embed-as-dependencies',
-      'Include embedded packages as private dependencies of backend plugins, instead of merging them with the generated code. Experimental for now, but expected to become the default.',
-      false,
-    )
-    .option('--no-embed-as-dependencies', undefined, true)
-    .option(
-      '--in-place',
-      'Adds the frontend dynamic plugin assets to the `dist-scalprum` folder of the original plugin package. When value is `false` (using `--no-in-place`), it produces the assets in a distinct package located in the `dist-dynamic` sub-folder, as for backend plugins. `true` by default for now, it is expected to become `false` by default.',
+      'Include embedded packages as private dependencies of backend plugins. When value is `false` (using `--no-embed-as-dependencies`), source code of embedded plugins is merged with the generated code, so that the embedded plugin packages are completly erased (only available for legacy reasons: use with care).',
       true,
     )
-    .option('--no-in-place', undefined, false)
+    .option('--no-embed-as-dependencies', undefined, false)
+    .option(
+      '--in-place',
+      'Adds the frontend dynamic plugin assets to the `dist-scalprum` folder of the original plugin package, instead of producing the assets in a distinct package located in the `dist-dynamic` sub-folder, as for backend plugins.',
+      false,
+    )
+    .option('--no-in-place', undefined, true)
     .option(
       '--scalprum-config <file>',
       'Allows retrieving scalprum configuration from an external JSON file, instead of using a `scalprum` field of the `package.json`. Frontend plugins only.',
