@@ -948,7 +948,7 @@ export class PoliciesServer {
       await this.aLog.auditLog<ConditionAuditInfo>({
         message: `Deleted conditional permission policy`,
         eventName: ConditionEvents.DELETE_CONDITION,
-        metadata: { condition: conditionToDelete, conditionId: id },
+        metadata: { condition: conditionToDelete },
         stage: SEND_RESPONSE_STAGE,
         status: 'succeeded',
         request,
@@ -989,7 +989,7 @@ export class PoliciesServer {
       await this.aLog.auditLog<ConditionAuditInfo>({
         message: `Updated conditional permission policy`,
         eventName: ConditionEvents.UPDATE_CONDITION,
-        metadata: { conditionId: id, condition: roleConditionPolicy },
+        metadata: { condition: roleConditionPolicy },
         stage: SEND_RESPONSE_STAGE,
         status: 'succeeded',
         request,
