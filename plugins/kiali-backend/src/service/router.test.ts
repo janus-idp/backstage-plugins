@@ -44,7 +44,10 @@ describe('createRouter', () => {
         },
       }),
     });
-    app = express().use(router);
+    app = express();
+    app.disable("'x-powered-by");
+
+    app = app.use(router);
   });
 
   describe('POST /status', () => {
