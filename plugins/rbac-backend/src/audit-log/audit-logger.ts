@@ -91,7 +91,8 @@ export const ConditionEvents = {
 };
 
 export type ConditionAuditInfo = {
-  condition: RoleConditionalPolicyDecision<PermissionInfo>;
+  conditionId?: number;
+  condition: RoleConditionalPolicyDecision<PermissionAction>;
 };
 
 export const RBAC_BACKEND = 'rbac-backend';
@@ -111,7 +112,7 @@ export function createPermissionEvaluationOptions(
   userEntityRef: string,
   request: PolicyQuery,
   policyDecision?: PolicyDecision,
-): AuditLogOptions {
+): AuditLogOptions<EvaluationAuditInfo> {
   const auditInfo: EvaluationAuditInfo = {
     userEntityRef,
     permissionName: request.permission.name,
