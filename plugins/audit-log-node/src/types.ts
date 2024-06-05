@@ -54,22 +54,22 @@ export type AuditLogDetails = {
   isAuditLog: true;
 } & AuditLogStatus;
 
-export type AuditLogDetailsOptions = {
+export type AuditLogDetailsOptions<T extends JsonValue> = {
   eventName: string;
   stage: string;
-  metadata?: JsonValue;
+  metadata?: T;
   response?: AuditResponse;
   actorId?: string;
   request?: Request;
 } & (AuditLogSuccessStatus | AuditLogUnknownFailureStatus);
 
-export type AuditLogOptions = {
+export type AuditLogOptions<T extends JsonValue> = {
   eventName: string;
   message: string;
   stage: string;
   level?: 'info' | 'debug' | 'warn' | 'error';
   actorId?: string;
-  metadata?: JsonValue;
+  metadata?: T;
   response?: AuditResponse;
   request?: Request;
 } & (AuditLogSuccessStatus | AuditLogUnknownFailureStatus);
@@ -94,8 +94,8 @@ export interface AuditLogger {
    * Secrets in the metadata field and request body, params and query field should be redacted by the user before passing in the request object
    * @public
    */
-  createAuditLogDetails(
-    options: AuditLogDetailsOptions,
+  createAuditLogDetails<T extends JsonValue>(
+    options: AuditLogDetailsOptions<T>,
   ): Promise<AuditLogDetails>;
 
   /**
@@ -105,5 +105,5 @@ export interface AuditLogger {
    * Secrets in the metadata field and request body, params and query field should be redacted by the user before passing in the request object
    * @public
    */
-  auditLog(options: AuditLogOptions): Promise<void>;
+  auditLog<T extends JsonValue>(options: AuditLogOptions<T>): Promise<void>;
 }

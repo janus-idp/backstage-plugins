@@ -47,10 +47,13 @@ import {
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import {
+  ConditionAuditInfo,
   ConditionEvents,
   ListConditionEvents,
   ListPluginPoliciesEvents,
+  PermissionAuditInfo,
   PermissionEvents,
+  RoleAuditInfo,
   RoleEvents,
   SEND_RESPONSE_STAGE,
 } from '../audit-log/audit-logger';
@@ -256,7 +259,7 @@ export class PoliciesServer {
 
         await this.enforcer.removePolicies(processedPolicies);
 
-        await this.aLog.auditLog({
+        await this.aLog.auditLog<PermissionAuditInfo>({
           message: `Deleted permission policies`,
           eventName: PermissionEvents.DELETE_POLICY,
           metadata: { policies: processedPolicies, source: 'rest' },
@@ -297,7 +300,7 @@ export class PoliciesServer {
 
       await this.enforcer.addPolicies(processedPolicies, 'rest');
 
-      await this.aLog.auditLog({
+      await this.aLog.auditLog<PermissionAuditInfo>({
         message: `Created permission policies`,
         eventName: PermissionEvents.CREATE_POLICY,
         metadata: { policies: processedPolicies, source: 'rest' },
@@ -385,7 +388,7 @@ export class PoliciesServer {
           'rest',
         );
 
-        await this.aLog.auditLog({
+        await this.aLog.auditLog<PermissionAuditInfo>({
           message: `Updated permission policies`,
           eventName: PermissionEvents.UPDATE_POLICY,
           metadata: { policies: processedNewPolicy, source: 'rest' },
@@ -523,7 +526,7 @@ export class PoliciesServer {
 
       await this.enforcer.addGroupingPolicies(roles, metadata);
 
-      await this.aLog.auditLog({
+      await this.aLog.auditLog<RoleAuditInfo>({
         message: `Created ${metadata.roleEntityRef}`,
         eventName: RoleEvents.CREATE_ROLE,
         metadata: {
@@ -663,7 +666,7 @@ export class PoliciesServer {
       if (newMetadata.roleEntityRef !== oldMetadata.roleEntityRef) {
         message = `${message}. Role entity reference renamed to ${newMetadata.roleEntityRef}`;
       }
-      await this.aLog.auditLog({
+      await this.aLog.auditLog<RoleAuditInfo>({
         message,
         eventName: RoleEvents.UPDATE_ROLE,
         metadata: {
@@ -733,7 +736,7 @@ export class PoliciesServer {
           false,
         );
 
-        await this.aLog.auditLog({
+        await this.aLog.auditLog<RoleAuditInfo>({
           message: `Deleted ${metadata.roleEntityRef}`,
           eventName: RoleEvents.DELETE_ROLE,
           metadata: {
@@ -863,10 +866,10 @@ export class PoliciesServer {
 
       const body = { id: id };
 
-      await this.aLog.auditLog({
+      await this.aLog.auditLog<ConditionAuditInfo>({
         message: `Created conditional permission policy`,
         eventName: ConditionEvents.CREATE_CONDITION,
-        metadata: { condition: conditionToCreate },
+        metadata: { condition: roleConditionPolicy },
         stage: SEND_RESPONSE_STAGE,
         status: 'succeeded',
         request,
@@ -942,7 +945,7 @@ export class PoliciesServer {
 
       await this.conditionalStorage.deleteCondition(id);
 
-      await this.aLog.auditLog({
+      await this.aLog.auditLog<ConditionAuditInfo>({
         message: `Deleted conditional permission policy`,
         eventName: ConditionEvents.DELETE_CONDITION,
         metadata: { condition: conditionToDelete },
@@ -983,10 +986,10 @@ export class PoliciesServer {
 
       await this.conditionalStorage.updateCondition(id, conditionToUpdate);
 
-      await this.aLog.auditLog({
+      await this.aLog.auditLog<ConditionAuditInfo>({
         message: `Updated conditional permission policy`,
         eventName: ConditionEvents.UPDATE_CONDITION,
-        metadata: { conditionId: id, condition: conditionToUpdate },
+        metadata: { condition: roleConditionPolicy },
         stage: SEND_RESPONSE_STAGE,
         status: 'succeeded',
         request,
