@@ -948,7 +948,7 @@ export class PoliciesServer {
       await this.aLog.auditLog<ConditionAuditInfo>({
         message: `Deleted conditional permission policy`,
         eventName: ConditionEvents.DELETE_CONDITION,
-        metadata: { condition: conditionToDelete },
+        metadata: { condition: conditionToDelete, conditionId: id },
         stage: SEND_RESPONSE_STAGE,
         status: 'succeeded',
         request,
