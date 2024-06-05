@@ -26,12 +26,6 @@ const logger = createLogger({
   transports: [new transports.Console({ silent: true })],
 });
 
-const getCSRF = (body: string): string => {
-  const csurfy = JSON.stringify(body);
-  const match = csurfy.split('"');
-  return match[3].replace("'", '');
-};
-
 describe('createRouter', () => {
   let app: express.Express;
 
