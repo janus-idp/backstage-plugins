@@ -8,7 +8,6 @@ import { PolicyQuery } from '@backstage/plugin-permission-node';
 import { AuditLogOptions } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
   PermissionAction,
-  PermissionInfo,
   RoleConditionalPolicyDecision,
   Source,
   toPermissionAction,
