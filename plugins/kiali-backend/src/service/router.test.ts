@@ -1,12 +1,8 @@
 import { ConfigReader } from '@backstage/config';
 
-// @ts-ignore
-import cookieParser from 'cookie-parser';
 import express from 'express';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
-// @ts-ignore
-import csurf from 'tiny-csrf';
 import { createLogger, transports } from 'winston';
 
 import { handlers } from '../../__fixtures__/handlers';
@@ -57,32 +53,12 @@ describe('createRouter', () => {
     app = express();
     app.disable('x-powered-by');
 
-    // csrf
-    app.use(cookieParser('cookie-parser-secret'));
-    app.use(express.urlencoded({ extended: true }));
-    app.use(csurf('8348yrhjfhey8fy39xhiudhh272hfuwa', ['POST'], ['/proxy']));
-
-    app.use((req, res, next) => {
-      // @ts-ignore
-      res.locals.csrfToken = req.csrfToken();
-      next();
-    });
-    app.get('/form', (_, res) => {
-      res.send({ value: res.locals.csrfToken });
-    });
-
     app = app.use(router);
   });
 
   describe('POST /status', () => {
     it('should get the kiali status', async () => {
-      const getRes = await request(app).get('/form');
-      const csurfy1 = getCSRF(getRes.body);
-      const cookies = getRes.headers['set-cookie'];
-      const result = await request(app)
-        .post('/status')
-        .set('Cookie', cookies)
-        .send(`_csrf=${csurfy1}`);
+      const result = await request(app).post('/status');
 
       expect(result.status).toBe(200);
       expect(result.body).toEqual({
