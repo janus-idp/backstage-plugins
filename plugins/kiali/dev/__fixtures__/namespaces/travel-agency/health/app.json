@@ -50,7 +50,7 @@
         "desiredReplicas": 1,
         "currentReplicas": 1,
         "availableReplicas": 1,
-        "syncedProxies": 1
+        "syncedProxies": 0
       }
     ],
     "requests": {

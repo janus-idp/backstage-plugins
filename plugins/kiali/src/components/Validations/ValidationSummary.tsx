@@ -128,6 +128,7 @@ export const ValidationSummary = (props: Props) => {
   return (
     <Tooltip
       aria-label="Validations list"
+      data-test={`validation-icon-${severity()}`}
       placement="right"
       title={tooltipContent()}
     >

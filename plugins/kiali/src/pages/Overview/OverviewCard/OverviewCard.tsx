@@ -106,6 +106,7 @@ export const OverviewCard = (props: OverviewCardProps) => {
         errors={validations.errors}
         warnings={validations.warnings}
         objectCount={validations.objectCount}
+        data-test={'validation-summary'}
       />
     );
   };

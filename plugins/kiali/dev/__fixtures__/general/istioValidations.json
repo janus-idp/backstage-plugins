@@ -32,8 +32,8 @@
     },
     "travel-control": {
       "errors": 0,
-      "objectCount": 0,
-      "warnings": 0
+      "objectCount": 1,
+      "warnings": 1
     },
     "travel-portal": {
       "errors": 0,

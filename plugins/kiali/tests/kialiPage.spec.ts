@@ -5,6 +5,42 @@ import { Common, kialiData } from './kialiHelper';
 const CONFIG = kialiData.config;
 const NAMESPACES = kialiData.namespaces;
 const STATUS = kialiData.status;
+const BOOKINFO_APPS = kialiData.apps.bookinfo;
+const BOOKINFO_SERVICES = kialiData.services.bookinfo;
+const BOOKINFO_WORKLOADS = kialiData.workloads.bookinfo;
+
+async function checkReportedItems(
+  type: string,
+  ns: string,
+  objects: any,
+  page: any,
+): Promise<void> {
+  const ns_card = await page.locator(`data-test=overview-card-${ns}`);
+  await page.click('[aria-label="Health for"]');
+  await page.click(`[data-value=${type}]`);
+
+  const icon = await ns_card.locator('data-test=overview-app-health');
+  await icon.hover();
+  let list = await page.locator('data-test=overview-status');
+
+  // Wait for the list to appear
+  await page.waitForSelector('data-test=overview-status');
+
+  let i = 0;
+  for (const object of Object.entries(objects)) {
+    if (i == 5) {
+      break;
+    }
+    await icon.hover({ force: true }).then(async () => {
+      await expect(list).toContainText(`${object[1].name}`);
+    });
+    i++;
+  }
+  let expected = type == 'app' ? 'application' : type;
+  await expect(
+    ns_card.locator(`data-test=overview-type-${type}`),
+  ).toContainText(`${Object.entries(objects).length} ${expected}s`);
+}
 
 function filterByIstioInjectionEnabled(jsonArray: any): any {
   return jsonArray.filter(
@@ -187,6 +223,81 @@ test.describe('Kiali page', () => {
       await expect(ns_card.locator('#labels_info')).toContainText(
         `${Object.entries(ns.labels).length} labels`,
       );
+    });
+
+    test('Apps should be reported in the namespace card', async () => {
+      const ns = BOOKINFO_APPS.namespace.name;
+      await checkReportedItems('app', ns, BOOKINFO_APPS.applications, page);
+    });
+
+    test('Services should be reported in the namespace card', async () => {
+      const ns = BOOKINFO_SERVICES.namespace.name;
+      await checkReportedItems('service', ns, BOOKINFO_SERVICES.services, page);
+    });
+
+    test('Workloads should be reported in the namespace card', async () => {
+      const ns = BOOKINFO_WORKLOADS.namespace.name;
+      await checkReportedItems(
+        'workload',
+        ns,
+        BOOKINFO_WORKLOADS.workloads,
+        page,
+      );
+    });
+
+    test('Healthy apps should be reported in the namespace card', async () => {
+      const ns_card = await page.locator(`data-test=overview-card-bookinfo`);
+      const icon = await ns_card.locator('data-test=overview-app-health');
+      await icon.hover();
+      await page.waitForSelector('data-test=overview-status');
+      await expect(ns_card.locator('data-test=Healthy-status')).toBeDefined();
+    });
+
+    test('Degraded apps should be reported in the namespace card', async () => {
+      const ns_card = await page.locator(
+        `data-test=overview-card-travel-agency`,
+      );
+      const icon = await ns_card
+        .locator('[aria-label="Overview status"]')
+        .first();
+      await icon.hover();
+      await page.waitForSelector('data-test=overview-status');
+      await expect(ns_card.locator('data-test=Degraded-status')).toBeDefined();
+    });
+
+    test('Failed apps should be reported in the namespace card', async () => {
+      const ns_card = await page.locator(
+        `data-test=overview-card-travel-control`,
+      );
+      const icon = await ns_card.locator('[aria-label="Overview status"]');
+      await icon.hover();
+      await page.waitForSelector('data-test=overview-status');
+      await expect(ns_card.locator('data-test=Failure-status')).toBeDefined();
+    });
+
+    test('Istio config with success should be reported in the namespace card', async () => {
+      const ns_card = await page.locator(
+        `data-test=overview-card-travel-agency`,
+      );
+      await expect(
+        ns_card.locator('data-test=validation-icon-correct'),
+      ).toBeVisible();
+    });
+
+    test('Istio config with warning should be reported in the namespace card', async () => {
+      const ns_card = await page.locator(
+        `data-test=overview-card-travel-control`,
+      );
+      await expect(
+        ns_card.locator('data-test=validation-icon-warning'),
+      ).toBeVisible();
+    });
+
+    test('Istio config with error should be reported in the namespace card', async () => {
+      const ns_card = await page.locator(`data-test=overview-card-bookinfo`);
+      await expect(
+        ns_card.locator('data-test=validation-icon-error'),
+      ).toBeVisible();
     });
   });
 });
