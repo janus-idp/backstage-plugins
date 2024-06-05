@@ -10,8 +10,10 @@ import fs from 'fs';
 
 import {
   HANDLE_RBAC_DATA_STAGE,
+  PermissionAuditInfo,
   PermissionEvents,
   RBAC_BACKEND,
+  RoleAuditInfo,
   RoleEvents,
 } from '../audit-log/audit-logger';
 import {
@@ -308,7 +310,7 @@ export class CSVFileWatcher {
       try {
         await this.enforcer.addOrUpdatePolicy(policy, 'csv-file');
 
-        await this.auditLogger.auditLog({
+        await this.auditLogger.auditLog<PermissionAuditInfo>({
           actorId: RBAC_BACKEND,
           message: `Created or updated policy`,
           eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,
@@ -333,7 +335,7 @@ export class CSVFileWatcher {
     try {
       await this.enforcer.removePolicies(this.csvFilePolicies.removedPolicies);
 
-      await this.auditLogger.auditLog({
+      await this.auditLogger.auditLog<PermissionAuditInfo>({
         actorId: RBAC_BACKEND,
         message: `Deleted policies`,
         eventName: PermissionEvents.DELETE_POLICY,
@@ -405,7 +407,7 @@ export class CSVFileWatcher {
           ? RoleEvents.UPDATE_ROLE
           : RoleEvents.CREATE_ROLE;
         const message = currentMetadata ? 'Updated role' : 'Created role';
-        await this.auditLogger.auditLog({
+        await this.auditLogger.auditLog<RoleAuditInfo>({
           actorId: RBAC_BACKEND,
           message,
           eventName,
@@ -459,7 +461,7 @@ export class CSVFileWatcher {
         const message = isRolePresent
           ? 'Updated role: deleted members'
           : 'Deleted role';
-        await this.auditLogger.auditLog({
+        await this.auditLogger.auditLog<RoleAuditInfo>({
           actorId: RBAC_BACKEND,
           message,
           eventName,

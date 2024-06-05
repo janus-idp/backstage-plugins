@@ -17,6 +17,7 @@ import {
 import {
   HANDLE_RBAC_DATA_STAGE,
   RBAC_BACKEND,
+  RoleAuditInfo,
   RoleEvents,
 } from './audit-log/audit-logger';
 import { EnforcerDelegate } from './service/enforcer-delegate';
@@ -73,7 +74,7 @@ export async function removeTheDifference(
     remainingMembers.length > 0
       ? RoleEvents.UPDATE_ROLE
       : RoleEvents.DELETE_ROLE;
-  await auditLogger.auditLog({
+  await auditLogger.auditLog<RoleAuditInfo>({
     actorId: RBAC_BACKEND,
     message,
     eventName,
