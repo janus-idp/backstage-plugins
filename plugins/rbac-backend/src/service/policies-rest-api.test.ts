@@ -160,6 +160,12 @@ jest.mock('../validation/condition-validation', () => {
   };
 });
 
+const auditLoggerMock = {
+  getActorId: jest.fn().mockImplementation(),
+  createAuditLogDetails: jest.fn().mockImplementation(),
+  auditLog: jest.fn().mockImplementation(() => Promise.resolve()),
+};
+
 const mockHttpAuth = mockServices.httpAuth();
 const mockAuth = mockServices.auth();
 const credentials = mockCredentials.user();
@@ -195,6 +201,8 @@ const expectedConditions: RoleConditionalPolicyDecision<PermissionAction>[] = [
     },
   },
 ];
+
+const modifiedBy = 'user:default/some-admin';
 
 describe('REST policies api', () => {
   let app: express.Express;
@@ -276,7 +284,11 @@ describe('REST policies api', () => {
       .fn()
       .mockImplementation(
         async (roleEntityRef: string): Promise<RoleMetadataDao> => {
-          return { source: 'rest', roleEntityRef: roleEntityRef };
+          return {
+            source: 'rest',
+            roleEntityRef: roleEntityRef,
+            modifiedBy: 'user:default/some-user',
+          };
         },
       );
 
@@ -287,6 +299,7 @@ describe('REST policies api', () => {
       identity: mockIdentityClient,
       policy: await RBACPermissionPolicy.build(
         logger,
+        auditLoggerMock,
         config,
         conditionalStorage,
         mockEnforcer as EnforcerDelegate,
@@ -305,12 +318,14 @@ describe('REST policies api', () => {
       conditionalStorage,
       backendPluginIDsProviderMock,
       roleMetadataStorageMock,
+      auditLoggerMock,
     );
     const router = await server.serve();
     app = express().use(router);
     app.use(errorHandler());
     conditionalStorage.getCondition.mockReset();
     validateRoleConditionMock.mockReset();
+    auditLoggerMock.auditLog.mockClear();
     jest.clearAllMocks();
   });
 
@@ -383,7 +398,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(403);
       expect(result.body.error).toEqual({
         name: 'NotAllowedError',
-        message: 'User not found',
+        message: 'User identity not found',
       });
     });
 
@@ -489,6 +504,7 @@ describe('REST policies api', () => {
       const roleMeta: RoleMetadataDao = {
         roleEntityRef: 'user:default/permission_admin',
         source: 'csv-file',
+        modifiedBy,
       };
 
       roleMetadataStorageMock.findRoleMetadata = jest
@@ -498,7 +514,7 @@ describe('REST policies api', () => {
             if (roleEntityRef === roleMeta.roleEntityRef) {
               return roleMeta;
             }
-            return { source: 'rest', roleEntityRef: roleEntityRef };
+            return { source: 'rest', roleEntityRef: roleEntityRef, modifiedBy };
           },
         );
 
@@ -526,6 +542,7 @@ describe('REST policies api', () => {
       const roleMeta: RoleMetadataDao = {
         roleEntityRef: 'user:default/permission_admin',
         source: 'configuration',
+        modifiedBy,
       };
 
       roleMetadataStorageMock.findRoleMetadata = jest
@@ -535,7 +552,7 @@ describe('REST policies api', () => {
             if (roleEntityRef === roleMeta.roleEntityRef) {
               return roleMeta;
             }
-            return { source: 'rest', roleEntityRef: roleEntityRef };
+            return { source: 'rest', roleEntityRef: roleEntityRef, modifiedBy };
           },
         );
 
@@ -928,6 +945,7 @@ describe('REST policies api', () => {
       const roleMeta: RoleMetadataDao = {
         roleEntityRef: 'user:default/permission_admin',
         source: 'csv-file',
+        modifiedBy,
       };
 
       roleMetadataStorageMock.findRoleMetadata = jest
@@ -937,7 +955,7 @@ describe('REST policies api', () => {
             if (roleEntityRef === roleMeta.roleEntityRef) {
               return roleMeta;
             }
-            return { source: 'rest', roleEntityRef: roleEntityRef };
+            return { source: 'rest', roleEntityRef: roleEntityRef, modifiedBy };
           },
         );
 
@@ -971,6 +989,7 @@ describe('REST policies api', () => {
       const roleMeta: RoleMetadataDao = {
         roleEntityRef: 'user:default/permission_admin',
         source: 'configuration',
+        modifiedBy,
       };
 
       roleMetadataStorageMock.findRoleMetadata = jest
@@ -980,7 +999,7 @@ describe('REST policies api', () => {
             if (roleEntityRef === roleMeta.roleEntityRef) {
               return roleMeta;
             }
-            return { source: 'rest', roleEntityRef: roleEntityRef };
+            return { source: 'rest', roleEntityRef: roleEntityRef, modifiedBy };
           },
         );
 
@@ -1680,6 +1699,7 @@ describe('REST policies api', () => {
       const roleMeta: RoleMetadataDao = {
         roleEntityRef: 'user:default/permission_admin',
         source: 'csv-file',
+        modifiedBy,
       };
 
       roleMetadataStorageMock.findRoleMetadata = jest
@@ -1689,7 +1709,7 @@ describe('REST policies api', () => {
             if (roleEntityRef === roleMeta.roleEntityRef) {
               return roleMeta;
             }
-            return { source: 'rest', roleEntityRef: roleEntityRef };
+            return { source: 'rest', roleEntityRef: roleEntityRef, modifiedBy };
           },
         );
 
@@ -1737,6 +1757,7 @@ describe('REST policies api', () => {
       const roleMeta: RoleMetadataDao = {
         roleEntityRef: 'user:default/permission_admin',
         source: 'configuration',
+        modifiedBy,
       };
 
       roleMetadataStorageMock.findRoleMetadata = jest
@@ -1746,7 +1767,7 @@ describe('REST policies api', () => {
             if (roleEntityRef === roleMeta.roleEntityRef) {
               return roleMeta;
             }
-            return { source: 'rest', roleEntityRef: roleEntityRef };
+            return { source: 'rest', roleEntityRef: roleEntityRef, modifiedBy };
           },
         );
 
@@ -1838,6 +1859,7 @@ describe('REST policies api', () => {
           name: 'role:default/test',
           metadata: {
             source: 'rest',
+            modifiedBy: 'user:default/some-user',
           },
         },
         {
@@ -1845,6 +1867,7 @@ describe('REST policies api', () => {
           name: 'role:default/team_a',
           metadata: {
             source: 'rest',
+            modifiedBy: 'user:default/some-user',
           },
         },
       ]);
@@ -1900,6 +1923,7 @@ describe('REST policies api', () => {
           name: 'role:default/rbac_admin',
           metadata: {
             source: 'rest',
+            modifiedBy: 'user:default/some-user',
           },
         },
       ]);
@@ -1930,6 +1954,11 @@ describe('REST policies api', () => {
   });
 
   describe('POST /roles', () => {
+    beforeEach(() => {
+      mockedAuthorize.mockImplementation(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
+    });
     it('should return a status of Unauthorized', async () => {
       mockedAuthorize.mockImplementationOnce(async () => [
         { result: AuthorizeResult.DENY },
@@ -2138,6 +2167,7 @@ describe('REST policies api', () => {
       const roleMeta: RoleMetadataDao = {
         roleEntityRef: 'role:default/rbac_admin',
         source: 'configuration',
+        modifiedBy,
       };
 
       roleMetadataStorageMock.findRoleMetadata = jest
@@ -2147,7 +2177,7 @@ describe('REST policies api', () => {
             if (roleEntityRef === roleMeta.roleEntityRef) {
               return roleMeta;
             }
-            return { source: 'rest', roleEntityRef: roleEntityRef };
+            return { source: 'rest', roleEntityRef: roleEntityRef, modifiedBy };
           },
         );
 
@@ -2756,6 +2786,7 @@ describe('REST policies api', () => {
       const roleMeta: RoleMetadataDao = {
         roleEntityRef: 'role:default/rbac_admin',
         source: 'configuration',
+        modifiedBy,
       };
 
       roleMetadataStorageMock.findRoleMetadata = jest
@@ -2765,7 +2796,7 @@ describe('REST policies api', () => {
             if (roleEntityRef === roleMeta.roleEntityRef) {
               return roleMeta;
             }
-            return { source: 'rest', roleEntityRef: roleEntityRef };
+            return { source: 'rest', roleEntityRef: roleEntityRef, modifiedBy };
           },
         );
 
@@ -2909,6 +2940,7 @@ describe('REST policies api', () => {
       const roleMeta: RoleMetadataDao = {
         roleEntityRef: 'role:default/rbac_admin',
         source: 'configuration',
+        modifiedBy,
       };
 
       roleMetadataStorageMock.findRoleMetadata = jest
@@ -2918,7 +2950,7 @@ describe('REST policies api', () => {
             if (roleEntityRef === roleMeta.roleEntityRef) {
               return roleMeta;
             }
-            return { source: 'rest', roleEntityRef: roleEntityRef };
+            return { source: 'rest', roleEntityRef: roleEntityRef, modifiedBy };
           },
         );
 
@@ -2981,7 +3013,7 @@ describe('REST policies api', () => {
             createdAt: undefined,
             description: undefined,
             lastModified: undefined,
-            modifiedBy: undefined,
+            modifiedBy: 'user:default/some-user',
             source: 'rest',
           },
         },
@@ -3097,6 +3129,13 @@ describe('REST policies api', () => {
   });
 
   describe('DELETE /roles/conditions/:id', () => {
+    beforeEach(() => {
+      conditionalStorage.getCondition = jest
+        .fn()
+        .mockImplementation(async () => {
+          return expectedConditions[0];
+        });
+    });
     it('should return a status of Unauthorized', async () => {
       mockedAuthorize.mockImplementationOnce(async () => [
         { result: AuthorizeResult.DENY },
@@ -3129,6 +3168,7 @@ describe('REST policies api', () => {
 
       expect(result.statusCode).toEqual(204);
       expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
+      expect(conditionalStorage.deleteCondition).toHaveBeenCalled();
     });
 
     it('should fail to delete condition decision by id', async () => {

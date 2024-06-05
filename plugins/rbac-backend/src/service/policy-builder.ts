@@ -14,6 +14,7 @@ import { newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
 import { Logger } from 'winston';
 
+import { DefaultAuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
@@ -98,6 +99,12 @@ export class PolicyBuilder {
       databaseClient,
     );
 
+    const defAuditLog = new DefaultAuditLogger({
+      logger: env.logger,
+      authService: auth,
+      httpAuthService: httpAuth,
+    });
+
     const options: RouterOptions = {
       config: env.config,
       logger: env.logger,
@@ -105,6 +112,7 @@ export class PolicyBuilder {
       identity: env.identity,
       policy: await RBACPermissionPolicy.build(
         env.logger,
+        defAuditLog,
         env.config,
         conditionStorage,
         enforcerDelegate,
@@ -138,6 +146,7 @@ export class PolicyBuilder {
       conditionStorage,
       pluginIdProvider,
       roleMetadataStorage,
+      defAuditLog,
     );
     return server.serve();
   }

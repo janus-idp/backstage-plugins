@@ -17,6 +17,7 @@ describe('role-metadata-db-table', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'SQLITE_3'],
   });
+  const modifiedBy = 'user:default/some-user';
 
   async function createDatabase(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
@@ -60,6 +61,7 @@ describe('role-metadata-db-table', () => {
         await knex<RoleMetadataDao>(ROLE_METADATA_TABLE).insert({
           roleEntityRef: 'role:default/some-super-important-role',
           source: 'rest',
+          modifiedBy,
         });
 
         const trx = await knex.transaction();
@@ -75,7 +77,7 @@ describe('role-metadata-db-table', () => {
             description: null,
             id: 1,
             lastModified: null,
-            modifiedBy: null,
+            modifiedBy,
             roleEntityRef: 'role:default/some-super-important-role',
             source: 'rest',
           });
@@ -100,6 +102,7 @@ describe('role-metadata-db-table', () => {
             {
               source: 'configuration',
               roleEntityRef: 'role:default/some-super-important-role',
+              modifiedBy,
             },
             trx,
           );
@@ -121,7 +124,7 @@ describe('role-metadata-db-table', () => {
           description: null,
           id: 1,
           lastModified: null,
-          modifiedBy: null,
+          modifiedBy,
           source: 'configuration',
         });
       },
@@ -144,6 +147,7 @@ describe('role-metadata-db-table', () => {
               {
                 source: 'configuration',
                 roleEntityRef: 'role:default/some-super-important-role',
+                modifiedBy,
               },
 
               trx,
@@ -173,11 +177,12 @@ describe('role-metadata-db-table', () => {
           {
             source: 'configuration',
             roleEntityRef: 'role:default/some-super-important-role',
+            modifiedBy,
           },
           trx,
         ),
       ).rejects.toThrow(
-        `Failed to create the role metadata: '{"source":"configuration","roleEntityRef":"role:default/some-super-important-role"}'.`,
+        `Failed to create the role metadata: '{"source":"configuration","roleEntityRef":"role:default/some-super-important-role","modifiedBy":"user:default/some-user"}'.`,
       );
     });
 
@@ -196,6 +201,7 @@ describe('role-metadata-db-table', () => {
             {
               source: 'configuration',
               roleEntityRef: 'role:default/some-super-important-role',
+              modifiedBy,
             },
             trx,
           );
@@ -205,7 +211,7 @@ describe('role-metadata-db-table', () => {
           throw err;
         }
       }).rejects.toThrow(
-        `Failed to create the role metadata: '{"source":"configuration","roleEntityRef":"role:default/some-super-important-role"}'.`,
+        `Failed to create the role metadata: '{"source":"configuration","roleEntityRef":"role:default/some-super-important-role","modifiedBy":"user:default/some-user"}'.`,
       );
     });
 
@@ -226,6 +232,7 @@ describe('role-metadata-db-table', () => {
             {
               source: 'configuration',
               roleEntityRef: 'role:default/some-super-important-role',
+              modifiedBy,
             },
             trx,
           );
@@ -255,6 +262,7 @@ describe('role-metadata-db-table', () => {
             {
               roleEntityRef: 'role:default/some-super-important-role',
               source: 'rest',
+              modifiedBy,
             },
             'role:default/some-super-important-role',
             trx,
@@ -278,7 +286,7 @@ describe('role-metadata-db-table', () => {
           roleEntityRef: 'role:default/some-super-important-role',
           id: 1,
           lastModified: null,
-          modifiedBy: null,
+          modifiedBy,
         });
       },
     );
@@ -300,6 +308,7 @@ describe('role-metadata-db-table', () => {
               {
                 roleEntityRef: 'role:default/some-super-important-role',
                 source: 'configuration',
+                modifiedBy,
               },
               'role:default/some-super-important-role',
               trx,
@@ -329,6 +338,7 @@ describe('role-metadata-db-table', () => {
             {
               roleEntityRef: 'role:default/important-role',
               source: 'configuration',
+              modifiedBy,
             },
             'role:default/some-super-important-role',
             trx,
@@ -352,7 +362,7 @@ describe('role-metadata-db-table', () => {
           roleEntityRef: 'role:default/important-role',
           id: 1,
           lastModified: null,
-          modifiedBy: null,
+          modifiedBy,
         });
       },
     );
@@ -369,6 +379,7 @@ describe('role-metadata-db-table', () => {
               {
                 roleEntityRef: 'role:default/important-role',
                 source: 'configuration',
+                modifiedBy,
               },
               'role:default/some-super-important-role',
               trx,
@@ -403,6 +414,7 @@ describe('role-metadata-db-table', () => {
             {
               roleEntityRef: 'role:default/important-role',
               source: 'configuration',
+              modifiedBy,
             },
             'role:default/some-super-important-role',
             trx,
@@ -413,7 +425,7 @@ describe('role-metadata-db-table', () => {
           throw err;
         }
       }).rejects.toThrow(
-        `Failed to update the role metadata '{"roleEntityRef":"role:default/some-super-important-role","source":"configuration","id":1}' with new value: '{"roleEntityRef":"role:default/important-role","source":"configuration"}'.`,
+        `Failed to update the role metadata '{"roleEntityRef":"role:default/some-super-important-role","source":"configuration","id":1}' with new value: '{"roleEntityRef":"role:default/important-role","source":"configuration","modifiedBy":"user:default/some-user"}'.`,
       );
     });
 
@@ -436,6 +448,7 @@ describe('role-metadata-db-table', () => {
             {
               roleEntityRef: 'role:default/important-role',
               source: 'configuration',
+              modifiedBy,
             },
             'role:default/some-super-important-role',
             trx,
@@ -446,7 +459,7 @@ describe('role-metadata-db-table', () => {
           throw err;
         }
       }).rejects.toThrow(
-        `Failed to update the role metadata '{"roleEntityRef":"role:default/some-super-important-role","source":"configuration","id":1}' with new value: '{"roleEntityRef":"role:default/important-role","source":"configuration"}'.`,
+        `Failed to update the role metadata '{"roleEntityRef":"role:default/some-super-important-role","source":"configuration","id":1}' with new value: '{"roleEntityRef":"role:default/important-role","source":"configuration","modifiedBy":"user:default/some-user"}'.`,
       );
     });
 
@@ -471,6 +484,7 @@ describe('role-metadata-db-table', () => {
             {
               roleEntityRef: 'role:default/important-role',
               source: 'configuration',
+              modifiedBy,
             },
             'role:default/some-super-important-role',
             trx,
