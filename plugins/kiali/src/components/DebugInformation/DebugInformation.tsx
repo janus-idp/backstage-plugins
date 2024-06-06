@@ -168,7 +168,6 @@ export const DebugInformation = (props: DebugInformationProps) => {
     element.download = `debug_${
       currentTab === 'kialiConfig' ? 'kiali_config' : 'additional_state'
     }.json`;
-    document.body.appendChild(sanitizeHTML(element)); // Required for this to work in FireFox
     element.click();
   };
 
