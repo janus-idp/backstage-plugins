@@ -47,12 +47,36 @@ describe('createRouter', () => {
     app = express();
     app.disable("'x-powered-by");
 
+    // csrf
+    const Tokens = require('csrf');
+    const tokens = new Tokens();
+    const secret = tokens.secretSync();
+    app.get('/token', (_, res) => {
+      const token = tokens.create(secret);
+      res.set('TOKEN', token);
+      res.json({ token });
+      console.log('New csrf token', token);
+    });
+    app.use((req, res, next) => {
+      const token = req.header('_csrf');
+      console.log('Running token check');
+      if (!tokens.verify(secret, token) && req.method === 'POST') {
+        res.status(403).send('Invalid CSRF token');
+      } else {
+        next();
+      }
+    });
+
     app = app.use(router);
   });
 
   describe('POST /status', () => {
     it('should get the kiali status', async () => {
-      const result = await request(app).post('/status');
+      // Get csrf
+      const tokenRes = await request(app).get('/token');
+      const token = tokenRes.headers.token;
+
+      const result = await request(app).post('/status').set('_csrf', token);
       expect(result.status).toBe(200);
       expect(result.body).toEqual({
         status: {
@@ -94,10 +118,15 @@ describe('createRouter', () => {
 
   describe('POST /proxy', () => {
     it('should get namespaces', async () => {
+      // Get csrf
+      const tokenRes = await request(app).get('/token');
+      const token = tokenRes.headers.token;
+
       const result = await request(app)
         .post('/proxy')
         .send('{"endpoint":"api/namespaces"}')
         .set('Content-Type', 'application/json')
+        .set('_csrf', token)
         .set('Accept', 'application/json');
       expect(result.status).toBe(200);
       expect(result.body).toEqual([
