@@ -30,6 +30,7 @@ import { KialiAppState } from '../../store/Store';
 import { istioAceEditorStyle } from '../../styles/AceEditorStyle';
 import { AuthConfig } from '../../types/Auth';
 import { aceOptions } from '../../types/IstioConfigDetails';
+import { sanitizeHTML } from '../../utils/Common';
 
 const beautify = require('json-beautify');
 
@@ -167,7 +168,7 @@ export const DebugInformation = (props: DebugInformationProps) => {
     element.download = `debug_${
       currentTab === 'kialiConfig' ? 'kiali_config' : 'additional_state'
     }.json`;
-    document.body.appendChild(element); // Required for this to work in FireFox
+    document.body.appendChild(sanitizeHTML(element)); // Required for this to work in FireFox
     element.click();
   };
 
