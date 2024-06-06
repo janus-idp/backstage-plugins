@@ -21,9 +21,8 @@ export const kialiPlugin = createBackendPlugin({
         catalogApi: catalogServiceRef,
       },
       async init({ http, logger, config }) {
-        const winstonLogger = logger;
         const router = await createRouter({
-          logger: winstonLogger,
+          logger,
           config,
         });
         http.use(router);
