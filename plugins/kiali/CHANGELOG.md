@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.18.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.11...@janus-idp/backstage-plugin-kiali@1.18.12) (2024-06-06)
+
+
+### Bug Fixes
+
+* **kiali:** remove debug window ([#1793](https://github.com/janus-idp/backstage-plugins/issues/1793)) ([b5b5376](https://github.com/janus-idp/backstage-plugins/commit/b5b5376181d49074bd58bb34734561eab6ee8d2a))
+
 ## @janus-idp/backstage-plugin-kiali [1.18.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.10...@janus-idp/backstage-plugin-kiali@1.18.11) (2024-06-06)
 
 
