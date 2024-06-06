@@ -55,11 +55,9 @@ describe('createRouter', () => {
       const token = tokens.create(secret);
       res.set('TOKEN', token);
       res.json({ token });
-      console.log('New csrf token', token);
     });
     app.use((req, res, next) => {
       const token = req.header('_csrf');
-      console.log('Running token check');
       if (!tokens.verify(secret, token) && req.method === 'POST') {
         res.status(403).send('Invalid CSRF token');
       } else {
