@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali-backend [1.10.22](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.21...@janus-idp/backstage-plugin-kiali-backend@1.10.22) (2024-06-06)
+
+
+### Bug Fixes
+
+* **kiali:** sanitize input for CWE-79 ([#1786](https://github.com/janus-idp/backstage-plugins/issues/1786)) ([9ba95bb](https://github.com/janus-idp/backstage-plugins/commit/9ba95bba7b9d5081829831e797b27f6a286971a4))
+
 ## @janus-idp/backstage-plugin-kiali-backend [1.10.21](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.20...@janus-idp/backstage-plugin-kiali-backend@1.10.21) (2024-06-05)
 
 
