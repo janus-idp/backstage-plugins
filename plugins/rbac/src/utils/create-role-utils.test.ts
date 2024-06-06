@@ -1,3 +1,5 @@
+import { DetailedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
+
 import {
   mockFormCurrentValues,
   mockFormInitialValues,
@@ -181,23 +183,27 @@ describe('getPermissionPolicies', () => {
   });
 
   it('correctly transforms policies into PermissionPolicies', () => {
-    const policies = [
+    const policies: DetailedPolicy[] = [
       {
         permission: 'catalog-entity',
+        name: 'catalog.entity.read',
         policy: 'read',
         isResourced: true,
       },
       {
         permission: 'catalog.entity.create',
         policy: 'create',
+        isResourced: false,
       },
       {
         permission: 'catalog-entity',
+        name: 'catalog.entity.delete',
         policy: 'delete',
         isResourced: true,
       },
       {
         permission: 'catalog-entity',
+        name: 'catalog.entity.update',
         policy: 'update',
         isResourced: true,
       },
@@ -208,7 +214,7 @@ describe('getPermissionPolicies', () => {
         policies: ['Read', 'Delete', 'Update'],
         isResourced: true,
       },
-      'catalog.entity.create': { policies: ['Create'], isResourced: undefined },
+      'catalog.entity.create': { policies: ['Create'], isResourced: false },
     });
   });
 });
@@ -239,19 +245,19 @@ describe('getPluginsPermissionPoliciesData', () => {
             },
             'catalog.entity.create': {
               policies: ['Create'],
-              isResourced: undefined,
+              isResourced: false,
             },
             'catalog.location.read': {
               policies: ['Read'],
-              isResourced: undefined,
+              isResourced: false,
             },
             'catalog.location.create': {
               policies: ['Create'],
-              isResourced: undefined,
+              isResourced: false,
             },
             'catalog.location.delete': {
               policies: ['Delete'],
-              isResourced: undefined,
+              isResourced: false,
             },
           },
         },
@@ -267,7 +273,7 @@ describe('getPluginsPermissionPoliciesData', () => {
           policies: {
             'policy-entity': {
               policies: ['Read', 'Create', 'Delete', 'Update'],
-              isResourced: undefined,
+              isResourced: false,
             },
           },
         },

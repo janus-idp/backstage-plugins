@@ -13,9 +13,11 @@ import {
 } from '@backstage/plugin-permission-common';
 
 import {
+  isResourcedPolicy,
   PermissionAction,
   PermissionPolicy,
   Policy,
+  ResourcedPolicy,
   RoleBasedPolicy,
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
@@ -114,7 +116,13 @@ export const getPluginInfo = (
 ): { pluginId: string; isResourced: boolean } =>
   permissions.reduce(
     (acc: { pluginId: string; isResourced: boolean }, p: PermissionPolicy) => {
-      const policy = p.policies?.find(pol => pol.permission === permissionName);
+      const policy = p.policies?.find(pol => {
+        const isPermissionNameMatched = pol.permission === permissionName;
+        if (!isPermissionNameMatched && isResourcedPolicy(pol)) {
+          return (pol as ResourcedPolicy).name === permissionName;
+        }
+        return isPermissionNameMatched;
+      });
       if (policy) {
         return {
           pluginId: p.pluginId || '-',

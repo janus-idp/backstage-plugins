@@ -92,6 +92,7 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].policies).toEqual([
         {
           isResourced: true,
+          name: 'policy.entity.read',
           permission: 'policy-entity',
           policy: 'read',
         },
@@ -159,6 +160,7 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].policies).toEqual([
         {
           isResourced: true,
+          name: 'policy.entity.read',
           permission: 'policy-entity',
           policy: 'read',
         },
@@ -201,6 +203,7 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].policies).toEqual([
         {
           isResourced: true,
+          name: 'policy.entity.read',
           permission: 'policy-entity',
           policy: 'read',
         },
@@ -243,6 +246,7 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].policies).toEqual([
         {
           isResourced: true,
+          name: 'policy.entity.read',
           permission: 'policy-entity',
           policy: 'read',
         },

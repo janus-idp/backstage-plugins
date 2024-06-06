@@ -20,7 +20,7 @@ import {
   MetadataResponseSerializedRule,
 } from '@backstage/plugin-permission-node';
 
-import { Policy } from '@janus-idp/backstage-plugin-rbac-common';
+import { DetailedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 type PluginMetadataResponse = {
@@ -35,7 +35,7 @@ export type PluginMetadataResponseSerializedRule = {
 
 export type PluginPermissionMetaData = {
   pluginId: string;
-  policies: Policy[];
+  policies: DetailedPolicy[];
 };
 
 export class PluginPermissionMetadataCollector {
@@ -147,12 +147,15 @@ export class PluginPermissionMetadataCollector {
   }
 }
 
-function permissionsToCasbinPolicies(permissions: Permission[]): Policy[] {
-  const policies: Policy[] = [];
+function permissionsToCasbinPolicies(
+  permissions: Permission[],
+): DetailedPolicy[] {
+  const policies: DetailedPolicy[] = [];
   for (const permission of permissions) {
     if (isResourcePermission(permission)) {
       policies.push({
         permission: permission.resourceType,
+        name: permission.name,
         policy: permission.attributes.action || 'use',
         isResourced: true,
       });

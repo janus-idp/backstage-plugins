@@ -1,8 +1,8 @@
 import * as yup from 'yup';
 
 import {
+  DetailedPolicy,
   PermissionPolicy,
-  Policy,
   Role,
   RoleBasedPolicy,
 } from '@janus-idp/backstage-plugin-rbac-common';
@@ -85,7 +85,7 @@ export const getChildGroupsCount = (member: MemberEntity) => {
 };
 
 export const getPermissionPolicies = (
-  policies: Policy[],
+  policies: DetailedPolicy[],
 ): PermissionPolicies => {
   return policies.reduce((ppsAcc: PermissionPolicies, policy) => {
     return {

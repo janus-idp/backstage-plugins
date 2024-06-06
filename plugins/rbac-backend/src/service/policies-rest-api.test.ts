@@ -3442,6 +3442,8 @@ describe('REST policies api', () => {
             {
               permission: 'policy-entity',
               policy: 'read',
+              isResourced: true,
+              name: 'catalog.entity.read',
             },
           ],
         },

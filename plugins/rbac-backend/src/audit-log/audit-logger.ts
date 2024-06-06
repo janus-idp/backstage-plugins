@@ -90,7 +90,6 @@ export const ConditionEvents = {
 };
 
 export type ConditionAuditInfo = {
-  conditionId?: number;
   condition: RoleConditionalPolicyDecision<PermissionAction>;
 };
 
