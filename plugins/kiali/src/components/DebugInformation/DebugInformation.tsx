@@ -30,7 +30,6 @@ import { KialiAppState } from '../../store/Store';
 import { istioAceEditorStyle } from '../../styles/AceEditorStyle';
 import { AuthConfig } from '../../types/Auth';
 import { aceOptions } from '../../types/IstioConfigDetails';
-import { sanitizeHTML } from '../../utils/Common';
 
 const beautify = require('json-beautify');
 
