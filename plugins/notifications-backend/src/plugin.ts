@@ -48,9 +48,8 @@ export const notificationBackendPlugin = createBackendPlugin({
         identity,
         tokenManager,
       }) {
-        const winstonLogger = logger;
         const router = await createRouter({
-          logger: winstonLogger,
+          logger,
           config,
           database,
           discovery,

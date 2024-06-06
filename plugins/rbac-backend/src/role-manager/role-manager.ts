@@ -1,4 +1,4 @@
-import { AuthService, LoggerService} from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -14,7 +14,7 @@ export class BackstageRoleManager implements RoleManager {
   private maxDepth?: number;
   constructor(
     private readonly catalogApi: CatalogApi,
-    private readonly log: LoggerService,
+    private readonly logger: LoggerService,
     private readonly catalogDBClient: Knex,
     private readonly rbacDBClient: Knex,
     private readonly config: Config,
@@ -150,11 +150,11 @@ export class BackstageRoleManager implements RoleManager {
     );
     await memo.buildUserGraph(memo);
 
-    memo.debugNodesAndEdges(this.log, name1);
+    memo.debugNodesAndEdges(this.logger, name1);
     if (!memo.isAcyclic()) {
       const cycles = memo.findCycles();
 
-      this.log.warn(
+      this.logger.warn(
         `Detected cycle dependencies in the Group graph: ${JSON.stringify(
           cycles,
         )}. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: ${JSON.stringify(
@@ -223,7 +223,7 @@ export class BackstageRoleManager implements RoleManager {
         this.maxDepth,
       );
       await memo.buildUserGraph(memo);
-      memo.debugNodesAndEdges(this.log, name);
+      memo.debugNodesAndEdges(this.logger, name);
 
       if (this.isPGClient()) {
         const currentRole = new RoleMemberList(name);
