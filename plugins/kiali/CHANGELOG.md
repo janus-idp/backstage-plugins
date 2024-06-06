@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.18.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.10...@janus-idp/backstage-plugin-kiali@1.18.11) (2024-06-06)
+
+
+### Documentation
+
+* **kiali:** update development doc for alpha backend([#1720](https://github.com/janus-idp/backstage-plugins/issues/1720)) ([e06e9be](https://github.com/janus-idp/backstage-plugins/commit/e06e9bee0745e76beccb8d7e3810548fd46207db))
+
 ## @janus-idp/backstage-plugin-kiali [1.18.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.9...@janus-idp/backstage-plugin-kiali@1.18.10) (2024-06-06)
 
 
