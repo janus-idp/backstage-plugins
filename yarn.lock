@@ -6307,18 +6307,6 @@
     yml-loader "^2.1.0"
     yn "^4.0.0"
 
-"@janus-idp/shared-react@2.6.3":
-  version "2.6.3"
-  resolved "https://registry.npmjs.org/@janus-idp/shared-react/-/shared-react-2.6.3.tgz#de98b434d19b96197f053095e0c412e3eabc1155"
-  integrity sha512-kQzY4+WXTtArAy9breW7PuWonlT6GbgZEEA+oClkOY5ETl9AW7QKgymNHSdemkIZrx+qJro/xF2yt70skIrBdg==
-  dependencies:
-    "@kubernetes/client-node" "^0.20.0"
-    classnames "^2.3.2"
-    date-fns "^2.30.0"
-    file-saver "^2.0.5"
-    lodash "^4.17.21"
-    mathjs "^11.11.2"
-
 "@jest/console@^29.7.0":
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-29.7.0.tgz#cd4822dbdb84529265c5a2bdb529a3c9cc950ffc"

@@ -31,8 +31,10 @@ import {
   EVALUATE_PERMISSION_ACCESS_STAGE,
   EvaluationEvents,
   HANDLE_RBAC_DATA_STAGE,
+  PermissionAuditInfo,
   PermissionEvents,
   RBAC_BACKEND,
+  RoleAuditInfo,
   RoleEvents,
 } from '../audit-log/audit-logger';
 import { ConditionalStorage } from '../database/conditional-storage';
@@ -107,7 +109,7 @@ const useAdminsFromConfig = async (
     getAdminRoleMetadata(),
   );
 
-  await auditLogger.auditLog({
+  await auditLogger.auditLog<RoleAuditInfo>({
     actorId: RBAC_BACKEND,
     message: `Created or updated role`,
     eventName: RoleEvents.CREATE_OR_UPDATE_ROLE,
@@ -147,7 +149,7 @@ const addAdminPermission = async (
 ) => {
   await enf.addOrUpdatePolicy(policy, 'configuration');
 
-  await auditLogger.auditLog({
+  await auditLogger.auditLog<PermissionAuditInfo>({
     actorId: RBAC_BACKEND,
     message: `Created or updated policy`,
     eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,

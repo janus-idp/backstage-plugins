@@ -4,7 +4,7 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { ErrorLike } from '@backstage/errors';
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 
 import { Request } from 'express';
 import { cloneDeep } from 'lodash';
@@ -51,8 +51,8 @@ export class DefaultAuditLogger implements AuditLogger {
       return undefined;
     }
   }
-  async createAuditLogDetails(
-    options: AuditLogDetailsOptions,
+  async createAuditLogDetails<T extends JsonValue>(
+    options: AuditLogDetailsOptions<T>,
   ): Promise<AuditLogDetails> {
     const { eventName, stage, metadata, request, response, status } = options;
 
@@ -106,7 +106,9 @@ export class DefaultAuditLogger implements AuditLogger {
       status,
     };
   }
-  async auditLog(options: AuditLogOptions): Promise<void> {
+  async auditLog<T extends JsonValue>(
+    options: AuditLogOptions<T>,
+  ): Promise<void> {
     let auditLogDetails: AuditLogDetails;
     const logLevel = options.level || 'info';
     const auditLogCommonDetails = {
