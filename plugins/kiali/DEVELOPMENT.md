@@ -44,36 +44,13 @@
    );
    ```
 
-3. Create a file called `kiali.ts` inside `packages/backend/src/plugins/` and add the following:
-
-   ```ts title="packages/backend/src/plugins/kiali.tsx"
-   /* highlight-add-start */
-   import { Router } from 'express';
-
-   // ..
-   import { createRouter } from '@janus-idp/backstage-plugin-kiali-backend';
-
-   import { PluginEnvironment } from '../types';
-
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     return await createRouter({
-       logger: env.logger,
-       config: env.config,
-     });
-   }
-   // ..
-   /* highlight-add-end */
-   ```
-
-4. import the plugin to `packages/backend/src/index.ts`.
+3. import the plugin to `packages/backend/src/index.ts`.
 
    ```typescript title="packages/backend/src/index.ts"
    backend.add(import('@janus-idp/backstage-plugin-kiali-backend/alpha'));
    ```
 
-5. Configure you `app-config.local.yaml` with kiali configuration
+4. Configure you `app-config.local.yaml` with kiali configuration
 
    ```yaml
    catalog:
@@ -95,7 +72,7 @@
          # highlight-add-end
    ```
 
-6. Add catalog
+5. Add catalog
 
    Add to locations in `app-config.local.yaml`
 
@@ -106,7 +83,7 @@
        target: ../../plugins/kiali/catalog-demo.yaml
    ```
 
-7. Disable backend authentication for development (If required)
+6. Disable backend authentication for development (If required)
 
    Add the auth config to backend in `app-config.local.yaml`
 
@@ -116,8 +93,8 @@
        dangerouslyDisableDefaultAuthPolicy: true
    ```
 
-8. Run `yarn start:backstage` from the project root.
-9. After create a new component, the Kiali tab should be enabled:
+7. Run `yarn start:backstage` from the project root.
+8. After create a new component, the Kiali tab should be enabled:
 
 ![catalog-list](./images/kiali-tab-backstage.png)
 
