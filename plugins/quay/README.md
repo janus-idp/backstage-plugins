@@ -18,15 +18,16 @@ The Quay plugin displays the information about your container images within the 
 
    ```yaml title="app-config.yaml"
    proxy:
-     '/quay/api':
-       target: 'https://quay.io'
-       headers:
-         X-Requested-With: 'XMLHttpRequest'
-         # Uncomment the following line to access a private Quay Repository using a token
-         # Authorization: 'Bearer <YOUR TOKEN>'
-       changeOrigin: true
-       # Change to "false" in case of using self hosted quay instance with a self-signed certificate
-       secure: true
+      endpoints:
+        '/quay/api':
+          target: 'https://quay.io'
+          headers:
+            X-Requested-With: 'XMLHttpRequest'
+            # Uncomment the following line to access a private Quay Repository using a token
+            # Authorization: 'Bearer <YOUR TOKEN>'
+          changeOrigin: true
+          # Change to "false" in case of using self hosted quay instance with a self-signed certificate
+          secure: true
 
    quay:
      # The UI url for Quay, used to generate the link to Quay
