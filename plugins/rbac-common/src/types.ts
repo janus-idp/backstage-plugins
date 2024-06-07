@@ -28,23 +28,6 @@ export type Policy = {
   policy?: string;
 };
 
-export type NamedPolicy = Policy & {
-  isResourced: false;
-};
-
-export type ResourcedPolicy = Policy & {
-  isResourced: true;
-  name: string;
-};
-
-export type DetailedPolicy = NamedPolicy | ResourcedPolicy;
-
-export function isResourcedPolicy(
-  policy: DetailedPolicy,
-): policy is ResourcedPolicy {
-  return policy.isResourced === true && 'name' in policy;
-}
-
 export type RoleBasedPolicy = Policy & {
   entityReference?: string;
   effect?: string;
@@ -62,9 +45,27 @@ export type UpdatePolicy = {
   newPolicy: Policy;
 };
 
-export type PermissionPolicy = {
-  pluginId?: string;
-  policies?: DetailedPolicy[];
+export type NamedPolicy = {
+  name: string;
+
+  policy: string;
+};
+
+export type ResourcedPolicy = NamedPolicy & {
+  resourceType: string;
+};
+
+export type PolicyDetails = NamedPolicy | ResourcedPolicy;
+
+export function isResourcedPolicy(
+  policy: PolicyDetails,
+): policy is ResourcedPolicy {
+  return 'resourceType' in policy;
+}
+
+export type PluginPermissionMetaData = {
+  pluginId: string;
+  policies: PolicyDetails[];
 };
 
 export type NonEmptyArray<T> = [T, ...T[]];

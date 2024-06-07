@@ -91,9 +91,8 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].pluginId).toEqual('permission');
       expect(policiesMetadata[0].policies).toEqual([
         {
-          isResourced: true,
           name: 'policy.entity.read',
-          permission: 'policy-entity',
+          resourceType: 'policy-entity',
           policy: 'read',
         },
       ]);
@@ -119,8 +118,7 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].pluginId).toEqual('permission');
       expect(policiesMetadata[0].policies).toEqual([
         {
-          isResourced: false,
-          permission: 'catalog.entity.create',
+          name: 'catalog.entity.create',
           policy: 'create',
         },
       ]);
@@ -159,9 +157,8 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].pluginId).toEqual('permission');
       expect(policiesMetadata[0].policies).toEqual([
         {
-          isResourced: true,
           name: 'policy.entity.read',
-          permission: 'policy-entity',
+          resourceType: 'policy-entity',
           policy: 'read',
         },
       ]);
@@ -202,9 +199,8 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].pluginId).toEqual('permission');
       expect(policiesMetadata[0].policies).toEqual([
         {
-          isResourced: true,
           name: 'policy.entity.read',
-          permission: 'policy-entity',
+          resourceType: 'policy-entity',
           policy: 'read',
         },
       ]);
@@ -245,9 +241,8 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].pluginId).toEqual('permission');
       expect(policiesMetadata[0].policies).toEqual([
         {
-          isResourced: true,
           name: 'policy.entity.read',
-          permission: 'policy-entity',
+          resourceType: 'policy-entity',
           policy: 'read',
         },
       ]);

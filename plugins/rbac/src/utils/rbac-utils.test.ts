@@ -216,10 +216,6 @@ describe('rbac utils', () => {
           effect: 'allow',
           policy: 'Delete',
         },
-        {
-          effect: 'deny',
-          policy: 'Update',
-        },
       ],
       policyString: ['Read', ', Create', ', Delete'],
       isResourced: false,

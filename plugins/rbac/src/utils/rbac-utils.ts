@@ -15,7 +15,7 @@ import {
 import {
   isResourcedPolicy,
   PermissionAction,
-  PermissionPolicy,
+  PluginPermissionMetaData,
   Policy,
   ResourcedPolicy,
   RoleBasedPolicy,
@@ -111,22 +111,27 @@ export const getMembersFromGroup = (group: GroupEntity): number => {
 };
 
 export const getPluginInfo = (
-  permissions: PermissionPolicy[],
+  permissions: PluginPermissionMetaData[],
   permissionName?: string,
 ): { pluginId: string; isResourced: boolean } =>
   permissions.reduce(
-    (acc: { pluginId: string; isResourced: boolean }, p: PermissionPolicy) => {
-      const policy = p.policies?.find(pol => {
-        const isPermissionNameMatched = pol.permission === permissionName;
-        if (!isPermissionNameMatched && isResourcedPolicy(pol)) {
-          return (pol as ResourcedPolicy).name === permissionName;
+    (
+      acc: { pluginId: string; isResourced: boolean },
+      p: PluginPermissionMetaData,
+    ) => {
+      const policy = p.policies.find(pol => {
+        if (pol.name === permissionName) {
+          return true;
         }
-        return isPermissionNameMatched;
+        if (isResourcedPolicy(pol)) {
+          return (pol as ResourcedPolicy).resourceType === permissionName;
+        }
+        return false;
       });
       if (policy) {
         return {
           pluginId: p.pluginId || '-',
-          isResourced: policy?.isResourced || false,
+          isResourced: isResourcedPolicy(policy) || false,
         };
       }
       return acc;
@@ -164,7 +169,7 @@ const getAllPolicies = (
 
 export const getPermissionsData = (
   policies: RoleBasedPolicy[],
-  permissionPolicies: PermissionPolicy[],
+  permissionPolicies: PluginPermissionMetaData[],
 ): PermissionsData[] => {
   const data = policies.reduce(
     (acc: PermissionsDataSet[], policy: RoleBasedPolicy) => {

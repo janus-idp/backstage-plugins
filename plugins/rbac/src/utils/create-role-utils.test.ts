@@ -1,4 +1,4 @@
-import { DetailedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
+import { PolicyDetails } from '@janus-idp/backstage-plugin-rbac-common';
 
 import {
   mockFormCurrentValues,
@@ -183,29 +183,25 @@ describe('getPermissionPolicies', () => {
   });
 
   it('correctly transforms policies into PermissionPolicies', () => {
-    const policies: DetailedPolicy[] = [
+    const policies: PolicyDetails[] = [
       {
-        permission: 'catalog-entity',
+        resourceType: 'catalog-entity',
         name: 'catalog.entity.read',
         policy: 'read',
-        isResourced: true,
       },
       {
-        permission: 'catalog.entity.create',
+        name: 'catalog.entity.create',
         policy: 'create',
-        isResourced: false,
       },
       {
-        permission: 'catalog-entity',
+        resourceType: 'catalog-entity',
         name: 'catalog.entity.delete',
         policy: 'delete',
-        isResourced: true,
       },
       {
-        permission: 'catalog-entity',
+        resourceType: 'catalog-entity',
         name: 'catalog.entity.update',
         policy: 'update',
-        isResourced: true,
       },
     ];
     const result = getPermissionPolicies(policies);

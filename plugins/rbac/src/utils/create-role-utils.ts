@@ -1,8 +1,10 @@
 import * as yup from 'yup';
 
 import {
-  DetailedPolicy,
-  PermissionPolicy,
+  isResourcedPolicy,
+  PluginPermissionMetaData,
+  PolicyDetails,
+  ResourcedPolicy,
   Role,
   RoleBasedPolicy,
 } from '@janus-idp/backstage-plugin-rbac-common';
@@ -85,40 +87,51 @@ export const getChildGroupsCount = (member: MemberEntity) => {
 };
 
 export const getPermissionPolicies = (
-  policies: DetailedPolicy[],
+  policies: PolicyDetails[],
 ): PermissionPolicies => {
-  return policies.reduce((ppsAcc: PermissionPolicies, policy) => {
-    return {
-      ...ppsAcc,
-      [policy.permission as string]: policies.reduce(
-        (policiesAcc: any, pol) => {
-          if (pol.permission === policy.permission)
-            return {
-              policies: uniqBy(
-                [...policiesAcc.policies, getTitleCase(pol.policy as string)],
-                val => val,
-              ),
-              isResourced: pol.isResourced,
-            };
-          return policiesAcc;
-        },
-        { policies: [] },
-      ),
-    };
-  }, {});
+  return policies.reduce(
+    (ppsAcc: PermissionPolicies, policy: PolicyDetails) => {
+      const permission = isResourcedPolicy(policy)
+        ? (policy as ResourcedPolicy).resourceType
+        : policy.name;
+      return {
+        ...ppsAcc,
+        [permission]: policies.reduce(
+          (policiesAcc: { policies: string[]; isResourced: boolean }, pol) => {
+            const perm = isResourcedPolicy(pol)
+              ? (pol as ResourcedPolicy).resourceType
+              : pol.name;
+            if (permission === perm)
+              return {
+                policies: uniqBy(
+                  [...policiesAcc.policies, getTitleCase(pol.policy as string)],
+                  val => val,
+                ),
+                isResourced: isResourcedPolicy(pol),
+              };
+            return policiesAcc;
+          },
+          { policies: [], isResourced: false },
+        ),
+      };
+    },
+    {},
+  );
 };
 
 export const getPluginsPermissionPoliciesData = (
-  pluginsPermissionPolicies: PermissionPolicy[],
+  pluginsPermissionPolicies: PluginPermissionMetaData[],
 ): PluginsPermissionPoliciesData => {
-  const plugins = pluginsPermissionPolicies.map(
+  const plugins: string[] = pluginsPermissionPolicies.map(
     pluginPp => pluginPp.pluginId,
-  ) as string[];
+  );
   const pluginsPermissions = pluginsPermissionPolicies.reduce(
     (acc: PluginsPermissions, pp, index) => {
-      const permissions = pp.policies?.reduce((plcAcc: string[], plc) => {
-        if (plc.permission) return [...plcAcc, plc.permission];
-        return plcAcc;
+      const permissions = pp.policies.reduce((plcAcc: string[], plc) => {
+        const permission = isResourcedPolicy(plc)
+          ? (plc as ResourcedPolicy).resourceType
+          : plc.name;
+        return [...plcAcc, permission];
       }, []);
       return {
         ...acc,
