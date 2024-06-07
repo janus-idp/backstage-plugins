@@ -1,14 +1,11 @@
 import * as React from 'react';
 
-import {
-  BitbucketIcon,
-  GitAltIcon,
-  GithubIcon,
-  GitlabIcon,
-} from '@patternfly/react-icons';
-
 import { detectGitType, GitProvider } from '../../utils/git-utils';
+import BitbucketIcon from './BitbucketIcon';
 import CheIcon from './CheIcon';
+import GitAltIcon from './GitAltIcon';
+import GithubIcon from './GithubIcon';
+import GitlabIcon from './GitlabIcon';
 
 type RouteDecoratorIconProps = {
   routeURL: string;

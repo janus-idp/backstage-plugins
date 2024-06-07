@@ -13,7 +13,7 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core';
-import { CloseIcon } from '@patternfly/react-icons';
+import CloseIcon from '@mui/icons-material/Close';
 
 import { PipelineRunKind, TaskRunKind } from '@janus-idp/shared-react';
 

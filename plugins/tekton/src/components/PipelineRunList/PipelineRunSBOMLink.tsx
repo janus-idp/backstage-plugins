@@ -25,18 +25,18 @@ const PipelineRunSBOMLink: React.FC<{
     // Link to external page
     return (
       <Link target="_blank" to={linkToSbom}>
-        <LinkToSBomIcon data-testid="external-sbom-link" />
+        <LinkToSBomIcon dataTestId="external-sbom-link" />
       </Link>
     );
   } else if (isSBOMTask && linkToSbom) {
     // Link to internal taskrun page
-    return <LinkToSBomIcon data-testid="internal-sbom-link" />;
+    return <LinkToSBomIcon dataTestId="internal-sbom-link" />;
   }
 
   return (
     <LinkToSBomIcon
       disabled={!sbomTaskRun || !isSBOMTask}
-      data-testid="icon-space-holder"
+      dataTestId="icon-space-holder"
     />
   );
 };
