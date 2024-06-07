@@ -37,7 +37,7 @@ export class KialiFetcher {
   private kialiAuth: KialiAuthentication;
   private KialiDetails: KialiDetails;
 
-  constructor(KD: KialiDetails, log: LoggerService) {
+  constructor(KD: KialiDetails, logger: LoggerService) {
     this.KialiDetails = KD;
     this.logger = log;
     this.kialiAuth = new KialiAuthentication(KD);
