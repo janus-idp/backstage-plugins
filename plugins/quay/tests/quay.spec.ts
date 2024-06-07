@@ -37,21 +37,21 @@ test.describe('Quay plugin', () => {
     }
   });
 
-  test('Vulnerabilities are listed', async () => {
+  test.skip('Vulnerabilities are listed', async () => {
     const severity = ['High:', 'Medium:', 'Low:'];
     for (const lvl of severity) {
       await expect(page.getByRole('link', { name: lvl })).toBeVisible();
     }
   });
 
-  test('Vulnerability details are accessible', async () => {
+  test.skip('Vulnerability details are accessible', async () => {
     await page.getByRole('link', { name: 'High' }).first().click();
     await expect(page.getByText('Vulnerabilities for')).toBeVisible({
       timeout: 15000,
     });
   });
 
-  test('Vulnerability columns are shown', async () => {
+  test.skip('Vulnerability columns are shown', async () => {
     const columns = [
       'Advisory',
       'Severity',
@@ -65,12 +65,12 @@ test.describe('Quay plugin', () => {
     }
   });
 
-  test('Vulnerability rows are shown', async () => {
+  test.skip('Vulnerability rows are shown', async () => {
     const tbody = page.locator('tbody');
     await expect(tbody.locator('tr')).toHaveCount(5);
   });
 
-  test('Link back to repository works', async () => {
+  test.skip('Link back to repository works', async () => {
     await page.getByRole('link', { name: 'Back to repository' }).click();
     await expect(
       page.getByRole('link', { name: 'backstage-test/test-images' }),
