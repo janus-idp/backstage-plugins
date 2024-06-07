@@ -207,6 +207,16 @@ export const CreateFeedbackModal = (props: {
       </DialogTitle>
       <DialogContent dividers>
         <Grid container justifyContent="flex-start" className={classes.root}>
+          {props.serverType.toLowerCase() !== 'mail' &&
+          !selectedTag.match(/(Excellent|Good)/g) ? (
+            <Grid xs={12}>
+              <Alert severity="warning" variant="outlined">
+                Note: By submitting&nbsp;
+                {feedbackType === 'FEEDBACK' ? 'feedback' : 'bug'} with this
+                tag, it will create an issue in {props.serverType.toLowerCase()}
+              </Alert>
+            </Grid>
+          ) : null}
           <Grid item xs={4}>
             <Typography variant="h6">Select type</Typography>
             <RadioGroup className={classes.radioGroup} row>
@@ -219,7 +229,7 @@ export const CreateFeedbackModal = (props: {
                   <Radio
                     icon={<BugReportOutlined />}
                     checkedIcon={<BugReportTwoToneIcon />}
-                    color="secondary"
+                    color="error"
                   />
                 }
               />
@@ -249,7 +259,7 @@ export const CreateFeedbackModal = (props: {
                       variant={
                         selectedTag === issueTitle ? 'filled' : 'outlined'
                       }
-                      color="secondary"
+                      color="error"
                       onClick={() => handleChipSlection(issueTitle)}
                       label={issueTitle}
                     />
@@ -309,21 +319,13 @@ export const CreateFeedbackModal = (props: {
         <Button onClick={props.handleModalCloseFn}>Cancel</Button>
         <Button
           onClick={handleSubmitClick}
-          color={feedbackType === 'FEEDBACK' ? 'primary' : 'secondary'}
+          color="primary"
           variant="contained"
           disabled={summary.error || summary.value.length === 0}
         >
           {feedbackType === 'FEEDBACK' ? 'Send Feedback' : 'Report Bug'}
         </Button>
       </DialogActions>
-      {props.serverType.toLowerCase() !== 'mail' &&
-      !selectedTag.match(/(Excellent|Good)/g) ? (
-        <Alert severity="warning" variant="outlined">
-          Note: By submitting&nbsp;
-          {feedbackType === 'FEEDBACK' ? 'feedback' : 'bug'} with this tag, it
-          will create an issue in {props.serverType.toLowerCase()}
-        </Alert>
-      ) : null}
     </StyledPaper>
   );
 };
