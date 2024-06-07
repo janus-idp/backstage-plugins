@@ -26,20 +26,13 @@ const Decorator = ({
   ...rest
 }: React.PropsWithChildren<DecoratorTypes>) => {
   const decorator = (
-    <PfDecorator
-      x={x}
-      y={y}
-      radius={radius}
-      className="tp-decorator"
-      showBackground
-      {...rest}
-    />
+    <PfDecorator x={x} y={y} radius={radius} showBackground {...rest} />
   );
 
   if (href) {
     return external ? (
       <a
-        className="tp-decorator__link"
+        className="bs-topology-decorator__link"
         href={href}
         target="_blank"
         rel="noopener noreferrer"
@@ -53,7 +46,7 @@ const Decorator = ({
       </a>
     ) : (
       <Link
-        className="tp-decorator__link"
+        className="bs-topology-decorator__link"
         to={href}
         role="button"
         aria-label={ariaLabel}
