@@ -16,11 +16,20 @@ import { Grid } from '@material-ui/core';
 import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { EntityKialiResourcesCard, kialiPlugin } from '../src';
-import { getEntityRoutes, getRoutes } from '../src/components/Router';
+import { getEntityRoutes } from '../src/components/Router';
+import { AppDetailsPage } from '../src/pages/AppDetails/AppDetailsPage';
+import { AppListPage } from '../src/pages/AppList/AppListPage';
+import { IstioConfigListPage } from '../src/pages/IstioConfigList/IstioConfigListPage';
+import { KialiNoPath } from '../src/pages/Kiali';
 import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
 import { KialiHelper } from '../src/pages/Kiali/KialiHelper';
 import { KialiNoAnnotation } from '../src/pages/Kiali/KialiNoAnnotation';
 import { KialiNoResources } from '../src/pages/Kiali/KialiNoResources';
+import { OverviewPage } from '../src/pages/Overview/OverviewPage';
+import { ServiceDetailsPage } from '../src/pages/ServiceDetails/ServiceDetailsPage';
+import { ServiceListPage } from '../src/pages/ServiceList/ServiceListPage';
+import { WorkloadDetailsPage } from '../src/pages/WorkloadDetails/WorkloadDetailsPage';
+import { WorkloadListPage } from '../src/pages/WorkloadList/WorkloadListPage';
 import { pluginName } from '../src/plugin';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
 import {
@@ -477,40 +486,73 @@ interface Props {
   isEntity?: boolean;
 }
 
-export const TabsMock = () => {
-  const [selectedTab, setSelectedTab] = React.useState<number>(0);
-  const tabs = [
-    { label: 'Overview', route: `${pluginName}/overview` },
-    { label: 'Workloads', route: `${pluginName}/workloads` },
-    { label: 'Services', route: `${pluginName}/services` },
-    { label: 'Applications', route: `${pluginName}/applications` },
-    { label: 'Istio Config', route: `${pluginName}/istio` },
-  ];
-  const navigate = useNavigate();
-  return (
-    <HeaderTabs
-      selectedIndex={selectedTab}
-      onChange={(index: number) => {
-        navigate(tabs[index].route);
-        setSelectedTab(index);
-      }}
-      tabs={tabs.map(({ label }, index) => ({
-        id: index.toString(),
-        label,
-      }))}
-    />
-  );
+function IstioDetailsPage() {
+  return null;
+}
+
+const getSelected = (route: number) => {
+  const pathname = window.location.hash.split('/');
+
+  if (pathname && pathname[0] === '#details') {
+    switch (pathname[1]) {
+      case 'workloads':
+        return <WorkloadDetailsPage />;
+      case 'services':
+        return <ServiceDetailsPage />;
+      case 'applications':
+        return <AppDetailsPage />;
+      case 'istio':
+        return <IstioDetailsPage />;
+      default:
+        return <OverviewPage />;
+    }
+  }
+  switch (route) {
+    case 0:
+      return <OverviewPage />;
+    case 1:
+      return <WorkloadListPage />;
+    case 2:
+      return <ServiceListPage />;
+    case 3:
+      return <AppListPage />;
+    case 4:
+      return <IstioConfigListPage />;
+    default:
+      return <KialiNoPath />;
+  }
 };
 
 const MockProvider = (props: Props) => {
+  const [selectedTab, setSelectedTab] = React.useState<number>(0);
+  const tabs = [
+    { label: 'Overview', route: `#overview` },
+    { label: 'Workloads', route: `#workloads` },
+    { label: 'Services', route: `#services` },
+    { label: 'Applications', route: `#applications` },
+    { label: 'Istio Config', route: `#istio` },
+  ];
+  const navigate = useNavigate();
+
   const content = (
     <KialiProvider entity={props.entity || mockEntity}>
       <Page themeId="tool">
         {!props.isEntity && (
           <>
             <KialiHeader />
-            <TabsMock />
-            {getRoutes(true)}
+            <HeaderTabs
+              selectedIndex={selectedTab}
+              onChange={(index: number) => {
+                navigate(tabs[index].route);
+                setSelectedTab(index);
+              }}
+              tabs={tabs.map(({ label }, index) => ({
+                id: tabs[index].route,
+                label,
+              }))}
+            />
+
+            {getSelected(selectedTab)}
           </>
         )}
         {props.isEntity && <Content>{getEntityRoutes()}</Content>}
@@ -624,7 +666,7 @@ createDevApp()
   .addPage({
     element: <MockProvider />,
     title: 'KialiPage',
-    path: `/${pluginName}/overview`,
+    path: `/${pluginName}`,
   })
   .addPage({
     element: <MockKialiError />,

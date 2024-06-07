@@ -75,33 +75,41 @@ const getRef = (type: string, entity?: boolean, root?: boolean) => {
 
 export const JanusObjectLink = (props: JanusLinkProps) => {
   const { name, type, objectType, namespace, query, cluster } = props;
-  const link: RouteFunc<routeRefParams> = useRouteRef(
-    getRef(type, props.entity, props.root),
-  );
-  let to = '';
-  if (!props.root) {
-    const items: { [key: string]: string } = { namespace: namespace || '' };
 
-    if (type && name) {
-      items[janusRoutesObject[type].id] = name;
+  // When routeRef is not defined, don't throw an error (E.g. for dev)
+  try {
+    const link: RouteFunc<routeRefParams> = useRouteRef(
+      getRef(type, props.entity, props.root),
+    );
+    let to = '';
+    if (!props.root) {
+      const items: { [key: string]: string } = { namespace: namespace || '' };
+
+      if (type && name) {
+        items[janusRoutesObject[type].id] = name;
+      }
+      if (objectType) {
+        items.objectType = objectType;
+      }
+      to = link(items);
+    } else {
+      to = link();
     }
-    if (objectType) {
-      items.objectType = objectType;
-    }
-    to = link(items);
-  } else {
-    to = link();
+    const href = addQuery(to, cluster, query);
+    return (
+      <Link
+        to={href}
+        data-test={`${
+          type ? janusRoutesObject[type].id : ''
+        }-${namespace}-${name}`}
+        {...props}
+      >
+        {props.children || `${namespace}/${name}`}
+      </Link>
+    );
+  } catch (error) {
+    return (
+      <Link to={`/kiali/${type}/${namespace}/${name}`}>{props.children}</Link>
+    );
   }
-  const href = addQuery(to, cluster, query);
-  return (
-    <Link
-      to={href}
-      data-test={`${
-        type ? janusRoutesObject[type].id : ''
-      }-${namespace}-${name}`}
-      {...props}
-    >
-      {props.children || `${namespace}/${name}`}
-    </Link>
-  );
 };
