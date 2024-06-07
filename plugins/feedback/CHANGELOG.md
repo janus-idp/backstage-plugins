@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-feedback [1.3.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.3.11...@janus-idp/backstage-plugin-feedback@1.3.12) (2024-06-07)
+
+
+### Bug Fixes
+
+* **feedback:** update EntityPage component ([#1798](https://github.com/janus-idp/backstage-plugins/issues/1798)) ([f5b04b5](https://github.com/janus-idp/backstage-plugins/commit/f5b04b5f5431cb6c710613b699ee81c9fec6d10d))
+
 ## @janus-idp/backstage-plugin-feedback [1.3.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.3.10...@janus-idp/backstage-plugin-feedback@1.3.11) (2024-06-05)
 
 
