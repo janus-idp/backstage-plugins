@@ -130,8 +130,12 @@ export const EntityFeedbackPage = () => {
             arrow
             TransitionComponent={Zoom}
           >
-            <Button startIcon={<Add />} onClick={handleModalOpen}>
-              Create
+            <Button
+              startIcon={<Add />}
+              variant="contained"
+              onClick={handleModalOpen}
+            >
+              Submit Feedback
             </Button>
           </Tooltip>
           {pluginConfig.feedbackType === 'JIRA' ? (
