@@ -2,7 +2,6 @@ import {
   createServiceBuilder,
   loadBackendConfig,
 } from '@backstage/backend-common';
-
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 import { Server } from 'http';

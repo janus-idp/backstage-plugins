@@ -1,5 +1,6 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+
 import { DataIndexService } from './DataIndexService';
 import { SonataFlowService } from './SonataFlowService';
 

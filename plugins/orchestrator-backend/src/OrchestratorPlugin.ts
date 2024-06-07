@@ -32,10 +32,9 @@ export const orchestratorPlugin = createBackendPlugin({
         permissions,
         httpAuth,
       }) {
-        const log = logger;
         const router = await createRouter({
           config: config,
-          logger: log,
+          logger,
           discovery: discovery,
           catalogApi: catalogApi,
           urlReader: urlReader,
