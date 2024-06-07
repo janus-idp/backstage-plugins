@@ -30,7 +30,7 @@ describe('createRouter', () => {
   beforeAll(async () => {
     jest.resetAllMocks();
     const router = await createRouter({
-      logger: logger,
+      logger,
       config: new ConfigReader({
         catalog: {
           providers: {

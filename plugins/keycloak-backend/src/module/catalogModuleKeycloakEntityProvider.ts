@@ -45,7 +45,7 @@ export const catalogModuleKeycloakEntityProvider = createBackendModule({
         catalog.addEntityProvider(
           KeycloakOrgEntityProvider.fromConfig(config, {
             id: 'development',
-            logger: logger,
+            logger,
             scheduler,
           }),
         );

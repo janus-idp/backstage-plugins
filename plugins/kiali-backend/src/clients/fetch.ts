@@ -39,7 +39,7 @@ export class KialiFetcher {
 
   constructor(KD: KialiDetails, logger: LoggerService) {
     this.KialiDetails = KD;
-    this.logger = log;
+    this.logger = logger;
     this.kialiAuth = new KialiAuthentication(KD);
   }
 

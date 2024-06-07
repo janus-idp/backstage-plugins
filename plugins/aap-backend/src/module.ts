@@ -35,7 +35,7 @@ export const catalogModuleAapResourceEntityProvider = createBackendModule({
       async init({ catalog, config, logger, scheduler }) {
         catalog.addEntityProvider(
           AapResourceEntityProvider.fromConfig(config, {
-            logger: logger,
+            logger,
             schedule: scheduler.createScheduledTaskRunner({
               frequency: { minutes: 30 },
               timeout: { minutes: 3 },

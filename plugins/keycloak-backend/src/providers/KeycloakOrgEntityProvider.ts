@@ -32,7 +32,6 @@ import type { Credentials } from '@keycloak/keycloak-admin-client/lib/utils/auth
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
 
-
 import {
   GroupTransformer,
   KEYCLOAK_ID_ANNOTATION,

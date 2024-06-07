@@ -61,11 +61,11 @@ export class AncestorSearchMemo {
     return this.graph.hasNode(groupRef);
   }
 
-  debugNodesAndEdges(log: LoggerService, userEntity: string): void {
-    log.debug(
+  debugNodesAndEdges(logger: LoggerService, userEntity: string): void {
+    logger.debug(
       `SubGraph edges: ${JSON.stringify(this.graph.edges())} for ${userEntity}`,
     );
-    log.debug(
+    logger.debug(
       `SubGraph nodes: ${JSON.stringify(this.graph.nodes())} for ${userEntity}`,
     );
   }

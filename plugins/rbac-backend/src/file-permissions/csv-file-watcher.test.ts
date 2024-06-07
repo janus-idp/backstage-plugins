@@ -1,4 +1,3 @@
-
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
@@ -685,7 +684,7 @@ describe('CSVFileWatcher', () => {
 async function createEnforcer(
   theModel: Model,
   adapter: Adapter,
-  log: LoggerService,
+  logger: LoggerService,
 ): Promise<Enforcer> {
   const catalogDBClient = Knex.knex({ client: MockClient });
   const rbacDBClient = Knex.knex({ client: MockClient });
@@ -695,7 +694,7 @@ async function createEnforcer(
 
   const rm = new BackstageRoleManager(
     catalogApi,
-    log,
+    logger,
     catalogDBClient,
     rbacDBClient,
     config,

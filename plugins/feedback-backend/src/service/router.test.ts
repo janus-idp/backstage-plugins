@@ -71,13 +71,15 @@ describe('Router', () => {
   mswMockServer.listen({ onUnhandledRequest: 'bypass' });
   const config: Config = new ConfigReader(mockConfig);
   const discovery: DiscoveryService = HostDiscovery.fromConfig(config);
-  const logger: LoggerService = getRootLogger().child({ service: 'feedback-backend' });
+  const logger: LoggerService = getRootLogger().child({
+    service: 'feedback-backend',
+  });
   const auth: AuthService = mockServices.auth();
   let app: express.Express;
 
   beforeAll(async () => {
     const router = await createRouter({
-      logger: logger,
+      logger,
       config: config,
       discovery: discovery,
       auth: auth,

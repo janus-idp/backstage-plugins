@@ -6,7 +6,7 @@ import { KIALI_CORE_VERSION, KialiApiImpl } from './KialiAPIConnector';
 const logger = getVoidLogger();
 
 const kialiApi = new KialiApiImpl({
-  logger: logger,
+  logger,
   kiali: { url: 'https://localhost:4000' },
 });
 

@@ -17,7 +17,7 @@ export const {{id}}Plugin = createBackendPlugin({
         http: coreServices.httpRouter,
       },
       async init({ config, logger, http }) {
-        http.use(() => createRouter({...config, logger: logger}));
+        http.use(() => createRouter({...config, logger}));
       },
     });
   },

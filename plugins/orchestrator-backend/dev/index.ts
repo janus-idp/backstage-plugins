@@ -36,7 +36,7 @@ export async function startStandaloneServer(
   });
 
   const router = await createRouter({
-    logger: logger,
+    logger,
     config: options.config,
     discovery: options.discovery,
     catalogApi: options.catalogApi,

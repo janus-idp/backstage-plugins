@@ -53,7 +53,7 @@ describe('createRouter', () => {
   beforeAll(async () => {
     jest.clearAllMocks();
     const router = await createRouter({
-      logger: logger,
+      logger,
       config: new ConfigReader({
         catalog: {
           providers: {
