@@ -5,6 +5,7 @@ import {
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
+  fetchApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
@@ -27,9 +28,15 @@ export const feedbackPlugin = createPlugin({
         discoveryApi: discoveryApiRef,
         configApi: configApiRef,
         identityApi: identityApiRef,
+        fetchApi: fetchApiRef,
       },
-      factory: ({ discoveryApi, configApi, identityApi }) => {
-        return new FeedbackAPI({ discoveryApi, configApi, identityApi });
+      factory: ({ discoveryApi, configApi, identityApi, fetchApi }) => {
+        return new FeedbackAPI({
+          discoveryApi,
+          configApi,
+          identityApi,
+          fetchApi,
+        });
       },
     }),
   ],

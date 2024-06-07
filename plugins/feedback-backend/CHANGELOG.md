@@ -1,3 +1,77 @@
+## @janus-idp/backstage-plugin-feedback-backend [1.3.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.7...@janus-idp/backstage-plugin-feedback-backend@1.3.8) (2024-06-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.10.0
+
+## @janus-idp/backstage-plugin-feedback-backend [1.3.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.6...@janus-idp/backstage-plugin-feedback-backend@1.3.7) (2024-06-04)
+
+## @janus-idp/backstage-plugin-feedback-backend [1.3.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.5...@janus-idp/backstage-plugin-feedback-backend@1.3.6) (2024-06-04)
+
+## @janus-idp/backstage-plugin-feedback-backend [1.3.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.4...@janus-idp/backstage-plugin-feedback-backend@1.3.5) (2024-06-03)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.9.0
+
+## @janus-idp/backstage-plugin-feedback-backend [1.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.3...@janus-idp/backstage-plugin-feedback-backend@1.3.4) (2024-05-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.10
+
+## @janus-idp/backstage-plugin-feedback-backend [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.2...@janus-idp/backstage-plugin-feedback-backend@1.3.3) (2024-05-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.9
+
+## @janus-idp/backstage-plugin-feedback-backend [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.1...@janus-idp/backstage-plugin-feedback-backend@1.3.2) (2024-05-23)
+
+
+### Bug Fixes
+
+* **deps:** upgrade devex plugins to mui v5 ([#1696](https://github.com/janus-idp/backstage-plugins/issues/1696)) ([06d9cf0](https://github.com/janus-idp/backstage-plugins/commit/06d9cf0d8c134212329eb691ac21eb78ae155c09))
+
+## @janus-idp/backstage-plugin-feedback-backend [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.0...@janus-idp/backstage-plugin-feedback-backend@1.3.1) (2024-05-16)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.7
+
+## @janus-idp/backstage-plugin-feedback-backend [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.2.6...@janus-idp/backstage-plugin-feedback-backend@1.3.0) (2024-05-14)
+
+
+### Features
+
+* **feedback:** use backstage auth service in backend plugin ([#1646](https://github.com/janus-idp/backstage-plugins/issues/1646)) ([7d9ee11](https://github.com/janus-idp/backstage-plugins/commit/7d9ee11d1ed0dbc1ff026de3b1e50f2888c3f542)), closes [#1626](https://github.com/janus-idp/backstage-plugins/issues/1626)
+
+## @janus-idp/backstage-plugin-feedback-backend [1.2.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.2.5...@janus-idp/backstage-plugin-feedback-backend@1.2.6) (2024-05-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.6
+
+## @janus-idp/backstage-plugin-feedback-backend [1.2.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.2.4...@janus-idp/backstage-plugin-feedback-backend@1.2.5) (2024-05-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.5
+
 ## @janus-idp/backstage-plugin-feedback-backend [1.2.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.2.3...@janus-idp/backstage-plugin-feedback-backend@1.2.4) (2024-05-02)
 
 

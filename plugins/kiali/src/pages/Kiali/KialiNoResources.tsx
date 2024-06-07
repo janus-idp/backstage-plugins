@@ -10,7 +10,7 @@ import {
 
 import { Box } from '@material-ui/core';
 
-import { ANNOTATION_SUPPORTED } from '../../Router';
+import { ANNOTATION_SUPPORTED } from '../../components/Router';
 
 export const KialiNoResources = (props: { entity: Entity }) => {
   const annotationsKey = Object.keys(

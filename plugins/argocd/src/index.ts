@@ -1,1 +1,6 @@
-export { argocdPlugin, ArgocdPage } from './plugin';
+export {
+  argocdPlugin,
+  ArgocdDeploymentLifecycle,
+  ArgocdDeploymentSummary,
+} from './plugin';
+export { isArgocdConfigured } from './utils/isArgocdConfigured';

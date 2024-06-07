@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {
   CatalogIcon,
   Content,
@@ -23,9 +21,12 @@ import {
 } from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 
-import { Grid, makeStyles, Paper, Theme } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import { Theme } from '@mui/material/styles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   bar: {
     padding: theme.spacing(1, 0),
   },
@@ -41,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const SearchPage = () => {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { types } = useSearch();
   const catalogApi = useApi(catalogApiRef);
 
@@ -121,4 +122,4 @@ const SearchPage = () => {
   );
 };
 
-export const searchPage = <SearchPage />;
+export const searchPage: React.JSX.Element = <SearchPage />;

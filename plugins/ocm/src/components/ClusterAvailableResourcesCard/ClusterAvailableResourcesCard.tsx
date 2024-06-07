@@ -1,5 +1,9 @@
 import React from 'react';
 
+import { RequirePermission } from '@backstage/plugin-permission-react';
+
+import { ocmEntityReadPermission } from '@janus-idp/backstage-plugin-ocm-common';
+
 import { useCluster } from '../ClusterContext';
 import { TableCardFromData } from '../TableCardFromData';
 
@@ -20,10 +24,12 @@ export const ClusterAvailableResourceCard = (): any => {
     ['numberOfPods', 'Number of pods'],
   ]);
   return (
-    <TableCardFromData
-      data={data.availableResources}
-      title="Available"
-      nameMap={nameMap}
-    />
+    <RequirePermission permission={ocmEntityReadPermission}>
+      <TableCardFromData
+        data={data.availableResources}
+        title="Available"
+        nameMap={nameMap}
+      />
+    </RequirePermission>
   );
 };

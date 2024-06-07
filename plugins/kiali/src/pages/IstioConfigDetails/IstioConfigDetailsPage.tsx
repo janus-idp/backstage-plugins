@@ -29,7 +29,9 @@ import {
 } from '../../types/AceValidations';
 import { IstioConfigDetailsOverview } from './IstioConfigDetailsOverview';
 
-export const IstioConfigDetailsPage = (): React.JSX.Element => {
+export const IstioConfigDetailsPage = (props: {
+  entity?: boolean;
+}): React.JSX.Element => {
   const { namespace, objectType, object } = useParams();
   const kialiClient = useApi(kialiApiRef);
   const kialiState = React.useContext(KialiContext) as KialiAppState;
@@ -79,7 +81,7 @@ export const IstioConfigDetailsPage = (): React.JSX.Element => {
   return (
     <div className={baseStyle}>
       <Content>
-        <BreadcrumbView />
+        <BreadcrumbView entity={props.entity} />
         <DefaultSecondaryMasthead
           elements={[]}
           onRefresh={() => fetchIstioConfig()}

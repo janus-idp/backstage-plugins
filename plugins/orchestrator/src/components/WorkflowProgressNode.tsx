@@ -1,12 +1,12 @@
 import React from 'react';
 import Moment from 'react-moment';
 
-import { Tooltip } from '@material-ui/core';
-import CancelIcon from '@material-ui/icons/Cancel';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
+import Tooltip from '@mui/material/Tooltip';
 
 import { VALUE_UNAVAILABLE } from '../constants';
 import { useWorkflowInstanceStateColors } from '../hooks/useWorkflowInstanceStatusColors';
@@ -27,14 +27,14 @@ const WorkflowProgressNodeIcon: React.FC<{
             'Additional details about this error are not available'
           }
         >
-          <ErrorIcon className={color} />
+          <ErrorIcon style={{ color }} />
         </Tooltip>
       );
     }
     case 'COMPLETED': {
       return (
         <Tooltip title="Completed">
-          <CheckCircleIcon className={color} />
+          <CheckCircleIcon style={{ color }} />
         </Tooltip>
       );
     }

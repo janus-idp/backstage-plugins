@@ -1,2 +1,2 @@
 export { createRouter } from './service/router';
-export { feedbackPlugin } from './plugin';
+export { feedbackPlugin as default } from './plugin';

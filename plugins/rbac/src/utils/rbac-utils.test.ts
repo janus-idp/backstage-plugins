@@ -1,13 +1,28 @@
 import { GroupEntity } from '@backstage/catalog-model';
+import {
+  AllOfCriteria,
+  AuthorizeResult,
+  PermissionCondition,
+} from '@backstage/plugin-permission-common';
 
+import {
+  PermissionAction,
+  RoleConditionalPolicyDecision,
+} from '@janus-idp/backstage-plugin-rbac-common';
+
+import { mockConditions } from '../__fixtures__/mockConditions';
 import { mockPermissionPolicies } from '../__fixtures__/mockPermissionPolicies';
 import {
+  getConditionalPermissionsData,
+  getConditionsData,
+  getConditionUpperCriteria,
   getKindNamespaceName,
   getMembers,
   getMembersFromGroup,
   getPermissions,
   getPermissionsData,
-  getPluginId,
+  getPluginInfo,
+  getPoliciesData,
 } from './rbac-utils';
 
 const mockPolicies = [
@@ -153,12 +168,21 @@ describe('rbac utils', () => {
   });
 
   it('should return plugin-id of the policy', () => {
-    expect(getPluginId(mockPermissionPolicies, 'catalog-entity')).toBe(
-      'catalog',
-    );
-    expect(getPluginId(mockPermissionPolicies, 'scaffolder-template')).toBe(
-      'scaffolder',
-    );
+    expect(
+      getPluginInfo(mockPermissionPolicies, 'catalog-entity').pluginId,
+    ).toBe('catalog');
+    expect(
+      getPluginInfo(mockPermissionPolicies, 'scaffolder-template').pluginId,
+    ).toBe('scaffolder');
+  });
+
+  it('should return if the permission is resourced', () => {
+    expect(
+      getPluginInfo(mockPermissionPolicies, 'catalog-entity').isResourced,
+    ).toBe(true);
+    expect(
+      getPluginInfo(mockPermissionPolicies, 'scaffolder-template').isResourced,
+    ).toBe(true);
   });
 
   it('should return kind, namespace and name from the reference', () => {
@@ -198,6 +222,7 @@ describe('rbac utils', () => {
         },
       ],
       policyString: ['Read', ', Create', ', Delete'],
+      isResourced: false,
     });
     data = getPermissionsData(mockPolicies, []);
     expect(data[0]).toEqual({
@@ -218,6 +243,218 @@ describe('rbac utils', () => {
         },
       ],
       policyString: ['Read', ', Create', ', Delete'],
+      isResourced: false,
     });
+  });
+});
+
+describe('getConditionUpperCriteria', () => {
+  it('should return the upper criteria', () => {
+    const conditions = mockConditions[1].conditions;
+
+    const result = getConditionUpperCriteria(conditions);
+
+    expect(result).toEqual('allOf');
+  });
+
+  it('should return undefined if no upper criteria is found', () => {
+    const conditions = mockConditions[0].conditions;
+
+    const result = getConditionUpperCriteria(conditions);
+
+    expect(result).toBeUndefined();
+  });
+});
+
+describe('getConditionsData', () => {
+  it('should return conditions data correctly for simple condition', () => {
+    const conditions = mockConditions[0].conditions;
+
+    const result = getConditionsData(conditions);
+
+    expect(result).toEqual({
+      condition: {
+        rule: 'HAS_ANNOTATION',
+        resourceType: 'catalog-entity',
+        params: { annotation: 'temp' },
+      },
+    });
+  });
+
+  it('should return conditions data correctly for any upper criteria', () => {
+    const conditions = mockConditions[1].conditions;
+
+    const result = getConditionsData(conditions);
+
+    expect(result).toEqual({
+      allOf: [
+        {
+          rule: 'HAS_LABEL',
+          resourceType: 'catalog-entity',
+          params: { label: 'temp' },
+        },
+        {
+          rule: 'HAS_METADATA',
+          resourceType: 'catalog-entity',
+          params: { key: 'status' },
+        },
+      ],
+    });
+  });
+
+  it('should return undefined if nested condition exists', () => {
+    const conditions = {
+      allOf: [mockConditions[1].conditions, mockConditions[0].conditions],
+    } as AllOfCriteria<PermissionCondition>;
+
+    const result = getConditionsData(conditions);
+
+    expect(result).toBeUndefined();
+  });
+});
+
+describe('getPoliciesData', () => {
+  it('should return policies data correctly', () => {
+    const allowedPermissions = ['read', 'update'];
+    const policies = ['read', 'update', 'delete'];
+
+    const result = getPoliciesData(allowedPermissions, policies);
+
+    expect(result).toEqual([
+      { policy: 'read', effect: 'allow' },
+      { policy: 'update', effect: 'allow' },
+      { policy: 'delete', effect: 'deny' },
+    ]);
+  });
+
+  it('should return empty array if no policies provided', () => {
+    const allowedPermissions = ['read', 'write'];
+    const policies: string[] = [];
+
+    const result = getPoliciesData(allowedPermissions, policies);
+
+    expect(result).toEqual([]);
+  });
+
+  it('should return all policies as deny if no allowed permissions provided', () => {
+    const allowedPermissions: string[] = [];
+    const policies = ['read', 'update', 'delete'];
+
+    const result = getPoliciesData(allowedPermissions, policies);
+
+    expect(result).toEqual([
+      { policy: 'read', effect: 'deny' },
+      { policy: 'update', effect: 'deny' },
+      { policy: 'delete', effect: 'deny' },
+    ]);
+  });
+});
+
+describe('getConditionalPermissionsData', () => {
+  it('should return conditional permissions data correctly', () => {
+    const conditionalPermissions = [mockConditions[0]];
+    const permissionPolicies = {
+      plugins: ['catalog'],
+      pluginsPermissions: {
+        ['catalog']: {
+          permissions: ['catalog-entity'],
+          policies: {
+            ['catalog-entity']: {
+              policies: ['read', 'update', 'delete'],
+              isResourced: true,
+            },
+          },
+        },
+      },
+    };
+
+    const result = getConditionalPermissionsData(
+      conditionalPermissions,
+      permissionPolicies,
+    );
+
+    expect(result).toEqual([
+      {
+        plugin: 'catalog',
+        permission: 'catalog-entity',
+        isResourced: true,
+        policies: [
+          { policy: 'read', effect: 'allow' },
+          { policy: 'update', effect: 'deny' },
+          { policy: 'delete', effect: 'deny' },
+        ],
+        policyString: ['read'],
+        conditions: {
+          condition: {
+            rule: 'HAS_ANNOTATION',
+            resourceType: 'catalog-entity',
+            params: { annotation: 'temp' },
+          },
+        },
+        id: 1,
+      },
+    ]);
+  });
+
+  it('should return empty array if no conditional permissions provided', () => {
+    const conditionalPermissions: RoleConditionalPolicyDecision<PermissionAction>[] =
+      [];
+    const permissionPolicies = {
+      plugins: ['catalog'],
+      pluginsPermissions: {
+        ['catalog']: {
+          permissions: ['catalog-entity'],
+          policies: {
+            ['catalog-entity']: {
+              policies: ['read', 'update', 'delete'],
+              isResourced: true,
+            },
+          },
+        },
+      },
+    };
+
+    const result = getConditionalPermissionsData(
+      conditionalPermissions,
+      permissionPolicies,
+    );
+
+    expect(result).toEqual([]);
+  });
+
+  it('should skip conditional permission with nested upper criteria', () => {
+    const conditionalPermissions = [
+      {
+        id: 1,
+        pluginId: 'catalog',
+        result: AuthorizeResult.CONDITIONAL,
+        resourceType: 'catalog-entity',
+        permissionMapping: ['read'],
+        conditions: {
+          allOf: [mockConditions[1].conditions, mockConditions[0].conditions],
+        } as AllOfCriteria<PermissionCondition>,
+      },
+    ] as RoleConditionalPolicyDecision<PermissionAction>[];
+
+    const permissionPolicies = {
+      plugins: ['catalog'],
+      pluginsPermissions: {
+        ['catalog']: {
+          permissions: ['catalog-entity'],
+          policies: {
+            ['catalog-entity']: {
+              policies: ['read', 'update', 'delete'],
+              isResourced: true,
+            },
+          },
+        },
+      },
+    };
+    const result = getConditionalPermissionsData(
+      conditionalPermissions,
+      permissionPolicies,
+    );
+
+    expect(result).toEqual([]);
   });
 });

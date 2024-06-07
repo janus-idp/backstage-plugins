@@ -1,4 +1,4 @@
-import { TokenManager } from '@backstage/backend-common';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 
@@ -20,25 +20,25 @@ export type ASMGroup = Relation | Entity;
 export class AncestorSearchMemo {
   private graph: Graph;
 
-  private tokenManager: TokenManager;
   private catalogApi: CatalogApi;
   private catalogDBClient: Knex;
+  private auth: AuthService;
 
   private userEntityRef: string;
   private maxDepth?: number;
 
   constructor(
     userEntityRef: string,
-    tokenManager: TokenManager,
     catalogApi: CatalogApi,
     catalogDBClient: Knex,
+    auth: AuthService,
     maxDepth?: number,
   ) {
     this.graph = new Graph({ directed: true });
     this.userEntityRef = userEntityRef;
-    this.tokenManager = tokenManager;
     this.catalogApi = catalogApi;
     this.catalogDBClient = catalogDBClient;
+    this.auth = auth;
     this.maxDepth = maxDepth;
   }
 
@@ -84,7 +84,11 @@ export class AncestorSearchMemo {
   }
 
   async getAllGroups(): Promise<ASMGroup[]> {
-    const { token } = await this.tokenManager.getToken();
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
+
     const { items } = await this.catalogApi.getEntities(
       {
         filter: { kind: 'Group' },
@@ -107,7 +111,10 @@ export class AncestorSearchMemo {
   }
 
   async getUserGroups(): Promise<ASMGroup[]> {
-    const { token } = await this.tokenManager.getToken();
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
     const { items } = await this.catalogApi.getEntities(
       {
         filter: { kind: 'Group', 'relations.hasMember': this.userEntityRef },
@@ -140,7 +147,6 @@ export class AncestorSearchMemo {
       return;
     }
 
-    const groupsRefs = new Set<string>();
     const groupName = `group:${group.metadata.namespace?.toLocaleLowerCase(
       'en-US',
     )}/${group.metadata.name.toLocaleLowerCase('en-US')}`;
@@ -154,13 +160,12 @@ export class AncestorSearchMemo {
     if (parentGroup) {
       const parentName = `group:${group.metadata.namespace?.toLocaleLowerCase(
         'en-US',
-      )}/${parent.toLocaleLowerCase('en-US')}`;
+      )}/${parentGroup.metadata.name.toLocaleLowerCase('en-US')}`;
       memo.setEdge(parentName, groupName);
-      groupsRefs.add(parentName);
-    }
 
-    if (groupsRefs.size > 0 && memo.isAcyclic()) {
-      this.traverseGroups(memo, parentGroup!, allGroups, depth);
+      if (memo.isAcyclic()) {
+        this.traverseGroups(memo, parentGroup, allGroups, depth);
+      }
     }
   }
 
@@ -187,7 +192,7 @@ export class AncestorSearchMemo {
     );
 
     if (parentGroup && memo.isAcyclic()) {
-      this.traverseRelations(memo, parentGroup!, allRelations, depth);
+      this.traverseRelations(memo, parentGroup, allRelations, depth);
     }
   }
 

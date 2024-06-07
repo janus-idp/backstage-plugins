@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
@@ -31,8 +29,10 @@ import {
   EntityLinksCard,
   EntityOrphanWarning,
   EntityProcessingErrorsPanel,
+  EntityRelationWarning,
   EntitySwitch,
   hasCatalogProcessingErrors,
+  hasRelationWarnings,
   isComponentType,
   isKind,
   isOrphan,
@@ -41,10 +41,6 @@ import {
   Direction,
   EntityCatalogGraphCard,
 } from '@backstage/plugin-catalog-graph';
-import {
-  EntityGithubActionsContent,
-  isGithubActionsAvailable,
-} from '@backstage/plugin-github-actions';
 import {
   EntityGroupProfileCard,
   EntityMembersListCard,
@@ -55,7 +51,12 @@ import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 
-import { Button, Grid } from '@material-ui/core';
+import {
+  EntityGithubActionsContent,
+  isGithubActionsAvailable,
+} from '@backstage-community/plugin-github-actions';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -98,6 +99,14 @@ const entityWarningContent = (
       <EntitySwitch.Case if={isOrphan}>
         <Grid item xs={12}>
           <EntityOrphanWarning />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasRelationWarnings}>
+        <Grid item xs={12}>
+          <EntityRelationWarning />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
@@ -368,7 +377,7 @@ const domainPage = (
   </EntityLayout>
 );
 
-export const entityPage = (
+export const entityPage: React.JSX.Element = (
   <EntitySwitch>
     <EntitySwitch.Case if={isKind('component')} children={componentPage} />
     <EntitySwitch.Case if={isKind('api')} children={apiPage} />

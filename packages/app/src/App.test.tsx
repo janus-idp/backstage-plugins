@@ -1,30 +1,9 @@
-import React from 'react';
-
-import { removeScalprum } from '@scalprum/core';
-import { mockPluginData } from '@scalprum/react-test-utils';
 import { render, waitFor } from '@testing-library/react';
 
-import { AppBase } from './App';
-import TestRoot from './utils/test/TestRoot';
+import App from './App';
 
 describe('App', () => {
-  beforeEach(() => {
-    removeScalprum();
-  });
-
   it('should render', async () => {
-    const { TestScalprumProvider } = mockPluginData({
-      url: 'http://localhost:7007/foo/bar.json',
-      module: 'UserSettings',
-      pluginManifest: {
-        baseURL: 'http://localhost:7007',
-        extensions: [],
-        name: 'janus.dynamic-frontend-plugin',
-        loadScripts: [],
-        version: '1.0.0',
-        registrationMethod: 'custom',
-      },
-    });
     process.env = {
       NODE_ENV: 'test',
       APP_CONFIG: [
@@ -41,13 +20,10 @@ describe('App', () => {
       ] as any,
     };
 
-    const rendered = render(
-      <TestScalprumProvider>
-        <TestRoot>
-          <AppBase />
-        </TestRoot>
-      </TestScalprumProvider>,
-    );
-    await waitFor(() => expect(rendered.baseElement).toBeInTheDocument());
+    const rendered = render(<App />);
+
+    await waitFor(() => {
+      expect(rendered.baseElement).toBeInTheDocument();
+    });
   });
 });

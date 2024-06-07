@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { Table, WarningPanel } from '@backstage/core-components';
-import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
 
 import { Card, CardContent, makeStyles } from '@material-ui/core';
@@ -9,7 +8,7 @@ import CachedIcon from '@material-ui/icons/Cached';
 
 import { policyEntityUpdatePermission } from '@janus-idp/backstage-plugin-rbac-common';
 
-import { useMembers } from '../../hooks/useMembers';
+import { MembersInfo } from '../../hooks/useMembers';
 import { MembersData } from '../../types';
 import { getKindNamespaceName, getMembers } from '../../utils/rbac-utils';
 import EditRole from '../EditRole';
@@ -17,6 +16,7 @@ import { columns } from './MembersListColumns';
 
 type MembersCardProps = {
   roleName: string;
+  membersInfo: MembersInfo;
 };
 
 const useStyles = makeStyles(theme => ({
@@ -41,16 +41,12 @@ const getEditIcon = (isAllowed: boolean, roleName: string) => {
   );
 };
 
-export const MembersCard = ({ roleName }: MembersCardProps) => {
-  const { data, loading, retry, error } = useMembers(roleName);
+export const MembersCard = ({ roleName, membersInfo }: MembersCardProps) => {
+  const { data, loading, retry, error, canReadUsersAndGroups } = membersInfo;
   const [members, setMembers] = React.useState<MembersData[]>();
   const policyEntityPermissionResult = usePermission({
     permission: policyEntityUpdatePermission,
     resourceRef: policyEntityUpdatePermission.resourceType,
-  });
-  const catalogEntityPermissionResult = usePermission({
-    permission: catalogEntityReadPermission,
-    resourceRef: catalogEntityReadPermission.resourceType,
   });
 
   const classes = useStyles();
@@ -67,13 +63,11 @@ export const MembersCard = ({ roleName }: MembersCardProps) => {
     {
       icon: () =>
         getEditIcon(
-          policyEntityPermissionResult.allowed &&
-            catalogEntityPermissionResult.allowed,
+          policyEntityPermissionResult.allowed && canReadUsersAndGroups,
           roleName,
         ),
       tooltip:
-        catalogEntityPermissionResult.allowed &&
-        policyEntityPermissionResult.allowed
+        policyEntityPermissionResult.allowed && canReadUsersAndGroups
           ? 'Edit'
           : 'Unauthorized to edit',
       isFreeAction: true,

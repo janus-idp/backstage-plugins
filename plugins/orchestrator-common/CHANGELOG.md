@@ -1,3 +1,28 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.8.0...@janus-idp/backstage-plugin-orchestrator-common@1.8.1) (2024-06-04)
+
+## @janus-idp/backstage-plugin-orchestrator-common [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.7.2...@janus-idp/backstage-plugin-orchestrator-common@1.8.0) (2024-05-22)
+
+
+### Features
+
+* **orchestrator:** add permissions to orchestrator plugin ([#1599](https://github.com/janus-idp/backstage-plugins/issues/1599)) ([d0a4531](https://github.com/janus-idp/backstage-plugins/commit/d0a453181e177eb1da7b1e231253b76a2d9356a8))
+
+## @janus-idp/backstage-plugin-orchestrator-common [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.7.1...@janus-idp/backstage-plugin-orchestrator-common@1.7.2) (2024-05-15)
+
+
+### Documentation
+
+* **orchestrator:** removes instructions related to the editor ([#1664](https://github.com/janus-idp/backstage-plugins/issues/1664)) ([10a75b2](https://github.com/janus-idp/backstage-plugins/commit/10a75b2706c72751bd774d6fae4332bbc527dc2b))
+
+## @janus-idp/backstage-plugin-orchestrator-common [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.7.0...@janus-idp/backstage-plugin-orchestrator-common@1.7.1) (2024-05-09)
+
+## @janus-idp/backstage-plugin-orchestrator-common [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.6.4...@janus-idp/backstage-plugin-orchestrator-common@1.7.0) (2024-05-09)
+
+
+### Features
+
+* **orchestrator:** add ability to re-trigger workflow in error state ([#1624](https://github.com/janus-idp/backstage-plugins/issues/1624)) ([8709a37](https://github.com/janus-idp/backstage-plugins/commit/8709a37d08c2eafc22f10bd2a41f0a105768222d))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.6.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.6.3...@janus-idp/backstage-plugin-orchestrator-common@1.6.4) (2024-04-18)
 
 

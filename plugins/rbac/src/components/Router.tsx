@@ -1,6 +1,8 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
+import { ErrorPage } from '@backstage/core-components';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 
 import {
@@ -19,33 +21,48 @@ import { ToastContextProvider } from './ToastContext';
  *
  * @public
  */
-export const Router = ({ useHeader = true }: { useHeader?: boolean }) => (
-  <ToastContextProvider>
-    <Routes>
-      <Route path="/" element={<RbacPage useHeader={useHeader} />} />
-      <Route path={roleRouteRef.path} element={<RoleOverviewPage />} />
-      <Route
-        path={createRoleRouteRef.path}
-        element={
-          <RequirePermission
-            permission={policyEntityCreatePermission}
-            resourceRef={policyEntityCreatePermission.resourceType}
-          >
-            <CreateRolePage />
-          </RequirePermission>
-        }
+export const Router = ({ useHeader = true }: { useHeader?: boolean }) => {
+  const config = useApi(configApiRef);
+  const isRBACPluginEnabled = config.getOptionalBoolean('permission.enabled');
+
+  if (!isRBACPluginEnabled) {
+    return (
+      <ErrorPage
+        status="404"
+        statusMessage="Enable the RBAC backend plugin to use this feature."
+        additionalInfo="To enable RBAC, set `permission.enabled` to `true` in the app-config file."
       />
-      <Route
-        path={editRoleRouteRef.path}
-        element={
-          <RequirePermission
-            permission={policyEntityUpdatePermission}
-            resourceRef={policyEntityUpdatePermission.resourceType}
-          >
-            <EditRolePage />
-          </RequirePermission>
-        }
-      />
-    </Routes>
-  </ToastContextProvider>
-);
+    );
+  }
+
+  return (
+    <ToastContextProvider>
+      <Routes>
+        <Route path="/" element={<RbacPage useHeader={useHeader} />} />
+        <Route path={roleRouteRef.path} element={<RoleOverviewPage />} />
+        <Route
+          path={createRoleRouteRef.path}
+          element={
+            <RequirePermission
+              permission={policyEntityCreatePermission}
+              resourceRef={policyEntityCreatePermission.resourceType}
+            >
+              <CreateRolePage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path={editRoleRouteRef.path}
+          element={
+            <RequirePermission
+              permission={policyEntityUpdatePermission}
+              resourceRef={policyEntityUpdatePermission.resourceType}
+            >
+              <EditRolePage />
+            </RequirePermission>
+          }
+        />
+      </Routes>
+    </ToastContextProvider>
+  );
+};

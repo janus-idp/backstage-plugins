@@ -1,4 +1,4 @@
-import { TokenManager } from '@backstage/backend-common';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -8,19 +8,20 @@ import { Knex } from 'knex';
 import { Logger } from 'winston';
 
 import { AncestorSearchMemo } from './ancestor-search-memo';
-import { RoleList } from './role-list';
+import { RoleMemberList } from './member-list';
 
 export class BackstageRoleManager implements RoleManager {
-  private allRoles: Map<string, RoleList>;
+  private allRoles: Map<string, RoleMemberList>;
   private maxDepth?: number;
   constructor(
     private readonly catalogApi: CatalogApi,
     private readonly log: Logger,
-    private readonly tokenManager: TokenManager,
     private readonly catalogDBClient: Knex,
+    private readonly rbacDBClient: Knex,
     private readonly config: Config,
+    private readonly auth: AuthService,
   ) {
-    this.allRoles = new Map<string, RoleList>();
+    this.allRoles = new Map<string, RoleMemberList>();
     const rbacConfig = this.config.getOptionalConfig('permission.rbac');
     this.maxDepth = rbacConfig?.getOptionalNumber('maxDepth');
     if (this.maxDepth !== undefined && this.maxDepth! <= 0) {
@@ -38,60 +39,97 @@ export class BackstageRoleManager implements RoleManager {
   }
 
   /**
-   * addLink adds the inheritance link between role: name1 and role: name2.
-   * aka role: name1 inherits role: name2.
-   * domain is a prefix to the roles.
+   * addLink adds the inheritance link between name1 and role: name2.
+   * aka name1 inherits role: name2.
+   * The link that is established is based on the defined grouping policies that are added by the enforcer.
+   *
+   * ex. `g, name1, name2`.
+   * @param name1 User or group that will be assigned to a role.
+   * @param name2 The role that will be created or updated.
+   * @param _domain Unimplemented prefix to the role.
    */
   async addLink(
     name1: string,
     name2: string,
     ..._domain: string[]
   ): Promise<void> {
-    const role1 = this.getOrCreateRole(name1);
-    const role2 = this.getOrCreateRole(name2);
-
-    role1.addRole(role2);
+    if (!this.isPGClient()) {
+      const role1 = this.getOrCreateRole(name2);
+      role1.addMember(name1);
+    }
   }
 
   /**
-   * deleteLink deletes the inheritance link between role: name1 and role: name2.
-   * aka role: name1 does not inherit role: name2 any more.
-   * domain is a prefix to the roles.
+   * deleteLink deletes the inheritance link between name1 and role: name2.
+   * aka name1 does not inherit role: name2 any more.
+   * The link that is deleted is based on the defined grouping policies that are removed by the enforcer.
+   *
+   * ex. `g, name1, name2`.
+   * @param name1 User or group that will be removed from assignment of a role.
+   * @param name2 The role that will be deleted or updated.
+   * @param _domain Unimplemented.
    */
   async deleteLink(
     name1: string,
     name2: string,
     ..._domain: string[]
   ): Promise<void> {
-    const role1 = this.getOrCreateRole(name1);
-    const role2 = this.getOrCreateRole(name2);
-    role1.deleteRole(role2);
+    if (!this.isPGClient()) {
+      const role1 = this.getOrCreateRole(name2);
+      role1.deleteMember(name1);
+
+      // Clean up in the event that there are no more members in the role
+      if (role1.getMembers().length === 0) {
+        this.allRoles.delete(name2);
+      }
+    }
   }
 
   /**
-   * hasLink determines whether role: name1 inherits role: name2.
-   * domain is a prefix to the roles.
-   *
-   * name1 will always be the user that we are authorizing
-   * name2 will be the roles that the role manager is aware of
+   * hasLink determines whether name1 inherits role: name2.
+   * During this check we build the group hierarchy graph to determine if the particular user is directly or indirectly
+   * attached to the role that we are receiving.
+   * In the event that there is a postgres database connection, we will attempt to query the roles from the database.
+   * Otherwise we will use the cached allRoles to determine if there is a link.
+   * @param name1 The user that we are authorizing.
+   * @param name2 The name of the role that we are checking against.
+   * @param domain Unimplemented.
+   * @returns True if the user is directly or indirectly attached to the role.
    */
   async hasLink(
     name1: string,
     name2: string,
     ...domain: string[]
   ): Promise<boolean> {
+    let currentRole: RoleMemberList;
     if (domain.length > 0) {
       throw new Error('domain argument is not supported.');
+    }
+
+    // Name2 can be an empty string in the event that there is not a role associated with the user
+    // This happens because of the filtering of the roles reduces the number of roles that we iterate through.
+    if (name2.length === 0) {
+      return false;
     }
 
     if (name1 === name2) {
       return true;
     }
 
-    const tempRole = this.getOrCreateRole(name1);
+    if (this.isPGClient()) {
+      currentRole = new RoleMemberList(name2);
+      await currentRole.buildMembers(currentRole, this.rbacDBClient);
+    } else {
+      currentRole = this.allRoles.get(name2)!;
+    }
 
-    // Immediately check if the our temporary role has a link with the role that we are comparing it to
-    if (this.parseEntityKind(name2) === 'role' && tempRole.hasRole(name2, 1)) {
+    // Check for direct declaration of user to role
+    const directDeclaration = await this.checkForUserToRole(
+      name1,
+      name2,
+      currentRole,
+    );
+    if (directDeclaration) {
       return true;
     }
 
@@ -106,9 +144,9 @@ export class BackstageRoleManager implements RoleManager {
 
     const memo = new AncestorSearchMemo(
       name1,
-      this.tokenManager,
       this.catalogApi,
       this.catalogDBClient,
+      this.auth,
       this.maxDepth,
     );
     await memo.buildUserGraph(memo);
@@ -128,14 +166,11 @@ export class BackstageRoleManager implements RoleManager {
       return false;
     }
 
-    // iterate through the known roles to check if the second name is apart of the known roles
-    // and if the group that is attached to the second name is apart of the graph
-    if (!memo.hasEntityRef(name2) && this.parseEntityKind(name2) === 'role') {
-      for (const [key, value] of this.allRoles.entries()) {
-        if (value.hasRole(name2, 1) && memo.hasEntityRef(key)) {
-          return true;
-        }
-      }
+    if (
+      this.parseEntityKind(name2) === 'role' &&
+      this.hasMember(currentRole, memo)
+    ) {
+      return true;
     }
     return memo.hasEntityRef(name2);
   }
@@ -183,30 +218,33 @@ export class BackstageRoleManager implements RoleManager {
     if (kind === 'user') {
       const memo = new AncestorSearchMemo(
         name,
-        this.tokenManager,
         this.catalogApi,
         this.catalogDBClient,
+        this.auth,
         this.maxDepth,
       );
-      await memo.getAllGroups();
       await memo.buildUserGraph(memo);
       memo.debugNodesAndEdges(this.log, name);
-      const userAndParentGroups = memo.getNodes();
-      userAndParentGroups.push(name);
+
+      if (this.isPGClient()) {
+        const currentRole = new RoleMemberList(name);
+        await currentRole.buildRoles(
+          currentRole,
+          memo.getNodes(),
+          this.rbacDBClient,
+        );
+        return Promise.resolve(currentRole.getRoles());
+      }
 
       const allRoles: string[] = [];
-      for (const userOrParentGroup of userAndParentGroups) {
-        const r = this.allRoles.get(userOrParentGroup);
-        if (r) {
-          const rolesEntityRefs = [...r.getRoles()]
-            .filter(role => {
-              return role.name.startsWith('role:default');
-            })
-            .map(role => role.name);
-
-          allRoles.push(...rolesEntityRefs);
+      // Account for the user not being in the graph
+      memo.setNode(name);
+      for (const value of this.allRoles.values()) {
+        if (this.hasMember(value, memo)) {
+          allRoles.push(value.name);
         }
       }
+
       return Promise.resolve(allRoles);
     }
 
@@ -228,12 +266,20 @@ export class BackstageRoleManager implements RoleManager {
     // do nothing
   }
 
-  private getOrCreateRole(name: string): RoleList {
+  /**
+   * getOrCreateRole will get a role if it has already been cached
+   * or it will create a new role to be cached.
+   * This cache is a simple tree that is used to quickly compare
+   * users and groups to roles.
+   * @param name The user or group whose cache we will be getting / creating.
+   * @returns The cached role as a RoleList.
+   */
+  private getOrCreateRole(name: string): RoleMemberList {
     const role = this.allRoles.get(name);
     if (role) {
       return role;
     }
-    const newRole = new RoleList(name);
+    const newRole = new RoleMemberList(name);
     this.allRoles.set(name, newRole);
 
     return newRole;
@@ -243,5 +289,70 @@ export class BackstageRoleManager implements RoleManager {
   private parseEntityKind(name: string): string {
     const parsed = name.split(':');
     return parsed[0];
+  }
+
+  /**
+   * isPGClient checks what the current database client is at them time.
+   * This is to ensure that we are querying the database in the event of postgres
+   * or using in memory cache for better sqlite3.
+   * @returns True if the database client is pg.
+   */
+  isPGClient(): boolean {
+    const client = this.rbacDBClient.client.config.client;
+    return client === 'pg';
+  }
+
+  /**
+   * checkForUserToRole checks if there exists a direct declaration of a user to a role. Used to exit out of
+   * hasLink faster in the event to reduce the time it would take to build the user graph.
+   * @param name1 The user that we are checking for.
+   * @param name2 The role that we are checking for.
+   * @returns True if there is a user that is directly attached to a particular role.
+   */
+  private async checkForUserToRole(
+    name1: string,
+    name2: string,
+    currentRole: RoleMemberList | undefined,
+  ): Promise<boolean | undefined> {
+    const tempRole = this.getOrCreateRole(name2);
+
+    // Immediately check if the our temporary role has a link with the role that we are comparing it to
+    if (this.parseEntityKind(name2) === 'role' && tempRole.hasMember(name1)) {
+      return true;
+    }
+
+    // Clean up the temp role
+    if (tempRole.getMembers().length === 0) {
+      this.allRoles.delete(name2);
+    }
+
+    if (currentRole && currentRole.hasMember(name1)) {
+      return true;
+    }
+
+    return undefined;
+  }
+
+  /**
+   * hasMember checks if the members from a particular role is associated with the user
+   * that the AncestorSearchMemo graph is built for.
+   * @param role The role that we are getting the members from.
+   * @param memo The user graph that we are comparing members with.
+   * @returns True if a member from the role is also associated with the user.
+   */
+  private hasMember(
+    role: RoleMemberList | undefined,
+    memo: AncestorSearchMemo,
+  ): boolean {
+    if (role === undefined) {
+      return false;
+    }
+
+    for (const member of role.getMembers()) {
+      if (memo.hasEntityRef(member)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

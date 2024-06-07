@@ -1,9 +1,12 @@
+import { mockServices } from '@backstage/backend-test-utils';
 import { Entity, GroupEntity } from '@backstage/catalog-model';
 
 import * as Knex from 'knex';
 import { createTracker, MockClient, Tracker } from 'knex-mock-client';
 
 import { AncestorSearchMemo, Relation } from './ancestor-search-memo';
+
+const mockAuthService = mockServices.auth();
 
 describe('ancestor-search-memo', () => {
   const userRelations = [
@@ -63,21 +66,14 @@ describe('ancestor-search-memo', () => {
 
   const catalogDBClient = Knex.knex({ client: MockClient });
 
-  const tokenManagerMock = {
-    getToken: jest.fn().mockImplementation(async () => {
-      return Promise.resolve({ token: 'some-token' });
-    }),
-    authenticate: jest.fn().mockImplementation(),
-  };
-
   let asm: AncestorSearchMemo;
 
   beforeEach(() => {
     asm = new AncestorSearchMemo(
       'user:default/adam',
-      tokenManagerMock,
       catalogApiMock,
       catalogDBClient,
+      mockAuthService,
     );
   });
 
@@ -197,9 +193,9 @@ describe('ancestor-search-memo', () => {
     it('should build the graph but stop based on the maxDepth', async () => {
       const asmMaxDepth = new AncestorSearchMemo(
         'user:default/adam',
-        tokenManagerMock,
         catalogApiMock,
         catalogDBClient,
+        mockAuthService,
         1,
       );
 
@@ -263,9 +259,9 @@ describe('ancestor-search-memo', () => {
     it('should build the graph but stop based on the maxDepth', async () => {
       const asmMaxDepth = new AncestorSearchMemo(
         'user:default/adam',
-        tokenManagerMock,
         catalogApiMock,
         catalogDBClient,
+        mockAuthService,
         1,
       );
 
@@ -294,9 +290,9 @@ describe('ancestor-search-memo', () => {
 
     const asmUserGraph = new AncestorSearchMemo(
       'user:default/adam',
-      tokenManagerMock,
       catalogApiMock,
       catalogDBClient,
+      mockAuthService,
     );
 
     const asmDBSpy = jest

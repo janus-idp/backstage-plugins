@@ -28,7 +28,7 @@ The orchestrator controls the flow orchestrating operations/tasks that may be ex
 - Timer/timeout control
 - Built-in powerful expression evaluation with JQ
 - Low Code/No code
-- Cloud-native architecture Kubernetes/Openshit with Operator support
+- Cloud-native architecture Kubernetes/OpenShift with Operator support
 - OpenAPI / REST built-in integration etc.
 
 **Client-side tooling**
@@ -71,14 +71,12 @@ backend:
     script-src-elem: ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
     connect-src: ["'self'", 'http:', 'https:', 'data:']
 orchestrator:
-  editor:
-    path: http://localhost:7007/api/orchestrator/static/envelope
   sonataFlowService:
     baseUrl: http://localhost
     port: 8899
     autoStart: true
     workflowsSource:
-      gitRepositoryUrl: https://github.com/tiagodolphine/backstage-orchestrator-workflows
+      gitRepositoryUrl: https://github.com/parodos-dev/backstage-orchestrator-workflows
       localPath: /tmp/orchestrator/repository
   dataIndexService:
     url: http://localhost:8899
@@ -150,14 +148,15 @@ For more information about the configuration options, including other optional p
    yarn workspace backend add @janus-idp/backstage-plugin-orchestrator-backend
    ```
 
-1. Add the following code to `packages/backend/src/index.ts` file:
+1. Add the following code to the `packages/backend/src/index.ts` file:
 
    ```ts title="packages/backend/src/index.ts"
-   import { orchestratorPlugin } from '@janus-idp/backstage-plugin-orchestrator-backend/alpha';
-
    const backend = createBackend();
+
    /* highlight-add-next-line */
-   backend.add(orchestratorPlugin);
+   backend.add(
+     import('@janus-idp/backstage-plugin-orchestrator-backend/alpha'),
+   );
 
    backend.start();
    ```

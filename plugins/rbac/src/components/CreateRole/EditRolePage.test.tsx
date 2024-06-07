@@ -47,17 +47,6 @@ jest.mock('./RoleForm', () => ({
   RoleForm: () => <div>RoleForm</div>,
 }));
 
-jest.mock('@backstage/plugin-permission-react', () => ({
-  RequirePermission: jest
-    .fn()
-    .mockImplementation(({ permission, resourceRef, children }) => (
-      <div>
-        {`${permission} ${resourceRef}`}
-        {children}
-      </div>
-    )),
-}));
-
 jest.mock('@backstage/core-components', () => ({
   useQueryParamState: () => ['roleName', jest.fn()],
   Progress: () => <div>MockedProgressComponent</div>,
@@ -97,6 +86,7 @@ beforeEach(() => {
   usePermissionPoliciesMock.mockReturnValue({
     loading: false,
     data: usePermissionPoliciesMockData,
+    conditionsData: [],
     retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
     error: new Error(''),
   });
@@ -116,6 +106,7 @@ describe('EditRolePage', () => {
       loading: false,
       roleError: { name: '', message: '' },
       membersError: new Error(''),
+      canReadUsersAndGroups: true,
     });
     render(<EditRolePage />);
     expect(screen.getByText('Edit Role Page')).toBeInTheDocument();
@@ -130,6 +121,7 @@ describe('EditRolePage', () => {
       role: undefined,
       membersError: { name: '', message: '' },
       roleError: { name: '', message: '' },
+      canReadUsersAndGroups: true,
     });
     render(<EditRolePage />);
     expect(screen.queryByText('MockedProgressComponent')).toBeInTheDocument();
@@ -143,6 +135,7 @@ describe('EditRolePage', () => {
       role: undefined,
       membersError: { name: 'Error', message: 'Error Message' },
       loading: false,
+      canReadUsersAndGroups: true,
     });
     render(<EditRolePage />);
     expect(screen.queryByText('MockedErrorPageComponent')).toBeInTheDocument();

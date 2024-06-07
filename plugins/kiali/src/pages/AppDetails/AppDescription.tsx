@@ -14,6 +14,7 @@ import * as H from '../../types/Health';
 type AppDescriptionProps = {
   app?: App;
   health?: H.Health;
+  view?: string;
 };
 
 const iconStyle = kialiStyle({
@@ -36,25 +37,29 @@ export const AppDescription: React.FC<AppDescriptionProps> = (
 
   return props.app ? (
     <Card id="AppDescriptionCard" data-test="app-description-card">
-      <CardHeader>
-        <Typography variant="h6" style={{ margin: '10px' }}>
-          <div key="service-icon" className={iconStyle}>
-            <PFBadge badge={PFBadges.App} />
-          </div>
+      <CardHeader
+        title={
+          <>
+            <Typography variant="h6" style={{ margin: '10px' }}>
+              <div key="service-icon" className={iconStyle}>
+                <PFBadge badge={PFBadges.App} />
+              </div>
 
-          {props.app.name}
+              {props.app.name}
 
-          <span className={healthIconStyle}>
-            <HealthIndicator id={props.app.name} health={props.health} />
-          </span>
-        </Typography>
+              <span className={healthIconStyle}>
+                <HealthIndicator id={props.app.name} health={props.health} />
+              </span>
+            </Typography>
 
-        {props.app.cluster && isMultiCluster && (
-          <div key="cluster-icon" style={{ paddingBottom: '0.5rem' }}>
-            <PFBadge badge={PFBadges.Cluster} /> {props.app.cluster}
-          </div>
-        )}
-      </CardHeader>
+            {props.app.cluster && isMultiCluster && (
+              <div key="cluster-icon" style={{ paddingBottom: '0.5rem' }}>
+                <PFBadge badge={PFBadges.Cluster} /> {props.app.cluster}
+              </div>
+            )}
+          </>
+        }
+      />
       <CardContent>
         <Labels
           labels={appLabels}
@@ -67,6 +72,7 @@ export const AppDescription: React.FC<AppDescriptionProps> = (
           services={props.app ? props.app.serviceNames : []}
           health={props.health}
           cluster={props.app?.cluster}
+          view={props.view}
         />
       </CardContent>
     </Card>

@@ -11,6 +11,17 @@ jest.mock('../ClusterContext/', () => ({
   useCluster: jest.fn().mockReturnValue({}),
 }));
 
+jest.mock('@backstage/plugin-permission-react', () => ({
+  RequirePermission: jest
+    .fn()
+    .mockImplementation(({ permission, children }) => (
+      <div>
+        {`${permission}`}
+        {children}
+      </div>
+    )),
+}));
+
 describe('ClusterAvailableResourceCard', () => {
   afterAll(() => {
     jest.resetAllMocks();

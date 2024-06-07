@@ -2,7 +2,6 @@ import React from 'react';
 import { useAsync } from 'react-use';
 
 import { Content, Header, Page } from '@backstage/core-components';
-import { RequirePermission } from '@backstage/plugin-permission-react';
 
 import { render, screen } from '@testing-library/react';
 
@@ -21,16 +20,6 @@ jest.mock('react-use', () => ({
 jest.mock('./RoleForm', () => ({
   RoleForm: () => <div>RoleForm</div>,
 }));
-
-jest.mock('@backstage/plugin-permission-react', () => ({
-  RequirePermission: jest
-    .fn()
-    .mockImplementation(({ children }) => <div>{children}</div>),
-}));
-
-const mockedPrequirePermission = RequirePermission as jest.MockedFunction<
-  typeof RequirePermission
->;
 
 jest.mock('@backstage/core-components', () => ({
   Page: jest.fn().mockImplementation(({ children }) => (
@@ -67,13 +56,6 @@ describe('CreateRolePage', () => {
     });
 
     render(<CreateRolePage />);
-    expect(mockedPrequirePermission).toHaveBeenCalledWith(
-      expect.objectContaining({
-        permission: expect.objectContaining({ name: 'catalog.entity.read' }),
-        resourceRef: expect.stringContaining('catalog-entity'),
-      }),
-      expect.anything(),
-    );
     expect(mockedPage).toHaveBeenCalled();
     expect(mockedHeader).toHaveBeenCalled();
     expect(mockedContent).toHaveBeenCalled();

@@ -8,6 +8,8 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 import { getTitleCase } from '@janus-idp/shared-react';
 
+import { criterias } from '../components/ConditionalAccess/const';
+import { ConditionsData } from '../components/ConditionalAccess/types';
 import {
   PermissionPolicies,
   PluginsPermissionPoliciesData,
@@ -15,9 +17,9 @@ import {
   RoleFormValues,
   SelectedMember,
 } from '../components/CreateRole/types';
-import { MemberEntity } from '../types';
+import { MemberEntity, PermissionsData, RoleBasedConditions } from '../types';
 
-const uniqBy = (arr: string[], iteratee: (arg: string) => any) => {
+export const uniqBy = (arr: string[], iteratee: (arg: string) => any) => {
   return arr.filter(
     (x, i, self) => i === self.findIndex(y => iteratee(x) === iteratee(y)),
   );
@@ -88,13 +90,19 @@ export const getPermissionPolicies = (
   return policies.reduce((ppsAcc: PermissionPolicies, policy) => {
     return {
       ...ppsAcc,
-      [policy.permission as string]: uniqBy(
-        policies.reduce((policiesAcc: any, pol) => {
+      [policy.permission as string]: policies.reduce(
+        (policiesAcc: any, pol) => {
           if (pol.permission === policy.permission)
-            return [...policiesAcc, getTitleCase(pol.policy as string)];
+            return {
+              policies: uniqBy(
+                [...policiesAcc.policies, getTitleCase(pol.policy as string)],
+                val => val,
+              ),
+              isResourced: pol.isResourced,
+            };
           return policiesAcc;
-        }, []),
-        val => val,
+        },
+        { policies: [] },
       ),
     };
   }, {});
@@ -134,10 +142,10 @@ export const getPermissionPoliciesData = (
 
   return permissionPoliciesRows.reduce(
     (acc: RoleBasedPolicy[], permissionPolicyRow) => {
-      const { permission, policies } = permissionPolicyRow;
+      const { permission, policies, conditions } = permissionPolicyRow;
       const permissionPoliciesData = policies.reduce(
         (pAcc: RoleBasedPolicy[], policy) => {
-          if (policy.effect === 'allow') {
+          if (policy.effect === 'allow' && !conditions) {
             return [
               ...pAcc,
               {
@@ -158,6 +166,124 @@ export const getPermissionPoliciesData = (
   );
 };
 
+export const getConditionalPermissionPoliciesData = (
+  values: RoleFormValues,
+) => {
+  const { kind, name, namespace, permissionPoliciesRows } = values;
+
+  return permissionPoliciesRows.reduce(
+    (acc: RoleBasedConditions[], permissionPolicyRow: PermissionsData) => {
+      const { permission, policies, isResourced, plugin, conditions } =
+        permissionPolicyRow;
+      const permissionMapping = policies.reduce((pAcc: string[], policy) => {
+        if (policy.effect === 'allow') {
+          return [...pAcc, policy.policy.toLowerCase()];
+        }
+        return pAcc;
+      }, []);
+      return isResourced && conditions
+        ? [
+            ...acc,
+            {
+              result: 'CONDITIONAL',
+              roleEntityRef: `${kind}:${namespace}/${name}`,
+              pluginId: `${plugin}`,
+              resourceType: `${permission}`,
+              permissionMapping,
+              conditions:
+                Object.keys(conditions)[0] === criterias.condition
+                  ? { ...conditions.condition }
+                  : conditions,
+            } as RoleBasedConditions,
+          ]
+        : acc;
+    },
+    [] as RoleBasedConditions[],
+  );
+};
+
+export const getUpdatedConditionalPolicies = (
+  values: RoleFormValues,
+  initialValues: RoleFormValues,
+) => {
+  const initialConditionsWithId = initialValues.permissionPoliciesRows.filter(
+    ppr => ppr.id,
+  );
+
+  const conditionsWithId = values.permissionPoliciesRows.filter(ppr => ppr.id);
+
+  return conditionsWithId.length > 0
+    ? conditionsWithId.reduce(
+        (
+          acc: { id: number; updateCondition: RoleBasedConditions }[],
+          condition: PermissionsData,
+        ) => {
+          const conditionExists = initialConditionsWithId.find(
+            c => c.id === condition.id,
+          );
+
+          if (conditionExists && condition.id)
+            return [
+              ...acc,
+              {
+                id: condition.id,
+                updateCondition: getConditionalPermissionPoliciesData({
+                  ...values,
+                  permissionPoliciesRows: [condition],
+                })[0],
+              },
+            ];
+          return acc;
+        },
+        [],
+      )
+    : [];
+};
+
+export const getNewConditionalPolicies = (values: RoleFormValues) => {
+  const newValues = { ...values };
+  const newPermissionPolicies = values.permissionPoliciesRows.filter(
+    ppr => !ppr.id,
+  );
+  newValues.permissionPoliciesRows = newPermissionPolicies;
+  return getConditionalPermissionPoliciesData(newValues);
+};
+
+export const getRemovedConditionalPoliciesIds = (
+  values: RoleFormValues,
+  initialValues: RoleFormValues,
+) => {
+  const initialConditionsIds = initialValues.permissionPoliciesRows
+    .map(ppr => ppr.id)
+    .filter(id => id);
+
+  const newConditionsIds = values.permissionPoliciesRows
+    .map(ppr => ppr.id)
+    .filter(id => id);
+
+  return initialConditionsIds.length > 0
+    ? initialConditionsIds.reduce((acc: number[], oldId) => {
+        const conditionExists = newConditionsIds.includes(oldId);
+        if (conditionExists) return acc;
+        return oldId ? [...acc, oldId] : acc;
+      }, [])
+    : [];
+};
+
 export const getPermissionsNumber = (values: RoleFormValues) => {
   return getPermissionPoliciesData(values).length;
+};
+
+export const getConditionsNumber = (values: RoleFormValues) => {
+  return getConditionalPermissionPoliciesData(values)?.length ?? 0;
+};
+
+export const getRulesNumber = (conditions?: ConditionsData) => {
+  if (!conditions) return 0;
+
+  if (conditions.allOf) return conditions.allOf.length;
+
+  if (conditions.anyOf) return conditions.anyOf.length;
+
+  return 1;
 };

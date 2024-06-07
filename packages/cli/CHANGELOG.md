@@ -1,3 +1,44 @@
+## @janus-idp/cli [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.9.0...@janus-idp/cli@1.10.0) (2024-06-05)
+
+
+### Features
+
+* switch defaults of the `--embed-as-dependencies` and `in-place` options. ([#1787](https://github.com/janus-idp/backstage-plugins/issues/1787)) ([049e675](https://github.com/janus-idp/backstage-plugins/commit/049e67502e7b4f9f00c8c6b01d112a27bc09ca9c))
+
+## @janus-idp/cli [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.10...@janus-idp/cli@1.9.0) (2024-06-03)
+
+
+### Features
+
+* add method for janus-cli package metadata (simpler PR) - RHIDP-1502 ([#1753](https://github.com/janus-idp/backstage-plugins/issues/1753)) ([b81a849](https://github.com/janus-idp/backstage-plugins/commit/b81a8499acc4fe9c585dd5179fbca1304c62520c))
+
+## @janus-idp/cli [1.8.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.9...@janus-idp/cli@1.8.10) (2024-05-29)
+
+
+### Bug Fixes
+
+* **cli:** fix entrypoint validation on backstage 1.24.0 and above. ([#1741](https://github.com/janus-idp/backstage-plugins/issues/1741)) ([6ed4171](https://github.com/janus-idp/backstage-plugins/commit/6ed4171dd4953da03be7f083b967f778909a768d))
+
+## @janus-idp/cli [1.8.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.8...@janus-idp/cli@1.8.9) (2024-05-29)
+
+
+### Bug Fixes
+
+* **release:** change problematic plugins to private ([#1738](https://github.com/janus-idp/backstage-plugins/issues/1738)) ([69176bd](https://github.com/janus-idp/backstage-plugins/commit/69176bd75ccd842a313445e096223ecc339b655b))
+
+## @janus-idp/cli [1.8.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.7...@janus-idp/cli@1.8.8) (2024-05-28)
+
+## @janus-idp/cli [1.8.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.6...@janus-idp/cli@1.8.7) (2024-05-16)
+
+## @janus-idp/cli [1.8.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.5...@janus-idp/cli@1.8.6) (2024-05-09)
+
+## @janus-idp/cli [1.8.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.4...@janus-idp/cli@1.8.5) (2024-05-02)
+
+
+### Bug Fixes
+
+* **cli:** completely removing the requirement for `app-config` when exporting fronted plugins to dynamic. ([#1603](https://github.com/janus-idp/backstage-plugins/issues/1603)) ([7fb243a](https://github.com/janus-idp/backstage-plugins/commit/7fb243ad5345a241e1c0a848e17f9936cac8234a))
+
 ## @janus-idp/cli [1.8.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.3...@janus-idp/cli@1.8.4) (2024-05-02)
 
 

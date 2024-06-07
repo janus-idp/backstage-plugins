@@ -1,15 +1,13 @@
 import React, { forwardRef, ForwardRefRenderFunction } from 'react';
 
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from '@mui/icons-material/Close';
+import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
 import { WorkflowEditor } from './WorkflowEditor';
 import {
@@ -25,47 +23,41 @@ export type OrchestratorWorkflowDialogProps = {
   dialogActions?: React.ReactNode;
 } & WorkflowEditorView;
 
-const useStyles = makeStyles(_theme => ({
-  editor: {
-    height: '600px',
-    marginBottom: 20,
-  },
-  closeBtn: {
-    position: 'absolute',
-    right: 8,
-    top: 8,
-  },
-}));
+const EditorBox = styled(Box)({
+  height: '600px',
+  marginBottom: 20,
+});
+
+const CloseButton = styled(IconButton)({
+  position: 'absolute',
+  right: 8,
+  top: 8,
+});
 
 export const RefForwardingWorkflowDialog: ForwardRefRenderFunction<
   WorkflowEditorRef,
   OrchestratorWorkflowDialogProps
 > = (props, forwardedRef): JSX.Element | null => {
   const { workflowId, title, open, close } = props;
-  const classes = useStyles();
 
   return (
     <Dialog fullWidth maxWidth="lg" onClose={_ => close()} open={open}>
       <DialogTitle>
         <Box>
           <Typography variant="h5">{title}</Typography>
-          <IconButton
-            className={classes.closeBtn}
-            aria-label="close"
-            onClick={close}
-          >
+          <CloseButton aria-label="close" onClick={close}>
             <CloseIcon />
-          </IconButton>
+          </CloseButton>
         </Box>
       </DialogTitle>
       <DialogContent>
-        <Box className={classes.editor}>
+        <EditorBox>
           <WorkflowEditor
             {...props}
             workflowId={workflowId}
             ref={forwardedRef}
           />
-        </Box>
+        </EditorBox>
       </DialogContent>
       {props.dialogActions}
     </Dialog>

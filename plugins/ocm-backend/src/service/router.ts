@@ -14,20 +14,37 @@
  * limitations under the License.
  */
 
-import { errorHandler, loggerToWinstonLogger } from '@backstage/backend-common';
+import {
+  createLegacyAuthAdapters,
+  errorHandler,
+  loggerToWinstonLogger,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
+  HttpAuthService,
+  PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { NotAllowedError } from '@backstage/errors';
+import {
+  AuthorizeResult,
+  BasicPermission,
+} from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
 import express from 'express';
 import Router from 'express-promise-router';
+import { Request } from 'express-serve-static-core';
 import { Logger } from 'winston';
 
 import {
   Cluster,
   ClusterOverview,
+  ocmClusterReadPermission,
+  ocmEntityPermissions,
+  ocmEntityReadPermission,
 } from '@janus-idp/backstage-plugin-ocm-common';
 
 import { readOcmConfigs } from '../helpers/config';
@@ -52,11 +69,25 @@ import { ManagedClusterInfo } from '../types';
 export interface RouterOptions {
   logger: Logger;
   config: Config;
+  discovery: PluginEndpointDiscovery;
+  permissions: PermissionsService;
+  httpAuth?: HttpAuthService;
 }
 
-const buildRouter = (config: Config, logger: Logger) => {
+const buildRouter = (
+  config: Config,
+  logger: Logger,
+  httpAuth: HttpAuthService,
+  permissions: PermissionsService,
+) => {
   const router = Router();
+
+  const permissionsIntegrationRouter = createPermissionIntegrationRouter({
+    permissions: ocmEntityPermissions,
+  });
+
   router.use(express.json());
+  router.use(permissionsIntegrationRouter);
 
   const clients = Object.fromEntries(
     readOcmConfigs(config).map(provider => [
@@ -68,43 +99,63 @@ const buildRouter = (config: Config, logger: Logger) => {
     ]),
   );
 
-  router.get(
-    '/status/:providerId/:clusterName',
-    async ({ params: { clusterName, providerId } }, response) => {
-      logger.debug(
-        `Incoming status request for ${clusterName} cluster on ${providerId} hub`,
-      );
+  const authorize = async (request: Request, permission: BasicPermission) => {
+    const decision = (
+      await permissions.authorize([{ permission: permission }], {
+        credentials: await httpAuth.credentials(request),
+      })
+    )[0];
 
-      if (!clients.hasOwnProperty(providerId)) {
-        throw Object.assign(new Error('Hub not found'), {
-          statusCode: 404,
-          name: 'HubNotFound',
-        });
-      }
+    return decision;
+  };
 
-      const normalizedClusterName = translateResourceToOCM(
-        clusterName,
-        clients[providerId].hubResourceName,
-      );
+  router.get('/status/:providerId/:clusterName', async (request, response) => {
+    const decision = await authorize(request, ocmEntityReadPermission);
 
-      const mc = await getManagedCluster(
-        clients[providerId].client,
-        normalizedClusterName,
-      );
-      const mci = await getManagedClusterInfo(
-        clients[providerId].client,
-        normalizedClusterName,
-      );
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
 
-      response.send({
-        name: clusterName,
-        ...parseManagedCluster(mc),
-        ...parseUpdateInfo(mci),
-      } as Cluster);
-    },
-  );
+    const { clusterName, providerId } = request.params;
+    logger.debug(
+      `Incoming status request for ${clusterName} cluster on ${providerId} hub`,
+    );
 
-  router.get('/status', async (_, response) => {
+    if (!clients.hasOwnProperty(providerId)) {
+      throw Object.assign(new Error('Hub not found'), {
+        statusCode: 404,
+        name: 'HubNotFound',
+      });
+    }
+
+    const normalizedClusterName = translateResourceToOCM(
+      clusterName,
+      clients[providerId].hubResourceName,
+    );
+
+    const mc = await getManagedCluster(
+      clients[providerId].client,
+      normalizedClusterName,
+    );
+    const mci = await getManagedClusterInfo(
+      clients[providerId].client,
+      normalizedClusterName,
+    );
+
+    response.send({
+      name: clusterName,
+      ...parseManagedCluster(mc),
+      ...parseUpdateInfo(mci),
+    } as Cluster);
+  });
+
+  router.get('/status', async (request, response) => {
+    const decision = await authorize(request, ocmClusterReadPermission);
+
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
+
     logger.debug(`Incoming status request for all clusters`);
 
     const allClusters = await Promise.all(
@@ -144,8 +195,11 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { logger } = options;
   const { config } = options;
+  const { permissions } = options;
 
-  return buildRouter(config, logger);
+  const { httpAuth } = createLegacyAuthAdapters(options);
+
+  return buildRouter(config, logger, httpAuth, permissions);
 }
 
 export const ocmPlugin = createBackendPlugin({
@@ -156,9 +210,18 @@ export const ocmPlugin = createBackendPlugin({
         logger: coreServices.logger,
         config: coreServices.rootConfig,
         http: coreServices.httpRouter,
+        httpAuth: coreServices.httpAuth,
+        permissions: coreServices.permissions,
       },
-      async init({ config, logger, http }) {
-        http.use(buildRouter(config, loggerToWinstonLogger(logger)));
+      async init({ config, logger, http, httpAuth, permissions }) {
+        http.use(
+          buildRouter(
+            config,
+            loggerToWinstonLogger(logger),
+            httpAuth,
+            permissions,
+          ),
+        );
       },
     });
   },

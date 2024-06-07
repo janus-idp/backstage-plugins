@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { SvgIcon, SvgIconProps } from '@material-ui/core';
+import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
 
 const OrchestratorIcon = (props: SvgIconProps) => (
   <SvgIcon viewBox="0 0 126 166.8" {...props}>

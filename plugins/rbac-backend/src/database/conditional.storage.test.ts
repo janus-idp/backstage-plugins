@@ -249,7 +249,7 @@ describe('DataBaseConditionalStorage', () => {
 
   describe('createCondition', () => {
     it.each(databases.eachSupportedId())(
-      'should successfully create new policy metadata',
+      'should successfully create new conditional policy',
       async databasesId => {
         const { knex, db } = await createDatabase(databasesId);
 
@@ -278,9 +278,7 @@ describe('DataBaseConditionalStorage', () => {
         await expect(async () => {
           await db.createCondition(condition1);
         }).rejects.toThrow(
-          `A condition with resource type 'catalog-entity'` +
-            ` and permission '[{"action":"read","name":"catalog.entity.read"}]'` +
-            ` has already been stored for role 'role:default/test'`,
+          `Found condition with conflicted permission action '["read"]'. Role could have multiple conditions for the same resource type 'catalog-entity', but with different permission action sets.`,
         );
       },
     );
@@ -299,37 +297,158 @@ describe('DataBaseConditionalStorage', () => {
     });
   });
 
-  describe('findUniqueCondition', () => {
+  describe('checkConflictedConditions', () => {
     it.each(databases.eachSupportedId())(
-      'should find condition',
+      'should check conflicted condition',
       async databasesId => {
         const { knex, db } = await createDatabase(databasesId);
         await knex<ConditionalPolicyDecisionDAO>(CONDITIONAL_TABLE).insert(
           conditionDao1,
         );
 
-        const condition = await db.findUniqueCondition(
-          'role:default/test',
-          'catalog-entity',
-          ['catalog.entity.read'],
+        await expect(async () => {
+          await db.checkConflictedConditions(
+            'role:default/test',
+            'catalog-entity',
+            'catalog',
+            ['read'],
+          );
+        }).rejects.toThrow(
+          `Found condition with conflicted permission action '["read"]'. Role could have multiple conditions for the same resource type 'catalog-entity', but with different permission action sets.`,
         );
-
-        expect(condition).toEqual(condition1);
       },
     );
 
     it.each(databases.eachSupportedId())(
-      'should not find condition',
+      'should fail check, when there is condition with one conflicted action "read"',
       async databasesId => {
-        const { db } = await createDatabase(databasesId);
+        const { knex, db } = await createDatabase(databasesId);
+        const conditionDaoWithFewActions = {
+          ...conditionDao1,
+          permissions:
+            '[{"action":"read","name":"catalog.entity.read"}, {"action":"delete","name":"catalog.entity.delete"}]',
+        };
+        await knex<ConditionalPolicyDecisionDAO>(CONDITIONAL_TABLE).insert(
+          conditionDaoWithFewActions,
+        );
 
-        const condition = await db.findUniqueCondition(
+        await expect(async () => {
+          await db.checkConflictedConditions(
+            'role:default/test',
+            'catalog-entity',
+            'catalog',
+            ['read'],
+          );
+        }).rejects.toThrow(
+          `Found condition with conflicted permission action '["read"]'. Role could have multiple conditions for the same resource type 'catalog-entity', but with different permission action sets.`,
+        );
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should fail check, when there is one condition with two conflicted actions "read" and "update"',
+      async databasesId => {
+        const { knex, db } = await createDatabase(databasesId);
+        const conditionDaoWithFewActions = {
+          ...conditionDao1,
+          permissions:
+            '[{"action":"read","name":"catalog.entity.read"}, {"action":"delete","name":"catalog.entity.delete"}, {"action":"update","name":"catalog.entity.update"}]',
+        };
+        await knex<ConditionalPolicyDecisionDAO>(CONDITIONAL_TABLE).insert(
+          conditionDaoWithFewActions,
+        );
+
+        await expect(async () => {
+          await db.checkConflictedConditions(
+            'role:default/test',
+            'catalog-entity',
+            'catalog',
+            ['read', 'update'],
+          );
+        }).rejects.toThrow(
+          `Found condition with conflicted permission action '["read","update"]'. Role could have multiple conditions for the same resource type 'catalog-entity', but with different permission action sets.`,
+        );
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should fail check, when there is condition with three conflicted actions "read", "update", "delete"',
+      async databasesId => {
+        const { knex, db } = await createDatabase(databasesId);
+        const conditionDaoWithFewActions = {
+          ...conditionDao1,
+          permissions:
+            '[{"action":"read","name":"catalog.entity.read"}, {"action":"delete","name":"catalog.entity.delete"}, {"action":"update","name":"catalog.entity.update"}]',
+        };
+        await knex<ConditionalPolicyDecisionDAO>(CONDITIONAL_TABLE).insert(
+          conditionDaoWithFewActions,
+        );
+
+        await expect(async () => {
+          await db.checkConflictedConditions(
+            'role:default/test',
+            'catalog-entity',
+            'catalog',
+            ['read', 'update', 'delete'],
+          );
+        }).rejects.toThrow(
+          `Found condition with conflicted permission action '["read","update","delete"]'. Role could have multiple conditions for the same resource type 'catalog-entity', but with different permission action sets.`,
+        );
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should pass check, when there is one non conflicted condition',
+      async databasesId => {
+        const { knex, db } = await createDatabase(databasesId);
+        const filterConditionsSpy = jest.spyOn(db, 'filterConditions');
+
+        const conditionDaoWithFewActions = {
+          ...conditionDao1,
+          permissions:
+            '[{"action":"read","name":"catalog.entity.read"}, {"action":"update","name":"catalog.entity.update"}]',
+        };
+        await knex<ConditionalPolicyDecisionDAO>(CONDITIONAL_TABLE).insert(
+          conditionDaoWithFewActions,
+        );
+
+        await db.checkConflictedConditions(
           'role:default/test',
           'catalog-entity',
+          'catalog',
+          ['delete'],
+        );
+
+        expect(filterConditionsSpy).toHaveBeenCalledTimes(1);
+        const result = await filterConditionsSpy.mock.results[0].value;
+        expect(result).toEqual([
+          {
+            ...condition1,
+            permissionMapping: [
+              { name: 'catalog.entity.read', action: 'read' },
+              { name: 'catalog.entity.update', action: 'update' },
+            ],
+          },
+        ]);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should pass check, when there are no conditions',
+      async databasesId => {
+        const { db } = await createDatabase(databasesId);
+        const filterConditionsSpy = jest.spyOn(db, 'filterConditions');
+
+        await db.checkConflictedConditions(
+          'role:default/test',
+          'catalog-entity',
+          'catalog',
           ['read'],
         );
 
-        expect(condition).toBeUndefined();
+        expect(filterConditionsSpy).toHaveBeenCalledTimes(1);
+        const result = await filterConditionsSpy.mock.results[0].value;
+        expect(result).toEqual([]);
       },
     );
   });
@@ -393,7 +512,7 @@ describe('DataBaseConditionalStorage', () => {
 
   describe('updateCondition', () => {
     it.each(databases.eachSupportedId())(
-      'should update condition',
+      'should update condition with added new action',
       async databasesId => {
         const { knex, db } = await createDatabase(databasesId);
         await knex<ConditionalPolicyDecisionDAO>(CONDITIONAL_TABLE).insert(
@@ -418,6 +537,36 @@ describe('DataBaseConditionalStorage', () => {
             ...conditionDao1,
             permissions:
               '[{"name":"catalog.entity.read","action":"read"},{"name":"catalog.entity.delete","action":"delete"}]',
+            id: 1,
+          },
+        ]);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should update condition with removed one action',
+      async databasesId => {
+        const { knex, db } = await createDatabase(databasesId);
+        await knex<ConditionalPolicyDecisionDAO>(CONDITIONAL_TABLE).insert({
+          ...conditionDao1,
+          permissions:
+            '[{"action":"read","name":"catalog.entity.read"}, {"action":"delete","name":"catalog.entity.delete"}]',
+        });
+
+        const updateCondition: RoleConditionalPolicyDecision<PermissionInfo> = {
+          ...condition1,
+          permissionMapping: [{ name: 'catalog.entity.read', action: 'read' }],
+        };
+        await db.updateCondition(1, updateCondition);
+
+        const condition = await knex
+          .table(CONDITIONAL_TABLE)
+          .select<ConditionalPolicyDecisionDAO[]>()
+          .where('id', 1);
+        expect(condition).toEqual([
+          {
+            ...conditionDao1,
+            permissions: '[{"name":"catalog.entity.read","action":"read"}]',
             id: 1,
           },
         ]);
@@ -466,8 +615,37 @@ describe('DataBaseConditionalStorage', () => {
         await expect(async () => {
           await db.updateCondition(1, updateCondition);
         }).rejects.toThrow(
-          `Found condition with conflicted permission '{"name":"catalog.entity.delete","action":"delete"}'. Role could have multiple ` +
-            `conditions for the same resource type 'catalog-entity', but with different permission name and action sets.`,
+          `Found condition with conflicted permission action '["delete"]'. Role could have multiple conditions for the same resource type 'catalog-entity', but with different permission action sets.`,
+        );
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should fail to update condition, because found condition with two conflicted actions',
+      async databasesId => {
+        const { knex, db } = await createDatabase(databasesId);
+
+        await knex<ConditionalPolicyDecisionDAO>(CONDITIONAL_TABLE).insert(
+          conditionDao1,
+        );
+        await knex<ConditionalPolicyDecisionDAO>(CONDITIONAL_TABLE).insert({
+          ...conditionDao1,
+          permissions:
+            '[{"name": "catalog.entity.delete", "action": "delete"}, {"name": "catalog.entity.read", "action": "read"}]',
+        });
+
+        const updateCondition: RoleConditionalPolicyDecision<PermissionInfo> = {
+          ...condition1,
+          permissionMapping: [
+            { name: 'catalog.entity.read', action: 'read' },
+            { name: 'catalog.entity.delete', action: 'delete' },
+          ],
+        };
+        await expect(async () => {
+          await db.updateCondition(1, updateCondition);
+        }).rejects.toThrow(
+          `Found condition with conflicted permission action '["read","delete"]'. Role could have multiple ` +
+            `conditions for the same resource type 'catalog-entity', but with different permission action sets.`,
         );
       },
     );

@@ -1,8 +1,9 @@
 import {
+  createLegacyAuthAdapters,
   DatabaseManager,
   PluginEndpointDiscovery,
-  TokenManager,
 } from '@backstage/backend-common';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -13,6 +14,7 @@ import { newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
 import { Logger } from 'winston';
 
+import { DefaultAuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
@@ -24,7 +26,7 @@ import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
-import { PolicesServer } from './policies-rest-api';
+import { PoliciesServer } from './policies-rest-api';
 
 export class PolicyBuilder {
   public static async build(
@@ -34,17 +36,31 @@ export class PolicyBuilder {
       discovery: PluginEndpointDiscovery;
       identity: IdentityApi;
       permissions: PermissionEvaluator;
-      tokenManager: TokenManager;
+      auth?: AuthService;
+      httpAuth?: HttpAuthService;
     },
     pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
   ): Promise<Router> {
+    const isPluginEnabled = env.config.getOptionalBoolean('permission.enabled');
+    if (isPluginEnabled) {
+      env.logger.info('RBAC backend plugin was enabled');
+    } else {
+      env.logger.warn(
+        'RBAC backend plugin was disabled by application config permission.enabled: false',
+      );
+    }
+
     const databaseManager = DatabaseManager.fromConfig(env.config).forPlugin(
       'permission',
     );
 
+    const databaseClient = await databaseManager.getClient();
+
+    const { auth, httpAuth } = createLegacyAuthAdapters(env);
+
     const adapter = await new CasbinDBAdapterFactory(
       env.config,
-      databaseManager,
+      databaseClient,
     ).createAdapter();
 
     const enf = await newEnforcer(newModelFromString(MODEL), adapter);
@@ -55,30 +71,39 @@ export class PolicyBuilder {
     const catalogDBClient = await DatabaseManager.fromConfig(env.config)
       .forPlugin('catalog')
       .getClient();
+
     const rm = new BackstageRoleManager(
       catalogClient,
       env.logger,
-      env.tokenManager,
       catalogDBClient,
+      databaseClient,
       env.config,
+      auth,
     );
     enf.setRoleManager(rm);
     enf.enableAutoBuildRoleLinks(false);
     await enf.buildRoleLinks();
 
     await migrate(databaseManager);
-    const knex = await databaseManager.getClient();
 
-    const conditionStorage = new DataBaseConditionalStorage(knex);
+    const conditionStorage = new DataBaseConditionalStorage(databaseClient);
 
-    const policyMetadataStorage = new DataBasePolicyMetadataStorage(knex);
-    const roleMetadataStorage = new DataBaseRoleMetadataStorage(knex);
+    const policyMetadataStorage = new DataBasePolicyMetadataStorage(
+      databaseClient,
+    );
+    const roleMetadataStorage = new DataBaseRoleMetadataStorage(databaseClient);
     const enforcerDelegate = new EnforcerDelegate(
       enf,
       policyMetadataStorage,
       roleMetadataStorage,
-      knex,
+      databaseClient,
     );
+
+    const defAuditLog = new DefaultAuditLogger({
+      logger: env.logger,
+      authService: auth,
+      httpAuthService: httpAuth,
+    });
 
     const options: RouterOptions = {
       config: env.config,
@@ -87,13 +112,15 @@ export class PolicyBuilder {
       identity: env.identity,
       policy: await RBACPermissionPolicy.build(
         env.logger,
+        defAuditLog,
         env.config,
         conditionStorage,
         enforcerDelegate,
         roleMetadataStorage,
-        policyMetadataStorage,
-        knex,
+        databaseClient,
       ),
+      auth: auth,
+      httpAuth: httpAuth,
     };
 
     const pluginIdsConfig = env.config.getOptionalStringArray(
@@ -109,17 +136,17 @@ export class PolicyBuilder {
       };
     }
 
-    const server = new PolicesServer(
-      env.identity,
+    const server = new PoliciesServer(
       env.permissions,
       options,
       enforcerDelegate,
       env.config,
-      env.logger,
-      env.discovery,
+      httpAuth,
+      auth,
       conditionStorage,
       pluginIdProvider,
       roleMetadataStorage,
+      defAuditLog,
     );
     return server.serve();
   }

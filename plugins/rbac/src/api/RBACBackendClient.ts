@@ -5,12 +5,19 @@ import {
 } from '@backstage/core-plugin-api';
 
 import {
+  PermissionAction,
   PermissionPolicy,
   Role,
   RoleBasedPolicy,
+  RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
-import { MemberEntity, RoleError } from '../types';
+import {
+  MemberEntity,
+  PluginConditionRules,
+  RoleBasedConditions,
+  RoleError,
+} from '../types';
 import { getKindNamespaceName } from '../utils/rbac-utils';
 
 // @public
@@ -37,7 +44,20 @@ export type RBACAPI = {
     entityReference: string,
     polices: RoleBasedPolicy[],
   ) => Promise<RoleError | Response>;
-  getPluginsConditionRules: () => Promise<any | Response>;
+  getPluginsConditionRules: () => Promise<PluginConditionRules[] | Response>;
+  createConditionalPermission: (
+    conditionalPermission: RoleBasedConditions,
+  ) => Promise<RoleError | Response>;
+  getRoleConditions: (
+    roleRef: string,
+  ) => Promise<RoleConditionalPolicyDecision<PermissionAction>[] | Response>;
+  updateConditionalPolicies: (
+    conditionId: number,
+    data: RoleBasedConditions,
+  ) => Promise<RoleError | Response>;
+  deleteConditionalPolicies: (
+    conditionId: number,
+  ) => Promise<RoleError | Response>;
 };
 
 export type Options = {
@@ -330,5 +350,95 @@ export class RBACBackendClient implements RBACAPI {
       return jsonResponse;
     }
     return jsonResponse.json();
+  }
+
+  async createConditionalPermission(
+    conditionalPermission: RoleBasedConditions,
+  ) {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const jsonResponse = await fetch(
+      `${backendUrl}/api/permission/roles/conditions`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+        },
+        body: JSON.stringify(conditionalPermission),
+      },
+    );
+    if (jsonResponse.status !== 200 && jsonResponse.status !== 201) {
+      return jsonResponse.json();
+    }
+    return jsonResponse;
+  }
+
+  async getRoleConditions(roleRef: string) {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const jsonResponse = await fetch(
+      `${backendUrl}/api/permission/roles/conditions?roleEntityRef=${roleRef}`,
+      {
+        headers: {
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    if (jsonResponse.status !== 200) {
+      return jsonResponse;
+    }
+    return jsonResponse.json();
+  }
+
+  async updateConditionalPolicies(
+    conditionId: number,
+    data: RoleBasedConditions,
+  ) {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const jsonResponse = await fetch(
+      `${backendUrl}/api/permission/roles/conditions/${conditionId}}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+        },
+        body: JSON.stringify(data),
+      },
+    );
+    if (jsonResponse.status !== 200 && jsonResponse.status !== 201) {
+      return jsonResponse.json();
+    }
+    return jsonResponse;
+  }
+
+  async deleteConditionalPolicies(conditionId: number) {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const jsonResponse = await fetch(
+      `${backendUrl}/api/permission/roles/conditions/${conditionId}`,
+      {
+        headers: {
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        method: 'DELETE',
+      },
+    );
+
+    if (
+      jsonResponse.status !== 200 &&
+      jsonResponse.status !== 201 &&
+      jsonResponse.status !== 204
+    ) {
+      return jsonResponse.json();
+    }
+    return jsonResponse;
   }
 }

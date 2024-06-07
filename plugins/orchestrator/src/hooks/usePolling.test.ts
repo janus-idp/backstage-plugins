@@ -1,4 +1,6 @@
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { act } from 'react';
+
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { SHORT_REFRESH_INTERVAL } from '../constants';
 import usePolling from './usePolling';
@@ -8,6 +10,7 @@ const ACTIVE1 = 'active1';
 const ABORTED = 'aborted';
 const COMPLETED = 'completed';
 
+// eslint-disable-next-line jest/no-disabled-tests
 describe('usePolling', () => {
   beforeAll(() => {
     jest.useFakeTimers();

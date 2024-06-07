@@ -7,12 +7,19 @@ import {
   ValueKeyIteratee,
 } from 'lodash';
 
+import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
   PermissionAction,
   RoleBasedPolicy,
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
+import {
+  HANDLE_RBAC_DATA_STAGE,
+  RBAC_BACKEND,
+  RoleAuditInfo,
+  RoleEvents,
+} from './audit-log/audit-logger';
 import { EnforcerDelegate } from './service/enforcer-delegate';
 
 export function policyToString(policy: string[]): string {
@@ -36,20 +43,48 @@ export async function removeTheDifference(
   source: Source,
   roleEntityRef: string,
   enf: EnforcerDelegate,
+  auditLogger: AuditLogger,
   modifiedBy: string,
 ): Promise<void> {
   originalGroup.sort((a, b) => a.localeCompare(b));
   addedGroup.sort((a, b) => a.localeCompare(b));
   const missing = difference(originalGroup, addedGroup);
 
+  const groupPolicies: string[][] = [];
   for (const missingRole of missing) {
-    const role = [missingRole, roleEntityRef];
-    await enf.removeGroupingPolicy(
-      role,
-      { source, modifiedBy, roleEntityRef },
-      false,
-    );
+    groupPolicies.push([missingRole, roleEntityRef]);
   }
+
+  if (groupPolicies.length === 0) {
+    return;
+  }
+
+  const roleMetadata = { source, modifiedBy, roleEntityRef };
+  await enf.removeGroupingPolicies(groupPolicies, roleMetadata, false);
+
+  const remainingMembers = await enf.getFilteredGroupingPolicy(
+    1,
+    roleEntityRef,
+  );
+  const message =
+    remainingMembers.length > 0
+      ? 'Updated role: deleted members'
+      : 'Deleted role';
+  const eventName =
+    remainingMembers.length > 0
+      ? RoleEvents.UPDATE_ROLE
+      : RoleEvents.DELETE_ROLE;
+  await auditLogger.auditLog<RoleAuditInfo>({
+    actorId: RBAC_BACKEND,
+    message,
+    eventName,
+    metadata: {
+      ...roleMetadata,
+      members: groupPolicies.map(gp => gp[0]),
+    },
+    stage: HANDLE_RBAC_DATA_STAGE,
+    status: 'succeeded',
+  });
 }
 
 export function transformArrayToPolicy(policyArray: string[]): RoleBasedPolicy {

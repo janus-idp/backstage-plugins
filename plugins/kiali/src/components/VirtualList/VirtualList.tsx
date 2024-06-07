@@ -18,7 +18,7 @@ import { kialiStyle } from '../../styles/StyleUtils';
 import { Namespace } from '../../types/Namespace';
 import { NamespaceInfo } from '../../types/NamespaceInfo';
 import { SortField } from '../../types/SortFilters';
-import { ENTITY } from '../../types/types';
+import { DRAWER, ENTITY } from '../../types/types';
 import { StatefulFiltersProps } from '../Filters/StatefulFilters';
 import { config, RenderResource, Resource, ResourceType } from './Config';
 import { VirtualItem } from './VirtualItem';
@@ -156,7 +156,7 @@ export const VirtualList = <R extends RenderResource>(
                     key={`column_${index}`}
                     align="center"
                     style={
-                      listProps.view === ENTITY
+                      listProps.view === ENTITY || listProps.view === DRAWER
                         ? tableEntityHeaderStyle
                         : tableHeaderStyle
                     }
@@ -176,8 +176,9 @@ export const VirtualList = <R extends RenderResource>(
                         handleRequestSort(e, column.title.toLowerCase())
                       }
                     >
-                      {listProps.view === ENTITY &&
-                      column.title === 'Configuration'
+                      {listProps.view === ENTITY ||
+                      (listProps.view === DRAWER &&
+                        column.title === 'Configuration')
                         ? 'CONFIG'
                         : column.title.toUpperCase()}
                     </TableSortLabel>

@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { ConfigReader } from '@backstage/config';
 import {
   BackstageUserIdentity,
   configApiRef,
@@ -11,7 +10,11 @@ import {
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import {
+  MockConfigApi,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 
 import { FeedbackAPI, feedbackApiRef } from '../../api';
 import { mockEntity, mockFeedback } from '../../mocks';
@@ -41,7 +44,7 @@ describe('Entity Feedback Page', () => {
       }),
   };
 
-  const mockConfigApi = new ConfigReader({
+  const mockConfigApi = new MockConfigApi({
     feedback: { integrations: { jira: [{ host: 'https://jira-server-url' }] } },
   });
 
@@ -73,7 +76,9 @@ describe('Entity Feedback Page', () => {
   it('Should have buttons', async () => {
     const rendered = await render();
     expect(
-      rendered.getByRole('button', { name: 'Create' }),
+      rendered.getByRole('button', {
+        name: 'Give a feedback / Report a issue',
+      }),
     ).toBeInTheDocument();
     expect(
       rendered.getByRole('button', { name: 'Refresh' }),

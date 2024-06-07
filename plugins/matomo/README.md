@@ -9,7 +9,7 @@ The matomo plugin shows the basic analytics from [Matomo](https://matomo.org/)
 1. Install the plugin
 
 ```bash
-yarn add @janus-idp/plugin-matomo
+yarn workspace app add @janus-idp/backstage-plugin-matomo
 ```
 
 2. Make sure the [Matomo backend plugin](../matomo-backend/README.md) is installed and configured

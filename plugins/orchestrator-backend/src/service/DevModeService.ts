@@ -126,6 +126,8 @@ export class DevModeService {
 
     const launcherArgs = [
       'run',
+      '--name',
+      'backstage-internal-sonataflow',
       '--add-host',
       'host.docker.internal:host-gateway',
     ];
@@ -134,14 +136,13 @@ export class DevModeService {
       launcherArgs.push(`--add-host`, `jira.test:${this.connection.jira.host}`);
     }
 
-    launcherArgs.push('--rm');
     launcherArgs.push('-e', `QUARKUS_HTTP_PORT=${this.connection.port}`);
 
     launcherArgs.push('-p', `${this.connection.port}:${this.connection.port}`);
     launcherArgs.push('-e', `KOGITO_SERVICE_URL=${this.devModeUrl}`);
     launcherArgs.push(
       '-v',
-      `${resourcesAbsPath}:${SONATA_FLOW_RESOURCES_PATH}`,
+      `${resourcesAbsPath}:${SONATA_FLOW_RESOURCES_PATH}:Z`,
     );
     launcherArgs.push('-e', 'KOGITO.CODEGEN.PROCESS.FAILONERROR=false');
     launcherArgs.push(

@@ -91,7 +91,8 @@ export const mockConditionRules = [
           properties: {
             kinds: {
               type: 'array',
-              items: { type: 'string' },
+              items: { type: 'string' }, // TODO: should be enum?
+              minItems: 1,
               description: 'List of kinds to match at least one of',
             },
           },
@@ -110,6 +111,7 @@ export const mockConditionRules = [
             claims: {
               type: 'array',
               items: { type: 'string' },
+              minItems: 1,
               description:
                 'List of claims to match at least one on within ownedBy',
             },

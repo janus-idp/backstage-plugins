@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Progress } from '@backstage/core-components';
 import {
+  alertApiRef,
   configApiRef,
   identityApiRef,
   useAnalytics,
@@ -9,42 +10,41 @@ import {
 } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-import {
-  ButtonGroup,
-  CircularProgress,
-  createStyles,
-  Dialog,
-  makeStyles,
-  Snackbar,
-  Theme,
-  Tooltip,
-  Zoom,
-} from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Add from '@material-ui/icons/Add';
-import ArrowForwardRounded from '@material-ui/icons/ArrowForwardRounded';
-import Sync from '@material-ui/icons/Sync';
-import { Alert } from '@material-ui/lab';
+import Add from '@mui/icons-material/Add';
+import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded';
+import Sync from '@mui/icons-material/Sync';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import Grid from '@mui/material/Grid';
+import { styled, Theme } from '@mui/material/styles';
+import Tooltip from '@mui/material/Tooltip';
+import Zoom from '@mui/material/Zoom';
 
 import { CreateFeedbackModal } from '../CreateFeedbackModal/CreateFeedbackModal';
 import { FeedbackDetailsModal } from '../FeedbackDetailsModal';
 import { FeedbackTable } from '../FeedbackTable';
 import { CustomEmptyState } from './CustomEmptyState';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    buttonGroup: {
-      textAlign: 'center',
-      whiteSpace: 'nowrap',
-      marginTop: theme.spacing(1),
-    },
-  }),
-);
+const PREFIX = 'EntityFeedbackPage';
+
+const classes = {
+  buttonGroup: `${PREFIX}-buttonGroup`,
+};
+
+const StyledGrid = styled(Grid)(({ theme }: { theme: Theme }) => ({
+  [`& .${classes.buttonGroup}`]: {
+    textAlign: 'center',
+    whiteSpace: 'nowrap',
+    marginTop: theme.spacing(1),
+  },
+}));
 
 export const EntityFeedbackPage = () => {
   const config = useApi(configApiRef);
-  const classes = useStyles();
+  const alertApi = useApi(alertApiRef);
+
   const { entity } = useEntity();
   const user = useApi(identityApiRef);
   const analytics = useAnalytics();
@@ -56,19 +56,11 @@ export const EntityFeedbackPage = () => {
   }>();
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState<{
-    message: string;
-    open: boolean;
-    severity: 'success' | 'error';
-  }>({
-    message: '',
-    open: false,
-    severity: 'success',
-  });
+
   const [reload, setReload] = useState(false);
   useEffect(() => {
     setReload(false);
-  }, [snackbarOpen, reload]);
+  }, [reload]);
 
   const projectEntity =
     `${entity.kind}:${entity.metadata.namespace}/${entity.metadata.name}`.toLowerCase();
@@ -102,30 +94,19 @@ export const EntityFeedbackPage = () => {
     if (respObj) {
       setReload(true);
       if (respObj.error) {
-        setSnackbarOpen({
+        alertApi.post({
           message: respObj.error,
           severity: 'error',
-          open: true,
+          display: 'transient',
         });
       } else if (respObj.message) {
-        setSnackbarOpen({
+        alertApi.post({
           message: respObj.message,
           severity: 'success',
-          open: true,
+          display: 'transient',
         });
       }
     }
-  };
-
-  const handleSnackbarClose = (
-    event?: React.SyntheticEvent,
-    reason?: string,
-  ) => {
-    event?.preventDefault();
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSnackbarOpen({ ...snackbarOpen, open: false });
   };
 
   const handleResyncClick = () => {
@@ -133,10 +114,10 @@ export const EntityFeedbackPage = () => {
     setReload(true);
   };
 
-  return pluginConfig.feedbackEmailTo === undefined ? (
+  return pluginConfig.feedbackType === undefined ? (
     <CustomEmptyState {...pluginConfig} />
   ) : (
-    <Grid container justifyContent="flex-end">
+    <StyledGrid container justifyContent="flex-end">
       <FeedbackDetailsModal />
       <Grid item>
         <ButtonGroup
@@ -149,8 +130,12 @@ export const EntityFeedbackPage = () => {
             arrow
             TransitionComponent={Zoom}
           >
-            <Button startIcon={<Add />} onClick={handleModalOpen}>
-              Create
+            <Button
+              startIcon={<Add />}
+              variant="contained"
+              onClick={handleModalOpen}
+            >
+              Submit Feedback
             </Button>
           </Tooltip>
           {pluginConfig.feedbackType === 'JIRA' ? (
@@ -192,15 +177,6 @@ export const EntityFeedbackPage = () => {
       <Grid item xs={12}>
         {reload ? <Progress /> : <FeedbackTable projectId={projectEntity} />}
       </Grid>
-      <Snackbar
-        open={snackbarOpen?.open}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-      >
-        <Alert severity={snackbarOpen.severity} onClose={handleSnackbarClose}>
-          {snackbarOpen?.message}
-        </Alert>
-      </Snackbar>
-    </Grid>
+    </StyledGrid>
   );
 };

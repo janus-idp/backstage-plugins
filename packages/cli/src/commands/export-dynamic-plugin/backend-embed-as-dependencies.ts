@@ -202,9 +202,8 @@ export async function backend(opts: OptionValues): Promise<string> {
 
   const embeddedDependenciesResolutions: { [key: string]: any } = {};
   embeddedResolvedPackages.map(ep => {
-    embeddedDependenciesResolutions[
-      ep.packageName
-    ] = `file:./${embeddedPackageRelativePath(ep)}`;
+    embeddedDependenciesResolutions[ep.packageName] =
+      `file:./${embeddedPackageRelativePath(ep)}`;
   });
 
   if (opts.build) {
@@ -797,21 +796,41 @@ function validatePluginEntryPoints(target: string): string {
     Task.log(
       `  adding typescript extension support to enable entry point validation`,
     );
-    let tsNode: string | undefined;
+
+    let nodeTransform: string | undefined;
     try {
-      tsNode = dynamicPluginRequire.resolve('ts-node');
+      nodeTransform = dynamicPluginRequire.resolve(
+        '@backstage/cli/config/nodeTransform.cjs',
+      );
     } catch (e) {
-      Task.log(`    => unable to find 'ts-node' in the plugin context`);
+      Task.log(
+        `    => unable to find '@backstage/cli/config/nodeTransform.cjs' in the plugin context`,
+      );
     }
 
-    if (tsNode) {
-      dynamicPluginRequire(tsNode).register({
-        transpileOnly: true,
-        project: path.resolve(paths.targetRoot, 'tsconfig.json'),
-        compilerOptions: {
-          module: 'CommonJS',
-        },
-      });
+    if (nodeTransform) {
+      dynamicPluginRequire(nodeTransform);
+    } else {
+      Task.log(
+        `    => searching for 'ts-node' (legacy mode before backage 1.24.0)`,
+      );
+
+      let tsNode: string | undefined;
+      try {
+        tsNode = dynamicPluginRequire.resolve('ts-node');
+      } catch (e) {
+        Task.log(`    => unable to find 'ts-node' in the plugin context`);
+      }
+
+      if (tsNode) {
+        dynamicPluginRequire(tsNode).register({
+          transpileOnly: true,
+          project: path.resolve(paths.targetRoot, 'tsconfig.json'),
+          compilerOptions: {
+            module: 'CommonJS',
+          },
+        });
+      }
     }
 
     // Retry requiring the plugin main module after adding typescript extensions

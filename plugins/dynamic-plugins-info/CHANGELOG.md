@@ -1,3 +1,22 @@
+## @janus-idp/backstage-plugin-dynamic-plugins-info [1.2.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.4...@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.5) (2024-06-04)
+
+## @janus-idp/backstage-plugin-dynamic-plugins-info [1.2.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.3...@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.4) (2024-05-31)
+
+## @janus-idp/backstage-plugin-dynamic-plugins-info [1.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.2...@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.3) (2024-05-29)
+
+## @janus-idp/backstage-plugin-dynamic-plugins-info [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.1...@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.2) (2024-05-16)
+
+## @janus-idp/backstage-plugin-dynamic-plugins-info [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.0...@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.1) (2024-05-16)
+
+## @janus-idp/backstage-plugin-dynamic-plugins-info [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.1.1...@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.0) (2024-05-14)
+
+
+### Features
+
+* **deps:** use RHDH themes in the backstage app and dev pages ([#1480](https://github.com/janus-idp/backstage-plugins/issues/1480)) ([8263bf0](https://github.com/janus-idp/backstage-plugins/commit/8263bf099736cbb0d0f2316082d338ba81fa6927))
+
+## @janus-idp/backstage-plugin-dynamic-plugins-info [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.1.0...@janus-idp/backstage-plugin-dynamic-plugins-info@1.1.1) (2024-05-09)
+
 ## @janus-idp/backstage-plugin-dynamic-plugins-info [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.0.4...@janus-idp/backstage-plugin-dynamic-plugins-info@1.1.0) (2024-04-15)
 
 

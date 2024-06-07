@@ -41,7 +41,8 @@ export const rbacPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         identity: coreServices.identity,
         permissions: coreServices.permissions,
-        tokenManager: coreServices.tokenManager,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
       },
       async init({
         http,
@@ -50,7 +51,8 @@ export const rbacPlugin = createBackendPlugin({
         discovery,
         identity,
         permissions,
-        tokenManager,
+        auth,
+        httpAuth,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
 
@@ -62,7 +64,8 @@ export const rbacPlugin = createBackendPlugin({
               discovery,
               identity,
               permissions,
-              tokenManager,
+              auth,
+              httpAuth,
             },
             {
               getPluginIds: () =>

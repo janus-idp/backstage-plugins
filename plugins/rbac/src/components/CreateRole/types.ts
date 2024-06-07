@@ -25,7 +25,9 @@ export type RoleFormValues = {
   permissionPoliciesRows: PermissionsData[];
 };
 
-export type PermissionPolicies = { [permission: string]: string[] };
+export type PermissionPolicies = {
+  [permission: string]: { policies: string[]; isResourced: boolean };
+};
 
 export type PluginsPermissions = {
   [plugin: string]: {

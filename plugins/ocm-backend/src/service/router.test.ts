@@ -1,4 +1,5 @@
 import { ConfigReader } from '@backstage/config';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import express from 'express';
 import { setupServer } from 'msw/node';
@@ -26,11 +27,33 @@ const logger = createLogger({
   transports: [new transports.Console({ silent: true })],
 });
 
+const mockedAuthorize = jest.fn().mockImplementation(async () => [
+  {
+    result: AuthorizeResult.ALLOW,
+  },
+]);
+
+const mockedAuthorizeConditional = jest.fn().mockImplementation(async () => [
+  {
+    result: AuthorizeResult.ALLOW,
+  },
+]);
+
+const mockPermissionEvaluator = {
+  authorize: mockedAuthorize,
+  authorizeConditional: mockedAuthorizeConditional,
+};
+
+const mockDiscovery = {
+  getBaseUrl: jest.fn(),
+  getExternalBaseUrl: jest.fn(),
+};
+
 describe('createRouter', () => {
   let app: express.Express;
 
   beforeAll(async () => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     const router = await createRouter({
       logger: logger,
       config: new ConfigReader({
@@ -46,11 +69,28 @@ describe('createRouter', () => {
           },
         },
       }),
+      permissions: mockPermissionEvaluator,
+      discovery: mockDiscovery,
     });
     app = express().use(router);
   });
 
   describe('GET /status', () => {
+    it('should deny access when getting all clusters', async () => {
+      mockedAuthorize.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      const result = await request(app).get('/status');
+
+      expect(mockedAuthorize).toHaveBeenCalled();
+
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: 'Unauthorized',
+      });
+    });
     it('should get all clusters', async () => {
       const result = await request(app).get('/status');
 
@@ -177,6 +217,21 @@ describe('createRouter', () => {
   });
 
   describe('GET /status/:hubName/:clusterName', () => {
+    it('should deny access when getting all clusters', async () => {
+      mockedAuthorize.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      const result = await request(app).get('/status/foo/cluster1');
+
+      expect(mockedAuthorize).toHaveBeenCalled();
+
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: 'Unauthorized',
+      });
+    });
     it('should correctly parse a cluster', async () => {
       const result = await request(app).get('/status/foo/cluster1');
 

@@ -1,5 +1,3 @@
-import React, { PropsWithChildren } from 'react';
-
 import {
   Link,
   Sidebar,
@@ -12,22 +10,26 @@ import {
   SidebarSpace,
   useSidebarOpenState,
 } from '@backstage/core-components';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { SidebarSearchModal } from '@backstage/plugin-search';
+import {
+  Settings as SidebarSettings,
+  UserSettingsSignInAvatar,
+} from '@backstage/plugin-user-settings';
 
-import { makeStyles } from '@material-ui/core';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import HomeIcon from '@material-ui/icons/Home';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
-import MenuIcon from '@material-ui/icons/Menu';
-import MapIcon from '@material-ui/icons/MyLocation';
-import SearchIcon from '@material-ui/icons/Search';
-import { ScalprumComponent } from '@scalprum/react-core';
+import CreateComponentIcon from '@mui/icons-material/AddCircleOutline';
+import ExtensionIcon from '@mui/icons-material/Extension';
+import HomeIcon from '@mui/icons-material/Home';
+import LibraryBooks from '@mui/icons-material/LibraryBooks';
+import MenuIcon from '@mui/icons-material/Menu';
+import MapIcon from '@mui/icons-material/MyLocation';
+import SearchIcon from '@mui/icons-material/Search';
+import { makeStyles } from 'tss-react/mui';
 
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
 
-const useSidebarLogoStyles = makeStyles({
+const useSidebarLogoStyles = makeStyles()({
   root: {
     width: sidebarConfig.drawerWidthClosed,
     height: 3 * sidebarConfig.logoHeight,
@@ -43,7 +45,7 @@ const useSidebarLogoStyles = makeStyles({
 });
 
 const SidebarLogo = () => {
-  const classes = useSidebarLogoStyles();
+  const { classes } = useSidebarLogoStyles();
   const { isOpen } = useSidebarOpenState();
 
   return (
@@ -55,7 +57,9 @@ const SidebarLogo = () => {
   );
 };
 
-export const Root = ({ children }: PropsWithChildren<{}>) => (
+export const Root = ({
+  children,
+}: React.PropsWithChildren): React.JSX.Element => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
@@ -65,35 +69,44 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarDivider />
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
         {/* Global nav, not org-specific */}
-        <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
-        <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
-        <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
-        <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+        <SidebarItem
+          icon={HomeIcon as IconComponent}
+          to="catalog"
+          text="Home"
+        />
+        <SidebarItem
+          icon={ExtensionIcon as IconComponent}
+          to="api-docs"
+          text="APIs"
+        />
+        <SidebarItem
+          icon={LibraryBooks as IconComponent}
+          to="docs"
+          text="Docs"
+        />
+        <SidebarItem
+          icon={CreateComponentIcon as IconComponent}
+          to="create"
+          text="Create..."
+        />
         {/* End global nav */}
         <SidebarDivider />
         <SidebarScrollWrapper>
-          <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+          <SidebarItem
+            icon={MapIcon as IconComponent}
+            to="tech-radar"
+            text="Tech Radar"
+          />
         </SidebarScrollWrapper>
       </SidebarGroup>
-      <SidebarDivider />
       <SidebarSpace />
       <SidebarDivider />
       <SidebarGroup
         label="Settings"
-        icon={
-          <ScalprumComponent
-            scope="janus.dynamic-frontend-plugin"
-            module="UserSettings"
-            importName="UserSettingsSignInAvatar"
-          />
-        }
+        icon={<UserSettingsSignInAvatar />}
         to="/settings"
       >
-        <ScalprumComponent
-          scope="janus.dynamic-frontend-plugin"
-          module="UserSettings"
-          importName="Settings"
-        />
+        <SidebarSettings />
       </SidebarGroup>
     </Sidebar>
     {children}

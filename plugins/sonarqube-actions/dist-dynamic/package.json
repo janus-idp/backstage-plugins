@@ -1,7 +1,7 @@
 {
   "name": "@janus-idp/backstage-scaffolder-backend-module-sonarqube-dynamic",
   "description": "The sonarqube module for @backstage/plugin-scaffolder-backend",
-  "version": "1.4.4",
+  "version": "1.4.12",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
@@ -11,7 +11,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "supported-versions": "1.26.5"
   },
   "exports": {
     ".": {
@@ -33,11 +34,26 @@
     "dist",
     "alpha"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/sonarqube-actions"
+  },
+  "maintainers": [
+    "@janus-idp/maintainers-plugins"
+  ],
+  "author": "Red Hat",
+  "homepage": "https://red.ht/rhdh",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "keywords": [
+    "support:tech-preview",
+    "lifecycle:active"
+  ],
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-dynamic-feature-service": "^0.2.8",
-    "@backstage/backend-plugin-api": "^0.6.16",
-    "@backstage/plugin-scaffolder-node": "^0.4.2"
+    "@backstage/backend-dynamic-feature-service": "^0.2.9",
+    "@backstage/backend-plugin-api": "^0.6.17",
+    "@backstage/plugin-scaffolder-node": "^0.4.3"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {

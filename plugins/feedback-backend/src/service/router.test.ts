@@ -1,12 +1,13 @@
-import { HostDiscovery } from '@backstage/backend-common';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { getRootLogger, HostDiscovery } from '@backstage/backend-common';
+import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { Config, ConfigReader } from '@backstage/config';
 
 import express from 'express';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
-import { createLogger, Logger, transports } from 'winston';
+import { Logger } from 'winston';
 
 import {
   mockConfig,
@@ -67,9 +68,8 @@ describe('Router', () => {
   mswMockServer.listen({ onUnhandledRequest: 'bypass' });
   const config: Config = new ConfigReader(mockConfig);
   const discovery: DiscoveryService = HostDiscovery.fromConfig(config);
-  const logger: Logger = createLogger({
-    transports: [new transports.Console({ silent: true })],
-  });
+  const logger: Logger = getRootLogger().child({ service: 'feedback-backend' });
+  const auth: AuthService = mockServices.auth();
   let app: express.Express;
 
   beforeAll(async () => {
@@ -77,6 +77,7 @@ describe('Router', () => {
       logger: logger,
       config: config,
       discovery: discovery,
+      auth: auth,
     });
     app = express().use(router);
   });

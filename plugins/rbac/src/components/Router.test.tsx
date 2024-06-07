@@ -7,6 +7,15 @@ import { render, screen } from '@testing-library/react';
 
 import { Router } from './Router';
 
+const configMock = {
+  getOptionalBoolean: jest.fn(() => true),
+};
+
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
+  useApi: jest.fn(() => configMock),
+}));
+
 jest.mock('./RbacPage', () => ({
   RbacPage: () => <div>RBAC</div>,
 }));
@@ -21,6 +30,10 @@ jest.mock('./CreateRole/CreateRolePage', () => ({
 
 jest.mock('./CreateRole/EditRolePage', () => ({
   EditRolePage: () => <div>EditRole</div>,
+}));
+
+jest.mock('@backstage/core-components', () => ({
+  ErrorPage: jest.fn().mockImplementation(() => <div>Mocked ErrorPage</div>),
 }));
 
 jest.mock('@backstage/plugin-permission-react', () => ({
@@ -48,6 +61,27 @@ describe('Router component', () => {
     expect(screen.queryByText('RBAC')).toBeInTheDocument();
   });
 
+  it(`should not render RbacPage when path is "/", when plugin is disabled`, () => {
+    configMock.getOptionalBoolean.mockReturnValueOnce(false);
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Router />
+      </MemoryRouter>,
+    );
+    expect(screen.queryByText('RBAC')).not.toBeInTheDocument();
+  });
+
+  it('should render ErrorPage when rbac-backend plugin is disabled', () => {
+    configMock.getOptionalBoolean.mockReturnValueOnce(false);
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Router />
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByText('Mocked ErrorPage')).toBeInTheDocument();
+  });
+
   it('renders RoleOverviewPage when path matches roleRouteRef', () => {
     render(
       <MemoryRouter initialEntries={['/roles/user/testns/testname']}>
@@ -56,6 +90,17 @@ describe('Router component', () => {
     );
 
     expect(screen.queryByText('Role')).toBeInTheDocument();
+  });
+
+  it('should not render RoleOverviewPage when path matches roleRouteRef, when plugin is disabled', () => {
+    configMock.getOptionalBoolean.mockReturnValueOnce(false);
+    render(
+      <MemoryRouter initialEntries={['/roles/user/testns/testname']}>
+        <Router />
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByText('Role')).not.toBeInTheDocument();
   });
 
   it('renders CreateRolePage with the right permissions when path matches createRoleRouteRef', () => {
@@ -74,6 +119,17 @@ describe('Router component', () => {
     expect(screen.queryByText('CreateRole')).toBeInTheDocument();
   });
 
+  it('should not render CreateRolePage with the right permissions when path matches createRoleRouteRef, when plugin is disabled', () => {
+    configMock.getOptionalBoolean.mockReturnValueOnce(false);
+    render(
+      <MemoryRouter initialEntries={['/role/new']}>
+        <Router />
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByText('CreateRole')).not.toBeInTheDocument();
+  });
+
   it('renders EditRolePage with the right permissions when path matches editRoleRouteRef', () => {
     render(
       <MemoryRouter initialEntries={['/role/user/testns/testname']}>
@@ -89,5 +145,16 @@ describe('Router component', () => {
       expect.anything(),
     );
     expect(screen.queryByText('EditRole')).toBeInTheDocument();
+  });
+
+  it('should not render EditRolePage with the right permissions when path matches editRoleRouteRef, when plugin is disabled', () => {
+    configMock.getOptionalBoolean.mockReturnValueOnce(false);
+    render(
+      <MemoryRouter initialEntries={['/role/user/testns/testname']}>
+        <Router />
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByText('EditRole')).not.toBeInTheDocument();
   });
 });

@@ -24,6 +24,7 @@ const useStyles = makeStyles(theme => ({
 
 type PermissionsCardProps = {
   entityReference: string;
+  canReadUsersAndGroups: boolean;
 };
 
 const getRefreshIcon = () => <CachedIcon />;
@@ -40,7 +41,10 @@ const getEditIcon = (isAllowed: boolean, roleName: string) => {
   );
 };
 
-export const PermissionsCard = ({ entityReference }: PermissionsCardProps) => {
+export const PermissionsCard = ({
+  entityReference,
+  canReadUsersAndGroups,
+}: PermissionsCardProps) => {
   const { data, loading, retry, error } =
     usePermissionPolicies(entityReference);
   const [permissions, setPermissions] = React.useState<PermissionsData[]>();
@@ -71,8 +75,15 @@ export const PermissionsCard = ({ entityReference }: PermissionsCardProps) => {
       },
     },
     {
-      icon: () => getEditIcon(permissionResult.allowed, entityReference),
-      tooltip: !permissionResult.allowed ? 'Unauthorized to edit' : 'Edit',
+      icon: () =>
+        getEditIcon(
+          permissionResult.allowed && canReadUsersAndGroups,
+          entityReference,
+        ),
+      tooltip:
+        permissionResult.allowed && canReadUsersAndGroups
+          ? 'Edit'
+          : 'Unauthorized to edit',
       isFreeAction: true,
       onClick: () => {},
     },
@@ -81,7 +92,7 @@ export const PermissionsCard = ({ entityReference }: PermissionsCardProps) => {
   return (
     <Card>
       <CardContent>
-        {error?.name && (
+        {error?.name && error.name !== 404 && (
           <div style={{ paddingBottom: '16px' }}>
             <WarningPanel
               message={error?.message}

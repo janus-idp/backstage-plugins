@@ -36,6 +36,8 @@ yarn workspace backend add @janus-idp/backstage-plugin-rbac-backend
 
 ### Configuring the Backend
 
+#### Old Backend System
+
 To connect the RBAC framework to your backend use the `PolicyBuilder` class in your backend permissions plugin (typically `packages/backend/src/plugins/permissions.ts`) as follows:
 
 ```ts
@@ -60,7 +62,6 @@ export default async function createPlugin(
       discovery: env.discovery,
       identity: env.identity,
       permissions: env.permissions,
-      tokenManager: env.tokenManager,
     },
     pluginIdProvider,
   );
@@ -91,6 +92,16 @@ async function main() {
   );
   /* highlight-add-end */
 }
+```
+
+#### New Backend System
+
+The RBAC plugin supports the integration with the new backend system.
+
+Add the RBAC plugin to the `packages/backend/src/index.ts` file.
+
+```ts
+backend.add(import('@janus-idp/backstage-plugin-rbac-backend'));
 ```
 
 ### Configure policy admins
@@ -166,6 +177,8 @@ permission:
 ```
 
 For more information on the available permissions within Showcase and RHDH, refer to the [permissions documentation](./docs/permissions.md).
+
+We also have a fairly strict validation for permission policies and roles based on the originating role's source information, refer to the [api documentation](./docs/apis.md).
 
 ### Configuring Database Storage for policies
 

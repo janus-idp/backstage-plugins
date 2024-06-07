@@ -6,6 +6,7 @@ import { Header, Page, TabbedLayout } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 
 import { useLocationToast } from '../../hooks/useLocationToast';
+import { useMembers } from '../../hooks/useMembers';
 import { SnackbarAlert } from '../SnackbarAlert';
 import { useToast } from '../ToastContext';
 import { AboutCard } from './AboutCard';
@@ -15,6 +16,7 @@ import { PermissionsCard } from './PermissionsCard';
 export const RoleOverviewPage = () => {
   const { roleName, roleNamespace, roleKind } = useParams();
   const { toastMessage, setToastMessage } = useToast();
+  const membersInfo = useMembers(`${roleKind}:${roleNamespace}/${roleName}`);
 
   useLocationToast(setToastMessage);
 
@@ -42,11 +44,13 @@ export const RoleOverviewPage = () => {
               <Grid item lg={6} xs={12}>
                 <MembersCard
                   roleName={`${roleKind}:${roleNamespace}/${roleName}`}
+                  membersInfo={membersInfo}
                 />
               </Grid>
               <Grid item lg={6} xs={12}>
                 <PermissionsCard
                   entityReference={`${roleKind}:${roleNamespace}/${roleName}`}
+                  canReadUsersAndGroups={membersInfo.canReadUsersAndGroups}
                 />
               </Grid>
             </Grid>

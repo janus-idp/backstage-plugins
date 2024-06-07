@@ -16,6 +16,7 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef, EntityRefLink } from '@backstage/plugin-catalog-react';
 import { HomePageCompanyLogo } from '@backstage/plugin-home';
+import { RequirePermission } from '@backstage/plugin-permission-react';
 import { SearchContextProvider } from '@backstage/plugin-search-react';
 
 import { Chip, CircularProgress, Grid, makeStyles } from '@material-ui/core';
@@ -23,6 +24,7 @@ import { Chip, CircularProgress, Grid, makeStyles } from '@material-ui/core';
 import {
   ClusterNodesStatus,
   ClusterOverview,
+  ocmClusterReadPermission,
 } from '@janus-idp/backstage-plugin-ocm-common';
 
 import { OcmApiRef } from '../../api';
@@ -180,17 +182,21 @@ export const ClusterStatusPage = ({ logo }: { logo?: React.ReactNode }) => {
 
   return (
     <SearchContextProvider>
-      <Page themeId="clusters">
-        <Header title="Your Managed Clusters" />
-        <Content>
-          <Grid container justifyContent="center" spacing={6}>
-            {logo && <HomePageCompanyLogo className={container} logo={logo} />}
-            <Grid container item xs={12} justifyContent="center">
-              <CatalogClusters />
+      <RequirePermission permission={ocmClusterReadPermission}>
+        <Page themeId="clusters">
+          <Header title="Your Managed Clusters" />
+          <Content>
+            <Grid container justifyContent="center" spacing={6}>
+              {logo && (
+                <HomePageCompanyLogo className={container} logo={logo} />
+              )}
+              <Grid container item xs={12} justifyContent="center">
+                <CatalogClusters />
+              </Grid>
             </Grid>
-          </Grid>
-        </Content>
-      </Page>
+          </Content>
+        </Page>
+      </RequirePermission>
     </SearchContextProvider>
   );
 };

@@ -3,28 +3,22 @@ import React from 'react';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import { JsonObject } from '@backstage/types';
 
-import {
-  Box,
-  Button,
-  Paper,
-  Step,
-  StepContent,
-  StepLabel,
-  Stepper,
-  Typography,
-} from '@material-ui/core';
-import { FormProps, ThemeProps, withTheme } from '@rjsf/core-v5';
-import { Theme as MuiTheme } from '@rjsf/material-ui-v5';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Step from '@mui/material/Step';
+import StepContent from '@mui/material/StepContent';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
+import Typography from '@mui/material/Typography';
+import { FormProps } from '@rjsf/core';
+import Form from '@rjsf/mui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 
 import { WorkflowInputSchemaStep } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import SubmitButton from '../SubmitButton';
-
-const MuiForm = withTheme<JsonObject>(
-  MuiTheme as ThemeProps<JsonObject, RJSFSchema, any>,
-);
 
 const getCombinedData = (
   steps: WorkflowInputSchemaStep[],
@@ -98,7 +92,7 @@ const FormWrapper = ({
 }) => {
   const firstKey = Object.keys(step.schema.properties ?? {})[0];
   const uiSchema = React.useMemo(() => {
-    const res: UiSchema<JsonObject> = firstKey
+    const res: UiSchema<any, RJSFSchema, any> = firstKey
       ? { [firstKey]: { 'ui:autofocus': 'true' } }
       : {};
     for (const key of step.readonlyKeys) {
@@ -108,7 +102,7 @@ const FormWrapper = ({
   }, [firstKey, step.readonlyKeys]);
 
   return (
-    <MuiForm
+    <Form
       validator={validator}
       showErrorList={false}
       noHtml5Validate
@@ -118,7 +112,7 @@ const FormWrapper = ({
       uiSchema={uiSchema}
     >
       {children}
-    </MuiForm>
+    </Form>
   );
 };
 

@@ -123,16 +123,16 @@ export function registerScriptCommand(program: Command) {
     )
     .option(
       '--embed-as-dependencies',
-      'Include embedded packages as private dependencies of backend plugins, instead of merging them with the generated code. Experimental for now, but expected to become the default.',
-      false,
-    )
-    .option('--no-embed-as-dependencies', undefined, true)
-    .option(
-      '--in-place',
-      'Adds the frontend dynamic plugin assets to the `dist-scalprum` folder of the original plugin package. When value is `false` (using `--no-in-place`), it produces the assets in a distinct package located in the `dist-dynamic` sub-folder, as for backend plugins. `true` by default for now, it is expected to become `false` by default.',
+      'Include embedded packages as private dependencies of backend plugins. When value is `false` (using `--no-embed-as-dependencies`), source code of embedded plugins is merged with the generated code, so that the embedded plugin packages are completly erased (only available for legacy reasons: use with care).',
       true,
     )
-    .option('--no-in-place', undefined, false)
+    .option('--no-embed-as-dependencies', undefined, false)
+    .option(
+      '--in-place',
+      'Adds the frontend dynamic plugin assets to the `dist-scalprum` folder of the original plugin package, instead of producing the assets in a distinct package located in the `dist-dynamic` sub-folder, as for backend plugins.',
+      false,
+    )
+    .option('--no-in-place', undefined, true)
     .option(
       '--scalprum-config <file>',
       'Allows retrieving scalprum configuration from an external JSON file, instead of using a `scalprum` field of the `package.json`. Frontend plugins only.',
@@ -143,6 +143,32 @@ export function registerScriptCommand(program: Command) {
     .command('schema')
     .description('Print configuration schema for a package')
     .action(lazy(() => import('./schema').then(m => m.default)));
+
+  command
+    .command('metadata')
+    .description('Add metadata to a package.json file')
+    .option(
+      '--dir <path/to/folder>',
+      'Folder in which to make changes to package.json, if not the current directory',
+      './',
+    )
+    .option('--author <author>', 'Set author', 'Red Hat')
+    .option('--license <license>', 'Set license', 'Apache-2.0')
+    .option('--homepage <homepage>', 'Set homepage', 'https://red.ht/rhdh')
+    .option(
+      '--bugs <bugs>',
+      'Set issue tracker URL',
+      'https://github.com/janus-idp/backstage-plugins/issues',
+    )
+    .option(
+      '--keywords <unique,keywords,to,add>',
+      'Add or replace keywords; there can be only one `support:` or `lifecycle:` value,\n                                     ' +
+        'but unlimited other keywords can be added. To remove values, manually edit package.json\n\n                                     ' +
+        'Valid values for support: alpha, beta, tech-preview, or production.\n                                     ' +
+        'Valid values for lifecycle: active, maintenance, deprecated, inactive, retired.\n                                    ',
+      'backstage,plugin,support:production,lifecycle:active',
+    )
+    .action(lazy(() => import('./metadata').then(m => m.command)));
 }
 
 export function registerCommands(program: Command) {

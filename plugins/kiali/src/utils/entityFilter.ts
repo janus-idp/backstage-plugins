@@ -4,7 +4,7 @@ import {
   KUBERNETES_ANNOTATION,
   KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION,
   KUBERNETES_NAMESPACE,
-} from '../Router';
+} from '../components/Router';
 import { Namespace } from '../types/Namespace';
 
 const filterById = (ns: Namespace[], value: string): Namespace[] => {

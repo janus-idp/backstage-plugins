@@ -10,6 +10,17 @@ jest.mock('../ClusterContext/', () => ({
   useCluster: jest.fn().mockReturnValue({}),
 }));
 
+jest.mock('@backstage/plugin-permission-react', () => ({
+  RequirePermission: jest
+    .fn()
+    .mockImplementation(({ permission, children }) => (
+      <div>
+        {`${permission}`}
+        {children}
+      </div>
+    )),
+}));
+
 jest.mock('../common', () => ({
   Status: () => 'Ready',
   Update: () => '4.10.26',

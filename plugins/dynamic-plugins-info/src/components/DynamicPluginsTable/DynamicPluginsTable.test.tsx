@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { act } from 'react';
 
 import { renderWithEffects } from '@backstage/test-utils';
 
-import { act, fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { listLoadedPluginsResult } from '../../__fixtures__/listLoadedPluginsResult';

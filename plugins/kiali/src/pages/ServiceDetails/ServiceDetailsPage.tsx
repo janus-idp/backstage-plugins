@@ -28,7 +28,7 @@ import { MetricsObjectTypes } from '../../types/Metrics';
 import { ServiceDetailsInfo } from '../../types/ServiceInfo';
 import { ServiceInfo } from './ServiceInfo';
 
-export const ServiceDetailsPage = () => {
+export const ServiceDetailsPage = (props: { entity?: boolean }) => {
   const { namespace, service } = useParams();
   const kialiClient = useApi(kialiApiRef);
   const kialiState = React.useContext(KialiContext) as KialiAppState;
@@ -203,7 +203,7 @@ export const ServiceDetailsPage = () => {
   return (
     <div className={baseStyle}>
       <Content>
-        <BreadcrumbView />
+        <BreadcrumbView entity={props.entity} />
         <DefaultSecondaryMasthead
           elements={grids()}
           onRefresh={() => fetchService()}

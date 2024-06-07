@@ -5,26 +5,26 @@ import {
   TableProps,
 } from '@backstage/core-components';
 
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
 
 // Workaround by issue created from overriding the tab theme in the backstage-showcase to add a gray background to disabled tabs.
 // This is achieved by overriding the global Mui-disabled class, which results in the actions column header background turning gray.
 // See https://github.com/janus-idp/backstage-showcase/blob/main/packages/app/src/themes/componentOverrides.ts#L59
 
-const useStyles = makeStyles({
-  orchestratorTable: {
-    '& .Mui-disabled': {
-      backgroundColor: 'transparent',
-    },
+const TableDiv = styled('div')({
+  '& .Mui-disabled': {
+    backgroundColor: 'transparent',
   },
 });
 
 const OverrideBackstageTable = <T extends object>(props: TableProps<T>) => {
-  const classes = useStyles();
   return (
-    <div className={classes.orchestratorTable}>
-      <BackstageTable {...props} />
-    </div>
+    <TableDiv>
+      <BackstageTable
+        {...props}
+        options={{ ...props.options, thirdSortClick: false }}
+      />
+    </TableDiv>
   );
 };
 

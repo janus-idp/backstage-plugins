@@ -1,5 +1,13 @@
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 
+import { RJSFSchema } from '@rjsf/utils';
+
+import {
+  PermissionAction,
+  RoleConditionalPolicyDecision,
+} from '@janus-idp/backstage-plugin-rbac-common';
+
+import { ConditionsData } from './components/ConditionalAccess/types';
 import { RowPolicy } from './components/CreateRole/types';
 
 export type RolesData = {
@@ -31,15 +39,36 @@ export type PermissionsDataSet = {
   permission: string;
   policies: Set<RowPolicy>;
   policyString?: Set<string>;
+  isResourced?: boolean;
 };
 
 export type PermissionsData = {
+  id?: number;
   plugin: string;
   permission: string;
   policies: RowPolicy[];
   policyString?: string[];
+  isResourced?: boolean;
+  conditions?: ConditionsData;
 };
 
 export type MemberEntity = UserEntity | GroupEntity;
 
 export type RoleError = { error: { name: string; message: string } };
+
+export type RoleBasedConditions = Omit<
+  RoleConditionalPolicyDecision<PermissionAction>,
+  'id'
+>;
+
+export type ConditionRule = {
+  name: string;
+  description?: string;
+  resourceType: string;
+  paramsSchema: RJSFSchema;
+};
+
+export type PluginConditionRules = {
+  pluginId: string;
+  rules: ConditionRule[];
+};

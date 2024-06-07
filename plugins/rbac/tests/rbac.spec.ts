@@ -1,7 +1,7 @@
 import { expect, Page, test } from '@playwright/test';
 
 import {
-  clickButton,
+  Common,
   verifyCellsInTable,
   verifyColumnHeading,
   verifyText,
@@ -9,11 +9,17 @@ import {
 
 test.describe('RBAC plugin', () => {
   let page: Page;
+  let common: Common;
+  const RoleOverviewPO = {
+    updatePolicies: 'span[data-testid="update-policies"]',
+    updateMembers: 'span[data-testid="update-members"]',
+  };
 
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    await page.goto('/');
+    common = new Common(page);
+    await common.loginAsGuest();
     const navSelector = 'nav [aria-label="Administration"]';
     await page.locator(navSelector).click();
     await expect(
@@ -89,18 +95,13 @@ test.describe('RBAC plugin', () => {
     await page.locator(`a`).filter({ hasText: 'RBAC' }).click();
   });
 
-  test('Edit user from overview page', async () => {
+  test('Edit an existing role', async () => {
     const roleName = 'role:default/rbac_admin';
     await page.locator(`a`).filter({ hasText: roleName }).click();
     await expect(page.getByRole('heading', { name: roleName })).toBeVisible({
       timeout: 20000,
     });
     await page.getByRole('tab', { name: 'Overview' }).click();
-
-    const RoleOverviewPO = {
-      updatePolicies: 'span[data-testid="update-policies"]',
-      updateMembers: 'span[data-testid="update-members"]',
-    };
 
     await page.locator(RoleOverviewPO.updateMembers).click();
     await expect(page.getByRole('heading', { name: 'Edit Role' })).toBeVisible({
@@ -117,9 +118,9 @@ test.describe('RBAC plugin', () => {
     ).toBeVisible({
       timeout: 20000,
     });
-    await clickButton('Next', page);
-    await clickButton('Next', page);
-    await clickButton('Save', page);
+    await common.clickButton('Next');
+    await common.clickButton('Next');
+    await common.clickButton('Save');
     await verifyText('Role role:default/rbac_admin updated successfully', page);
 
     // alert doesn't show up after Cancel button is clicked
@@ -127,7 +128,7 @@ test.describe('RBAC plugin', () => {
     await expect(page.getByRole('heading', { name: 'Edit Role' })).toBeVisible({
       timeout: 20000,
     });
-    await clickButton('Cancel', page);
+    await common.clickButton('Cancel');
     await expect(page.getByRole('alert')).toHaveCount(0);
 
     // edit/update policies
@@ -139,17 +140,33 @@ test.describe('RBAC plugin', () => {
     await page.getByTestId('AddIcon').click();
     await page.getByPlaceholder('Select a plugin').last().click();
     await page.getByText('scaffolder').click();
-    await page.getByPlaceholder('Select a permission').last().click();
+    await page.getByPlaceholder('Select a resource type').last().click();
     await page.getByText('scaffolder-action').click();
 
-    await clickButton('Next', page);
-    await clickButton('Save', page);
+    // update existing conditional policy
+    await page
+      .getByText('Configure access (1 rule)', { exact: true })
+      .first()
+      .click();
+    await page.getByPlaceholder('Select a rule').first().click();
+    await page.getByText('HAS_METADATA').click();
+    await page.getByLabel('key').fill('status');
+    await page.getByTestId('save-conditions').click();
+
+    // remove existing conditional policy
+    await page.getByTestId('permissionPoliciesRows[1]-remove').first().click();
+    expect(
+      page.getByText('Configure access (2 rules)', { exact: true }),
+    ).toBeHidden();
+
+    await common.clickButton('Next');
+    await common.clickButton('Save');
     await verifyText('Role role:default/rbac_admin updated successfully', page);
 
     await page.locator(`a`).filter({ hasText: 'RBAC' }).click();
   });
 
-  test('Create role from rolelist page', async () => {
+  test('Create role from rolelist page with simple/conditional permission policies', async () => {
     await expect(
       page.getByRole('heading', { name: 'All roles (2)' }),
     ).toBeVisible({ timeout: 20000 });
@@ -162,7 +179,7 @@ test.describe('RBAC plugin', () => {
 
     await page.fill('input[name="name"]', 'sample-role-1');
     await page.fill('textarea[name="description"]', 'Test Description data');
-    await clickButton('Next', page);
+    await common.clickButton('Next');
 
     await page
       .getByPlaceholder('Search by user name or group name')
@@ -175,18 +192,91 @@ test.describe('RBAC plugin', () => {
     ).toBeVisible({
       timeout: 20000,
     });
-    await clickButton('Next', page);
+    await common.clickButton('Next');
 
     await page.getByPlaceholder('Select a plugin').first().click();
-    await page.getByText('scaffolder').click();
-    await page.getByPlaceholder('Select a permission').last().click();
-    await page.getByText('scaffolder-action').click();
-    await clickButton('Next', page);
+    await page.getByRole('option', { name: 'permission' }).click();
+    await page.getByPlaceholder('Select a resource type').first().click();
+    await page.getByText('policy-entity').click();
 
-    await clickButton('Create', page);
+    await page.getByRole('button', { name: 'Add' }).click();
+
+    await page.getByPlaceholder('Select a plugin').last().click();
+    await page.getByText('scaffolder').click();
+    await page.getByPlaceholder('Select a resource type').last().click();
+    await page.getByText('scaffolder-action').click();
+    await page.getByText('Configure access').first().click();
+    await page.getByPlaceholder('Select a rule').first().click();
+    await page.getByText('HAS_ACTION_ID').click();
+    await page.getByLabel('actionId').fill('temp');
+    await page.getByTestId('save-conditions').click();
+    await expect(page.getByText('Configure access (1 rule)')).toBeVisible({
+      timeout: 20000,
+    });
+
+    await page.getByRole('button', { name: 'Add' }).click();
+
+    await page.getByPlaceholder('Select a plugin').last().click();
+    await page.getByText('catalog').click();
+    await page.getByPlaceholder('Select a resource type').last().click();
+    await page.getByText('catalog-entity').click();
+    await page.getByText('Configure access').last().click();
+    await page.getByRole('button', { name: 'AllOf' }).click();
+    await page.getByPlaceholder('Select a rule').first().click();
+    await page.getByText('HAS_LABEL').click();
+    await page.getByLabel('label').fill('temp');
+    await page.getByRole('button', { name: 'Add rule' }).click();
+    await page.getByPlaceholder('Select a rule').last().click();
+    await page.getByText('HAS_SPEC').click();
+    await page.getByLabel('key').fill('test');
+    await page.getByTestId('save-conditions').click();
+    await expect(page.getByText('Configure access (2 rules)')).toBeVisible({
+      timeout: 20000,
+    });
+
+    await common.clickButton('Next');
+
+    await common.clickButton('Create');
     await verifyText(
       'Role role:default/sample-role-1 created successfully',
       page,
     );
+  });
+
+  test('Edit role to convert simple policy into conditional policy', async () => {
+    await expect(
+      page.getByRole('heading', { name: 'All roles (2)' }),
+    ).toBeVisible({ timeout: 20000 });
+
+    // edit/update policies
+    await page.locator(`a`).filter({ hasText: 'role:default/guests' }).click();
+    await expect(
+      page.getByRole('heading', { name: 'role:default/guests' }),
+    ).toBeVisible({
+      timeout: 20000,
+    });
+    await page.getByRole('tab', { name: 'Overview' }).click();
+
+    await page.locator(RoleOverviewPO.updatePolicies).click();
+    await expect(page.getByRole('heading', { name: 'Edit Role' })).toBeVisible({
+      timeout: 20000,
+    });
+
+    // update simple policy to add conditions
+    await page.getByText('Configure access', { exact: true }).click();
+    await page.getByPlaceholder('Select a rule').first().click();
+    await page.getByText('HAS_METADATA').click();
+    await page.getByLabel('key').fill('status');
+    await page.getByTestId('save-conditions').click();
+
+    expect(
+      page.getByText('Configure access (1 rule)', { exact: true }),
+    ).toBeVisible();
+
+    await common.clickButton('Next');
+    await common.clickButton('Save');
+    await verifyText('Role role:default/guests updated successfully', page);
+
+    await page.locator(`a`).filter({ hasText: 'RBAC' }).click();
   });
 });

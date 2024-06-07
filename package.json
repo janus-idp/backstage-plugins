@@ -7,16 +7,17 @@
   },
   "scripts": {
     "preinstall": "npx only-allow yarn",
-    "start:backstage": "turbo run start:backstage",
+    "start:backend": "turbo run start --filter=...backend",
+    "start:backstage": "turbo run start --filter=...app --filter=...backend",
     "start:plugins": "turbo run start --filter=@janus-idp/*",
     "start:storybook": "yarn --cwd packages/storybook start",
     "build": "turbo run build",
-    "build:backstage": "turbo run build --filter=...{./packages/app} --filter=...{./packages/backend}",
+    "build:backstage": "turbo run build --filter=...app --filter=...backend",
     "build:plugins": "turbo run build --filter=@janus-idp/*",
     "build:storybook": "yarn --cwd packages/storybook build",
     "tsc": "turbo run tsc",
     "clean": "turbo run clean",
-    "test": "turbo run test",
+    "test": "turbo run test --concurrency=1",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint -- --fix",
     "lint-staged": "lint-staged",
@@ -39,8 +40,8 @@
     ]
   },
   "devDependencies": {
-    "@backstage/cli": "0.26.2",
-    "@ianvs/prettier-plugin-sort-imports": "4.1.1",
+    "@backstage/cli": "0.26.4",
+    "@ianvs/prettier-plugin-sort-imports": "4.2.1",
     "@janus-idp/cli": "*",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
@@ -49,19 +50,24 @@
     "@semrel-extra/npm": "1.2.2",
     "@spotify/prettier-config": "15.0.0",
     "conventional-changelog-conventionalcommits": "6.1.0",
-    "eslint-plugin-jest": "27.4.2",
+    "eslint-plugin-jest": "27.9.0",
     "husky": "8.0.3",
-    "lint-staged": "15.0.1",
+    "lint-staged": "15.2.5",
     "multi-semantic-release": "3.0.2",
-    "prettier": "3.0.3",
-    "turbo": "1.10.15",
-    "typescript": "5.3.3"
+    "prettier": "3.2.5",
+    "turbo": "1.13.3",
+    "typescript": "5.4.5"
   },
   "resolutions": {
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "vscode-languageserver-types": "3.17.1",
-    "@typescript-eslint/typescript-estree": "^7.3.1"
+    "react": "^18",
+    "react-dom": "^18",
+    "vscode-languageserver-types": "3.17.5",
+    "@typescript-eslint/typescript-estree": "^7.3.1",
+    "@babel/core": "7.24.6",
+    "@babel/traverse": "7.24.6",
+    "@babel/generator": "7.24.6"
   },
   "lint-staged": {
     "*": "turbo run prettier:fix --",
