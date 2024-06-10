@@ -1,5 +1,6 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
+
 import { CloudEvent } from 'cloudevents';
-import { Logger } from 'winston';
 
 import { CloudEventService } from './CloudEventService';
 import { DataIndexService } from './DataIndexService';
@@ -37,7 +38,7 @@ export type JiraEvent = IssueCommented | IssueUpdated;
 
 export class JiraService {
   constructor(
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly cloudEventService: CloudEventService,
     private readonly dataIndexService: DataIndexService,
   ) {}

@@ -47,8 +47,7 @@
     "@backstage/catalog-model": "^1.4.5",
     "@backstage/config": "^1.2.0",
     "@backstage/plugin-catalog-node": "^1.11.1",
-    "@backstage/backend-dynamic-feature-service": "^0.2.9",
-    "winston": "^3.11.0"
+    "@backstage/backend-dynamic-feature-service": "^0.2.9"
   },
   "devDependencies": {
     "@backstage/cli": "0.26.4",

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
@@ -28,7 +29,6 @@ import {
 import { ANNOTATION_KUBERNETES_API_SERVER } from '@backstage/plugin-kubernetes-common';
 
 import { CustomObjectsApi } from '@kubernetes/client-node';
-import * as winston from 'winston';
 
 import {
   ANNOTATION_CLUSTER_ID,
@@ -52,7 +52,7 @@ export class ManagedClusterProvider implements EntityProvider {
   protected readonly hubResourceName: string;
   protected readonly id: string;
   protected readonly owner: string;
-  protected readonly logger: winston.Logger;
+  protected readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
   protected connection?: EntityProviderConnection;
 
@@ -60,7 +60,7 @@ export class ManagedClusterProvider implements EntityProvider {
     client: CustomObjectsApi,
     hubResourceName: string,
     id: string,
-    options: { logger: winston.Logger },
+    options: { logger: LoggerService },
     owner: string,
     taskRunner: TaskRunner,
   ) {
@@ -75,7 +75,7 @@ export class ManagedClusterProvider implements EntityProvider {
   static fromConfig(
     config: Config,
     options: {
-      logger: winston.Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },

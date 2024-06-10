@@ -17,13 +17,13 @@
 import {
   createLegacyAuthAdapters,
   errorHandler,
-  loggerToWinstonLogger,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
   HttpAuthService,
+  LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
@@ -37,7 +37,6 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 import express from 'express';
 import Router from 'express-promise-router';
 import { Request } from 'express-serve-static-core';
-import { Logger } from 'winston';
 
 import {
   Cluster,
@@ -67,7 +66,7 @@ import {
 import { ManagedClusterInfo } from '../types';
 
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   discovery: PluginEndpointDiscovery;
   permissions: PermissionsService;
@@ -76,7 +75,7 @@ export interface RouterOptions {
 
 const buildRouter = (
   config: Config,
-  logger: Logger,
+  logger: LoggerService,
   httpAuth: HttpAuthService,
   permissions: PermissionsService,
 ) => {
@@ -214,14 +213,7 @@ export const ocmPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
       },
       async init({ config, logger, http, httpAuth, permissions }) {
-        http.use(
-          buildRouter(
-            config,
-            loggerToWinstonLogger(logger),
-            httpAuth,
-            permissions,
-          ),
-        );
+        http.use(buildRouter(config, logger, httpAuth, permissions));
       },
     });
   },

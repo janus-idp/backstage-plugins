@@ -5,15 +5,14 @@ import {
   TokenManager,
   UrlReader,
 } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
-import { Logger } from 'winston';
-
 export type PluginEnvironment = {
-  logger: Logger;
+  logger: LoggerService;
   database: PluginDatabaseManager;
   cache: PluginCacheManager;
   config: Config;

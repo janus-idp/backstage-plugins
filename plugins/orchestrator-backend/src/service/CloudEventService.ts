@@ -1,12 +1,13 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
+
 import { CloudEvent, emitterFor, httpTransport } from 'cloudevents';
-import { Logger } from 'winston';
 
 export type CloudEventResponse =
   | { success: true }
   | { success: false; error: string };
 
 export class CloudEventService {
-  constructor(private readonly logger: Logger) {}
+  constructor(private readonly logger: LoggerService) {}
 
   public async send<T>(args: {
     event: CloudEvent<T>;

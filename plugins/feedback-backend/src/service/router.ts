@@ -31,7 +31,7 @@ export async function createRouter(
   const feedbackDB = await DatabaseFeedbackStore.create({
     database: DatabaseManager.fromConfig(config).forPlugin('feedback'),
     skipMigrations: false,
-    logger: logger,
+    logger,
   });
 
   const mailer = new NodeMailer(config, logger);

@@ -1,5 +1,6 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
+
 import { Client, fetchExchange, gql } from '@urql/core';
-import { Logger } from 'winston';
 
 import {
   fromWorkflowSource,
@@ -21,7 +22,7 @@ export class DataIndexService {
 
   public constructor(
     private readonly dataIndexUrl: string,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
   ) {
     if (!dataIndexUrl.length) {
       throw ErrorBuilder.GET_NO_DATA_INDEX_URL_ERR();
