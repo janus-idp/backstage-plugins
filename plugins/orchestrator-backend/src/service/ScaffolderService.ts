@@ -78,7 +78,7 @@ export class ScaffolderService {
         workingDirectory,
         actionExecutionContext.instanceId ?? randomUUID(),
       );
-    } catch (err) {
+    } catch (err: any) {
       this.logger.error(
         `Error getting working directory to execute action ${actionExecutionContext.actionId}`,
         err,

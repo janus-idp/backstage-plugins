@@ -170,7 +170,7 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
           service.service.id,
         );
         if (apiDoc !== undefined) {
-          this.logger.info(apiDoc);
+          this.logger.info(`${apiDoc}`);
           const apiEntity: ApiEntity = this.buildApiEntityFromService(
             service,
             apiDoc,
