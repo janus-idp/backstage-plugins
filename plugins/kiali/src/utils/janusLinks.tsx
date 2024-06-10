@@ -75,7 +75,6 @@ const getRef = (type: string, entity?: boolean, root?: boolean) => {
 
 export const JanusObjectLink = (props: JanusLinkProps) => {
   const { name, type, objectType, namespace, query, cluster } = props;
-
   const link: RouteFunc<routeRefParams> = useRouteRef(
     getRef(type, props.entity, props.root),
   );

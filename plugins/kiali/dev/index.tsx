@@ -20,7 +20,7 @@ import { KialiChecker, ValidationCategory } from '../src/store/KialiProvider';
 import { mockEntity, mockEntityAnnotationNoNamespace } from './mockEntity';
 import { MockKialiClient } from './MockProvider';
 
-export const KialiMock = kialiPlugin.provide(
+const KialiMock = kialiPlugin.provide(
   createRoutableExtension({
     name: 'KialiPage',
     component: () => import('./MockProvider').then(m => m.MockProvider),

@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
 import { Content, HeaderTabs, Page } from '@backstage/core-components';
@@ -464,10 +463,10 @@ export class MockKialiClient implements KialiApi {
 }
 
 const getSelected = (route: number) => {
-  const pathname = window.location.hash.split('/');
-
-  if (pathname && pathname[0] === '#details') {
-    switch (pathname[1]) {
+  const pathname = window.location.pathname.split('/');
+  const paths = ['workloads', 'applications', 'services', 'istio'];
+  if (pathname && paths.includes(pathname[2])) {
+    switch (pathname[2]) {
       case 'workloads':
         return <WorkloadDetailsPage />;
       case 'services':
@@ -496,16 +495,21 @@ const getSelected = (route: number) => {
   }
 };
 
+interface Props {
+  children?: React.ReactNode;
+  entity?: Entity;
+  isEntity?: boolean;
+}
+
 export const MockProvider = (props: Props) => {
   const [selectedTab, setSelectedTab] = React.useState<number>(0);
   const tabs = [
-    { label: 'Overview', route: `#overview` },
-    { label: 'Workloads', route: `#workloads` },
-    { label: 'Services', route: `#services` },
-    { label: 'Applications', route: `#applications` },
-    { label: 'Istio Config', route: `#istio` },
+    { label: 'Overview', route: `/kiali#overview` },
+    { label: 'Workloads', route: `/kiali#workloads` },
+    { label: 'Services', route: `/kiali#services` },
+    { label: 'Applications', route: `/kiali#applications` },
+    { label: 'Istio Config', route: `/kiali#istio` },
   ];
-  const navigate = useNavigate();
 
   const content = (
     <KialiProvider entity={props.entity || mockEntity}>
@@ -516,7 +520,6 @@ export const MockProvider = (props: Props) => {
             <HeaderTabs
               selectedIndex={selectedTab}
               onChange={(index: number) => {
-                navigate(tabs[index].route);
                 setSelectedTab(index);
               }}
               tabs={tabs.map(({ label }, index) => ({
