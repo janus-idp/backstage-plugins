@@ -5,6 +5,7 @@ import {
 } from '@backstage/backend-common';
 import {
   HttpAuthService,
+  LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
@@ -23,7 +24,6 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Request as HttpRequest } from 'express-serve-static-core';
 import { OpenAPIBackend, Request } from 'openapi-backend';
-import { Logger } from 'winston';
 
 import {
   openApiDocument,
@@ -143,7 +143,7 @@ export async function createBackendRouter(
 }
 
 function initPublicServices(
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   scheduler: PluginTaskScheduler,
 ): PublicServices {

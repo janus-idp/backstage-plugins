@@ -1,4 +1,3 @@
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { coreServices, createBackendPlugin } from '@backstage/backend-plugin-api';
 
 import { createRouter } from './service/router';
@@ -18,7 +17,7 @@ export const {{id}}Plugin = createBackendPlugin({
         http: coreServices.httpRouter,
       },
       async init({ config, logger, http }) {
-        http.use(() => createRouter({...config, logger: loggerToWinstonLogger(logger)}));
+        http.use(() => createRouter({...config, logger}));
       },
     });
   },

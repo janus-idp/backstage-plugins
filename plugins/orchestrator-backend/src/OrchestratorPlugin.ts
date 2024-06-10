@@ -1,4 +1,3 @@
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -33,10 +32,9 @@ export const orchestratorPlugin = createBackendPlugin({
         permissions,
         httpAuth,
       }) {
-        const log = loggerToWinstonLogger(logger);
         const router = await createRouter({
           config: config,
-          logger: log,
+          logger,
           discovery: discovery,
           catalogApi: catalogApi,
           urlReader: urlReader,

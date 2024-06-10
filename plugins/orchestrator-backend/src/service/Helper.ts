@@ -1,7 +1,7 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
 import fs from 'fs-extra';
-import { Logger } from 'winston';
 
 import os from 'os';
 
@@ -23,7 +23,7 @@ export async function retryAsyncFunction<T>(args: {
 
 export async function getWorkingDirectory(
   config: Config,
-  logger: Logger,
+  logger: LoggerService,
 ): Promise<string> {
   if (!config.has('backend.workingDirectory')) {
     return os.tmpdir();

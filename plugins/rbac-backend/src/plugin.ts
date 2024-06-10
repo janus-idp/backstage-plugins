@@ -1,4 +1,3 @@
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -54,13 +53,11 @@ export const rbacPlugin = createBackendPlugin({
         auth,
         httpAuth,
       }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
-
         http.use(
           await PolicyBuilder.build(
             {
               config,
-              logger: winstonLogger,
+              logger,
               discovery,
               identity,
               permissions,

@@ -3,7 +3,11 @@ import {
   DatabaseManager,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -12,7 +16,6 @@ import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 import { newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
-import { Logger } from 'winston';
 
 import { DefaultAuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
@@ -32,7 +35,7 @@ export class PolicyBuilder {
   public static async build(
     env: {
       config: Config;
-      logger: Logger;
+      logger: LoggerService;
       discovery: PluginEndpointDiscovery;
       identity: IdentityApi;
       permissions: PermissionEvaluator;

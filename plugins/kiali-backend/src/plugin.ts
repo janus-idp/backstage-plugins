@@ -1,4 +1,3 @@
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -22,9 +21,8 @@ export const kialiPlugin = createBackendPlugin({
         catalogApi: catalogServiceRef,
       },
       async init({ http, logger, config }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
         const router = await createRouter({
-          logger: winstonLogger,
+          logger,
           config,
         });
         http.use(router);

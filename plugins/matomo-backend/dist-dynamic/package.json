@@ -30,7 +30,6 @@
     "express-promise-router": "^4.1.1",
     "http-proxy-middleware": "^2.0.6",
     "node-fetch": "^3.3.2",
-    "winston": "^3.11.0",
     "yn": "^4.0.0"
   },
   "devDependencies": {},

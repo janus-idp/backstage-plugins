@@ -34,7 +34,6 @@
     "node-fetch": "^2.6.7",
     "nodemailer": "^6.9.8",
     "short-uuid": "^4.2.2",
-    "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {},

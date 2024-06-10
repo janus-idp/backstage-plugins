@@ -1,3 +1,4 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 
@@ -10,7 +11,6 @@ import {
 } from 'casbin';
 import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
-import { Logger } from 'winston';
 
 import {
   PermissionPolicyMetadata,
@@ -684,7 +684,7 @@ describe('CSVFileWatcher', () => {
 async function createEnforcer(
   theModel: Model,
   adapter: Adapter,
-  log: Logger,
+  logger: LoggerService,
 ): Promise<Enforcer> {
   const catalogDBClient = Knex.knex({ client: MockClient });
   const rbacDBClient = Knex.knex({ client: MockClient });
@@ -694,7 +694,7 @@ async function createEnforcer(
 
   const rm = new BackstageRoleManager(
     catalogApi,
-    log,
+    logger,
     catalogDBClient,
     rbacDBClient,
     config,
