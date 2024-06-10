@@ -7341,7 +7341,7 @@
     "@types/set-cookie-parser" "^2.4.0"
     set-cookie-parser "^2.4.6"
 
-"@mswjs/interceptors@^0.17.10", "@mswjs/interceptors@^0.17.5":
+"@mswjs/interceptors@^0.17.10":
   version "0.17.10"
   resolved "https://registry.yarnpkg.com/@mswjs/interceptors/-/interceptors-0.17.10.tgz#857b41f30e2b92345ed9a4e2b1d0a08b8b6fcad4"
   integrity sha512-N8x7eSLGcmUFNWZRxT1vsHvypzIRgQYdG0rJey/rZCy6zT/30qDt8Joj7FxzGNLSwXbeZqJOMqDurp7ra4hgbw==
@@ -14313,15 +14313,17 @@
   dependencies:
     undici-types "~5.26.4"
 
-"@types/node@18.18.5":
-  version "18.18.5"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.18.5.tgz#afc0fd975df946d6e1add5bbf98264225b212244"
-  integrity sha512-4slmbtwV59ZxitY4ixUZdy1uRLf9eSIvBWPQxNjhHYWEtn0FryfKpyS2cvADYXTayWdKEIsJengncrVvkI4I6A==
-
 "@types/node@18.19.33", "@types/node@^18.0.0", "@types/node@^18.11.18":
   version "18.19.33"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.19.33.tgz#98cd286a1b8a5e11aa06623210240bcc28e95c48"
   integrity sha512-NR9+KrpSajr2qBVp/Yt5TU/rp+b5Mayi3+OlMlcg2cVCfRmcG5PWZ7S4+MG9PZ5gWBoc9Pd0BKSRViuBCRPu0A==
+  dependencies:
+    undici-types "~5.26.4"
+
+"@types/node@18.19.34":
+  version "18.19.34"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.19.34.tgz#c3fae2bbbdb94b4a52fe2d229d0dccce02ef3d27"
+  integrity sha512-eXF4pfBNV5DAMKGbI02NnDtWrQ40hAN558/2vvS4gMpMIxaf6JmD7YjnZbq0Q9TDSSkKBamime8ewRoomHdt4g==
   dependencies:
     undici-types "~5.26.4"
 
@@ -16954,14 +16956,6 @@ chalk@2.4.2, chalk@^2.3.2, chalk@^2.4.2:
     ansi-styles "^3.2.1"
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
-
-chalk@4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.1.tgz#c80b3fab28bf6371e6863325eee67e618b77e6ad"
-  integrity sha512-diHzdDKxcU+bAsUboHLPEDQiw0qEe0qd7SYUn3HgcFlWgbDcfLGswOHYeGrHKzG9z6UYf01d9VFMfZxPM1xZSg==
-  dependencies:
-    ansi-styles "^4.1.0"
-    supports-color "^7.1.0"
 
 chalk@4.1.2, chalk@^4.0.0, chalk@^4.0.2, chalk@^4.1.0, chalk@^4.1.1, chalk@^4.1.2:
   version "4.1.2"
@@ -22026,7 +22020,7 @@ graphql-ws@^5.14.0, graphql-ws@^5.4.1:
   resolved "https://registry.yarnpkg.com/graphql-ws/-/graphql-ws-5.16.0.tgz#849efe02f384b4332109329be01d74c345842729"
   integrity sha512-Ju2RCU2dQMgSKtArPbEtsK5gNLnsQyTNIo/T7cZNp96niC1x0KdJNZV0TIoilceBPQwfb5itrGl8pkFeOUMl4A==
 
-"graphql@^15.0.0 || ^16.0.0", graphql@^16.0.0, graphql@^16.8.1:
+graphql@^16.0.0, graphql@^16.8.1:
   version "16.8.1"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.8.1.tgz#1930a965bef1170603702acdb68aedd3f3cf6f07"
   integrity sha512-59LZHPdGZVh695Ud9lRzPBVTtlX9ZCV150Er2W43ro37wVof0ctenSaskPPjN7lVTIN8mSZt8PHUNKZuNQUuxw==
@@ -22243,11 +22237,6 @@ headers-polyfill@3.2.5:
   version "3.2.5"
   resolved "https://registry.yarnpkg.com/headers-polyfill/-/headers-polyfill-3.2.5.tgz#6e67d392c9d113d37448fe45014e0afdd168faed"
   integrity sha512-tUCGvt191vNSQgttSyJoibR+VO+I6+iCHIUdhzEMJKE+EAL8BwCN7fUOZlY4ofOelNHsK+gEjxB/B+9N3EWtdA==
-
-headers-polyfill@^3.1.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/headers-polyfill/-/headers-polyfill-3.3.0.tgz#67c6ef7b72d4c8cac832ad5936f5b3a56e7b705a"
-  integrity sha512-5e57etwBpNcDc0b6KCVWEh/Ro063OxPvzVimUdM0/tsYM/T7Hfy3kknIGj78SFTOhNd8AZY41U8mOHoO4LzmIQ==
 
 helmet@^6.0.0:
   version "6.2.0"
@@ -23309,7 +23298,7 @@ is-network-error@^1.0.0:
   resolved "https://registry.yarnpkg.com/is-network-error/-/is-network-error-1.1.0.tgz#d26a760e3770226d11c169052f266a4803d9c997"
   integrity sha512-tUdRRAnhT+OtCZR/LxZelH/C7QtjtFrTu5tXCA8pl55eTUElUHT+GPYV8MBMBvea/j+NxQqVt3LbWMRir7Gx9g==
 
-is-node-process@^1.0.1, is-node-process@^1.2.0:
+is-node-process@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/is-node-process/-/is-node-process-1.2.0.tgz#ea02a1b90ddb3934a19aea414e88edef7e11d134"
   integrity sha512-Vg4o6/fqPxIjtxgUH5QLJhwZ7gW5diGCVlXpuUfELC62CuxM1iHcRe51f2W1FDy04Ai4KJkagKjx3XaqyfRKXw==
@@ -27051,56 +27040,6 @@ ms@2.1.3, ms@^2.0.0, ms@^2.1.1, ms@^2.1.2:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-msw@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/msw/-/msw-1.0.0.tgz#4f8e63aa23912561a63b99ff560a089da6969418"
-  integrity sha512-8QVa1RAN/Nzbn/tKmtimJ+b2M1QZOMdETQW7/1TmBOZ4w+wJojfxuh1Hj5J4FYdBgZWW/TK4CABUOlOM4OjTOA==
-  dependencies:
-    "@mswjs/cookies" "^0.2.2"
-    "@mswjs/interceptors" "^0.17.5"
-    "@open-draft/until" "^1.0.3"
-    "@types/cookie" "^0.4.1"
-    "@types/js-levenshtein" "^1.1.1"
-    chalk "4.1.1"
-    chokidar "^3.4.2"
-    cookie "^0.4.2"
-    graphql "^15.0.0 || ^16.0.0"
-    headers-polyfill "^3.1.0"
-    inquirer "^8.2.0"
-    is-node-process "^1.0.1"
-    js-levenshtein "^1.1.6"
-    node-fetch "^2.6.7"
-    outvariant "^1.3.0"
-    path-to-regexp "^6.2.0"
-    strict-event-emitter "^0.4.3"
-    type-fest "^2.19.0"
-    yargs "^17.3.1"
-
-msw@1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/msw/-/msw-1.3.2.tgz#35e0271293e893fc3c55116e90aad5d955c66899"
-  integrity sha512-wKLhFPR+NitYTkQl5047pia0reNGgf0P6a1eTnA5aNlripmiz0sabMvvHcicE8kQ3/gZcI0YiPFWmYfowfm3lA==
-  dependencies:
-    "@mswjs/cookies" "^0.2.2"
-    "@mswjs/interceptors" "^0.17.10"
-    "@open-draft/until" "^1.0.3"
-    "@types/cookie" "^0.4.1"
-    "@types/js-levenshtein" "^1.1.1"
-    chalk "^4.1.1"
-    chokidar "^3.4.2"
-    cookie "^0.4.2"
-    graphql "^16.8.1"
-    headers-polyfill "3.2.5"
-    inquirer "^8.2.0"
-    is-node-process "^1.2.0"
-    js-levenshtein "^1.1.6"
-    node-fetch "^2.6.7"
-    outvariant "^1.4.0"
-    path-to-regexp "^6.2.0"
-    strict-event-emitter "^0.4.3"
-    type-fest "^2.19.0"
-    yargs "^17.3.1"
-
 msw@1.3.3, msw@^1.0.0:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/msw/-/msw-1.3.3.tgz#0b6f173db07292e1cf096b435878932dcf78f208"
@@ -28560,7 +28499,7 @@ os-tmpdir@~1.0.2:
   resolved "https://registry.yarnpkg.com/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
   integrity sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==
 
-outvariant@^1.2.1, outvariant@^1.3.0, outvariant@^1.4.0:
+outvariant@^1.2.1, outvariant@^1.4.0:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/outvariant/-/outvariant-1.4.2.tgz#f54f19240eeb7f15b28263d5147405752d8e2066"
   integrity sha512-Ou3dJ6bA/UJ5GVHxah4LnqDwZRwAmWxrG3wtrHrbGnP4RnLCtA64A4F+ae7Y8ww660JaddSoArUR5HjipWSHAQ==
