@@ -10,31 +10,31 @@ export const rootRouteRef = createRouteRef({
 
 /* Kiali Page Routes */
 export const overviewRouteRef = createSubRouteRef({
-  id: 'kiali/overview',
+  id: 'overview',
   path: '/overview',
   parent: rootRouteRef,
 });
 
 export const workloadsRouteRef: SubRouteRef<undefined> = createSubRouteRef({
-  id: 'kiali/workloads',
+  id: 'workloads',
   path: '/workloads',
   parent: rootRouteRef,
 });
 
 export const servicesRouteRef: SubRouteRef<undefined> = createSubRouteRef({
-  id: 'kiali/services',
+  id: 'services',
   path: '/services',
   parent: rootRouteRef,
 });
 
 export const appsRouteRef: SubRouteRef<undefined> = createSubRouteRef({
-  id: 'kiali/applications',
+  id: 'applications',
   path: '/applications',
   parent: rootRouteRef,
 });
 
 export const istioConfigRouteRef = createSubRouteRef({
-  id: 'kiali/istio',
+  id: 'istio',
   parent: rootRouteRef,
   path: '/istio',
 });
