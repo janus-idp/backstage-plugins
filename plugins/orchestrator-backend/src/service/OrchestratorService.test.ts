@@ -140,8 +140,21 @@ describe('OrchestratorService', () => {
       jest.clearAllMocks();
     });
 
-    it('should execute the operation when the cache is not empty', async () => {
-      workflowCacheServiceMock.isEmpty = jest.fn().mockReturnValue(false);
+    it('should throw error when data index returns error', async () => {
+      let err: Error | null = null;
+      const errMsg = 'Failed to load instances';
+      dataIndexServiceMock.fetchInstances = jest.fn().mockImplementation(() => {
+        throw new Error(errMsg);
+      });
+      try {
+        await orchestratorService.fetchInstances({});
+      } catch (err_) {
+        err = err_ as Error;
+      }
+      expect(err?.message).toEqual(errMsg);
+    });
+
+    it('should execute the operation', async () => {
       dataIndexServiceMock.fetchInstances = jest
         .fn()
         .mockResolvedValue(instances);
@@ -151,15 +164,6 @@ describe('OrchestratorService', () => {
       expect(result).toHaveLength(instances.length);
       expect(dataIndexServiceMock.fetchInstances).toHaveBeenCalled();
     });
-
-    it('should not execute the operation when the cache is empty', async () => {
-      workflowCacheServiceMock.isEmpty = jest.fn().mockReturnValue(true);
-
-      const result = await orchestratorService.fetchInstances({});
-
-      expect(result).toHaveLength(0);
-      expect(dataIndexServiceMock.fetchInstances).not.toHaveBeenCalled();
-    });
   });
 
   describe('fetchInstancesTotalCount', () => {
@@ -167,8 +171,23 @@ describe('OrchestratorService', () => {
       jest.clearAllMocks();
     });
 
-    it('should execute the operation when the cache is not empty', async () => {
-      workflowCacheServiceMock.isEmpty = jest.fn().mockReturnValue(false);
+    it('should throw error when data index returns error', async () => {
+      let err: Error | null = null;
+      const errMsg = 'Failed to get instances total count';
+      dataIndexServiceMock.fetchInstancesTotalCount = jest
+        .fn()
+        .mockImplementation(() => {
+          throw new Error(errMsg);
+        });
+      try {
+        await orchestratorService.fetchInstancesTotalCount();
+      } catch (err_) {
+        err = err_ as Error;
+      }
+      expect(err?.message).toEqual(errMsg);
+    });
+
+    it('should execute the operation', async () => {
       dataIndexServiceMock.fetchInstancesTotalCount = jest
         .fn()
         .mockResolvedValue(instances.length);
@@ -178,17 +197,6 @@ describe('OrchestratorService', () => {
       expect(result).toBe(instances.length);
       expect(dataIndexServiceMock.fetchInstancesTotalCount).toHaveBeenCalled();
     });
-
-    it('should not execute the operation when the cache is empty', async () => {
-      workflowCacheServiceMock.isEmpty = jest.fn().mockReturnValue(true);
-
-      const result = await orchestratorService.fetchInstancesTotalCount();
-
-      expect(result).toBe(0);
-      expect(
-        dataIndexServiceMock.fetchInstancesTotalCount,
-      ).not.toHaveBeenCalled();
-    });
   });
 
   describe('fetchWorkflowOverviews', () => {
@@ -196,8 +204,23 @@ describe('OrchestratorService', () => {
       jest.clearAllMocks();
     });
 
-    it('should execute the operation when the cache is not empty', async () => {
-      workflowCacheServiceMock.isEmpty = jest.fn().mockReturnValue(false);
+    it('should throw error when data index returns error', async () => {
+      let err: Error | null = null;
+      const errMsg = 'Failed to get workflows overview';
+      sonataFlowServiceMock.fetchWorkflowOverviews = jest
+        .fn()
+        .mockImplementation(() => {
+          throw new Error(errMsg);
+        });
+      try {
+        await orchestratorService.fetchWorkflowOverviews({});
+      } catch (err_) {
+        err = err_ as Error;
+      }
+      expect(err?.message).toEqual(errMsg);
+    });
+
+    it('should execute the operation', async () => {
       sonataFlowServiceMock.fetchWorkflowOverviews = jest
         .fn()
         .mockResolvedValue(workflowOverviews);
@@ -206,17 +229,6 @@ describe('OrchestratorService', () => {
 
       expect(result).toHaveLength(workflowOverviews.length);
       expect(sonataFlowServiceMock.fetchWorkflowOverviews).toHaveBeenCalled();
-    });
-
-    it('should not execute the operation when the cache is empty', async () => {
-      workflowCacheServiceMock.isEmpty = jest.fn().mockReturnValue(true);
-
-      const result = await orchestratorService.fetchWorkflowOverviews({});
-
-      expect(result).toHaveLength(0);
-      expect(
-        sonataFlowServiceMock.fetchWorkflowOverviews,
-      ).not.toHaveBeenCalled();
     });
   });
 

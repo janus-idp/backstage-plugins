@@ -54,9 +54,6 @@ export class OrchestratorService {
   public async fetchInstances(args: {
     pagination?: Pagination;
   }): Promise<ProcessInstance[]> {
-    if (this.workflowCacheService.isEmpty()) {
-      return [];
-    }
     return await this.dataIndexService.fetchInstances({
       definitionIds: this.workflowCacheService.definitionIds,
       pagination: args.pagination,
@@ -64,9 +61,6 @@ export class OrchestratorService {
   }
 
   public async fetchInstancesTotalCount(): Promise<number> {
-    if (this.workflowCacheService.isEmpty()) {
-      return 0;
-    }
     return await this.dataIndexService.fetchInstancesTotalCount(
       this.workflowCacheService.definitionIds,
     );
@@ -149,9 +143,6 @@ export class OrchestratorService {
   public async fetchWorkflowOverviews(args: {
     pagination?: Pagination;
   }): Promise<WorkflowOverview[] | undefined> {
-    if (this.workflowCacheService.isEmpty()) {
-      return [];
-    }
     return await this.sonataFlowService.fetchWorkflowOverviews({
       definitionIds: this.workflowCacheService.definitionIds,
       pagination: args.pagination,
