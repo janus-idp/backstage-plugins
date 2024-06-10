@@ -16,7 +16,6 @@ import {
   isResourcedPolicy,
   PermissionAction,
   PluginPermissionMetaData,
-  Policy,
   PolicyDetails,
   ResourcedPolicy,
   RoleBasedPolicy,
