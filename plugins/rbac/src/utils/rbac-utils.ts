@@ -17,6 +17,7 @@ import {
   PermissionAction,
   PluginPermissionMetaData,
   Policy,
+  PolicyDetails,
   ResourcedPolicy,
   RoleBasedPolicy,
   RoleConditionalPolicyDecision,
@@ -147,11 +148,12 @@ const getPolicy = (str: string) => {
 const getAllPolicies = (
   permission: string,
   allowedPolicies: RowPolicy[],
-  policies: Policy[],
+  policies: PolicyDetails[],
 ) => {
   const deniedPolicies = policies?.reduce((acc, p) => {
+    const perm = isResourcedPolicy(p) ? p.resourceType : p.name;
     if (
-      permission === p.permission &&
+      permission === perm &&
       !allowedPolicies.find(
         allowedPolicy =>
           allowedPolicy.policy.toLowerCase() === p.policy?.toLowerCase(),
@@ -221,7 +223,7 @@ export const getPermissionsData = (
       p.permission,
       Array.from(p.policies),
       permissionPolicies.find(pp => pp.pluginId === p.plugin)
-        ?.policies as Policy[],
+        ?.policies as PolicyDetails[],
     ),
   })) as PermissionsData[];
 };
