@@ -1,6 +1,6 @@
 import * as React from 'react';
 import AceEditor from 'react-ace';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import { Content } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
@@ -8,7 +8,10 @@ import { useApi } from '@backstage/core-plugin-api';
 import { Grid } from '@material-ui/core';
 import jsYaml from 'js-yaml';
 
-import { BreadcrumbView } from '../../components/BreadcrumbView/BreadcrumbView';
+import {
+  BreadcrumbView,
+  getPath,
+} from '../../components/BreadcrumbView/BreadcrumbView';
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import { kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
@@ -32,7 +35,11 @@ import { IstioConfigDetailsOverview } from './IstioConfigDetailsOverview';
 export const IstioConfigDetailsPage = (props: {
   entity?: boolean;
 }): React.JSX.Element => {
-  const { namespace, objectType, object } = useParams();
+  const path = getPath(useLocation());
+  const namespace = path.namespace;
+  const object = path.item;
+  const objectType = path.istioType;
+
   const kialiClient = useApi(kialiApiRef);
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const [istioConfig, setIstioConfig] = React.useState<IstioConfigDetails>();
