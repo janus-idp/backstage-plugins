@@ -26,8 +26,8 @@ export const KialiHeader = () => {
           label={homeCluster?.name}
         />
       </Tooltip>
-      <HelpKiali color="white" />
-      <MessageCenter color="white" />
+      <HelpKiali />
+      <MessageCenter />
       {kialiState.authentication.session && (
         <div
           style={{
@@ -36,7 +36,7 @@ export const KialiHeader = () => {
             justifyContent: 'space-between',
           }}
         >
-          <span style={{ margin: '10px', color: 'white' }}>
+          <span style={{ margin: '10px' }}>
             <b>User : </b>
             {kialiState.authentication.session.username || 'anonymous'}
           </span>

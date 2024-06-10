@@ -56,7 +56,6 @@ export const NamespaceSelector = (props: { page?: boolean }) => {
         onChange={handleChange}
         renderValue={selected => (selected as string[]).join(', ')}
         MenuProps={MenuProps}
-        style={{ color: props.page ? 'white' : undefined }}
       >
         {(kialiState.namespaces.items || []).map(ns => (
           <MenuItem key={ns.name} value={ns.name}>
