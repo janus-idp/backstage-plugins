@@ -81,7 +81,7 @@ export class ScaffolderService {
     } catch (err: unknown) {
       this.logger.error(
         `Error getting working directory to execute action ${actionExecutionContext.actionId}`,
-        err,
+        err as Error,
       );
       throw err;
     }
