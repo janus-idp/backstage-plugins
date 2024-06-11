@@ -141,17 +141,13 @@ describe('OrchestratorService', () => {
     });
 
     it('should throw error when data index returns error', async () => {
-      let err: Error | null = null;
       const errMsg = 'Failed to load instances';
       dataIndexServiceMock.fetchInstances = jest.fn().mockImplementation(() => {
         throw new Error(errMsg);
       });
-      try {
-        await orchestratorService.fetchInstances({});
-      } catch (err_) {
-        err = err_ as Error;
-      }
-      expect(err?.message).toEqual(errMsg);
+
+      const promise = orchestratorService.fetchInstances({});
+      await expect(promise).rejects.toThrow(errMsg);
     });
 
     it('should execute the operation', async () => {
@@ -172,19 +168,14 @@ describe('OrchestratorService', () => {
     });
 
     it('should throw error when data index returns error', async () => {
-      let err: Error | null = null;
       const errMsg = 'Failed to get instances total count';
       dataIndexServiceMock.fetchInstancesTotalCount = jest
         .fn()
         .mockImplementation(() => {
           throw new Error(errMsg);
         });
-      try {
-        await orchestratorService.fetchInstancesTotalCount();
-      } catch (err_) {
-        err = err_ as Error;
-      }
-      expect(err?.message).toEqual(errMsg);
+      const promise = orchestratorService.fetchInstancesTotalCount();
+      await expect(promise).rejects.toThrow(errMsg);
     });
 
     it('should execute the operation', async () => {
@@ -205,19 +196,15 @@ describe('OrchestratorService', () => {
     });
 
     it('should throw error when data index returns error', async () => {
-      let err: Error | null = null;
       const errMsg = 'Failed to get workflows overview';
       sonataFlowServiceMock.fetchWorkflowOverviews = jest
         .fn()
         .mockImplementation(() => {
           throw new Error(errMsg);
         });
-      try {
-        await orchestratorService.fetchWorkflowOverviews({});
-      } catch (err_) {
-        err = err_ as Error;
-      }
-      expect(err?.message).toEqual(errMsg);
+
+      const promise = orchestratorService.fetchWorkflowOverviews({});
+      await expect(promise).rejects.toThrow();
     });
 
     it('should execute the operation', async () => {
