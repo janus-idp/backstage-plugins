@@ -17,9 +17,9 @@
   "npm": {
     "minimumReleaseAge": "1 day"
   },
-  "major": {
-    "dependencyDashboardApproval": true
-  },
+  "dependencyDashboardApproval": true,
+  "recreateWhen": "never",
+  "prCreation": "status-success",
   "packageRules": [
     {
       "description": "Do automerge and pin actions in GH workflows, except for versions starting with 0",
@@ -136,6 +136,43 @@
       "matchCurrentVersion": "0.26.1",
       "groupName": "Keycloak dependency"
     },
+    {
+      "description": "disable updates to the kubernetes client. Lock it down to the same version as Backstage",
+      "enabled": false,
+      "matchDatasources": [
+        "npm"
+      ],
+      "matchCurrentVersion": "0.20.0",
+      "matchPackageNames": [
+        "@kubernetes/client-node"
+      ],
+      "groupName": "Kubernetes client dependency"
+    },    
+    {
+      "description": "disable updates playwright.  Breaking changes in 1.44.1",
+      "enabled": false,
+      "matchDatasources": [
+        "npm"
+      ],
+      "matchCurrentVersion": "1.41.2",
+      "matchPackageNames": [
+        "@playwright/test"
+      ],
+      "groupName": "Playwright test dependency"
+    },    
+    {
+      "description": "disable updates to storybook.  Breaking changes in 7.6.19",
+      "enabled": false,
+      "matchDatasources": [
+        "npm"
+      ],
+      "matchCurrentVersion": "7.5.3",
+      "matchPackageNames": [
+        "@storybook/react-webpack5"
+      ],
+      "groupName": "Storybook react webpack5 dependency"
+    },    
+
     {
       "matchFileNames": [
         "plugins/orchestrator*/**"

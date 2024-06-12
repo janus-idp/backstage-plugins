@@ -1,7 +1,7 @@
 {
   "name": "@janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor-dynamic",
   "description": "The scaffolder-relation-processor backend module for the catalog plugin.",
-  "version": "0.1.0",
+  "version": "1.0.3",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
@@ -11,7 +11,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "supported-versions": "1.26.5"
   },
   "exports": {
     ".": {
@@ -37,14 +38,20 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/janus-idp/backstage-plugins",
-    "directory": "plugins/catalog"
+    "directory": "plugins/catalog-backend-module-scaffolder-relation-processor"
   },
   "keywords": [
+    "support:tech-preview",
+    "lifecycle:active",
     "backstage",
     "plugin"
   ],
-  "homepage": "https://janus-idp.io/",
+  "homepage": "https://red.ht/rhdh",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "maintainers": [
+    "@janus-idp/maintainers-plugins"
+  ],
+  "author": "Red Hat",
   "bundleDependencies": true,
   "peerDependencies": {
     "@backstage/backend-common": "^0.22.0",

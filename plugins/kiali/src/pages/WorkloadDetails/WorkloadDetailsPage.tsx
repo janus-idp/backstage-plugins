@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAsyncFn, useDebounce } from 'react-use';
 
 import { Content, EmptyState } from '@backstage/core-components';
@@ -7,7 +7,10 @@ import { useApi } from '@backstage/core-plugin-api';
 
 import { CircularProgress, Tab, Tabs } from '@material-ui/core';
 
-import { BreadcrumbView } from '../../components/BreadcrumbView/BreadcrumbView';
+import {
+  BreadcrumbView,
+  getPath,
+} from '../../components/BreadcrumbView/BreadcrumbView';
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { IstioMetrics } from '../../components/Metrics/IstioMetrics';
@@ -24,7 +27,9 @@ import { WorkloadInfo } from './WorkloadInfo';
 import { WorkloadPodLogs } from './WorkloadPodLogs';
 
 export const WorkloadDetailsPage = (props: { entity?: boolean }) => {
-  const { namespace, workload } = useParams();
+  const path = getPath(useLocation());
+  const namespace = path.namespace;
+  const workload = path.item;
   const kialiClient = useApi(kialiApiRef);
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const [workloadItem, setWorkloadItem] = React.useState<Workload>();

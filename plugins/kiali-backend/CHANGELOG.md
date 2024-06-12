@@ -1,3 +1,46 @@
+## @janus-idp/backstage-plugin-kiali-backend [1.10.22](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.21...@janus-idp/backstage-plugin-kiali-backend@1.10.22) (2024-06-06)
+
+
+### Bug Fixes
+
+* **kiali:** sanitize input for CWE-79 ([#1786](https://github.com/janus-idp/backstage-plugins/issues/1786)) ([9ba95bb](https://github.com/janus-idp/backstage-plugins/commit/9ba95bba7b9d5081829831e797b27f6a286971a4))
+
+## @janus-idp/backstage-plugin-kiali-backend [1.10.21](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.20...@janus-idp/backstage-plugin-kiali-backend@1.10.21) (2024-06-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.10.0
+
+## @janus-idp/backstage-plugin-kiali-backend [1.10.20](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.19...@janus-idp/backstage-plugin-kiali-backend@1.10.20) (2024-06-04)
+
+## @janus-idp/backstage-plugin-kiali-backend [1.10.19](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.18...@janus-idp/backstage-plugin-kiali-backend@1.10.19) (2024-06-03)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.9.0
+
+## @janus-idp/backstage-plugin-kiali-backend [1.10.18](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.17...@janus-idp/backstage-plugin-kiali-backend@1.10.18) (2024-05-31)
+
+## @janus-idp/backstage-plugin-kiali-backend [1.10.17](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.16...@janus-idp/backstage-plugin-kiali-backend@1.10.17) (2024-05-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.10
+
+## @janus-idp/backstage-plugin-kiali-backend [1.10.16](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.15...@janus-idp/backstage-plugin-kiali-backend@1.10.16) (2024-05-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.9
+
 ## @janus-idp/backstage-plugin-kiali-backend [1.10.15](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.14...@janus-idp/backstage-plugin-kiali-backend@1.10.15) (2024-05-16)
 
 

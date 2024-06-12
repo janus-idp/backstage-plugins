@@ -1,7 +1,7 @@
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 
+import { Knex } from 'knex';
 import TypeORMAdapter from 'typeorm-adapter';
 
 import { resolve } from 'path';
@@ -12,7 +12,7 @@ const DEFAULT_SQLITE3_STORAGE_FILE_NAME = 'rbac.sqlite';
 export class CasbinDBAdapterFactory {
   public constructor(
     private readonly config: ConfigApi,
-    private readonly databaseManager: PluginDatabaseManager,
+    private readonly databaseClient: Knex,
   ) {}
 
   public async createAdapter(): Promise<TypeORMAdapter> {
@@ -21,8 +21,8 @@ export class CasbinDBAdapterFactory {
 
     let adapter;
     if (client === 'pg') {
-      const knexClient = await this.databaseManager.getClient();
-      const dbName = await knexClient.client.config.connection.database;
+      const dbName =
+        await this.databaseClient.client.config.connection.database;
 
       const ssl = this.handleSSL(databaseConfig!);
 

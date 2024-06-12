@@ -108,12 +108,23 @@ export const getMembersFromGroup = (group: GroupEntity): number => {
   return membersList || 0;
 };
 
-export const getPluginId = (
+export const getPluginInfo = (
   permissions: PermissionPolicy[],
-  permission: string | undefined,
-): string =>
-  permissions.find(p => p.policies?.find(pol => pol.permission === permission))
-    ?.pluginId || '-';
+  permissionName?: string,
+): { pluginId: string; isResourced: boolean } =>
+  permissions.reduce(
+    (acc: { pluginId: string; isResourced: boolean }, p: PermissionPolicy) => {
+      const policy = p.policies?.find(pol => pol.permission === permissionName);
+      if (policy) {
+        return {
+          pluginId: p.pluginId || '-',
+          isResourced: policy?.isResourced || false,
+        };
+      }
+      return acc;
+    },
+    { pluginId: '-', isResourced: false },
+  );
 
 const getPolicy = (str: string) => {
   const arr = str.split('.');
@@ -174,12 +185,15 @@ export const getPermissionsData = (
           const policiesSet = new Set<{ policy: string; effect: string }>();
           acc.push({
             permission: policy.permission || '-',
-            plugin: getPluginId(permissionPolicies, policy?.permission) || '-',
+            plugin: getPluginInfo(permissionPolicies, policy?.permission)
+              .pluginId,
             policyString: policyString.add(policyTitleCase || 'Use'),
             policies: policiesSet.add({
               policy: policyTitleCase || 'Use',
               effect: policy.effect,
             }),
+            isResourced: getPluginInfo(permissionPolicies, policy?.permission)
+              .isResourced,
           });
         }
       }

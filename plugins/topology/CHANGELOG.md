@@ -1,3 +1,71 @@
+## @janus-idp/backstage-plugin-topology [1.21.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.21.9...@janus-idp/backstage-plugin-topology@1.21.10) (2024-06-07)
+
+
+### Bug Fixes
+
+* **topology:** remove check for catalog entity permission ([#1800](https://github.com/janus-idp/backstage-plugins/issues/1800)) ([fd6ae41](https://github.com/janus-idp/backstage-plugins/commit/fd6ae41f8d4438f58d74dbf1163df25c335eef61))
+
+## @janus-idp/backstage-plugin-topology [1.21.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.21.8...@janus-idp/backstage-plugin-topology@1.21.9) (2024-06-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.10.0
+
+## @janus-idp/backstage-plugin-topology [1.21.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.21.7...@janus-idp/backstage-plugin-topology@1.21.8) (2024-06-04)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-topology-common:** upgraded to 1.0.2
+
+## @janus-idp/backstage-plugin-topology [1.21.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.21.6...@janus-idp/backstage-plugin-topology@1.21.7) (2024-06-03)
+
+## @janus-idp/backstage-plugin-topology [1.21.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.21.5...@janus-idp/backstage-plugin-topology@1.21.6) (2024-06-03)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.9.0
+
+## @janus-idp/backstage-plugin-topology [1.21.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.21.4...@janus-idp/backstage-plugin-topology@1.21.5) (2024-05-31)
+
+## @janus-idp/backstage-plugin-topology [1.21.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.21.3...@janus-idp/backstage-plugin-topology@1.21.4) (2024-05-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-topology-common:** upgraded to 1.0.0
+
+## @janus-idp/backstage-plugin-topology [1.21.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.21.2...@janus-idp/backstage-plugin-topology@1.21.3) (2024-05-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-topology-common:** upgraded to 1.0.0
+
+## @janus-idp/backstage-plugin-topology [1.21.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.21.1...@janus-idp/backstage-plugin-topology@1.21.2) (2024-05-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-topology-common:** upgraded to 1.0.0
+
+## @janus-idp/backstage-plugin-topology [1.21.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.21.0...@janus-idp/backstage-plugin-topology@1.21.1) (2024-05-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-topology-common:** upgraded to 1.0.0
+* **@janus-idp/cli:** upgraded to 1.8.10
+
 ## @janus-idp/backstage-plugin-topology [1.21.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.20.2...@janus-idp/backstage-plugin-topology@1.21.0) (2024-05-21)
 
 

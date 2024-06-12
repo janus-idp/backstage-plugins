@@ -1,4 +1,4 @@
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 import {
   extractWorkflowFormat,
@@ -19,7 +19,7 @@ import { DataIndexService } from './DataIndexService';
 export class SonataFlowService {
   constructor(
     private readonly dataIndexService: DataIndexService,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
   ) {}
 
   public async fetchWorkflowInfoOnService(args: {

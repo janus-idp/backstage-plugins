@@ -7,13 +7,13 @@ import { readFileSync } from 'fs';
 
 export class NodeMailer {
   private readonly transportConfig: Transporter;
-  private readonly from: string;
+  private readonly from: string | undefined;
 
   constructor(
     config: Config,
     private logger: LoggerService,
   ) {
-    const useSecure: boolean = config.getBoolean(
+    const useSecure = config.getOptionalBoolean(
       'feedback.integrations.email.secure',
     );
     const caCertPath = config.getOptionalString(
@@ -21,9 +21,9 @@ export class NodeMailer {
     );
     const customCACert = caCertPath ? readFileSync(caCertPath) : undefined;
 
-    this.from = config.getString('feedback.integrations.email.from');
+    this.from = config.getOptionalString('feedback.integrations.email.from');
     this.transportConfig = createTransport({
-      host: config.getString('feedback.integrations.email.host'),
+      host: config.getOptionalString('feedback.integrations.email.host'),
       port: config.getOptionalNumber('feedback.integrations.email.port') ?? 587,
       auth: {
         user: config.getOptionalString('feedback.integrations.email.auth.user'),

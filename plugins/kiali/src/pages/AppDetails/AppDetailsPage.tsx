@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAsyncFn, useDebounce } from 'react-use';
 
 import { Content, EmptyState } from '@backstage/core-components';
@@ -9,7 +9,10 @@ import { CircularProgress, Tab, Tabs } from '@material-ui/core';
 import { AxiosError } from 'axios';
 
 import { HistoryManager } from '../../app/History';
-import { BreadcrumbView } from '../../components/BreadcrumbView/BreadcrumbView';
+import {
+  BreadcrumbView,
+  getPath,
+} from '../../components/BreadcrumbView/BreadcrumbView';
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { IstioMetrics } from '../../components/Metrics/IstioMetrics';
@@ -25,7 +28,9 @@ import { MetricsObjectTypes } from '../../types/Metrics';
 import { AppInfo } from './AppInfo';
 
 export const AppDetailsPage = (props: { entity?: boolean }) => {
-  const { namespace, app } = useParams();
+  const path = getPath(useLocation());
+  const namespace = path.namespace;
+  const app = path.item;
   const kialiClient = useApi(kialiApiRef);
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const [appItem, setAppItem] = React.useState<App>();

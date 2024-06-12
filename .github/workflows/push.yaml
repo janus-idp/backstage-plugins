@@ -8,7 +8,7 @@ on:
       - main
 concurrency:
   group: push
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   test:

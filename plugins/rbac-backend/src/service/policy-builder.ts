@@ -3,7 +3,11 @@ import {
   DatabaseManager,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -12,8 +16,8 @@ import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 import { newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
-import { Logger } from 'winston';
 
+import { DefaultAuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
@@ -31,7 +35,7 @@ export class PolicyBuilder {
   public static async build(
     env: {
       config: Config;
-      logger: Logger;
+      logger: LoggerService;
       discovery: PluginEndpointDiscovery;
       identity: IdentityApi;
       permissions: PermissionEvaluator;
@@ -53,11 +57,13 @@ export class PolicyBuilder {
       'permission',
     );
 
+    const databaseClient = await databaseManager.getClient();
+
     const { auth, httpAuth } = createLegacyAuthAdapters(env);
 
     const adapter = await new CasbinDBAdapterFactory(
       env.config,
-      databaseManager,
+      databaseClient,
     ).createAdapter();
 
     const enf = await newEnforcer(newModelFromString(MODEL), adapter);
@@ -68,10 +74,12 @@ export class PolicyBuilder {
     const catalogDBClient = await DatabaseManager.fromConfig(env.config)
       .forPlugin('catalog')
       .getClient();
+
     const rm = new BackstageRoleManager(
       catalogClient,
       env.logger,
       catalogDBClient,
+      databaseClient,
       env.config,
       auth,
     );
@@ -80,18 +88,25 @@ export class PolicyBuilder {
     await enf.buildRoleLinks();
 
     await migrate(databaseManager);
-    const knex = await databaseManager.getClient();
 
-    const conditionStorage = new DataBaseConditionalStorage(knex);
+    const conditionStorage = new DataBaseConditionalStorage(databaseClient);
 
-    const policyMetadataStorage = new DataBasePolicyMetadataStorage(knex);
-    const roleMetadataStorage = new DataBaseRoleMetadataStorage(knex);
+    const policyMetadataStorage = new DataBasePolicyMetadataStorage(
+      databaseClient,
+    );
+    const roleMetadataStorage = new DataBaseRoleMetadataStorage(databaseClient);
     const enforcerDelegate = new EnforcerDelegate(
       enf,
       policyMetadataStorage,
       roleMetadataStorage,
-      knex,
+      databaseClient,
     );
+
+    const defAuditLog = new DefaultAuditLogger({
+      logger: env.logger,
+      authService: auth,
+      httpAuthService: httpAuth,
+    });
 
     const options: RouterOptions = {
       config: env.config,
@@ -100,11 +115,12 @@ export class PolicyBuilder {
       identity: env.identity,
       policy: await RBACPermissionPolicy.build(
         env.logger,
+        defAuditLog,
         env.config,
         conditionStorage,
         enforcerDelegate,
         roleMetadataStorage,
-        knex,
+        databaseClient,
       ),
       auth: auth,
       httpAuth: httpAuth,
@@ -133,6 +149,7 @@ export class PolicyBuilder {
       conditionStorage,
       pluginIdProvider,
       roleMetadataStorage,
+      defAuditLog,
     );
     return server.serve();
   }

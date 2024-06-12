@@ -1,8 +1,7 @@
 import React from 'react';
-import { Location, useLocation, useNavigate } from 'react-router-dom';
+import { Location, useLocation } from 'react-router-dom';
 
 import { HeaderTabs } from '@backstage/core-components';
-import { useRouteRef } from '@backstage/core-plugin-api';
 
 import {
   appsRouteRef,
@@ -33,22 +32,21 @@ export const KialiTabs = () => {
   const path = getPath(loc);
   const [selectedTab, setSelectedTab] = React.useState<number>(path);
   const tabs = [
-    { label: 'Overview', route: useRouteRef(overviewRouteRef) },
-    { label: 'Workloads', route: useRouteRef(workloadsRouteRef) },
-    { label: 'Services', route: useRouteRef(servicesRouteRef) },
-    { label: 'Applications', route: useRouteRef(appsRouteRef) },
-    { label: 'Istio Config', route: useRouteRef(istioConfigRouteRef) },
+    { label: 'Overview', route: overviewRouteRef.path },
+    { label: 'Workloads', route: workloadsRouteRef.path },
+    { label: 'Services', route: servicesRouteRef.path },
+    { label: 'Applications', route: appsRouteRef.path },
+    { label: 'Istio Config', route: istioConfigRouteRef.path },
   ];
-  const navigate = useNavigate();
+
   return (
     <HeaderTabs
       selectedIndex={selectedTab}
       onChange={(index: number) => {
-        navigate(tabs[index].route());
         setSelectedTab(index);
       }}
       tabs={tabs.map(({ label }, index) => ({
-        id: index.toString(),
+        id: tabs[index].route,
         label,
       }))}
     />

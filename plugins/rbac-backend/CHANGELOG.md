@@ -1,3 +1,81 @@
+## @janus-idp/backstage-plugin-rbac-backend [4.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.1.0...@janus-idp/backstage-plugin-rbac-backend@4.2.0) (2024-06-05)
+
+
+### Features
+
+* **rbac:** add type checks with generics for audit log ([#1789](https://github.com/janus-idp/backstage-plugins/issues/1789)) ([ac69838](https://github.com/janus-idp/backstage-plugins/commit/ac698382f64fe91e0f9f9232dd3eecd9cc9247be))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-audit-log-node:** upgraded to 1.1.0
+
+## @janus-idp/backstage-plugin-rbac-backend [4.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.0.2...@janus-idp/backstage-plugin-rbac-backend@4.1.0) (2024-06-04)
+
+
+### Features
+
+* **rbac:** add audit log for RBAC backend ([#1726](https://github.com/janus-idp/backstage-plugins/issues/1726)) ([e50464b](https://github.com/janus-idp/backstage-plugins/commit/e50464bcb38e9897ddfe208fdeef699e4bfeda3a))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.5.0
+* **@janus-idp/backstage-plugin-rbac-node:** upgraded to 1.1.2
+* **@janus-idp/backstage-plugin-audit-log-node:** upgraded to 1.0.3
+
+## @janus-idp/backstage-plugin-rbac-backend [4.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.0.1...@janus-idp/backstage-plugin-rbac-backend@4.0.2) (2024-06-04)
+
+
+### Bug Fixes
+
+* **rbac:** fix handling condition action conflicts ([#1781](https://github.com/janus-idp/backstage-plugins/issues/1781)) ([966b2b2](https://github.com/janus-idp/backstage-plugins/commit/966b2b200e0ade0ce600901a7853a4a94751df22))
+
+## @janus-idp/backstage-plugin-rbac-backend [4.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.0.0...@janus-idp/backstage-plugin-rbac-backend@4.0.1) (2024-06-03)
+
+
+### Bug Fixes
+
+* **rbac:** add support for scaling ([#1757](https://github.com/janus-idp/backstage-plugins/issues/1757)) ([caddc83](https://github.com/janus-idp/backstage-plugins/commit/caddc832e0df5199a455539d3538635448691c2d))
+
+## @janus-idp/backstage-plugin-rbac-backend [4.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@3.3.0...@janus-idp/backstage-plugin-rbac-backend@4.0.0) (2024-05-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* **rbac:** This will lead to more strict validation on the source of permission policies and roles based on the where the first role is defined.
+
+Improves the validation of the different sources of permission policies and roles. Aims to make policy definition more consistent.
+
+Now checks if a permission policy or role with new member matches the originating role's source and prevents any action if the sources do not match. Exception includes the event of adding
+new permission policies to the RBAC Admin role defined by the configuration file. Sources include 'REST, 'CSV', 'Configuration', and 'legacy'.
+
+Before updating, ensure that you have attempted to migrate all permission policies and roles to a single source. This can be done by checking source information through the REST API and
+by querying the database. Make updates through one of the available avenues: REST API, CSV file, and the database.
+
+To view the originating source for a particular role, query the role-metadata table or use the GET roles endpoint.
+
+* feat(rbac): remove the ability to add permission policies to configuration role
+
+* feat(rbac): remove no longer needed check for source in EnforcerDelegate
+
+* feat(rbac): update yarn lock
+
+* feat(rbac): address review comments
+
+### Features
+
+* **rbac:** improve validation from source ([#1643](https://github.com/janus-idp/backstage-plugins/issues/1643)) ([5f983cb](https://github.com/janus-idp/backstage-plugins/commit/5f983cbc0184e0a8e74f7e89cdff71d5ed5cd2fa))
+
+## @janus-idp/backstage-plugin-rbac-backend [3.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@3.2.0...@janus-idp/backstage-plugin-rbac-backend@3.3.0) (2024-05-29)
+
+
+### Features
+
+* **rbac:** improve conditional policy validation ([#1673](https://github.com/janus-idp/backstage-plugins/issues/1673)) ([15dac91](https://github.com/janus-idp/backstage-plugins/commit/15dac91b673c63a4e7ac41f95296651df2ef8053))
+
 ## @janus-idp/backstage-plugin-rbac-backend [3.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@3.1.1...@janus-idp/backstage-plugin-rbac-backend@3.2.0) (2024-05-21)
 
 

@@ -1,16 +1,17 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 
 import * as Knex from 'knex';
-import { MockClient } from 'knex-mock-client';
-import { Logger } from 'winston';
+import { createTracker, MockClient, Tracker } from 'knex-mock-client';
 
 import { BackstageRoleManager } from '../role-manager/role-manager';
 
 describe('BackstageRoleManager', () => {
   const catalogDBClient = Knex.knex({ client: MockClient });
+  const rbacDBClient = Knex.knex({ client: MockClient });
   const catalogApiMock: any = {
     getEntities: jest.fn().mockImplementation(),
   };
@@ -32,11 +33,42 @@ describe('BackstageRoleManager', () => {
 
     roleManager = new BackstageRoleManager(
       catalogApiMock as CatalogApi,
-      loggerMock as Logger,
+      loggerMock as LoggerService,
       catalogDBClient,
+      rbacDBClient,
       config,
       mockAuthService,
     );
+  });
+
+  describe('initialize', () => {
+    it('should initialize', () => {
+      expect(roleManager).not.toBeUndefined();
+    });
+
+    it('should throw an error whenever max depth is less than 0', () => {
+      let expectedError;
+      let errorRoleManager;
+      const config = newConfigReader(-1);
+
+      try {
+        errorRoleManager = new BackstageRoleManager(
+          catalogApiMock as CatalogApi,
+          loggerMock as LoggerService,
+          catalogDBClient,
+          rbacDBClient,
+          config,
+          mockAuthService,
+        );
+      } catch (error) {
+        expectedError = error;
+      }
+
+      expect(errorRoleManager).toBeUndefined();
+      expect(expectedError).toMatchObject({
+        message: 'Max Depth for RBAC group hierarchy must be greater than zero',
+      });
+    });
   });
 
   describe('unimplemented methods', () => {
@@ -1013,8 +1045,9 @@ describe('BackstageRoleManager', () => {
 
       const roleManagerMaxDepth = new BackstageRoleManager(
         catalogApiMock as CatalogApi,
-        loggerMock as Logger,
+        loggerMock as LoggerService,
         catalogDBClient,
+        rbacDBClient,
         config,
         mockAuthService,
       );
@@ -1228,6 +1261,224 @@ describe('BackstageRoleManager', () => {
     });
   });
 
+  describe('hasLink with database', () => {
+    let tracker: Tracker;
+
+    beforeEach(() => {
+      tracker = createTracker(rbacDBClient);
+    });
+
+    afterEach(() => {
+      tracker.reset();
+    });
+
+    // user:default/mike should inherits from role:default/somerole
+    //
+    //     Hierarchy:
+    //
+    //  user:default/mike -> role:default/somerole
+    //
+    it('should return true for hasLink when user:default/mike inherits from role:default/somerole when using the database', async () => {
+      const user = [{ v0: 'user:default/mike', v1: 'role:default/somerole' }];
+
+      roleManager.isPGClient = jest.fn().mockImplementation(() => true);
+
+      tracker.on.select('casbin_rule').response(user);
+
+      roleManager.addLink('user:default/mike', 'role:default/somerole');
+
+      const result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/somerole',
+      );
+
+      expect(result).toBeTruthy();
+    });
+
+    // user:default/mike should not inherits role:default/team-c from group:default/team-c
+    //
+    //     Hierarchy:
+    //
+    // group:default/team-a       group:default/team-c -> role:default/team-c
+    //       |
+    // group:default/team-b
+    //       |
+    // user:default/mike
+    //
+    it('should return false for hasLink, when user:default/mike does not inherits role:default/team-c from group:default/team-c with database', async () => {
+      roleManager.isPGClient = jest.fn().mockImplementation(() => true);
+
+      tracker.on.select('casbin_rule').response([]);
+
+      const groupBMock = createGroupEntity('team-b', 'team-a', ['mike']);
+      const groupAMock = createGroupEntity('team-a', undefined, ['team-b']);
+
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupBMock] };
+        }
+        return { items: [groupAMock, groupBMock] };
+      });
+
+      roleManager.addLink('group:default/team-c', 'role:default/team-c');
+
+      const result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/team-c',
+      );
+      expect(result).toBeFalsy();
+    });
+
+    // user:default/mike should inherits role from group:default/team-e, and we have a complex graph
+    // So return true on call hasLink.
+    //
+    //     Hierarchy:
+    //                                                        role:default/team-e
+    //                                                                ↓
+    //                                     |----------------- group:default/team-e ---------|
+    //                                     ↓                                                |
+    //       | ----------------- group:default/team-f ----|                                 |
+    //       ↓                                            ↓                                 |
+    // group:default/team-a -> role:default/team-a   group:default/team-b                   |
+    //       ↓                                            ↓                                 ↓
+    // group:default/team-c -> role:default/team-c   group:default/team-d         group:default/team-g -> role:default/team-g
+    //               ↓                                    ↓                                 ↓
+    //               user:default/mike -------------------|---------------------------------|
+    //
+    it('should return true for hasLink, when user:default/mike inherits role from group tree with group:default/team-e, complex tree with database', async () => {
+      const data = [{ v0: 'group:default/team-e', v1: 'role:default/team-e' }];
+      roleManager.isPGClient = jest.fn().mockImplementation(() => true);
+
+      tracker.on.select('casbin_rule').response(data);
+
+      const groupCMock = createGroupEntity('team-c', 'team-a', [], ['mike']);
+      const groupDMock = createGroupEntity('team-d', 'team-b', [], ['mike']);
+      const groupAMock = createGroupEntity('team-a', 'team-f', ['team-c']);
+      const groupBMock = createGroupEntity('team-b', 'team-f', ['team-d']);
+      const groupFMock = createGroupEntity('team-f', 'team-e', [
+        'team-a',
+        'team-b',
+      ]);
+      const groupEMock = createGroupEntity('team-e', undefined, [
+        'team-f',
+        'team-g',
+      ]);
+      const groupGMock = createGroupEntity('team-g', 'team-e', [], ['mike']);
+
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupCMock, groupDMock, groupGMock] };
+        }
+        return {
+          items: [
+            groupCMock,
+            groupDMock,
+            groupAMock,
+            groupBMock,
+            groupFMock,
+            groupEMock,
+            groupGMock,
+          ],
+        };
+      });
+
+      roleManager.addLink('group:default/team-a', 'role:default/team-a');
+      roleManager.addLink('group:default/team-c', 'role:default/team-c');
+      roleManager.addLink('group:default/team-e', 'role:default/team-e');
+      roleManager.addLink('group:default/team-g', 'role:default/team-g');
+
+      const result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/team-e',
+      );
+      expect(result).toBeTruthy();
+    });
+
+    // user:default/mike should inherits role from group:default/team-a, but we have cycle dependency: team-a -> team-c.
+    // So return false on call hasLink.
+    //
+    //     Hierarchy:
+    //
+    // group:default/team-a -> role:default/team-a   group:default/team-b
+    //       ↓       ↑                                    ↓
+    // group:default/team-c -> role:default/team-c   group:default/team-d
+    //               ↓                                    ↓
+    //               user:default/mike -------------------|
+    //
+    it('should return false for hasLink, when user:default/mike inherits role from group tree with group:default/team-a, but we cycle dependency with database', async () => {
+      const data = [{ v0: 'group:default/team-a', v1: 'role:default/team-a' }];
+
+      tracker.on.select('casbin_rule').response(data);
+
+      tracker.on
+        .select('select "v0" from "casbin_rule" where "v1" = ?')
+        .response(['group:default/team-a']);
+      const groupCMock = createGroupEntity('team-c', 'team-a', [], ['mike']);
+      const groupDMock = createGroupEntity('team-d', 'team-b', [], ['mike']);
+      const groupAMock = createGroupEntity('team-a', 'team-c', ['team-c']);
+      const groupBMock = createGroupEntity('team-b', undefined, ['team-d']);
+
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupCMock, groupDMock] };
+        }
+        return { items: [groupCMock, groupDMock, groupAMock, groupBMock] };
+      });
+
+      roleManager.addLink('group:default/team-a', 'role:default/team-a');
+      roleManager.addLink('group:default/team-c', 'role:default/team-c');
+
+      const result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/team-a',
+      );
+      expect(result).toBeFalsy();
+      expect(loggerMock.warn).toHaveBeenCalledWith(
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-c"]]',
+      );
+    });
+
+    // user:default/mike should inherits role:default/team-a from group:default/team-a
+    //
+    //     Hierarchy:
+    //
+    // group:default/team-a -x-> role:default/team-a  group:default/team-b
+    //       |                                             |
+    // group:default/team-c                     group:default/team-d
+    //       |                                             |
+    //       |--------user:default/mike -------------------|
+    //
+    it('should return false for hasLink, when user:default/mike originally inherits role:default/team-a group tree with group:default/team-a but connection has been removed in database', async () => {
+      roleManager.isPGClient = jest.fn().mockImplementation(() => true);
+
+      tracker.on.select('casbin_rule').response([]);
+
+      const groupCMock = createGroupEntity('team-c', 'team-a', [], ['mike']);
+      const groupDMock = createGroupEntity('team-d', 'team-b', [], ['mike']);
+      const groupAMock = createGroupEntity('team-a', undefined, ['team-c']);
+      const groupBMock = createGroupEntity('team-b', undefined, ['team-d']);
+
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupCMock, groupDMock] };
+        }
+        return { items: [groupAMock, groupBMock, groupCMock, groupDMock] };
+      });
+
+      roleManager.addLink('group:default/team-a', 'role:default/team-a');
+
+      const result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/team-a',
+      );
+      expect(result).toBeFalsy();
+    });
+  });
+
   describe('getRoles returns roles per user', () => {
     it('should returns role per user', async () => {
       roleManager.addLink('user:default/test', 'role:default/rbac_admin');
@@ -1281,6 +1532,114 @@ describe('BackstageRoleManager', () => {
       // should return empty array for group
       roles = await roleManager.getRoles('group:default/team-a');
       expect(roles.length).toBe(0);
+
+      // should return empty array for role
+      roles = await roleManager.getRoles('role:default/rbac_admin');
+      expect(roles.length).toBe(0);
+    });
+  });
+
+  describe('getRoles returns roles per user with database', () => {
+    let tracker: Tracker;
+
+    beforeEach(() => {
+      tracker = createTracker(rbacDBClient);
+    });
+
+    afterEach(() => {
+      tracker.reset();
+    });
+
+    it('should returns role per user', async () => {
+      roleManager.isPGClient = jest.fn().mockImplementation(() => true);
+
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+
+        if (hasMember && hasMember[0] === 'user:default/test') {
+          return { items: [] };
+        }
+        if (hasMember && hasMember[0] === 'user:default/test-two') {
+          return { items: [] };
+        }
+        if (hasMember && hasMember[0] === 'user:default/test-three') {
+          return { items: [] };
+        }
+        return { items: [] };
+      });
+
+      roleManager.addLink('user:default/test', 'role:default/rbac_admin');
+
+      let data = [{ v0: 'user:default/test', v1: 'role:default/rbac_admin' }];
+
+      tracker.on.select('casbin_rule').response(data);
+
+      let roles = await roleManager.getRoles('user:default/test');
+      expect(roles.length).toBe(1);
+      expect(roles[0]).toEqual('role:default/rbac_admin');
+
+      roleManager.addLink('user:default/test-two', 'role:default/rbac_admin');
+
+      tracker.resetHandlers();
+
+      data = [{ v0: 'user:default/test-two', v1: 'role:default/rbac_admin' }];
+
+      tracker.on.select('casbin_rule').response(data);
+
+      roles = await roleManager.getRoles('user:default/test-two');
+      expect(roles.length).toBe(1);
+      expect(roles[0]).toEqual('role:default/rbac_admin');
+
+      roleManager.addLink(
+        'user:default/test-three',
+        'role:default/rbac_admin_test',
+      );
+
+      tracker.resetHandlers();
+
+      data = [
+        { v0: 'user:default/test-three', v1: 'role:default/rbac_admin_test' },
+      ];
+
+      tracker.on.select('casbin_rule').response(data);
+
+      roles = await roleManager.getRoles('user:default/test-three');
+      expect(roles.length).toBe(1);
+      expect(roles[0]).toEqual('role:default/rbac_admin_test');
+    });
+
+    it('getRoles returns role for user inherited from group', async () => {
+      roleManager.isPGClient = jest.fn().mockImplementation(() => true);
+
+      const teamAGroup = createGroupEntity('team-a', undefined, [], ['test']);
+
+      roleManager.addLink('group:default/team-a', 'role:default/rbac_admin');
+
+      catalogApiMock.getEntities.mockImplementation((_arg: any) => {
+        return { items: [teamAGroup] };
+      });
+
+      const data = [
+        { v0: 'group:default/team-a', v1: 'role:default/rbac_admin' },
+      ];
+
+      tracker.on.select('casbin_rule').response(data);
+
+      let roles = await roleManager.getRoles('user:default/test');
+      expect(roles.length).toBe(1);
+      expect(roles[0]).toEqual('role:default/rbac_admin');
+
+      tracker.on
+        .select('select "v1" from "casbin_rule" where "v0" = ?')
+        .response([]);
+
+      // should return empty array for group
+      roles = await roleManager.getRoles('group:default/team-a');
+      expect(roles.length).toBe(0);
+
+      tracker.on
+        .select('select "v1" from "casbin_rule" where "v0" = ?')
+        .response([]);
 
       // should return empty array for role
       roles = await roleManager.getRoles('role:default/rbac_admin');

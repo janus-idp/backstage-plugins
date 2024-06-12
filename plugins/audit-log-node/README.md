@@ -14,7 +14,7 @@ yarn workspace <package/plugin> add @janus-idp/backstage-plugin-audit-log-node
 
 The audit logging node package contains a helper class for generating audit logs with a common structure, as well as logging them.
 
-The `auditLog` and `auditErrorLog` functions can be used to log out an audit log using the backstage `LoggerService`. You can provide a log level to the `auditLog` function. The supported levels are: `info`, `debug`, `warn`, and `error`.
+The `auditLog` function can be used to log out an audit log using the backstage `LoggerService`. You can provide a log level to the `auditLog` function. The supported levels are: `info`, `debug`, `warn`, and `error`. If no log level is provided, it defaults to the `info` level.
 
 Alternatively, if you want to generate the audit log object (does not contain message) without it being logged out for you, the `createAuditLogDetails` helper function of the `DefaultAuditLogger` can be used.
 
@@ -47,20 +47,19 @@ The `getActorId` helper function grabs the specified entityRef of the user or se
 
 #### Audit Log Example
 
-In the following example, we add a simple audit log for the `/health` endpoint of a plugin's router.
+In the following example, we add a simple audit log for the `/health` endpoint of a plugin's router to the `debug` log level.
 
 ```ts plugins/test/src/service/router.ts
-/* highlight-add-start */
-
-/* highlight-add-end */
-
 import {
   AuthService,
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
 
+/* highlight-add-start */
 import { DefaultAuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+
+/* highlight-add-end */
 
 export interface RouterOptions {
   logger: LoggerService;
@@ -93,6 +92,7 @@ export async function createRouter(
     auditLogger.auditLog({
       eventName: 'HealthEndpointHit',
       stage: 'completion',
+      status: 'succeeded',
       level: 'debug',
       request,
       response: {
@@ -118,20 +118,19 @@ Assuming the `user:default/tester` user hit requested this endpoint, something s
 
 #### Audit Log Error Example
 
-In the following example, we utilize the `auditErrorLog` utility function to generate and output an error log:
+In the following example, we utilize the `auditLog` utility function to generate and output an error log to the `error` log level:
 
 ```ts plugins/test/src/service/router.ts
-/* highlight-add-start */
-
-/* highlight-add-end */
-
 import {
   AuthService,
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
 
+/* highlight-add-start */
 import { DefaultAuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+
+/* highlight-add-end */
 
 export interface RouterOptions {
   logger: LoggerService;
@@ -167,9 +166,11 @@ export async function createRouter(
       });
     } catch (err) {
       /* highlight-add-start */
-      auditLogger.auditErrorLog({
+      auditLogger.auditLog({
         eventName: 'ErrorEndpointHit',
         stage: 'completion',
+        status: 'failed',
+        level: 'error',
         request,
         response: {
           status: 501,

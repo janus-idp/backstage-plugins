@@ -1,15 +1,39 @@
-import { RoleBasedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
+import Knex from 'knex';
 
-import { RoleMetadataStorage } from '../database/role-metadata';
+import {
+  RoleBasedPolicy,
+  Source,
+} from '@janus-idp/backstage-plugin-rbac-common';
+
+import {
+  RoleMetadataDao,
+  RoleMetadataStorage,
+} from '../database/role-metadata';
 import {
   validateEntityReference,
   validateGroupingPolicy,
   validatePolicy,
   validateRole,
+  validateSource,
 } from './policies-validation';
 
+const modifiedBy = 'user:default/some-admin';
+
 const roleMetadataStorageMock: RoleMetadataStorage = {
-  findRoleMetadata: jest.fn().mockImplementation(),
+  findRoleMetadata: jest
+    .fn()
+    .mockImplementation(
+      async (
+        _roleEntityRef: string,
+        _trx: Knex.Knex.Transaction,
+      ): Promise<RoleMetadataDao> => {
+        return {
+          roleEntityRef: 'role:default/catalog-reader',
+          source: 'rest',
+          modifiedBy,
+        };
+      },
+    ),
   createRoleMetadata: jest.fn().mockImplementation(),
   updateRoleMetadata: jest.fn().mockImplementation(),
   removeRoleMetadata: jest.fn().mockImplementation(),
@@ -206,62 +230,146 @@ describe('rest data validation', () => {
     });
   });
 
+  describe('validateSource', () => {
+    const roleMeta: RoleMetadataDao = {
+      roleEntityRef: 'role:default/catalog-reader',
+      source: 'rest',
+      modifiedBy,
+    };
+
+    it('should not return an error whenever the source that is passed matches the source of the role', async () => {
+      const source: Source = 'rest';
+
+      const err = await validateSource(source, roleMeta);
+
+      expect(err).toBeUndefined();
+    });
+
+    it('should not return an error whenever the source that is passed does not match a legacy source role', async () => {
+      const roleMetaLegacy: RoleMetadataDao = {
+        roleEntityRef: 'role:default/legacy-reader',
+        source: 'legacy',
+        modifiedBy,
+      };
+
+      const source: Source = 'rest';
+
+      const err = await validateSource(source, roleMetaLegacy);
+
+      expect(err).toBeUndefined();
+    });
+
+    it('should return an error whenever the source that is passed does not match the source of the role', async () => {
+      const source: Source = 'csv-file';
+
+      const err = await validateSource(source, roleMeta);
+
+      expect(err).toBeTruthy();
+      expect(err?.message).toEqual(
+        `source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
+      );
+    });
+  });
+
   describe('validateGroupingPolicy', () => {
-    it('should fail validation if the group policy length is greater than two', async () => {
-      const groupPolicy = ['user:default/test', 'role:default/test', 'invalid'];
+    let groupPolicy = ['user:default/test', 'role:default/catalog-reader'];
+    let source: Source = 'rest';
+    const roleMeta: RoleMetadataDao = {
+      roleEntityRef: 'role:default/catalog-reader',
+      source: 'rest',
+      modifiedBy,
+    };
+
+    it('should not return an error during validation', async () => {
+      const err = await validateGroupingPolicy(
+        groupPolicy,
+        roleMetadataStorageMock,
+        source,
+      );
+
+      expect(err).toBeUndefined();
+    });
+
+    it('should return an error if the grouping policy is too long', async () => {
+      groupPolicy = [
+        'user:default/test',
+        'role:default/catalog-reader',
+        'extra',
+      ];
 
       const err = await validateGroupingPolicy(
         groupPolicy,
-        './test',
         roleMetadataStorageMock,
-        'csv-file',
+        source,
       );
+
       expect(err).toBeTruthy();
       expect(err?.message).toEqual(`Group policy should have length 2`);
     });
 
-    it('should fail validation if the member of the group policy starts with role:', async () => {
-      const groupPolicy = ['role:default/test', 'role:default/test'];
+    it('should return an error if a member starts with role:', async () => {
+      groupPolicy = ['role:default/test', 'role:default/catalog-reader'];
 
       const err = await validateGroupingPolicy(
         groupPolicy,
-        './test',
         roleMetadataStorageMock,
-        'csv-file',
+        source,
       );
+
       expect(err).toBeTruthy();
       expect(err?.message).toEqual(
         `Group policy is invalid: ${groupPolicy}. rbac-backend plugin doesn't support role inheritance.`,
       );
     });
 
-    it('should fail validation if the group policy contains two groups for group inheritance', async () => {
-      const groupPolicy = ['group:default/test', 'group:default/test'];
+    it('should return an error for group inheritance (user to group)', async () => {
+      groupPolicy = ['user:default/test', 'group:default/catalog-reader'];
 
       const err = await validateGroupingPolicy(
         groupPolicy,
-        './test',
         roleMetadataStorageMock,
-        'csv-file',
+        source,
       );
+
+      expect(err).toBeTruthy();
+      expect(err?.message).toEqual(
+        `Group policy is invalid: ${groupPolicy}. User membership information could be provided only with help of Catalog API.`,
+      );
+    });
+
+    it('should return an error for group inheritance (group to group)', async () => {
+      groupPolicy = ['group:default/test', 'group:default/catalog-reader'];
+
+      const err = await validateGroupingPolicy(
+        groupPolicy,
+        roleMetadataStorageMock,
+        source,
+      );
+
       expect(err).toBeTruthy();
       expect(err?.message).toEqual(
         `Group policy is invalid: ${groupPolicy}. Group inheritance information could be provided only with help of Catalog API.`,
       );
     });
 
-    it('should fail validation if the group policy is a user to a group for inheritance', async () => {
-      const groupPolicy = ['user:default/test', 'group:default/test'];
+    it('should return an error for mismatch source', async () => {
+      groupPolicy = ['user:default/test', 'role:default/catalog-reader'];
+      source = 'csv-file';
 
       const err = await validateGroupingPolicy(
         groupPolicy,
-        './test',
         roleMetadataStorageMock,
-        'csv-file',
+        source,
       );
+
       expect(err).toBeTruthy();
+      expect(err?.name).toEqual('NotAllowedError');
       expect(err?.message).toEqual(
-        `Group policy is invalid: ${groupPolicy}. User membership information could be provided only with help of Catalog API.`,
+        `Unable to validate role ${groupPolicy}. Cause: source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
       );
     });
   });

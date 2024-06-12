@@ -22,6 +22,9 @@ declare namespace NodeJS {
 declare module 'fs' {
   export interface StatSyncFn {}
 }
+
+declare module 'gitconfiglocal';
+
 declare module 'rollup-plugin-image-files' {
   export default function image(options?: any): any;
 }

@@ -1,9 +1,9 @@
+import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 
 import express from 'express';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
-import { createLogger, transports } from 'winston';
 
 import { handlers } from '../../__fixtures__/handlers';
 import { createRouter } from './router';
@@ -22,9 +22,7 @@ beforeAll(() =>
 afterEach(() => server.restoreHandlers());
 afterAll(() => server.close());
 
-const logger = createLogger({
-  transports: [new transports.Console({ silent: true })],
-});
+const logger = getVoidLogger();
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -32,7 +30,7 @@ describe('createRouter', () => {
   beforeAll(async () => {
     jest.resetAllMocks();
     const router = await createRouter({
-      logger: logger,
+      logger,
       config: new ConfigReader({
         catalog: {
           providers: {
@@ -44,7 +42,10 @@ describe('createRouter', () => {
         },
       }),
     });
-    app = express().use(router);
+    app = express();
+    app.disable("'x-powered-by");
+
+    app = app.use(router);
   });
 
   describe('POST /status', () => {

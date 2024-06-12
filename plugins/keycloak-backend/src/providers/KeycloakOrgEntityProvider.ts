@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
@@ -30,7 +31,6 @@ import KcAdminClient from '@keycloak/keycloak-admin-client';
 import type { Credentials } from '@keycloak/keycloak-admin-client/lib/utils/auth';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
 
 import {
   GroupTransformer,
@@ -78,7 +78,7 @@ export interface KeycloakOrgEntityProviderOptions {
   /**
    * The logger to use.
    */
-  logger: Logger;
+  logger: LoggerService;
 
   /**
    * The function that transforms a user entry in LDAP to an entity.
@@ -161,7 +161,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
     private options: {
       id: string;
       provider: KeycloakProviderConfig;
-      logger: Logger;
+      logger: LoggerService;
       userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
     },
@@ -180,7 +180,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
    * Runs one complete ingestion loop. Call this method regularly at some
    * appropriate cadence.
    */
-  async read(options?: { logger?: Logger }) {
+  async read(options?: { logger?: LoggerService }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -269,7 +269,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
 }
 
 // Helps wrap the timing and logging behaviors
-function trackProgress(logger: Logger) {
+function trackProgress(logger: LoggerService) {
   let timestamp = Date.now();
   let summary: string;
 

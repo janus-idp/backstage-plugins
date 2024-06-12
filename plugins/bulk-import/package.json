@@ -11,12 +11,13 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "supported-versions": "1.26.5"
   },
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "export-dynamic": "janus-cli package export-dynamic-plugin --in-place",
     "lint": "backstage-cli package lint",
     "postpack": "backstage-cli package postpack",
     "postversion": "yarn run export-dynamic",
@@ -48,9 +49,9 @@
     "@backstage/core-app-api": "1.12.5",
     "@backstage/dev-utils": "1.0.32",
     "@backstage/test-utils": "1.5.5",
-    "@janus-idp/cli": "1.7.10",
-    "@playwright/test": "1.41.2",
-    "@redhat-developer/red-hat-developer-hub-theme": "0.0.40",
+    "@janus-idp/cli": "1.8.7",
+    "@playwright/test": "1.44.1",
+    "@redhat-developer/red-hat-developer-hub-theme": "0.0.54",
     "@testing-library/jest-dom": "6.4.5",
     "@testing-library/react": "14.3.1",
     "@testing-library/user-event": "14.5.2",
@@ -67,11 +68,21 @@
     "dist-scalprum",
     "app-config.janus-idp.yaml"
   ],
-  "repository": "github:janus-idp/backstage-plugins",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/bulk-import"
+  },
   "keywords": [
+    "support:tech-preview",
+    "lifecycle:active",
     "backstage",
     "plugin"
   ],
-  "homepage": "https://janus-idp.io/",
-  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
+  "homepage": "https://red.ht/rhdh",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "maintainers": [
+    "@janus-idp/maintainers-plugins"
+  ],
+  "author": "The Backstage Community"
 }

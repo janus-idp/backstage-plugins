@@ -1,3 +1,43 @@
+## @janus-idp/backstage-plugin-ocm-backend [4.0.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@4.0.7...@janus-idp/backstage-plugin-ocm-backend@4.0.8) (2024-06-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.10.0
+
+## @janus-idp/backstage-plugin-ocm-backend [4.0.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@4.0.6...@janus-idp/backstage-plugin-ocm-backend@4.0.7) (2024-06-04)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-ocm-common:** upgraded to 3.0.2
+
+## @janus-idp/backstage-plugin-ocm-backend [4.0.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@4.0.5...@janus-idp/backstage-plugin-ocm-backend@4.0.6) (2024-06-03)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.9.0
+
+## @janus-idp/backstage-plugin-ocm-backend [4.0.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@4.0.4...@janus-idp/backstage-plugin-ocm-backend@4.0.5) (2024-05-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.10
+
+## @janus-idp/backstage-plugin-ocm-backend [4.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@4.0.3...@janus-idp/backstage-plugin-ocm-backend@4.0.4) (2024-05-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.9
+
 ## @janus-idp/backstage-plugin-ocm-backend [4.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@4.0.2...@janus-idp/backstage-plugin-ocm-backend@4.0.3) (2024-05-16)
 
 

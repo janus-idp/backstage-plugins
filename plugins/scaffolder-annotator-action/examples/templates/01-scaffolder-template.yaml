@@ -57,11 +57,25 @@ spec:
           description: ${{ parameters.description }}
           destination: ${{ parameters.repoUrl | parseRepoUrl }}
           owner: ${{ parameters.owner }}
-  
+
+    # this step is an example of using the `catalog:timestamping` action
     - id: timestamp
       name: Add Timestamp to catalog-info.yaml
       action: catalog:timestamping
+    
+    # this step is an example of using the `catalog:annotate` action
+    - id: add-fields-to-catalog-info
+      name: Add a few fields into `catalog-info.yaml` using the generic action
+      action: catalog:annotate
+      input:
+        labels:
+          custom: ${{ parameters.label }}
+          other: "test-label"
+        annotations:
+          custom.io/annotation: ${{ parameters.label }}
+          custom.io/other: "value"
 
+    # this step is an example of using the `catalog:scaffolded-from` action
     - id: append-templateRef
       name: Append the entityRef of this template to the entityRef
       action: catalog:scaffolded-from
@@ -74,6 +88,7 @@ spec:
           - github.com
         description: This is ${{ parameters.component_id }}
         repoUrl: ${{ parameters.repoUrl }}
+        repoVisibility: public
 
     - id: register
       name: Register

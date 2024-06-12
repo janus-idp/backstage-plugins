@@ -1,7 +1,7 @@
 {
   "name": "@janus-idp/backstage-scaffolder-backend-module-kubernetes-dynamic",
   "description": "The kubernetes module for @backstage/plugin-scaffolder-backend",
-  "version": "1.4.8",
+  "version": "1.4.13",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
@@ -11,7 +11,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "supported-versions": "1.26.5"
   },
   "exports": {
     ".": {
@@ -33,13 +34,23 @@
     "dist",
     "alpha"
   ],
-  "repository": "github:janus-idp/backstage-plugins",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/kubernetes-actions"
+  },
   "keywords": [
+    "support:tech-preview",
+    "lifecycle:active",
     "backstage",
     "backend-plugin-module"
   ],
-  "homepage": "https://janus-idp.io/",
+  "homepage": "https://red.ht/rhdh",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "maintainers": [
+    "@janus-idp/maintainers-plugins"
+  ],
+  "author": "The Backstage Community",
   "bundleDependencies": true,
   "peerDependencies": {
     "@backstage/backend-dynamic-feature-service": "^0.2.10",

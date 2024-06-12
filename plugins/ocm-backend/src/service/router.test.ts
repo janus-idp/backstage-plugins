@@ -1,10 +1,10 @@
+import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import express from 'express';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
-import { createLogger, transports } from 'winston';
 
 import { handlers } from '../../__fixtures__/handlers';
 import { createRouter } from './router';
@@ -23,9 +23,7 @@ beforeAll(() =>
 afterEach(() => server.restoreHandlers());
 afterAll(() => server.close());
 
-const logger = createLogger({
-  transports: [new transports.Console({ silent: true })],
-});
+const logger = getVoidLogger();
 
 const mockedAuthorize = jest.fn().mockImplementation(async () => [
   {
@@ -55,7 +53,7 @@ describe('createRouter', () => {
   beforeAll(async () => {
     jest.clearAllMocks();
     const router = await createRouter({
-      logger: logger,
+      logger,
       config: new ConfigReader({
         catalog: {
           providers: {

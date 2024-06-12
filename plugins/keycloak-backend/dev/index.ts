@@ -8,6 +8,7 @@ import {
   UrlReaders,
   useHotMemoize,
 } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { TaskScheduler } from '@backstage/backend-tasks';
 import { Config, ConfigReader } from '@backstage/config';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
@@ -15,7 +16,6 @@ import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 import { Router } from 'express';
-import { Logger } from 'winston';
 
 import { Server } from 'http';
 
@@ -24,7 +24,7 @@ import { PluginEnvironment } from './types';
 
 export interface ServerOptions {
   port: number;
-  logger: Logger;
+  logger: LoggerService;
 }
 
 function makeCreateEnv(config: Config) {

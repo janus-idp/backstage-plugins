@@ -1,8 +1,7 @@
 import React from 'react';
-import { useAsyncRetry, useInterval } from 'react-use';
+import { useAsync, useAsyncRetry, useInterval } from 'react-use';
 
 import { useApi } from '@backstage/core-plugin-api';
-import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
 
 import {
@@ -17,6 +16,10 @@ import { rbacApiRef } from '../api/RBACBackendClient';
 import { RolesData } from '../types';
 import { getPermissions } from '../utils/rbac-utils';
 
+type RoleWithConditionalPoliciesCount = Role & {
+  conditionalPoliciesCount: number;
+};
+
 export const useRoles = (
   pollInterval?: number,
 ): {
@@ -27,10 +30,16 @@ export const useRoles = (
   error: {
     rolesError: string;
     policiesError: string;
+    roleConditionError: string;
   };
   retry: { roleRetry: () => void; policiesRetry: () => void };
 } => {
   const rbacApi = useApi(rbacApiRef);
+  const [newRoles, setNewRoles] = React.useState<
+    RoleWithConditionalPoliciesCount[]
+  >([]);
+  const [roleConditionError, setRoleConditionError] =
+    React.useState<string>('');
   const {
     value: roles,
     retry: roleRetry,
@@ -43,6 +52,20 @@ export const useRoles = (
     error: policiesError,
   } = useAsyncRetry(async () => await rbacApi.getPolicies(), []);
 
+  const {
+    loading: membersLoading,
+    value: members,
+    error: membersError,
+  } = useAsync(async () => {
+    return await rbacApi.getMembers();
+  });
+
+  const canReadUsersAndGroups =
+    !membersLoading &&
+    !membersError &&
+    Array.isArray(members) &&
+    members.length > 0;
+
   const deletePermissionResult = usePermission({
     permission: policyEntityDeletePermission,
     resourceRef: policyEntityDeletePermission.resourceType,
@@ -53,63 +76,98 @@ export const useRoles = (
     resourceRef: policyEntityCreatePermission.resourceType,
   });
 
-  const catalogEntityReadPermissionResult = usePermission({
-    permission: catalogEntityReadPermission,
-    resourceRef: catalogEntityReadPermission.resourceType,
-  });
-
   const createRoleLoading =
-    policyEntityCreatePermissionResult.loading ||
-    catalogEntityReadPermissionResult.loading;
+    policyEntityCreatePermissionResult.loading || membersLoading;
 
   const createRoleAllowed =
-    policyEntityCreatePermissionResult.allowed &&
-    catalogEntityReadPermissionResult.allowed;
+    policyEntityCreatePermissionResult.allowed && canReadUsersAndGroups;
 
   const editPermissionResult = usePermission({
     permission: policyEntityUpdatePermission,
     resourceRef: policyEntityUpdatePermission.resourceType,
   });
+
+  React.useEffect(() => {
+    const fetchAllPermissionPolicies = async () => {
+      if (!Array.isArray(roles)) return;
+      const failedFetchConditionRoles: string[] = [];
+      const conditionPromises = roles.map(async role => {
+        try {
+          const conditionalPolicies = await rbacApi.getRoleConditions(
+            role.name,
+          );
+
+          if ((conditionalPolicies as any as Response)?.statusText) {
+            failedFetchConditionRoles.push(role.name);
+            throw new Error(
+              (conditionalPolicies as any as Response).statusText,
+            );
+          }
+          return {
+            ...role,
+            conditionalPoliciesCount: Array.isArray(conditionalPolicies)
+              ? conditionalPolicies.length
+              : 0,
+          };
+        } catch (error) {
+          setRoleConditionError(
+            `Error fetching role conditions for ${failedFetchConditionRoles.length > 1 ? 'roles' : 'role'} ${failedFetchConditionRoles.join(', ')}, please try again later.`,
+          );
+          return {
+            ...role,
+            conditionalPoliciesCount: 0,
+          };
+        }
+      });
+
+      const updatedRoles = await Promise.all(conditionPromises);
+      setNewRoles(updatedRoles);
+    };
+
+    fetchAllPermissionPolicies();
+  }, [roles, rbacApi]);
+
   const data: RolesData[] = React.useMemo(
     () =>
-      Array.isArray(roles) && roles?.length > 0
-        ? roles.reduce((acc: RolesData[], role: Role) => {
-            const permissions = getPermissions(
-              role.name,
-              policies as RoleBasedPolicy[],
-            );
+      Array.isArray(newRoles) && newRoles?.length > 0
+        ? newRoles.reduce(
+            (acc: RolesData[], role: RoleWithConditionalPoliciesCount) => {
+              const permissions = getPermissions(
+                role.name,
+                policies as RoleBasedPolicy[],
+              );
 
-            return [
-              ...acc,
-              {
-                id: role.name,
-                name: role.name,
-                description: role.metadata?.description ?? '-',
-                members: role.memberReferences,
-                permissions,
-                modifiedBy: '-',
-                lastModified: '-',
-                actionsPermissionResults: {
-                  delete: deletePermissionResult,
-                  edit: {
-                    allowed:
-                      editPermissionResult.allowed &&
-                      catalogEntityReadPermissionResult.allowed,
-                    loading:
-                      editPermissionResult.loading &&
-                      catalogEntityReadPermissionResult.loading,
+              return [
+                ...acc,
+                {
+                  id: role.name,
+                  name: role.name,
+                  description: role.metadata?.description ?? '-',
+                  members: role.memberReferences,
+                  permissions: role.conditionalPoliciesCount + permissions,
+                  modifiedBy: '-',
+                  lastModified: '-',
+                  actionsPermissionResults: {
+                    delete: deletePermissionResult,
+                    edit: {
+                      allowed:
+                        editPermissionResult.allowed && canReadUsersAndGroups,
+                      loading: editPermissionResult.loading,
+                    },
                   },
                 },
-              },
-            ];
-          }, [])
+              ];
+            },
+            [],
+          )
         : [],
     [
-      roles,
+      newRoles,
       policies,
       deletePermissionResult,
-      editPermissionResult,
-      catalogEntityReadPermissionResult,
+      editPermissionResult.allowed,
+      editPermissionResult.loading,
+      canReadUsersAndGroups,
     ],
   );
   const loading = !rolesError && !policiesError && !roles && !policies;
@@ -134,6 +192,7 @@ export const useRoles = (
         (typeof policies === 'object'
           ? (policies as any as Response)?.statusText
           : '')) as string,
+      roleConditionError,
     },
     createRoleLoading,
     createRoleAllowed,

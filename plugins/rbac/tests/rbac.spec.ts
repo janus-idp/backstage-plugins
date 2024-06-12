@@ -10,6 +10,10 @@ import {
 test.describe('RBAC plugin', () => {
   let page: Page;
   let common: Common;
+  const RoleOverviewPO = {
+    updatePolicies: 'span[data-testid="update-policies"]',
+    updateMembers: 'span[data-testid="update-members"]',
+  };
 
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
@@ -91,18 +95,13 @@ test.describe('RBAC plugin', () => {
     await page.locator(`a`).filter({ hasText: 'RBAC' }).click();
   });
 
-  test('Edit user from overview page', async () => {
+  test('Edit an existing role', async () => {
     const roleName = 'role:default/rbac_admin';
     await page.locator(`a`).filter({ hasText: roleName }).click();
     await expect(page.getByRole('heading', { name: roleName })).toBeVisible({
       timeout: 20000,
     });
     await page.getByRole('tab', { name: 'Overview' }).click();
-
-    const RoleOverviewPO = {
-      updatePolicies: 'span[data-testid="update-policies"]',
-      updateMembers: 'span[data-testid="update-members"]',
-    };
 
     await page.locator(RoleOverviewPO.updateMembers).click();
     await expect(page.getByRole('heading', { name: 'Edit Role' })).toBeVisible({
@@ -242,5 +241,42 @@ test.describe('RBAC plugin', () => {
       'Role role:default/sample-role-1 created successfully',
       page,
     );
+  });
+
+  test('Edit role to convert simple policy into conditional policy', async () => {
+    await expect(
+      page.getByRole('heading', { name: 'All roles (2)' }),
+    ).toBeVisible({ timeout: 20000 });
+
+    // edit/update policies
+    await page.locator(`a`).filter({ hasText: 'role:default/guests' }).click();
+    await expect(
+      page.getByRole('heading', { name: 'role:default/guests' }),
+    ).toBeVisible({
+      timeout: 20000,
+    });
+    await page.getByRole('tab', { name: 'Overview' }).click();
+
+    await page.locator(RoleOverviewPO.updatePolicies).click();
+    await expect(page.getByRole('heading', { name: 'Edit Role' })).toBeVisible({
+      timeout: 20000,
+    });
+
+    // update simple policy to add conditions
+    await page.getByText('Configure access', { exact: true }).click();
+    await page.getByPlaceholder('Select a rule').first().click();
+    await page.getByText('HAS_METADATA').click();
+    await page.getByLabel('key').fill('status');
+    await page.getByTestId('save-conditions').click();
+
+    expect(
+      page.getByText('Configure access (1 rule)', { exact: true }),
+    ).toBeVisible();
+
+    await common.clickButton('Next');
+    await common.clickButton('Save');
+    await verifyText('Role role:default/guests updated successfully', page);
+
+    await page.locator(`a`).filter({ hasText: 'RBAC' }).click();
   });
 });

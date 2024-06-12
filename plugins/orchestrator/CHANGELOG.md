@@ -1,3 +1,50 @@
+## @janus-idp/backstage-plugin-orchestrator [1.13.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.13.5...@janus-idp/backstage-plugin-orchestrator@1.13.6) (2024-06-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.10.0
+
+## @janus-idp/backstage-plugin-orchestrator [1.13.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.13.4...@janus-idp/backstage-plugin-orchestrator@1.13.5) (2024-06-04)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.8.1
+
+## @janus-idp/backstage-plugin-orchestrator [1.13.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.13.3...@janus-idp/backstage-plugin-orchestrator@1.13.4) (2024-06-03)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.9.0
+
+## @janus-idp/backstage-plugin-orchestrator [1.13.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.13.2...@janus-idp/backstage-plugin-orchestrator@1.13.3) (2024-05-31)
+
+## @janus-idp/backstage-plugin-orchestrator [1.13.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.13.1...@janus-idp/backstage-plugin-orchestrator@1.13.2) (2024-05-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.10
+
+## @janus-idp/backstage-plugin-orchestrator [1.13.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.13.0...@janus-idp/backstage-plugin-orchestrator@1.13.1) (2024-05-29)
+
+
+### Bug Fixes
+
+* **orchestrator:** upgrade to mui v5 ([#1727](https://github.com/janus-idp/backstage-plugins/issues/1727)) ([8b935dc](https://github.com/janus-idp/backstage-plugins/commit/8b935dc3c85fbe4030564301820d946effa78426))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.9
+
 ## @janus-idp/backstage-plugin-orchestrator [1.13.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.12.6...@janus-idp/backstage-plugin-orchestrator@1.13.0) (2024-05-28)
 
 

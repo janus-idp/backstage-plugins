@@ -1,3 +1,46 @@
+## @janus-idp/backstage-plugin-argocd [1.1.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.8...@janus-idp/backstage-plugin-argocd@1.1.9) (2024-06-10)
+
+## @janus-idp/backstage-plugin-argocd [1.1.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.7...@janus-idp/backstage-plugin-argocd@1.1.8) (2024-06-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.10.0
+
+## @janus-idp/backstage-plugin-argocd [1.1.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.6...@janus-idp/backstage-plugin-argocd@1.1.7) (2024-06-04)
+
+## @janus-idp/backstage-plugin-argocd [1.1.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.5...@janus-idp/backstage-plugin-argocd@1.1.6) (2024-06-03)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.9.0
+
+## @janus-idp/backstage-plugin-argocd [1.1.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.4...@janus-idp/backstage-plugin-argocd@1.1.5) (2024-05-31)
+
+## @janus-idp/backstage-plugin-argocd [1.1.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.3...@janus-idp/backstage-plugin-argocd@1.1.4) (2024-05-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.10
+
+## @janus-idp/backstage-plugin-argocd [1.1.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.2...@janus-idp/backstage-plugin-argocd@1.1.3) (2024-05-29)
+
+
+### Bug Fixes
+
+* **release:** change problematic plugins to private ([#1738](https://github.com/janus-idp/backstage-plugins/issues/1738)) ([69176bd](https://github.com/janus-idp/backstage-plugins/commit/69176bd75ccd842a313445e096223ecc339b655b))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.9
+
 ## @janus-idp/backstage-plugin-argocd [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.1...@janus-idp/backstage-plugin-argocd@1.1.2) (2024-05-28)
 
 

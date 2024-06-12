@@ -1,3 +1,76 @@
+## @janus-idp/backstage-plugin-kiali [1.18.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.12...@janus-idp/backstage-plugin-kiali@1.18.13) (2024-06-10)
+
+
+### Bug Fixes
+
+* **kiali:** fix dev links ([#1801](https://github.com/janus-idp/backstage-plugins/issues/1801)) ([2a86a5e](https://github.com/janus-idp/backstage-plugins/commit/2a86a5e7ed43c520962f32a11bc1cce6d13523e3))
+
+## @janus-idp/backstage-plugin-kiali [1.18.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.11...@janus-idp/backstage-plugin-kiali@1.18.12) (2024-06-06)
+
+
+### Bug Fixes
+
+* **kiali:** remove debug window ([#1793](https://github.com/janus-idp/backstage-plugins/issues/1793)) ([b5b5376](https://github.com/janus-idp/backstage-plugins/commit/b5b5376181d49074bd58bb34734561eab6ee8d2a))
+
+## @janus-idp/backstage-plugin-kiali [1.18.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.10...@janus-idp/backstage-plugin-kiali@1.18.11) (2024-06-06)
+
+
+### Documentation
+
+* **kiali:** update development doc for alpha backend([#1720](https://github.com/janus-idp/backstage-plugins/issues/1720)) ([e06e9be](https://github.com/janus-idp/backstage-plugins/commit/e06e9bee0745e76beccb8d7e3810548fd46207db))
+
+## @janus-idp/backstage-plugin-kiali [1.18.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.9...@janus-idp/backstage-plugin-kiali@1.18.10) (2024-06-06)
+
+
+### Bug Fixes
+
+* **kiali:** sanitize input for CWE-79 ([#1786](https://github.com/janus-idp/backstage-plugins/issues/1786)) ([9ba95bb](https://github.com/janus-idp/backstage-plugins/commit/9ba95bba7b9d5081829831e797b27f6a286971a4))
+
+## @janus-idp/backstage-plugin-kiali [1.18.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.8...@janus-idp/backstage-plugin-kiali@1.18.9) (2024-06-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.10.0
+
+## @janus-idp/backstage-plugin-kiali [1.18.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.7...@janus-idp/backstage-plugin-kiali@1.18.8) (2024-06-04)
+
+## @janus-idp/backstage-plugin-kiali [1.18.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.6...@janus-idp/backstage-plugin-kiali@1.18.7) (2024-06-04)
+
+
+### Bug Fixes
+
+* **deps:** update kiali dependencies (minor) ([#1779](https://github.com/janus-idp/backstage-plugins/issues/1779)) ([ff2b421](https://github.com/janus-idp/backstage-plugins/commit/ff2b421be9206d395805f497d4e2821ca4d6edc1))
+
+## @janus-idp/backstage-plugin-kiali [1.18.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.5...@janus-idp/backstage-plugin-kiali@1.18.6) (2024-06-03)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.9.0
+
+## @janus-idp/backstage-plugin-kiali [1.18.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.4...@janus-idp/backstage-plugin-kiali@1.18.5) (2024-05-31)
+
+## @janus-idp/backstage-plugin-kiali [1.18.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.3...@janus-idp/backstage-plugin-kiali@1.18.4) (2024-05-31)
+
+## @janus-idp/backstage-plugin-kiali [1.18.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.2...@janus-idp/backstage-plugin-kiali@1.18.3) (2024-05-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.10
+
+## @janus-idp/backstage-plugin-kiali [1.18.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.1...@janus-idp/backstage-plugin-kiali@1.18.2) (2024-05-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.9
+
 ## @janus-idp/backstage-plugin-kiali [1.18.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.0...@janus-idp/backstage-plugin-kiali@1.18.1) (2024-05-16)
 
 

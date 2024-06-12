@@ -358,7 +358,20 @@ Test results from the headless run will be available in `plugins/${plugin}/playw
 This repository defaults to a rapid release scheme where we would rather release on every PR merge than restrict ourselves by a strict release cadence and policy. This brings contributors the opportunity to see the direct impact of their contributions since they are released immediately after the merge. The release process itself is done via the [semantic-release](https://semantic-release.gitbook.io/semantic-release/) tool. In order for it to work properly, it requires contributors to follow a simple set of rules:
 
 1. Never bump the package version manually yourself. `semantic-release` will calculate the appropriate version change and do it for you.
-2. Do not hesitate to update multiple packages in a single PR. [multi-semantic-release](https://github.com/dhoulb/multi-semantic-release) will take care of it, and release a new version for all of them while updating their cross-dependencies accordingly.
+2. Do not hesitate to update multiple packages in a single PR. [multi-semantic-release](https://github.com/dhoulb/multi-semantic-release) (MSR) will take care of it, and release a new version for all of them while updating their cross-dependencies accordingly.
+
+**NOTE**: When adding a **new** plugin, MSR will try to convert the entire repo's history of commits into a single changelog / commit message for your new plugin. This will break git and result in the [push action](https://github.com/janus-idp/backstage-plugins/actions/workflows/push.yaml) failing; you will prevent everyone from releasing their changes.
+
+**Workaround**: manually release your plugin to npmjs.com, then tag the repo manually.
+
+```
+cd plugins/topology-common
+npm publish --cwd . --access public -w .
+git tag @janus-idp/backstage-plugin-topology-common@1.0.0
+git push origin @janus-idp/backstage-plugin-topology-common@1.0.0 || true
+```
+
+Note also that as this repo is **DEPRECATED**, new plugins should be contributed to the new **[Backstage Community Plugins](https://github.com/backstage/community-plugins/blob/main/CONTRIBUTING.md#get-started)** repo.
 
 ### Release workflow
 
@@ -385,7 +398,11 @@ The table below shows which Pull Request titles get you which release:
 | ~~Major~~ `v🆙.0.0` Breaking Release | `<type>(<optional-scope>)!: <message>` Notice the `!` token. It must be present. The type and scope are irrelevant. | `feat(ocm)!: Relocate OCM config and support multiple hubs` |
 | No release                           | Type `chore` (except when the scope is `deps`), or for any type when the scope is `no-release`                      |
 
-## Creating new plugins
+## Creating new plugins - DEPRECATED!
+
+**As of June 2024, new plugins should be contributed to the new [Backstage Community Plugins](https://github.com/backstage/community-plugins/blob/main/CONTRIBUTING.md#get-started) repo.**
+
+**The rest of this section is DEPRECATED and will be removed in future.**
 
 A particular case of contribution is implementing a new plugin. Before you start implementing a new one, please consult our issue tracker and make a [New plugin request](#new-plugin-request). Once you have a green light from the community, you can start implementing your plugin.
 

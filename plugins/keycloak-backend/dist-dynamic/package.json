@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-keycloak-backend-dynamic",
-  "version": "1.9.7",
+  "version": "1.9.12",
   "description": "A Backend backend plugin for Keycloak",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "supported-versions": "1.26.5"
   },
   "exports": {
     ".": {
@@ -28,7 +29,6 @@
   "dependencies": {
     "lodash": "^4.17.21",
     "uuid": "^9.0.1",
-    "winston": "^3.11.0",
     "axios": "^0.26.1",
     "camelize-ts": "^1.0.8",
     "keycloak-js": "^17.0.1",
@@ -44,13 +44,23 @@
     "alpha"
   ],
   "configSchema": "config.d.ts",
-  "repository": "github:janus-idp/backstage-plugins",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/keycloak-backend"
+  },
   "keywords": [
+    "support:production",
+    "lifecycle:active",
     "backstage",
     "plugin"
   ],
-  "homepage": "https://janus-idp.io/",
+  "homepage": "https://red.ht/rhdh",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "maintainers": [
+    "@janus-idp/maintainers-plugins"
+  ],
+  "author": "Red Hat",
   "bundleDependencies": true,
   "peerDependencies": {
     "@backstage/backend-common": "^0.22.0",

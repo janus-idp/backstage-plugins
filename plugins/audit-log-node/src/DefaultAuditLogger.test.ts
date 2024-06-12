@@ -245,6 +245,7 @@ describe('DefaultAuditLogger', () => {
       await auditLogger.auditLog({
         eventName: 'TestAuditLog',
         stage: 'completion',
+        status: 'succeeded',
         actorId: 'user:default/tester',
         message: 'Audit Log Triggered',
       });
@@ -259,16 +260,16 @@ describe('DefaultAuditLogger', () => {
         meta: {},
       });
     });
-  });
-  describe('auditErrorLog', () => {
     it('Outputs the audit error log to the error level of the logger', async () => {
       const customError = new Error(
         'This is a test error, so pay no attention to it',
       );
       customError.name = 'TestError';
-      await auditLogger.auditErrorLog({
+      await auditLogger.auditLog({
         eventName: 'TestAuditLog',
         stage: 'completion',
+        status: 'failed',
+        level: 'error',
         actorId: 'user:default/tester',
         errors: [customError],
         message: 'Audit Log Triggered',
