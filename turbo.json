@@ -22,7 +22,8 @@
       "outputs": ["coverage/**"]
     },
     "export-dynamic": {
-      "cache": false
+      "cache": false,
+      "dependsOn": ["tsc"]
     },
     "lint": {},
     "lint:fix": {},
