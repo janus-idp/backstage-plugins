@@ -17,16 +17,16 @@ export interface Config {
          * The hostname or URL of the JIRA organization.
          * @visibility frontend
          */
-        host: string;
+        host?: string;
         /**
          * The access token for authenticating with JIRA.
          * @visibility secret
          */
-        token: string;
+        token?: string;
         /**
          * what type of jira instance are you using, CLOUD/SERVER
          */
-        hostType: string;
+        hostType?: string;
       }>;
 
       /**
@@ -36,12 +36,12 @@ export interface Config {
         /**
          * The SMTP server's hostname or IP address.
          */
-        host: string;
+        host?: string;
 
         /**
          * The port number to use for the SMTP server.
          */
-        port: number;
+        port?: number;
 
         /**
          * Optional authentication settings for the SMTP server.
@@ -56,7 +56,7 @@ export interface Config {
            * The password to use for SMTP server authentication.
            * @visibility secret
            */
-          pass?: string;
+          password?: string;
         };
 
         /**
