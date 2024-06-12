@@ -1,3 +1,12 @@
+## @janus-idp/backstage-plugin-topology [1.21.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.20.2...@janus-idp/backstage-plugin-topology@1.21.0) (2024-05-21)
+
+
+### Features
+
+* **topology:** add permissions to topology plugin ([#1665](https://github.com/janus-idp/backstage-plugins/issues/1665)) ([9d8f244](https://github.com/janus-idp/backstage-plugins/commit/9d8f244ae136cdf1980a5abf416180bce3f235ea))
+
+## @janus-idp/backstage-plugin-topology [1.20.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.20.1...@janus-idp/backstage-plugin-topology@1.20.2) (2024-05-16)
+
 ## @janus-idp/backstage-plugin-topology [1.20.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.20.0...@janus-idp/backstage-plugin-topology@1.20.1) (2024-05-16)
 
 

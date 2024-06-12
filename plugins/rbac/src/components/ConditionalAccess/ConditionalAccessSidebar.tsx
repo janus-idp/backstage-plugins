@@ -42,7 +42,7 @@ const useDrawerContentStyles = makeStyles(theme => ({
 type ConditionalAccessSidebarProps = {
   open: boolean;
   onClose: () => void;
-  onSave: (conditions: ConditionsData) => void;
+  onSave: (conditions?: ConditionsData) => void;
   selPluginResourceType: string;
   conditionRulesData?: RulesData;
   conditionsFormVal?: ConditionsData;

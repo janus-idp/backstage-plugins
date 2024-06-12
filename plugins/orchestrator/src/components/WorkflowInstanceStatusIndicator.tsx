@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
-import DotIcon from '@material-ui/icons/FiberManualRecord';
+import DotIcon from '@mui/icons-material/FiberManualRecord';
 
 import {
   capitalize,
@@ -30,7 +30,7 @@ export const WorkflowInstanceStatusIndicator = ({
 
   return (
     <>
-      <DotIcon style={{ fontSize: '0.75rem' }} className={iconColor} />{' '}
+      <DotIcon style={{ fontSize: '0.75rem', color: iconColor }} />{' '}
       {lastRunId ? (
         <Link to={workflowInstanceLink({ instanceId: lastRunId })}>
           {capitalize(status)}

@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@backstage/backend-common": "0.22.0",
-    "@backstage/cli": "0.26.5",
+    "@backstage/cli": "0.26.6",
     "@backstage/plugin-scaffolder-node-test-utils": "0.1.4",
     "@janus-idp/cli": "1.8.7"
   },

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { usePermission } from '@backstage/plugin-permission-react';
+
 import { render } from '@testing-library/react';
 
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
@@ -11,6 +13,14 @@ jest.mock('../../hooks/useWorkloadWatcher', () => ({
 }));
 
 const mockUseWorkloadsWatcher = useWorkloadsWatcher as jest.Mock;
+
+jest.mock('@backstage/plugin-permission-react', () => ({
+  usePermission: jest.fn(),
+}));
+
+const mockUsePermission = usePermission as jest.MockedFunction<
+  typeof usePermission
+>;
 
 jest.mock('@patternfly/react-topology', () => ({
   useVisualizationController: () => ({
@@ -35,6 +45,10 @@ jest.mock('@patternfly/react-topology', () => ({
 }));
 
 describe('TopologyViewWorkloadComponent', () => {
+  beforeEach(() => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+  });
+
   it('should show loading state when loading is true', () => {
     mockUseWorkloadsWatcher.mockReturnValue({
       loaded: false,
@@ -70,5 +84,29 @@ describe('TopologyViewWorkloadComponent', () => {
       </K8sResourcesContext.Provider>,
     );
     expect(getByText(/topologyview/i)).not.toBeNull();
+  });
+
+  it('should not render TopologyView when data is available, loading is false, but user is not allowed', () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: false });
+
+    mockUseWorkloadsWatcher.mockReturnValue({
+      loaded: true,
+      dataModel: { nodes: [{}] },
+    });
+    const { getByText } = render(
+      <K8sResourcesContext.Provider
+        value={{ clusters: ['ocp'], setSelectedCluster: () => {} }}
+      >
+        <TopologyViewWorkloadComponent />
+      </K8sResourcesContext.Provider>,
+    );
+    expect(getByText(/topologyview/i)).not.toBeNull();
+
+    const { getByRole } = render(<TopologyViewWorkloadComponent />);
+    expect(
+      getByRole('heading', {
+        name: /no resources found/i,
+      }),
+    ).not.toBeNull();
   });
 });

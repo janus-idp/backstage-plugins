@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.7.2...@janus-idp/backstage-plugin-orchestrator-common@1.8.0) (2024-05-22)
+
+
+### Features
+
+* **orchestrator:** add permissions to orchestrator plugin ([#1599](https://github.com/janus-idp/backstage-plugins/issues/1599)) ([d0a4531](https://github.com/janus-idp/backstage-plugins/commit/d0a453181e177eb1da7b1e231253b76a2d9356a8))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.7.1...@janus-idp/backstage-plugin-orchestrator-common@1.7.2) (2024-05-15)
 
 

@@ -43,8 +43,7 @@ export function QuayRepository(_props: QuayRepositoryProps) {
         columns={columns}
         emptyContent={
           <div data-testid="quay-repo-table-empty" className={classes.empty}>
-            No data was added yet,&nbsp;
-            <Link to="https://backstage.io/">learn how to add data</Link>.
+            There are no images available.
           </div>
         }
       />

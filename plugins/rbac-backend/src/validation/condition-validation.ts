@@ -55,12 +55,20 @@ export function validateRoleCondition(
   }
 }
 
+/**
+ * validatePermissionCondition validate conditional permission policies using validateCriteria and validateRule.
+ * @param conditionOrCriteria The Permission Criteria of the conditional permission.
+ * @param jsonPathLocator The location in the JSON of the current check.
+ * @returns undefined.
+ */
 function validatePermissionCondition(
   conditionOrCriteria: PermissionCriteria<
     PermissionCondition<string, PermissionRuleParams>
   >,
   jsonPathLocator: string,
 ) {
+  validateCriteria(conditionOrCriteria, jsonPathLocator);
+
   if ('not' in conditionOrCriteria) {
     validatePermissionCondition(
       conditionOrCriteria.not,
@@ -68,6 +76,7 @@ function validatePermissionCondition(
     );
     return;
   }
+
   if ('allOf' in conditionOrCriteria) {
     if (
       !Array.isArray(conditionOrCriteria.allOf) ||
@@ -82,6 +91,7 @@ function validatePermissionCondition(
     }
     return;
   }
+
   if ('anyOf' in conditionOrCriteria) {
     if (
       !Array.isArray(conditionOrCriteria.anyOf) ||
@@ -94,8 +104,20 @@ function validatePermissionCondition(
     for (const [index, elem] of conditionOrCriteria.anyOf.entries()) {
       validatePermissionCondition(elem, `${jsonPathLocator}.anyOf[${index}]`);
     }
-    return;
   }
+}
+
+/**
+ * validateRule ensures that there is a rule and resource type associated with each conditional permission.
+ * @param conditionOrCriteria The Permission Criteria of the conditional permission.
+ * @param jsonPathLocator The location in the JSON of the current check.
+ */
+function validateRule(
+  conditionOrCriteria: PermissionCriteria<
+    PermissionCondition<string, PermissionRuleParams>
+  >,
+  jsonPathLocator: string,
+) {
   if (!('resourceType' in conditionOrCriteria)) {
     throw new Error(
       `'resourceType' must be specified in the ${jsonPathLocator}.condition`,
@@ -104,6 +126,47 @@ function validatePermissionCondition(
   if (!('rule' in conditionOrCriteria)) {
     throw new Error(
       `'rule' must be specified in the ${jsonPathLocator}.condition`,
+    );
+  }
+}
+
+/**
+ * validateCriteria ensures that there is only one of the following criteria: allOf, anyOf, and not, at any given level.
+ * We want to make sure that there are no parallel conditional criteria for conditional permission policies as this is
+ * not support by the permission framework.
+ *
+ * If more than one criteria are at a given level, we throw an error about the inability to support parallel conditions.
+ * If no criteria are found, we validate the rule.
+ *
+ * @param conditionOrCriteria The Permission Criteria of the conditional permission.
+ * @param jsonPathLocator The location in the JSON of the current check.
+ */
+function validateCriteria(
+  conditionOrCriteria: PermissionCriteria<
+    PermissionCondition<string, PermissionRuleParams>
+  >,
+  jsonPathLocator: string,
+) {
+  const criteriaList = ['allOf', 'anyOf', 'not'];
+  const found: string[] = [];
+
+  for (const crit of criteriaList) {
+    if (crit in conditionOrCriteria) {
+      found.push(crit);
+    }
+  }
+
+  if (found.length > 1) {
+    throw new Error(
+      `RBAC plugin does not support parallel conditions, consider reworking request to include nested condition criteria. Conditional criteria causing the error ${found}.`,
+    );
+  } else if (found.length === 0) {
+    validateRule(conditionOrCriteria, jsonPathLocator);
+  }
+
+  if (found.length === 1 && 'rule' in conditionOrCriteria) {
+    throw new Error(
+      `RBAC plugin does not support parallel conditions alongside rules, consider reworking request to include nested condition criteria. Conditional criteria causing the error ${found}, 'rule: ${conditionOrCriteria.rule}'.`,
     );
   }
 }

@@ -10,7 +10,6 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { RoleMetadataStorage } from '../database/role-metadata';
-import { EnforcerDelegate } from './enforcer-delegate';
 
 export function validatePolicy(policy: RoleBasedPolicy): Error | undefined {
   const err = validateEntityReference(policy.entityReference);
@@ -156,54 +155,6 @@ export async function validateGroupingPolicy(
     return new Error(
       `Group policy is invalid: ${groupPolicy}. You could not add user or group to the role created with source ${metadata.source}`,
     );
-  }
-  return undefined;
-}
-
-export async function validateAllPredefinedPolicies(
-  policies: string[][],
-  groupPolicies: string[][],
-  preDefinedPoliciesFile: string,
-  roleMetadataStorage: RoleMetadataStorage,
-  enforcer: EnforcerDelegate,
-): Promise<Error | undefined> {
-  for (const policy of policies) {
-    const err = validateEntityReference(policy[0]);
-    if (err) {
-      return new Error(
-        `Failed to validate policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
-      );
-    }
-
-    if (await enforcer.hasPolicy(...policy)) {
-      const source = (await enforcer.getMetadata(policy)).source;
-      if (source !== 'csv-file') {
-        return new Error(
-          `Duplicate policy: ${policy} found in the file ${preDefinedPoliciesFile}, originates from source: ${source}`,
-        );
-      }
-    }
-  }
-
-  for (const groupPolicy of groupPolicies) {
-    const validationError = await validateGroupingPolicy(
-      groupPolicy,
-      preDefinedPoliciesFile,
-      roleMetadataStorage,
-      `csv-file`,
-    );
-    if (validationError) {
-      return validationError;
-    }
-
-    if (await enforcer.hasGroupingPolicy(...groupPolicy)) {
-      const source = (await enforcer.getMetadata(groupPolicy)).source;
-      if (source !== 'csv-file') {
-        return new Error(
-          `Duplicate role: ${groupPolicy} found in the file ${preDefinedPoliciesFile}, originates from source: ${source}`,
-        );
-      }
-    }
   }
   return undefined;
 }

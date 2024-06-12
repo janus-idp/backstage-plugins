@@ -1,3 +1,5 @@
 matomo:
   apiToken: ${MATOMO_API_TOKEN}
   apiUrl: ${MATOMO_API_URL}
+  # Set to false if you get SSL certificate error
+  secure: ${MATOMO_SECURE_FLAG}

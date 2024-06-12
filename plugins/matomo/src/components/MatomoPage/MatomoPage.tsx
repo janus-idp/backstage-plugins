@@ -12,21 +12,19 @@ import {
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-import {
-  Box,
-  Card,
-  CardContent,
-  CircularProgress,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Tooltip as MuiTooltip,
-  Select,
-  Typography,
-} from '@material-ui/core';
-import Assessment from '@material-ui/icons/Assessment';
-import ContactMail from '@material-ui/icons/ContactMail';
+import Assessment from '@mui/icons-material/Assessment';
+import ContactMail from '@mui/icons-material/ContactMail';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CircularProgress from '@mui/material/CircularProgress';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import MuiTooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   CartesianGrid,

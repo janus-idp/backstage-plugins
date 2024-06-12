@@ -52,14 +52,14 @@ import {
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { deepSortedEqual, isPermissionAction, policyToString } from '../helper';
-import { validateRoleCondition } from './condition-validation';
-import { EnforcerDelegate } from './enforcer-delegate';
-import { PluginPermissionMetadataCollector } from './plugin-endpoints';
+import { validateRoleCondition } from '../validation/condition-validation';
 import {
   validateEntityReference,
   validatePolicy,
   validateRole,
-} from './policies-validation';
+} from '../validation/policies-validation';
+import { EnforcerDelegate } from './enforcer-delegate';
+import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 
 export class PoliciesServer {
   constructor(
@@ -999,7 +999,8 @@ export class PoliciesServer {
       const perm = rule.permissions.find(
         permission =>
           permission.type === 'resource' &&
-          action === permission.attributes.action,
+          (action === permission.attributes.action ||
+            (action === 'use' && permission.attributes.action === undefined)),
       );
       if (!perm) {
         throw new Error(

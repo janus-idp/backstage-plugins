@@ -1,16 +1,15 @@
-import React, { forwardRef, ForwardRefRenderFunction } from 'react';
+import React from 'react';
 
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from '@mui/icons-material/Close';
+import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
 export type InfoDialogProps = {
   title: string;
@@ -20,43 +19,29 @@ export type InfoDialogProps = {
   children?: React.ReactNode;
 };
 
-export type ParentComponentRef = HTMLElement;
+const CloseButton = styled(IconButton)({
+  position: 'absolute',
+  right: 8,
+  top: 8,
+});
 
-const useStyles = makeStyles(_theme => ({
-  closeBtn: {
-    position: 'absolute',
-    right: 8,
-    top: 8,
-  },
-}));
-
-export const RefForwardingInfoDialog: ForwardRefRenderFunction<
-  ParentComponentRef,
-  InfoDialogProps
-> = (props, forwardedRef): JSX.Element | null => {
+export const InfoDialog = (props: InfoDialogProps) => {
   const { title, open = false, onClose, children, dialogActions } = props;
-  const classes = useStyles();
 
   return (
-    <Dialog onClose={_ => onClose} open={open} ref={forwardedRef}>
+    <Dialog onClose={_ => onClose} open={open}>
       <DialogTitle>
         <Box>
           <Typography variant="h5">{title}</Typography>
-          <IconButton
-            className={classes.closeBtn}
-            aria-label="close"
-            onClick={onClose}
-          >
+          <CloseButton aria-label="close" onClick={onClose}>
             <CloseIcon />
-          </IconButton>
+          </CloseButton>
         </Box>
       </DialogTitle>
       <DialogContent>
-        <Box>{children}</Box>
+        <DialogContentText>{children}</DialogContentText>
       </DialogContent>
       <DialogActions>{dialogActions}</DialogActions>
     </Dialog>
   );
 };
-
-export const InfoDialog = forwardRef(RefForwardingInfoDialog);

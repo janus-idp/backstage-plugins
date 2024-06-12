@@ -1,17 +1,38 @@
-import { errorHandler, resolvePackagePath } from '@backstage/backend-common';
+import {
+  createLegacyAuthAdapters,
+  errorHandler,
+  resolvePackagePath,
+} from '@backstage/backend-common';
+import {
+  HttpAuthService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { NotAllowedError } from '@backstage/errors';
+import {
+  AuthorizeResult,
+  BasicPermission,
+} from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { JsonObject, JsonValue } from '@backstage/types';
 
 import { fullFormats } from 'ajv-formats/dist/formats';
 import express from 'express';
 import Router from 'express-promise-router';
+import { Request as HttpRequest } from 'express-serve-static-core';
 import { OpenAPIBackend, Request } from 'openapi-backend';
 import { Logger } from 'winston';
 
 import {
   openApiDocument,
+  orchestratorPermissions,
+  orchestratorWorkflowExecutePermission,
+  orchestratorWorkflowInstanceAbortPermission,
+  orchestratorWorkflowInstanceReadPermission,
+  orchestratorWorkflowInstancesReadPermission,
+  orchestratorWorkflowReadPermission,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_BUSINESS_KEY,
   QUERY_PARAM_INCLUDE_ASSESSMENT,
@@ -46,17 +67,51 @@ interface RouterApi {
   v2: V2;
 }
 
+const authorize = async (
+  request: HttpRequest,
+  permission: BasicPermission,
+  permissionsSvc: PermissionsService,
+  httpAuth: HttpAuthService,
+) => {
+  const decision = (
+    await permissionsSvc.authorize([{ permission: permission }], {
+      credentials: await httpAuth.credentials(request),
+    })
+  )[0];
+
+  return decision;
+};
+
+declare class UnauthorizedError extends NotAllowedError {
+  message: 'Unauthorized';
+}
+
 export async function createBackendRouter(
   args: RouterArgs,
 ): Promise<express.Router> {
-  const { config, logger, discovery, catalogApi, urlReader, scheduler } = args;
-
+  const {
+    config,
+    logger,
+    discovery,
+    catalogApi,
+    urlReader,
+    scheduler,
+    permissions,
+  } = args;
+  const { httpAuth } = createLegacyAuthAdapters({
+    httpAuth: args.httpAuth,
+    discovery: args.discovery,
+  });
   const publicServices = initPublicServices(logger, config, scheduler);
 
   const routerApi = await initRouterApi(publicServices.orchestratorService);
 
   const router = Router();
+  const permissionsIntegrationRouter = createPermissionIntegrationRouter({
+    permissions: orchestratorPermissions,
+  });
   router.use(express.json());
+  router.use(permissionsIntegrationRouter);
   router.use('/workflows', express.text());
   router.use('/static', express.static(resolvePackagePath(pkg.name, 'static')));
 
@@ -72,19 +127,13 @@ export async function createBackendRouter(
     urlReader,
   );
 
-  setupInternalRoutes(router, publicServices, routerApi);
+  setupInternalRoutes(router, publicServices, routerApi, permissions, httpAuth);
   setupExternalRoutes(router, discovery, scaffolderService);
 
   router.use((req, res, next) => {
     if (!next) {
       throw new Error('next is undefined');
     }
-
-    // const validation = routerApi.validateRequest(req as Request);
-    // if (!validation.valid) {
-    //   console.log('errors: ', validation.errors);
-    //   throw validation.errors;
-    // }
 
     routerApi.openApiBackend.handleRequest(req as Request, req, res, next);
   });
@@ -172,9 +221,20 @@ function setupInternalRoutes(
   router: express.Router,
   services: PublicServices,
   routerApi: RouterApi,
+  permissions: PermissionsService,
+  httpAuth: HttpAuthService,
 ) {
   // v1
-  router.get('/workflows/overview', async (_c, res) => {
+  router.get('/workflows/overview', async (req, res) => {
+    const desicion = await authorize(
+      req,
+      orchestratorWorkflowInstancesReadPermission,
+      permissions,
+      httpAuth,
+    );
+    if (desicion.result === AuthorizeResult.DENY) {
+      throw new UnauthorizedError();
+    }
     await routerApi.v1
       .getWorkflowsOverview()
       .then(result => res.status(200).json(result))
@@ -189,6 +249,15 @@ function setupInternalRoutes(
   routerApi.openApiBackend.register(
     'getWorkflowsOverview',
     async (_c, req, res: express.Response, next) => {
+      const desicion = await authorize(
+        req,
+        orchestratorWorkflowInstancesReadPermission,
+        permissions,
+        httpAuth,
+      );
+      if (desicion.result === AuthorizeResult.DENY) {
+        throw new UnauthorizedError();
+      }
       await routerApi.v2
         .getWorkflowsOverview(buildPagination(req))
         .then(result => res.json(result))
@@ -206,6 +275,15 @@ function setupInternalRoutes(
     const {
       params: { workflowId },
     } = req;
+    const desicion = await authorize(
+      req,
+      orchestratorWorkflowReadPermission,
+      permissions,
+      httpAuth,
+    );
+    if (desicion.result === AuthorizeResult.DENY) {
+      throw new UnauthorizedError();
+    }
     await routerApi.v1
       .getWorkflowById(workflowId)
       .then(result => res.status(200).json(result))
@@ -220,8 +298,16 @@ function setupInternalRoutes(
   routerApi.openApiBackend.register(
     'getWorkflowById',
     async (c, _req, res, next) => {
+      const desicion = await authorize(
+        _req,
+        orchestratorWorkflowReadPermission,
+        permissions,
+        httpAuth,
+      );
+      if (desicion.result === AuthorizeResult.DENY) {
+        throw new UnauthorizedError();
+      }
       const workflowId = c.request.params.workflowId as string;
-
       await routerApi.v2
         .getWorkflowById(workflowId)
         .then(result => res.json(result))
@@ -239,48 +325,94 @@ function setupInternalRoutes(
     const {
       params: { workflowId },
     } = req;
-    await routerApi.v1
-      .getWorkflowSourceById(workflowId)
-      .then(result => res.status(200).send(result))
-      .catch(error => {
-        res.status(500).send(error.message || INTERNAL_SERVER_ERROR_MESSAGE);
-      });
+    const desicion = await authorize(
+      req,
+      orchestratorWorkflowReadPermission,
+      permissions,
+      httpAuth,
+    );
+    if (desicion.result === AuthorizeResult.DENY) {
+      throw new UnauthorizedError();
+    }
+
+    try {
+      const result = await routerApi.v1.getWorkflowSourceById(workflowId);
+      res.status(200).contentType('text/plain').send(result);
+    } catch (error) {
+      res
+        .status(500)
+        .contentType('text/plain')
+        .send((error as Error)?.message || INTERNAL_SERVER_ERROR_MESSAGE);
+    }
   });
 
   // v2
   routerApi.openApiBackend.register(
     'getWorkflowSourceById',
     async (c, _req, res, next) => {
+      const desicion = await authorize(
+        _req,
+        orchestratorWorkflowReadPermission,
+        permissions,
+        httpAuth,
+      );
+      if (desicion.result === AuthorizeResult.DENY) {
+        throw new UnauthorizedError();
+      }
       const workflowId = c.request.params.workflowId as string;
 
-      await routerApi.v2
-        .getWorkflowSourceById(workflowId)
-        .then(result => res.send(result))
-        .catch(error => {
-          res.status(500).send(error.message || INTERNAL_SERVER_ERROR_MESSAGE);
-          next();
-        });
+      try {
+        const result = await routerApi.v2.getWorkflowSourceById(workflowId);
+        res.status(200).contentType('plain/text').send(result);
+      } catch (error) {
+        res
+          .status(500)
+          .contentType('plain/text')
+          .send((error as Error)?.message || INTERNAL_SERVER_ERROR_MESSAGE);
+        next();
+      }
     },
   );
 
   // v1
   router.delete('/instances/:instanceId/abort', async (req, res) => {
+    const desicion = await authorize(
+      req,
+      orchestratorWorkflowInstanceAbortPermission,
+      permissions,
+      httpAuth,
+    );
+    if (desicion.result === AuthorizeResult.DENY) {
+      throw new UnauthorizedError();
+    }
     const {
       params: { instanceId },
     } = req;
 
-    await routerApi.v1
-      .abortWorkflow(instanceId)
-      .then(() => res.status(200).send())
-      .catch(error => {
-        res.status(500).send(error.message || INTERNAL_SERVER_ERROR_MESSAGE);
-      });
+    try {
+      await routerApi.v1.abortWorkflow(instanceId);
+      res.status(200).send();
+    } catch (error) {
+      res
+        .status(500)
+        .contentType('plain/text')
+        .send((error as Error)?.message || INTERNAL_SERVER_ERROR_MESSAGE);
+    }
   });
 
   // v2
   routerApi.openApiBackend.register(
     'abortWorkflow',
     async (c, _req, res, next) => {
+      const desicion = await authorize(
+        _req,
+        orchestratorWorkflowInstanceAbortPermission,
+        permissions,
+        httpAuth,
+      );
+      if (desicion.result === AuthorizeResult.DENY) {
+        throw new UnauthorizedError();
+      }
       const instanceId = c.request.params.instanceId as string;
       await routerApi.v2
         .abortWorkflow(instanceId)
@@ -296,6 +428,15 @@ function setupInternalRoutes(
 
   // v1
   router.post('/workflows/:workflowId/execute', async (req, res) => {
+    const desicion = await authorize(
+      req,
+      orchestratorWorkflowExecutePermission,
+      permissions,
+      httpAuth,
+    );
+    if (desicion.result === AuthorizeResult.DENY) {
+      throw new UnauthorizedError();
+    }
     const {
       params: { workflowId },
     } = req;
@@ -319,6 +460,15 @@ function setupInternalRoutes(
   routerApi.openApiBackend.register(
     'executeWorkflow',
     async (c, req: express.Request, res: express.Response) => {
+      const desicion = await authorize(
+        req,
+        orchestratorWorkflowExecutePermission,
+        permissions,
+        httpAuth,
+      );
+      if (desicion.result === AuthorizeResult.DENY) {
+        throw new UnauthorizedError();
+      }
       const workflowId = c.request.params.workflowId as string;
       const businessKey = routerApi.v2.extractQueryParam(
         c.request,
@@ -326,6 +476,7 @@ function setupInternalRoutes(
       );
 
       const executeWorkflowRequestDTO = req.body;
+
       await routerApi.v2
         .executeWorkflow(executeWorkflowRequestDTO, workflowId, businessKey)
         .then(result => res.status(200).json(result))
@@ -339,6 +490,15 @@ function setupInternalRoutes(
 
   // v1
   router.post('/instances/:instanceId/retrigger', async (req, res) => {
+    const desicion = await authorize(
+      req,
+      orchestratorWorkflowExecutePermission,
+      permissions,
+      httpAuth,
+    );
+    if (desicion.result === AuthorizeResult.DENY) {
+      throw new UnauthorizedError();
+    }
     const {
       params: { instanceId },
     } = req;
@@ -355,6 +515,15 @@ function setupInternalRoutes(
 
   // v1
   router.get('/workflows/:workflowId/overview', async (req, res) => {
+    const desicion = await authorize(
+      req,
+      orchestratorWorkflowReadPermission,
+      permissions,
+      httpAuth,
+    );
+    if (desicion.result === AuthorizeResult.DENY) {
+      throw new UnauthorizedError();
+    }
     const {
       params: { workflowId },
     } = req;
@@ -367,8 +536,16 @@ function setupInternalRoutes(
   routerApi.openApiBackend.register(
     'getWorkflowOverviewById',
     async (c, _req: express.Request, res: express.Response, next) => {
+      const desicion = await authorize(
+        _req,
+        orchestratorWorkflowReadPermission,
+        permissions,
+        httpAuth,
+      );
+      if (desicion.result === AuthorizeResult.DENY) {
+        throw new UnauthorizedError();
+      }
       const workflowId = c.request.params.workflowId as string;
-
       await routerApi.v2
         .getWorkflowOverviewById(workflowId)
         .then(result => res.json(result))
@@ -377,7 +554,16 @@ function setupInternalRoutes(
   );
 
   // v1
-  router.get('/instances', async (_, res) => {
+  router.get('/instances', async (req, res) => {
+    const desicion = await authorize(
+      req,
+      orchestratorWorkflowInstancesReadPermission,
+      permissions,
+      httpAuth,
+    );
+    if (desicion.result === AuthorizeResult.DENY) {
+      throw new UnauthorizedError();
+    }
     await routerApi.v1
       .getInstances()
       .then(result => res.status(200).json(result))
@@ -392,6 +578,15 @@ function setupInternalRoutes(
   routerApi.openApiBackend.register(
     'getInstances',
     async (_c, req: express.Request, res: express.Response, next) => {
+      const desicion = await authorize(
+        req,
+        orchestratorWorkflowInstancesReadPermission,
+        permissions,
+        httpAuth,
+      );
+      if (desicion.result === AuthorizeResult.DENY) {
+        throw new UnauthorizedError();
+      }
       await routerApi.v2
         .getInstances(buildPagination(req))
         .then(result => res.json(result))
@@ -401,6 +596,15 @@ function setupInternalRoutes(
 
   // v1
   router.get('/instances/:instanceId', async (req, res) => {
+    const desicion = await authorize(
+      req,
+      orchestratorWorkflowInstanceReadPermission,
+      permissions,
+      httpAuth,
+    );
+    if (desicion.result === AuthorizeResult.DENY) {
+      throw new UnauthorizedError();
+    }
     const {
       params: { instanceId },
     } = req;
@@ -424,6 +628,15 @@ function setupInternalRoutes(
   routerApi.openApiBackend.register(
     'getInstanceById',
     async (c, _req: express.Request, res: express.Response, next) => {
+      const desicion = await authorize(
+        _req,
+        orchestratorWorkflowInstanceReadPermission,
+        permissions,
+        httpAuth,
+      );
+      if (desicion.result === AuthorizeResult.DENY) {
+        throw new UnauthorizedError();
+      }
       const instanceId = c.request.params.instanceId as string;
       const includeAssessment = routerApi.v2.extractQueryParam(
         c.request,
@@ -443,6 +656,15 @@ function setupInternalRoutes(
 
   // v1
   router.get('/workflows/:workflowId/inputSchema', async (req, res) => {
+    const desicion = await authorize(
+      req,
+      orchestratorWorkflowReadPermission,
+      permissions,
+      httpAuth,
+    );
+    if (desicion.result === AuthorizeResult.DENY) {
+      throw new UnauthorizedError();
+    }
     const {
       params: { workflowId },
     } = req;
@@ -556,6 +778,15 @@ function setupInternalRoutes(
   routerApi.openApiBackend.register(
     'getWorkflowResults',
     async (c, _req: express.Request, res: express.Response) => {
+      const desicion = await authorize(
+        _req,
+        orchestratorWorkflowInstanceReadPermission,
+        permissions,
+        httpAuth,
+      );
+      if (desicion.result === AuthorizeResult.DENY) {
+        throw new UnauthorizedError();
+      }
       const instanceId = c.request.params.instanceId as string;
 
       await routerApi.v2
@@ -573,6 +804,15 @@ function setupInternalRoutes(
   routerApi.openApiBackend.register(
     'getWorkflowStatuses',
     async (_c, _req: express.Request, res: express.Response) => {
+      const desicion = await authorize(
+        _req,
+        orchestratorWorkflowInstanceReadPermission,
+        permissions,
+        httpAuth,
+      );
+      if (desicion.result === AuthorizeResult.DENY) {
+        throw new UnauthorizedError();
+      }
       await routerApi.v2
         .getWorkflowStatuses()
         .then(result => res.status(200).json(result))

@@ -2,17 +2,29 @@
 pwd
 set -e
 
+GENERATED_FOLDER="./src/generated"
 OPENAPI_SPEC_FILE="./src/openapi/openapi.yaml"
-SCHEMA_FILE="./src/auto-generated/api/models/schema.ts"
-DEFINITION_FILE="./src/auto-generated/api/definition.ts"
-METADATA_FILE="./src/auto-generated/.METADATA.sha1"
+API_FOLDER="${GENERATED_FOLDER}/api"
+DEFINITION_FILE="${API_FOLDER}/definition.ts"
+METADATA_FILE="${GENERATED_FOLDER}/.METADATA.sha1"
+CLIENT_FOLDER="${GENERATED_FOLDER}/client"
 
 openapi_generate() {
-    npx --yes openapi-typescript@6.7.5 ${OPENAPI_SPEC_FILE} -o ${SCHEMA_FILE}
-    npx --yes @openapitools/openapi-generator-cli@v2.13.1 generate -g asciidoc -i ./src/openapi/openapi.yaml -o ./src/auto-generated/docs/index.adoc
+    # TypeScript Client generation
+    openapi-ts --input ${OPENAPI_SPEC_FILE} --output ${CLIENT_FOLDER}
+
+    # Workaround to temporarly ignore SonarCloud super-linear runtime vulnerability warning
+    REQ_FILE="${CLIENT_FOLDER}"/core/request.ts
+    TMPFILE=$(mktemp)
+    awk '/\/{\(.*?\)}\/g/ {print $0 " // NOSONAR"} !/\/{\(.*?\)}\/g/ {print}' "${REQ_FILE}" > ${TMPFILE} && mv ${TMPFILE} "${REQ_FILE}"
+
+    # Docs generation
+    npx --yes @openapitools/openapi-generator-cli@v2.13.1 generate -g asciidoc -i ./src/openapi/openapi.yaml -o ./src/generated/docs/index.adoc
+    
     npx --yes --package=js-yaml-cli@0.6.0 -- yaml2json -f ${OPENAPI_SPEC_FILE}
 
     OPENAPI_SPEC_FILE_JSON=$(tr -d '[:space:]' < "$(dirname $OPENAPI_SPEC_FILE)"/openapi.json)
+    mkdir -p ${API_FOLDER}
     cat << EOF > ${DEFINITION_FILE}
 /* eslint-disable */
 /* prettier-ignore */
@@ -28,7 +40,7 @@ EOF
 }
 
 openapi_checksum() {
-    export CONCATENATED_CONTENT=$(cat ${DEFINITION_FILE} ${SCHEMA_FILE} ${OPENAPI_SPEC_FILE})
+    export CONCATENATED_CONTENT=$(cat ${DEFINITION_FILE} ${OPENAPI_SPEC_FILE})
     node -e $'console.log(crypto.createHash("sha1").update(`${process.env.CONCATENATED_CONTENT}`).digest("hex"))'
 }
 
@@ -51,10 +63,10 @@ openapi_check() {
 
     # Check if the stored and current SHA-1 checksums differ
     if [ "${STORED_SHA1}" != "${NEW_SHA1}" ]; then
-        echo "Changes detected in auto-generated files or openapi.yaml. Please run 'yarn openapi:generate' to update."
+        echo "Changes detected in generated files or openapi.yaml. Please run 'yarn openapi:generate' to update."
         exit 1
     else
-        echo "No changes detected in auto-generated files or openapi.yaml. Auto-generated files are up to date."
+        echo "No changes detected in generated files or openapi.yaml. generated files are up to date."
     fi
 }
 

@@ -2,62 +2,71 @@ import React from 'react';
 
 import { CodeSnippet, EmptyState } from '@backstage/core-components';
 
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  createStyles,
-  makeStyles,
-  Theme,
-  Typography,
-} from '@material-ui/core';
-import ExpandMoreRounded from '@material-ui/icons/ExpandMoreRounded';
+import ExpandMoreRounded from '@mui/icons-material/ExpandMoreRounded';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import { styled, Theme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    code: {
-      width: '100%',
-      borderRadius: 6,
-      margin: theme.spacing(0, 0),
-      background: theme.palette.background.paper,
-    },
-    accordionGroup: {
-      '& > *': {
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(1),
-        background: theme.palette.type === 'dark' ? '#333' : '#eee',
-      },
-    },
-    heading: {
-      width: '50%',
-      fontSize: '1.2rem',
-      fontWeight: 600,
-    },
-    subHeading: {
-      color: theme.palette.textSubtle,
-    },
-    embeddedVideo: {
-      top: '50%',
-      left: '50%',
-      zIndex: 2,
-      position: 'relative',
-      transform: 'translate(-50%, 15%)',
-      '& > iframe': {
-        [theme.breakpoints.up('sm')]: {
-          width: '100%',
-          height: '280px',
-        },
-        [theme.breakpoints.up('xl')]: {
-          width: '768px',
-          height: '482px',
-        },
+const PREFIX = 'CustomEmptyState';
 
-        border: '0',
-        borderRadius: theme.spacing(1),
-      },
+const classes = {
+  code: `${PREFIX}-code`,
+  accordionGroup: `${PREFIX}-accordionGroup`,
+  heading: `${PREFIX}-heading`,
+  subHeading: `${PREFIX}-subHeading`,
+  embeddedVideo: `${PREFIX}-embeddedVideo`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }: { theme: Theme }) => ({
+  [`& .${classes.code}`]: {
+    width: '100%',
+    borderRadius: 6,
+    margin: theme.spacing(0, 0),
+    background: theme.palette.background.paper,
+  },
+
+  [`& .${classes.accordionGroup}`]: {
+    '& > *': {
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(1),
+      background: theme.palette.mode === 'dark' ? '#333' : '#eee',
     },
-  }),
-);
+  },
+
+  [`& .${classes.heading}`]: {
+    width: '50%',
+    fontSize: '1.2rem',
+    fontWeight: 600,
+  },
+
+  [`& .${classes.subHeading}`]: {
+    color: '#9e9e9e',
+  },
+
+  [`& .${classes.embeddedVideo}`]: {
+    top: '50%',
+    left: '50%',
+    zIndex: 2,
+    position: 'relative',
+    transform: 'translate(-50%, 15%)',
+    '& > iframe': {
+      [theme.breakpoints.up('sm')]: {
+        width: '100%',
+        height: '280px',
+      },
+      [theme.breakpoints.up('xl')]: {
+        width: '768px',
+        height: '482px',
+      },
+
+      border: '0',
+      borderRadius: theme.spacing(1),
+    },
+  },
+}));
 
 const EMAIL_YAML = `metadata:
   annotations:    
@@ -86,7 +95,6 @@ const JIRA_YAML = `metadata:
     feedback/email-to: 'example@example.com';`;
 
 export const CustomEmptyState = (props: { [key: string]: string }) => {
-  const classes = useStyles();
   const [expanded, setExpanded] = React.useState<string | false>('jira');
 
   const handleChange =
@@ -106,7 +114,7 @@ export const CustomEmptyState = (props: { [key: string]: string }) => {
         </Typography>
       }
       action={
-        <>
+        <Root>
           <Typography variant="body1">
             Add the annotation to your component YAML as shown in the
             highlighted example below:
@@ -159,7 +167,7 @@ export const CustomEmptyState = (props: { [key: string]: string }) => {
               </AccordionDetails>
             </Accordion>
           </div>
-        </>
+        </Root>
       }
       missing="field"
     />

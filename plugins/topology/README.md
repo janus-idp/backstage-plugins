@@ -337,6 +337,16 @@ Topology is a front-end plugin that enables you to view the workloads as nodes t
 
 - Your Backstage application is installed and running.
 - You have installed the Topology plugin. For the installation process, see [Installation](#installation).
+- If RBAC permission framework is enabled, ensure to add the following permission policies in an external permission policies configuration file named `rbac-policy.csv` to allow the rbac admins or your desired user(s)/group(s) to access the topology plugin:
+
+```csv rbac-policy.csv
+g, user:default/<YOUR_USERNAME>, role:default/topology-viewer
+p, role:default/topology-viewer, topology.view.read, read, allow
+p, role:default/topology-viewer, kubernetes.proxy, use, allow
+p, role:default/topology-viewer, catalog-entity, read, allow
+```
+
+`p, role:default/topology-viewer, topology.view.read, read, allow` grants the user the ability to see the Topology panel. `p, role:default/topology-viewer, kubernetes.proxy, use, allow` grants the user the ability to view the pod logs. `p, role:default/topology-viewer, catalog-entity, read, allow` grants the user the ability to see the catalog item.
 
 #### Procedure
 

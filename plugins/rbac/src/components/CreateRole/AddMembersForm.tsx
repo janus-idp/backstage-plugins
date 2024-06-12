@@ -77,10 +77,12 @@ export const AddMembersForm = ({
       </FormHelperText>
       <br />
       <Autocomplete
-        options={membersOptions}
+        options={membersOptions || []}
         getOptionLabel={(option: SelectedMember) => option.label ?? ''}
         getOptionSelected={(option: SelectedMember, value: SelectedMember) =>
-          option.etag === value.etag
+          value.etag
+            ? option.etag === value.etag
+            : selectedMember.etag === value.etag
         }
         loading={membersData.loading}
         loadingText={<LinearProgress />}

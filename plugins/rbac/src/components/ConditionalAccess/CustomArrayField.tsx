@@ -35,8 +35,9 @@ export const CustomArrayField = (props: FieldProps) => {
         label={name}
         value={fieldVal}
         onChange={e => {
-          setFieldVal(e.target.value);
-          onChange(e.target.value.split(',').map(val => val.trim()));
+          const value = e.target.value;
+          setFieldVal(value);
+          onChange(value ? value.split(',').map(val => val.trim()) : []);
         }}
         className={classes.bgPaper}
         required={required}

@@ -126,6 +126,8 @@ export const PermissionPoliciesForm = ({
 
   const onAddConditions = (index: number, conditions?: ConditionsData) => {
     setFieldValue(`permissionPoliciesRows[${index}].conditions`, conditions);
+    if (!conditions)
+      setFieldValue(`permissionPoliciesRows[${index}].id`, undefined);
   };
 
   const onRowRemove = (index: number) => {

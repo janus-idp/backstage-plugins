@@ -14,29 +14,32 @@ import {
   EntityRefLink,
 } from '@backstage/plugin-catalog-react';
 
-import {
-  Box,
-  Chip,
-  IconButton,
-  Link,
-  makeStyles,
-  Paper,
-  TableContainer,
-  TextField,
-  Theme,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
-import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
-import Clear from '@material-ui/icons/Clear';
-import Search from '@material-ui/icons/Search';
-import TextsmsOutlined from '@material-ui/icons/TextsmsOutlined';
+import BugReportOutlined from '@mui/icons-material/BugReportOutlined';
+import Clear from '@mui/icons-material/Clear';
+import Search from '@mui/icons-material/Search';
+import TextsmsOutlined from '@mui/icons-material/TextsmsOutlined';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import { styled, Theme } from '@mui/material/styles';
+import TableContainer from '@mui/material/TableContainer';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
 import { feedbackApiRef } from '../../api';
 import { FeedbackType } from '../../models/feedback.model';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  textField: {
+const PREFIX = 'FeedbackTable';
+
+const classes = {
+  textField: `${PREFIX}-textField`,
+};
+
+const StyledPaper = styled(Paper)(({ theme }: { theme: Theme }) => ({
+  [`& .${classes.textField}`]: {
     padding: 0,
     margin: theme.spacing(2),
     width: '70%',
@@ -46,9 +49,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
-  projectId?: string;
-}) => {
+export const FeedbackTable = (props: { projectId?: string }) => {
   const projectId = props.projectId ? props.projectId : 'all';
   const api = useApi(feedbackApiRef);
   const analytics = useAnalytics();
@@ -61,7 +62,6 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
   const [queryState, setQueryState] = useQueryParamState<string>('id');
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState<string>('');
-  const classes = useStyles();
 
   const columns: TableColumn[] = [
     {
@@ -248,7 +248,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
   }
 
   return (
-    <Paper>
+    <StyledPaper>
       <TextField
         onChange={handleSearch}
         variant="outlined"
@@ -263,7 +263,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
           ),
           endAdornment: (
             <Tooltip title="Clear search" arrow>
-              <IconButton onClick={() => setSearchText('')}>
+              <IconButton onClick={() => setSearchText('')} size="medium">
                 <Clear />
               </IconButton>
             </Tooltip>
@@ -293,6 +293,6 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
           page={tableConfig.page - 1}
         />
       </TableContainer>
-    </Paper>
+    </StyledPaper>
   );
 };
