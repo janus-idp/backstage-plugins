@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-feedback-backend [1.3.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.8...@janus-idp/backstage-plugin-feedback-backend@1.3.9) (2024-06-12)
+
+
+### Bug Fixes
+
+* **feedback:** fixed feedback backend plugin crashing ([#1809](https://github.com/janus-idp/backstage-plugins/issues/1809)) ([e4a571e](https://github.com/janus-idp/backstage-plugins/commit/e4a571e737b7697a5ad96a4a43aacf29b2a2179e))
+
 ## @janus-idp/backstage-plugin-feedback-backend [1.3.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.7...@janus-idp/backstage-plugin-feedback-backend@1.3.8) (2024-06-05)
 
 
