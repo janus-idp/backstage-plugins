@@ -1,3 +1,6 @@
+import { getRootLogger } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
+
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
@@ -26,6 +29,9 @@ const handlers = [
     res(ctx.json(mockJiraTicketDetailsResp)),
   ),
 ];
+const logger: LoggerService = getRootLogger().child({
+  service: 'feedback-backend',
+});
 
 describe('JIRA issue', () => {
   const mswMockServer = setupServer();
@@ -33,7 +39,7 @@ describe('JIRA issue', () => {
   mswMockServer.listen({ onUnhandledRequest: 'warn' });
   const jiraHost = mockConfig.feedback.integrations.jira[0].host;
   const jiraToken = mockConfig.feedback.integrations.jira[0].token;
-  const jiraService = new JiraApiService(jiraHost, jiraToken);
+  const jiraService = new JiraApiService(jiraHost, jiraToken, logger);
 
   it('createJiraTicket', async () => {
     const data = await jiraService.createJiraTicket({

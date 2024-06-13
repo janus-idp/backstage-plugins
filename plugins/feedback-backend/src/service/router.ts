@@ -137,7 +137,12 @@ export async function createRouter(
           const hostType = serviceConfig.getOptionalString('hostType');
 
           const projectKey = entityRef.metadata.annotations['jira/project-key'];
-          const jiraService = new JiraApiService(host, authToken, hostType);
+          const jiraService = new JiraApiService(
+            host,
+            authToken,
+            logger,
+            hostType,
+          );
           const jiraUsername = reporterEmail
             ? await jiraService.getJiraUsernameByEmail(reporterEmail)
             : undefined;
@@ -160,9 +165,12 @@ export async function createRouter(
             tag: reqData.tag!.toLowerCase().split(' ').join('-'),
             feedbackType: reqData.feedbackType,
             reporter: jiraUsername,
+            jiraComponent: entityRef.metadata.annotations['jira/component'],
           });
-          reqData.ticketUrl = `${host}/browse/${resp.key}`;
-          await feedbackDB.updateFeedback(reqData);
+          if (resp.key) {
+            reqData.ticketUrl = `${host}/browse/${resp.key}`;
+            await feedbackDB.updateFeedback(reqData);
+          }
         }
 
         if (type.toUpperCase() === 'MAIL' || replyTo) {
@@ -292,6 +300,7 @@ export async function createRouter(
           const resp = await new JiraApiService(
             host,
             authToken,
+            logger,
           ).getTicketDetails(ticketId);
           return res.status(200).json({
             data: { ...resp },

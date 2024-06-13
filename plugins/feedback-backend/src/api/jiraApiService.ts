@@ -1,14 +1,18 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
+
 import axios from 'axios';
 
 /**
  * @param host
  * @param authToken
+ * @param logger
  * @param hostType
  */
 export class JiraApiService {
   constructor(
     private host: string,
     private authToken: string,
+    private logger: LoggerService,
     private hostType: string = 'SERVER',
   ) {}
 
@@ -19,9 +23,17 @@ export class JiraApiService {
     tag: string;
     feedbackType: string;
     reporter?: string;
+    jiraComponent?: string;
   }): Promise<any> => {
-    const { projectKey, summary, description, tag, feedbackType, reporter } =
-      options;
+    const {
+      projectKey,
+      summary,
+      description,
+      tag,
+      feedbackType,
+      reporter,
+      jiraComponent,
+    } = options;
     const requestBody = {
       fields: {
         ...(reporter && {
@@ -41,19 +53,31 @@ export class JiraApiService {
         issuetype: {
           name: feedbackType === 'BUG' ? 'Bug' : 'Task',
         },
+        ...(jiraComponent && {
+          components: [
+            {
+              name: jiraComponent,
+            },
+          ],
+        }),
       },
     };
-    const resp = await axios.post(
-      `${this.host}/rest/api/latest/issue`,
-      requestBody,
-      {
-        headers: {
-          Authorization: this.authToken,
-          'Content-Type': 'application/json',
+    try {
+      const resp = await axios.post(
+        `${this.host}/rest/api/latest/issue`,
+        requestBody,
+        {
+          headers: {
+            Authorization: this.authToken,
+            'Content-Type': 'application/json',
+          },
         },
-      },
-    );
-    return resp.data;
+      );
+      return resp.data;
+    } catch (err: any) {
+      this.logger.error('Error:', err);
+      return {};
+    }
   };
 
   getJiraUsernameByEmail = async (
