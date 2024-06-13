@@ -65,12 +65,12 @@
   "author": "The Backstage Community",
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-common": "^0.21.7",
+    "@backstage/backend-common": "^0.22.0",
     "@backstage/backend-dynamic-feature-service": "^0.2.10",
-    "@backstage/backend-plugin-api": "^0.6.17",
-    "@backstage/backend-test-utils": "^0.3.7",
-    "@backstage/catalog-client": "^1.6.4",
-    "@backstage/catalog-model": "^1.4.5",
+    "@backstage/backend-plugin-api": "^0.6.18",
+    "@backstage/backend-test-utils": "^0.3.8",
+    "@backstage/catalog-client": "^1.6.5",
+    "@backstage/catalog-model": "^1.5.0",
     "@backstage/config": "^1.2.0"
   },
   "overrides": {
