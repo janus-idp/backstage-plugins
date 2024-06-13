@@ -1,3 +1,23 @@
+## @janus-idp/backstage-plugin-feedback-backend [1.3.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.9...@janus-idp/backstage-plugin-feedback-backend@1.3.10) (2024-06-13)
+
+
+### Bug Fixes
+
+* missing postversion script is several plugins and missing turbo dependency ([#1811](https://github.com/janus-idp/backstage-plugins/issues/1811)) ([4dfe4f5](https://github.com/janus-idp/backstage-plugins/commit/4dfe4f533e21e79c928c66bfd68684243912be2c))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.10.1
+
+## @janus-idp/backstage-plugin-feedback-backend [1.3.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.8...@janus-idp/backstage-plugin-feedback-backend@1.3.9) (2024-06-12)
+
+
+### Bug Fixes
+
+* **feedback:** fixed feedback backend plugin crashing ([#1809](https://github.com/janus-idp/backstage-plugins/issues/1809)) ([e4a571e](https://github.com/janus-idp/backstage-plugins/commit/e4a571e737b7697a5ad96a4a43aacf29b2a2179e))
+
 ## @janus-idp/backstage-plugin-feedback-backend [1.3.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.7...@janus-idp/backstage-plugin-feedback-backend@1.3.8) (2024-06-05)
 
 
