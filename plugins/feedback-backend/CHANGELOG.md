@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-feedback-backend [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.10...@janus-idp/backstage-plugin-feedback-backend@1.4.0) (2024-06-13)
+
+
+### Features
+
+* **feedback:** add support for jira component ([#1813](https://github.com/janus-idp/backstage-plugins/issues/1813)) ([4afbc17](https://github.com/janus-idp/backstage-plugins/commit/4afbc171801c1351cb4a89b1884861abe531b2dc))
+
 ## @janus-idp/backstage-plugin-feedback-backend [1.3.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.9...@janus-idp/backstage-plugin-feedback-backend@1.3.10) (2024-06-13)
 
 
