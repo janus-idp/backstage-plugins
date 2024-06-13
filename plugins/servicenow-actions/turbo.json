@@ -13,9 +13,6 @@
     },
     "test": {
       "dependsOn": ["generate"]
-    },
-    "export-dynamic": {
-      "dependsOn": ["generate"]
     }
   }
 }

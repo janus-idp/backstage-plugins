@@ -37,6 +37,7 @@
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
+    "postversion": "yarn run export-dynamic",
     "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies",
     "lodash": "^4.17.21",
     "tsc": "tsc"
