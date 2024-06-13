@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.9.13...@janus-idp/backstage-plugin-keycloak-backend@1.10.0) (2024-06-13)
+
+
+### Features
+
+* **deps:** update to backstage 1.27 ([#1683](https://github.com/janus-idp/backstage-plugins/issues/1683)) ([a14869c](https://github.com/janus-idp/backstage-plugins/commit/a14869c3f4177049cb8d6552b36c3ffd17e7997d))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.11.0
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.9.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.9.12...@janus-idp/backstage-plugin-keycloak-backend@1.9.13) (2024-06-13)
 
 
