@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor@1.0.3...@janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor@1.0.4) (2024-06-13)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.10.1
+
 ## @janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor@1.0.2...@janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor@1.0.3) (2024-06-05)
 
 
