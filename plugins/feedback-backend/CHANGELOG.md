@@ -1,3 +1,23 @@
+## @janus-idp/backstage-plugin-feedback-backend [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.10...@janus-idp/backstage-plugin-feedback-backend@1.4.0) (2024-06-13)
+
+
+### Features
+
+* **feedback:** add support for jira component ([#1813](https://github.com/janus-idp/backstage-plugins/issues/1813)) ([4afbc17](https://github.com/janus-idp/backstage-plugins/commit/4afbc171801c1351cb4a89b1884861abe531b2dc))
+
+## @janus-idp/backstage-plugin-feedback-backend [1.3.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.9...@janus-idp/backstage-plugin-feedback-backend@1.3.10) (2024-06-13)
+
+
+### Bug Fixes
+
+* missing postversion script is several plugins and missing turbo dependency ([#1811](https://github.com/janus-idp/backstage-plugins/issues/1811)) ([4dfe4f5](https://github.com/janus-idp/backstage-plugins/commit/4dfe4f533e21e79c928c66bfd68684243912be2c))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.10.1
+
 ## @janus-idp/backstage-plugin-feedback-backend [1.3.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.8...@janus-idp/backstage-plugin-feedback-backend@1.3.9) (2024-06-12)
 
 

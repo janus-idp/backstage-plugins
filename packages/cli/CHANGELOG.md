@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.10.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.10.0...@janus-idp/cli@1.10.1) (2024-06-13)
+
+
+### Bug Fixes
+
+* **cli:** fix the removal of type definitions by `export-dynamic`. ([#1810](https://github.com/janus-idp/backstage-plugins/issues/1810)) ([8472d91](https://github.com/janus-idp/backstage-plugins/commit/8472d914a2f9107c08a9a30ab1ea8ed8d10bc43a))
+
 ## @janus-idp/cli [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.9.0...@janus-idp/cli@1.10.0) (2024-06-05)
 
 
