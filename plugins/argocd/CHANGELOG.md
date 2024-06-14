@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-argocd [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.2.0...@janus-idp/backstage-plugin-argocd@1.2.1) (2024-06-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency react-use to v17.5.0 ([#1780](https://github.com/janus-idp/backstage-plugins/issues/1780)) ([a25bf15](https://github.com/janus-idp/backstage-plugins/commit/a25bf15e14e9fa5a946551c5626c92f6b1f83d2f))
+
 ## @janus-idp/backstage-plugin-argocd [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.10...@janus-idp/backstage-plugin-argocd@1.2.0) (2024-06-13)
 
 
