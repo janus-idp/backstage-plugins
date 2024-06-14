@@ -82,8 +82,10 @@ const authorize = async (
   return decision;
 };
 
-declare class UnauthorizedError extends NotAllowedError {
-  message: 'Unauthorized';
+export class UnauthorizedError extends NotAllowedError {
+  constructor() {
+    super('Unauthorized');
+  }
 }
 
 export async function createBackendRouter(

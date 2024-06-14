@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Link, TableColumn, TableProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { usePermission } from '@backstage/plugin-permission-react';
 
 import Pageview from '@mui/icons-material/Pageview';
 import PlayArrow from '@mui/icons-material/PlayArrow';
@@ -25,7 +26,6 @@ import {
 } from '../routes';
 import OverrideBackstageTable from './ui/OverrideBackstageTable';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
-import { usePermission } from '@backstage/plugin-permission-react';
 
 export interface WorkflowsTableProps {
   items: WorkflowOverview[];
@@ -139,14 +139,14 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   );
 
   return (
-        !permittedToReadWorkflows && ( 
-        <OverrideBackstageTable<FormattedWorkflowOverview>
-          title="Workflows"
-          options={options}
-          columns={columns}
-          data={data}
-          actions={actions}
-        />
-        )
+    permittedToReadWorkflows && (
+      <OverrideBackstageTable<FormattedWorkflowOverview>
+        title="Workflows"
+        options={options}
+        columns={columns}
+        data={data}
+        actions={actions}
+      />
+    )
   );
 };
