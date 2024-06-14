@@ -82,7 +82,7 @@
     "@testing-library/jest-dom": "6.4.5",
     "@testing-library/react": "14.3.1",
     "@testing-library/user-event": "14.5.2",
-    "@types/node": "20.14.0",
+    "@types/node": "20.14.2",
     "@types/react-copy-to-clipboard": "5.0.7",
     "cross-fetch": "4.0.0",
     "jest-canvas-mock": "2.5.2",
