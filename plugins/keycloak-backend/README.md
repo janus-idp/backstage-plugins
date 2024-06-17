@@ -243,11 +243,60 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
    backend.start();
    ```
 
----
+1. Optional: provide a transformer function for user/group to mutate the entity before their ingestion into catalog. Create a new backend module with the `yarn new` command to use the `keycloakTransformerExtensionPoint`.
 
-**NOTE**
+   ```ts
+   /* highlight-add-start */
+   import {
+     GroupTransformer,
+     keycloakTransformerExtensionPoint,
+     UserTransformer,
+   } from '@janus-idp/backstage-plugin-keycloak-backend';
 
-Currently the new backend installation method does not support transformer functions for users and groups.
+   /* highlight-add-end */
+
+   /* highlight-add-start */
+   const groupTransformer: GroupTransformer = async (entity, realm, groups) => {
+     /* apply transformations */
+     return entity;
+   };
+   const userTransformer: UserTransformer = async (
+     entity,
+     user,
+     realm,
+     groups,
+   ) => {
+     /* apply transformations */
+     return entity;
+   };
+   /* highlight-add-end */
+
+   export const keycloakBackendModuleTransformer = createBackendModule({
+     pluginId: 'catalog',
+     moduleId: 'transformer',
+     register(reg) {
+       reg.registerInit({
+         deps: {
+           /* highlight-add-start */
+           keycloak: keycloakTransformerExtensionPoint,
+           /* highlight-add-end */
+         },
+         /* highlight-add-start */
+         async init({ keycloak }) {
+           keycloak.setUserTransformer(userTransformer);
+           keycloak.setGroupTransformer(groupTransformer);
+           /* highlight-add-end */
+         },
+       });
+     },
+   });
+   ```
+
+   ***
+
+   **NOTE**
+
+   The `pluginId` must be the ID of an existing plugin (e.g. `catalog`) due to a limitation with extending a module on top of another module. Otherwise the newly created backend module will not be initialized.
 
 ---
 

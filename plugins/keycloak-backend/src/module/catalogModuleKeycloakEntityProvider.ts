@@ -20,6 +20,8 @@ import {
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 
+import { keycloakTransformerExtensionPoint } from '../extensions';
+import { GroupTransformer, UserTransformer } from '../lib/types';
 import { KeycloakOrgEntityProvider } from '../providers';
 
 /**
@@ -31,9 +33,23 @@ export const catalogModuleKeycloakEntityProvider = createBackendModule({
   pluginId: 'catalog',
   moduleId: 'catalog-backend-module-keycloak',
   register(env) {
-    // TODO: add extension points to support setting custom User and Group Transformers using modules
-    // Refer to https://backstage.io/docs/backend-system/architecture/extension-points/
-    // env.registerExtensionPoint(...)
+    let userTransformer: UserTransformer | undefined;
+    let groupTransformer: GroupTransformer | undefined;
+
+    env.registerExtensionPoint(keycloakTransformerExtensionPoint, {
+      setUserTransformer(transformer) {
+        if (userTransformer) {
+          throw new Error('User transformer may only be set once');
+        }
+        userTransformer = transformer;
+      },
+      setGroupTransformer(transformer) {
+        if (groupTransformer) {
+          throw new Error('Group transformer may only be set once');
+        }
+        groupTransformer = transformer;
+      },
+    });
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
@@ -47,6 +63,8 @@ export const catalogModuleKeycloakEntityProvider = createBackendModule({
             id: 'development',
             logger,
             scheduler,
+            userTransformer: userTransformer,
+            groupTransformer: groupTransformer,
           }),
         );
       },
