@@ -306,13 +306,13 @@ function setupInternalRoutes(
       level: 'debug',
       message: `Received request to '${endpoint}' endpoint`,
     });
-    const desicion = await authorize(
+    const decision = await authorize(
       req,
       orchestratorWorkflowInstancesReadPermission,
       permissions,
       httpAuth,
     );
-    if (desicion.result === AuthorizeResult.DENY) {
+    if (decision.result === AuthorizeResult.DENY) {
       manageDenyAuthorization(endpointName, endpoint);
     }
     await routerApi.v1
@@ -341,13 +341,13 @@ function setupInternalRoutes(
         level: 'debug',
         message: `Received request to '/workflows/overview' v2 endpoint`,
       });
-      const desicion = await authorize(
+      const decision = await authorize(
         req,
         orchestratorWorkflowInstancesReadPermission,
         permissions,
         httpAuth,
       );
-      if (desicion.result === AuthorizeResult.DENY) {
+      if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(
           'getWorkflowsOverview',
           '/v2/workflows/overview',
@@ -381,13 +381,13 @@ function setupInternalRoutes(
       level: 'debug',
       message: `Received request to '/workflows/${workflowId}' v1 endpoint`,
     });
-    const desicion = await authorize(
+    const decision = await authorize(
       req,
       orchestratorWorkflowReadPermission,
       permissions,
       httpAuth,
     );
-    if (desicion.result === AuthorizeResult.DENY) {
+    if (decision.result === AuthorizeResult.DENY) {
       manageDenyAuthorization(
         'WorkflowsWorkflowId',
         `/v1/workflows/${workflowId}`,
@@ -420,13 +420,13 @@ function setupInternalRoutes(
         message: `Received request to '${endpoint}' endpoint`,
       });
 
-      const desicion = await authorize(
+      const decision = await authorize(
         _req,
         orchestratorWorkflowReadPermission,
         permissions,
         httpAuth,
       );
-      if (desicion.result === AuthorizeResult.DENY) {
+      if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint);
       }
       await routerApi.v2
@@ -457,13 +457,13 @@ function setupInternalRoutes(
       message: `Received request to '${endpoint}' endpoint`,
     });
 
-    const desicion = await authorize(
+    const decision = await authorize(
       req,
       orchestratorWorkflowReadPermission,
       permissions,
       httpAuth,
     );
-    if (desicion.result === AuthorizeResult.DENY) {
+    if (decision.result === AuthorizeResult.DENY) {
       manageDenyAuthorization(endpointName, endpoint);
     }
 
@@ -494,13 +494,13 @@ function setupInternalRoutes(
         message: `Received request to '${endpoint}' endpoint`,
       });
 
-      const desicion = await authorize(
+      const decision = await authorize(
         _req,
         orchestratorWorkflowReadPermission,
         permissions,
         httpAuth,
       );
-      if (desicion.result === AuthorizeResult.DENY) {
+      if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint);
       }
 
@@ -534,13 +534,13 @@ function setupInternalRoutes(
       message: `Received request to '${endpoint}' endpoint`,
     });
 
-    const desicion = await authorize(
+    const decision = await authorize(
       req,
       orchestratorWorkflowExecutePermission,
       permissions,
       httpAuth,
     );
-    if (desicion.result === AuthorizeResult.DENY) {
+    if (decision.result === AuthorizeResult.DENY) {
       manageDenyAuthorization(endpointName, endpoint);
     }
 
@@ -576,13 +576,13 @@ function setupInternalRoutes(
         message: `Received request to '${endpoint}' endpoint`,
       });
 
-      const desicion = await authorize(
+      const decision = await authorize(
         req,
         orchestratorWorkflowExecutePermission,
         permissions,
         httpAuth,
       );
-      if (desicion.result === AuthorizeResult.DENY) {
+      if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint);
       }
 
@@ -621,13 +621,13 @@ function setupInternalRoutes(
       message: `Received request to '${endpoint}' endpoint`,
     });
 
-    const desicion = await authorize(
+    const decision = await authorize(
       req,
       orchestratorWorkflowReadPermission,
       permissions,
       httpAuth,
     );
-    if (desicion.result === AuthorizeResult.DENY) {
+    if (decision.result === AuthorizeResult.DENY) {
       manageDenyAuthorization(endpointName, endpoint);
     }
 
@@ -652,13 +652,13 @@ function setupInternalRoutes(
         message: `Received request to '${endpoint}' endpoint`,
       });
 
-      const desicion = await authorize(
+      const decision = await authorize(
         _req,
         orchestratorWorkflowReadPermission,
         permissions,
         httpAuth,
       );
-      if (desicion.result === AuthorizeResult.DENY) {
+      if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint);
       }
 
@@ -685,13 +685,13 @@ function setupInternalRoutes(
       message: `Received request to '${endpoint}' endpoint`,
     });
 
-    const desicion = await authorize(
+    const decision = await authorize(
       req,
       orchestratorWorkflowReadPermission,
       permissions,
       httpAuth,
     );
-    if (desicion.result === AuthorizeResult.DENY) {
+    if (decision.result === AuthorizeResult.DENY) {
       manageDenyAuthorization(endpointName, endpoint);
     }
 
@@ -846,13 +846,13 @@ function setupInternalRoutes(
         message: `Received request to '${endpoint}' endpoint`,
       });
 
-      const desicion = await authorize(
+      const decision = await authorize(
         _req,
         orchestratorWorkflowInstanceReadPermission,
         permissions,
         httpAuth,
       );
-      if (desicion.result === AuthorizeResult.DENY) {
+      if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint);
       }
 
@@ -882,13 +882,13 @@ function setupInternalRoutes(
         level: 'debug',
         message: `Received request to '${endpoint}' endpoint`,
       });
-      const desicion = await authorize(
+      const decision = await authorize(
         _req,
         orchestratorWorkflowInstanceReadPermission,
         permissions,
         httpAuth,
       );
-      if (desicion.result === AuthorizeResult.DENY) {
+      if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint);
       }
       await routerApi.v2
@@ -916,13 +916,13 @@ function setupInternalRoutes(
       message: `Received request to '${endpoint}' endpoint`,
     });
 
-    const desicion = await authorize(
+    const decision = await authorize(
       req,
       orchestratorWorkflowInstancesReadPermission,
       permissions,
       httpAuth,
     );
-    if (desicion.result === AuthorizeResult.DENY) {
+    if (decision.result === AuthorizeResult.DENY) {
       manageDenyAuthorization(endpointName, endpoint);
     }
     await routerApi.v1
@@ -951,13 +951,13 @@ function setupInternalRoutes(
         message: `Received request to '${endpoint}' endpoint`,
       });
 
-      const desicion = await authorize(
+      const decision = await authorize(
         req,
         orchestratorWorkflowInstancesReadPermission,
         permissions,
         httpAuth,
       );
-      if (desicion.result === AuthorizeResult.DENY) {
+      if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint);
       }
       await routerApi.v2
@@ -983,13 +983,13 @@ function setupInternalRoutes(
       message: `Received request to '${endpoint}' endpoint`,
     });
 
-    const desicion = await authorize(
+    const decision = await authorize(
       req,
       orchestratorWorkflowInstanceReadPermission,
       permissions,
       httpAuth,
     );
-    if (desicion.result === AuthorizeResult.DENY) {
+    if (decision.result === AuthorizeResult.DENY) {
       manageDenyAuthorization(endpointName, endpoint);
     }
 
@@ -1025,13 +1025,13 @@ function setupInternalRoutes(
         message: `Received request to '${endpoint}' endpoint`,
       });
 
-      const desicion = await authorize(
+      const decision = await authorize(
         _req,
         orchestratorWorkflowInstanceReadPermission,
         permissions,
         httpAuth,
       );
-      if (desicion.result === AuthorizeResult.DENY) {
+      if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint);
       }
       const includeAssessment = routerApi.v2.extractQueryParam(
@@ -1067,13 +1067,13 @@ function setupInternalRoutes(
       message: `Received request to '${endpoint}' endpoint`,
     });
 
-    const desicion = await authorize(
+    const decision = await authorize(
       req,
       orchestratorWorkflowInstanceAbortPermission,
       permissions,
       httpAuth,
     );
-    if (desicion.result === AuthorizeResult.DENY) {
+    if (decision.result === AuthorizeResult.DENY) {
       manageDenyAuthorization(endpointName, endpoint);
     }
 
@@ -1105,13 +1105,13 @@ function setupInternalRoutes(
         message: `Received request to '${endpoint}' endpoint`,
       });
 
-      const desicion = await authorize(
+      const decision = await authorize(
         _req,
         orchestratorWorkflowInstanceAbortPermission,
         permissions,
         httpAuth,
       );
-      if (desicion.result === AuthorizeResult.DENY) {
+      if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint);
       }
       await routerApi.v2
@@ -1143,13 +1143,13 @@ function setupInternalRoutes(
       message: `Received request to '${endpoint}' endpoint`,
     });
 
-    const desicion = await authorize(
+    const decision = await authorize(
       req,
       orchestratorWorkflowExecutePermission,
       permissions,
       httpAuth,
     );
-    if (desicion.result === AuthorizeResult.DENY) {
+    if (decision.result === AuthorizeResult.DENY) {
       manageDenyAuthorization(endpointName, endpoint);
     }
 
