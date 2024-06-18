@@ -19,6 +19,7 @@ export const orchestratorPlugin = createBackendPlugin({
         scheduler: coreServices.scheduler,
         permissions: coreServices.permissions,
         httpAuth: coreServices.httpAuth,
+        auth: coreServices.auth,
         catalogApi: catalogServiceRef,
       },
       async init({
@@ -31,17 +32,21 @@ export const orchestratorPlugin = createBackendPlugin({
         scheduler,
         permissions,
         httpAuth,
+        auth,
       }) {
-        const router = await createRouter({
-          config: config,
-          logger,
-          discovery: discovery,
-          catalogApi: catalogApi,
-          urlReader: urlReader,
-          scheduler: scheduler,
-          permissions: permissions,
-          httpAuth: httpAuth,
-        });
+        const router = await createRouter(
+          {
+            config: config,
+            logger,
+            discovery: discovery,
+            catalogApi: catalogApi,
+            urlReader: urlReader,
+            scheduler: scheduler,
+            permissions: permissions,
+            httpAuth: httpAuth,
+          },
+          auth,
+        );
         httpRouter.use(router);
         httpRouter.addAuthPolicy({
           path: '/static/generated/envelope',

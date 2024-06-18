@@ -1,5 +1,6 @@
 import { createLegacyAuthAdapters, UrlReader } from '@backstage/backend-common';
 import {
+  AuthService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
@@ -25,7 +26,10 @@ export interface RouterArgs {
   httpAuth?: HttpAuthService;
 }
 
-export async function createRouter(args: RouterArgs): Promise<express.Router> {
+export async function createRouter(
+  args: RouterArgs,
+  auth: AuthService,
+): Promise<express.Router> {
   const autoStartDevMode =
     args.config.getOptionalBoolean(
       'orchestrator.sonataFlowService.autoStart',
@@ -45,14 +49,17 @@ export async function createRouter(args: RouterArgs): Promise<express.Router> {
     httpAuth: args.httpAuth,
     discovery: args.discovery,
   });
-  return await createBackendRouter({
-    config: args.config,
-    logger: args.logger,
-    discovery: args.discovery,
-    catalogApi: args.catalogApi,
-    urlReader: args.urlReader,
-    scheduler: args.scheduler,
-    permissions: args.permissions,
-    httpAuth: httpAuth,
-  });
+  return await createBackendRouter(
+    {
+      config: args.config,
+      logger: args.logger,
+      discovery: args.discovery,
+      catalogApi: args.catalogApi,
+      urlReader: args.urlReader,
+      scheduler: args.scheduler,
+      permissions: args.permissions,
+      httpAuth: httpAuth,
+    },
+    auth,
+  );
 }
