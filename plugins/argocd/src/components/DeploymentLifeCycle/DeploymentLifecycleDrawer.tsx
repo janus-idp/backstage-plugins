@@ -19,13 +19,13 @@ import {
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
 import { Skeleton } from '@material-ui/lab';
-import GitLabIcon from '@patternfly/react-icons/dist/esm/icons/gitlab-icon';
 import moment from 'moment';
 
 import { Application, Revision } from '../../types';
 import { getCommitUrl, isAppHelmChartType } from '../../utils/utils';
 import AppNamespace from '../AppStatus/AppNamespace';
 import StatusHeading from '../AppStatus/StatusHeading';
+import GitlabIcon from '../Icons/GitlabIcon';
 import DeploymentLifecycledHeader from './DeploymentLifecycleHeader';
 
 interface DeploymentLifecycleDrawerProps {
@@ -149,7 +149,7 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
                     )}-commit-link`}
                     size="small"
                     variant="outlined"
-                    icon={<GitLabIcon />}
+                    icon={<GitlabIcon style={{ marginLeft: '2px' }} />}
                     color="primary"
                     onClick={e => {
                       e.stopPropagation();

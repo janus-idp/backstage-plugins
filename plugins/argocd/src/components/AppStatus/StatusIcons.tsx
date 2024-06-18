@@ -1,21 +1,39 @@
 import React from 'react';
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import ArrowCircleUpIcon from '@patternfly/react-icons/dist/esm/icons/arrow-alt-circle-up-icon';
-import CheckCircleIcon from '@patternfly/react-icons/dist/esm/icons/check-circle-icon';
-import CircleNotchIcon from '@patternfly/react-icons/dist/esm/icons/circle-notch-icon';
-import GhostIcon from '@patternfly/react-icons/dist/esm/icons/ghost-icon';
-import HeartBrokenIcon from '@patternfly/react-icons/dist/esm/icons/heart-broken-icon';
-import HeartIcon from '@patternfly/react-icons/dist/esm/icons/heart-icon';
-import PauseCircleIcon from '@patternfly/react-icons/dist/esm/icons/pause-circle-icon';
-import QuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/question-circle-icon';
+import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
+import HeartIcon from '@mui/icons-material/Favorite';
+import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
+import PauseCircleIcon from '@mui/icons-material/PauseCircleOutlineOutlined';
+
+import { Status } from '@janus-idp/shared-react';
 
 import { HealthStatus, SyncStatusCode, SyncStatuses } from '../../types';
+import GhostIcon from '../Icons/GhostIcon';
 
 const useIconStyles = makeStyles<Theme>(theme =>
   createStyles({
     icon: {
+      marginRight: theme.spacing(0.6),
+      height: '0.8em',
+      width: '0.8em',
+      top: '0.125em',
+      position: 'relative',
+      flexShrink: 0,
+    },
+    bsIcon: {
       marginLeft: theme.spacing(0.6),
+      marginBottom: '7px',
+      marginRight: theme.spacing(0.6),
+      width: '0.8em',
+    },
+    iconOnly: {
+      marginLeft: theme.spacing(0.6),
+      height: '0.8em',
+      width: '0.8em',
+      top: '0',
+      position: 'relative',
+      flexShrink: 0,
     },
     'icon-spin': {
       animation: '$spin-animation 0.5s infinite',
@@ -32,33 +50,44 @@ const useIconStyles = makeStyles<Theme>(theme =>
     },
   }),
 );
-export const SyncIcon: React.FC<{ status: SyncStatusCode }> = ({
+export const SyncIcon = ({
   status,
+  iconOnly,
+}: {
+  status: SyncStatusCode;
+  iconOnly?: boolean;
 }): React.ReactNode => {
   const classes = useIconStyles();
   switch (status) {
     case SyncStatuses.Synced:
       return (
-        <CheckCircleIcon
-          data-testid="synced-icon"
-          className={`${classes.icon}`}
-          style={{ height: '1em', color: 'green' }}
+        <Status
+          status={SyncStatuses.Synced}
+          dataTestId="synced-icon"
+          iconOnly={iconOnly}
+          iconClassNames={iconOnly ? classes.bsIcon : ''}
         />
       );
     case SyncStatuses.OutOfSync:
       return (
-        <ArrowCircleUpIcon
-          data-testid="outofsync-icon"
-          className={`${classes.icon}`}
-          style={{ height: '1em', color: '#f4c030' }}
-        />
+        <>
+          <ArrowCircleUpIcon
+            data-testid="outofsync-icon"
+            className={iconOnly ? classes.iconOnly : classes.icon}
+            style={{
+              color: '#f4c030',
+            }}
+          />
+          {!iconOnly && status}
+        </>
       );
     case SyncStatuses.Unknown:
       return (
-        <CircleNotchIcon
-          data-testid="unknown-icon"
-          className={`${classes.icon} ${classes['icon-spin']}`}
-          style={{ height: '1em', color: '#0DADEA' }}
+        <Status
+          status="Running"
+          dataTestId="unknown-icon"
+          iconOnly={iconOnly}
+          iconClassNames={iconOnly ? classes.bsIcon : ''}
         />
       );
     default:
@@ -66,58 +95,80 @@ export const SyncIcon: React.FC<{ status: SyncStatusCode }> = ({
   }
 };
 
-export const AppHealthIcon: React.FC<{ status: HealthStatus }> = ({
+export const AppHealthIcon = ({
   status,
+  iconOnly,
+}: {
+  status: HealthStatus;
+  iconOnly?: boolean;
 }): React.ReactNode => {
   const classes = useIconStyles();
 
   switch (status) {
     case HealthStatus.Healthy:
       return (
-        <HeartIcon
-          data-testid="healthy-icon"
-          className={`${classes.icon}`}
-          style={{ height: '1em', color: 'green' }}
-        />
+        <>
+          <HeartIcon
+            data-testid="healthy-icon"
+            className={iconOnly ? classes.iconOnly : classes.icon}
+            style={{ color: 'green' }}
+          />
+          {!iconOnly && status}
+        </>
       );
     case HealthStatus.Suspended:
       return (
-        <PauseCircleIcon
-          data-testid="suspended-icon"
-          className={`${classes.icon}`}
-          style={{ height: '1em', color: '#766f94' }}
-        />
+        <>
+          <PauseCircleIcon
+            data-testid="suspended-icon"
+            className={iconOnly ? classes.iconOnly : classes.icon}
+            style={{ color: '#766f94' }}
+          />
+          {!iconOnly && status}
+        </>
       );
     case HealthStatus.Degraded:
       return (
-        <HeartBrokenIcon
-          data-testid="degraded-icon"
-          className={`${classes.icon}`}
-          style={{ height: '1em', color: '#E96D76' }}
-        />
+        <>
+          <HeartBrokenIcon
+            data-testid="degraded-icon"
+            className={iconOnly ? classes.iconOnly : classes.icon}
+            style={{ color: '#E96D76' }}
+          />
+          {!iconOnly && status}
+        </>
       );
     case HealthStatus.Progressing:
       return (
-        <CircleNotchIcon
-          data-testid="progressing-icon"
-          className={`${classes.icon} ${classes['icon-spin']}`}
-          style={{ height: '1em', color: '#0DADEA' }}
+        <Status
+          status={HealthStatus.Progressing}
+          iconOnly={iconOnly}
+          iconClassNames={iconOnly ? classes.bsIcon : ''}
+          dataTestId="progressing-icon"
         />
       );
     case HealthStatus.Missing:
       return (
-        <GhostIcon
-          data-testid="missing-icon"
-          className={`${classes.icon}`}
-          style={{ height: '1em', color: '#f4c030' }}
-        />
+        <>
+          <GhostIcon
+            dataTestId="missing-icon"
+            className={iconOnly ? classes.iconOnly : classes.icon}
+          />
+          {!iconOnly && status}
+        </>
       );
     default:
       return (
-        <QuestionCircleIcon
-          data-testid="unknown-icon"
-          style={{ height: '1em', color: 'green' }}
-        />
+        <>
+          <Status
+            status="Unknown"
+            iconStyles={{ color: 'green' }}
+            iconOnly={iconOnly}
+            iconClassNames={iconOnly ? classes.bsIcon : ''}
+            dataTestId="unknown-icon"
+          />
+          {!iconOnly && status}
+        </>
       );
   }
 };

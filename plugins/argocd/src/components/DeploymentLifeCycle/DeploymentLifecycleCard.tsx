@@ -17,13 +17,13 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import GitLabIcon from '@patternfly/react-icons/dist/esm/icons/gitlab-icon';
 import moment from 'moment';
 
 import { Application, Revision } from '../../types';
 import { getCommitUrl, isAppHelmChartType } from '../../utils/utils';
 import AppNamespace from '../AppStatus/AppNamespace';
 import StatusHeading from '../AppStatus/StatusHeading';
+import GitlabIcon from '../Icons/GitlabIcon';
 import DeploymentLifecycleHeader from './DeploymentLifecycleHeader';
 
 const useCardStyles = makeStyles<Theme>(theme =>
@@ -146,7 +146,7 @@ const DeploymentLifecycleCard: React.FC<DeploymentLifecycleCardProps> = ({
                         );
                       }
                     }}
-                    icon={<GitLabIcon />}
+                    icon={<GitlabIcon style={{ marginLeft: '2px' }} />}
                     color="primary"
                     label={latestRevision?.revision.slice(0, 7)}
                   />

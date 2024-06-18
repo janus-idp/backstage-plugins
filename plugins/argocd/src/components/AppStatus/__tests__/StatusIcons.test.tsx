@@ -5,6 +5,19 @@ import { render, screen } from '@testing-library/react';
 import { HealthStatus, SyncStatusCode } from '../../../types';
 import { AppHealthIcon, SyncIcon } from '../StatusIcons';
 
+jest.mock('@material-ui/styles', () => ({
+  ...jest.requireActual('@material-ui/styles'),
+  makeStyles: () => (_theme: any) => {
+    return {
+      success: 'success',
+      error: 'error',
+      running: 'running',
+      warning: 'warning',
+      pending: 'pending',
+    };
+  },
+}));
+
 describe('StatusIcons', () => {
   describe('Sync Status', () => {
     test('should return application sync icon', () => {

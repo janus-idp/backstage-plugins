@@ -9,25 +9,28 @@ import {
   StatusWarning,
 } from '@backstage/core-components';
 
-import { makeStyles } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import OffIcon from '@mui/icons-material/DoNotDisturbOnOutlined';
 import UnknownIcon from '@mui/icons-material/HelpOutline';
 import AngleDoubleRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import BanIcon from '@mui/icons-material/NotInterestedOutlined';
 import PauseIcon from '@mui/icons-material/PauseCircleOutlineOutlined';
+import cx from 'classnames';
 
 import { StatusIconAndText } from './StatusIconAndText';
 
-const useStyles = makeStyles({
-  iconStyles: {
-    height: '0.8em',
-    width: '0.8em',
-    top: '0.125em',
-    position: 'relative',
-    flexShrink: 0,
-    marginRight: '8px',
-  },
-});
+const useStyles = makeStyles<Theme>(theme =>
+  createStyles({
+    iconStyles: {
+      height: '0.8em',
+      width: '0.8em',
+      top: '0.125em',
+      position: 'relative',
+      flexShrink: 0,
+      marginRight: theme.spacing(0.6),
+    },
+  }),
+);
 
 const DASH = '-';
 
@@ -59,37 +62,43 @@ const useStatusStyles = makeStyles(theme => ({
   },
 }));
 
-const StatusIcon = ({ statusKey }: { statusKey: StatusClassKey }) => {
+const StatusIcon = ({
+  statusKey,
+  classNames,
+}: {
+  statusKey: StatusClassKey;
+  classNames: string;
+}) => {
   const statusStyles = useStatusStyles();
 
   switch (statusKey) {
     case 'ok':
       return (
-        <g className={statusStyles.success}>
+        <g className={cx(statusStyles.success, classNames)}>
           <StatusOK />{' '}
         </g>
       );
     case 'pending':
       return (
-        <g className={statusStyles.pending}>
+        <g className={cx(statusStyles.pending, classNames)}>
           <StatusPending />{' '}
         </g>
       );
     case 'running':
       return (
-        <g className={statusStyles.running}>
+        <g className={cx(statusStyles.running, classNames)}>
           <StatusRunning />{' '}
         </g>
       );
     case 'warning':
       return (
-        <g className={statusStyles.warning}>
+        <g className={cx(statusStyles.warning, classNames)}>
           <StatusWarning />{' '}
         </g>
       );
     case 'error':
       return (
-        <g className={statusStyles.error}>
+        <g className={cx(statusStyles.error, classNames)}>
           <StatusError />{' '}
         </g>
       );
@@ -103,6 +112,7 @@ const StatusIcon = ({ statusKey }: { statusKey: StatusClassKey }) => {
  * @param {string} status - type of status to be displayed
  * @param {boolean} [iconOnly] - (optional) if true, only displays icon
  * @param {string} [className] - (optional) additional class name for the component
+ * @param {string} [displayStatusText] - (optional) use a different text to display the status
 
  * @example
  * ```tsx
@@ -114,17 +124,24 @@ export const Status = ({
   iconOnly,
   className,
   displayStatusText,
+  dataTestId,
+  iconStyles,
+  iconClassNames,
 }: {
   status: string | null;
   displayStatusText?: string;
   iconOnly?: boolean;
   className?: string;
+  dataTestId?: string;
+  iconStyles?: React.CSSProperties;
+  iconClassNames?: string;
 }): React.ReactElement => {
   const classes = useStyles();
   const statusProps = {
     title: displayStatusText || status || '',
     iconOnly,
     className,
+    dataTestId,
   };
 
   switch (status) {
@@ -135,12 +152,15 @@ export const Status = ({
       return (
         <StatusIconAndText
           {...statusProps}
-          icon={<StatusIcon statusKey="pending" />}
+          icon={
+            <StatusIcon statusKey="pending" classNames={iconClassNames || ''} />
+          }
         />
       );
 
     case 'In Progress':
     case 'Progress':
+    case 'Progressing':
     case 'Installing':
     case 'InstallReady':
     case 'Replacing':
@@ -151,7 +171,9 @@ export const Status = ({
       return (
         <StatusIconAndText
           {...statusProps}
-          icon={<StatusIcon statusKey="running" />}
+          icon={
+            <StatusIcon statusKey="running" classNames={iconClassNames || ''} />
+          }
         />
       );
 
@@ -166,7 +188,7 @@ export const Status = ({
       return (
         <StatusIconAndText
           {...statusProps}
-          icon={<BanIcon className={classes.iconStyles} />}
+          icon={<BanIcon className={classes.iconStyles} style={iconStyles} />}
         />
       );
 
@@ -175,28 +197,34 @@ export const Status = ({
       return (
         <StatusIconAndText
           {...statusProps}
-          icon={<StatusIcon statusKey="warning" />}
+          icon={
+            <StatusIcon statusKey="warning" classNames={iconClassNames || ''} />
+          }
         />
       );
 
     case 'ImagePullBackOff':
     case 'Error':
     case 'Failed':
+    case 'Failure':
     case 'CrashLoopBackOff':
     case 'ErrImagePull':
       return (
         <StatusIconAndText
           {...statusProps}
-          icon={<StatusIcon statusKey="error" />}
+          icon={
+            <StatusIcon statusKey="error" classNames={iconClassNames || ''} />
+          }
         />
       );
 
     case 'Completed':
     case 'Succeeded':
+    case 'Synced':
       return (
         <StatusIconAndText
           {...statusProps}
-          icon={<StatusIcon statusKey="ok" />}
+          icon={<StatusIcon statusKey="ok" classNames={iconClassNames || ''} />}
         />
       );
 
@@ -204,21 +232,26 @@ export const Status = ({
       return (
         <StatusIconAndText
           {...statusProps}
-          icon={<AngleDoubleRightIcon className={classes.iconStyles} />}
+          icon={
+            <AngleDoubleRightIcon
+              className={classes.iconStyles}
+              style={iconStyles}
+            />
+          }
         />
       );
     case 'Paused':
       return (
         <StatusIconAndText
           {...statusProps}
-          icon={<PauseIcon className={classes.iconStyles} />}
+          icon={<PauseIcon className={classes.iconStyles} style={iconStyles} />}
         />
       );
     case 'Stopped':
       return (
         <StatusIconAndText
           {...statusProps}
-          icon={<OffIcon className={classes.iconStyles} />}
+          icon={<OffIcon className={classes.iconStyles} style={iconStyles} />}
         />
       );
 
@@ -226,7 +259,9 @@ export const Status = ({
       return (
         <StatusIconAndText
           {...statusProps}
-          icon={<UnknownIcon className={classes.iconStyles} />}
+          icon={
+            <UnknownIcon className={classes.iconStyles} style={iconStyles} />
+          }
         />
       );
 

@@ -6,6 +6,19 @@ import { mockApplication } from '../../../../dev/__data__';
 import { Application } from '../../../types';
 import StatusHeading from '../StatusHeading';
 
+jest.mock('@material-ui/styles', () => ({
+  ...jest.requireActual('@material-ui/styles'),
+  makeStyles: () => (_theme: any) => {
+    return {
+      success: 'success',
+      error: 'error',
+      running: 'running',
+      warning: 'warning',
+      pending: 'pending',
+    };
+  },
+}));
+
 describe('StatusHeading', () => {
   test('should not render if the application is not available', () => {
     render(<StatusHeading app={null as unknown as Application} />);

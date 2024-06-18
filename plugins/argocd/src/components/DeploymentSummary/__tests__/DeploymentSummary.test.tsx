@@ -38,6 +38,19 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   }),
 }));
 
+jest.mock('@material-ui/styles', () => ({
+  ...jest.requireActual('@material-ui/styles'),
+  makeStyles: () => (_theme: any) => {
+    return {
+      success: 'success',
+      error: 'error',
+      running: 'running',
+      warning: 'warning',
+      pending: 'pending',
+    };
+  },
+}));
+
 describe('DeploymentSummary', () => {
   beforeEach(() => {
     (useApplications as any).mockReturnValue({
@@ -203,7 +216,7 @@ describe('DeploymentSummary', () => {
       within(firstRow).getByText('90f9758');
     });
     await fireEvent.click(lastDeployedHeader);
-    // miui table requires two clicks to start sorting
+    // mui table requires two clicks to start sorting
     await fireEvent.click(lastDeployedHeader);
 
     await waitFor(() => {

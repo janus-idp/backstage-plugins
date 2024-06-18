@@ -4,7 +4,8 @@ import { Table, TableColumn } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { IconButton, Link } from '@material-ui/core';
-import ExternalLinkIcon from '@patternfly/react-icons/dist/esm/icons/external-link-alt-icon';
+import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
+// import ExternalLinkIcon from '@patternfly/react-icons/dist/esm/icons/external-link-alt-icon';
 import moment from 'moment';
 
 import { useApplications } from '../../hooks/useApplications';
@@ -63,7 +64,7 @@ const DeploymentSummary = () => {
           >
             {row.metadata.name}{' '}
             <IconButton color="primary" size="small">
-              <ExternalLinkIcon />
+              <OpenInNewOutlinedIcon />
             </IconButton>
           </Link>
         ) : (
@@ -163,10 +164,7 @@ const DeploymentSummary = () => {
         );
       },
       render: (row: Application): React.ReactNode => (
-        <>
-          <AppHealthIcon status={row.status.health.status as HealthStatus} />{' '}
-          {row?.status?.health?.status}
-        </>
+        <AppHealthIcon status={row.status.health.status as HealthStatus} />
       ),
     },
   ];

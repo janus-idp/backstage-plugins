@@ -318,13 +318,13 @@ catalog:
 
      ```tsx title="packages/app/src/App.tsx"
      /* highlight-add-next-line */
-     import { OcmPage } from '@janus-idp/backstage-plugin-ocm';
+     import { OcmIcon, OcmPage } from '@janus-idp/backstage-plugin-ocm';
 
      const routes = (
        <FlatRoutes>
          {/* ... */}
          {/* highlight-add-next-line */}
-         <Route path="/ocm" element={<OcmPage logo={<Logo />} />} />
+         <Route path="/ocm" element={<OcmPage logo={<OcmIcon />} />} />
        </FlatRoutes>
      );
      ```
@@ -333,7 +333,7 @@ catalog:
 
      ```tsx title="packages/app/src/components/Root/Root.tsx"
      /* highlight-add-next-line */
-     import StorageIcon from '@material-ui/icons/Storage';
+     import StorageIcon from '@mui/icons-material/Storage';
 
      export const Root = ({ children }: PropsWithChildren<{}>) => (
        <SidebarPage>
@@ -341,7 +341,11 @@ catalog:
            <SidebarGroup label="Menu" icon={<MenuIcon />}>
              {/* ... */}
              {/* highlight-add-next-line */}
-             <SidebarItem icon={StorageIcon} to="ocm" text="Clusters" />
+             <SidebarItem
+               icon={StorageIcon as IconComponent}
+               to="ocm"
+               text="Clusters"
+             />
            </SidebarGroup>
            {/* ... */}
          </Sidebar>

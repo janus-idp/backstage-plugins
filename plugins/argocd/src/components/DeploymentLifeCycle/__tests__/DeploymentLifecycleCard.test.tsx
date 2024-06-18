@@ -20,11 +20,24 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   }),
 }));
 
+jest.mock('@material-ui/styles', () => ({
+  ...jest.requireActual('@material-ui/styles'),
+  makeStyles: () => (_theme: any) => {
+    return {
+      success: 'success',
+      error: 'error',
+      running: 'running',
+      warning: 'warning',
+      pending: 'pending',
+    };
+  },
+}));
+
 jest.mock('../../../hooks/useArgocdConfig', () => ({
   useArgocdConfig: jest.fn(),
 }));
 
-describe('DeploymentLifecylceCard', () => {
+describe('DeploymentLifecycleCard', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 

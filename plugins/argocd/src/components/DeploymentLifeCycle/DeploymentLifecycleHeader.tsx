@@ -1,7 +1,9 @@
 import React from 'react';
 
 import { IconButton } from '@material-ui/core';
-import ExternalLinkIcon from '@patternfly/react-icons/dist/esm/icons/external-link-alt-icon';
+import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
+
+// import ExternalLinkIcon from '@patternfly/react-icons/dist/esm/icons/external-link-alt-icon';
 
 import { useArgocdConfig } from '../../hooks/useArgocdConfig';
 import { Application } from '../../types';
@@ -29,7 +31,8 @@ const DeploymentLifecycleHeader: React.FC<{ app: Application }> = ({ app }) => {
         href={`${getBaseUrl(app)}/applications/${app.metadata.name}`}
         onClick={e => e.stopPropagation()}
       >
-        <ExternalLinkIcon />
+        {/* <ExternalLinkIcon /> */}
+        <OpenInNewOutlinedIcon />
       </IconButton>
     </>
   );
