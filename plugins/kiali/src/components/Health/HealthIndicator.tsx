@@ -34,7 +34,7 @@ export const HealthIndicator: React.FC<HealthIndicatorProps> = (
         position={PopoverPosition.auto}
         className={healthIndicatorStyle}
       >
-        {createTooltipIcon(icon)}
+        {createTooltipIcon(icon, 'health')}
       </Tooltip>
     );
   }

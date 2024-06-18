@@ -117,17 +117,17 @@ export const EntityKialiResourcesCard = () => {
       value={value}
       data-test="kiali-tabbed-card"
     >
-      <CardTab label="Workloads" value="workload">
+      <CardTab label="Workloads" value="workload" data-test="workloads-tab">
         <div style={tabStyle}>
           <WorkloadListPage view={DRAWER} entity={entity} />
         </div>
       </CardTab>
-      <CardTab label="Services" value="service" data-test="service-tab">
+      <CardTab label="Services" value="service" data-test="services-tab">
         <div style={tabStyle}>
           <ServiceListPage view={DRAWER} entity={entity} />
         </div>
       </CardTab>
-      <CardTab label="Applications" value="application">
+      <CardTab label="Applications" value="application" data-test="apps-tab">
         <div style={tabStyle}>
           <AppListPage view={DRAWER} entity={entity} />
         </div>
