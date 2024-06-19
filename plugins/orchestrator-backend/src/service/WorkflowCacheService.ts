@@ -92,7 +92,7 @@ export class WorkflowCacheService {
         ? 'empty cache'
         : Array.from(this.definitionIdCache).join(', ');
 
-      this.logger.info(
+      this.logger.debug(
         `${this.TASK_ID} updated the workflow definition ID cache to: ${workflowDefinitionIds}`,
       );
     } catch (error) {
