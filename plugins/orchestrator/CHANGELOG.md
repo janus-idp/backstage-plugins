@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator [1.14.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.14.0...@janus-idp/backstage-plugin-orchestrator@1.14.1) (2024-06-19)
+
+
+### Bug Fixes
+
+* **matomo:** add default export for new backend system ([#1822](https://github.com/janus-idp/backstage-plugins/issues/1822)) ([5e72920](https://github.com/janus-idp/backstage-plugins/commit/5e72920209589535d503bb28e77f54175a0bd946))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.11.1
+
 ## @janus-idp/backstage-plugin-orchestrator [1.14.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.13.7...@janus-idp/backstage-plugin-orchestrator@1.14.0) (2024-06-13)
 
 
