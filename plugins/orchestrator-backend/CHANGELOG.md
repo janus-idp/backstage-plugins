@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.10.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.10.0...@janus-idp/backstage-plugin-orchestrator-backend@1.10.1) (2024-06-19)
+
+
+### Bug Fixes
+
+* **orchestrator:** change log level of cache messages to be debug ([#1824](https://github.com/janus-idp/backstage-plugins/issues/1824)) ([4224612](https://github.com/janus-idp/backstage-plugins/commit/422461224e31b419cd8394e2432af71ed10a986e))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.11.1
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.9.8...@janus-idp/backstage-plugin-orchestrator-backend@1.10.0) (2024-06-13)
 
 
