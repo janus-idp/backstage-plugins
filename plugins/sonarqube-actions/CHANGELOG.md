@@ -1,3 +1,11 @@
+## @janus-idp/backstage-scaffolder-backend-module-sonarqube [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-sonarqube@1.5.0...@janus-idp/backstage-scaffolder-backend-module-sonarqube@1.5.1) (2024-06-19)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.11.1
+
 ## @janus-idp/backstage-scaffolder-backend-module-sonarqube [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-sonarqube@1.4.13...@janus-idp/backstage-scaffolder-backend-module-sonarqube@1.5.0) (2024-06-13)
 
 
