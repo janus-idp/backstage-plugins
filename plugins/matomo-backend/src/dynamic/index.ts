@@ -1,11 +1,8 @@
 import { BackendDynamicPluginInstaller } from '@backstage/backend-dynamic-feature-service';
 
-import { createRouter } from '../service/router';
+import { matomoBackendPlugin } from '../plugin';
 
 export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
-  kind: 'legacy',
-  router: {
-    pluginID: 'matomo',
-    createPlugin: createRouter,
-  },
+  kind: 'new',
+  install: () => matomoBackendPlugin(),
 };

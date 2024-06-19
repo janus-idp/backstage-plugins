@@ -9,6 +9,7 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "configSchema": "config.d.ts",
   "backstage": {
     "role": "backend-plugin",
     "supported-versions": "1.26.5"
