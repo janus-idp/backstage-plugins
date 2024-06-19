@@ -10,6 +10,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { usePermission } from '@backstage/plugin-permission-react';
 
+import { Tooltip } from '@mui/material';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Skeleton from '@mui/material/Skeleton';
@@ -64,10 +65,13 @@ export const WorkflowDefinitionViewerPage = () => {
         )}
         <Grid container item justifyContent="flex-end" spacing={1}>
           <Grid item>
-            {loading ? (
+            {loading || loadingPermission ? (
               <Skeleton variant="text" width="5rem" />
             ) : (
-              !loadingPermission && (
+              <Tooltip
+                title="user not authorized to execute workflow"
+                disableHoverListener={canRun}
+              >
                 <Button
                   variant="contained"
                   color="primary"
@@ -76,7 +80,7 @@ export const WorkflowDefinitionViewerPage = () => {
                 >
                   Run
                 </Button>
-              )
+              </Tooltip>
             )}
           </Grid>
         </Grid>
