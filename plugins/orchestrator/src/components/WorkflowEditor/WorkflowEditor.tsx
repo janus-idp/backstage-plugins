@@ -197,18 +197,14 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
     });
   }, [editorMode, embeddedFile, languageService, stateControl]);
 
-  useImperativeHandle(
-    forwardedRef,
-    () => {
-      return {
-        validate,
-        getContent,
-        workflowDefinition: workflowDefinitionPromise.data,
-        isReady: ready,
-      };
-    },
-    [validate, getContent, workflowDefinitionPromise.data, ready],
-  );
+  useImperativeHandle(forwardedRef, () => {
+    return {
+      validate,
+      getContent,
+      workflowDefinition: workflowDefinitionPromise.data,
+      isReady: ready,
+    };
+  }, [validate, getContent, workflowDefinitionPromise.data, ready]);
 
   useCancelableEffect(
     useCallback(
