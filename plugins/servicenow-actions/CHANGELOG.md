@@ -1,3 +1,11 @@
+## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.5.0...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.5.1) (2024-06-19)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.11.1
+
 ## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.15...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.5.0) (2024-06-13)
 
 
