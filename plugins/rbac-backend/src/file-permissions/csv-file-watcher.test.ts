@@ -289,12 +289,12 @@ describe('CSVFileWatcher', () => {
       expect(enfRemovePolicySpy).toHaveBeenCalledWith(
         ...legacyPermissionWithLegacySource,
       );
+      expect(enfAddPolicySpy).toHaveBeenCalledWith(...legacyPermission);
       expect(enfAddPolicySpy).toHaveBeenCalledWith(
         ...legacyPermissionWithCSVFileSource,
       );
 
       const enfPolicies = await enforcerDelegate.getPolicy();
-      expect(enfAddPolicySpy).toHaveBeenCalledWith(...legacyPermission);
       expect(enfPolicies).toStrictEqual(permissionPolicies);
     });
 
