@@ -1,5 +1,6 @@
 import approvalToolBlackImg from '../images/ApprovalTool_Black.svg';
 import approvalToolWhiteImg from '../images/ApprovalTool_White.svg';
+import bulkImportWhiteImg from '../images/BulkImportIcon-White.svg';
 import chooseRepositoriesBlackImg from '../images/ChooseRepositories_Black.svg';
 import chooseRepositoriesWhiteImg from '../images/ChooseRepositories_White.svg';
 import editPullRequestBlackImg from '../images/EditPullRequest_Black.svg';
@@ -19,7 +20,8 @@ const logos = new Map<string, any>()
   .set('icon-choose-repositories-white', chooseRepositoriesWhiteImg)
   .set('icon-generate-cataloginfo-white', generateCatalogInfoWhiteImg)
   .set('icon-track-status-white', trackStatusWhiteImg)
-  .set('icon-approval-tool-white', approvalToolWhiteImg);
+  .set('icon-approval-tool-white', approvalToolWhiteImg)
+  .set('icon-bulk-import-white', bulkImportWhiteImg);
 
 export const getImageForIconClass = (iconClass: string): string => {
   return logos.get(iconClass);

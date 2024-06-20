@@ -1,18 +1,23 @@
 import React from 'react';
 
 import { SidebarItem } from '@backstage/core-components';
-import { IconComponent } from '@backstage/core-plugin-api';
 
-import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
+import { getImageForIconClass } from '../utils/icons';
+
+export const icon = () => {
+  return (
+    <img
+      src={getImageForIconClass('icon-bulk-import-white')}
+      alt="bulk import icon"
+      style={{ height: '25px' }}
+    />
+  );
+};
 
 export const BulkImportIcon = () => {
   // permission logic
 
   return (
-    <SidebarItem
-      text="Bulk import"
-      to="bulk-import/repositories"
-      icon={LibraryAddOutlinedIcon as IconComponent}
-    />
+    <SidebarItem text="Bulk import" to="bulk-import/repositories" icon={icon} />
   );
 };
