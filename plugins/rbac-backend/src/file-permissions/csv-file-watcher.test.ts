@@ -120,70 +120,6 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
   removeRoleMetadata: jest.fn().mockImplementation(),
 };
 
-// const policyMetadataStorageMock: PolicyMetadataStorage = {
-//   findPolicyMetadataBySource: jest
-//     .fn()
-//     .mockImplementation(
-//       async (source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-//         if (source === 'legacy') {
-//           return [
-//             {
-//               id: 0,
-//               policy: '[role:default/legacy, catalog-entity, update, allow]',
-//               source: 'legacy',
-//             },
-//             {
-//               id: 1,
-//               policy: '[user:default/guest, role:default/legacy]',
-//               source: 'legacy',
-//             },
-//           ];
-//         } else if (source === 'rest') {
-//           return [
-//             {
-//               id: 0,
-//               policy: '[role:default/rest, catalog-entity, update, allow]',
-//               source: 'rest',
-//             },
-//           ];
-//         } else if (source === 'configuration') {
-//           return [
-//             {
-//               id: 0,
-//               policy: '[role:default/config, catalog-entity, update, allow]',
-//               source: 'configuration',
-//             },
-//           ];
-//         }
-//         return [];
-//       },
-//     ),
-//   findPolicyMetadata: jest
-//     .fn()
-//     .mockImplementation(
-//       async (
-//         policy: string[],
-//         _trx: Knex.Knex.Transaction,
-//       ): Promise<PermissionPolicyMetadata> => {
-//         if (
-//           policyToString(policy) === policyToString(legacyPermission) ||
-//           policyToString(policy) === policyToString(legacyRole)
-//         ) {
-//           return { source: 'legacy' };
-//         } else if (policyToString(policy) === policyToString(restPermission)) {
-//           return { source: 'rest' };
-//         } else if (
-//           policyToString(policy) === policyToString(configPermission)
-//         ) {
-//           return { source: 'configuration' };
-//         }
-//         return { source: 'csv-file' };
-//       },
-//     ),
-//   createPolicyMetadata: jest.fn().mockImplementation(),
-//   removePolicyMetadata: jest.fn().mockImplementation(),
-// };
-
 const dbManagerMock = Knex.knex({ client: MockClient });
 
 const mockAuthService = mockServices.auth();
@@ -194,15 +130,7 @@ const auditLoggerMock = {
   auditLog: jest.fn().mockImplementation(),
 };
 
-// const currentPermissionPolicies = [
-//   ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
-//   ['role:default/legacy', 'catalog-entity', 'update', 'allow'],
-//   ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
-//   ['role:default/catalog-writer', 'catalog.entity.create', 'use', 'allow'],
-//   ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
-//   ['role:default/known_role', 'test.resource.deny', 'use', 'allow'],
-// ];
-const currentPermissionPoliciesWithSource = [
+const currentPermissionPolicies = [
   [
     'role:default/catalog-writer',
     'catalog-entity',
@@ -235,15 +163,7 @@ const currentPermissionPoliciesWithSource = [
   ['role:default/known_role', 'test.resource.deny', 'use', 'allow', 'csv-file'],
 ];
 
-// const currentRoles = [
-//   ['user:default/guest', 'role:default/catalog-writer'],
-//   ['user:default/guest', 'role:default/legacy'],
-//   ['user:default/guest', 'role:default/catalog-reader'],
-//   ['user:default/guest', 'role:default/catalog-deleter'],
-//   ['user:default/known_user', 'role:default/known_role'],
-// ];
-
-const currentRolesWithSource = [
+const currentRoles = [
   ['user:default/guest', 'role:default/catalog-writer', 'csv-file'],
   ['user:default/guest', 'role:default/legacy', 'csv-file'],
   ['user:default/guest', 'role:default/catalog-reader', 'csv-file'],
@@ -305,7 +225,7 @@ describe('CSVFileWatcher', () => {
 
       const enfPolicies = await enforcerDelegate.getPolicy();
 
-      expect(enfPolicies).toStrictEqual(currentPermissionPoliciesWithSource);
+      expect(enfPolicies).toStrictEqual(currentPermissionPolicies);
     });
 
     it('should be able to add roles during initialization', async () => {
@@ -313,7 +233,7 @@ describe('CSVFileWatcher', () => {
 
       const enfRoles = await enforcerDelegate.getGroupingPolicy();
 
-      expect(enfRoles).toStrictEqual(currentRolesWithSource);
+      expect(enfRoles).toStrictEqual(currentRoles);
     });
 
     it('should be able to update legacy permission policies during initialization', async () => {
@@ -374,7 +294,7 @@ describe('CSVFileWatcher', () => {
       );
 
       const enfPolicies = await enforcerDelegate.getPolicy();
-
+      expect(enfAddPolicySpy).toHaveBeenCalledWith(...legacyPermission);
       expect(enfPolicies).toStrictEqual(permissionPolicies);
     });
 
