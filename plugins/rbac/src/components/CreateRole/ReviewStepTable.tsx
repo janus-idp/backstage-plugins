@@ -3,17 +3,25 @@ import React from 'react';
 export const ReviewStepTable = ({
   columns,
   rows,
+  tableWrapperWidth,
 }: {
   columns: any[];
   rows: any[];
+  tableWrapperWidth: number;
 }) => {
   return (
-    <div style={{ maxHeight: '230px', overflow: 'scroll', width: '650px' }}>
-      <table style={{ width: '600px' }}>
+    <div
+      style={{
+        maxHeight: '230px',
+        overflow: 'auto',
+        width: `${tableWrapperWidth}px`,
+      }}
+    >
+      <table style={{ width: `${tableWrapperWidth - 50}px` }}>
         <thead>
           <tr>
             {columns.map(col => (
-              <th style={{ width: '200px' }} key={col.title}>
+              <th style={{ width: '150px' }} key={col.title}>
                 {col.title}
               </th>
             ))}
@@ -25,7 +33,7 @@ export const ReviewStepTable = ({
               <tr>
                 {columns.map(rowCol => (
                   <td
-                    style={{ width: '200px' }}
+                    style={{ width: '150px' }}
                     key={`${rowCol.title}-${rowCol.field}`}
                   >
                     {rowCol.render
