@@ -21,6 +21,7 @@ import {
   RoleEvents,
 } from './audit-log/audit-logger';
 import { EnforcerDelegate } from './service/enforcer-delegate';
+import { SourcedPolicy } from './types';
 
 export function policyToString(policy: string[]): string {
   return `[${policy.join(', ')}]`;
@@ -122,4 +123,22 @@ export function isPermissionAction(action: string): action is PermissionAction {
   return ['create', 'read', 'update', 'delete', 'use'].includes(
     action as PermissionAction,
   );
+}
+
+export function parsePolicyWithSource(policy: string[]): SourcedPolicy {
+  const source = policy[policy.length - 1];
+
+  const isLastItemSource = [
+    'rest',
+    'csv-file',
+    'configuration',
+    'legacy',
+  ].includes(source);
+  if (!isLastItemSource) {
+    throw new Error(
+      `Failed to parse source policy. Policy should ends with source value: ${source}`,
+    );
+  }
+
+  return { policy: policy.slice(0, -1), source: source as Source };
 }

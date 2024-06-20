@@ -43,6 +43,7 @@ import {
   Role,
   RoleBasedPolicy,
   RoleConditionalPolicyDecision,
+  Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
@@ -182,7 +183,7 @@ export class PoliciesServer {
         policies = await this.enforcer.getPolicy();
       }
 
-      const body = await this.transformPolicyArray(...policies);
+      const body = this.transformPolicyArray(...policies);
 
       await this.aLog.auditLog({
         message: `Return list permission policies`,
@@ -213,7 +214,7 @@ export class PoliciesServer {
 
         const policy = await this.enforcer.getFilteredPolicy(0, entityRef);
         if (policy.length !== 0) {
-          const body = await this.transformPolicyArray(...policy);
+          const body = this.transformPolicyArray(...policy);
 
           await this.aLog.auditLog({
             message: `Return permission policy`,
@@ -257,7 +258,7 @@ export class PoliciesServer {
 
         const processedPolicies = await this.processPolicies(policyRaw, true);
 
-        await this.enforcer.removePolicies(processedPolicies);
+        await this.enforcer.removePolicies(processedPolicies, 'rest');
 
         await this.aLog.auditLog<PermissionAuditInfo>({
           message: `Deleted permission policies`,
@@ -496,8 +497,8 @@ export class PoliciesServer {
 
       for (const role of roles) {
         if (
-          (await this.enforcer.hasGroupingPolicy(...role)) &&
-          !(await this.enforcer.hasFilteredPolicyMetadata(role, 'legacy'))
+          (await this.enforcer.hasGroupingPolicy(...role, 'rest')) &&
+          !(await this.enforcer.hasGroupingPolicy(...role, 'legacy'))
         ) {
           throw new ConflictError(); // 409
         }
@@ -622,7 +623,7 @@ export class PoliciesServer {
         });
         // if the role is already part of old role and is a grouping policy we want to skip returning a conflict error
         // to allow for other roles to be checked and added
-        if (await this.enforcer.hasGroupingPolicy(...role)) {
+        if (await this.enforcer.hasGroupingPolicy(...role, 'rest')) {
           if (!hasRole) {
             throw new ConflictError(); // 409
           }
@@ -642,7 +643,7 @@ export class PoliciesServer {
 
       uniqueItems.clear();
       for (const role of oldRole) {
-        if (!(await this.enforcer.hasGroupingPolicy(...role))) {
+        if (!(await this.enforcer.hasGroupingPolicy(...role, 'rest'))) {
           throw new NotFoundError(
             `Member reference: ${role[0]} was not found for role ${roleEntityRef}`,
           ); // 404
@@ -685,7 +686,6 @@ export class PoliciesServer {
     router.delete(
       '/roles/:kind/:namespace/:name',
       async (request, response) => {
-        let roleMembers = [];
         const decision = await this.authorize(
           request,
           identity,
@@ -698,11 +698,23 @@ export class PoliciesServer {
 
         const roleEntityRef = this.getEntityReference(request, true);
 
+        let roleMembers = [];
         if (request.query.memberReferences) {
-          const memberReferences = this.getFirstQuery(
+          const memberReference = this.getFirstQuery(
             request.query.memberReferences!,
           );
-          roleMembers.push([memberReferences, roleEntityRef]);
+          const gp = await this.enforcer.getFilteredGroupingPolicy(
+            0,
+            memberReference,
+            roleEntityRef,
+          );
+          if (gp.length > 0) {
+            roleMembers.push(gp[0]);
+          } else {
+            throw new NotFoundError(
+              `role member '${memberReference}' was not found`,
+            ); // 404
+          }
         } else {
           roleMembers = await this.enforcer.getFilteredGroupingPolicy(
             1,
@@ -712,7 +724,7 @@ export class PoliciesServer {
 
         for (const role of roleMembers) {
           if (!(await this.enforcer.hasGroupingPolicy(...role))) {
-            throw new NotFoundError(); // 404
+            throw new NotFoundError(`role member '${role[0]}' was not found`);
           }
         }
 
@@ -1018,19 +1030,16 @@ export class PoliciesServer {
     return entityRef;
   }
 
-  async transformPolicyArray(
-    ...policies: string[][]
-  ): Promise<RoleBasedPolicy[]> {
+  transformPolicyArray(...policies: string[][]): RoleBasedPolicy[] {
     const roleBasedPolices: RoleBasedPolicy[] = [];
     for (const p of policies) {
-      const [entityReference, permission, policy, effect] = p;
-      const metadata = await this.enforcer.getMetadata(p);
+      const [entityReference, permission, policy, effect, source] = p;
       roleBasedPolices.push({
         entityReference,
         permission,
         policy,
         effect,
-        metadata,
+        metadata: { source: source as Source },
       });
     }
 
@@ -1170,7 +1179,10 @@ export class PoliciesServer {
       }
 
       const transformedPolicy = this.transformPolicyToArray(policy);
-      if (isOld && !(await this.enforcer.hasPolicy(...transformedPolicy))) {
+      if (
+        isOld &&
+        !(await this.enforcer.hasPolicy(...transformedPolicy, 'rest'))
+      ) {
         throw new NotFoundError(
           `Policy '${policyToString(transformedPolicy)}' not found`,
         ); // 404
@@ -1178,11 +1190,8 @@ export class PoliciesServer {
 
       if (
         !isOld &&
-        (await this.enforcer.hasPolicy(...transformedPolicy)) &&
-        !(await this.enforcer.hasFilteredPolicyMetadata(
-          transformedPolicy,
-          'legacy',
-        ))
+        (await this.enforcer.hasPolicy(...transformedPolicy, 'rest')) &&
+        !(await this.enforcer.hasPolicy(...transformedPolicy, 'legacy'))
       ) {
         throw new ConflictError(
           `Policy '${policyToString(

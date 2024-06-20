@@ -43,7 +43,7 @@ import {
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { CSVFileWatcher } from '../file-permissions/csv-file-watcher';
-import { metadataStringToPolicy, removeTheDifference } from '../helper';
+import { removeTheDifference } from '../helper';
 import { validateEntityReference } from '../validation/policies-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
 
@@ -72,7 +72,6 @@ const useAdminsFromConfig = async (
   roleMetadataStorage: RoleMetadataStorage,
   knex: Knex,
 ) => {
-  const groupPoliciesToCompare: string[] = [];
   const addedGroupPolicies = new Map<string, string>();
 
   for (const admin of admins) {
@@ -121,18 +120,11 @@ const useAdminsFromConfig = async (
     status: 'succeeded',
   });
 
-  const configPoliciesMetadata =
-    await enf.getFilteredPolicyMetadata('configuration');
-
-  for (const policyMetadata of configPoliciesMetadata) {
-    if (metadataStringToPolicy(policyMetadata.policy).length === 2) {
-      const stringPolicy = metadataStringToPolicy(policyMetadata.policy);
-      groupPoliciesToCompare.push(stringPolicy.at(0)!);
-    }
-  }
+  const configGroupPolicies =
+    await enf.getFilteredGroupingPoliciesBySource('configuration');
 
   await removeTheDifference(
-    groupPoliciesToCompare,
+    configGroupPolicies.map(gp => gp[0]),
     Array.from<string>(addedGroupPolicies.keys()),
     'configuration',
     ADMIN_ROLE_NAME,
