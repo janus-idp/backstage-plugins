@@ -292,10 +292,7 @@ export class CSVFileWatcher {
           actorId: RBAC_BACKEND,
           message: `Created or updated policy`,
           eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,
-          metadata: {
-            policies: [policy],
-            source: 'csv-file',
-          },
+          metadata: { policies: [policy], source: 'csv-file' },
           stage: HANDLE_RBAC_DATA_STAGE,
           status: 'succeeded',
         });
@@ -395,10 +392,7 @@ export class CSVFileWatcher {
           actorId: RBAC_BACKEND,
           message,
           eventName,
-          metadata: {
-            ...roleMetadata,
-            members: [groupPolicy[0]],
-          },
+          metadata: { ...roleMetadata, members: [groupPolicy[0]] },
           stage: HANDLE_RBAC_DATA_STAGE,
           status: 'succeeded',
         });
