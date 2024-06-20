@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.20.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.19.2...@janus-idp/backstage-plugin-kiali@1.20.0) (2024-06-20)
+
+
+### Features
+
+* **kiali:** resources card test coverage ([#1821](https://github.com/janus-idp/backstage-plugins/issues/1821)) ([4090fc2](https://github.com/janus-idp/backstage-plugins/commit/4090fc2e0a20db31fb08fc262dd290a67bd7b05e))
+
 ## @janus-idp/backstage-plugin-kiali [1.19.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.19.1...@janus-idp/backstage-plugin-kiali@1.19.2) (2024-06-19)
 
 
