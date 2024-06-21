@@ -289,7 +289,6 @@ describe('CSVFileWatcher', () => {
       expect(enfRemovePolicySpy).toHaveBeenCalledWith(
         ...legacyPermissionWithLegacySource,
       );
-      expect(enfAddPolicySpy).toHaveBeenCalledWith(...legacyPermission);
       expect(enfAddPolicySpy).toHaveBeenCalledWith(
         ...legacyPermissionWithCSVFileSource,
       );

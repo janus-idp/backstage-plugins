@@ -23,9 +23,9 @@ import {
 } from '../database/role-metadata';
 import {
   metadataStringToPolicy,
-  parsePolicyWithSource,
   policyToString,
   transformArrayToPolicy,
+  trimPolicySource,
 } from '../helper';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
@@ -132,7 +132,7 @@ export class CSVFileWatcher {
     for (const policy of policiesToRemove) {
       if (!(await tempEnforcer.hasGroupingPolicy(...policy))) {
         this.csvFilePolicies.removedGroupPolicies.push(
-          parsePolicyWithSource(policy).policy,
+          trimPolicySource(policy),
         );
       }
     }
@@ -140,9 +140,7 @@ export class CSVFileWatcher {
       await this.enforcer.getFilteredPoliciesBySource('csv-file');
     for (const gPolicy of groupingPoliciesToRemove) {
       if (!(await tempEnforcer.hasPolicy(...gPolicy))) {
-        this.csvFilePolicies.removedPolicies.push(
-          parsePolicyWithSource(gPolicy).policy,
-        );
+        this.csvFilePolicies.removedPolicies.push(trimPolicySource(gPolicy));
       }
     }
 
