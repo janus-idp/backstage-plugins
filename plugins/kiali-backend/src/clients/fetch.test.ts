@@ -12,7 +12,10 @@ describe('kiali Fetch', () => {
     describe(`${AuthStrategy.anonymous} strategy`, () => {
       it('should get a true', async () => {
         const kialiFetch = new KialiFetcher(
-          { url: 'https://localhost:4000' },
+          {
+            url: 'https://localhost:4000',
+            urlExternal: 'https://localhost:4000',
+          },
           logger,
         );
         const result = (kialiFetch as any).validateConfiguration({
@@ -30,7 +33,10 @@ describe('kiali Fetch', () => {
     describe(`${AuthStrategy.token} strategy`, () => {
       it('should get a false when `serviceAccountToken` is missed', async () => {
         const kialiFetch = new KialiFetcher(
-          { url: 'https://localhost:4000' },
+          {
+            url: 'https://localhost:4000',
+            urlExternal: 'https://localhost:4000',
+          },
           logger,
         );
         const result = (kialiFetch as any).validateConfiguration({
@@ -52,7 +58,11 @@ describe('kiali Fetch', () => {
 
       it('should get a true when `serviceAccountToken` is set', async () => {
         const kialiFetch = new KialiFetcher(
-          { url: 'https://localhost:4000', serviceAccountToken: '<token>' },
+          {
+            url: 'https://localhost:4000',
+            serviceAccountToken: '<token>',
+            urlExternal: 'https://localhost:4000',
+          },
           logger,
         );
         const result = (kialiFetch as any).validateConfiguration({
@@ -71,7 +81,10 @@ describe('kiali Fetch', () => {
     describe(`Not ${AuthStrategy.openid} strategy supported`, () => {
       it('should get a true', async () => {
         const kialiFetch = new KialiFetcher(
-          { url: 'https://localhost:4000' },
+          {
+            url: 'https://localhost:4000',
+            urlExternal: 'https://localhost:4000',
+          },
           logger,
         );
         const result = (kialiFetch as any).validateConfiguration({
@@ -93,7 +106,10 @@ describe('kiali Fetch', () => {
     describe('bufferFromFileOrString', () => {
       it('No file or data passed', () => {
         const kialiFetch = new KialiFetcher(
-          { url: 'https://localhost:4000' },
+          {
+            url: 'https://localhost:4000',
+            urlExternal: 'https://localhost:4000',
+          },
           logger,
         );
         const result = (kialiFetch as any).bufferFromFileOrString();
@@ -103,7 +119,10 @@ describe('kiali Fetch', () => {
 
       it('Read from file', () => {
         const kialiFetch = new KialiFetcher(
-          { url: 'https://localhost:4000' },
+          {
+            url: 'https://localhost:4000',
+            urlExternal: 'https://localhost:4000',
+          },
           logger,
         );
         const result = (kialiFetch as any).bufferFromFileOrString(
@@ -116,7 +135,10 @@ describe('kiali Fetch', () => {
 
       it('Read from data', () => {
         const kialiFetch = new KialiFetcher(
-          { url: 'https://localhost:4000' },
+          {
+            url: 'https://localhost:4000',
+            urlExternal: 'https://localhost:4000',
+          },
           logger,
         );
         const result = (kialiFetch as any).bufferFromFileOrString(
@@ -133,7 +155,10 @@ describe('kiali Fetch', () => {
   describe('Return networking error in checkSession', () => {
     it('Respond with verify category to network', async () => {
       const kialiFetch = new KialiFetcher(
-        { url: 'https://localhost:4000' },
+        {
+          url: 'https://localhost:4000',
+          urlExternal: 'https://localhost:4000',
+        },
         logger,
       );
 
@@ -150,7 +175,10 @@ describe('kiali Fetch', () => {
   describe('Handle Unsuccessful Response', () => {
     it('Respond with a readable message with endpoint', () => {
       const kialiFetch = new KialiFetcher(
-        { url: 'https://localhost:4000' },
+        {
+          url: 'https://localhost:4000',
+          urlExternal: 'https://localhost:4000',
+        },
         logger,
       );
       const message = 'Error server message';
@@ -169,7 +197,10 @@ describe('kiali Fetch', () => {
 
     it('Respond with a readable message without endpoint', () => {
       const kialiFetch = new KialiFetcher(
-        { url: 'https://localhost:4000' },
+        {
+          url: 'https://localhost:4000',
+          urlExternal: 'https://localhost:4000',
+        },
         logger,
       );
       const message = 'Error server message';
