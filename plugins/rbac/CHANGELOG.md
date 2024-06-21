@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.22.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.21.1...@janus-idp/backstage-plugin-rbac@1.22.0) (2024-06-21)
+
+
+### Features
+
+* **rbac:** show total no. of rules in review and create step ([#1827](https://github.com/janus-idp/backstage-plugins/issues/1827)) ([e54c470](https://github.com/janus-idp/backstage-plugins/commit/e54c4705de0b318a759e928999b5dcdb29f9846f))
+
 ## @janus-idp/backstage-plugin-rbac [1.21.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.21.0...@janus-idp/backstage-plugin-rbac@1.21.1) (2024-06-19)
 
 
