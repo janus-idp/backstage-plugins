@@ -80,6 +80,28 @@ describe('DeploymentLifecycleDrawer', () => {
     expect(screen.getByTestId('quarkus-app-dev-drawer')).toBeInTheDocument();
   });
 
+  test('should not render the commit section for helm based applications in drawer component', () => {
+    const helmApplication = {
+      ...mockApplication,
+      spec: {
+        ...mockApplication.spec,
+        source: { ...mockApplication.spec.source, chart: 'redhat-charts' },
+      },
+    };
+    render(
+      <DeploymentLifecycleDrawer
+        app={helmApplication}
+        isOpen
+        onClose={() => jest.fn()}
+        revisionsMap={{}}
+      />,
+      { wrapper },
+    );
+
+    const commitLink = screen.queryByText('Commit');
+    expect(commitLink).not.toBeInTheDocument();
+  });
+
   test('should render the commit link in drawer component', () => {
     global.open = jest.fn();
 

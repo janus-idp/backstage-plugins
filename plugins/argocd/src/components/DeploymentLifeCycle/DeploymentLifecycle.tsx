@@ -87,14 +87,18 @@ const DeploymentLifecycle = () => {
 
   const activeApp = apps.find(a => a.metadata.name === activeItem);
 
+  if (error) {
+    return <ResponseErrorPanel data-testid="error-panel" error={error} />;
+  }
+
   if (loading) {
     return (
       <div data-testid="argocd-loader">
         <Progress />
       </div>
     );
-  } else if (error) {
-    return <ResponseErrorPanel data-testid="error-panel" error={error} />;
+  } else if (apps?.length === 0) {
+    return null;
   }
 
   return (

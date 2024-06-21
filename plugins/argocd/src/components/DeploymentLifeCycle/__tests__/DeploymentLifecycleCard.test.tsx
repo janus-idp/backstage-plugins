@@ -148,3 +148,25 @@ describe('DeploymentLifecylceCard', () => {
     screen.getByText('commit message');
   });
 });
+
+test('application card should not contain commit section for helm based applications', () => {
+  (useArgocdConfig as any).mockReturnValue({
+    baseUrl: 'https://baseUrl.com',
+    instances: [{ name: 'main', url: 'https://main-instance-url.com' }],
+    intervalMs: 10000,
+    instanceName: 'main',
+  });
+
+  const helmApplication = {
+    ...mockApplication,
+    spec: {
+      ...mockApplication.spec,
+      source: { ...mockApplication.spec.source, chart: 'redhat-charts' },
+    },
+  };
+
+  render(<DeploymentLifecycleCard app={helmApplication} revisionsMap={{}} />);
+
+  const commitLink = screen.queryByText('Commit');
+  expect(commitLink).not.toBeInTheDocument();
+});
