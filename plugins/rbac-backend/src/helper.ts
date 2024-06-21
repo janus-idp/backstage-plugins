@@ -21,7 +21,6 @@ import {
   RoleEvents,
 } from './audit-log/audit-logger';
 import { EnforcerDelegate } from './service/enforcer-delegate';
-import { SourcedPolicy } from './types';
 
 export function policyToString(policy: string[]): string {
   return `[${policy.join(', ')}]`;
@@ -125,7 +124,7 @@ export function isPermissionAction(action: string): action is PermissionAction {
   );
 }
 
-export function parsePolicyWithSource(policy: string[]): SourcedPolicy {
+export function trimPolicySource(policy: string[]): string[] {
   const source = policy[policy.length - 1];
 
   const isLastItemSource = [
@@ -140,5 +139,5 @@ export function parsePolicyWithSource(policy: string[]): SourcedPolicy {
     );
   }
 
-  return { policy: policy.slice(0, -1), source: source as Source };
+  return policy.slice(0, -1);
 }
