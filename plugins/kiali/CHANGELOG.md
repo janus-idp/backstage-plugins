@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.21.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.20.0...@janus-idp/backstage-plugin-kiali@1.21.0) (2024-06-21)
+
+
+### Features
+
+* **kiali:** add banner to warn for tech preview windows ([#1829](https://github.com/janus-idp/backstage-plugins/issues/1829)) ([b0cb796](https://github.com/janus-idp/backstage-plugins/commit/b0cb7960b572dd17ec001a1afcb314219a45e656))
+
 ## @janus-idp/backstage-plugin-kiali [1.20.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.19.2...@janus-idp/backstage-plugin-kiali@1.20.0) (2024-06-20)
 
 
