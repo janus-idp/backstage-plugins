@@ -1,3 +1,5 @@
+import { getRulesNumber } from '../../utils/create-role-utils';
+import { ConditionsData } from '../ConditionalAccess/types';
 import { RowPolicy } from './types';
 
 export const selectedPermissionPoliciesColumn = () => [
@@ -18,6 +20,16 @@ export const selectedPermissionPoliciesColumn = () => [
         return acc;
       }, '');
       return policyStr.slice(0, policyStr.length - 2);
+    },
+  },
+  {
+    title: 'Conditional',
+    field: 'conditions',
+    render: (conditions: ConditionsData) => {
+      const totalRules = getRulesNumber(conditions);
+      return totalRules
+        ? `${totalRules} ${totalRules > 1 ? 'rules' : 'rule'}`
+        : '-';
     },
   },
 ];

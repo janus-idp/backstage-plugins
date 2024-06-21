@@ -271,7 +271,10 @@ export const getRemovedConditionalPoliciesIds = (
 };
 
 export const getPermissionsNumber = (values: RoleFormValues) => {
-  return getPermissionPoliciesData(values).length;
+  return (
+    getPermissionPoliciesData(values).length +
+    getConditionalPermissionPoliciesData(values).length
+  );
 };
 
 export const getConditionsNumber = (values: RoleFormValues) => {
