@@ -30,6 +30,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
      providers:
        keycloakOrg:
          default:
+           # Remove the `/auth` if using keycloak 17+
            baseUrl: https://<keycloak_host>/auth
            loginRealm: ${KEYCLOAK_REALM}
            realm: ${KEYCLOAK_REALM}
@@ -219,6 +220,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
      providers:
        keycloakOrg:
          default:
+           # Remove the `/auth` if using keycloak 17+
            baseUrl: https://<keycloak_host>/auth
            loginRealm: ${KEYCLOAK_REALM}
            realm: ${KEYCLOAK_REALM}
@@ -305,17 +307,17 @@ Communication between Backstage and Keycloak is enabled by using the Keycloak AP
 
 The following table describes the parameters that you can configure to enable the plugin under `catalog.providers.keycloakOrg.<ENVIRONMENT_NAME>` object in the `app-config.yaml` file:
 
-| Name             | Description                                                                                                                                     | Default Value | Required                                             |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------- |
-| `baseUrl`        | Location of the Keycloak server, such as `https://localhost:8443/auth`. Note that the newer versions of Keycloak omit the `/auth` context path. | ""            | Yes                                                  |
-| `realm`          | Realm to synchronize                                                                                                                            | `master`      | No                                                   |
-| `loginRealm`     | Realm used to authenticate                                                                                                                      | `master`      | No                                                   |
-| `username`       | Username to authenticate                                                                                                                        | ""            | Yes if using password based authentication           |
-| `password`       | Password to authenticate                                                                                                                        | ""            | Yes if using password based authentication           |
-| `clientId`       | Client ID to authenticate                                                                                                                       | ""            | Yes if using client credentials based authentication |
-| `clientSecret`   | Client Secret to authenticate                                                                                                                   | ""            | Yes if using client credentials based authentication |
-| `userQuerySize`  | Number of users to query at a time                                                                                                              | `100`         | No                                                   |
-| `groupQuerySize` | Number of groups to query at a time                                                                                                             | `100`         | No                                                   |
+| Name             | Description                                                                                                                    | Default Value | Required                                             |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------- | ---------------------------------------------------- |
+| `baseUrl`        | Location of the Keycloak server, such as `https://localhost:8443/auth`. Note that Keycloak 17+ omits the `/auth` context path. | ""            | Yes                                                  |
+| `realm`          | Realm to synchronize                                                                                                           | `master`      | No                                                   |
+| `loginRealm`     | Realm used to authenticate                                                                                                     | `master`      | No                                                   |
+| `username`       | Username to authenticate                                                                                                       | ""            | Yes if using password based authentication           |
+| `password`       | Password to authenticate                                                                                                       | ""            | Yes if using password based authentication           |
+| `clientId`       | Client ID to authenticate                                                                                                      | ""            | Yes if using client credentials based authentication |
+| `clientSecret`   | Client Secret to authenticate                                                                                                  | ""            | Yes if using client credentials based authentication |
+| `userQuerySize`  | Number of users to query at a time                                                                                             | `100`         | No                                                   |
+| `groupQuerySize` | Number of groups to query at a time                                                                                            | `100`         | No                                                   |
 
 When using client credentials, the access type must be set to `confidential` and service accounts must be enabled. You must also add the following roles from the `realm-management` client role:
 
@@ -332,7 +334,7 @@ If you have self-signed or corporate certificate issues, you can set the followi
 ---
 
 **NOTE**
-The solution of setting that environment variable is not recommended.
+The solution of setting the `NODE_TLS_REJECT_UNAUTHORIZED` environment variable is not recommended.
 
 ---
 
