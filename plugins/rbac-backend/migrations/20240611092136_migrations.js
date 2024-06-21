@@ -14,4 +14,4 @@ exports.up = async function up(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function down(knex) {};
+exports.down = function down(_knex) {};
