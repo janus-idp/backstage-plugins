@@ -172,8 +172,12 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
       <CardHeader
         title={
           <>
-            <Typography variant="h6" style={{ margin: '10px' }}>
-              <div key="service-icon" className={iconStyle}>
+            <Typography
+              variant="h6"
+              style={{ margin: '10px' }}
+              data-test="workload-title"
+            >
+              <div key="service-icon" className={iconStyle} data-test="w-badge">
                 <PFBadge badge={PFBadges.Workload} position="top" />
               </div>
 
