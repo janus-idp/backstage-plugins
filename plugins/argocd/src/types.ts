@@ -26,6 +26,7 @@ export interface Destination {
 }
 
 export interface Source {
+  chart?: string;
   repoURL: string;
   path: string;
   helm?: {
