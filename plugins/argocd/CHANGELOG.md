@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-argocd [1.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.2.2...@janus-idp/backstage-plugin-argocd@1.2.3) (2024-06-21)
+
+
+### Bug Fixes
+
+* **argocd:** hide commit section for helm based applications ([#1834](https://github.com/janus-idp/backstage-plugins/issues/1834)) ([a86ce1e](https://github.com/janus-idp/backstage-plugins/commit/a86ce1e5237ac419eb93a9766cb8e2736ba9b8d7))
+
 ## @janus-idp/backstage-plugin-argocd [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.2.1...@janus-idp/backstage-plugin-argocd@1.2.2) (2024-06-19)
 
 
