@@ -4,6 +4,7 @@ const KIALI_PREFIX = 'catalog.providers.kiali';
 
 export type KialiDetails = {
   url: string;
+  urlExternal: string;
   skipTLSVerify?: boolean;
   sessionTime?: number;
   serviceAccountToken?: string;
@@ -45,8 +46,14 @@ export const getHubClusterFromConfig = (config: Config): KialiDetails => {
     new URL(url).href => guarantees that the url will end in '/' 
     - If the user does not indicate the last character as /, URL class will put it
   */
+  const kialiExternal = hub.getOptionalString('urlExternal');
+  if (kialiExternal && kialiExternal !== '' && !isValidUrl(kialiExternal)) {
+    throw new Error(`"${kialiExternal}" is not a valid url`);
+  }
+  const externalUrl = kialiExternal ? kialiExternal : url;
   return {
     url: new URL(url).href,
+    urlExternal: new URL(externalUrl).href,
     serviceAccountToken: hub.getOptionalString('serviceAccountToken'),
     skipTLSVerify: hub.getOptionalBoolean('skipTLSVerify') || false,
     caData: hub.getOptionalString('caData'),

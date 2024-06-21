@@ -5,7 +5,7 @@ import { Config } from '@backstage/config';
 import express from 'express';
 
 import { KialiApiImpl } from '../clients/KialiAPIConnector';
-import { readKialiConfigs } from './config';
+import { KialiDetails, readKialiConfigs } from './config';
 
 export interface RouterOptions {
   logger: LoggerService;
@@ -15,6 +15,7 @@ export interface RouterOptions {
 export const makeRouter = (
   logger: LoggerService,
   kialiAPI: KialiApiImpl,
+  kiali: KialiDetails,
 ): express.Router => {
   const router = express.Router();
   router.use(express.json());
@@ -23,7 +24,14 @@ export const makeRouter = (
   router.post('/proxy', async (req, res) => {
     const endpoint = req.body.endpoint;
     logger.info(`Call to Kiali ${endpoint}`);
-    res.json(await kialiAPI.proxy(endpoint));
+
+    kialiAPI.proxy(endpoint).then((response: any) => {
+      if (endpoint.includes('api/status')) {
+        // Include kiali external url to status
+        response.status.kialiExternalUrl = kiali.urlExternal;
+      }
+      res.json(response);
+    });
   });
 
   router.post('/status', async (_, res) => {
@@ -48,5 +56,5 @@ export async function createRouter(
 
   const kialiAPI = new KialiApiImpl({ logger, kiali });
 
-  return makeRouter(logger, kialiAPI);
+  return makeRouter(logger, kialiAPI, kiali);
 }

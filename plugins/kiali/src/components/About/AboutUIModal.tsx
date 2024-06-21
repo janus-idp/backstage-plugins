@@ -132,6 +132,7 @@ export const AboutUIModal = (props: AboutUIModalProps) => {
         props.status[StatusKey.MESH_VERSION] || ''
       }`
     : 'Unknown';
+  const kialiExternalUrl = props.status[StatusKey.KIALI_EXTERNAL_URL];
 
   return (
     <Dialog
@@ -171,6 +172,12 @@ export const AboutUIModal = (props: AboutUIModalProps) => {
             </Grid>
             <Grid item xs={8}>
               {meshVersion || 'Unknown'}
+            </Grid>
+            <Grid item xs={4}>
+              Kiali External URL
+            </Grid>
+            <Grid item xs={8}>
+              {kialiExternalUrl}
             </Grid>
           </Grid>
         </Typography>
