@@ -13,6 +13,7 @@ import { getErrorString, kialiApiRef } from '../../services/Api';
 import { computePrometheusRateParams } from '../../services/Prometheus';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
+import { DurationInSeconds } from '../../types/Common';
 import {
   DEGRADED,
   FAILURE,
@@ -103,24 +104,35 @@ export const OverviewPage = (props: { entity?: boolean }) => {
     return nss;
   };
 
-  const fetchHealthChunk = async (chunk: NamespaceInfo[]): Promise<void> => {
+  const fetchHealthForCluster = async (
+    namespacesInfo: NamespaceInfo[],
+    cluster: string,
+    durationSec: DurationInSeconds,
+    type: OverviewType,
+  ): Promise<void> => {
     const apiFunc = switchType(
-      overviewType,
-      kialiClient.getNamespaceAppHealth,
-      kialiClient.getNamespaceServiceHealth,
-      kialiClient.getNamespaceWorkloadHealth,
+      type,
+      kialiClient.getClustersAppHealth,
+      kialiClient.getClustersServiceHealth,
+      kialiClient.getClustersWorkloadHealth,
     );
 
-    return Promise.all(
-      chunk.map(async nsInfo => {
-        const healthPromise: Promise<
-          NamespaceAppHealth | NamespaceWorkloadHealth | NamespaceServiceHealth
-        > = apiFunc(nsInfo.name, duration, nsInfo.cluster);
-        return healthPromise.then(rs => ({ health: rs, nsInfo: nsInfo }));
-      }),
-    )
+    const healthPromise: Promise<
+      | Map<string, NamespaceAppHealth>
+      | Map<string, NamespaceWorkloadHealth>
+      | Map<string, NamespaceServiceHealth>
+    > = apiFunc(
+      namespacesInfo
+        .filter(ns => ns.cluster === cluster)
+        .map(ns => ns.name)
+        .join(','),
+      durationSec,
+      cluster,
+    );
+
+    return healthPromise
       .then(results => {
-        results.forEach(result => {
+        namespacesInfo.forEach(nsInfo => {
           const nsStatus: NamespaceStatus = {
             inNotReady: [],
             inError: [],
@@ -128,22 +140,32 @@ export const OverviewPage = (props: { entity?: boolean }) => {
             inSuccess: [],
             notAvailable: [],
           };
-          Object.keys(result.health).forEach(item => {
-            const health: Health = result.health[item];
-            const status = health.getGlobalStatus();
-            if (status === FAILURE) {
-              nsStatus.inError.push(item);
-            } else if (status === DEGRADED) {
-              nsStatus.inWarning.push(item);
-            } else if (status === HEALTHY) {
-              nsStatus.inSuccess.push(item);
-            } else if (status === NOT_READY) {
-              nsStatus.inNotReady.push(item);
-            } else {
-              nsStatus.notAvailable.push(item);
-            }
-          });
-          result.nsInfo.status = nsStatus;
+
+          if (
+            ((nsInfo.cluster && nsInfo.cluster === cluster) ||
+              !nsInfo.cluster) &&
+            results.get(nsInfo.name)
+          ) {
+            // @ts-ignore
+            Object.keys(results[nsInfo.name]).forEach(k => {
+              // @ts-ignore
+              const health: Health = results[nsInfo.name][k];
+              const status = health.getGlobalStatus();
+
+              if (status === FAILURE) {
+                nsStatus.inError.push(k);
+              } else if (status === DEGRADED) {
+                nsStatus.inWarning.push(k);
+              } else if (status === HEALTHY) {
+                nsStatus.inSuccess.push(k);
+              } else if (status === NOT_READY) {
+                nsStatus.inNotReady.push(k);
+              } else {
+                nsStatus.notAvailable.push(k);
+              }
+            });
+            nsInfo.status = nsStatus;
+          }
         });
       })
       .catch(err =>
@@ -154,17 +176,27 @@ export const OverviewPage = (props: { entity?: boolean }) => {
   };
 
   const fetchHealth = (
-    nss: NamespaceInfo[],
     isAscending: boolean,
     sortField: SortField<NamespaceInfo>,
+    type: OverviewType,
   ): void => {
-    _.chunk(nss, 10).forEach(chunk => {
+    const durationCurrent = FilterHelper.currentDuration();
+    const uniqueClusters = new Set<string>();
+
+    namespaces.forEach(namespace => {
+      if (namespace.cluster) {
+        uniqueClusters.add(namespace.cluster);
+      }
+    });
+
+    uniqueClusters.forEach(cluster => {
       promises
-        .registerChained('healthchunks', undefined, () =>
-          fetchHealthChunk(chunk),
+        .registerChained('health', undefined, () =>
+          fetchHealthForCluster(namespaces, cluster, durationCurrent, type),
         )
         .then(() => {
-          let newNamespaces = nss.slice();
+          let newNamespaces = namespaces.slice();
+
           if (sortField.id === 'health') {
             newNamespaces = Sorts.sortFunc(
               newNamespaces,
@@ -172,16 +204,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
               isAscending,
             );
           }
-          return newNamespaces;
-        })
-        .catch(error => {
-          kialiState.alertUtils!.add(
-            `Could not fetch health: ${getErrorString(error)}`,
-          );
-          if (error.isCanceled) {
-            return [];
-          }
-          return error;
+          setNamespaces(newNamespaces);
         });
     });
   };
@@ -415,7 +438,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
       const sortField = FilterHelper.currentSortField(Sorts.sortFields);
       const sortNs = sortedNamespaces(allNamespaces);
       if (!props.entity) {
-        fetchHealth(sortNs, isAscending, sortField);
+        fetchHealth(isAscending, sortField, 'workload');
         fetchTLS(sortNs, isAscending, sortField);
         fetchValidations(sortNs, isAscending, sortField);
         fetchOutboundTrafficPolicyMode();

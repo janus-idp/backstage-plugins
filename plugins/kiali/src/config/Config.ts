@@ -178,8 +178,6 @@ const conf = {
       namespaces: 'api/namespaces',
       namespace: (namespace: string) => `api/namespaces/${namespace}`,
       namespacesGraphElements: `api/namespaces/graph`,
-      namespaceHealth: (namespace: string) =>
-        `api/namespaces/${namespace}/health`,
       namespaceMetrics: (namespace: string) =>
         `api/namespaces/${namespace}/metrics`,
       namespaceTls: (namespace: string) => `api/namespaces/${namespace}/tls`,
@@ -228,6 +226,7 @@ const conf = {
         `api/namespaces/${namespace}/workloads/${workload}/metrics`,
       workloadDashboard: (namespace: string, workload: string) =>
         `api/namespaces/${namespace}/workloads/${workload}/dashboard`,
+      clustersHealth: () => `api/clusters/health`,
     },
   },
   /** Graph configurations */
