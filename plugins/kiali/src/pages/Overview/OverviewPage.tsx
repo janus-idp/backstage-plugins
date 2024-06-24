@@ -204,7 +204,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
               isAscending,
             );
           }
-          setNamespaces(newNamespaces);
+          return { namespaces: newNamespaces };
         });
     });
   };
@@ -438,7 +438,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
       const sortField = FilterHelper.currentSortField(Sorts.sortFields);
       const sortNs = sortedNamespaces(allNamespaces);
       if (!props.entity) {
-        fetchHealth(isAscending, sortField, 'workload');
+        fetchHealth(isAscending, sortField, overviewType);
         fetchTLS(sortNs, isAscending, sortField);
         fetchValidations(sortNs, isAscending, sortField);
         fetchOutboundTrafficPolicyMode();

@@ -51,9 +51,9 @@ import { StatusState } from '../types/StatusState';
 import { TLSStatus } from '../types/TLSStatus';
 import { Span, TracingQuery } from '../types/Tracing';
 import {
+  ClusterWorkloadsResponse,
   Workload,
-  WorkloadListItem,
-  WorkloadNamespaceResponse,
+  WorkloadListQuery,
   WorkloadQuery,
 } from '../types/Workload';
 import { filterNsByAnnotation } from '../utils/entityFilter';
@@ -129,6 +129,12 @@ export interface KialiApi {
     queryTime?: TimeInSeconds,
   ): Promise<Map<string, NamespaceWorkloadHealth>>;
   getServerConfig(): Promise<ServerConfig>;
+  getWorkload(
+    namespace: string,
+    name: string,
+    params: WorkloadQuery,
+    cluster?: string,
+  ): Promise<Workload>;
   getMeshTls(cluster?: string): Promise<TLSStatus>;
   getNamespaceTls(namespace: string, cluster?: string): Promise<TLSStatus>;
   getOutboundTrafficPolicyMode(): Promise<OutboundTrafficPolicy>;
@@ -149,16 +155,11 @@ export interface KialiApi {
   ): Promise<Readonly<IstioMetricsMap>>;
   getIstioStatus(cluster?: string): Promise<ComponentStatus[]>;
   getIstioCertsInfo(): Promise<CertsInfo[]>;
-  getWorkload(
-    namespace: string,
-    name: string,
-    params: WorkloadQuery,
+  getClustersWorkloads(
+    namespaces: string,
+    params: AppListQuery,
     cluster?: string,
-  ): Promise<Workload>;
-  getWorkloads(
-    namespace: string,
-    duration: number,
-  ): Promise<WorkloadListItem[]>;
+  ): Promise<ClusterWorkloadsResponse>;
   getIstioConfig(
     namespace: string,
     objects: string[],
@@ -418,16 +419,13 @@ export class KialiApiClient implements KialiApi {
             // @ts-ignore
             if (namespaceAppHealth[ns][k]) {
               // @ts-ignore
-              const ah = AppHealth.fromJson(
-                namespaces,
-                k,
-                namespaceAppHealth[ns][k],
-                {
-                  rateInterval: duration,
-                  hasSidecar: true,
-                  hasAmbient: false,
-                },
-              );
+              const conv = namespaceAppHealth[ns][k];
+              // @ts-ignore
+              const ah = AppHealth.fromJson(namespaces, k, conv, {
+                rateInterval: duration,
+                hasSidecar: true,
+                hasAmbient: false,
+              });
 
               // @ts-ignore
               ret[ns][k] = ah;
@@ -476,16 +474,13 @@ export class KialiApiClient implements KialiApi {
             // @ts-ignore
             if (namespaceServiceHealth[ns][k]) {
               // @ts-ignore
-              const sh = ServiceHealth.fromJson(
-                namespaces,
-                k,
-                namespaceServiceHealth[ns][k],
-                {
-                  rateInterval: duration,
-                  hasSidecar: true,
-                  hasAmbient: false,
-                },
-              );
+              const conv = namespaceAppHealth[ns][k];
+              // @ts-ignore
+              const sh = ServiceHealth.fromJson(namespaces, k, conv, {
+                rateInterval: duration,
+                hasSidecar: true,
+                hasAmbient: false,
+              });
               // @ts-ignore
               ret[ns][k] = sh;
             }
@@ -533,16 +528,13 @@ export class KialiApiClient implements KialiApi {
             // @ts-ignore
             if (namespaceWorkloadHealth[ns][k]) {
               // @ts-ignore
-              const wh = WorkloadHealth.fromJson(
-                namespaces,
-                k,
-                namespaceWorkloadHealth[ns][k],
-                {
-                  rateInterval: duration,
-                  hasSidecar: true,
-                  hasAmbient: false,
-                },
-              );
+              const conv = namespaceAppHealth[ns][k];
+              // @ts-ignore
+              const wh = WorkloadHealth.fromJson(namespaces, k, conv, {
+                rateInterval: duration,
+                hasSidecar: true,
+                hasAmbient: false,
+              });
 
               // @ts-ignore
               ret[ns][k] = wh;
@@ -722,43 +714,25 @@ export class KialiApiClient implements KialiApi {
     this.entity = entity;
   };
 
-  getWorkloads = async (
-    namespace: string,
-    duration: number,
-  ): Promise<WorkloadListItem[]> => {
-    return this.newRequest<WorkloadNamespaceResponse>(
+  getClustersWorkloads = async (
+    namespaces: string,
+    params: AppListQuery,
+    cluster?: string,
+  ): Promise<ClusterWorkloadsResponse> => {
+    const queryParams: QueryParams<WorkloadListQuery & Namespaces> = {
+      ...params,
+      namespaces: namespaces,
+    };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+    return this.newRequest<ClusterWorkloadsResponse>(
       HTTP_VERBS.GET,
-      urls.workloads(namespace),
-      { health: true, istioResources: true, rateInterval: `${duration}s` },
+      urls.clustersWorkloads(),
+      queryParams,
       {},
-    ).then(resp => {
-      return resp.workloads.map(w => {
-        return {
-          name: w.name,
-          namespace: resp.namespace.name,
-          cluster: w.cluster,
-          type: w.type,
-          istioSidecar: w.istioSidecar,
-          istioAmbient: w.istioAmbient,
-          additionalDetailSample: undefined,
-          appLabel: w.appLabel,
-          versionLabel: w.versionLabel,
-          labels: w.labels,
-          istioReferences: w.istioReferences,
-          notCoveredAuthPolicy: w.notCoveredAuthPolicy,
-          health: WorkloadHealth.fromJson(
-            resp.namespace.name,
-            w.name,
-            w.health,
-            {
-              rateInterval: duration,
-              hasSidecar: w.istioSidecar,
-              hasAmbient: w.istioAmbient,
-            },
-          ),
-        };
-      });
-    });
+    );
   };
 
   getWorkload = async (

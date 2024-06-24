@@ -135,6 +135,7 @@ const conf = {
         `api/namespaces/${namespace}/apps/${app}/spans`,
       canaryUpgradeStatus: () => 'api/mesh/canaries/status',
       clusters: 'api/clusters',
+      clustersWorkloads: () => `api/clusters/workloads`,
       crippledFeatures: 'api/crippled',
       serviceSpans: (namespace: string, service: string) =>
         `api/namespaces/${namespace}/services/${service}/spans`,
@@ -215,7 +216,6 @@ const conf = {
       serviceDashboard: (namespace: string, service: string) =>
         `api/namespaces/${namespace}/services/${service}/dashboard`,
       status: 'api/status',
-      workloads: (namespace: string) => `api/namespaces/${namespace}/workloads`,
       workload: (namespace: string, workload: string) =>
         `api/namespaces/${namespace}/workloads/${workload}`,
       workloadGraphElements: (namespace: string, workload: string) =>
