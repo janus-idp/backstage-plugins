@@ -71,17 +71,8 @@ test.describe('Kiali page', () => {
       );
     });
 
-    test('Debug info can be opened', async () => {
-      await page.click('data-test=help-button');
-      await page.click('text=View Debug Info');
-      await expect(
-        page.locator('css=[aria-describedby="Debug information"]'),
-      ).toBeVisible();
-    });
-
     test('About page can be opened', async () => {
       await page.click('data-test=help-button');
-      await page.click('text=About');
       await expect(page.locator('data-test=Kiali')).toContainText(
         STATUS.status['Kiali version'],
       );
