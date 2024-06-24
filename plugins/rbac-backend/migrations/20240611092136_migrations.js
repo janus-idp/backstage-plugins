@@ -3,9 +3,10 @@
  * @returns { Promise<void> }
  */
 exports.up = async function up(knex) {
+  const casbinRuleExist = await knex.schema.hasTable('casbin_rule');
   const policyMetadataExist = await knex.schema.hasTable('policy-metadata');
 
-  if (policyMetadataExist) {
+  if (casbinRuleExist && policyMetadataExist) {
     // Fetch all necessary data in a single query
     const existingPoliciesSet = await knex('casbin_rule').select(
       'id',
