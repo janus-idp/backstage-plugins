@@ -11,10 +11,10 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from '@mui/icons-material/Close';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
-import { AddRepositoriesData, AddRepositoriesFormValues } from '../../types';
+import { AddRepositoriesData } from '../../types';
 import { urlHelper } from '../../utils/repository-utils';
 import { AddRepositoriesTableToolbar } from './AddRepositoriesTableToolbar';
 import { RepositoriesTable } from './RepositoriesTable';
@@ -25,7 +25,6 @@ type AddRepositoriesDrawerProps = {
   onSelect: (ids: number[], drawerOrgId: number) => void;
   title: string;
   data: AddRepositoriesData;
-  selectedRepositoriesFormData: AddRepositoriesFormValues;
   checkedRepos: number[];
 };
 
@@ -62,7 +61,6 @@ export const AddRepositoriesDrawer = ({
   onSelect,
   title,
   data,
-  selectedRepositoriesFormData,
   checkedRepos,
 }: AddRepositoriesDrawerProps) => {
   const classes = useStyles();
@@ -90,9 +88,9 @@ export const AddRepositoriesDrawer = ({
       <Container className={classes.drawerContainer}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div>
-            <Typography variant="h5">{data?.name}</Typography>
-            <Link to={data?.url}>
-              {urlHelper(data?.url)}
+            <Typography variant="h5">{data?.orgName}</Typography>
+            <Link to={data?.organizationUrl || ''}>
+              {urlHelper(data?.organizationUrl || '')}
               <OpenInNewIcon
                 style={{ verticalAlign: 'sub', paddingTop: '7px' }}
               />
@@ -109,12 +107,10 @@ export const AddRepositoriesDrawer = ({
             title={title}
             setSearchString={setSearchString}
             selectedReposFromDrawer={selectedReposID}
-            selectedRepositoriesFormData={selectedRepositoriesFormData}
             activeOrganization={data}
           />
           <RepositoriesTable
             searchString={searchString}
-            selectedOrgRepos={selectedReposID}
             updateSelectedReposInDrawer={updateSelectedReposInDrawer}
             drawerOrganization={data}
           />

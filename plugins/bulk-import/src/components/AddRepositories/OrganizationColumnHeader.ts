@@ -4,9 +4,9 @@ export const OrganizationColumnHeader: TableColumn[] = [
   {
     id: 'name',
     title: 'Name',
-    field: 'name',
+    field: 'orgName',
   },
-  { id: 'url', title: 'URL', field: 'url' },
+  { id: 'url', title: 'URL', field: 'organizationUrl' },
   {
     id: 'selectedRepositories',
     title: 'Selected repositories',

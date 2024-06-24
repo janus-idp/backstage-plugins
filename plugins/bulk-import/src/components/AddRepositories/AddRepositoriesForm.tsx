@@ -8,14 +8,16 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { FormikErrors } from 'formik';
+import { useFormikContext } from 'formik';
 
 import { AddRepositoriesFormValues } from '../../types';
+import { AddRepositoriesFormFooter } from './AddRepositoriesFormFooter';
 import { AddRepositoriesTable } from './AddRepositoriesTable';
 
 const useStyles = makeStyles(theme => ({
   body: {
     marginBottom: '50px',
+    padding: '24px',
   },
   approvalTool: {
     display: 'flex',
@@ -37,63 +39,51 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const AddRepositoriesForm = ({
-  values,
-  setFieldValue,
-  setapprovalTool,
-}: {
-  values: AddRepositoriesFormValues;
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean | undefined,
-  ) => Promise<void> | Promise<FormikErrors<AddRepositoriesFormValues>>;
-  setapprovalTool: any;
-}) => {
+export const AddRepositoriesForm = () => {
+  const { values, setFieldValue } =
+    useFormikContext<AddRepositoriesFormValues>();
   const styles = useStyles();
 
   return (
-    <FormControl fullWidth>
-      <div className={styles.body}>
-        <span className={styles.approvalTool}>
-          <Typography fontSize="16px" fontWeight="500">
-            Approval tool
-          </Typography>
-          <Tooltip
-            placement="top"
-            title="When adding a new repository, it requires approval. Once the PR is approved or the ServiceNow ticket is closed, the repositories will be added to the Catalog page."
-          >
-            <span className={styles.approvalToolTooltip}>
-              <HelpIcon fontSize="small" />
-            </span>
-          </Tooltip>
-          <RadioGroup
-            id="approval-tool"
-            data-testid="approval-tool"
-            row
-            aria-labelledby="approval-tool"
-            name="approvalTool"
-            value={values.approvalTool}
-            onChange={(_event, value: string) => {
-              setapprovalTool(value);
-              setFieldValue('approvalTool', value);
-            }}
-          >
-            <FormControlLabel value="git" control={<Radio />} label="Git" />
-            <FormControlLabel
-              value="servicenow"
-              control={<Radio />}
-              label="ServiceNow"
-            />
-          </RadioGroup>
-        </span>
-        <AddRepositoriesTable
-          title="Selected repositories"
-          selectedRepositoriesFormData={values}
-          setFieldValue={setFieldValue}
-        />
-      </div>
-      <br />
-    </FormControl>
+    <>
+      <FormControl fullWidth>
+        <div className={styles.body}>
+          <span className={styles.approvalTool}>
+            <Typography fontSize="16px" fontWeight="500">
+              Approval tool
+            </Typography>
+            <Tooltip
+              placement="top"
+              title="When adding a new repository, it requires approval. Once the PR is approved or the ServiceNow ticket is closed, the repositories will be added to the Catalog page."
+            >
+              <span className={styles.approvalToolTooltip}>
+                <HelpIcon fontSize="small" />
+              </span>
+            </Tooltip>
+            <RadioGroup
+              id="approval-tool"
+              data-testid="approval-tool"
+              row
+              aria-labelledby="approval-tool"
+              name="approvalTool"
+              value={values.approvalTool}
+              onChange={(_event, value: string) => {
+                setFieldValue('approvalTool', value);
+              }}
+            >
+              <FormControlLabel value="git" control={<Radio />} label="Git" />
+              <FormControlLabel
+                value="servicenow"
+                control={<Radio />}
+                label="ServiceNow"
+              />
+            </RadioGroup>
+          </span>
+          <AddRepositoriesTable title="Selected repositories" />
+        </div>
+        <br />
+      </FormControl>
+      <AddRepositoriesFormFooter />
+    </>
   );
 };

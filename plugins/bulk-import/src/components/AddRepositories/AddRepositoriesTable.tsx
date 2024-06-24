@@ -2,25 +2,14 @@ import * as React from 'react';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-import { FormikErrors } from 'formik';
+import { useFormikContext } from 'formik';
 
-import { AddRepositoriesFormValues } from '../../types';
+import { AddRepositoriesFormValues, RepositorySelection } from '../../types';
 import { AddRepositoriesTableToolbar } from './AddRepositoriesTableToolbar';
 import { RepositoriesTable } from './RepositoriesTable';
 
-export const AddRepositoriesTable = ({
-  title,
-  selectedRepositoriesFormData,
-  setFieldValue,
-}: {
-  title: string;
-  selectedRepositoriesFormData: AddRepositoriesFormValues;
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean,
-  ) => Promise<FormikErrors<AddRepositoriesFormValues>> | Promise<void>;
-}) => {
+export const AddRepositoriesTable = ({ title }: { title: string }) => {
+  const { values } = useFormikContext<AddRepositoriesFormValues>();
   const [searchString, setSearchString] = React.useState<string>('');
   const [page, setPage] = React.useState<number>(0);
 
@@ -30,23 +19,17 @@ export const AddRepositoriesTable = ({
         <AddRepositoriesTableToolbar
           title={title}
           setSearchString={setSearchString}
-          selectedRepositoriesFormData={selectedRepositoriesFormData}
-          setFieldValue={setFieldValue}
           onPageChange={setPage}
         />
-        {selectedRepositoriesFormData.repositoryType === 'repository' ? (
+        {values.repositoryType === RepositorySelection.Repository ? (
           <RepositoriesTable
             searchString={searchString}
-            selectedRepositoriesFormData={selectedRepositoriesFormData}
-            setFieldValue={setFieldValue}
             page={page}
             setPage={setPage}
           />
         ) : (
           <RepositoriesTable
             searchString={searchString}
-            selectedRepositoriesFormData={selectedRepositoriesFormData}
-            setFieldValue={setFieldValue}
             page={page}
             setPage={setPage}
             showOrganizations
