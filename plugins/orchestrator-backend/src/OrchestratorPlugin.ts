@@ -34,19 +34,17 @@ export const orchestratorPlugin = createBackendPlugin({
         httpAuth,
         auth,
       }) {
-        const router = await createRouter(
-          {
-            config: config,
-            logger,
-            discovery: discovery,
-            catalogApi: catalogApi,
-            urlReader: urlReader,
-            scheduler: scheduler,
-            permissions: permissions,
-            httpAuth: httpAuth,
-          },
-          auth,
-        );
+        const router = await createRouter({
+          config: config,
+          logger,
+          discovery: discovery,
+          catalogApi: catalogApi,
+          urlReader: urlReader,
+          scheduler: scheduler,
+          permissions: permissions,
+          httpAuth: httpAuth,
+          auth: auth,
+        });
         httpRouter.use(router);
         httpRouter.addAuthPolicy({
           path: '/static/generated/envelope',

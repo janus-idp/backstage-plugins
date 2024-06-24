@@ -24,12 +24,10 @@ export interface RouterArgs {
   scheduler: PluginTaskScheduler;
   permissions: PermissionsService;
   httpAuth?: HttpAuthService;
+  auth?: AuthService;
 }
 
-export async function createRouter(
-  args: RouterArgs,
-  auth: AuthService,
-): Promise<express.Router> {
+export async function createRouter(args: RouterArgs): Promise<express.Router> {
   const autoStartDevMode =
     args.config.getOptionalBoolean(
       'orchestrator.sonataFlowService.autoStart',
@@ -45,21 +43,20 @@ export async function createRouter(
     }
   }
 
-  const { httpAuth } = createLegacyAuthAdapters({
+  const { auth, httpAuth } = createLegacyAuthAdapters({
     httpAuth: args.httpAuth,
     discovery: args.discovery,
+    auth: args.auth,
   });
-  return await createBackendRouter(
-    {
-      config: args.config,
-      logger: args.logger,
-      discovery: args.discovery,
-      catalogApi: args.catalogApi,
-      urlReader: args.urlReader,
-      scheduler: args.scheduler,
-      permissions: args.permissions,
-      httpAuth: httpAuth,
-    },
-    auth,
-  );
+  return await createBackendRouter({
+    config: args.config,
+    logger: args.logger,
+    discovery: args.discovery,
+    catalogApi: args.catalogApi,
+    urlReader: args.urlReader,
+    scheduler: args.scheduler,
+    permissions: args.permissions,
+    httpAuth: httpAuth,
+    auth: auth,
+  });
 }

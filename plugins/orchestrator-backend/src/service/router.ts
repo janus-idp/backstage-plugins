@@ -4,7 +4,6 @@ import {
   resolvePackagePath,
 } from '@backstage/backend-common';
 import {
-  AuthService,
   HttpAuthService,
   LoggerService,
   PermissionsService,
@@ -93,7 +92,6 @@ declare class UnauthorizedError extends NotAllowedError {
 
 export async function createBackendRouter(
   args: RouterArgs,
-  auth: AuthService,
 ): Promise<express.Router> {
   const {
     config,
@@ -104,9 +102,10 @@ export async function createBackendRouter(
     scheduler,
     permissions,
   } = args;
-  const { httpAuth } = createLegacyAuthAdapters({
+  const { auth, httpAuth } = createLegacyAuthAdapters({
     httpAuth: args.httpAuth,
     discovery: args.discovery,
+    auth: args.auth,
   });
   const publicServices = initPublicServices(logger, config, scheduler);
 
@@ -244,13 +243,18 @@ function setupInternalRoutes(
   httpAuth: HttpAuthService,
   auditLogger: AuditLogger,
 ) {
-  function manageDenyAuthorization(endpointName: string, endpoint: string) {
+  function manageDenyAuthorization(
+    endpointName: string,
+    endpoint: string,
+    req: HttpRequest,
+  ) {
     const error = new UnauthorizedError();
     auditLogger.auditLog({
       eventName: `${endpointName}EndpointHit`,
       stage: 'authorization',
       status: 'failed',
       level: 'error',
+      request: req,
       response: {
         status: 403,
         body: {
@@ -272,12 +276,14 @@ function setupInternalRoutes(
     error: any,
     endpointName: string,
     endpoint: string,
+    req: HttpRequest,
   ) {
     auditLogger.auditLog({
       eventName: `${endpointName}EndpointHit`,
       stage: 'completion',
       status: 'failed',
       level: 'error',
+      request: req,
       response: {
         status: 500,
         body: {
@@ -304,6 +310,7 @@ function setupInternalRoutes(
       stage: 'start',
       status: 'succeeded',
       level: 'debug',
+      request: req,
       message: `Received request to '${endpoint}' endpoint`,
     });
     const decision = await authorize(
@@ -313,14 +320,13 @@ function setupInternalRoutes(
       httpAuth,
     );
     if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint);
+      manageDenyAuthorization(endpointName, endpoint, req);
     }
     await routerApi.v1
       .getWorkflowsOverview()
       .then(result => res.status(200).json(result))
       .catch(error => {
-        auditLogRequestError(error, endpointName, endpoint);
-        auditLogRequestError(error, endpointName, endpoint);
+        auditLogRequestError(error, endpointName, endpoint, req);
         res
           .status(500)
           .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
@@ -331,15 +337,16 @@ function setupInternalRoutes(
   routerApi.openApiBackend.register(
     'getWorkflowsOverview',
     async (_c, req, res: express.Response, next) => {
-      const endpointName = 'WorkflowsOverview';
-      const endpoint = '/v1/workflows/overview';
+      const endpointName = 'getWorkflowsOverview';
+      const endpoint = '/v2/workflows/overview';
 
       auditLogger.auditLog({
         eventName: 'getWorkflowsOverview',
         stage: 'start',
         status: 'succeeded',
         level: 'debug',
-        message: `Received request to '/workflows/overview' v2 endpoint`,
+        request: req,
+        message: `Received request to '${endpoint}' endpoint`,
       });
       const decision = await authorize(
         req,
@@ -348,16 +355,13 @@ function setupInternalRoutes(
         httpAuth,
       );
       if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(
-          'getWorkflowsOverview',
-          '/v2/workflows/overview',
-        );
+        manageDenyAuthorization(endpointName, endpoint, req);
       }
       await routerApi.v2
         .getWorkflowsOverview(buildPagination(req))
         .then(result => res.json(result))
         .catch(error => {
-          auditLogRequestError(error, endpointName, endpoint);
+          auditLogRequestError(error, endpointName, endpoint, req);
           res
             .status(500)
             .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
@@ -375,11 +379,12 @@ function setupInternalRoutes(
     const endpoint = '/v1/workflows/overview';
 
     auditLogger.auditLog({
-      eventName: 'WorkflowsWorkflowId',
+      eventName: endpointName,
       stage: 'start',
       status: 'succeeded',
       level: 'debug',
-      message: `Received request to '/workflows/${workflowId}' v1 endpoint`,
+      request: req,
+      message: `Received request to '${endpoint}' endpoint`,
     });
     const decision = await authorize(
       req,
@@ -388,16 +393,13 @@ function setupInternalRoutes(
       httpAuth,
     );
     if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(
-        'WorkflowsWorkflowId',
-        `/v1/workflows/${workflowId}`,
-      );
+      manageDenyAuthorization(endpointName, endpoint, req);
     }
     await routerApi.v1
       .getWorkflowById(workflowId)
       .then(result => res.status(200).json(result))
       .catch(error => {
-        auditLogRequestError(error, endpointName, endpoint);
+        auditLogRequestError(error, endpointName, endpoint, req);
         res
           .status(500)
           .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
@@ -417,6 +419,7 @@ function setupInternalRoutes(
         stage: 'start',
         status: 'succeeded',
         level: 'debug',
+        request: _req,
         message: `Received request to '${endpoint}' endpoint`,
       });
 
@@ -427,7 +430,7 @@ function setupInternalRoutes(
         httpAuth,
       );
       if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(endpointName, endpoint);
+        manageDenyAuthorization(endpointName, endpoint, _req);
       }
       await routerApi.v2
         .getWorkflowById(workflowId)
@@ -454,6 +457,7 @@ function setupInternalRoutes(
       stage: 'start',
       status: 'succeeded',
       level: 'debug',
+      request: req,
       message: `Received request to '${endpoint}' endpoint`,
     });
 
@@ -464,7 +468,7 @@ function setupInternalRoutes(
       httpAuth,
     );
     if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint);
+      manageDenyAuthorization(endpointName, endpoint, req);
     }
 
     try {
@@ -491,6 +495,7 @@ function setupInternalRoutes(
         stage: 'start',
         status: 'succeeded',
         level: 'debug',
+        request: _req,
         message: `Received request to '${endpoint}' endpoint`,
       });
 
@@ -501,14 +506,14 @@ function setupInternalRoutes(
         httpAuth,
       );
       if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(endpointName, endpoint);
+        manageDenyAuthorization(endpointName, endpoint, _req);
       }
 
       try {
         const result = await routerApi.v2.getWorkflowSourceById(workflowId);
         res.status(200).contentType('plain/text').send(result);
       } catch (error) {
-        auditLogRequestError(error, endpointName, endpoint);
+        auditLogRequestError(error, endpointName, endpoint, _req);
         res
           .status(500)
           .contentType('plain/text')
@@ -531,6 +536,7 @@ function setupInternalRoutes(
       stage: 'start',
       status: 'succeeded',
       level: 'debug',
+      request: req,
       message: `Received request to '${endpoint}' endpoint`,
     });
 
@@ -541,7 +547,7 @@ function setupInternalRoutes(
       httpAuth,
     );
     if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint);
+      manageDenyAuthorization(endpointName, endpoint, req);
     }
 
     const businessKey = routerApi.v1.extractQueryParam(
@@ -553,7 +559,7 @@ function setupInternalRoutes(
       .executeWorkflow(req.body, workflowId, businessKey)
       .then(result => res.status(200).json(result))
       .catch((error: { message: string }) => {
-        auditLogRequestError(error, endpointName, endpoint);
+        auditLogRequestError(error, endpointName, endpoint, req);
         res
           .status(500)
           .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
@@ -573,6 +579,7 @@ function setupInternalRoutes(
         stage: 'start',
         status: 'succeeded',
         level: 'debug',
+        request: req,
         message: `Received request to '${endpoint}' endpoint`,
       });
 
@@ -583,7 +590,7 @@ function setupInternalRoutes(
         httpAuth,
       );
       if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(endpointName, endpoint);
+        manageDenyAuthorization(endpointName, endpoint, req);
       }
 
       const businessKey = routerApi.v2.extractQueryParam(
@@ -597,7 +604,7 @@ function setupInternalRoutes(
         .executeWorkflow(executeWorkflowRequestDTO, workflowId, businessKey)
         .then(result => res.status(200).json(result))
         .catch((error: { message: string }) => {
-          auditLogRequestError(error, endpointName, endpoint);
+          auditLogRequestError(error, endpointName, endpoint, req);
           res
             .status(500)
             .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
@@ -618,6 +625,7 @@ function setupInternalRoutes(
       stage: 'start',
       status: 'succeeded',
       level: 'debug',
+      request: req,
       message: `Received request to '${endpoint}' endpoint`,
     });
 
@@ -628,7 +636,7 @@ function setupInternalRoutes(
       httpAuth,
     );
     if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint);
+      manageDenyAuthorization(endpointName, endpoint, req);
     }
 
     await routerApi.v1
@@ -649,6 +657,7 @@ function setupInternalRoutes(
         stage: 'start',
         status: 'succeeded',
         level: 'debug',
+        request: _req,
         message: `Received request to '${endpoint}' endpoint`,
       });
 
@@ -659,7 +668,7 @@ function setupInternalRoutes(
         httpAuth,
       );
       if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(endpointName, endpoint);
+        manageDenyAuthorization(endpointName, endpoint, _req);
       }
 
       await routerApi.v2
@@ -682,6 +691,7 @@ function setupInternalRoutes(
       stage: 'start',
       status: 'succeeded',
       level: 'debug',
+      request: req,
       message: `Received request to '${endpoint}' endpoint`,
     });
 
@@ -692,7 +702,7 @@ function setupInternalRoutes(
       httpAuth,
     );
     if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint);
+      manageDenyAuthorization(endpointName, endpoint, req);
     }
 
     const instanceId = routerApi.v1.extractQueryParam(
@@ -715,6 +725,7 @@ function setupInternalRoutes(
         new Error(`Couldn't fetch workflow definition ${workflowId}`),
         endpointName,
         endpoint,
+        req,
       );
       res.status(500).send(`Couldn't fetch workflow definition ${workflowId}`);
       return;
@@ -725,6 +736,7 @@ function setupInternalRoutes(
         new Error(`Service URL is not defined for workflow ${workflowId}`),
         endpointName,
         endpoint,
+        req,
       );
       res
         .status(500)
@@ -746,6 +758,7 @@ function setupInternalRoutes(
         ),
         endpointName,
         endpoint,
+        req,
       );
       res
         .status(500)
@@ -778,6 +791,7 @@ function setupInternalRoutes(
         new Error(`couldn't fetch workflow info ${workflowId}`),
         endpointName,
         endpoint,
+        req,
       );
       res.status(500).send(`couldn't fetch workflow info ${workflowId}`);
       return;
@@ -792,6 +806,7 @@ function setupInternalRoutes(
         ),
         endpointName,
         endpoint,
+        req,
       );
 
       res
@@ -843,6 +858,7 @@ function setupInternalRoutes(
         stage: 'start',
         status: 'succeeded',
         level: 'debug',
+        request: _req,
         message: `Received request to '${endpoint}' endpoint`,
       });
 
@@ -853,14 +869,14 @@ function setupInternalRoutes(
         httpAuth,
       );
       if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(endpointName, endpoint);
+        manageDenyAuthorization(endpointName, endpoint, _req);
       }
 
       await routerApi.v2
         .getWorkflowResults(instanceId)
         .then(result => res.status(200).json(result))
         .catch((error: { message: string }) => {
-          auditLogRequestError(error, endpointName, endpoint);
+          auditLogRequestError(error, endpointName, endpoint, _req);
           res
             .status(500)
             .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
@@ -880,6 +896,7 @@ function setupInternalRoutes(
         stage: 'start',
         status: 'succeeded',
         level: 'debug',
+        request: _req,
         message: `Received request to '${endpoint}' endpoint`,
       });
       const decision = await authorize(
@@ -889,13 +906,13 @@ function setupInternalRoutes(
         httpAuth,
       );
       if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(endpointName, endpoint);
+        manageDenyAuthorization(endpointName, endpoint, _req);
       }
       await routerApi.v2
         .getWorkflowStatuses()
         .then(result => res.status(200).json(result))
         .catch((error: { message: string }) => {
-          auditLogRequestError(error, endpointName, endpoint);
+          auditLogRequestError(error, endpointName, endpoint, _req);
           res
             .status(500)
             .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
@@ -913,6 +930,7 @@ function setupInternalRoutes(
       stage: 'start',
       status: 'succeeded',
       level: 'debug',
+      request: req,
       message: `Received request to '${endpoint}' endpoint`,
     });
 
@@ -923,13 +941,13 @@ function setupInternalRoutes(
       httpAuth,
     );
     if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint);
+      manageDenyAuthorization(endpointName, endpoint, req);
     }
     await routerApi.v1
       .getInstances()
       .then(result => res.status(200).json(result))
       .catch(error => {
-        auditLogRequestError(error, endpointName, endpoint);
+        auditLogRequestError(error, endpointName, endpoint, req);
         res
           .status(500)
           .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
@@ -948,6 +966,7 @@ function setupInternalRoutes(
         stage: 'start',
         status: 'succeeded',
         level: 'debug',
+        request: req,
         message: `Received request to '${endpoint}' endpoint`,
       });
 
@@ -958,7 +977,7 @@ function setupInternalRoutes(
         httpAuth,
       );
       if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(endpointName, endpoint);
+        manageDenyAuthorization(endpointName, endpoint, req);
       }
       await routerApi.v2
         .getInstances(buildPagination(req))
@@ -980,6 +999,7 @@ function setupInternalRoutes(
       stage: 'start',
       status: 'succeeded',
       level: 'debug',
+      request: req,
       message: `Received request to '${endpoint}' endpoint`,
     });
 
@@ -990,7 +1010,7 @@ function setupInternalRoutes(
       httpAuth,
     );
     if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint);
+      manageDenyAuthorization(endpointName, endpoint, req);
     }
 
     const includeAssessment = routerApi.v1.extractQueryParam(
@@ -1002,7 +1022,7 @@ function setupInternalRoutes(
       .getInstanceById(instanceId, !!includeAssessment)
       .then(result => res.status(200).json(result))
       .catch(error => {
-        auditLogRequestError(error, endpointName, endpoint);
+        auditLogRequestError(error, endpointName, endpoint, req);
         res
           .status(500)
           .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
@@ -1022,6 +1042,7 @@ function setupInternalRoutes(
         stage: 'start',
         status: 'succeeded',
         level: 'debug',
+        request: _req,
         message: `Received request to '${endpoint}' endpoint`,
       });
 
@@ -1032,7 +1053,7 @@ function setupInternalRoutes(
         httpAuth,
       );
       if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(endpointName, endpoint);
+        manageDenyAuthorization(endpointName, endpoint, _req);
       }
       const includeAssessment = routerApi.v2.extractQueryParam(
         c.request,
@@ -1042,7 +1063,7 @@ function setupInternalRoutes(
         .getInstanceById(instanceId, !!includeAssessment)
         .then(result => res.status(200).json(result))
         .catch(error => {
-          auditLogRequestError(error, endpointName, endpoint);
+          auditLogRequestError(error, endpointName, endpoint, _req);
           res
             .status(500)
             .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
@@ -1064,6 +1085,7 @@ function setupInternalRoutes(
       stage: 'start',
       status: 'succeeded',
       level: 'debug',
+      request: req,
       message: `Received request to '${endpoint}' endpoint`,
     });
 
@@ -1074,14 +1096,14 @@ function setupInternalRoutes(
       httpAuth,
     );
     if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint);
+      manageDenyAuthorization(endpointName, endpoint, req);
     }
 
     try {
       await routerApi.v1.abortWorkflow(instanceId);
       res.status(200).send();
     } catch (error) {
-      auditLogRequestError(error, endpointName, endpoint);
+      auditLogRequestError(error, endpointName, endpoint, req);
       res
         .status(500)
         .contentType('plain/text')
@@ -1102,6 +1124,7 @@ function setupInternalRoutes(
         stage: 'start',
         status: 'succeeded',
         level: 'debug',
+        request: _req,
         message: `Received request to '${endpoint}' endpoint`,
       });
 
@@ -1112,13 +1135,13 @@ function setupInternalRoutes(
         httpAuth,
       );
       if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(endpointName, endpoint);
+        manageDenyAuthorization(endpointName, endpoint, _req);
       }
       await routerApi.v2
         .abortWorkflow(instanceId)
         .then(result => res.json(result))
         .catch(error => {
-          auditLogRequestError(error, endpointName, endpoint);
+          auditLogRequestError(error, endpointName, endpoint, _req);
           res
             .status(500)
             .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
@@ -1140,6 +1163,7 @@ function setupInternalRoutes(
       stage: 'start',
       status: 'succeeded',
       level: 'debug',
+      request: req,
       message: `Received request to '${endpoint}' endpoint`,
     });
 
@@ -1150,14 +1174,14 @@ function setupInternalRoutes(
       httpAuth,
     );
     if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint);
+      manageDenyAuthorization(endpointName, endpoint, req);
     }
 
     await routerApi.v1
       .retriggerInstanceInError(instanceId, req.body)
       .then(result => res.status(200).json(result))
       .catch((error: { message: string }) => {
-        auditLogRequestError(error, endpointName, endpoint);
+        auditLogRequestError(error, endpointName, endpoint, req);
         res
           .status(500)
           .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
@@ -1180,12 +1204,13 @@ function setupExternalRoutes(
   scaffolderService: ScaffolderService,
   auditLogger: AuditLogger,
 ) {
-  router.get('/actions', async (_, res) => {
+  router.get('/actions', async (req, res) => {
     auditLogger.auditLog({
       eventName: 'ActionsEndpointHit',
       stage: 'start',
       status: 'succeeded',
       level: 'debug',
+      request: req,
       message: `Received request to '/actions' endpoint`,
     });
     const scaffolderUrl = await discovery.getBaseUrl('scaffolder');
@@ -1201,6 +1226,7 @@ function setupExternalRoutes(
       stage: 'start',
       status: 'succeeded',
       level: 'debug',
+      request: req,
       message: `Received request to '/actions/${actionId}' endpoint`,
     });
     const instanceId: string | undefined = req.header('kogitoprocinstanceid');
