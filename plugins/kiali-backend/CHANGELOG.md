@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali-backend [1.12.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.11.1...@janus-idp/backstage-plugin-kiali-backend@1.12.0) (2024-06-24)
+
+
+### Features
+
+* **kiali:** include Kiali external URL as a parameter ([#1835](https://github.com/janus-idp/backstage-plugins/issues/1835)) ([6dbe9eb](https://github.com/janus-idp/backstage-plugins/commit/6dbe9eb6cd635f682da6b893aad8bcd8ad2fb170))
+
 ## @janus-idp/backstage-plugin-kiali-backend [1.11.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.11.0...@janus-idp/backstage-plugin-kiali-backend@1.11.1) (2024-06-19)
 
 
