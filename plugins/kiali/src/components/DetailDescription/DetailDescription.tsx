@@ -106,7 +106,11 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
     }
 
     return (
-      <li key={`App_${namespace}_${appName}`} className={itemStyle}>
+      <li
+        key={`App_${namespace}_${appName}`}
+        data-test={`App_${namespace}_${appName}`}
+        className={itemStyle}
+      >
         <div className={iconStyle}>
           <PFBadge badge={PFBadges.App} position="top" />
         </div>
@@ -148,7 +152,11 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
     }
 
     return (
-      <li key={`Service_${serviceName}`} className={itemStyle}>
+      <li
+        key={`Service_${serviceName}`}
+        data-test={`Service_${serviceName}`}
+        className={itemStyle}
+      >
         <div className={iconStyle}>
           <PFBadge badge={PFBadges.Service} position="top" />
         </div>

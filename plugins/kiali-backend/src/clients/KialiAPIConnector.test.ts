@@ -7,7 +7,10 @@ const logger = getVoidLogger();
 
 const kialiApi = new KialiApiImpl({
   logger,
-  kiali: { url: 'https://localhost:4000' },
+  kiali: {
+    url: 'https://localhost:4000',
+    urlExternal: 'https://localhost:4000',
+  },
 });
 
 describe('kiali Api Connector', () => {

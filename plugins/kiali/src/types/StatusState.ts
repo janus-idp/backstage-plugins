@@ -6,6 +6,7 @@ export enum StatusKey {
   KIALI_STATE = 'Kiali state',
   MESH_NAME = 'Mesh name',
   MESH_VERSION = 'Mesh version',
+  KIALI_EXTERNAL_URL = 'kialiExternalUrl',
 }
 
 export type Status = { [K in StatusKey]?: string };

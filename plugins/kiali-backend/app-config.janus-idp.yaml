@@ -4,6 +4,8 @@ catalog:
     kiali:
       # Required. Kiali endpoint
       url: ${KIALI_BASE_URL}
+      # Optional. Kiali public URL to redirect to standalone Kiali. When not specified, url will be used.
+      urlExternal: ''
       # Optional. Required by token authentication
       serviceAccountToken: ${KIALI_SERVICE_ACCOUNT_TOKEN}
       # Optional. defaults false

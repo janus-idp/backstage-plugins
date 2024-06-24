@@ -7,6 +7,10 @@ export interface Config {
          */
         url: string;
         /**
+         * Url of the Kiali standalone for external access
+         */
+        urlExternal?: string;
+        /**
          * Service Account Token which is used for querying data from Kiali
          * @visibility secret
          */

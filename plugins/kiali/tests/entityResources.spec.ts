@@ -86,6 +86,39 @@ test.describe('Entity resources', () => {
       expect(page.locator('[data-test="drawer"]')).toBeDefined();
     });
 
+    // Verify drawer date
+    test('Workload Drawer Data', async () => {
+      const wbadge = page.locator('[data-test="w-badge"]');
+      expect(wbadge).toBeDefined();
+      await expect(wbadge).toContainText('W');
+
+      const title = page.locator('[data-test="workload-title"]');
+      expect(title).toBeDefined();
+      await expect(title).toContainText('details-v1');
+
+      const health = title.locator('[data-test="health"]');
+      expect(health).toBeDefined();
+      await health.hover();
+      const tooltip = page.getByRole('tooltip');
+      await expect(tooltip).toContainText('Pod Status');
+
+      const labels = page.locator('[data-test="app-label-container"]');
+      await expect(labels).toContainText('app=details');
+      const versionLabels = page.locator(
+        '[data-test="version-label-container"]',
+      );
+      await expect(versionLabels).toContainText('version=v1');
+      expect(page.locator('[data-test="help-icon"]')).toBeDefined();
+
+      const appLinks = page.locator('[data-test="App_bookinfo_details"]');
+      await expect(appLinks).toContainText('A');
+      await expect(appLinks).toContainText('details');
+
+      const serviceLinks = page.locator('[data-test="Service_details"]');
+      await expect(serviceLinks).toContainText('S');
+      await expect(serviceLinks).toContainText('details');
+    });
+
     // The drawer is closed
     test('Close drawer', async () => {
       await page.locator('#close_drawer').click();
