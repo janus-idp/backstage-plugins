@@ -11,7 +11,6 @@ import PlayArrow from '@mui/icons-material/PlayArrow';
 import {
   capitalize,
   orchestratorWorkflowExecutePermission,
-  orchestratorWorkflowInstancesReadPermission,
   ProcessInstanceStateValues,
   WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -39,9 +38,7 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   const permittedToExecute = usePermission({
     permission: orchestratorWorkflowExecutePermission,
   });
-  const permittedToReadWorkflows = usePermission({
-    permission: orchestratorWorkflowInstancesReadPermission,
-  });
+
   const initialState = useMemo(
     () => items.map(WorkflowOverviewFormatter.format),
     [items],
@@ -85,7 +82,7 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
     ];
 
     return actionItems;
-  }, [handleExecute, handleView]);
+  }, [handleExecute, handleView, permittedToExecute]);
 
   const columns = useMemo<TableColumn<FormattedWorkflowOverview>[]>(
     () => [

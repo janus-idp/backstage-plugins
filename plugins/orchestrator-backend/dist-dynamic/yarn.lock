@@ -790,9 +790,9 @@
     tslib "^2.6.2"
 
 "@azure/core-rest-pipeline@^1.1.0", "@azure/core-rest-pipeline@^1.9.1":
-  version "1.16.0"
-  resolved "https://registry.yarnpkg.com/@azure/core-rest-pipeline/-/core-rest-pipeline-1.16.0.tgz#631172e2fe0346cf4410d1c8e01ad98d849738e2"
-  integrity sha512-CeuTvsXxCUmEuxH5g/aceuSl6w2EugvNHKAtKKVdiX915EjJJxAwfzNNWZreNnbxHZ2fi0zaM6wwS23x2JVqSQ==
+  version "1.16.1"
+  resolved "https://registry.yarnpkg.com/@azure/core-rest-pipeline/-/core-rest-pipeline-1.16.1.tgz#069caf02ca283027dd0a3cf37817e674ebf130c8"
+  integrity sha512-ExPSbgjwCoht6kB7B4MeZoBAxcQSIl29r/bPeazZJx50ej4JJCByimLOrZoIsurISNyJQQHf30b3JfqC3Hb88A==
   dependencies:
     "@azure/abort-controller" "^2.0.0"
     "@azure/core-auth" "^1.4.0"
@@ -1078,7 +1078,7 @@
     zod "^3.22.4"
     zod-to-json-schema "^3.21.4"
 
-"@backstage/plugin-permission-common@^0.7.14":
+"@backstage/plugin-permission-common@^0.7.13", "@backstage/plugin-permission-common@^0.7.14":
   version "0.7.14"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-permission-common/-/plugin-permission-common-0.7.14.tgz#ecb12877c412ff271124af54fca46ec06d9c812f"
   integrity sha512-fHbxhX9ZoT8bTVuGycfTeU/6TE2yjZ6YNvm/2ko1bcxGnvYe1p5Ug5JW+iWjDZS+F6F152tWzhRcg05wQlPNKQ==
@@ -1180,6 +1180,14 @@
     "@backstage/types" "^1.1.1"
     express "^4.19.2"
     lodash "^4.17.21"
+
+"@janus-idp/backstage-plugin-rbac-common@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-rbac-common/-/backstage-plugin-rbac-common-1.6.0.tgz#254f6b26daaba1faeb6672d1692c042dacab4db6"
+  integrity sha512-3qyeGkpVa7X2gS8LUmAHtgLyLTEWtfeGvZcLJUuliStW5KWppxFXZbhOlrlY4aZOFWFgVVngs09NO7EbwanqcA==
+  dependencies:
+    "@backstage/errors" "^1.2.4"
+    "@backstage/plugin-permission-common" "^0.7.13"
 
 "@jridgewell/resolve-uri@^3.0.3":
   version "3.1.2"
@@ -3726,9 +3734,9 @@ isarray@~1.0.0:
   integrity sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==
 
 isomorphic-git@^1.23.0:
-  version "1.26.2"
-  resolved "https://registry.yarnpkg.com/isomorphic-git/-/isomorphic-git-1.26.2.tgz#424958f1a8aadf440fdab9b8cf65aeaf09d84b03"
-  integrity sha512-swKxfDm/GyaU5ojGwKtfs3EiHwlUf3iP1iIHPduaJHA5y1cIzMDFo3ogwdW6i00UmAjYQNKyF2BZgj/jz58/2A==
+  version "1.26.3"
+  resolved "https://registry.yarnpkg.com/isomorphic-git/-/isomorphic-git-1.26.3.tgz#4cc7860ec915729e1daed7b51be9371da5da1574"
+  integrity sha512-NVicJz3RvUhllSSZnCVtTOqWhxlMln5OD3mh00334wCYhiMDuMiYsNJqs3sCHL7oXiv1tP93jMaQTdN7DkPCOg==
   dependencies:
     async-lock "^1.4.1"
     clean-git-ref "^2.0.1"
