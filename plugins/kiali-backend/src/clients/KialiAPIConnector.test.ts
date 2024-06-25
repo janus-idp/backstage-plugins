@@ -16,7 +16,7 @@ const kialiApi = new KialiApiImpl({
 describe('kiali Api Connector', () => {
   describe('Validate suported version', () => {
     it('Plugin support the version', () => {
-      const versionsToTest = ['v1.73', 'v1.73.6'];
+      const versionsToTest = ['v1.86', 'v1.86.0'];
       versionsToTest.forEach(version => {
         const support = kialiApi.supportedVersion(version);
         expect(support).toBeUndefined();
