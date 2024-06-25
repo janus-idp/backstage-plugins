@@ -27,7 +27,6 @@ import {
 import {
   IstioConfigList,
   IstioConfigListQuery,
-  IstioConfigsMap,
   IstioConfigsMapQuery,
 } from '../types/IstioConfigList';
 import {

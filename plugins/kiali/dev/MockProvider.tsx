@@ -35,7 +35,7 @@ import {
   WorkloadHealth,
 } from '../src/types/Health';
 import { IstioConfigDetails } from '../src/types/IstioConfigDetails';
-import { IstioConfigList, IstioConfigsMap } from '../src/types/IstioConfigList';
+import { IstioConfigList } from '../src/types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
   OutboundTrafficPolicy,
@@ -56,10 +56,8 @@ import { StatusState } from '../src/types/StatusState';
 import { TLSStatus } from '../src/types/TLSStatus';
 import { Span, TracingQuery } from '../src/types/Tracing';
 import {
+  ClusterWorkloadsResponse,
   Workload,
-  WorkloadListItem,
-  WorkloadNamespaceResponse,
-  WorkloadOverview,
   WorkloadQuery,
 } from '../src/types/Workload';
 import { filterNsByAnnotation } from '../src/utils/entityFilter';
@@ -95,35 +93,12 @@ export class MockKialiClient implements KialiApi {
     );
   }
 
-  async getWorkloads(
-    namespace: string,
-    duration: number,
-  ): Promise<WorkloadListItem[]> {
-    const nsl = kialiData.workloads as WorkloadNamespaceResponse[];
-    // @ts-ignore
-    return nsl[namespace].workloads.map(
-      (w: WorkloadOverview): WorkloadListItem => {
-        return {
-          name: w.name,
-          namespace: namespace,
-          cluster: w.cluster,
-          type: w.type,
-          istioSidecar: w.istioSidecar,
-          istioAmbient: w.istioAmbient,
-          additionalDetailSample: undefined,
-          appLabel: w.appLabel,
-          versionLabel: w.versionLabel,
-          labels: w.labels,
-          istioReferences: w.istioReferences,
-          notCoveredAuthPolicy: w.notCoveredAuthPolicy,
-          health: WorkloadHealth.fromJson(namespace, w.name, w.health, {
-            rateInterval: duration,
-            hasSidecar: w.istioSidecar,
-            hasAmbient: w.istioAmbient,
-          }),
-        };
-      },
-    );
+  async getClustersWorkloads(
+    _namespaces: string,
+    _: AppListQuery,
+    _cluster?: string,
+  ): Promise<ClusterWorkloadsResponse> {
+    return kialiData.clusters.kubernetes.workloads;
   }
 
   async getWorkload(
@@ -263,17 +238,13 @@ export class MockKialiClient implements KialiApi {
   }
 
   async getAllIstioConfigs(
-    namespaces: string[],
     objects: string[],
     validate: boolean,
     labelSelector: string,
     workloadSelector: string,
     cluster?: string,
-  ): Promise<IstioConfigsMap> {
-    const params: any =
-      namespaces && namespaces.length > 0
-        ? { namespaces: namespaces.join(',') }
-        : {};
+  ): Promise<IstioConfigList> {
+    const params: any = {};
     if (objects && objects.length > 0) {
       params.objects = objects.join(',');
     }
@@ -350,11 +321,39 @@ export class MockKialiClient implements KialiApi {
     return kialiData.spanLogs;
   }
 
-  async getServices(
-    namespace: string,
-    _?: ServiceListQuery,
+  async getClustersServices(
+    _namespaces: string,
+    _: ServiceListQuery,
+    __?: string,
   ): Promise<ServiceList> {
-    return kialiData.services[namespace];
+    return kialiData.clusters.kubernetes.services;
+  }
+
+  async getClustersAppHealth(
+    namespaces: string,
+    _: DurationInSeconds,
+    __?: string,
+    ___?: TimeInSeconds,
+  ): Promise<Map<string, NamespaceAppHealth>> {
+    return kialiData.appHealth[namespaces];
+  }
+
+  async getClustersServiceHealth(
+    namespaces: string,
+    _: DurationInSeconds,
+    __?: string,
+    ___?: TimeInSeconds,
+  ): Promise<Map<string, NamespaceServiceHealth>> {
+    return kialiData.appHealth[namespaces];
+  }
+
+  async getClustersWorkloadHealth(
+    namespaces: string,
+    _: DurationInSeconds,
+    __?: string,
+    ___?: TimeInSeconds,
+  ): Promise<Map<string, NamespaceWorkloadHealth>> {
+    return kialiData.appHealth[namespaces];
   }
 
   async getIstioConfigDetail(
@@ -391,11 +390,12 @@ export class MockKialiClient implements KialiApi {
     return info;
   }
 
-  getApps = async (
-    namespace: string,
-    _params: AppListQuery,
+  getClustersApps = async (
+    _namespaces: string,
+    _: AppListQuery,
+    __?: string,
   ): Promise<AppList> => {
-    return kialiData.apps[namespace];
+    return kialiData.clusters.kubernetes.apps;
   };
 
   getApp = async (

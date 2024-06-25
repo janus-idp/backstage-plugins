@@ -1,4 +1,8 @@
 /* Config Data */
+import clusterApps from './clusters/kubernetes/apps.json';
+import clusterServices from './clusters/kubernetes/services.json';
+/* clusters */
+import clusterWorkloads from './clusters/kubernetes/workloads.json';
 import anonymousAuth from './general/auth_info_anonymous.json';
 import configData from './general/config.json';
 /** Metrics **/
@@ -375,6 +379,13 @@ export const kialiData: { [index: string]: any } = {
     'travel-portal': travelPortalApps,
     'travel-agency': travelAgencyApps,
     'travel-control': travelControlApps,
+  },
+  clusters: {
+    kubernetes: {
+      workloads: clusterWorkloads,
+      services: clusterServices,
+      apps: clusterApps,
+    },
   },
   status: status,
   crippledFeatures: crippledFeatures,
