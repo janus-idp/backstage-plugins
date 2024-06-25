@@ -6,8 +6,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 
-import { Order } from '../../types';
-import { OrganizationColumnHeader } from './OrganizationColumnHeader';
+import { Order } from '../../types/types';
+import { OrganizationsColumnHeader } from './OrganizationsColumnHeader';
 import { RepositoriesColumnHeader } from './RepositoriesColumnHeader';
 import { ReposSelectDrawerColumnHeader } from './ReposSelectDrawerColumnHeader';
 
@@ -23,12 +23,12 @@ export const RepositoriesHeader = ({
 }: {
   numSelected: number;
   onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
   rowCount: number;
-  showOrganizations: boolean;
+  showOrganizations?: boolean;
   isRepoSelectDrawer?: boolean;
+  onSelectAllClick?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const createSortHandler =
     (property: any) => (event: React.MouseEvent<unknown>) => {
@@ -37,7 +37,7 @@ export const RepositoriesHeader = ({
 
   const getColumnHeader = () => {
     if (showOrganizations) {
-      return OrganizationColumnHeader;
+      return OrganizationsColumnHeader;
     }
     if (isRepoSelectDrawer) {
       return ReposSelectDrawerColumnHeader;
