@@ -1,97 +1,53 @@
-import { getDataForRepositories, mockData } from '../mocks/mockData';
 import {
-  createOrganizationData,
+  mockGetRepositories,
+  mockSelectedRepositories,
+} from '../mocks/mockData';
+import {
   getNewOrgsData,
-  getSelectedRepositories,
-  getSelectedRepositoriesCount,
   getYamlKeyValuePairs,
   updateWithNewSelectedRepositories,
   urlHelper,
 } from './repository-utils';
 
 describe('Repository utils', () => {
-  it('should allow users to select repositories if none are selected yet', () => {
-    const component = getSelectedRepositoriesCount(
-      jest.fn(),
-      { id: 1, selectedRepositories: [] },
-      0,
-    );
-    expect(component.props['data-testid']).toBe('select-repositories');
-  });
-
-  it('should allow users to edit repositories if repositories are selected', () => {
-    const component = getSelectedRepositoriesCount(
-      jest.fn(),
-      {
-        id: 1,
-        selectedRepositories: [{ id: 1, repoName: 'xyz' }],
-        repositories: [
-          { id: 1, repoName: 'xyz' },
-          { id: 2, repoName: 'abc' },
-        ],
-      },
-      0,
-    );
-    expect(component.props['data-testid']).toBe('edit-repositories');
-  });
-
   it('should evaluate the newly selected repositories in the organization drawer', () => {
-    let addedRepositories = updateWithNewSelectedRepositories(
-      getDataForRepositories('user:default/guest'),
+    const addedRepositories = updateWithNewSelectedRepositories(
+      mockSelectedRepositories,
       {
-        Cupcake: mockData('use:default/guest')[0],
+        ...mockSelectedRepositories,
+        ['org/food/food-app']: {
+          id: 'org/food/food-app',
+          repoName: 'food-app',
+          repoUrl: 'https://github.com/org/food/food-app',
+          defaultBranch: 'master',
+          organizationUrl: 'org/food',
+        },
+        ['org/pet-store-boston/online-store']: {
+          id: 'org/pet-store-boston/online-store',
+          repoName: 'online-store',
+          defaultBranch: 'master',
+          repoUrl: 'https://github.com/org/pet-store-boston/online-store',
+          organizationUrl: 'org/pet-store-boston',
+        },
+        ['org/pet-store-boston/pet-app']: {
+          id: 'org/pet-store-boston/pet-app',
+          repoName: 'pet-app',
+          defaultBranch: 'master',
+          repoUrl: 'https://github.com/org/pet-store-boston/pet-app',
+          organizationUrl: 'org/pet-store-boston',
+        },
       },
-      [1, 2],
     );
 
-    expect(Object.values(addedRepositories).length).toBe(2);
+    expect(Object.values(addedRepositories).length).toBe(7);
     expect(
-      Object.keys(addedRepositories).find(r => r === 'Donut'),
-    ).toBeTruthy();
-
-    addedRepositories = updateWithNewSelectedRepositories(
-      getDataForRepositories('user:default/guest'),
-      {
-        Cupcake: mockData('use:default/guest')[0],
-      },
-      [2],
-    );
-
-    expect(Object.values(addedRepositories).length).toBe(1);
-    expect(
-      Object.keys(addedRepositories).find(r => r === 'Donut'),
+      Object.keys(addedRepositories).find(
+        r => r === 'org/pet-store-boston/pet-app',
+      ),
     ).toBeTruthy();
     expect(
-      Object.keys(addedRepositories).find(r => r === 'Cupcake'),
+      Object.keys(addedRepositories).find(r => r === 'org/dessert/oreo'),
     ).toBeFalsy();
-  });
-
-  it('should evaluate the selected repositories', () => {
-    let orgData = {
-      id: 1,
-      orgName: 'org/desert',
-      organizationUrl: 'org/desert',
-      repositories: mockData('user:default/guest'),
-      selectedRepositories: mockData('user:default/guest').slice(0, 2),
-    };
-    let selectedRepositories = getSelectedRepositories(orgData, [1, 2, 3]);
-    expect(selectedRepositories.length).toBe(3);
-    expect(selectedRepositories).toEqual(
-      mockData('user:default/guest').slice(0, 3),
-    );
-
-    orgData = {
-      id: 1,
-      orgName: 'org/desert',
-      organizationUrl: 'org/desert',
-      repositories: mockData('user:default/guest'),
-      selectedRepositories: mockData('user:default/guest').slice(0, 2),
-    };
-    selectedRepositories = getSelectedRepositories(orgData, [3, 4]);
-    expect(selectedRepositories.length).toBe(2);
-    expect(selectedRepositories).toEqual(
-      mockData('user:default/guest').slice(2, 4),
-    );
   });
 
   it('should return the url is the desired format', () => {
@@ -107,14 +63,29 @@ describe('Repository utils', () => {
 
   it('should update organization data when repositories are selected', () => {
     const newOrgsData = getNewOrgsData(
-      createOrganizationData(mockData('user:default/guest')).slice(0, 5),
-      getDataForRepositories('user:default/guest').slice(0, 4),
-      [2, 3],
-      3,
+      {
+        'org/dessert': {
+          id: '1234',
+          orgName: 'org/dessert',
+          organizationUrl: 'https://github.com/org/dessert',
+        },
+        'org/food': {
+          id: '1235',
+          orgName: 'org/food',
+          organizationUrl: 'https://github.com/org/food',
+        },
+        'org/pet-store-boston': {
+          id: '1236',
+          orgName: 'org/pet-store-boston',
+          organizationUrl: 'https://github.com/org/pet-store-boston',
+        },
+      },
+      mockGetRepositories.repositories[1],
     );
-    expect(newOrgsData.find(o => o.id === 1)?.selectedRepositories).toEqual(
-      getDataForRepositories('user:default/guest').slice(1, 3),
-    );
+    expect(
+      Object.values(newOrgsData).find(o => o.orgName === 'org/dessert')
+        ?.selectedRepositories,
+    ).toEqual({ 'org/dessert/donut': mockGetRepositories.repositories[1] });
   });
 
   it('should parse key-value pairs correctly with semicolons', () => {

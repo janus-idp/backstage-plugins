@@ -2,15 +2,17 @@ import React from 'react';
 
 import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
+import FormControl from '@mui/material/FormControl';
 import { Formik } from 'formik';
 
-import { AddRepositoriesFormValues } from '../types';
-import { RepositoriesListForm } from './Repositories/RepositoriesListForm';
+import { AddRepositoriesFormValues, RepositorySelection } from '../types/types';
+import { RepositoriesList } from './Repositories/RepositoriesList';
 
 export const BulkImportPage = () => {
   const initialValues: AddRepositoriesFormValues = {
-    repositoryType: 'repository',
+    repositoryType: RepositorySelection.Repository,
     repositories: {},
+    excludedRepositories: {},
     approvalTool: 'git',
   };
 
@@ -24,7 +26,9 @@ export const BulkImportPage = () => {
             enableReinitialize
             onSubmit={async (_values: AddRepositoriesFormValues) => {}}
           >
-            <RepositoriesListForm />
+            <FormControl fullWidth>
+              <RepositoriesList />
+            </FormControl>
           </Formik>
         </TabbedLayout.Route>
       </TabbedLayout>

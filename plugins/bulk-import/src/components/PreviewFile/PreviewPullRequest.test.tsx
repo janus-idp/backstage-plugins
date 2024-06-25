@@ -7,9 +7,10 @@ import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent, render } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 
-import { getDataForRepositories } from '../../mocks/mockData';
+import { mockGetRepositories } from '../../mocks/mockData';
 import { mockEntities } from '../../mocks/mockEntities';
-import { ApprovalTool, PullRequestPreview } from '../../types';
+import { ApprovalTool } from '../../types/types';
+import { getPRTemplate } from '../../utils/repository-utils';
 import { PreviewPullRequest } from './PreviewPullRequest';
 
 jest.mock('react', () => ({
@@ -53,7 +54,7 @@ describe('Preview Pull Request', () => {
       errors: {},
       values: {
         repositories: {
-          Cupcake: getDataForRepositories('user:default/guest')[0],
+          'org/dessert/Cupcake': mockGetRepositories.repositories[0],
         },
         approvalTool: ApprovalTool.Git,
       },
@@ -76,10 +77,13 @@ describe('Preview Pull Request', () => {
         ]}
       >
         <PreviewPullRequest
-          repoName="Cupcake"
+          repoName="org/dessert/Cupcake"
           pullRequest={{
-            Cupcake: getDataForRepositories('user:default/guest')[0]
-              .catalogInfoYaml?.prTemplate as PullRequestPreview,
+            'org/dessert/Cupcake': getPRTemplate(
+              'org/dessert/Cupcake',
+              'org/dessert',
+              'user:default/guest',
+            ),
           }}
           setFormErrors={() => jest.fn()}
           formErrors={{}}
@@ -93,12 +97,13 @@ describe('Preview Pull Request', () => {
     expect(getByPlaceholderText(/groups and users/)).toBeInTheDocument();
   });
 
-  it('should render the servicenow ticket preview', async () => {
+  // Enable this test when Service Now approval tool is supported
+  xit('should render the servicenow ticket preview', async () => {
     (useFormikContext as jest.Mock).mockReturnValue({
       errors: {},
       values: {
         repositories: {
-          Cupcake: getDataForRepositories('user:default/guest')[0],
+          'org/dessert/Cupcake': mockGetRepositories.repositories[0],
         },
         approvalTool: ApprovalTool.ServiceNow,
       },
@@ -123,8 +128,11 @@ describe('Preview Pull Request', () => {
         <PreviewPullRequest
           repoName="Cupcake"
           pullRequest={{
-            Cupcake: getDataForRepositories('user:default/guest')[0]
-              .catalogInfoYaml?.prTemplate as PullRequestPreview,
+            Cupcake: getPRTemplate(
+              'org/dessert/Cupcake',
+              'org/dessert',
+              'user:default/guest',
+            ),
           }}
           setFormErrors={() => jest.fn()}
           formErrors={{}}
@@ -143,7 +151,7 @@ describe('Preview Pull Request', () => {
       errors: {},
       values: {
         repositories: {
-          Cupcake: getDataForRepositories('user:default/guest')[0],
+          'org/dessert/Cupcake': mockGetRepositories.repositories[0],
         },
         approvalTool: ApprovalTool.Git,
       },
@@ -168,10 +176,13 @@ describe('Preview Pull Request', () => {
         ]}
       >
         <PreviewPullRequest
-          repoName="Cupcake"
+          repoName="org/dessert/Cupcake"
           pullRequest={{
-            Cupcake: getDataForRepositories('user:default/guest')[0]
-              .catalogInfoYaml?.prTemplate as PullRequestPreview,
+            'org/dessert/Cupcake': getPRTemplate(
+              'org/dessert/Cupcake',
+              'org/dessert',
+              'user:default/guest',
+            ),
           }}
           setFormErrors={setFormErrors}
           formErrors={{}}
@@ -184,7 +195,7 @@ describe('Preview Pull Request', () => {
     );
     fireEvent.change(prTitle, { target: { value: '' } });
     expect(setFormErrors).toHaveBeenCalledWith({
-      Cupcake: {
+      'org/dessert/Cupcake': {
         prTitle: 'Pull request title is missing',
       },
     });
@@ -192,7 +203,7 @@ describe('Preview Pull Request', () => {
     const componentName = getByPlaceholderText(/Component Name/);
     fireEvent.change(componentName, { target: { value: '' } });
     expect(setFormErrors).toHaveBeenCalledWith({
-      Cupcake: {
+      'org/dessert/Cupcake': {
         componentName: 'Component name is missing',
       },
     });

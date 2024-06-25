@@ -4,7 +4,10 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { useFormikContext } from 'formik';
 
-import { AddRepositoriesFormValues, RepositorySelection } from '../../types';
+import {
+  AddRepositoriesFormValues,
+  RepositorySelection,
+} from '../../types/types';
 import { AddRepositoriesTableToolbar } from './AddRepositoriesTableToolbar';
 import { RepositoriesTable } from './RepositoriesTable';
 
