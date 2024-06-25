@@ -83,6 +83,7 @@
     "@backstage/plugin-permission-node": "^0.7.29",
     "@backstage/plugin-auth-node": "^0.4.13",
     "@backstage/types": "^1.1.1",
+    "@janus-idp/backstage-plugin-audit-log-node": "^1.2.0",
     "@janus-idp/backstage-plugin-orchestrator-common": "1.9.0",
     "@urql/core": "^4.1.4",
     "ajv-formats": "^2.1.1",

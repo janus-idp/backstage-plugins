@@ -1,5 +1,6 @@
 import { createLegacyAuthAdapters, UrlReader } from '@backstage/backend-common';
 import {
+  AuthService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
@@ -23,6 +24,7 @@ export interface RouterArgs {
   scheduler: PluginTaskScheduler;
   permissions: PermissionsService;
   httpAuth?: HttpAuthService;
+  auth?: AuthService;
 }
 
 export async function createRouter(args: RouterArgs): Promise<express.Router> {
@@ -41,9 +43,10 @@ export async function createRouter(args: RouterArgs): Promise<express.Router> {
     }
   }
 
-  const { httpAuth } = createLegacyAuthAdapters({
+  const { auth, httpAuth } = createLegacyAuthAdapters({
     httpAuth: args.httpAuth,
     discovery: args.discovery,
+    auth: args.auth,
   });
   return await createBackendRouter({
     config: args.config,
@@ -54,5 +57,6 @@ export async function createRouter(args: RouterArgs): Promise<express.Router> {
     scheduler: args.scheduler,
     permissions: args.permissions,
     httpAuth: httpAuth,
+    auth: auth,
   });
 }
