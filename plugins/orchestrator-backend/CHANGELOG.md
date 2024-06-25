@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.11.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.10.1...@janus-idp/backstage-plugin-orchestrator-backend@1.11.0) (2024-06-25)
+
+
+### Features
+
+* **orchestrator:** add auditLog and reorganize endpoints declaration ([#1820](https://github.com/janus-idp/backstage-plugins/issues/1820)) ([00d9216](https://github.com/janus-idp/backstage-plugins/commit/00d9216ba76c13fac86933a8605102d6e1768929))
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.10.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.10.0...@janus-idp/backstage-plugin-orchestrator-backend@1.10.1) (2024-06-19)
 
 
