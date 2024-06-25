@@ -80,7 +80,6 @@ export const AppListPage = (props: {
     )
       .then(results => {
         let appListItems: AppListItem[] = [];
-        console.log(results);
         results.forEach(response => {
           appListItems = appListItems.concat(
             AppListClass.getAppItems(response, timeDuration),
