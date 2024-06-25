@@ -8,11 +8,6 @@ import IconButton from '@mui/material/IconButton';
 import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
 
-type RepositoriesSearchBarProps = {
-  value: string;
-  onChange: (filter: string) => void;
-};
-
 const useStyles = makeStyles({
   formControl: {
     alignItems: 'flex-end',
@@ -24,14 +19,21 @@ const useStyles = makeStyles({
 export const RepositoriesSearchBar = ({
   value,
   onChange,
-}: RepositoriesSearchBarProps) => {
+  activeOrganization,
+}: {
+  value: string;
+  onChange: (filter: string) => void;
+  activeOrganization?: boolean;
+}) => {
   const classes = useStyles();
+  const ariaLabel = activeOrganization ? 'search-in-organization' : 'search';
 
   return (
     <FormControl className={classes.formControl}>
       <Input
-        aria-label="search"
+        data-testid={ariaLabel}
         placeholder="Search"
+        inputProps={{ 'aria-label': ariaLabel }}
         autoComplete="off"
         onChange={event => onChange(event.target.value)}
         value={value}

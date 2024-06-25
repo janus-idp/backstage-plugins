@@ -5,7 +5,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 
 import { screen, waitFor } from '@testing-library/react';
 
-import { AddRepositoriesPage } from './components/AddRepositories/AddRepositoriesPage';
+import { BulkImportSidebarItem } from './components';
 import { BulkImportPage, bulkImportPlugin } from './plugin';
 import { rootRouteRef } from './routes';
 
@@ -16,7 +16,7 @@ describe('bulk-import', () => {
   it('should render the bulk import page', async () => {
     await renderInTestApp(
       <Routes>
-        <Route path="/" element={<BulkImportPage />} />
+        <Route path="*" element={<BulkImportPage />} />
       </Routes>,
       {
         mountedRoutes: {
@@ -30,10 +30,10 @@ describe('bulk-import', () => {
     });
   });
 
-  it('should render the add repositories page', async () => {
+  it('should render the bulk import icon', async () => {
     await renderInTestApp(
       <Routes>
-        <Route path="/" element={<AddRepositoriesPage />} />
+        <Route path="*" element={<BulkImportSidebarItem />} />
       </Routes>,
       {
         mountedRoutes: {
@@ -43,7 +43,9 @@ describe('bulk-import', () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryAllByText(/Add repositories/i)[0]).toBeInTheDocument();
+      expect(
+        screen.queryByRole('img', { name: 'bulk import icon' }),
+      ).toBeInTheDocument();
     });
   });
 });

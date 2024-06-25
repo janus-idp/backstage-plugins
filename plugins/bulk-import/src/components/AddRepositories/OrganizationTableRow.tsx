@@ -5,13 +5,12 @@ import { Link } from '@backstage/core-components';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
+import { useFormikContext } from 'formik';
 
-import { AddRepositoriesData } from '../../types';
-import {
-  getSelectedRepositoriesCount,
-  urlHelper,
-} from '../../utils/repository-utils';
+import { AddRepositoriesFormValues, AddRepositoryData } from '../../types';
+import { urlHelper } from '../../utils/repository-utils';
 import { CatalogInfoStatus } from './CatalogInfoStatus';
+import { SelectRepositories } from './SelectRepositories';
 
 const tableCellStyle = {
   lineHeight: '1.5rem',
@@ -22,12 +21,15 @@ const tableCellStyle = {
 export const OrganizationTableRow = ({
   onOrgRowSelected,
   data,
-  alreadyAdded,
 }: {
-  onOrgRowSelected: (org: AddRepositoriesData) => void;
-  data: AddRepositoriesData;
-  alreadyAdded: number;
+  onOrgRowSelected: (org: AddRepositoryData) => void;
+  data: AddRepositoryData;
 }) => {
+  const { values } = useFormikContext<AddRepositoriesFormValues>();
+  const alreadyAdded = Object.values(values?.excludedRepositories || {}).filter(
+    r => r.orgName === data.orgName,
+  ).length;
+
   return (
     <TableRow hover>
       <TableCell component="th" scope="row" padding="none" sx={tableCellStyle}>
@@ -44,7 +46,11 @@ export const OrganizationTableRow = ({
         </Link>
       </TableCell>
       <TableCell align="left" sx={tableCellStyle}>
-        {getSelectedRepositoriesCount(onOrgRowSelected, data, alreadyAdded)}
+        <SelectRepositories
+          onOrgRowSelected={onOrgRowSelected}
+          orgData={data}
+          addedRepositoriesCount={alreadyAdded}
+        />
       </TableCell>
       <TableCell align="left" sx={tableCellStyle}>
         <CatalogInfoStatus data={data} alreadyAdded={alreadyAdded} />
