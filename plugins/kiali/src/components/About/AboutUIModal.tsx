@@ -162,19 +162,19 @@ export const AboutUIModal = (props: AboutUIModalProps) => {
             <Grid item xs={4}>
               Kiali
             </Grid>
-            <Grid item xs={8} data-test={'Kiali'}>
+            <Grid item xs={8} data-test="Kiali">
               {coreVersion || 'Unknown'}
             </Grid>
             <Grid item xs={4}>
               Kiali Container
             </Grid>
-            <Grid item xs={8} data-test={'Kiali container'}>
+            <Grid item xs={8} data-test="Kiali container">
               {containerVersion || 'Unknown'}
             </Grid>
             <Grid item xs={4}>
               Service Mesh
             </Grid>
-            <Grid item xs={8} data-test={'Service Mesh'}>
+            <Grid item xs={8} data-test="Service Mesh">
               {meshVersion || 'Unknown'}
             </Grid>
           </Grid>

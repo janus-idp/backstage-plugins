@@ -46,7 +46,7 @@ export const AlertDrawerMessage = (props: AlertDrawerMessageProps) => {
 
   return (
     <Card>
-      <CardContent data-test={'drawer-message'}>
+      <CardContent data-test="drawer-message">
         {getIcon(props.message.type)}{' '}
         {props.message.seen ? (
           props.message.content
@@ -70,7 +70,7 @@ export const AlertDrawerMessage = (props: AlertDrawerMessageProps) => {
                 {props.message.showDetail ? 'Hide Detail' : 'Show Detail'}
               </Typography>
             </AccordionSummary>
-            <AccordionDetails data-test={'message-detail'}>
+            <AccordionDetails data-test="message-detail">
               <pre style={{ whiteSpace: 'pre-wrap' }}>
                 {props.message.detail}
               </pre>

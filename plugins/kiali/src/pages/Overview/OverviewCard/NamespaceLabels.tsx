@@ -13,7 +13,7 @@ export const NamespaceLabels = (props: NamespaceLabelsprops) => {
     ? `${Object.entries(props.labels).length}`
     : 'No';
   const tooltipTitle = (
-    <ul data-test={'namespace-labels'}>
+    <ul data-test="namespace-labels">
       {Object.entries(props.labels || []).map(([key, value]) => (
         <li key={key}>
           {key}={value}
@@ -27,7 +27,7 @@ export const NamespaceLabels = (props: NamespaceLabelsprops) => {
         {labelsLength} label{labelsLength !== '1' ? 's' : ''}
       </div>
       <Tooltip title={tooltipTitle} placement="right">
-        <span data-test={'labels-info-icon'}>
+        <span data-test="labels-info-icon">
           <KialiIcon.Info className={infoStyle} />
         </span>
       </Tooltip>

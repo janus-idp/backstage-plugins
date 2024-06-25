@@ -43,7 +43,7 @@ export class OverviewStatus extends React.Component<Props, {}> {
       items.push(`and ${length - items.length} more...`);
     }
     const tooltipContent = (
-      <div data-test={'overview-status'}>
+      <div data-test="overview-status">
         <strong data-test={`${this.props.status.name}-status`}>
           {this.props.status.name}
         </strong>

@@ -21,14 +21,14 @@ async function checkReportedItems(
 
   const icon = await ns_card.locator('data-test=overview-app-health');
   await icon.hover();
-  let list = await page.locator('data-test=overview-status');
+  const list = await page.locator('data-test=overview-status');
 
   // Wait for the list to appear
   await page.waitForSelector('data-test=overview-status');
 
   let i = 0;
   for (const object of Object.entries(objects)) {
-    if (i == 5) {
+    if (i === 5) {
       break;
     }
     await icon.hover({ force: true }).then(async () => {
@@ -36,7 +36,7 @@ async function checkReportedItems(
     });
     i++;
   }
-  let expected = type == 'app' ? 'application' : type;
+  const expected = type === 'app' ? 'application' : type;
   await expect(
     ns_card.locator(`data-test=overview-type-${type}`),
   ).toContainText(`${Object.entries(objects).length} ${expected}s`);
@@ -201,7 +201,7 @@ test.describe('Kiali page', () => {
       const ns_card = await page.locator(`data-test=overview-card-${ns.name}`);
       const icon = await ns_card.locator('data-test=labels-info-icon');
       await icon.hover();
-      let list = await page.locator('data-test=namespace-labels');
+      const list = await page.locator('data-test=namespace-labels');
 
       // Wait for the list to appear
       await page.waitForSelector('data-test=namespace-labels');

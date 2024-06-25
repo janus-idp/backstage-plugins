@@ -61,7 +61,7 @@ export const AlertDrawerGroup = (props: AlertDrawerGroupProps) => {
     <Card elevation={0}>
       <CardContent
         style={{ paddingTop: 0 }}
-        data-test={'message-center-messages'}
+        data-test="message-center-messages"
       >
         {group.messages.length === 0 && noNotificationsMessage}
         {getMessages().map(message => (
@@ -71,14 +71,14 @@ export const AlertDrawerGroup = (props: AlertDrawerGroupProps) => {
       {group.showActions && group.messages.length > 0 && (
         <CardActions>
           <Button
-            data-test={'mark-as-read'}
+            data-test="mark-as-read"
             variant="text"
             onClick={() => markGroupAsRead(group.id)}
           >
             Mark All Read
           </Button>
           <Button
-            data-test={'clear-all'}
+            data-test="clear-all"
             variant="text"
             onClick={() => clearGroup(group.id)}
           >
