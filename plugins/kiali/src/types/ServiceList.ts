@@ -1,11 +1,10 @@
 import { ServiceHealth } from './Health';
 import { ObjectReference, ObjectValidation, Validations } from './IstioObjects';
-import { Namespace } from './Namespace';
 import { AdditionalItem } from './Workload';
 
 export interface ServiceList {
-  namespace: Namespace;
-  services: ServiceOverview[];
+  cluster?: string;
+  services: ServiceListItem[];
   validations: Validations;
 }
 

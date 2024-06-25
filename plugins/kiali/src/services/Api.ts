@@ -135,6 +135,11 @@ export interface KialiApi {
     params: WorkloadQuery,
     cluster?: string,
   ): Promise<Workload>;
+  getClustersApps(
+    namespaces: string,
+    params: AppListQuery,
+    cluster?: string,
+  ): Promise<AppList>;
   getMeshTls(cluster?: string): Promise<TLSStatus>;
   getNamespaceTls(namespace: string, cluster?: string): Promise<TLSStatus>;
   getOutboundTrafficPolicyMode(): Promise<OutboundTrafficPolicy>;
@@ -160,6 +165,11 @@ export interface KialiApi {
     params: AppListQuery,
     cluster?: string,
   ): Promise<ClusterWorkloadsResponse>;
+  getClustersServices(
+    namespaces: string,
+    params: ServiceListQuery,
+    cluster?: string,
+  ): Promise<ServiceList>;
   getIstioConfig(
     namespace: string,
     objects: string[],
@@ -199,10 +209,6 @@ export interface KialiApi {
     level: string,
     cluster?: string,
   ): Promise<void>;
-  getServices(
-    namespace: string,
-    params?: ServiceListQuery,
-  ): Promise<ServiceList>;
   getServiceDetail(
     namespace: string,
     service: string,
@@ -210,7 +216,6 @@ export interface KialiApi {
     cluster?: string,
     rateInterval?: DurationInSeconds,
   ): Promise<ServiceDetailsInfo>;
-  getApps(namespace: string, params: AppListQuery): Promise<AppList>;
   getApp(
     namespace: string,
     app: string,
@@ -881,14 +886,23 @@ export class KialiApiClient implements KialiApi {
     });
   };
 
-  getServices = async (
-    namespace: string,
-    params?: ServiceListQuery,
+  getClustersServices = async (
+    namespaces: string,
+    params: ServiceListQuery,
+    cluster?: string,
   ): Promise<ServiceList> => {
+    const queryParams: QueryParams<ServiceListQuery & Namespaces> = {
+      ...params,
+      namespaces: namespaces,
+    };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
     return this.newRequest<ServiceList>(
       HTTP_VERBS.GET,
-      urls.services(namespace),
-      params,
+      urls.clustersServices(),
+      queryParams,
       {},
     );
   };
@@ -934,14 +948,23 @@ export class KialiApiClient implements KialiApi {
     });
   };
 
-  getApps = async (
-    namespace: string,
+  getClustersApps = async (
+    namespaces: string,
     params: AppListQuery,
+    cluster?: string,
   ): Promise<AppList> => {
+    const queryParams: QueryParams<AppListQuery & Namespaces> = {
+      ...params,
+      namespaces: namespaces,
+    };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
     return this.newRequest<AppList>(
       HTTP_VERBS.GET,
-      urls.apps(namespace),
-      params,
+      urls.clustersApps(),
+      queryParams,
       {},
     );
   };
