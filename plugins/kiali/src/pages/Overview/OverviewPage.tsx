@@ -314,7 +314,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
   ) => {
     return Promise.all([
       kialiClient.getConfigValidations(cluster),
-      kialiClient.getAllIstioConfigs([], [], false, '', '', cluster),
+      kialiClient.getAllIstioConfigs([], true, '', '', cluster),
     ])
       .then(results => {
         nss.forEach(nsInfo => {
@@ -327,6 +327,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
             nsInfo.validations = results[0][nsInfo.cluster][nsInfo.name];
           }
           if (nsInfo.cluster && nsInfo.cluster === cluster) {
+            // @ts-ignore
             nsInfo.istioConfig = results[1][nsInfo.name];
           }
         });

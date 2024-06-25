@@ -1,6 +1,5 @@
 import { AppHealth } from './Health';
 import { ObjectReference } from './IstioObjects';
-import { Namespace } from './Namespace';
 
 export interface AppListItem {
   cluster?: string;
