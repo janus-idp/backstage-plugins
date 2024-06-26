@@ -23,7 +23,8 @@ export class CasbinDBAdapterFactory {
     if (client === 'pg') {
       const dbName =
         await this.databaseClient.client.config.connection.database;
-      const schema = await this.databaseClient.client.searchPath?.[0] ?? 'public';
+      const schema =
+        (await this.databaseClient.client.searchPath?.[0]) ?? 'public';
 
       const ssl = this.handleSSL(databaseConfig!);
 
