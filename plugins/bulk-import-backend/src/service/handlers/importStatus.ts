@@ -101,3 +101,17 @@ export async function verifyLocationExistence(
     throw error;
   }
 }
+
+export async function hasEntityInCatalog(
+  catalogApi: CatalogApi,
+  entityName: string,
+) {
+  return catalogApi
+    .queryEntities({
+      filter: {
+        'metadata.name': entityName,
+      },
+      limit: 1,
+    })
+    .then(resp => resp.items?.length > 0);
+}

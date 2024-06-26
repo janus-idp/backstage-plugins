@@ -196,6 +196,11 @@ export async function createRouter(
         req.header('authorization'),
       );
       await permissionCheck(permissions, backstageToken);
+      const q: Paths.CreateImportJobs.QueryParameters = Object.assign(
+        {},
+        c.request.query,
+      );
+      q.dryRun = stringToBoolean(q.dryRun);
       const response = await createImportJobs(
         logger,
         config,
@@ -203,6 +208,7 @@ export async function createRouter(
         githubApiService,
         catalogInfoGenerator,
         c.request.requestBody,
+        q.dryRun,
       );
       return res.status(response.statusCode).json(response.responseBody);
     },
@@ -286,4 +292,11 @@ export async function createRouter(
 
 function stringToNumber(s: number | undefined): number | undefined {
   return s ? Number.parseInt(s.toString(), 10) : undefined;
+}
+
+function stringToBoolean(s: boolean | undefined): boolean | undefined {
+  if (!s) {
+    return undefined;
+  }
+  return s.toString() === 'true';
 }

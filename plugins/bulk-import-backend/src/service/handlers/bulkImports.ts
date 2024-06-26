@@ -12,7 +12,7 @@ import {
   DefaultPageSize,
   HandlerResponse,
 } from './handlers';
-import { verifyLocationExistence } from './importStatus';
+import { hasEntityInCatalog, verifyLocationExistence } from './importStatus';
 import { findAllRepositories } from './repositories';
 
 export async function findAllImports(
@@ -158,9 +158,12 @@ export async function createImportJobs(
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
   importRequests: Paths.CreateImportJobs.RequestBody,
-): Promise<HandlerResponse<Components.Schemas.Import[]>> {
+  dryRun: boolean = false,
+): Promise<
+  HandlerResponse<Components.Schemas.Import[] | { errors: string[] }>
+> {
   logger.debug(
-    `Handling request to import ${importRequests?.length ?? 0} repo(s)..`,
+    `Handling request to import ${importRequests?.length ?? 0} repo(s) (dryRun=${dryRun})..`,
   );
 
   if (!importRequests || importRequests.length === 0) {
@@ -176,8 +179,36 @@ export async function createImportJobs(
   const appBaseUrl = config.getString('app.baseUrl');
 
   const result: Components.Schemas.Import[] = [];
+  const dryRunErrors: string[] = [];
   for (const req of importRequests) {
     const gitUrl = gitUrlParse(req.repository.url);
+
+    if (dryRun) {
+      if (!req.catalogEntityName || req.catalogEntityName.trim().length === 0) {
+        dryRunErrors.push(
+          `ERROR: 'catalogEntityName' field must be specified in request body for ${req.repository.url} for dry-run operations`,
+        );
+      } else {
+        const errs: string[] = [];
+        const hasEntity = await hasEntityInCatalog(
+          catalogApi,
+          req.catalogEntityName,
+        );
+        if (hasEntity) {
+          errs.push('CONFLICT');
+        }
+        result.push({
+          errors: errs,
+          catalogEntityName: req.catalogEntityName,
+          repository: {
+            url: req.repository.url,
+            name: gitUrl.name,
+            organization: gitUrl.organization,
+          },
+        });
+      }
+      continue;
+    }
 
     // Check if repo is already imported
     const repoCatalogUrl = catalogInfoGenerator.getCatalogUrl(
@@ -273,6 +304,15 @@ export async function createImportJobs(
         },
       } as Components.Schemas.Import);
     }
+  }
+
+  if (dryRun && dryRunErrors.length > 0) {
+    return {
+      statusCode: 400,
+      responseBody: {
+        errors: dryRunErrors,
+      },
+    };
   }
 
   return {

@@ -19,6 +19,10 @@ declare namespace Components {
         export interface Import {
             id?: string;
             status?: /* Import Job status */ ImportStatus;
+            /**
+             * Specified entity name in the catalog. Filled only in response for dry-run import requests.
+             */
+            catalogEntityName?: string;
             errors?: string[];
             approvalTool?: ApprovalTool;
             repository?: {
@@ -56,6 +60,10 @@ declare namespace Components {
          */
         export interface ImportRequest {
             approvalTool?: ApprovalTool;
+            /**
+             * Expected Entity name in the catalog. Relevant only if the 'dryRun' query parameter is set to 'true'.
+             */
+            catalogEntityName?: string;
             repository: {
                 /**
                  * repository name
@@ -142,6 +150,12 @@ declare namespace Components {
 }
 declare namespace Paths {
     namespace CreateImportJobs {
+        namespace Parameters {
+            export type DryRun = boolean;
+        }
+        export interface QueryParameters {
+            dryRun?: Parameters.DryRun;
+        }
         export type RequestBody = /* Import Job request */ Components.Schemas.ImportRequest[];
         namespace Responses {
             export type $202 = /* Import Job */ Components.Schemas.Import[];
@@ -245,7 +259,7 @@ export interface OperationMethods {
    * createImportJobs - Submit Import Jobs
    */
   'createImportJobs'(
-    parameters?: Parameters<UnknownParamsObject> | null,
+    parameters?: Parameters<Paths.CreateImportJobs.QueryParameters> | null,
     data?: Paths.CreateImportJobs.RequestBody,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.CreateImportJobs.Responses.$202>
@@ -301,7 +315,7 @@ export interface PathsDictionary {
      * createImportJobs - Submit Import Jobs
      */
     'post'(
-      parameters?: Parameters<UnknownParamsObject> | null,
+      parameters?: Parameters<Paths.CreateImportJobs.QueryParameters> | null,
       data?: Paths.CreateImportJobs.RequestBody,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.CreateImportJobs.Responses.$202>

@@ -12,7 +12,7 @@ All URIs are relative to *http://localhost:7007/api/bulk-import-backend*
 
 <a name="createImportJobs"></a>
 # **createImportJobs**
-> List createImportJobs(ImportRequest)
+> List createImportJobs(ImportRequest, dryRun)
 
 Submit Import Jobs
 
@@ -21,6 +21,7 @@ Submit Import Jobs
 |Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **ImportRequest** | [**List**](../Models/ImportRequest.md)| List of Import jobs to create | |
+| **dryRun** | **Boolean**| whether to perform a dry-run to check if entity name collisions would occur in the catalog | [optional] [default to false] |
 
 ### Return type
 

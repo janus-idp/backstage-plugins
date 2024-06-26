@@ -198,6 +198,17 @@ const OPENAPI = `
         "tags": [
           "Import"
         ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "dryRun",
+            "description": "whether to perform a dry-run to check if entity name collisions would occur in the catalog",
+            "schema": {
+              "type": "boolean",
+              "default": "false"
+            }
+          }
+        ],
         "requestBody": {
           "description": "List of Import jobs to create",
           "required": true,
@@ -424,6 +435,10 @@ const OPENAPI = `
           "status": {
             "$ref": "#/components/schemas/ImportStatus"
           },
+          "catalogEntityName": {
+            "type": "string",
+            "description": "Specified entity name in the catalog. Filled only in response for dry-run import requests."
+          },
           "errors": {
             "type": "array",
             "items": {
@@ -480,6 +495,10 @@ const OPENAPI = `
         "properties": {
           "approvalTool": {
             "$ref": "#/components/schemas/ApprovalTool"
+          },
+          "catalogEntityName": {
+            "type": "string",
+            "description": "Expected Entity name in the catalog. Relevant only if the 'dryRun' query parameter is set to 'true'."
           },
           "repository": {
             "type": "object",

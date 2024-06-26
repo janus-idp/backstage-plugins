@@ -82,6 +82,7 @@ describe('createRouter', () => {
       getEntitiesByRefs: mockGetEntitiesByRefs,
       validateEntity: mockValidateEntity,
       addLocation: mockAddLocation,
+      queryEntities: jest.fn,
     } as unknown as CatalogClient;
     const router = await createRouter({
       logger: getVoidLogger(),
@@ -426,6 +427,96 @@ describe('createRouter', () => {
       mockedPermissionQuery.mockImplementation(allowAll);
       const response = await request(app).post('/imports').send([]);
       expect(response.status).toEqual(400);
+    });
+
+    describe('dry run', () => {
+      it('error if there are missing catalogEntityName in any of the request body items', async () => {
+        mockedPermissionQuery.mockImplementation(allowAll);
+        mockCatalogClient.queryEntities = jest
+          .fn()
+          .mockResolvedValue({ items: [] });
+        const response = await request(app)
+          .post('/imports')
+          .query({ dryRun: true })
+          .send([
+            {
+              repository: {
+                url: 'https://github.com/my-org-ent-1/my-repo-a',
+                defaultBranch: 'dev',
+              },
+            },
+            {
+              catalogEntityName: 'my-entity-b',
+              repository: {
+                url: 'https://github.com/my-org-ent-1/my-repo-b',
+                defaultBranch: 'dev',
+              },
+            },
+          ]);
+        expect(response.status).toEqual(400);
+        expect(response.body.errors as string[]).toContain(
+          "ERROR: 'catalogEntityName' field must be specified in request body for https://github.com/my-org-ent-1/my-repo-a for dry-run operations",
+        );
+      });
+
+      it('return dry-run results in errors array for each item in request body', async () => {
+        mockedPermissionQuery.mockImplementation(allowAll);
+        mockCatalogClient.queryEntities = jest
+          .fn()
+          .mockResolvedValueOnce({ items: [] })
+          .mockResolvedValueOnce({
+            totalItems: 1,
+            items: [
+              {
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'Component',
+                component: {
+                  name: 'my-entity-b',
+                },
+              },
+            ],
+          });
+        const response = await request(app)
+          .post('/imports')
+          .query({ dryRun: true })
+          .send([
+            {
+              catalogEntityName: 'my-entity-a',
+              repository: {
+                url: 'https://github.com/my-org-ent-1/my-repo-a',
+                defaultBranch: 'dev',
+              },
+            },
+            {
+              catalogEntityName: 'my-entity-b',
+              repository: {
+                url: 'https://github.com/my-org-ent-2/my-repo-b',
+                defaultBranch: 'main',
+              },
+            },
+          ]);
+        expect(response.status).toEqual(202);
+        expect(response.body).toEqual([
+          {
+            errors: [],
+            catalogEntityName: 'my-entity-a',
+            repository: {
+              url: 'https://github.com/my-org-ent-1/my-repo-a',
+              name: 'my-repo-a',
+              organization: 'my-org-ent-1',
+            },
+          },
+          {
+            errors: ['CONFLICT'],
+            catalogEntityName: 'my-entity-b',
+            repository: {
+              url: 'https://github.com/my-org-ent-2/my-repo-b',
+              name: 'my-repo-b',
+              organization: 'my-org-ent-2',
+            },
+          },
+        ]);
+      });
     });
 
     it('returns 202 with appropriate import statuses', async () => {
