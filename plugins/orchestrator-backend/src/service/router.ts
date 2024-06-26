@@ -11,7 +11,6 @@ import {
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
-import { NotAllowedError } from '@backstage/errors';
 import {
   AuthorizeResult,
   BasicPermission,
@@ -43,6 +42,7 @@ import {
   QUERY_PARAM_INSTANCE_ID,
   WorkflowInputSchemaResponse,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { UnauthorizedError } from '@janus-idp/backstage-plugin-rbac-common';
 
 import * as pkg from '../../package.json';
 import { RouterArgs } from '../routerWrapper';
@@ -85,10 +85,6 @@ const authorize = async (
 
   return decision;
 };
-
-declare class UnauthorizedError extends NotAllowedError {
-  message: 'Unauthorized';
-}
 
 export async function createBackendRouter(
   args: RouterArgs,

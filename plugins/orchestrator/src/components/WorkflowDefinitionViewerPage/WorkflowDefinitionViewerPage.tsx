@@ -8,10 +8,14 @@ import {
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
+import { usePermission } from '@backstage/plugin-permission-react';
 
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Skeleton from '@mui/material/Skeleton';
+import Tooltip from '@mui/material/Tooltip';
+
+import { orchestratorWorkflowExecutePermission } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
 import {
@@ -25,6 +29,9 @@ import WorkflowDefinitionDetailsCard from './WorkflowDefinitionDetailsCard';
 export const WorkflowDefinitionViewerPage = () => {
   const { workflowId, format } = useRouteRefParams(workflowDefinitionsRouteRef);
   const orchestratorApi = useApi(orchestratorApiRef);
+  const { loading: loadingPermission, allowed: canRun } = usePermission({
+    permission: orchestratorWorkflowExecutePermission,
+  });
   const {
     value: workflowOverview,
     loading,
@@ -58,16 +65,22 @@ export const WorkflowDefinitionViewerPage = () => {
         )}
         <Grid container item justifyContent="flex-end" spacing={1}>
           <Grid item>
-            {loading ? (
+            {loading || loadingPermission ? (
               <Skeleton variant="text" width="5rem" />
             ) : (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleExecute}
+              <Tooltip
+                title="user not authorized to execute workflow"
+                disableHoverListener={canRun}
               >
-                Run
-              </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleExecute}
+                  disabled={!canRun}
+                >
+                  Run
+                </Button>
+              </Tooltip>
             )}
           </Grid>
         </Grid>

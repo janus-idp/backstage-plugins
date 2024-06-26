@@ -31,3 +31,17 @@ g, user:default/guest, role:default/workflowViewer
 g, user:default/myOrgUser, role:default/workflowAdmin
 g, group:default/platformAdmins, role:default/worflowAdmin
 ```
+
+See https://casbin.org/docs/rbac for more information about casbin rules
+
+## Enable permissions
+
+To enable permissions, you need to add the following in the [app-config file](../../../app-config.yaml):
+
+```
+permission:
+  enabled: true
+  rbac:
+    policies-csv-file: <absolute path to the policy file>
+    policyFileReload: true
+```
