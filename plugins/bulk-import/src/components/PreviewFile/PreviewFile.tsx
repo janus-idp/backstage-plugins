@@ -15,6 +15,7 @@ import { useFormikContext } from 'formik';
 import {
   AddRepositoriesData,
   AddRepositoriesFormValues,
+  PullRequestPreview,
   PullRequestPreviewData,
   RepositorySelection,
   RepositoryStatus,
@@ -23,11 +24,14 @@ import {
 import { PreviewPullRequest } from './PreviewPullRequest';
 import { PreviewPullRequests } from './PreviewPullRequests';
 
-const useDrawerContentStyles = makeStyles(theme => ({
+const useDrawerStyles = makeStyles(() => ({
   paper: {
     width: '40%',
     gap: '3%',
   },
+}));
+
+const useDrawerContentStyles = makeStyles(theme => ({
   createButton: {
     marginRight: theme.spacing(1),
   },
@@ -59,54 +63,66 @@ const useDrawerContentStyles = makeStyles(theme => ({
     width: '100%',
     borderTopStyle: 'groove',
     border: theme.palette.divider,
-    zIndex: 'inherit',
+    zIndex: 1,
   },
 }));
 
-const PreviewFileSidebar = ({
+export const PreviewFileSidebar = ({
   open,
   onClose,
   repositoryType,
   data,
+  formErrors,
+  setFormErrors,
+  handleSave,
 }: {
   open: boolean;
   data: AddRepositoriesData;
   repositoryType: RepositoryType;
   onClose: () => void;
+  formErrors: any;
+  setFormErrors: React.Dispatch<React.SetStateAction<any>>;
+  handleSave: (pullRequest: PullRequestPreviewData, _event: any) => void;
 }) => {
-  const classes = useDrawerContentStyles();
-  const [formErrors, setFormErrors] = React.useState<PullRequestPreviewData>();
-  const { values, setFieldValue } =
-    useFormikContext<AddRepositoriesFormValues>();
+  const classes = useDrawerStyles();
   const [pullRequest, setPullRequest] = React.useState<PullRequestPreviewData>(
     {},
   );
-  const initializePullRequest = () => {
-    Object.keys(values?.repositories || {}).forEach(repo => {
-      setPullRequest(prev => {
-        return {
-          ...prev,
-          [repo]: values?.repositories?.[repo].catalogInfoYaml?.prTemplate,
-        } as PullRequestPreviewData;
+  const { values } = useFormikContext<AddRepositoriesFormValues>();
+  const contentClasses = useDrawerContentStyles();
+  const initializePullRequest = React.useCallback(() => {
+    const newPullRequestData: PullRequestPreviewData = {};
+
+    if (
+      data?.repositories?.length &&
+      data?.repositories?.length > 0 &&
+      data?.selectedRepositories?.length &&
+      data.selectedRepositories?.length > 0
+    ) {
+      data.selectedRepositories.forEach(repo => {
+        if (
+          repo.repoName &&
+          values.repositories?.[repo.repoName]?.catalogInfoYaml?.prTemplate
+        ) {
+          newPullRequestData[repo.repoName] = values.repositories[repo.repoName]
+            .catalogInfoYaml?.prTemplate as PullRequestPreview;
+        }
       });
-    });
-  };
+    } else if (
+      data?.repoName &&
+      values.repositories?.[data.repoName]?.catalogInfoYaml?.prTemplate
+    ) {
+      newPullRequestData[data.repoName] = values.repositories[data.repoName]
+        .catalogInfoYaml?.prTemplate as PullRequestPreview;
+    }
+
+    setPullRequest(newPullRequestData);
+  }, [data, values]);
 
   React.useEffect(() => {
-    initializePullRequest();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values?.repositories]);
-
-  const handleSave = (_event: any) => {
-    Object.keys(pullRequest).forEach(pr => {
-      setFieldValue(
-        `repositories.${pr}.catalogInfoYaml.prTemplate`,
-        pullRequest[pr],
-      );
-    });
-
-    onClose();
-  };
+    initializePullRequest();
+  }, [data, initializePullRequest]);
 
   const handleCancel = (_event: any) => {
     initializePullRequest();
@@ -124,7 +140,7 @@ const PreviewFileSidebar = ({
       }}
     >
       <Box>
-        <Box className={classes.header}>
+        <Box className={contentClasses.header}>
           <div>
             {repositoryType === RepositorySelection.Repository ? (
               <>
@@ -151,7 +167,7 @@ const PreviewFileSidebar = ({
           </IconButton>
         </Box>
 
-        <Box className={classes.body}>
+        <Box className={contentClasses.body}>
           {repositoryType === RepositorySelection.Repository &&
             data.catalogInfoYaml?.prTemplate && (
               <PreviewPullRequest
@@ -179,27 +195,28 @@ const PreviewFileSidebar = ({
               setPullRequest={setPullRequest}
             />
           )}
+
+          <div className={contentClasses.footer}>
+            <Button
+              variant="contained"
+              onClick={e => handleSave(pullRequest, e)}
+              className={contentClasses.createButton}
+              disabled={
+                !!formErrors &&
+                Object.values(formErrors).length > 0 &&
+                Object.values(formErrors).every(
+                  fe => !!fe && Object.values(fe).length > 0,
+                )
+              }
+            >
+              Save
+            </Button>
+            <Link to="" variant="button" onClick={handleCancel}>
+              <Button variant="outlined">Cancel</Button>
+            </Link>
+          </div>
         </Box>
       </Box>
-      <div className={classes.footer}>
-        <Button
-          variant="contained"
-          onClick={handleSave}
-          className={classes.createButton}
-          disabled={
-            !!formErrors &&
-            Object.values(formErrors).length > 0 &&
-            Object.values(formErrors).every(
-              fe => !!fe && Object.values(fe).length > 0,
-            )
-          }
-        >
-          Save
-        </Button>
-        <Link to="" variant="button" onClick={handleCancel}>
-          <Button variant="outlined">Cancel</Button>
-        </Link>
-      </div>
     </Drawer>
   );
 };
@@ -212,6 +229,17 @@ export const PreviewFile = ({
   repositoryType: RepositoryType;
 }) => {
   const [sidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
+  const { setFieldValue } = useFormikContext<AddRepositoriesFormValues>();
+  const [formErrors, setFormErrors] = React.useState<PullRequestPreviewData>();
+  const handleSave = (pullRequest: PullRequestPreviewData, _event: any) => {
+    Object.keys(pullRequest).forEach(pr => {
+      setFieldValue(
+        `repositories.${pr}.catalogInfoYaml.prTemplate`,
+        pullRequest[pr],
+      );
+    });
+    setSidebarOpen(false);
+  };
   return (
     <>
       <span>
@@ -238,7 +266,10 @@ export const PreviewFile = ({
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         data={data}
+        formErrors={formErrors}
+        setFormErrors={setFormErrors}
         repositoryType={repositoryType}
+        handleSave={handleSave}
       />
     </>
   );

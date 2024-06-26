@@ -4,6 +4,8 @@ import { Link } from '@backstage/core-components';
 
 import { get } from 'lodash';
 
+import { formatDate } from '@janus-idp/shared-react';
+
 import {
   AddedRepositories,
   AddRepositoriesData,
@@ -106,6 +108,7 @@ export const createData = (
       status: catalogInfoYamlStatus,
       prTemplate: getPRTemplate(name, entityOwner),
     },
+    lastUpdated: formatDate(new Date().toISOString()),
   };
 };
 
@@ -124,6 +127,8 @@ export const createOrganizationData = (
           organizationUrl: repo.organizationUrl,
           repositories: [repo],
           selectedRepositories: [],
+          lastUpdated: formatDate(new Date().toISOString()),
+          repoName: repo.organizationUrl || '',
         });
       }
       return acc;

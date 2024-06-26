@@ -2,21 +2,27 @@ import React from 'react';
 
 import { Link, TableColumn } from '@backstage/core-components';
 
-import { RepositoriesData } from '../../types';
+import { AddRepositoriesData } from '../../types';
+import { urlHelper } from '../../utils/repository-utils';
+import DeleteRepository from './DeleteRepository';
+import EditCatalogInfo from './EditCatalogInfo';
+import SyncRepository from './SyncRepository';
 
-export const columns: TableColumn<RepositoriesData>[] = [
+export const columns: TableColumn<AddRepositoriesData>[] = [
   {
     title: 'Name',
-    field: 'name',
+    field: 'repoName',
     type: 'string',
   },
   {
     title: 'Repo URL',
-    field: 'repoURL',
+    field: 'repoUrl',
     type: 'string',
     align: 'left',
-    render: (props: RepositoriesData) => {
-      return <Link to={props.repoURL}>{props.repoURL}</Link>;
+    render: (props: AddRepositoriesData) => {
+      return (
+        <Link to={props.repoUrl || ''}>{urlHelper(props.repoUrl || '')}</Link>
+      );
     },
   },
   {
@@ -24,13 +30,15 @@ export const columns: TableColumn<RepositoriesData>[] = [
     field: 'organization',
     type: 'string',
     align: 'left',
-    render: (props: RepositoriesData) => {
-      return <Link to={props.organization}>{props.organization}</Link>;
+    render: (props: AddRepositoriesData) => {
+      return (
+        <Link to={props.organizationUrl || ''}>{props.organizationUrl}</Link>
+      );
     },
   },
   {
     title: 'Status',
-    field: 'status',
+    field: 'catalogInfoYaml.status',
     type: 'string',
     align: 'left',
   },
@@ -39,5 +47,18 @@ export const columns: TableColumn<RepositoriesData>[] = [
     field: 'lastUpdated',
     type: 'string',
     align: 'left',
+  },
+  {
+    title: 'Actions',
+    field: 'actions',
+    type: 'string',
+    align: 'left',
+    render: (data: AddRepositoriesData) => (
+      <>
+        <EditCatalogInfo data={data} />
+        <DeleteRepository data={data} />
+        <SyncRepository data={data} />
+      </>
+    ),
   },
 ];

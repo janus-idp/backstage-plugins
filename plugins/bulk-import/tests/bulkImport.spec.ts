@@ -24,13 +24,14 @@ test.describe('Bulk import plugin', () => {
   });
 
   test('Repositories tab is shown', async () => {
-    await expect(page.getByText('Added repositories (0)')).toBeVisible();
+    await expect(page.getByText('Added repositories (1)')).toBeVisible();
     const columns = [
       'Name',
       'Repo URL',
       'Organization',
       'Status',
       'Last Updated',
+      'Actions',
     ];
     const thead = page.locator('thead');
 
@@ -38,6 +39,66 @@ test.describe('Bulk import plugin', () => {
       await expect(thead.getByText(col)).toBeVisible();
     }
   });
+
+  test('Edit icon, Delete icon and Refresh icon are shown', async () => {
+    await expect(
+      page.locator('span[data-testid="edit-catalog-info"]').first(),
+    ).toBeVisible();
+    await expect(
+      page.locator('span[data-testid="delete-repository"]').first(),
+    ).toBeVisible();
+    await expect(
+      page.locator('span[data-testid="refresh-repository"]').first(),
+    ).toBeVisible();
+  });
+
+  test('Edit catalog-info side panel is shown', async () => {
+    await page.locator('span[data-testid="edit-catalog-info"]').first().click();
+    await expect(
+      page.getByRole('heading', { name: 'org/desert/Gingerbread' }),
+    ).toBeVisible();
+    await expect(
+      page
+        .getByTestId('preview-file-sidebar')
+        .getByText('Pull request details'),
+    ).toBeVisible();
+    await page.locator('button[title="Close the drawer"]').click();
+
+    await expect(
+      page.getByRole('heading', {
+        name: 'Added repositories (1)',
+        exact: true,
+      }),
+    ).toBeVisible({
+      timeout: 20000,
+    });
+  });
+
+  test('Remove repository alert window is shown', async () => {
+    await page.locator('span[data-testid="delete-repository"]').first().click();
+    await expect(
+      page.getByText('Remove Gingerbread repository?'),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        'Removing a repository erases all associated information from the Catalog page.',
+      ),
+    ).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Remove' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible();
+
+    await page.locator('button[title="Close"]').click();
+
+    await expect(
+      page.getByRole('heading', {
+        name: 'Added repositories (1)',
+        exact: true,
+      }),
+    ).toBeVisible({
+      timeout: 20000,
+    });
+  });
+
   test('Add button is shown', async () => {
     await page.locator(`a`).filter({ hasText: 'Add' }).click();
     await expect(
