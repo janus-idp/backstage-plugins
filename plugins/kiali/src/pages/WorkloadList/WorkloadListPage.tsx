@@ -128,11 +128,7 @@ export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
 
     if (kialiContext.data) {
       setNamespaces(kialiContext.data);
-      await fetchWorkloads(
-        Array.from(uniqueClusters),
-        kialiContext.data,
-        duration,
-      );
+      await fetchWorkloads(Array.from(uniqueClusters), duration);
     } else {
       kialiClient.getNamespaces().then(namespacesResponse => {
         const allNamespaces: NamespaceInfo[] = getNamespaces(
