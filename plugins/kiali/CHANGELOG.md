@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.23.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.22.0...@janus-idp/backstage-plugin-kiali@1.23.0) (2024-06-26)
+
+
+### Features
+
+* **kiali:** add tests for the overview page ([#1790](https://github.com/janus-idp/backstage-plugins/issues/1790)) ([582cf36](https://github.com/janus-idp/backstage-plugins/commit/582cf36da48f21f7aa31075430bf566a818a3cfa))
+
 ## @janus-idp/backstage-plugin-kiali [1.22.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.21.0...@janus-idp/backstage-plugin-kiali@1.22.0) (2024-06-24)
 
 
