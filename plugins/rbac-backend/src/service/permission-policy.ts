@@ -103,15 +103,12 @@ const useAdminsFromConfig = async (
   }
 
   const addedRoleMembers = Array.from<string[]>(addedGroupPolicies.entries());
-  await enf.addOrUpdateGroupingPolicies(
-    addedRoleMembers,
-    getAdminRoleMetadata(),
-  );
+  await enf.addGroupingPolicies(addedRoleMembers, getAdminRoleMetadata());
 
   await auditLogger.auditLog<RoleAuditInfo>({
     actorId: RBAC_BACKEND,
     message: `Created or updated role`,
-    eventName: RoleEvents.CREATE_OR_UPDATE_ROLE,
+    eventName: RoleEvents.CREATE_ROLE,
     metadata: {
       ...getAdminRoleMetadata(),
       members: addedRoleMembers.map(gp => gp[0]),
@@ -120,8 +117,10 @@ const useAdminsFromConfig = async (
     status: 'succeeded',
   });
 
-  const configGroupPolicies =
-    await enf.getFilteredGroupingPoliciesBySource('configuration');
+  const configGroupPolicies = await enf.getFilteredGroupingPolicy(
+    1,
+    ADMIN_ROLE_NAME,
+  );
 
   await removeTheDifference(
     configGroupPolicies.map(gp => gp[0]),
@@ -139,13 +138,13 @@ const addAdminPermission = async (
   enf: EnforcerDelegate,
   auditLogger: AuditLogger,
 ) => {
-  await enf.addOrUpdatePolicy(policy, 'configuration');
+  await enf.addPolicy(policy);
 
   await auditLogger.auditLog<PermissionAuditInfo>({
     actorId: RBAC_BACKEND,
-    message: `Created or updated policy`,
-    eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,
-    metadata: { policies: [policy], source: 'configuration' },
+    message: `Created policy`,
+    eventName: PermissionEvents.CREATE_POLICY,
+    metadata: { policies: [policy] },
     stage: HANDLE_RBAC_DATA_STAGE,
     status: 'succeeded',
   });

@@ -23,10 +23,7 @@ import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
 import { ADMIN_ROLE_AUTHOR } from '../service/permission-policy';
-import {
-  CSV_PERMISSION_POLICY_FILE_AUTHOR,
-  CSVFileWatcher,
-} from './csv-file-watcher';
+import { CSVFileWatcher } from './csv-file-watcher';
 
 const legacyPermission = [
   'role:default/legacy',
@@ -34,12 +31,6 @@ const legacyPermission = [
   'update',
   'allow',
 ];
-const legacyPermissionWithLegacySource = [...legacyPermission, 'legacy'];
-const legacyPermissionWithCSVFileSource = [...legacyPermission, 'csv-file'];
-
-const legacyRole = ['user:default/guest', 'role:default/legacy'];
-const legacyRoleWithLegacySource = [...legacyRole, 'legacy'];
-const legacyRoleWithCSVFileSource = [...legacyRole, 'csv-file'];
 
 const restPermission = [
   'role:default/rest',
@@ -85,6 +76,7 @@ const loggerMock: any = {
 const modifiedBy = 'user:default/some-admin';
 
 const roleMetadataStorageMock: RoleMetadataStorage = {
+  filterRoleMetadata: jest.fn().mockImplementation(() => []),
   findRoleMetadata: jest
     .fn()
     .mockImplementation(
@@ -131,55 +123,26 @@ const auditLoggerMock = {
 };
 
 const currentPermissionPolicies = [
-  [
-    'role:default/catalog-writer',
-    'catalog-entity',
-    'update',
-    'allow',
-    'csv-file',
-  ],
-  ['role:default/legacy', 'catalog-entity', 'update', 'allow', 'csv-file'],
-  [
-    'role:default/catalog-writer',
-    'catalog-entity',
-    'read',
-    'allow',
-    'csv-file',
-  ],
-  [
-    'role:default/catalog-writer',
-    'catalog.entity.create',
-    'use',
-    'allow',
-    'csv-file',
-  ],
-  [
-    'role:default/catalog-deleter',
-    'catalog-entity',
-    'delete',
-    'deny',
-    'csv-file',
-  ],
-  ['role:default/known_role', 'test.resource.deny', 'use', 'allow', 'csv-file'],
+  ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
+  ['role:default/legacy', 'catalog-entity', 'update', 'allow'],
+  ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
+  ['role:default/catalog-writer', 'catalog.entity.create', 'use', 'allow'],
+  ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
+  ['role:default/known_role', 'test.resource.deny', 'use', 'allow'],
 ];
 
 const currentRoles = [
-  ['user:default/guest', 'role:default/catalog-writer', 'csv-file'],
-  ['user:default/guest', 'role:default/legacy', 'csv-file'],
-  ['user:default/guest', 'role:default/catalog-reader', 'csv-file'],
-  ['user:default/guest', 'role:default/catalog-deleter', 'csv-file'],
-  ['user:default/known_user', 'role:default/known_role', 'csv-file'],
+  ['user:default/guest', 'role:default/catalog-writer'],
+  ['user:default/guest', 'role:default/legacy'],
+  ['user:default/guest', 'role:default/catalog-reader'],
+  ['user:default/guest', 'role:default/catalog-deleter'],
+  ['user:default/known_user', 'role:default/known_role'],
 ];
 
 describe('CSVFileWatcher', () => {
   let csvFileWatcher: CSVFileWatcher;
   let enforcerDelegate: EnforcerDelegate;
   let csvFileName: string;
-
-  let enfAddPolicySpy: jest.SpyInstance<Promise<boolean>, string[], any>;
-  let enfRemovePolicySpy: jest.SpyInstance<Promise<boolean>, string[], any>;
-  let enfAddGroupingSpy: jest.SpyInstance<Promise<boolean>, string[], any>;
-  let enfRemoveGroupingSpy: jest.SpyInstance<Promise<boolean>, string[], any>;
 
   beforeEach(async () => {
     csvFileName = resolve(
@@ -200,11 +163,6 @@ describe('CSVFileWatcher', () => {
     const knex = Knex.knex({ client: MockClient });
 
     enforcerDelegate = new EnforcerDelegate(enf, roleMetadataStorageMock, knex);
-
-    enfAddPolicySpy = jest.spyOn(enf, 'addPolicy');
-    enfRemovePolicySpy = jest.spyOn(enf, 'removePolicy');
-    enfAddGroupingSpy = jest.spyOn(enf, 'addGroupingPolicy');
-    enfRemoveGroupingSpy = jest.spyOn(enf, 'removeGroupingPolicy');
 
     csvFileWatcher = new CSVFileWatcher(
       enforcerDelegate,
@@ -234,96 +192,6 @@ describe('CSVFileWatcher', () => {
       const enfRoles = await enforcerDelegate.getGroupingPolicy();
 
       expect(enfRoles).toStrictEqual(currentRoles);
-    });
-
-    it('should be able to update legacy permission policies during initialization', async () => {
-      const permissionPolicies = [
-        [
-          'role:default/catalog-writer',
-          'catalog-entity',
-          'update',
-          'allow',
-          'csv-file',
-        ],
-        [
-          'role:default/legacy',
-          'catalog-entity',
-          'update',
-          'allow',
-          'csv-file',
-        ],
-        [
-          'role:default/catalog-writer',
-          'catalog-entity',
-          'read',
-          'allow',
-          'csv-file',
-        ],
-        [
-          'role:default/catalog-writer',
-          'catalog.entity.create',
-          'use',
-          'allow',
-          'csv-file',
-        ],
-        [
-          'role:default/catalog-deleter',
-          'catalog-entity',
-          'delete',
-          'deny',
-          'csv-file',
-        ],
-        [
-          'role:default/known_role',
-          'test.resource.deny',
-          'use',
-          'allow',
-          'csv-file',
-        ],
-      ];
-
-      await enforcerDelegate.addPolicy(legacyPermission, 'legacy');
-
-      await csvFileWatcher.initialize(csvFileName, false);
-
-      expect(enfRemovePolicySpy).toHaveBeenCalledWith(
-        ...legacyPermissionWithLegacySource,
-      );
-      expect(enfAddPolicySpy).toHaveBeenCalledWith(
-        ...legacyPermissionWithCSVFileSource,
-      );
-
-      const enfPolicies = await enforcerDelegate.getPolicy();
-      expect(enfPolicies).toStrictEqual(permissionPolicies);
-    });
-
-    it('should be able to update legacy roles during initialization', async () => {
-      const roles = [
-        ['user:default/guest', 'role:default/catalog-writer', 'csv-file'],
-        ['user:default/guest', 'role:default/legacy', 'csv-file'],
-        ['user:default/guest', 'role:default/catalog-reader', 'csv-file'],
-        ['user:default/guest', 'role:default/catalog-deleter', 'csv-file'],
-        ['user:default/known_user', 'role:default/known_role', 'csv-file'],
-      ];
-
-      await enforcerDelegate.addGroupingPolicy(legacyRole, {
-        roleEntityRef: legacyRole[1],
-        source: 'legacy',
-        modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
-      });
-
-      await csvFileWatcher.initialize(csvFileName, false);
-
-      expect(enfRemoveGroupingSpy).toHaveBeenCalledWith(
-        ...legacyRoleWithLegacySource,
-      );
-
-      expect(enfAddGroupingSpy).toHaveBeenCalledWith(
-        ...legacyRoleWithCSVFileSource,
-      );
-
-      const enfPolicies = await enforcerDelegate.getGroupingPolicy();
-      expect(enfPolicies).toStrictEqual(roles);
     });
 
     // Failing tests
@@ -466,20 +334,8 @@ describe('CSVFileWatcher', () => {
       ];
 
       const policies = [
-        [
-          'role:default/catalog-writer',
-          'catalog-entity',
-          'update',
-          'allow',
-          'csv-file',
-        ],
-        [
-          'role:default/catalog-writer',
-          'catalog-entity',
-          'delete',
-          'allow',
-          'csv-file',
-        ],
+        ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
+        ['role:default/catalog-writer', 'catalog-entity', 'delete', 'allow'],
       ];
 
       csvFileWatcher.parse = jest.fn().mockImplementation(() => {
@@ -507,8 +363,8 @@ describe('CSVFileWatcher', () => {
       ];
 
       const roles = [
-        ['user:default/guest', 'role:default/catalog-writer', 'csv-file'],
-        ['user:default/test', 'role:default/catalog-writer', 'csv-file'],
+        ['user:default/guest', 'role:default/catalog-writer'],
+        ['user:default/test', 'role:default/catalog-writer'],
       ];
 
       csvFileWatcher.parse = jest.fn().mockImplementation(() => {
@@ -537,25 +393,13 @@ describe('CSVFileWatcher', () => {
       ];
 
       const policies = [
-        [
-          'role:default/catalog-writer',
-          'catalog-entity',
-          'update',
-          'allow',
-          'csv-file',
-        ],
-        [
-          'role:default/config',
-          'catalog-entity',
-          'update',
-          'allow',
-          'configuration',
-        ],
-        ['role:default/rest', 'catalog-entity', 'update', 'allow', 'rest'],
+        ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
+        ['role:default/config', 'catalog-entity', 'update', 'allow'],
+        ['role:default/rest', 'catalog-entity', 'update', 'allow'],
       ];
 
-      await enforcerDelegate.addPolicy(configPermission, 'configuration');
-      await enforcerDelegate.addPolicy(restPermission, 'rest');
+      await enforcerDelegate.addPolicy(configPermission);
+      await enforcerDelegate.addPolicy(restPermission);
 
       csvFileWatcher.parse = jest.fn().mockImplementation(() => {
         return addContents;
@@ -585,9 +429,9 @@ describe('CSVFileWatcher', () => {
       ];
 
       const roles = [
-        ['user:default/guest', 'role:default/catalog-writer', 'csv-file'],
-        ['user:default/guest', 'role:default/config', 'configuration'],
-        ['user:default/guest', 'role:default/rest', 'rest'],
+        ['user:default/guest', 'role:default/catalog-writer'],
+        ['user:default/guest', 'role:default/config'],
+        ['user:default/guest', 'role:default/rest'],
       ];
 
       await enforcerDelegate.addGroupingPolicy(configRole, {
@@ -681,16 +525,10 @@ describe('CSVFileWatcher', () => {
       const enfPolicies = await enforcerDelegate.getPolicy();
 
       expect(enfRoles).toStrictEqual([
-        ['user:default/guest', 'role:default/catalog-writer', 'csv-file'],
+        ['user:default/guest', 'role:default/catalog-writer'],
       ]);
       expect(enfPolicies).toStrictEqual([
-        [
-          'role:default/catalog-writer',
-          'catalog-entity',
-          'update',
-          'allow',
-          'csv-file',
-        ],
+        ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
       ]);
     });
   });

@@ -17,7 +17,6 @@ export const RoleEvents = {
   CREATE_ROLE: 'CreateRole',
   UPDATE_ROLE: 'UpdateRole',
   DELETE_ROLE: 'DeleteRole',
-  CREATE_OR_UPDATE_ROLE: 'CreateOrUpdateRole',
   GET_ROLE: 'GetRole',
 
   CREATE_ROLE_ERROR: 'CreateRoleError',
@@ -28,7 +27,6 @@ export const RoleEvents = {
 
 export const PermissionEvents = {
   CREATE_POLICY: 'CreatePolicy',
-  CREATE_OR_UPDATE_POLICY: 'CreateOrUpdatePolicy',
   UPDATE_POLICY: 'UpdatePolicy',
   DELETE_POLICY: 'DeletePolicy',
   GET_POLICY: 'GetPolicy',
@@ -49,7 +47,6 @@ export type RoleAuditInfo = {
 
 export type PermissionAuditInfo = {
   policies: string[][];
-  source: Source;
 };
 
 export const EvaluationEvents = {

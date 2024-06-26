@@ -65,6 +65,7 @@ const conditionalStorage: ConditionalStorage = {
 };
 
 const roleMetadataStorageMock: RoleMetadataStorage = {
+  filterRoleMetadata: jest.fn().mockImplementation(() => []),
   findRoleMetadata: jest
     .fn()
     .mockImplementation(
@@ -105,9 +106,8 @@ describe('RBACPermissionPolicy Tests', () => {
   });
 
   it('should build', async () => {
-    const stringPolicy = `p, user:default/known_user, test-resource, update, allow `;
     const config = newConfigReader();
-    const adapter = await newAdapter(config, stringPolicy);
+    const adapter = await newAdapter(config);
     const enfDelegate = await newEnforcerDelegate(adapter, config);
 
     const policy = await newPermissionPolicy(config, enfDelegate);
@@ -254,56 +254,26 @@ describe('RBACPermissionPolicy Tests', () => {
     ];
 
     const allEnfGroupPolicies = [
-      ['user:default/tester', 'role:default/some-role', 'rest'],
-      ['user:default/guest', 'role:default/rbac_admin', 'configuration'],
-      ['group:default/guests', 'role:default/rbac_admin', 'configuration'],
-      ['user:default/guest', 'role:default/catalog-writer', 'csv-file'],
-      ['user:default/guest', 'role:default/legacy', 'csv-file'],
-      ['user:default/guest', 'role:default/catalog-reader', 'csv-file'],
-      ['user:default/guest', 'role:default/catalog-deleter', 'csv-file'],
-      ['user:default/known_user', 'role:default/known_role', 'csv-file'],
+      ['user:default/tester', 'role:default/some-role'],
+      ['user:default/guest', 'role:default/rbac_admin'],
+      ['group:default/guests', 'role:default/rbac_admin'],
+      ['user:default/guest', 'role:default/catalog-writer'],
+      ['user:default/guest', 'role:default/legacy'],
+      ['user:default/guest', 'role:default/catalog-reader'],
+      ['user:default/guest', 'role:default/catalog-deleter'],
+      ['user:default/known_user', 'role:default/known_role'],
     ];
 
     const allEnfPolicies = [
       // stored policy
-      ['role:default/some-role', 'test.some.resource', 'use', 'allow', 'rest'],
+      ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       // policies from csv file
-      [
-        'role:default/catalog-writer',
-        'catalog-entity',
-        'update',
-        'allow',
-        'csv-file',
-      ],
-      ['role:default/legacy', 'catalog-entity', 'update', 'allow', 'csv-file'],
-      [
-        'role:default/catalog-writer',
-        'catalog-entity',
-        'read',
-        'allow',
-        'csv-file',
-      ],
-      [
-        'role:default/catalog-writer',
-        'catalog.entity.create',
-        'use',
-        'allow',
-        'csv-file',
-      ],
-      [
-        'role:default/catalog-deleter',
-        'catalog-entity',
-        'delete',
-        'deny',
-        'csv-file',
-      ],
-      [
-        'role:default/known_role',
-        'test.resource.deny',
-        'use',
-        'allow',
-        'csv-file',
-      ],
+      ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
+      ['role:default/legacy', 'catalog-entity', 'update', 'allow'],
+      ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
+      ['role:default/catalog-writer', 'catalog.entity.create', 'use', 'allow'],
+      ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
+      ['role:default/known_role', 'test.resource.deny', 'use', 'allow'],
     ];
 
     beforeEach(async () => {
@@ -316,23 +286,27 @@ describe('RBACPermissionPolicy Tests', () => {
     });
 
     it('should cleanup old group policies and metadata after re-attach policy file', async () => {
+      roleMetadataStorageMock.filterRoleMetadata = jest
+        .fn()
+        .mockImplementation(() => {
+          const roleMetadataDao: RoleMetadataDao = {
+            roleEntityRef: 'role:default/old-role',
+            source: 'csv-file',
+            modifiedBy: 'user:default/tom',
+          };
+          return [roleMetadataDao];
+        });
       const storedGroupPolicies = [
         // should be removed
-        ['user:default/user-old-1', 'role:default/old-role', 'csv-file'],
-        ['group:default/team-a-old-1', 'role:default/old-role', 'csv-file'],
+        ['user:default/user-old-1', 'role:default/old-role'],
+        ['group:default/team-a-old-1', 'role:default/old-role'],
 
         // should not be removed:
-        ['user:default/tester', 'role:default/some-role', 'rest'],
+        ['user:default/tester', 'role:default/some-role'],
       ];
       const storedPolicies = [
         // should not be removed
-        [
-          'role:default/some-role',
-          'test.some.resource',
-          'use',
-          'allow',
-          'rest',
-        ],
+        ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       ];
 
       enforcerDelegate = await newEnforcerDelegate(
@@ -366,26 +340,14 @@ describe('RBACPermissionPolicy Tests', () => {
     it('should cleanup old policies and metadata after re-attach policy file', async () => {
       const storedGroupPolicies = [
         // should not be removed:
-        ['user:default/tester', 'role:default/some-role', 'rest'],
+        ['user:default/tester', 'role:default/some-role'],
       ];
       const storedPolicies = [
         // should be removed
-        [
-          'role:default/old-role',
-          'test.some.resource',
-          'use',
-          'allow',
-          'csv-file',
-        ],
+        ['role:default/old-role', 'test.some.resource', 'use', 'allow'],
 
         // should not be removed
-        [
-          'role:default/some-role',
-          'test.some.resource',
-          'use',
-          'allow',
-          'rest',
-        ],
+        ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       ];
 
       enforcerDelegate = await newEnforcerDelegate(
@@ -432,32 +394,20 @@ describe('RBACPermissionPolicy Tests', () => {
     it('should cleanup old policies and group policies and metadata after re-attach policy file', async () => {
       const storedGroupPolicies = [
         // should be removed
-        ['user:default/user-old-1', 'role:default/old-role', 'csv-file'],
-        ['user:default/user-old-2', 'role:default/old-role', 'csv-file'],
-        ['group:default/team-a-old-1', 'role:default/old-role', 'csv-file'],
-        ['group:default/team-a-old-2', 'role:default/old-role', 'csv-file'],
+        ['user:default/user-old-1', 'role:default/old-role'],
+        ['user:default/user-old-2', 'role:default/old-role'],
+        ['group:default/team-a-old-1', 'role:default/old-role'],
+        ['group:default/team-a-old-2', 'role:default/old-role'],
 
         // should not be removed:
-        ['user:default/tester', 'role:default/some-role', 'rest'],
+        ['user:default/tester', 'role:default/some-role'],
       ];
       const storedPolicies = [
         // should be removed
-        [
-          'role:default/old-role',
-          'test.some.resource',
-          'use',
-          'allow',
-          'csv-file',
-        ],
+        ['role:default/old-role', 'test.some.resource', 'use', 'allow'],
 
         // should not be removed
-        [
-          'role:default/some-role',
-          'test.some.resource',
-          'use',
-          'allow',
-          'rest',
-        ],
+        ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       ];
 
       enforcerDelegate = await newEnforcerDelegate(
@@ -492,21 +442,15 @@ describe('RBACPermissionPolicy Tests', () => {
     it('should cleanup old group policies and metadata after detach policy file', async () => {
       const storedGroupPolicies = [
         // should be removed
-        ['user:default/user-old-1', 'role:default/old-role', 'csv-file'],
-        ['group:default/team-a-old-1', 'role:default/old-role', 'csv-file'],
+        ['user:default/user-old-1', 'role:default/old-role'],
+        ['group:default/team-a-old-1', 'role:default/old-role'],
 
         // should not be removed:
-        ['user:default/tester', 'role:default/some-role', 'rest'],
+        ['user:default/tester', 'role:default/some-role'],
       ];
       const storedPolicies = [
         // should not be removed
-        [
-          'role:default/some-role',
-          'test.some.resource',
-          'use',
-          'allow',
-          'rest',
-        ],
+        ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       ];
 
       enforcerDelegate = await newEnforcerDelegate(
@@ -541,26 +485,14 @@ describe('RBACPermissionPolicy Tests', () => {
     it('should cleanup old policies after detach policy file', async () => {
       const storedGroupPolicies = [
         // should not be removed:
-        ['user:default/tester', 'role:default/some-role', 'rest'],
+        ['user:default/tester', 'role:default/some-role'],
       ];
       const storedPolicies = [
         // should be removed
-        [
-          'role:default/old-role',
-          'test.some.resource',
-          'use',
-          'allow',
-          'csv-file',
-        ],
+        ['role:default/old-role', 'test.some.resource', 'use', 'allow'],
 
         // should not be removed
-        [
-          'role:default/some-role',
-          'test.some.resource',
-          'use',
-          'allow',
-          'rest',
-        ],
+        ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       ];
 
       enforcerDelegate = await newEnforcerDelegate(
@@ -589,32 +521,20 @@ describe('RBACPermissionPolicy Tests', () => {
     it('should cleanup old policies and group policies and metadata after detach policy file', async () => {
       const storedGroupPolicies = [
         // should be removed
-        ['user:default/user-old-1', 'role:default/old-role', 'csv-file'],
-        ['user:default/user-old-2', 'role:default/old-role', 'csv-file'],
-        ['group:default/team-a-old-1', 'role:default/old-role', 'csv-file'],
-        ['group:default/team-a-old-2', 'role:default/old-role', 'csv-file'],
+        ['user:default/user-old-1', 'role:default/old-role'],
+        ['user:default/user-old-2', 'role:default/old-role'],
+        ['group:default/team-a-old-1', 'role:default/old-role'],
+        ['group:default/team-a-old-2', 'role:default/old-role'],
 
         // should not be removed:
-        ['user:default/tester', 'role:default/some-role', 'rest'],
+        ['user:default/tester', 'role:default/some-role'],
       ];
       const storedPolicies = [
         // should be removed
-        [
-          'role:default/old-role',
-          'test.some.resource',
-          'use',
-          'allow',
-          'csv-file',
-        ],
+        ['role:default/old-role', 'test.some.resource', 'use', 'allow'],
 
         // should not be removed
-        [
-          'role:default/some-role',
-          'test.some.resource',
-          'use',
-          'allow',
-          'rest',
-        ],
+        ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       ];
 
       enforcerDelegate = await newEnforcerDelegate(
@@ -652,6 +572,7 @@ describe('RBACPermissionPolicy Tests', () => {
     let enfDelegate: EnforcerDelegate;
 
     const roleMetadataStorageTest: RoleMetadataStorage = {
+      filterRoleMetadata: jest.fn().mockImplementation(() => []),
       findRoleMetadata: jest
         .fn()
         .mockImplementation(
@@ -924,6 +845,7 @@ describe('RBACPermissionPolicy Tests', () => {
     let policy: RBACPermissionPolicy;
     let enfDelegate: EnforcerDelegate;
     const roleMetadataStorageTest: RoleMetadataStorage = {
+      filterRoleMetadata: jest.fn().mockImplementation(() => []),
       findRoleMetadata: jest
         .fn()
         .mockImplementation(
@@ -945,44 +867,14 @@ describe('RBACPermissionPolicy Tests', () => {
 
     const adminRole = 'role:default/rbac_admin';
     const groupPolicy = [
-      ['user:default/test_admin', 'role:default/rbac_admin', 'configuration'],
+      ['user:default/test_admin', 'role:default/rbac_admin'],
     ];
     const permissions = [
-      [
-        'role:default/rbac_admin',
-        'policy-entity',
-        'read',
-        'allow',
-        'configuration',
-      ],
-      [
-        'role:default/rbac_admin',
-        'policy-entity',
-        'create',
-        'allow',
-        'configuration',
-      ],
-      [
-        'role:default/rbac_admin',
-        'policy-entity',
-        'delete',
-        'allow',
-        'configuration',
-      ],
-      [
-        'role:default/rbac_admin',
-        'policy-entity',
-        'update',
-        'allow',
-        'configuration',
-      ],
-      [
-        'role:default/rbac_admin',
-        'catalog-entity',
-        'read',
-        'allow',
-        'configuration',
-      ],
+      ['role:default/rbac_admin', 'policy-entity', 'read', 'allow'],
+      ['role:default/rbac_admin', 'policy-entity', 'create', 'allow'],
+      ['role:default/rbac_admin', 'policy-entity', 'delete', 'allow'],
+      ['role:default/rbac_admin', 'policy-entity', 'update', 'allow'],
+      ['role:default/rbac_admin', 'catalog-entity', 'read', 'allow'],
     ];
     const oldGroupPolicy = [
       'user:default/old_admin',
@@ -1158,6 +1050,7 @@ describe('RBACPermissionPolicy Tests', () => {
 // Notice: There is corner case, when "resourced" permission policy can be defined not by resource type, but by name.
 describe('Policy checks for resourced permissions defined by name', () => {
   const roleMetadataStorageTest: RoleMetadataStorage = {
+    filterRoleMetadata: jest.fn().mockImplementation(() => []),
     findRoleMetadata: jest
       .fn()
       .mockImplementation(
@@ -1201,10 +1094,12 @@ describe('Policy checks for resourced permissions defined by name', () => {
         modifiedBy,
       },
     );
-    await enfDelegate.addPolicy(
-      ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'allow'],
-      'csv-file',
-    );
+    await enfDelegate.addPolicy([
+      'role:default/catalog_reader',
+      'catalog.entity.read',
+      'read',
+      'allow',
+    ]);
 
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
@@ -1228,13 +1123,10 @@ describe('Policy checks for resourced permissions defined by name', () => {
         modifiedBy,
       },
     );
-    await enfDelegate.addPolicies(
-      [
-        ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'allow'],
-        ['role:default/catalog_reader', 'catalog-entity', 'read', 'deny'],
-      ],
-      'csv-file',
-    );
+    await enfDelegate.addPolicies([
+      ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'allow'],
+      ['role:default/catalog_reader', 'catalog-entity', 'read', 'deny'],
+    ]);
 
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
@@ -1259,13 +1151,10 @@ describe('Policy checks for resourced permissions defined by name', () => {
       },
     );
 
-    await enfDelegate.addPolicies(
-      [
-        ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'deny'],
-        ['role:default/catalog_reader', 'catalog-entity', 'read', 'allow'],
-      ],
-      'csv-file',
-    );
+    await enfDelegate.addPolicies([
+      ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'deny'],
+      ['role:default/catalog_reader', 'catalog-entity', 'read', 'allow'],
+    ]);
 
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
@@ -1310,10 +1199,9 @@ describe('Policy checks for resourced permissions defined by name', () => {
       },
     );
 
-    await enfDelegate.addPolicies(
-      [['role:default/catalog_user', 'catalog.entity.read', 'read', 'allow']],
-      'csv-file',
-    );
+    await enfDelegate.addPolicies([
+      ['role:default/catalog_user', 'catalog.entity.read', 'read', 'allow'],
+    ]);
 
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
@@ -1375,10 +1263,9 @@ describe('Policy checks for resourced permissions defined by name', () => {
       },
     );
 
-    await enfDelegate.addPolicies(
-      [['role:default/catalog_user', 'catalog.entity.read', 'read', 'allow']],
-      'csv-file',
-    );
+    await enfDelegate.addPolicies([
+      ['role:default/catalog_user', 'catalog.entity.read', 'read', 'allow'],
+    ]);
 
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
@@ -1890,7 +1777,7 @@ describe('Policy checks for conditional policies', () => {
       g, group:default/qa, role:default/qa
       `,
     );
-    const config = newConfigReader();
+    const config = newConfigReader(undefined, []);
     const theModel = newModelFromString(MODEL);
     const logger = getVoidLogger();
     const enf = await createEnforcer(theModel, adapter, logger, config);

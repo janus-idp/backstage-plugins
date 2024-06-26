@@ -43,7 +43,6 @@ import {
   Role,
   RoleBasedPolicy,
   RoleConditionalPolicyDecision,
-  Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
@@ -65,7 +64,12 @@ import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
-import { deepSortedEqual, isPermissionAction, policyToString } from '../helper';
+import {
+  buildRoleSourceMap,
+  deepSortedEqual,
+  isPermissionAction,
+  policyToString,
+} from '../helper';
 import { validateRoleCondition } from '../validation/condition-validation';
 import {
   validateEntityReference,
@@ -183,7 +187,7 @@ export class PoliciesServer {
         policies = await this.enforcer.getPolicy();
       }
 
-      const body = this.transformPolicyArray(...policies);
+      const body = await this.transformPolicyArray(...policies);
 
       await this.aLog.auditLog({
         message: `Return list permission policies`,
@@ -214,7 +218,7 @@ export class PoliciesServer {
 
         const policy = await this.enforcer.getFilteredPolicy(0, entityRef);
         if (policy.length !== 0) {
-          const body = this.transformPolicyArray(...policy);
+          const body = await this.transformPolicyArray(...policy);
 
           await this.aLog.auditLog({
             message: `Return permission policy`,
@@ -258,12 +262,12 @@ export class PoliciesServer {
 
         const processedPolicies = await this.processPolicies(policyRaw, true);
 
-        await this.enforcer.removePolicies(processedPolicies, 'rest');
+        await this.enforcer.removePolicies(processedPolicies);
 
         await this.aLog.auditLog<PermissionAuditInfo>({
           message: `Deleted permission policies`,
           eventName: PermissionEvents.DELETE_POLICY,
-          metadata: { policies: processedPolicies, source: 'rest' },
+          metadata: { policies: processedPolicies },
           stage: SEND_RESPONSE_STAGE,
           status: 'succeeded',
           request,
@@ -299,12 +303,12 @@ export class PoliciesServer {
         throw new Error(`Corresponding role ${entityRef} was not found`);
       }
 
-      await this.enforcer.addPolicies(processedPolicies, 'rest');
+      await this.enforcer.addPolicies(processedPolicies);
 
       await this.aLog.auditLog<PermissionAuditInfo>({
         message: `Created permission policies`,
         eventName: PermissionEvents.CREATE_POLICY,
-        metadata: { policies: processedPolicies, source: 'rest' },
+        metadata: { policies: processedPolicies },
         stage: SEND_RESPONSE_STAGE,
         status: 'succeeded',
         request,
@@ -386,13 +390,12 @@ export class PoliciesServer {
         await this.enforcer.updatePolicies(
           processedOldPolicy,
           processedNewPolicy,
-          'rest',
         );
 
         await this.aLog.auditLog<PermissionAuditInfo>({
           message: `Updated permission policies`,
           eventName: PermissionEvents.UPDATE_POLICY,
-          metadata: { policies: processedNewPolicy, source: 'rest' },
+          metadata: { policies: processedNewPolicy },
           stage: SEND_RESPONSE_STAGE,
           status: 'succeeded',
           request,
@@ -496,10 +499,7 @@ export class PoliciesServer {
       const roles = this.transformRoleToArray(roleRaw);
 
       for (const role of roles) {
-        if (
-          (await this.enforcer.hasGroupingPolicy(...role, 'rest')) &&
-          !(await this.enforcer.hasGroupingPolicy(...role, 'legacy'))
-        ) {
+        if (await this.enforcer.hasGroupingPolicy(...role)) {
           throw new ConflictError(); // 409
         }
         const roleString = JSON.stringify(role);
@@ -623,7 +623,7 @@ export class PoliciesServer {
         });
         // if the role is already part of old role and is a grouping policy we want to skip returning a conflict error
         // to allow for other roles to be checked and added
-        if (await this.enforcer.hasGroupingPolicy(...role, 'rest')) {
+        if (await this.enforcer.hasGroupingPolicy(...role)) {
           if (!hasRole) {
             throw new ConflictError(); // 409
           }
@@ -643,7 +643,7 @@ export class PoliciesServer {
 
       uniqueItems.clear();
       for (const role of oldRole) {
-        if (!(await this.enforcer.hasGroupingPolicy(...role, 'rest'))) {
+        if (!(await this.enforcer.hasGroupingPolicy(...role))) {
           throw new NotFoundError(
             `Member reference: ${role[0]} was not found for role ${roleEntityRef}`,
           ); // 404
@@ -1030,16 +1030,23 @@ export class PoliciesServer {
     return entityRef;
   }
 
-  transformPolicyArray(...policies: string[][]): RoleBasedPolicy[] {
+  async transformPolicyArray(
+    ...policies: string[][]
+  ): Promise<RoleBasedPolicy[]> {
+    const roleToSourceMap = await buildRoleSourceMap(
+      policies,
+      this.roleMetadata,
+    );
+
     const roleBasedPolices: RoleBasedPolicy[] = [];
     for (const p of policies) {
-      const [entityReference, permission, policy, effect, source] = p;
+      const [entityReference, permission, policy, effect] = p;
       roleBasedPolices.push({
         entityReference,
         permission,
         policy,
         effect,
-        metadata: { source: source as Source },
+        metadata: { source: roleToSourceMap.get(entityReference) },
       });
     }
 
@@ -1179,20 +1186,13 @@ export class PoliciesServer {
       }
 
       const transformedPolicy = this.transformPolicyToArray(policy);
-      if (
-        isOld &&
-        !(await this.enforcer.hasPolicy(...transformedPolicy, 'rest'))
-      ) {
+      if (isOld && !(await this.enforcer.hasPolicy(...transformedPolicy))) {
         throw new NotFoundError(
           `Policy '${policyToString(transformedPolicy)}' not found`,
         ); // 404
       }
 
-      if (
-        !isOld &&
-        (await this.enforcer.hasPolicy(...transformedPolicy, 'rest')) &&
-        !(await this.enforcer.hasPolicy(...transformedPolicy, 'legacy'))
-      ) {
+      if (!isOld && (await this.enforcer.hasPolicy(...transformedPolicy))) {
         throw new ConflictError(
           `Policy '${policyToString(
             transformedPolicy,

@@ -76,11 +76,7 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
 
   addPolicy: jest.fn().mockImplementation(),
 
-  addOrUpdatePolicy: jest.fn().mockImplementation(),
-
   addPolicies: jest.fn().mockImplementation(),
-
-  addOrUpdateGroupingPolicies: jest.fn().mockImplementation(),
 
   addGroupingPolicies: jest.fn().mockImplementation(),
 
@@ -92,20 +88,13 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
 
   removeGroupingPolicies: jest.fn().mockImplementation(),
 
-  getFilteredPoliciesBySource: jest.fn().mockImplementation(() => {
-    return [];
-  }),
-
-  getFilteredGroupingPoliciesBySource: jest.fn().mockImplementation(() => {
-    return [];
-  }),
-
   updatePolicies: jest.fn().mockImplementation(),
 
   updateGroupingPolicies: jest.fn().mockImplementation(),
 };
 
 const roleMetadataStorageMock: RoleMetadataStorage = {
+  filterRoleMetadata: jest.fn().mockImplementation(() => []),
   findRoleMetadata: jest.fn().mockImplementation(),
   createRoleMetadata: jest.fn().mockImplementation(),
   updateRoleMetadata: jest.fn().mockImplementation(),
@@ -263,7 +252,6 @@ describe('REST policies api', () => {
               'policy-entity',
               'create',
               'allow',
-              'rest',
             ],
           ];
         },
@@ -272,15 +260,15 @@ describe('REST policies api', () => {
       .fn()
       .mockImplementation(
         async (_fieldIndex: number, ..._fieldValues: string[]) => {
-          return [
-            [
-              'user:default/permission_admin',
-              'role:default/rbac_admin',
-              'rest',
-            ],
-          ];
+          return [['user:default/permission_admin', 'role:default/rbac_admin']];
         },
       );
+    mockEnforcer.removeGroupingPolicies = jest
+      .fn()
+      .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+        return true;
+      });
+    mockEnforcer.addGroupingPolicies = jest.fn().mockImplementation();
 
     roleMetadataStorageMock.findRoleMetadata = jest
       .fn()
@@ -582,7 +570,7 @@ describe('REST policies api', () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param.at(2) === 'read' && param[4] === 'rest') {
+          if (param.at(2) === 'read') {
             return Promise.resolve(true);
           }
           return Promise.resolve(false);
@@ -683,6 +671,20 @@ describe('REST policies api', () => {
     });
 
     it('should be returned permission policies by user reference', async () => {
+      mockEnforcer.getFilteredPolicy = jest
+        .fn()
+        .mockImplementation(
+          async (_fieldIndex: number, ..._fieldValues: string[]) => {
+            return [
+              [
+                'user:default/permission_admin',
+                'policy-entity',
+                'create',
+                'allow',
+              ],
+            ];
+          },
+        );
       const result = await request(app)
         .get('/policies/user/default/permission_admin')
         .send();
@@ -1326,11 +1328,8 @@ describe('REST policies api', () => {
     it('should fail to update policy - newPolicy is already present', async () => {
       mockEnforcer.hasPolicy = jest
         .fn()
-        .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[4] === 'rest') {
-            return true;
-          }
-          return false;
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
         });
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
@@ -2123,11 +2122,8 @@ describe('REST policies api', () => {
     it('should not be created role, because it is has been already present', async () => {
       mockEnforcer.hasGroupingPolicy = jest
         .fn()
-        .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[2] === 'rest') {
-            return true;
-          }
-          return false;
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
         });
 
       const result = await request(app)

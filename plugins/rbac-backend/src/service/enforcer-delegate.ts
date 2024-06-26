@@ -1,8 +1,6 @@
 import { Enforcer, newModelFromString } from 'casbin';
 import { Knex } from 'knex';
 
-import { Source } from '@janus-idp/backstage-plugin-rbac-common';
-
 import {
   RoleMetadataDao,
   RoleMetadataStorage,
@@ -54,17 +52,17 @@ export class EnforcerDelegate {
 
   async addPolicy(
     policy: string[],
-    source: Source,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
 
+    if (await this.enforcer.hasPolicy(...policy)) {
+      return;
+    }
     try {
-      const ok = await this.enforcer.addPolicy(...policy, source);
+      const ok = await this.enforcer.addPolicy(...policy);
       if (!ok) {
-        throw new Error(
-          `failed to create policy ${policyToString([...policy, source])}`,
-        );
+        throw new Error(`failed to create policy ${policyToString(policy)}`);
       }
       if (!externalTrx) {
         await trx.commit();
@@ -79,16 +77,28 @@ export class EnforcerDelegate {
 
   async addPolicies(
     policies: string[][],
-    source: Source,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
     const trx = externalTrx || (await this.knex.transaction());
+
+    const policiesToAdd: string[][] = await policies.reduce<
+      Promise<string[][]>
+    >(async (accP: Promise<string[][]>, p: string[]) => {
+      const acc = await accP;
+      const hasPolicy = await this.enforcer.hasPolicy(...p);
+      if (!hasPolicy) acc.push(p);
+      return acc;
+    }, Promise.resolve([]));
+
+    if (policiesToAdd.length === 0) {
+      return;
+    }
+
     try {
-      const policiesWithSource = policies.map(policy => [...policy, source]);
-      const ok = await this.enforcer.addPolicies(policiesWithSource);
+      const ok = await this.enforcer.addPolicies(policies);
       if (!ok) {
         throw new Error(
-          `Failed to store policies ${policiesToString(policiesWithSource)}`,
+          `Failed to store policies ${policiesToString(policies)}`,
         );
       }
       if (!externalTrx) {
@@ -110,6 +120,9 @@ export class EnforcerDelegate {
     const trx = externalTrx ?? (await this.knex.transaction());
     const entityRef = roleMetadata.roleEntityRef;
 
+    if (await this.enforcer.hasGroupingPolicy(...policy)) {
+      return;
+    }
     try {
       let currentMetadata;
       if (entityRef.startsWith(`role:`)) {
@@ -132,10 +145,7 @@ export class EnforcerDelegate {
         await this.roleMetadataStorage.createRoleMetadata(roleMetadata, trx);
       }
 
-      const ok = await this.enforcer.addGroupingPolicy(
-        ...policy,
-        roleMetadata.source,
-      );
+      const ok = await this.enforcer.addGroupingPolicy(...policy);
       if (!ok) {
         throw new Error(
           `failed to create policy ${policyToString([...policy, roleMetadata.source])}`,
@@ -159,6 +169,18 @@ export class EnforcerDelegate {
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
 
+    const policiesToAdd: string[][] = await policies.reduce<
+      Promise<string[][]>
+    >(async (accP: Promise<string[][]>, gp: string[]) => {
+      const acc = await accP;
+      const hasPolicy = await this.enforcer.hasGroupingPolicy(...gp);
+      if (!hasPolicy) acc.push(gp);
+      return acc;
+    }, Promise.resolve([]));
+
+    if (policiesToAdd.length === 0) {
+      return;
+    }
     try {
       const currentRoleMetadata =
         await this.roleMetadataStorage.findRoleMetadata(
@@ -178,14 +200,10 @@ export class EnforcerDelegate {
         await this.roleMetadataStorage.createRoleMetadata(roleMetadata, trx);
       }
 
-      const policiesWithSource = policies.map(policy => [
-        ...policy,
-        roleMetadata.source,
-      ]);
-      const ok = await this.enforcer.addGroupingPolicies(policiesWithSource);
+      const ok = await this.enforcer.addGroupingPolicies(policiesToAdd);
       if (!ok) {
         throw new Error(
-          `Failed to store policies ${policiesToString(policiesWithSource)}`,
+          `Failed to store policies ${policiesToString(policiesToAdd)}`,
         );
       }
 
@@ -229,13 +247,12 @@ export class EnforcerDelegate {
   async updatePolicies(
     oldPolicies: string[][],
     newPolicies: string[][],
-    source: Source,
   ): Promise<void> {
     const trx = await this.knex.transaction();
 
     try {
-      await this.removePolicies(oldPolicies, source, trx);
-      await this.addPolicies(newPolicies, source, trx);
+      await this.removePolicies(oldPolicies, trx);
+      await this.addPolicies(newPolicies, trx);
       await trx.commit();
     } catch (err) {
       await trx.rollback(err);
@@ -243,15 +260,11 @@ export class EnforcerDelegate {
     }
   }
 
-  async removePolicy(
-    policy: string[],
-    source: Source,
-    externalTrx?: Knex.Transaction,
-  ) {
+  async removePolicy(policy: string[], externalTrx?: Knex.Transaction) {
     const trx = externalTrx ?? (await this.knex.transaction());
 
     try {
-      const ok = await this.enforcer.removePolicy(...policy, source);
+      const ok = await this.enforcer.removePolicy(...policy);
       if (!ok) {
         throw new Error(`fail to delete policy ${policy}`);
       }
@@ -268,17 +281,15 @@ export class EnforcerDelegate {
 
   async removePolicies(
     policies: string[][],
-    source: Source,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
 
     try {
-      const policiesWithSource = policies.map(policy => [...policy, source]);
-      const ok = await this.enforcer.removePolicies(policiesWithSource);
+      const ok = await this.enforcer.removePolicies(policies);
       if (!ok) {
         throw new Error(
-          `Failed to delete policies ${policiesToString(policiesWithSource)}`,
+          `Failed to delete policies ${policiesToString(policies)}`,
         );
       }
 
@@ -303,11 +314,7 @@ export class EnforcerDelegate {
     const roleEntity = policy[1];
 
     try {
-      const ok = await this.enforcer.removeGroupingPolicy(
-        policy[0],
-        policy[1],
-        roleMetadata.source,
-      );
+      const ok = await this.enforcer.removeGroupingPolicy(...policy);
       if (!ok) {
         throw new Error(`Failed to delete policy ${policyToString(policy)}`);
       }
@@ -353,15 +360,10 @@ export class EnforcerDelegate {
 
     const roleEntity = roleMetadata.roleEntityRef;
     try {
-      const policiesWithSource = policies.map(policy => [
-        policy[0],
-        policy[1],
-        roleMetadata.source,
-      ]);
-      const ok = await this.enforcer.removeGroupingPolicies(policiesWithSource);
+      const ok = await this.enforcer.removeGroupingPolicies(policies);
       if (!ok) {
         throw new Error(
-          `Failed to delete grouping policies: ${policiesToString(policiesWithSource)}`,
+          `Failed to delete grouping policies: ${policiesToString(policies)}`,
         );
       }
 
@@ -392,73 +394,6 @@ export class EnforcerDelegate {
       if (!externalTrx) {
         await trx.rollback(err);
       }
-      throw err;
-    }
-  }
-
-  async addOrUpdatePolicy(policy: string[], source: Source): Promise<void> {
-    const trx = await this.knex.transaction();
-    try {
-      if (await this.hasPolicy(...policy, 'legacy')) {
-        await this.removePolicy(policy, 'legacy', trx);
-        await this.addPolicy(policy, source, trx);
-      } else if (!(await this.hasPolicy(...policy, source))) {
-        await this.addPolicy(policy, source, trx);
-      }
-
-      await trx.commit();
-    } catch (err) {
-      await trx.rollback(err);
-      throw err;
-    }
-  }
-
-  async addOrUpdateGroupingPolicy(
-    groupPolicy: string[],
-    roleMetadata: RoleMetadataDao,
-  ): Promise<void> {
-    const trx = await this.knex.transaction();
-    try {
-      if (await this.hasGroupingPolicy(...groupPolicy, 'legacy')) {
-        await this.removeGroupingPolicy(
-          groupPolicy,
-          { ...roleMetadata, source: 'legacy' },
-          true,
-          trx,
-        );
-        await this.addGroupingPolicy(groupPolicy, roleMetadata, trx);
-      } else if (
-        !(await this.hasGroupingPolicy(...groupPolicy, roleMetadata.source))
-      ) {
-        await this.addGroupingPolicy(groupPolicy, roleMetadata, trx);
-      }
-
-      await trx.commit();
-    } catch (err) {
-      await trx.rollback(err);
-      throw err;
-    }
-  }
-
-  async addOrUpdateGroupingPolicies(
-    groupPolicies: string[][],
-    roleMetadata: RoleMetadataDao,
-  ): Promise<void> {
-    const trx = await this.knex.transaction();
-    try {
-      for (const groupPolicy of groupPolicies) {
-        if (await this.hasGroupingPolicy(...groupPolicy, 'legacy')) {
-          await this.removeGroupingPolicy(groupPolicy, roleMetadata, true, trx);
-          await this.addGroupingPolicy(groupPolicy, roleMetadata, trx);
-        } else if (
-          !(await this.hasGroupingPolicy(...groupPolicy, roleMetadata.source))
-        ) {
-          await this.addGroupingPolicy(groupPolicy, roleMetadata, trx);
-        }
-      }
-      await trx.commit();
-    } catch (err) {
-      await trx.rollback(err);
       throw err;
     }
   }
@@ -513,24 +448,6 @@ export class EnforcerDelegate {
     await tempEnforcer.loadFilteredPolicy(filter);
 
     return await tempEnforcer.enforce(entityRef, resourceType, action);
-  }
-
-  async getFilteredPoliciesBySource(
-    source: Source,
-    isCutSource?: boolean,
-  ): Promise<string[][]> {
-    return (await this.enforcer.getFilteredPolicy(4, source)).map(policy =>
-      isCutSource ? policy.slice(0, -1) : policy,
-    );
-  }
-
-  async getFilteredGroupingPoliciesBySource(
-    source: Source,
-    isCutSource?: boolean,
-  ): Promise<string[][]> {
-    return (await this.enforcer.getFilteredGroupingPolicy(2, source)).map(
-      gPolicy => (isCutSource ? gPolicy.slice(0, -1) : gPolicy),
-    );
   }
 
   async getImplicitPermissionsForUser(user: string): Promise<string[][]> {
