@@ -61,7 +61,7 @@ const noNotificationsMessage = (
 
 export const AlertDrawer = (props: AlertDrawerProps) => {
   return (
-    <Card className={drawer}>
+    <Card className={drawer} data-test="message-center-modal">
       <CardMedia>
         <ItemCardHeader title="MessageCenter" subtitle="" />
       </CardMedia>
@@ -74,6 +74,7 @@ export const AlertDrawer = (props: AlertDrawerProps) => {
                   <AccordionSummary
                     key={`${group.id}_item`}
                     expandIcon={<ExpandMoreRounded />}
+                    data-test="message-center-summary"
                   >
                     <Typography>
                       {group.title} {getUnreadMessageLabel(group.messages)}

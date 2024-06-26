@@ -4,7 +4,7 @@
       {
         "name": "control",
         "desiredReplicas": 1,
-        "currentReplicas": 1,
+        "currentReplicas": 0,
         "availableReplicas": 1,
         "syncedProxies": 1
       }

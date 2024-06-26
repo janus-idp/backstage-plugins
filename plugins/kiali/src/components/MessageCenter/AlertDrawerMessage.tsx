@@ -46,7 +46,7 @@ export const AlertDrawerMessage = (props: AlertDrawerMessageProps) => {
 
   return (
     <Card>
-      <CardContent>
+      <CardContent data-test="drawer-message">
         {getIcon(props.message.type)}{' '}
         {props.message.seen ? (
           props.message.content
@@ -60,11 +60,17 @@ export const AlertDrawerMessage = (props: AlertDrawerMessageProps) => {
               onClick={() => toggleMessageDetail(props.message)}
               expandIcon={<ExpandMoreRounded />}
             >
-              <Typography>
+              <Typography
+                data-test={
+                  props.message.showDetail
+                    ? 'hide-message-detail'
+                    : 'show-message-detail'
+                }
+              >
                 {props.message.showDetail ? 'Hide Detail' : 'Show Detail'}
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails data-test="message-detail">
               <pre style={{ whiteSpace: 'pre-wrap' }}>
                 {props.message.detail}
               </pre>

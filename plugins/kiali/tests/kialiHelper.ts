@@ -1,5 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+export { kialiData } from '../dev/__fixtures__';
+
 export class Common {
   page: Page;
 
