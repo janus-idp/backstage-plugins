@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.12.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.11.0...@janus-idp/backstage-plugin-orchestrator-backend@1.12.0) (2024-06-26)
+
+
+### Features
+
+* **orchestrator:** disable buttons based on permissions ([#1818](https://github.com/janus-idp/backstage-plugins/issues/1818)) ([36504b0](https://github.com/janus-idp/backstage-plugins/commit/36504b05d96dbbf0b2395dc6e5c155c21fa73bcd))
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.11.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.10.1...@janus-idp/backstage-plugin-orchestrator-backend@1.11.0) (2024-06-25)
 
 
