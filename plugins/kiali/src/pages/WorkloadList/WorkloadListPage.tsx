@@ -12,7 +12,7 @@ import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasth
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { VirtualList } from '../../components/VirtualList/VirtualList';
-import { isMultiCluster, serverConfig } from '../../config';
+import { isMultiCluster } from '../../config';
 import { useKialiEntityContext } from '../../dynamic/KialiContext';
 import { getEntityNs, nsEqual } from '../../helpers/namespaces';
 import { getErrorString, kialiApiRef } from '../../services/Api';
@@ -106,11 +106,9 @@ export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
     )
       .then(results => {
         let workloadsItems: WorkloadListItem[] = [];
-
         results.forEach(response => {
           workloadsItems = workloadsItems.concat(getDeploymentItems(response));
         });
-
         setWorkloads(workloadsItems);
       })
       .catch(err => {
@@ -122,6 +120,7 @@ export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
 
   const load = async () => {
     const uniqueClusters = new Set<string>();
+    const serverConfig = await kialiClient.getServerConfig();
 
     Object.keys(serverConfig.clusters).forEach(cluster => {
       uniqueClusters.add(cluster);
@@ -129,7 +128,11 @@ export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
 
     if (kialiContext.data) {
       setNamespaces(kialiContext.data);
-      fetchWorkloads(Array.from(uniqueClusters), duration);
+      await fetchWorkloads(
+        Array.from(uniqueClusters),
+        kialiContext.data,
+        duration,
+      );
     } else {
       kialiClient.getNamespaces().then(namespacesResponse => {
         const allNamespaces: NamespaceInfo[] = getNamespaces(
@@ -138,7 +141,6 @@ export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
         );
         const nsl = allNamespaces.filter(ns => activeNs.includes(ns.name));
         setNamespaces(nsl);
-
         fetchWorkloads(Array.from(uniqueClusters), duration);
       });
     }

@@ -10,7 +10,7 @@ import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasth
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { VirtualList } from '../../components/VirtualList/VirtualList';
-import { isMultiCluster, serverConfig } from '../../config';
+import { isMultiCluster } from '../../config';
 import { getEntityNs, nsEqual } from '../../helpers/namespaces';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
@@ -95,6 +95,8 @@ export const AppListPage = (props: {
   };
 
   const getNS = async () => {
+    const serverConfig = await kialiClient.getServerConfig();
+
     kialiClient.getNamespaces().then(namespacesResponse => {
       const uniqueClusters = new Set<string>();
       Object.keys(serverConfig.clusters).forEach(cluster => {
