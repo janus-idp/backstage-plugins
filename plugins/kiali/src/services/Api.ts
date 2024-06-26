@@ -413,9 +413,11 @@ export class KialiApiClient implements KialiApi {
       {},
     ).then(response => {
       const ret = new Map<string, NamespaceAppHealth>();
-      const namespaceAppHealth = response.get('namespaceAppHealth');
+      // @ts-ignore
+      const namespaceAppHealth = response.namespaceAppHealth;
       if (namespaceAppHealth) {
         Object.keys(namespaceAppHealth).forEach(ns => {
+          ret.set(ns, {});
           if (!ret.get(ns)) {
             ret.set(ns, {});
           }
@@ -430,9 +432,9 @@ export class KialiApiClient implements KialiApi {
                 hasSidecar: true,
                 hasAmbient: false,
               });
-
-              // @ts-ignore
-              ret[ns][k] = ah;
+              const nsAppHealth = ret.get(ns) || {};
+              nsAppHealth[k] = ah;
+              ret.set(ns, nsAppHealth);
             }
           });
         });
@@ -467,8 +469,8 @@ export class KialiApiClient implements KialiApi {
       {},
     ).then(response => {
       const ret = new Map<string, NamespaceServiceHealth>();
-
-      const namespaceServiceHealth = response.get('namespaceServiceHealth');
+      // @ts-ignore
+      const namespaceServiceHealth = response.namespaceServiceHealth;
       if (namespaceServiceHealth) {
         Object.keys(namespaceServiceHealth).forEach(ns => {
           if (!ret.get(ns)) {
@@ -486,7 +488,9 @@ export class KialiApiClient implements KialiApi {
                 hasAmbient: false,
               });
               // @ts-ignore
-              ret[ns][k] = sh;
+              const nsSvcHealth = ret.get(ns) || {};
+              nsSvcHealth[k] = sh;
+              ret.set(ns, nsSvcHealth);
             }
           });
         });
@@ -521,8 +525,8 @@ export class KialiApiClient implements KialiApi {
       {},
     ).then(response => {
       const ret = new Map<string, NamespaceWorkloadHealth>();
-
-      const namespaceWorkloadHealth = response.get('namespaceWorkloadHealth');
+      // @ts-ignore
+      const namespaceWorkloadHealth = response.namespaceWorkloadHealth;
       if (namespaceWorkloadHealth) {
         Object.keys(namespaceWorkloadHealth).forEach(ns => {
           if (!ret.get(ns)) {
@@ -539,9 +543,9 @@ export class KialiApiClient implements KialiApi {
                 hasSidecar: true,
                 hasAmbient: false,
               });
-
-              // @ts-ignore
-              ret[ns][k] = wh;
+              const nsWkHealth = ret.get(ns) || {};
+              nsWkHealth[k] = wh;
+              ret.set(ns, nsWkHealth);
             }
           });
         });

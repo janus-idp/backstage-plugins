@@ -1,8 +1,11 @@
 /* Config Data */
 import clusterApps from './clusters/kubernetes/apps.json';
+import appsHealth from './clusters/kubernetes/appsHealth.json';
 import clusterServices from './clusters/kubernetes/services.json';
+import servicesHealth from './clusters/kubernetes/servicesHealth.json';
 /* clusters */
 import clusterWorkloads from './clusters/kubernetes/workloads.json';
+import workloadsHealth from './clusters/kubernetes/workloadsHealth.json';
 import anonymousAuth from './general/auth_info_anonymous.json';
 import configData from './general/config.json';
 /** Metrics **/
@@ -383,8 +386,11 @@ export const kialiData: { [index: string]: any } = {
   clusters: {
     kubernetes: {
       workloads: clusterWorkloads,
+      workloadsHealth: workloadsHealth,
       services: clusterServices,
+      servicesHealth: servicesHealth,
       apps: clusterApps,
+      appsHealth: appsHealth,
     },
   },
   status: status,

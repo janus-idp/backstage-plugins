@@ -126,78 +126,6 @@ export class MockKialiClient implements KialiApi {
     return kialiData.config;
   }
 
-  async getNamespaceAppHealth(
-    namespace: string,
-    duration: DurationInSeconds,
-    cluster?: string,
-    queryTime?: TimeInSeconds,
-  ): Promise<NamespaceAppHealth> {
-    const ret: NamespaceAppHealth = {};
-    const params: any = {
-      type: 'app',
-      rateInterval: `${String(duration)}s`,
-      queryTime: String(queryTime),
-      clusterName: cluster,
-    };
-    const data = kialiData.namespacesData[namespace].health[params.type];
-    Object.keys(data).forEach(k => {
-      ret[k] = AppHealth.fromJson(namespace, k, data[k], {
-        rateInterval: duration,
-        hasSidecar: true,
-        hasAmbient: false,
-      });
-    });
-    return ret;
-  }
-
-  async getNamespaceServiceHealth(
-    namespace: string,
-    duration: DurationInSeconds,
-    cluster?: string,
-    queryTime?: TimeInSeconds,
-  ): Promise<NamespaceServiceHealth> {
-    const ret: NamespaceServiceHealth = {};
-    const params: any = {
-      type: 'service',
-      rateInterval: `${String(duration)}s`,
-      queryTime: String(queryTime),
-      clusterName: cluster,
-    };
-    const data = kialiData.namespacesData[namespace].health[params.type];
-    Object.keys(data).forEach(k => {
-      ret[k] = ServiceHealth.fromJson(namespace, k, data[k], {
-        rateInterval: duration,
-        hasSidecar: true,
-        hasAmbient: false,
-      });
-    });
-    return ret;
-  }
-
-  async getNamespaceWorkloadHealth(
-    namespace: string,
-    duration: DurationInSeconds,
-    cluster?: string,
-    queryTime?: TimeInSeconds,
-  ): Promise<NamespaceWorkloadHealth> {
-    const ret: NamespaceWorkloadHealth = {};
-    const params: any = {
-      type: 'workload',
-      rateInterval: `${String(duration)}s`,
-      queryTime: String(queryTime),
-      clusterName: cluster,
-    };
-    const data = kialiData.namespacesData[namespace].health[params.type];
-    Object.keys(data).forEach(k => {
-      ret[k] = WorkloadHealth.fromJson(namespace, k, data[k], {
-        rateInterval: duration,
-        hasSidecar: true,
-        hasAmbient: false,
-      });
-    });
-    return ret;
-  }
-
   async getNamespaceTls(
     namespace: string,
     cluster?: string,
@@ -330,30 +258,116 @@ export class MockKialiClient implements KialiApi {
   }
 
   async getClustersAppHealth(
-    namespaces: string,
+    _namespaces: string,
     _: DurationInSeconds,
     __?: string,
     ___?: TimeInSeconds,
   ): Promise<Map<string, NamespaceAppHealth>> {
-    return kialiData.appHealth[namespaces];
+    const response =
+      kialiData.clusters.kubernetes.appsHealth.namespaceAppHealth;
+    const ret = new Map<string, NamespaceAppHealth>();
+    // @ts-ignore
+    const namespaceAppHealth = response.namespaceAppHealth;
+    if (namespaceAppHealth) {
+      Object.keys(namespaceAppHealth).forEach(ns => {
+        ret.set(ns, {});
+        if (!ret.get(ns)) {
+          ret.set(ns, {});
+        }
+        Object.keys(namespaceAppHealth[ns]).forEach(k => {
+          // @ts-ignore
+          if (namespaceAppHealth[ns][k]) {
+            // @ts-ignore
+            const conv = namespaceAppHealth[ns][k];
+            // @ts-ignore
+            const ah = AppHealth.fromJson(namespaces, k, conv, {
+              rateInterval: 60,
+              hasSidecar: true,
+              hasAmbient: false,
+            });
+            const nsAppHealth = ret.get(ns) || {};
+            nsAppHealth[k] = ah;
+            ret.set(ns, nsAppHealth);
+          }
+        });
+      });
+    }
+    return ret;
   }
 
   async getClustersServiceHealth(
-    namespaces: string,
+    _namespaces: string,
     _: DurationInSeconds,
     __?: string,
     ___?: TimeInSeconds,
   ): Promise<Map<string, NamespaceServiceHealth>> {
-    return kialiData.appHealth[namespaces];
+    const response =
+      kialiData.clusters.kubernetes.workloadsHealth.namespaceServiceHealth;
+    const ret = new Map<string, NamespaceServiceHealth>();
+
+    const namespaceServiceHealth = response.namespaceServiceHealth;
+    if (namespaceServiceHealth) {
+      Object.keys(namespaceServiceHealth).forEach(ns => {
+        if (!ret.get(ns)) {
+          ret.set(ns, {});
+        }
+        Object.keys(namespaceServiceHealth[ns]).forEach(k => {
+          // @ts-ignore
+          if (namespaceServiceHealth[ns][k]) {
+            // @ts-ignore
+            const conv = namespaceAppHealth[ns][k];
+            // @ts-ignore
+            const sh = ServiceHealth.fromJson(namespaces, k, conv, {
+              rateInterval: 60,
+              hasSidecar: true,
+              hasAmbient: false,
+            });
+            // @ts-ignore
+            const nsSvcHealth = ret.get(ns) || {};
+            nsSvcHealth[k] = sh;
+            ret.set(ns, nsSvcHealth);
+          }
+        });
+      });
+    }
+    return ret;
   }
 
   async getClustersWorkloadHealth(
-    namespaces: string,
+    _namespaces: string,
     _: DurationInSeconds,
     __?: string,
     ___?: TimeInSeconds,
   ): Promise<Map<string, NamespaceWorkloadHealth>> {
-    return kialiData.appHealth[namespaces];
+    const response =
+      kialiData.clusters.kubernetes.workloadsHealth.namespaceWorkloadHealth;
+    const ret = new Map<string, NamespaceWorkloadHealth>();
+    // @ts-ignore
+    const namespaceWorkloadHealth = response.namespaceWorkloadHealth;
+    if (namespaceWorkloadHealth) {
+      Object.keys(namespaceWorkloadHealth).forEach(ns => {
+        if (!ret.get(ns)) {
+          ret.set(ns, {});
+        }
+        Object.keys(namespaceWorkloadHealth[ns]).forEach(k => {
+          // @ts-ignore
+          if (namespaceWorkloadHealth[ns][k]) {
+            // @ts-ignore
+            const conv = namespaceAppHealth[ns][k];
+            // @ts-ignore
+            const wh = WorkloadHealth.fromJson(namespaces, k, conv, {
+              rateInterval: 60,
+              hasSidecar: true,
+              hasAmbient: false,
+            });
+            const nsWkHealth = ret.get(ns) || {};
+            nsWkHealth[k] = wh;
+            ret.set(ns, nsWkHealth);
+          }
+        });
+      });
+    }
+    return ret;
   }
 
   async getIstioConfigDetail(

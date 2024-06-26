@@ -1,0 +1,268 @@
+{
+  "namespaceServiceHealth": {
+    "bookinfo": {
+      "bookinfo-gateway-istio": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "details": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "productpage": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.9999999999999999
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "ratings": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "reviews": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    "default": {
+      "details-v1": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "kubernetes": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "productpage-v1": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "ratings-v1": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "reviews-v1": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "reviews-v2": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "reviews-v3": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    "istio-system": {
+      "grafana": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "istio-egressgateway": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "istio-ingressgateway": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "istiod": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "jaeger-collector": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "kiali": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "prometheus": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "tracing": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "zipkin": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    "travel-agency": {
+      "cars": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.2717948717948718
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "discounts": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 1.3367521367521367
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "flights": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.2666666666666666
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "hotels": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.7999999999999999
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "insurances": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.39999999999999997
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "mysqldb": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "travels": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.7999999999999998
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    "travel-control": {
+      "control": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    "travel-portal": {
+      "travels": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "viaggi": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "voyages": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    }
+  }
+}

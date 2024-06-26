@@ -7,7 +7,7 @@ export type NamespaceInfo = {
   name: string;
   cluster?: string;
   outboundPolicyMode?: string;
-  status?: NamespaceStatus;
+  status?: NamespaceInfoStatus;
   tlsStatus?: TLSStatus;
   istioConfig?: IstioConfigList;
   validations?: ValidationStatus;
@@ -19,7 +19,7 @@ export type NamespaceInfo = {
   isAmbient?: boolean;
 };
 
-export type NamespaceStatus = {
+export type NamespaceInfoStatus = {
   inNotReady: string[];
   inError: string[];
   inWarning: string[];

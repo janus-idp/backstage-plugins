@@ -1,0 +1,441 @@
+{
+  "namespaceAppHealth": {
+    "bookinfo": {
+      "details": {
+        "workloadStatuses": [
+          {
+            "name": "details-v1",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": -1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "kiali-traffic-generator": {
+        "workloadStatuses": [
+          {
+            "name": "kiali-traffic-generator",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": -1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "productpage": {
+        "workloadStatuses": [
+          {
+            "name": "productpage-v1",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": -1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "ratings": {
+        "workloadStatuses": [
+          {
+            "name": "ratings-v1",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": -1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "reviews": {
+        "workloadStatuses": [
+          {
+            "name": "reviews-v1",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": -1
+          },
+          {
+            "name": "reviews-v2",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": -1
+          },
+          {
+            "name": "reviews-v3",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": -1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    "default": {},
+    "istio-system": {
+      "istio-egressgateway": {
+        "workloadStatuses": [
+          {
+            "name": "istio-egressgateway",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": -1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "istio-ingressgateway": {
+        "workloadStatuses": [
+          {
+            "name": "istio-ingressgateway",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": -1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "istiod": {
+        "workloadStatuses": [
+          {
+            "name": "istiod",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": -1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "jaeger": {
+        "workloadStatuses": [
+          {
+            "name": "jaeger",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": -1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "kiali": {
+        "workloadStatuses": [
+          {
+            "name": "kiali",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": -1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "ztunnel": {
+        "workloadStatuses": [
+          {
+            "name": "ztunnel",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": -1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    "travel-agency": {
+      "cars": {
+        "workloadStatuses": [
+          {
+            "name": "cars-v1",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": 1
+          }
+        ],
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.2717948717948718
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 0.2717948717948718
+            }
+          },
+          "healthAnnotations": {}
+        }
+      },
+      "discounts": {
+        "workloadStatuses": [
+          {
+            "name": "discounts-v1",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": 1
+          }
+        ],
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 1.3367521367521367
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "flights": {
+        "workloadStatuses": [
+          {
+            "name": "flights-v1",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": 1
+          }
+        ],
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.2666666666666666
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 0.2666666666666666
+            }
+          },
+          "healthAnnotations": {}
+        }
+      },
+      "hotels": {
+        "workloadStatuses": [
+          {
+            "name": "hotels-v1",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": 1
+          }
+        ],
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.7999999999999999
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 0.39999999999999997
+            }
+          },
+          "healthAnnotations": {}
+        }
+      },
+      "insurances": {
+        "workloadStatuses": [
+          {
+            "name": "insurances-v1",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": 1
+          }
+        ],
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.39999999999999997
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 0.39829059829059826
+            }
+          },
+          "healthAnnotations": {}
+        }
+      },
+      "mysqldb": {
+        "workloadStatuses": [
+          {
+            "name": "mysqldb-v1",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": 1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      },
+      "travels": {
+        "workloadStatuses": [
+          {
+            "name": "travels-v1",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": 1
+          }
+        ],
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.7999999999999998
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 2.0051282051282047
+            }
+          },
+          "healthAnnotations": {}
+        }
+      }
+    },
+    "travel-control": {
+      "control": {
+        "workloadStatuses": [
+          {
+            "name": "control",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": 1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    "travel-portal": {
+      "travels": {
+        "workloadStatuses": [
+          {
+            "name": "travels",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": 1
+          }
+        ],
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.7999999999999998
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 0.2666666666666666
+            }
+          },
+          "healthAnnotations": {}
+        }
+      },
+      "viaggi": {
+        "workloadStatuses": [
+          {
+            "name": "viaggi",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": 1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {
+            "http": {
+              "200": 0.2666666666666666
+            }
+          },
+          "healthAnnotations": {}
+        }
+      },
+      "voyages": {
+        "workloadStatuses": [
+          {
+            "name": "voyages",
+            "desiredReplicas": 1,
+            "currentReplicas": 1,
+            "availableReplicas": 1,
+            "syncedProxies": 1
+          }
+        ],
+        "requests": {
+          "inbound": {},
+          "outbound": {
+            "http": {
+              "200": 0.2632478632478632
+            }
+          },
+          "healthAnnotations": {}
+        }
+      }
+    }
+  }
+}

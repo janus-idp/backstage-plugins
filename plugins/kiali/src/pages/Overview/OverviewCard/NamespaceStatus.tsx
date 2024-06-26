@@ -6,7 +6,7 @@ import {
   IntervalInMilliseconds,
 } from '../../../types/Common';
 import { DEGRADED, FAILURE, HEALTHY, NOT_READY } from '../../../types/Health';
-import { NamespaceInfo } from '../NamespaceInfo';
+import { NamespaceInfo, NamespaceInfoStatus } from '../NamespaceInfo';
 import { switchType } from '../OverviewHelper';
 import { OverviewStatus } from '../OverviewStatus';
 import { OverviewType } from '../OverviewToolbar';
@@ -16,10 +16,12 @@ type NamespaceStatusProps = {
   type: OverviewType;
   duration: DurationInSeconds;
   refreshInterval: IntervalInMilliseconds;
+  healthNs?: NamespaceInfoStatus;
 };
 
 export const NamespaceStatus = (props: NamespaceStatusProps) => {
   const ns = props.namespace;
+  const health = props.healthNs;
   const targetPage = switchType(
     props.type,
     Paths.APPLICATIONS,
@@ -28,13 +30,13 @@ export const NamespaceStatus = (props: NamespaceStatusProps) => {
   );
   const name = ns.name;
   let nbItems = 0;
-  if (ns.status) {
+  if (health) {
     nbItems =
-      ns.status.inError.length +
-      ns.status.inWarning.length +
-      ns.status.inSuccess.length +
-      ns.status.notAvailable.length +
-      ns.status.inNotReady.length;
+      health.inError.length +
+      health.inWarning.length +
+      health.inSuccess.length +
+      health.notAvailable.length +
+      health.inNotReady.length;
   }
   let text: string;
   if (nbItems === 1) {

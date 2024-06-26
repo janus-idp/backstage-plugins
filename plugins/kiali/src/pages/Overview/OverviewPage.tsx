@@ -34,7 +34,7 @@ import { IstioMetricsOptions } from '../../types/MetricsOptions';
 import { SortField } from '../../types/SortFilters';
 import { nsWideMTLSStatus } from '../../types/TLSStatus';
 import { PromisesRegistry } from '../../utils/CancelablePromises';
-import { NamespaceInfo, NamespaceStatus } from './NamespaceInfo';
+import { NamespaceInfo, NamespaceInfoStatus } from './NamespaceInfo';
 import { OverviewCard } from './OverviewCard';
 import { switchType } from './OverviewHelper';
 import {
@@ -94,6 +94,9 @@ export const OverviewPage = (props: { entity?: boolean }) => {
     currentDirectionType(),
   );
   const [activeNs, setActiveNs] = React.useState<NamespaceInfo[]>([]);
+  const [healthNs, setHealthNs] = React.useState<
+    Map<string, NamespaceInfoStatus>
+  >(new Map<string, NamespaceInfoStatus>());
 
   const sortedNamespaces = (nss: NamespaceInfo[]) => {
     nss.sort((a, b) => {
@@ -113,10 +116,9 @@ export const OverviewPage = (props: { entity?: boolean }) => {
     const apiFunc = switchType(
       type,
       kialiClient.getClustersAppHealth,
-      kialiClient.getClustersServiceHealth,
       kialiClient.getClustersWorkloadHealth,
+      kialiClient.getClustersServiceHealth,
     );
-
     const healthPromise: Promise<
       | Map<string, NamespaceAppHealth>
       | Map<string, NamespaceWorkloadHealth>
@@ -133,23 +135,23 @@ export const OverviewPage = (props: { entity?: boolean }) => {
     return healthPromise
       .then(results => {
         namespacesInfo.forEach(nsInfo => {
-          const nsStatus: NamespaceStatus = {
+          const nsStatus: NamespaceInfoStatus = {
             inNotReady: [],
             inError: [],
             inWarning: [],
             inSuccess: [],
             notAvailable: [],
           };
-
           if (
             ((nsInfo.cluster && nsInfo.cluster === cluster) ||
               !nsInfo.cluster) &&
             results.get(nsInfo.name)
           ) {
+            const resultObj = results.get(nsInfo.name);
             // @ts-ignore
-            Object.keys(results[nsInfo.name]).forEach(k => {
+            Object.keys(resultObj).forEach(k => {
               // @ts-ignore
-              const health: Health = results[nsInfo.name][k];
+              const health: Health = resultObj[k];
               const status = health.getGlobalStatus();
 
               if (status === FAILURE) {
@@ -165,6 +167,9 @@ export const OverviewPage = (props: { entity?: boolean }) => {
               }
             });
             nsInfo.status = nsStatus;
+            const localHealthNs = healthNs;
+            localHealthNs.set(nsInfo.name, nsStatus);
+            setHealthNs(localHealthNs);
           }
         });
       })
@@ -175,28 +180,30 @@ export const OverviewPage = (props: { entity?: boolean }) => {
       );
   };
 
+  const filterActiveNamespaces = (nss: NamespaceInfo[]) => {
+    return nss.filter(ns => activeNsName.includes(ns.name));
+  };
+
   const fetchHealth = (
     isAscending: boolean,
     sortField: SortField<NamespaceInfo>,
     type: OverviewType,
-  ): void => {
+    nsList: NamespaceInfo[],
+  ) => {
     const durationCurrent = FilterHelper.currentDuration();
     const uniqueClusters = new Set<string>();
-
-    namespaces.forEach(namespace => {
+    nsList.forEach(namespace => {
       if (namespace.cluster) {
         uniqueClusters.add(namespace.cluster);
       }
     });
-
     uniqueClusters.forEach(cluster => {
       promises
         .registerChained('health', undefined, () =>
-          fetchHealthForCluster(namespaces, cluster, durationCurrent, type),
+          fetchHealthForCluster(nsList, cluster, durationCurrent, type),
         )
         .then(() => {
           let newNamespaces = namespaces.slice();
-
           if (sortField.id === 'health') {
             newNamespaces = Sorts.sortFunc(
               newNamespaces,
@@ -204,6 +211,8 @@ export const OverviewPage = (props: { entity?: boolean }) => {
               isAscending,
             );
           }
+          setActiveNs(filterActiveNamespaces(newNamespaces));
+
           return { namespaces: newNamespaces };
         });
     });
@@ -409,10 +418,6 @@ export const OverviewPage = (props: { entity?: boolean }) => {
     );
   };
 
-  const filterActiveNamespaces = (nss: NamespaceInfo[]) => {
-    return nss.filter(ns => activeNsName.includes(ns.name));
-  };
-
   const fetchMetrics = async (nss: NamespaceInfo[]) => {
     // debounce async for back-pressure, ten by ten
     _.chunk(nss, 10).forEach(chunk => {
@@ -439,7 +444,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
       const sortField = FilterHelper.currentSortField(Sorts.sortFields);
       const sortNs = sortedNamespaces(allNamespaces);
       if (!props.entity) {
-        fetchHealth(isAscending, sortField, overviewType);
+        fetchHealth(isAscending, sortField, overviewType, sortNs);
         fetchTLS(sortNs, isAscending, sortField);
         fetchValidations(sortNs, isAscending, sortField);
         fetchOutboundTrafficPolicyMode();
@@ -447,8 +452,8 @@ export const OverviewPage = (props: { entity?: boolean }) => {
         fetchIstiodResourceThresholds();
       }
       fetchMetrics(sortNs);
-      promises.waitAll();
       setNamespaces(sortNs);
+      promises.waitAll();
     });
   };
 
@@ -458,7 +463,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
       load();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeNsName]);
+  }, [activeNsName, healthNs]);
 
   React.useEffect(() => {
     load();
@@ -492,6 +497,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
                   istiodResourceThresholds={istiodResourceThresholds}
                   istioStatus={kialiState.istioStatus}
                   outboundTrafficPolicy={outboundTrafficPolicy}
+                  healthNs={healthNs.get(ns.name)}
                 />
               </CardTab>
             ))}
@@ -531,6 +537,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
                     istiodResourceThresholds={istiodResourceThresholds}
                     istioStatus={kialiState.istioStatus}
                     outboundTrafficPolicy={outboundTrafficPolicy}
+                    healthNs={healthNs.get(ns.name)}
                   />
                 </Grid>
               ))}
