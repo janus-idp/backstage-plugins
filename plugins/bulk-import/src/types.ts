@@ -31,6 +31,7 @@ export type AddRepositoriesData = {
     status: string;
     prTemplate: PullRequestPreview;
   };
+  lastUpdated?: string;
 };
 
 export type Order = 'asc' | 'desc';

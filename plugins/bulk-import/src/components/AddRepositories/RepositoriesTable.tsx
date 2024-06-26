@@ -97,11 +97,13 @@ export const RepositoriesTable = ({
   const reposData = useMemo(() => {
     return getDataForRepositories(user || '');
   }, [user]);
-  const [orgsData, setOrgsData] = React.useState<AddRepositoriesData[]>(
-    createOrganizationData(mockData(user || '')),
-  );
+  const [orgsData, setOrgsData] = React.useState<AddRepositoriesData[]>([]);
 
   const orgReposData = drawerOrganization?.repositories;
+
+  useEffect(() => {
+    setOrgsData(createOrganizationData(mockData(user || '')));
+  }, [user]);
 
   useEffect(() => {
     setLocalPage(page || 0);

@@ -53,8 +53,7 @@ export const PreviewPullRequest = ({
     values.approvalTool === 'git' ? 'Pull request' : 'ServiceNow ticket';
 
   const [entityOwner, setEntityOwner] = React.useState<string | null>(
-    values.repositories[repoName]?.catalogInfoYaml?.prTemplate?.entityOwner ||
-      '',
+    pullRequest[repoName]?.entityOwner || '',
   );
   const { loading: entitiesLoading, value: entities } = useAsync(async () => {
     const allEntities = await catalogApi.getEntities({
@@ -68,18 +67,20 @@ export const PreviewPullRequest = ({
       .sort();
   });
   React.useEffect(() => {
-    if (
-      !values.repositories[repoName]?.catalogInfoYaml?.prTemplate?.entityOwner
-    ) {
-      setFormErrors({
-        ...formErrors,
-        [repoName]: {
-          ...formErrors?.[repoName],
-          entityOwner: 'Entity owner is missing',
-        },
-      });
+    const newFormErrors = {
+      ...formErrors,
+      [repoName]: {
+        ...formErrors?.[repoName],
+        entityOwner: 'Entity owner is missing',
+      },
+    };
+
+    if (entityOwner === null || !pullRequest[repoName]?.entityOwner) {
+      if (JSON.stringify(formErrors) !== JSON.stringify(newFormErrors)) {
+        setFormErrors(newFormErrors);
+      }
     }
-  }, [values, setFormErrors, formErrors, repoName]);
+  }, [entityOwner, pullRequest, setFormErrors, formErrors, repoName]);
 
   const handleChange = (
     event: React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>,
@@ -171,7 +172,7 @@ export const PreviewPullRequest = ({
         variant="outlined"
         margin="normal"
         fullWidth
-        name={`repositories.${pullRequest.componentName}.prTitle`}
+        name={`repositories.${pullRequest[repoName].componentName}.prTitle`}
         value={pullRequest?.[repoName]?.prTitle}
         onChange={handleChange}
         error={!!formErrors?.[repoName]?.prTitle}
@@ -185,7 +186,7 @@ export const PreviewPullRequest = ({
         variant="outlined"
         fullWidth
         onChange={handleChange}
-        name={`repositories.${pullRequest.componentName}.prDescription`}
+        name={`repositories.${pullRequest[repoName].componentName}.prDescription`}
         value={pullRequest?.[repoName]?.prDescription}
         error={!!formErrors?.[repoName]?.prDescription}
         multiline
@@ -203,7 +204,7 @@ export const PreviewPullRequest = ({
         variant="outlined"
         onChange={handleChange}
         value={pullRequest?.[repoName]?.componentName}
-        name={`repositories.${pullRequest.componentName}.componentName`}
+        name={`repositories.${pullRequest[repoName].componentName}.componentName`}
         error={!!formErrors?.[repoName]?.componentName}
         fullWidth
         required
