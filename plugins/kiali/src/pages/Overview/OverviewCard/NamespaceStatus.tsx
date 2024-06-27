@@ -6,7 +6,7 @@ import {
   IntervalInMilliseconds,
 } from '../../../types/Common';
 import { DEGRADED, FAILURE, HEALTHY, NOT_READY } from '../../../types/Health';
-import { NamespaceInfo, NamespaceInfoStatus } from '../NamespaceInfo';
+import { NamespaceInfo } from '../NamespaceInfo';
 import { switchType } from '../OverviewHelper';
 import { OverviewStatus } from '../OverviewStatus';
 import { OverviewType } from '../OverviewToolbar';
@@ -16,12 +16,11 @@ type NamespaceStatusProps = {
   type: OverviewType;
   duration: DurationInSeconds;
   refreshInterval: IntervalInMilliseconds;
-  healthNs?: NamespaceInfoStatus;
 };
 
 export const NamespaceStatus = (props: NamespaceStatusProps) => {
   const ns = props.namespace;
-  const health = props.healthNs;
+  const health = props.namespace.status;
   const targetPage = switchType(
     props.type,
     Paths.APPLICATIONS,

@@ -94,9 +94,14 @@ export const OverviewPage = (props: { entity?: boolean }) => {
     currentDirectionType(),
   );
   const [activeNs, setActiveNs] = React.useState<NamespaceInfo[]>([]);
-  const [healthNs, setHealthNs] = React.useState<
-    Map<string, NamespaceInfoStatus>
-  >(new Map<string, NamespaceInfoStatus>());
+
+  const setHealth = (ns: NamespaceInfo, i: number) => {
+    setNamespaces(prevNamespaces => {
+      const newNs = [...prevNamespaces];
+      newNs[i] = { ...newNs, ...ns };
+      return newNs;
+    });
+  };
 
   const sortedNamespaces = (nss: NamespaceInfo[]) => {
     nss.sort((a, b) => {
@@ -116,8 +121,8 @@ export const OverviewPage = (props: { entity?: boolean }) => {
     const apiFunc = switchType(
       type,
       kialiClient.getClustersAppHealth,
-      kialiClient.getClustersWorkloadHealth,
       kialiClient.getClustersServiceHealth,
+      kialiClient.getClustersWorkloadHealth,
     );
     const healthPromise: Promise<
       | Map<string, NamespaceAppHealth>
@@ -134,7 +139,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
 
     return healthPromise
       .then(results => {
-        namespacesInfo.forEach(nsInfo => {
+        namespacesInfo.forEach((nsInfo, index) => {
           const nsStatus: NamespaceInfoStatus = {
             inNotReady: [],
             inError: [],
@@ -167,9 +172,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
               }
             });
             nsInfo.status = nsStatus;
-            const localHealthNs = healthNs;
-            localHealthNs.set(nsInfo.name, nsStatus);
-            setHealthNs(localHealthNs);
+            setHealth(nsInfo, index);
           }
         });
       })
@@ -438,7 +441,6 @@ export const OverviewPage = (props: { entity?: boolean }) => {
         namespacesResponse,
         namespaces,
       );
-
       // Calculate information
       const isAscending = FilterHelper.isCurrentSortAscending();
       const sortField = FilterHelper.currentSortField(Sorts.sortFields);
@@ -463,7 +465,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
       load();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeNsName, healthNs]);
+  }, [activeNsName]);
 
   React.useEffect(() => {
     load();
@@ -497,7 +499,6 @@ export const OverviewPage = (props: { entity?: boolean }) => {
                   istiodResourceThresholds={istiodResourceThresholds}
                   istioStatus={kialiState.istioStatus}
                   outboundTrafficPolicy={outboundTrafficPolicy}
-                  healthNs={healthNs.get(ns.name)}
                 />
               </CardTab>
             ))}
@@ -537,7 +538,6 @@ export const OverviewPage = (props: { entity?: boolean }) => {
                     istiodResourceThresholds={istiodResourceThresholds}
                     istioStatus={kialiState.istioStatus}
                     outboundTrafficPolicy={outboundTrafficPolicy}
-                    healthNs={healthNs.get(ns.name)}
                   />
                 </Grid>
               ))}

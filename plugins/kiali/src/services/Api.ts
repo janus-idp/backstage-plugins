@@ -480,7 +480,7 @@ export class KialiApiClient implements KialiApi {
             // @ts-ignore
             if (namespaceServiceHealth[ns][k]) {
               // @ts-ignore
-              const conv = namespaceAppHealth[ns][k];
+              const conv = namespaceServiceHealth[ns][k];
               // @ts-ignore
               const sh = ServiceHealth.fromJson(namespaces, k, conv, {
                 rateInterval: duration,
@@ -527,6 +527,7 @@ export class KialiApiClient implements KialiApi {
       const ret = new Map<string, NamespaceWorkloadHealth>();
       // @ts-ignore
       const namespaceWorkloadHealth = response.namespaceWorkloadHealth;
+
       if (namespaceWorkloadHealth) {
         Object.keys(namespaceWorkloadHealth).forEach(ns => {
           if (!ret.get(ns)) {
@@ -536,7 +537,7 @@ export class KialiApiClient implements KialiApi {
             // @ts-ignore
             if (namespaceWorkloadHealth[ns][k]) {
               // @ts-ignore
-              const conv = namespaceAppHealth[ns][k];
+              const conv = namespaceWorkloadHealth[ns][k];
               // @ts-ignore
               const wh = WorkloadHealth.fromJson(namespaces, k, conv, {
                 rateInterval: duration,
