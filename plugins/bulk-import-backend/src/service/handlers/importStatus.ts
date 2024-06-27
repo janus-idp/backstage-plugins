@@ -1,14 +1,16 @@
+import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 
 import { Logger } from 'winston';
 
-import { CatalogInfoGenerator } from '../../helpers';
+import { CatalogInfoGenerator, getTokenForPlugin } from '../../helpers';
 import { Components } from '../../openapi';
 import { GithubApiService } from '../githubApiService';
 
 export async function getImportStatus(
   logger: Logger,
   githubApiService: GithubApiService,
+  auth: AuthService,
   catalogApi: CatalogApi,
   catalogInfoGenerator: CatalogInfoGenerator,
   repoUrl: string,
@@ -20,7 +22,7 @@ export async function getImportStatus(
     catalogInfoGenerator,
     repoUrl,
     async (catalogUrl: string) =>
-      await verifyLocationExistence(catalogApi, catalogUrl),
+      await verifyLocationExistence(auth, catalogApi, catalogUrl),
     defaultBranch,
   );
 }
@@ -79,19 +81,26 @@ async function getImportStatusWithCheckerFn(
  * verifyLocationExistence checks for the existence of the Location target.
  * Under the hood, it attempts to read the target URL and will return false if the target could not be found
  * and even if there is already a Location row in the database.
+ * @param auth
  * @param catalogApi
  * @param repoCatalogUrl
  */
 export async function verifyLocationExistence(
+  auth: AuthService,
   catalogApi: CatalogApi,
   repoCatalogUrl: string,
 ): Promise<boolean> {
   try {
-    const result = await catalogApi.addLocation({
-      type: 'url',
-      target: repoCatalogUrl,
-      dryRun: true,
-    });
+    const result = await catalogApi.addLocation(
+      {
+        type: 'url',
+        target: repoCatalogUrl,
+        dryRun: true,
+      },
+      {
+        token: await getTokenForPlugin(auth, 'catalog'),
+      },
+    );
     // The `result.exists` field is only filled in dryRun mode
     return result.exists as boolean;
   } catch (error: any) {
@@ -103,15 +112,21 @@ export async function verifyLocationExistence(
 }
 
 export async function hasEntityInCatalog(
+  auth: AuthService,
   catalogApi: CatalogApi,
   entityName: string,
 ) {
   return catalogApi
-    .queryEntities({
-      filter: {
-        'metadata.name': entityName,
+    .queryEntities(
+      {
+        filter: {
+          'metadata.name': entityName,
+        },
+        limit: 1,
       },
-      limit: 1,
-    })
+      {
+        token: await getTokenForPlugin(auth, 'catalog'),
+      },
+    )
     .then(resp => resp.items?.length > 0);
 }

@@ -349,7 +349,6 @@ export class CustomSingleInstanceGithubCredentialsProvider
    */
   async getCredentials(opts: { url: string }): Promise<GithubCredentials> {
     const parsed = gitUrlParse(opts.url);
-
     const owner = parsed.owner || parsed.name;
 
     let type: GithubCredentialType = 'app';

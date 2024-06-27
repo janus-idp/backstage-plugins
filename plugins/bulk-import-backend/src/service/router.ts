@@ -15,21 +15,22 @@
  */
 
 import {
+  createLegacyAuthAdapters,
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { NotAllowedError } from '@backstage/errors';
 import {
   getBearerTokenFromAuthorizationHeader,
   IdentityApi,
 } from '@backstage/plugin-auth-node';
 import {
-  AuthorizeResult,
   createPermission,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
 import { fullFormats } from 'ajv-formats/dist/formats';
 import express from 'express';
@@ -68,6 +69,8 @@ export interface RouterOptions {
   config: Config;
   discovery: PluginEndpointDiscovery;
   identity: IdentityApi;
+  httpAuth?: HttpAuthService;
+  auth?: AuthService;
   catalogApi: CatalogApi;
 }
 
@@ -75,37 +78,38 @@ export interface RouterOptions {
  * This will resolve to { result: AuthorizeResult.ALLOW } if the permission framework is disabled
  */
 async function permissionCheck(
-  permissions: PermissionEvaluator,
-  token?: string,
+  _permissions: PermissionEvaluator,
+  _token?: string,
 ) {
-  const decision = (
-    await permissions.authorizeConditional(
-      [{ permission: bulkImportPermission }],
-      {
-        token,
-      },
-    )
-  )[0];
-
-  if (decision.result === AuthorizeResult.DENY) {
-    throw new NotAllowedError('Unauthorized');
-  }
+  // TODO(rm3l): Implement this properly as part of https://issues.redhat.com/browse/RHIDP-1208
+  return;
+  // const decision = (
+  //   await permissions.authorizeConditional(
+  //     [{ permission: bulkImportPermission }],
+  //     {
+  //       token,
+  //     },
+  //   )
+  // )[0];
+  //
+  // if (decision.result === AuthorizeResult.DENY) {
+  //   throw new NotAllowedError('Unauthorized');
+  // }
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const {
-    logger,
-    permissions,
-    config,
-    discovery,
-    // identity,
-    catalogApi,
-  } = options;
+  const { logger, permissions, config, discovery, catalogApi } = options;
+
+  const { auth } = createLegacyAuthAdapters(options);
 
   const githubApiService = new GithubApiService(logger, config);
-  const catalogInfoGenerator = new CatalogInfoGenerator(logger, discovery);
+  const catalogInfoGenerator = new CatalogInfoGenerator(
+    logger,
+    discovery,
+    auth,
+  );
 
   // create openapi requests handler
   const api = new OpenAPIBackend({
@@ -204,6 +208,7 @@ export async function createRouter(
       const response = await createImportJobs(
         logger,
         config,
+        auth,
         catalogApi,
         githubApiService,
         catalogInfoGenerator,

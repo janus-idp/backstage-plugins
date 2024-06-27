@@ -2,6 +2,11 @@ import {
   getVoidLogger,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import {
+  AuthService,
+  BackstageCredentials,
+  BackstagePrincipalTypes,
+} from '@backstage/backend-plugin-api';
 
 import fetch from 'node-fetch';
 
@@ -17,6 +22,7 @@ const mockExternalBaseUrl = 'https://127.0.0.127';
 describe('catalogInfoGenerator', () => {
   let catalogInfoGenerator: CatalogInfoGenerator;
   let mockDiscovery: PluginEndpointDiscovery;
+  let mockAuth: AuthService;
 
   beforeAll(() => {
     (fetch as unknown as jest.Mock).mockReturnValue(
@@ -30,7 +36,30 @@ describe('catalogInfoGenerator', () => {
       getExternalBaseUrl: (pluginId: string) =>
         Promise.resolve(`${mockExternalBaseUrl}/my-${pluginId}`),
     };
-    catalogInfoGenerator = new CatalogInfoGenerator(logger, mockDiscovery);
+    mockAuth = {
+      isPrincipal<TType extends keyof BackstagePrincipalTypes>(
+        _credentials: BackstageCredentials,
+        _type: TType,
+      ): _credentials is BackstageCredentials<BackstagePrincipalTypes[TType]> {
+        return false;
+      },
+      getPluginRequestToken: () =>
+        Promise.resolve({ token: 'ey123.abc.xyzzz' }),
+      authenticate: jest.fn(),
+      getNoneCredentials: jest.fn(),
+      getOwnServiceCredentials: jest.fn().mockResolvedValue({
+        principal: {
+          subject: 'my-sub',
+        },
+      }),
+      getLimitedUserToken: jest.fn(),
+      listPublicServiceKeys: jest.fn(),
+    };
+    catalogInfoGenerator = new CatalogInfoGenerator(
+      logger,
+      mockDiscovery,
+      mockAuth,
+    );
   });
 
   beforeEach(() => {
@@ -82,6 +111,7 @@ describe('catalogInfoGenerator', () => {
       {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: 'Bearer ey123.abc.xyzzz',
         },
         method: 'POST',
         body: JSON.stringify({
@@ -121,6 +151,7 @@ ${getDefaultCatalogInfoWithoutSeparators('my-org-4', 'my-repo-comp-42')}
       {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: 'Bearer ey123.abc.xyzzz',
         },
         method: 'POST',
         body: JSON.stringify({

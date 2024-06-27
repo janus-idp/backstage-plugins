@@ -39,6 +39,8 @@ export const bulkImportPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         permissions: coreServices.permissions,
         identity: coreServices.identity,
+        httpAuth: coreServices.httpAuth,
+        auth: coreServices.auth,
         catalogApi: catalogServiceRef,
       },
       async init({
@@ -48,18 +50,25 @@ export const bulkImportPlugin = createBackendPlugin({
         discovery,
         permissions,
         identity,
+        httpAuth,
+        auth,
         catalogApi,
       }) {
-        http.use(
-          await createRouter({
-            config,
-            discovery,
-            permissions,
-            identity,
-            logger: loggerToWinstonLogger(logger),
-            catalogApi,
-          }),
-        );
+        const router = await createRouter({
+          config,
+          discovery,
+          permissions,
+          identity,
+          logger: loggerToWinstonLogger(logger),
+          httpAuth,
+          auth,
+          catalogApi,
+        });
+        http.use(router);
+        http.addAuthPolicy({
+          path: '/ping',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

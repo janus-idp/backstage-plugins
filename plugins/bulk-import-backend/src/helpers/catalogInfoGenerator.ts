@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 
 import gitUrlParse from 'git-url-parse';
 import jsYaml from 'js-yaml';
 import fetch from 'node-fetch';
 import { Logger } from 'winston';
 
+import { getTokenForPlugin } from './auth';
+
 export class CatalogInfoGenerator {
   private readonly logger: Logger;
   private readonly discovery: PluginEndpointDiscovery;
+  private readonly auth: AuthService;
 
-  constructor(logger: Logger, discovery: PluginEndpointDiscovery) {
+  constructor(logger: Logger, discovery: DiscoveryService, auth: AuthService) {
     this.logger = logger;
     this.discovery = discovery;
+    this.auth = auth;
   }
 
   async generateDefaultCatalogInfoContent(
@@ -57,6 +62,7 @@ spec:
         {
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${await getTokenForPlugin(this.auth, 'catalog')}`,
           },
           method: 'POST',
           body: JSON.stringify({
@@ -100,6 +106,7 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     const response = await fetch(url, {
       headers: {
         Accept: 'application/json',
+        Authorization: `Bearer ${await getTokenForPlugin(this.auth, 'catalog')}`,
       },
       method: 'GET',
     });
@@ -121,6 +128,7 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     await fetch(url, {
       headers: {
         Accept: 'application/json',
+        Authorization: `Bearer ${await getTokenForPlugin(this.auth, 'catalog')}`,
       },
       method: 'DELETE',
     });

@@ -185,6 +185,50 @@ export class GithubApiService {
         errors.set(-1, credentialError);
       }
     }
+    return { totalCount };
+  }
+
+  private async computeTotalRepoCountFromGitHubToken(
+    octokit: Octokit,
+    resp: RestEndpointMethodTypes['repos']['listForAuthenticatedUser']['response'],
+  ): Promise<number | undefined> {
+    // There is no direct way to get the total count of repositories other than using octokit.paginate,
+    // but will make us retrieve all pages, thus increasing our response time.
+    // Workaround here is to analyze the headers, and get the link to the last page.
+    const pageSize = resp?.data?.length;
+    const linkHeader = resp?.headers?.link;
+    if (!linkHeader) {
+      this.logger.debug(
+        'No link header found in response from listForAuthenticatedUser GH endpoint => returning current page size',
+      );
+      return pageSize;
+    }
+    const lastPageLink = linkHeader
+      .split(',')
+      .find(s => s.includes('rel="last"'));
+    if (!lastPageLink) {
+      this.logger.debug(
+        "No rel='last' link found in response headers from listForAuthenticatedUser GH endpoint => returning current page size",
+      );
+      return pageSize;
+    }
+    const match = lastPageLink.match(/page=(\d+).*$/);
+    if (!match || match.length < 2) {
+      this.logger.debug(
+        "Unable to extract page number from rel='last' link found in response headers from listForAuthenticatedUser GH endpoint => returning current page size",
+      );
+      return pageSize;
+    }
+
+    const lastPageNumber = parseInt(match[1], 10);
+    // Fetch the last page to count its items, as it might contain fewer than the requested size
+    const lastPageResponse = await octokit.repos.listForAuthenticatedUser({
+      page: lastPageNumber,
+      per_page: 1,
+    });
+    return pageSize
+      ? (lastPageNumber - 1) * pageSize + lastPageResponse.data.length
+      : undefined;
   }
 
   /**
@@ -338,7 +382,13 @@ export class GithubApiService {
       });
 
       try {
-        return await this.findOpenPRForBranch(logger, octo, owner, repo, branchName);
+        return await this.findOpenPRForBranch(
+          logger,
+          octo,
+          owner,
+          repo,
+          branchName,
+        );
       } catch (error) {
         logger.warn(`Error fetching pull requests: ${error}`);
       }

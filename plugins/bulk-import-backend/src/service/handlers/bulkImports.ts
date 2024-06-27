@@ -1,10 +1,11 @@
+import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
 import { Logger } from 'winston';
 
-import { CatalogInfoGenerator } from '../../helpers';
+import { CatalogInfoGenerator, getTokenForPlugin } from '../../helpers';
 import { Components, Paths } from '../../openapi.d';
 import { GithubApiService } from '../githubApiService';
 import {
@@ -154,6 +155,7 @@ async function possiblyCreateLocation(
 export async function createImportJobs(
   logger: Logger,
   config: Config,
+  auth: AuthService,
   catalogApi: CatalogApi,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
@@ -191,6 +193,7 @@ export async function createImportJobs(
       } else {
         const errs: string[] = [];
         const hasEntity = await hasEntityInCatalog(
+          auth,
           catalogApi,
           req.catalogEntityName,
         );
@@ -216,6 +219,7 @@ export async function createImportJobs(
       req.repository.defaultBranch,
     );
     const hasLocation = await verifyLocationExistence(
+      auth,
       catalogApi,
       repoCatalogUrl,
     );
@@ -253,17 +257,7 @@ export async function createImportJobs(
       logger.debug(`Created new PR from request: ${prToRepo.prUrl}`);
 
       // Create Location
-      try {
-        await catalogApi.addLocation({
-          type: 'url',
-          target: repoCatalogUrl,
-        });
-      } catch (error: any) {
-        });
-          throw error;
-        }
-        // Location already exists, which is fine
-      }
+      await possiblyCreateLocation(auth, catalogApi, repoCatalogUrl);
 
       if (prToRepo.hasChanges === false) {
         // PR created but with no changes compared to the base branch
