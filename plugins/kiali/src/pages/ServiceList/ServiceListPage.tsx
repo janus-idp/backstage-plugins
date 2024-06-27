@@ -10,7 +10,6 @@ import { CircularProgress } from '@material-ui/core';
 
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
-import { Toggles } from '../../components/Filters/StatefulFilters';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { VirtualList } from '../../components/VirtualList/VirtualList';
 import { isMultiCluster } from '../../config';
@@ -18,7 +17,6 @@ import { getEntityNs, nsEqual } from '../../helpers/namespaces';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
-import { ActiveTogglesInfo } from '../../types/Filters';
 import { ServiceHealth } from '../../types/Health';
 import { validationKey } from '../../types/IstioConfigList';
 import { ObjectValidation, Validations } from '../../types/IstioObjects';
@@ -44,7 +42,6 @@ export const ServiceListPage = (props: {
     : kialiState.namespaces.activeNamespaces.map(ns => ns.name);
   const prevActiveNs = useRef(activeNs);
   const prevDuration = useRef(duration);
-  const activeToggles: ActiveTogglesInfo = Toggles.getToggles();
   const [loadingD, setLoading] = React.useState<boolean>(true);
 
   const hiddenColumns = isMultiCluster ? [] : ['cluster'];
@@ -93,10 +90,10 @@ export const ServiceListPage = (props: {
         name: service.name,
         istioSidecar: service.istioSidecar,
         istioAmbient: service.istioAmbient,
-        namespace: data.namespace.name,
+        namespace: service.namespace,
         cluster: service.cluster,
         health: ServiceHealth.fromJson(
-          data.namespace.name,
+          service.namespace,
           service.name,
           service.health,
           {
@@ -107,7 +104,7 @@ export const ServiceListPage = (props: {
         ),
         validation: getServiceValidation(
           service.name,
-          data.namespace.name,
+          service.namespace,
           data.validations,
         ),
         additionalDetailSample: service.additionalDetailSample,
@@ -123,21 +120,24 @@ export const ServiceListPage = (props: {
   };
 
   const fetchServices = async (
-    nss: NamespaceInfo[],
+    clusters: string[],
     timeDuration: number,
-    _: ActiveTogglesInfo,
   ): Promise<void> => {
     const health = 'true';
     const istioResources = 'true';
     const onlyDefinitions = 'false';
     return Promise.all(
-      nss.map(async nsInfo => {
-        return await kialiClient.getServices(nsInfo.name, {
-          rateInterval: `${String(timeDuration)}s`,
-          health: health,
-          istioResources: istioResources,
-          onlyDefinitions: onlyDefinitions,
-        });
+      clusters.map(async cluster => {
+        return await kialiClient.getClustersServices(
+          activeNs.map(ns => ns).join(','),
+          {
+            rateInterval: `${String(timeDuration)}s`,
+            health: health,
+            istioResources: istioResources,
+            onlyDefinitions: onlyDefinitions,
+          },
+          cluster,
+        );
       }),
     )
       .then(results => {
@@ -158,6 +158,12 @@ export const ServiceListPage = (props: {
   };
 
   const load = async () => {
+    const serverConfig = await kialiClient.getServerConfig();
+
+    const uniqueClusters = new Set<string>();
+    Object.keys(serverConfig.clusters).forEach(cluster => {
+      uniqueClusters.add(cluster);
+    });
     kialiClient.getNamespaces().then(namespacesResponse => {
       const allNamespaces: NamespaceInfo[] = getNamespaces(
         namespacesResponse,
@@ -165,7 +171,7 @@ export const ServiceListPage = (props: {
       );
       const nsl = allNamespaces.filter(ns => activeNs.includes(ns.name));
       setNamespaces(nsl);
-      fetchServices(nsl, duration, activeToggles);
+      fetchServices(Array.from(uniqueClusters), duration);
     });
     setTimeout(() => {
       setLoading(false);

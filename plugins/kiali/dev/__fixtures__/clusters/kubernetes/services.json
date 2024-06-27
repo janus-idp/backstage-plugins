@@ -1,0 +1,621 @@
+{
+  "cluster": "Kubernetes",
+  "services": [
+    {
+      "name": "voyages",
+      "namespace": "travel-portal",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "voyages"
+      },
+      "selector": {
+        "app": "voyages"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "viaggi",
+      "namespace": "travel-portal",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "viaggi"
+      },
+      "selector": {
+        "app": "viaggi"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "travels",
+      "namespace": "travel-portal",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "travels"
+      },
+      "selector": {
+        "app": "travels"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "details",
+      "namespace": "bookinfo",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "details",
+        "service": "details"
+      },
+      "selector": {
+        "app": "details"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.9999999999999999
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "ratings",
+      "namespace": "bookinfo",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "ratings",
+        "service": "ratings"
+      },
+      "selector": {
+        "app": "ratings"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.5777777777777777
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "reviews",
+      "namespace": "bookinfo",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "reviews",
+        "service": "reviews"
+      },
+      "selector": {
+        "app": "reviews"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 1
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "productpage",
+      "namespace": "bookinfo",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "productpage",
+        "service": "productpage"
+      },
+      "selector": {
+        "app": "productpage"
+      },
+      "istioReferences": [
+        {
+          "objectType": "VirtualService",
+          "name": "bookinfo",
+          "namespace": "bookinfo",
+          "cluster": ""
+        },
+        {
+          "objectType": "Gateway",
+          "name": "bookinfo-gateway",
+          "namespace": "bookinfo",
+          "cluster": ""
+        }
+      ],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.9999999999999999
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "flights",
+      "namespace": "travel-agency",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "flights"
+      },
+      "selector": {
+        "app": "flights"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.2666666666666666
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "hotels",
+      "namespace": "travel-agency",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "hotels"
+      },
+      "selector": {
+        "app": "hotels"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.7999999999999999
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "insurances",
+      "namespace": "travel-agency",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "insurances"
+      },
+      "selector": {
+        "app": "insurances"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.39999999999999997
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "travels",
+      "namespace": "travel-agency",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "travels"
+      },
+      "selector": {
+        "app": "travels"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.7999999999999998
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "mysqldb",
+      "namespace": "travel-agency",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "mysqldb"
+      },
+      "selector": {
+        "app": "mysqldb"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "cars",
+      "namespace": "travel-agency",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "cars"
+      },
+      "selector": {
+        "app": "cars"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.2666666666666666
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "discounts",
+      "namespace": "travel-agency",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "discounts"
+      },
+      "selector": {
+        "app": "discounts"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 1.333333333333333
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "control",
+      "namespace": "travel-control",
+      "istioSidecar": true,
+      "cluster": "Kubernetes",
+      "istioAmbient": false,
+      "appLabel": true,
+      "additionalDetailSample": null,
+      "annotations": null,
+      "healthAnnotations": {},
+      "ports": null,
+      "labels": {
+        "app": "control"
+      },
+      "selector": {
+        "app": "control"
+      },
+      "istioReferences": [],
+      "kialiWizard": "",
+      "serviceRegistry": "Kubernetes",
+      "health": {
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    }
+  ],
+  "validations": {
+    "service": {
+      "cars.travel-agency": {
+        "name": "cars",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "control.travel-control": {
+        "name": "control",
+        "namespace": "travel-control",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "details.bookinfo": {
+        "name": "details",
+        "namespace": "bookinfo",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "discounts.travel-agency": {
+        "name": "discounts",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "flights.travel-agency": {
+        "name": "flights",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "hotels.travel-agency": {
+        "name": "hotels",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "insurances.travel-agency": {
+        "name": "insurances",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "mysqldb.travel-agency": {
+        "name": "mysqldb",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "productpage.bookinfo": {
+        "name": "productpage",
+        "namespace": "bookinfo",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "ratings.bookinfo": {
+        "name": "ratings",
+        "namespace": "bookinfo",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "reviews.bookinfo": {
+        "name": "reviews",
+        "namespace": "bookinfo",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "travels.travel-agency": {
+        "name": "travels",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "travels.travel-portal": {
+        "name": "travels",
+        "namespace": "travel-portal",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "viaggi.travel-portal": {
+        "name": "viaggi",
+        "namespace": "travel-portal",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "voyages.travel-portal": {
+        "name": "voyages",
+        "namespace": "travel-portal",
+        "cluster": "",
+        "objectType": "service",
+        "valid": true,
+        "checks": [],
+        "references": null
+      }
+    }
+  }
+}

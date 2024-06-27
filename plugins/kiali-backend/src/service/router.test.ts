@@ -53,39 +53,11 @@ describe('createRouter', () => {
       const result = await request(app).post('/status');
       expect(result.status).toBe(200);
       expect(result.body).toEqual({
-        status: {
-          'Kiali commit hash': '72a2496cb4ed1545457a68e34fe3e81409b1611d',
-          'Kiali container version': 'v1.73.0-SNAPSHOT',
-          'Kiali state': 'running',
-          'Kiali version': 'v1.73.0-SNAPSHOT',
-          'Mesh name': 'Istio',
-          'Mesh version': '1.17.1',
-        },
-        externalServices: [
-          {
-            name: 'Istio',
-            version: '1.17.1',
-          },
-          {
-            name: 'Prometheus',
-            version: '2.34.0',
-          },
-          {
-            name: 'Kubernetes',
-            version: 'v1.26.3+b404935',
-          },
-          {
-            name: 'Grafana',
-          },
-          {
-            name: 'Jaeger',
-          },
-        ],
-        warningMessages: [],
-        istioEnvironment: {
-          isMaistra: false,
-          istioAPIEnabled: true,
-        },
+        category: 'versionSupported',
+        message:
+          'Kiali version supported is v1.86, we found version v1.73.0-SNAPSHOT',
+        title: 'kiali version not supported',
+        verify: false,
       });
     });
   });

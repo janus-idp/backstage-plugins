@@ -1,0 +1,956 @@
+{
+  "cluster": "Kubernetes",
+  "workloads": [
+    {
+      "name": "cars-v1",
+      "namespace": "travel-agency",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T11:03:26Z",
+      "resourceVersion": "20855",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "cars",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"cars-v1\",\"namespace\":\"travel-agency\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"cars\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"annotations\":{\"proxy.istio.io/config\":\"tracing:\\n  zipkin:\\n    address: zipkin.istio-system:9411\\n  sampling: 10\\n  custom_tags:\\n    http.header.portal:\\n      header:\\n        name: portal\\n    http.header.device:\\n      header:\\n        name: device\\n    http.header.user:\\n      header:\\n        name: user\\n    http.header.travel:\\n      header:\\n        name: travel\\n\",\"readiness.status.sidecar.istio.io/applicationPorts\":\"\"},\"labels\":{\"app\":\"cars\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"CURRENT_SERVICE\",\"value\":\"cars\"},{\"name\":\"CURRENT_VERSION\",\"value\":\"v1\"},{\"name\":\"LISTEN_ADDRESS\",\"value\":\":8000\"},{\"name\":\"DISCOUNTS_SERVICE\",\"value\":\"http://discounts.travel-agency:8000\"},{\"name\":\"MYSQL_SERVICE\",\"value\":\"mysqldb.travel-agency:3306\"},{\"name\":\"MYSQL_USER\",\"value\":\"root\"},{\"name\":\"MYSQL_PASSWORD\",\"valueFrom\":{\"secretKeyRef\":{\"key\":\"rootpasswd\",\"name\":\"mysql-credentials\"}}},{\"name\":\"MYSQL_DATABASE\",\"value\":\"test\"}],\"image\":\"quay.io/kiali/demo_travels_cars:v1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"cars\",\"ports\":[{\"containerPort\":8000}],\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"privileged\":false,\"readOnlyRootFilesystem\":true}}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["default"],
+      "health": {
+        "workloadStatus": {
+          "name": "cars-v1",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "discounts-v1",
+      "namespace": "travel-agency",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T11:03:26Z",
+      "resourceVersion": "20902",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "discounts",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"discounts-v1\",\"namespace\":\"travel-agency\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"discounts\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"annotations\":{\"proxy.istio.io/config\":\"tracing:\\n  zipkin:\\n    address: zipkin.istio-system:9411\\n  sampling: 10\\n  custom_tags:\\n    http.header.portal:\\n      header:\\n        name: portal\\n    http.header.device:\\n      header:\\n        name: device\\n    http.header.user:\\n      header:\\n        name: user\\n    http.header.travel:\\n      header:\\n        name: travel\\n\",\"readiness.status.sidecar.istio.io/applicationPorts\":\"\"},\"labels\":{\"app\":\"discounts\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"CURRENT_SERVICE\",\"value\":\"discounts\"},{\"name\":\"CURRENT_VERSION\",\"value\":\"v1\"},{\"name\":\"LISTEN_ADDRESS\",\"value\":\":8000\"}],\"image\":\"quay.io/kiali/demo_travels_discounts:v1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"discounts\",\"ports\":[{\"containerPort\":8000}],\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"privileged\":false,\"readOnlyRootFilesystem\":true}}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["default"],
+      "health": {
+        "workloadStatus": {
+          "name": "discounts-v1",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.24288666666666664
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "flights-v1",
+      "namespace": "travel-agency",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T11:03:26Z",
+      "resourceVersion": "21023",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "flights",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"flights-v1\",\"namespace\":\"travel-agency\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"flights\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"annotations\":{\"proxy.istio.io/config\":\"tracing:\\n  zipkin:\\n    address: zipkin.istio-system:9411\\n  sampling: 10\\n  custom_tags:\\n    http.header.portal:\\n      header:\\n        name: portal\\n    http.header.device:\\n      header:\\n        name: device\\n    http.header.user:\\n      header:\\n        name: user\\n    http.header.travel:\\n      header:\\n        name: travel\\n\",\"readiness.status.sidecar.istio.io/applicationPorts\":\"\"},\"labels\":{\"app\":\"flights\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"CURRENT_SERVICE\",\"value\":\"flights\"},{\"name\":\"CURRENT_VERSION\",\"value\":\"v1\"},{\"name\":\"LISTEN_ADDRESS\",\"value\":\":8000\"},{\"name\":\"DISCOUNTS_SERVICE\",\"value\":\"http://discounts.travel-agency:8000\"},{\"name\":\"MYSQL_SERVICE\",\"value\":\"mysqldb.travel-agency:3306\"},{\"name\":\"MYSQL_USER\",\"value\":\"root\"},{\"name\":\"MYSQL_PASSWORD\",\"valueFrom\":{\"secretKeyRef\":{\"key\":\"rootpasswd\",\"name\":\"mysql-credentials\"}}},{\"name\":\"MYSQL_DATABASE\",\"value\":\"test\"}],\"image\":\"quay.io/kiali/demo_travels_flights:v1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"flights\",\"ports\":[{\"containerPort\":8000}],\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"privileged\":false,\"readOnlyRootFilesystem\":true}}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["default"],
+      "health": {
+        "workloadStatus": {
+          "name": "flights-v1",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.08296666666666666
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 0.08296666666666666
+            }
+          },
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "hotels-v1",
+      "namespace": "travel-agency",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T11:03:26Z",
+      "resourceVersion": "20939",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "hotels",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"hotels-v1\",\"namespace\":\"travel-agency\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"hotels\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"annotations\":{\"proxy.istio.io/config\":\"tracing:\\n  zipkin:\\n    address: zipkin.istio-system:9411\\n  sampling: 10\\n  custom_tags:\\n    http.header.portal:\\n      header:\\n        name: portal\\n    http.header.device:\\n      header:\\n        name: device\\n    http.header.user:\\n      header:\\n        name: user\\n    http.header.travel:\\n      header:\\n        name: travel\\n\",\"readiness.status.sidecar.istio.io/applicationPorts\":\"\"},\"labels\":{\"app\":\"hotels\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"CURRENT_SERVICE\",\"value\":\"hotels\"},{\"name\":\"CURRENT_VERSION\",\"value\":\"v1\"},{\"name\":\"LISTEN_ADDRESS\",\"value\":\":8000\"},{\"name\":\"DISCOUNTS_SERVICE\",\"value\":\"http://discounts.travel-agency:8000\"},{\"name\":\"MYSQL_SERVICE\",\"value\":\"mysqldb.travel-agency:3306\"},{\"name\":\"MYSQL_USER\",\"value\":\"root\"},{\"name\":\"MYSQL_PASSWORD\",\"valueFrom\":{\"secretKeyRef\":{\"key\":\"rootpasswd\",\"name\":\"mysql-credentials\"}}},{\"name\":\"MYSQL_DATABASE\",\"value\":\"test\"}],\"image\":\"quay.io/kiali/demo_travels_hotels:v1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"hotels\",\"ports\":[{\"containerPort\":8000}],\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"privileged\":false,\"readOnlyRootFilesystem\":true}}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["default"],
+      "health": {
+        "workloadStatus": {
+          "name": "hotels-v1",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "insurances-v1",
+      "namespace": "travel-agency",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T11:03:26Z",
+      "resourceVersion": "20923",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "insurances",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"insurances-v1\",\"namespace\":\"travel-agency\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"insurances\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"annotations\":{\"readiness.status.sidecar.istio.io/applicationPorts\":\"\"},\"labels\":{\"app\":\"insurances\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"CURRENT_SERVICE\",\"value\":\"insurances\"},{\"name\":\"CURRENT_VERSION\",\"value\":\"v1\"},{\"name\":\"LISTEN_ADDRESS\",\"value\":\":8000\"},{\"name\":\"DISCOUNTS_SERVICE\",\"value\":\"http://discounts.travel-agency:8000\"},{\"name\":\"MYSQL_SERVICE\",\"value\":\"mysqldb.travel-agency:3306\"},{\"name\":\"MYSQL_USER\",\"value\":\"root\"},{\"name\":\"MYSQL_PASSWORD\",\"valueFrom\":{\"secretKeyRef\":{\"key\":\"rootpasswd\",\"name\":\"mysql-credentials\"}}},{\"name\":\"MYSQL_DATABASE\",\"value\":\"test\"}],\"image\":\"quay.io/kiali/demo_travels_insurances:v1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"insurances\",\"ports\":[{\"containerPort\":8000}],\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"privileged\":false,\"readOnlyRootFilesystem\":true}}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["default"],
+      "health": {
+        "workloadStatus": {
+          "name": "insurances-v1",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.15991999999999998
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 0.15991999999999998
+            }
+          },
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "mysqldb-v1",
+      "namespace": "travel-agency",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T11:03:26Z",
+      "resourceVersion": "20887",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "mysqldb",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"mysqldb\",\"version\":\"v1\"},\"name\":\"mysqldb-v1\",\"namespace\":\"travel-agency\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"mysqldb\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"mysqldb\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"args\":[\"--default-authentication-plugin\",\"mysql_native_password\"],\"env\":[{\"name\":\"MYSQL_ROOT_PASSWORD\",\"valueFrom\":{\"secretKeyRef\":{\"key\":\"rootpasswd\",\"name\":\"mysql-credentials\"}}}],\"image\":\"quay.io/kiali/demo_travels_mysqldb:v1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"mysqldb\",\"ports\":[{\"containerPort\":3306}],\"volumeMounts\":[{\"mountPath\":\"/var/lib/mysql\",\"name\":\"var-lib-mysql\"}]}],\"volumes\":[{\"emptyDir\":null,\"name\":\"var-lib-mysql\"}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["default"],
+      "health": {
+        "workloadStatus": {
+          "name": "mysqldb-v1",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "travels-v1",
+      "namespace": "travel-agency",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T11:03:26Z",
+      "resourceVersion": "21042",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "travels",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"travels-v1\",\"namespace\":\"travel-agency\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"travels\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"annotations\":{\"proxy.istio.io/config\":\"tracing:\\n  zipkin:\\n    address: zipkin.istio-system:9411\\n  sampling: 10\\n  custom_tags:\\n    http.header.portal:\\n      header:\\n        name: portal\\n    http.header.device:\\n      header:\\n        name: device\\n    http.header.user:\\n      header:\\n        name: user\\n    http.header.travel:\\n      header:\\n        name: travel\\n\",\"readiness.status.sidecar.istio.io/applicationPorts\":\"\"},\"labels\":{\"app\":\"travels\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"CURRENT_SERVICE\",\"value\":\"travels\"},{\"name\":\"CURRENT_VERSION\",\"value\":\"v1\"},{\"name\":\"LISTEN_ADDRESS\",\"value\":\":8000\"},{\"name\":\"FLIGHTS_SERVICE\",\"value\":\"http://flights.travel-agency:8000\"},{\"name\":\"HOTELS_SERVICE\",\"value\":\"http://hotels.travel-agency:8000\"},{\"name\":\"CARS_SERVICE\",\"value\":\"http://cars.travel-agency:8000\"},{\"name\":\"INSURANCES_SERVICE\",\"value\":\"http://insurances.travel-agency:8000\"}],\"image\":\"quay.io/kiali/demo_travels_travels:v1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"travels\",\"ports\":[{\"containerPort\":8000}],\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"privileged\":false,\"readOnlyRootFilesystem\":true}}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["default"],
+      "health": {
+        "workloadStatus": {
+          "name": "travels-v1",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.21751111111111113
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "control",
+      "namespace": "travel-control",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T11:03:27Z",
+      "resourceVersion": "20960",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "control",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"control\",\"namespace\":\"travel-control\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"control\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"annotations\":{\"readiness.status.sidecar.istio.io/applicationPorts\":\"\"},\"labels\":{\"app\":\"control\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"PORTAL_SERVICES\",\"value\":\"voyages.fr;http://voyages.travel-portal:8000,viaggi.it;http://viaggi.travel-portal:8000,travels.uk;http://travels.travel-portal:8000\"}],\"image\":\"quay.io/kiali/demo_travels_control:v1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"control\",\"ports\":[{\"containerPort\":8080}],\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"privileged\":false,\"readOnlyRootFilesystem\":true}}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["default"],
+      "health": {
+        "workloadStatus": {
+          "name": "control",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "travels",
+      "namespace": "travel-portal",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T11:03:27Z",
+      "resourceVersion": "21061",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "travels",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"travels\",\"namespace\":\"travel-portal\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"travels\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"annotations\":{\"proxy.istio.io/config\":\"tracing:\\n  zipkin:\\n    address: zipkin.istio-system:9411\\n  sampling: 10\\n  custom_tags:\\n    http.header.portal:\\n      header:\\n        name: portal\\n    http.header.device:\\n      header:\\n        name: device\\n    http.header.user:\\n      header:\\n        name: user\\n    http.header.travel:\\n      header:\\n        name: travel\\n\",\"readiness.status.sidecar.istio.io/applicationPorts\":\"\"},\"labels\":{\"app\":\"travels\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"LISTEN_ADDRESS\",\"value\":\":8000\"},{\"name\":\"PORTAL_COORDINATES\",\"value\":\"55.956245,-3.187915\"},{\"name\":\"PORTAL_COUNTRY\",\"value\":\"United Kingdom\"},{\"name\":\"PORTAL_NAME\",\"value\":\"travels.uk\"},{\"name\":\"TRAVELS_AGENCY_SERVICE\",\"value\":\"http://travels.travel-agency:8000\"}],\"image\":\"quay.io/kiali/demo_travels_portal:v1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"control\",\"ports\":[{\"containerPort\":8000}],\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"privileged\":false,\"readOnlyRootFilesystem\":true}}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["default"],
+      "health": {
+        "workloadStatus": {
+          "name": "travels",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {},
+          "outbound": {
+            "http": {
+              "200": 0.11147555555555556
+            }
+          },
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "viaggi",
+      "namespace": "travel-portal",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T11:03:27Z",
+      "resourceVersion": "21069",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "viaggi",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"viaggi\",\"namespace\":\"travel-portal\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"viaggi\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"annotations\":{\"proxy.istio.io/config\":\"tracing:\\n  zipkin:\\n    address: zipkin.istio-system:9411\\n  sampling: 10\\n  custom_tags:\\n    http.header.portal:\\n      header:\\n        name: portal\\n    http.header.device:\\n      header:\\n        name: device\\n    http.header.user:\\n      header:\\n        name: user\\n    http.header.travel:\\n      header:\\n        name: travel\\n\",\"readiness.status.sidecar.istio.io/applicationPorts\":\"\"},\"labels\":{\"app\":\"viaggi\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"LISTEN_ADDRESS\",\"value\":\":8000\"},{\"name\":\"PORTAL_COORDINATES\",\"value\":\"41.890668,12.492194\"},{\"name\":\"PORTAL_COUNTRY\",\"value\":\"Italy\"},{\"name\":\"PORTAL_NAME\",\"value\":\"viaggi.it\"},{\"name\":\"TRAVELS_AGENCY_SERVICE\",\"value\":\"http://travels.travel-agency:8000\"}],\"image\":\"quay.io/kiali/demo_travels_portal:v1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"control\",\"ports\":[{\"containerPort\":8000}],\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"privileged\":false,\"readOnlyRootFilesystem\":true}}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["default"],
+      "health": {
+        "workloadStatus": {
+          "name": "viaggi",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {},
+          "outbound": {
+            "http": {
+              "200": 0.10603555555555556
+            }
+          },
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "voyages",
+      "namespace": "travel-portal",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T11:03:27Z",
+      "resourceVersion": "21085",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "voyages",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"voyages\",\"namespace\":\"travel-portal\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"voyages\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"annotations\":{\"proxy.istio.io/config\":\"tracing:\\n  zipkin:\\n    address: zipkin.istio-system:9411\\n  sampling: 10\\n  custom_tags:\\n    http.header.portal:\\n      header:\\n        name: portal\\n    http.header.device:\\n      header:\\n        name: device\\n    http.header.user:\\n      header:\\n        name: user\\n    http.header.travel:\\n      header:\\n        name: travel\\n\",\"readiness.status.sidecar.istio.io/applicationPorts\":\"\"},\"labels\":{\"app\":\"voyages\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"LISTEN_ADDRESS\",\"value\":\":8000\"},{\"name\":\"PORTAL_COORDINATES\",\"value\":\"48.861310,2.337418\"},{\"name\":\"PORTAL_COUNTRY\",\"value\":\"France\"},{\"name\":\"PORTAL_NAME\",\"value\":\"voyages.fr\"},{\"name\":\"TRAVELS_AGENCY_SERVICE\",\"value\":\"http://travels.travel-agency:8000\"}],\"image\":\"quay.io/kiali/demo_travels_portal:v1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"voyages\",\"ports\":[{\"containerPort\":8000}],\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"privileged\":false,\"readOnlyRootFilesystem\":true}}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["default"],
+      "health": {
+        "workloadStatus": {
+          "name": "voyages",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "details-v1",
+      "namespace": "bookinfo",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T07:03:14Z",
+      "resourceVersion": "1305",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "details",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"details\",\"version\":\"v1\"},\"name\":\"details-v1\",\"namespace\":\"bookinfo\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"details\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"details\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"image\":\"docker.io/istio/examples-bookinfo-details-v1:1.19.1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"details\",\"ports\":[{\"containerPort\":9080}]}],\"serviceAccountName\":\"bookinfo-details\"}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["bookinfo-details"],
+      "health": {
+        "workloadStatus": {
+          "name": "details-v1",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.9999999999999999
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "kiali-traffic-generator",
+      "namespace": "bookinfo",
+      "cluster": "Kubernetes",
+      "type": "ReplicaSet",
+      "createdAt": "2024-06-25T07:03:55Z",
+      "resourceVersion": "1386",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "kiali-traffic-generator",
+        "kiali-test": "traffic-generator"
+      },
+      "appLabel": true,
+      "versionLabel": false,
+      "podCount": 1,
+      "annotations": {},
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["default"],
+      "health": {
+        "workloadStatus": {
+          "name": "kiali-traffic-generator",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {},
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "productpage-v1",
+      "namespace": "bookinfo",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T07:03:14Z",
+      "resourceVersion": "1265",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "productpage",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"productpage\",\"version\":\"v1\"},\"name\":\"productpage-v1\",\"namespace\":\"bookinfo\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"productpage\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"annotations\":{\"prometheus.io/path\":\"/metrics\",\"prometheus.io/port\":\"9080\",\"prometheus.io/scrape\":\"true\"},\"labels\":{\"app\":\"productpage\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"image\":\"docker.io/istio/examples-bookinfo-productpage-v1:1.19.1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"productpage\",\"ports\":[{\"containerPort\":9080}],\"volumeMounts\":[{\"mountPath\":\"/tmp\",\"name\":\"tmp\"}]}],\"serviceAccountName\":\"bookinfo-productpage\",\"volumes\":[{\"emptyDir\":{},\"name\":\"tmp\"}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["bookinfo-productpage"],
+      "health": {
+        "workloadStatus": {
+          "name": "productpage-v1",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.9999999999999999
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 2
+            }
+          },
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "ratings-v1",
+      "namespace": "bookinfo",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T07:03:14Z",
+      "resourceVersion": "1327",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "ratings",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"ratings\",\"version\":\"v1\"},\"name\":\"ratings-v1\",\"namespace\":\"bookinfo\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"ratings\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"ratings\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"image\":\"docker.io/istio/examples-bookinfo-ratings-v1:1.19.1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"ratings\",\"ports\":[{\"containerPort\":9080}]}],\"serviceAccountName\":\"bookinfo-ratings\"}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["bookinfo-ratings"],
+      "health": {
+        "workloadStatus": {
+          "name": "ratings-v1",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.8222222222222222
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "reviews-v1",
+      "namespace": "bookinfo",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T07:03:14Z",
+      "resourceVersion": "1286",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "reviews",
+        "version": "v1"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"reviews\",\"version\":\"v1\"},\"name\":\"reviews-v1\",\"namespace\":\"bookinfo\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"reviews\",\"version\":\"v1\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"reviews\",\"version\":\"v1\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"LOG_DIR\",\"value\":\"/tmp/logs\"}],\"image\":\"docker.io/istio/examples-bookinfo-reviews-v1:1.19.1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"reviews\",\"ports\":[{\"containerPort\":9080}],\"volumeMounts\":[{\"mountPath\":\"/tmp\",\"name\":\"tmp\"},{\"mountPath\":\"/opt/ibm/wlp/output\",\"name\":\"wlp-output\"}]}],\"serviceAccountName\":\"bookinfo-reviews\",\"volumes\":[{\"emptyDir\":{},\"name\":\"wlp-output\"},{\"emptyDir\":{},\"name\":\"tmp\"}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["bookinfo-reviews"],
+      "health": {
+        "workloadStatus": {
+          "name": "reviews-v1",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.2222222222222222
+            }
+          },
+          "outbound": {},
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "reviews-v2",
+      "namespace": "bookinfo",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T07:03:14Z",
+      "resourceVersion": "1347",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "reviews",
+        "version": "v2"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"reviews\",\"version\":\"v2\"},\"name\":\"reviews-v2\",\"namespace\":\"bookinfo\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"reviews\",\"version\":\"v2\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"reviews\",\"version\":\"v2\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"LOG_DIR\",\"value\":\"/tmp/logs\"}],\"image\":\"docker.io/istio/examples-bookinfo-reviews-v2:1.19.1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"reviews\",\"ports\":[{\"containerPort\":9080}],\"volumeMounts\":[{\"mountPath\":\"/tmp\",\"name\":\"tmp\"},{\"mountPath\":\"/opt/ibm/wlp/output\",\"name\":\"wlp-output\"}]}],\"serviceAccountName\":\"bookinfo-reviews\",\"volumes\":[{\"emptyDir\":{},\"name\":\"wlp-output\"},{\"emptyDir\":{},\"name\":\"tmp\"}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["bookinfo-reviews"],
+      "health": {
+        "workloadStatus": {
+          "name": "reviews-v2",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.3333333333333333
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 0.31111111111111106
+            }
+          },
+          "healthAnnotations": {}
+        }
+      }
+    },
+    {
+      "name": "reviews-v3",
+      "namespace": "bookinfo",
+      "cluster": "Kubernetes",
+      "type": "Deployment",
+      "createdAt": "2024-06-25T07:03:14Z",
+      "resourceVersion": "1238",
+      "istioSidecar": true,
+      "istioAmbient": false,
+      "additionalDetailSample": null,
+      "labels": {
+        "app": "reviews",
+        "version": "v3"
+      },
+      "appLabel": true,
+      "versionLabel": true,
+      "podCount": 1,
+      "annotations": {
+        "deployment.kubernetes.io/revision": "1",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"reviews\",\"version\":\"v3\"},\"name\":\"reviews-v3\",\"namespace\":\"bookinfo\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"reviews\",\"version\":\"v3\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"reviews\",\"version\":\"v3\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"LOG_DIR\",\"value\":\"/tmp/logs\"}],\"image\":\"docker.io/istio/examples-bookinfo-reviews-v3:1.19.1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"reviews\",\"ports\":[{\"containerPort\":9080}],\"volumeMounts\":[{\"mountPath\":\"/tmp\",\"name\":\"tmp\"},{\"mountPath\":\"/opt/ibm/wlp/output\",\"name\":\"wlp-output\"}]}],\"serviceAccountName\":\"bookinfo-reviews\",\"volumes\":[{\"emptyDir\":{},\"name\":\"wlp-output\"},{\"emptyDir\":{},\"name\":\"tmp\"}]}}}}\n"
+      },
+      "healthAnnotations": {},
+      "istioReferences": [],
+      "dashboardAnnotations": null,
+      "serviceAccountNames": ["bookinfo-reviews"],
+      "health": {
+        "workloadStatus": {
+          "name": "reviews-v3",
+          "desiredReplicas": 1,
+          "currentReplicas": 1,
+          "availableReplicas": 1,
+          "syncedProxies": 1
+        },
+        "requests": {
+          "inbound": {
+            "http": {
+              "200": 0.5111111111111111
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 0.5111111111111111
+            }
+          },
+          "healthAnnotations": {}
+        }
+      }
+    }
+  ],
+  "validations": {
+    "workload": {
+      "cars-v1.travel-agency": {
+        "name": "cars-v1",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "control.travel-control": {
+        "name": "control",
+        "namespace": "travel-control",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "details-v1.bookinfo": {
+        "name": "details-v1",
+        "namespace": "bookinfo",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "discounts-v1.travel-agency": {
+        "name": "discounts-v1",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "flights-v1.travel-agency": {
+        "name": "flights-v1",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "hotels-v1.travel-agency": {
+        "name": "hotels-v1",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "insurances-v1.travel-agency": {
+        "name": "insurances-v1",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "kiali-traffic-generator.bookinfo": {
+        "name": "kiali-traffic-generator",
+        "namespace": "bookinfo",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "mysqldb-v1.travel-agency": {
+        "name": "mysqldb-v1",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "productpage-v1.bookinfo": {
+        "name": "productpage-v1",
+        "namespace": "bookinfo",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "ratings-v1.bookinfo": {
+        "name": "ratings-v1",
+        "namespace": "bookinfo",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "reviews-v1.bookinfo": {
+        "name": "reviews-v1",
+        "namespace": "bookinfo",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "reviews-v2.bookinfo": {
+        "name": "reviews-v2",
+        "namespace": "bookinfo",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "reviews-v3.bookinfo": {
+        "name": "reviews-v3",
+        "namespace": "bookinfo",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "travels-v1.travel-agency": {
+        "name": "travels-v1",
+        "namespace": "travel-agency",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "travels.travel-portal": {
+        "name": "travels",
+        "namespace": "travel-portal",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "viaggi.travel-portal": {
+        "name": "viaggi",
+        "namespace": "travel-portal",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      },
+      "voyages.travel-portal": {
+        "name": "voyages",
+        "namespace": "travel-portal",
+        "cluster": "",
+        "objectType": "workload",
+        "valid": true,
+        "checks": [],
+        "references": null
+      }
+    }
+  }
+}

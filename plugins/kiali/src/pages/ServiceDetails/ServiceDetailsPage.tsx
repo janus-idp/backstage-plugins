@@ -69,19 +69,12 @@ export const ServiceDetailsPage = (props: { entity?: boolean }) => {
 
   const fetchIstioObjects = async () => {
     kialiClient
-      .getAllIstioConfigs(
-        [namespace ? namespace : ''],
-        ['gateways', 'k8sgateways', 'peerauthentications'],
-        false,
-        '',
-        '',
-        cluster,
-      )
+      .getAllIstioConfigs([], true, '', '', cluster)
       .then(response => {
         const gws: Gateway[] = [];
         const k8sGws: K8sGateway[] = [];
         const peer: PeerAuthentication[] = [];
-        Object.values(response.data).forEach(item => {
+        Object.values(response).forEach(item => {
           gws.push(...item.gateways);
           k8sGws.push(...item.k8sGateways);
           peer.push(...item.peerAuthentication);

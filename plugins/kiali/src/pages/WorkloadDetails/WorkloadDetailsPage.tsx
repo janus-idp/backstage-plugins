@@ -70,6 +70,7 @@ export const WorkloadDetailsPage = (props: { entity?: boolean }) => {
       );
       return;
     }
+
     kialiClient
       .getWorkload(namespace ? namespace : '', workload ? workload : '', query)
       .then((workloadResponse: Workload) => {
