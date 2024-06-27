@@ -49,18 +49,15 @@ import { RouterArgs } from '../routerWrapper';
 import { buildPagination } from '../types/pagination';
 import { V1 } from './api/v1';
 import { V2 } from './api/v2';
-import { CloudEventService } from './CloudEventService';
 import { INTERNAL_SERVER_ERROR_MESSAGE } from './constants';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
-import { JiraEvent, JiraService } from './JiraService';
 import { OrchestratorService } from './OrchestratorService';
 import { ScaffolderService } from './ScaffolderService';
 import { SonataFlowService } from './SonataFlowService';
 import { WorkflowCacheService } from './WorkflowCacheService';
 
 interface PublicServices {
-  jiraService: JiraService;
   dataInputSchemaService: DataInputSchemaService;
   orchestratorService: OrchestratorService;
 }
@@ -178,17 +175,10 @@ function initPublicServices(
     workflowCacheService,
   );
 
-  const cloudEventService = new CloudEventService(logger);
-  const jiraService = new JiraService(
-    logger,
-    cloudEventService,
-    dataIndexService,
-  );
   const dataInputSchemaService = new DataInputSchemaService();
 
   return {
     orchestratorService,
-    jiraService,
     dataInputSchemaService,
   };
 }

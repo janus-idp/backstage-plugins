@@ -30,13 +30,7 @@ interface DevModeConnectionConfig {
   containerImage: string;
   resourcesPath: string;
   persistencePath: string;
-  jira?: JiraConfig;
   repoUrl?: string;
-}
-
-interface JiraConfig {
-  host: string;
-  bearerToken: string;
 }
 
 export class DevModeService {
@@ -132,10 +126,6 @@ export class DevModeService {
       'host.docker.internal:host-gateway',
     ];
 
-    if (this.connection.jira) {
-      launcherArgs.push(`--add-host`, `jira.test:${this.connection.jira.host}`);
-    }
-
     launcherArgs.push('-e', `QUARKUS_HTTP_PORT=${this.connection.port}`);
 
     launcherArgs.push('-p', `${this.connection.port}:${this.connection.port}`);
@@ -149,14 +139,6 @@ export class DevModeService {
       '-e',
       `QUARKUS_EMBEDDED_POSTGRESQL_DATA_DIR=${this.connection.persistencePath}`,
     );
-
-    if (this.connection.jira) {
-      launcherArgs.push(
-        '-e',
-        'QUARKUS_REST_CLIENT_JIRA_OPENAPI_JSON_URL=http://jira.test:8080 -e ',
-      );
-      launcherArgs.push(`JIRABEARERTOKEN=${this.connection.jira.bearerToken}`);
-    }
 
     launcherArgs.push(this.connection.containerImage);
 
@@ -188,19 +170,6 @@ export class DevModeService {
         'orchestrator.sonataFlowService.persistence.path',
       ) ?? DEFAULT_SONATAFLOW_PERSISTENCE_PATH;
 
-    const jiraHost = config.getOptionalString('orchestrator.jira.host');
-    const jiraBearerToken = config.getOptionalString(
-      'orchestrator.jira.bearerToken',
-    );
-
-    const jiraConfig: JiraConfig | undefined =
-      jiraHost && jiraBearerToken
-        ? {
-            host: jiraHost,
-            bearerToken: jiraBearerToken,
-          }
-        : undefined;
-
     const repoUrl =
       config.getOptionalString(
         'orchestrator.sonataFlowService.workflowsSource.gitRepositoryUrl',
@@ -212,7 +181,6 @@ export class DevModeService {
       containerImage,
       resourcesPath,
       persistencePath,
-      jira: jiraConfig,
       repoUrl,
     };
   }

@@ -62,20 +62,5 @@ export interface Config {
        */
       url: string;
     };
-    /**
-     * Configuration for the integration with Jira API.
-     * Note: This is a temporary solution. We should probably use the JIRA integration config instead.
-     */
-    jira?: {
-      /**
-       * Base URL of the Jira API.
-       */
-      host?: string;
-      /**
-       * Token to authenticate with the Jira API.
-       * @visibility secret
-       */
-      bearerToken?: string;
-    };
   };
 }
