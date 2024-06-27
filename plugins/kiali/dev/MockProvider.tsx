@@ -258,19 +258,17 @@ export class MockKialiClient implements KialiApi {
   }
 
   async getClustersAppHealth(
-    _namespaces: string,
+    namespaces: string,
     _: DurationInSeconds,
     __?: string,
     ___?: TimeInSeconds,
   ): Promise<Map<string, NamespaceAppHealth>> {
-    const response =
+    const namespaceAppHealth =
       kialiData.clusters.kubernetes.appsHealth.namespaceAppHealth;
+
     const ret = new Map<string, NamespaceAppHealth>();
-    // @ts-ignore
-    const namespaceAppHealth = response.namespaceAppHealth;
     if (namespaceAppHealth) {
       Object.keys(namespaceAppHealth).forEach(ns => {
-        ret.set(ns, {});
         if (!ret.get(ns)) {
           ret.set(ns, {});
         }
@@ -296,16 +294,15 @@ export class MockKialiClient implements KialiApi {
   }
 
   async getClustersServiceHealth(
-    _namespaces: string,
+    namespaces: string,
     _: DurationInSeconds,
     __?: string,
     ___?: TimeInSeconds,
   ): Promise<Map<string, NamespaceServiceHealth>> {
-    const response =
+    const namespaceServiceHealth =
       kialiData.clusters.kubernetes.workloadsHealth.namespaceServiceHealth;
     const ret = new Map<string, NamespaceServiceHealth>();
 
-    const namespaceServiceHealth = response.namespaceServiceHealth;
     if (namespaceServiceHealth) {
       Object.keys(namespaceServiceHealth).forEach(ns => {
         if (!ret.get(ns)) {
@@ -334,16 +331,14 @@ export class MockKialiClient implements KialiApi {
   }
 
   async getClustersWorkloadHealth(
-    _namespaces: string,
+    namespaces: string,
     _: DurationInSeconds,
     __?: string,
     ___?: TimeInSeconds,
   ): Promise<Map<string, NamespaceWorkloadHealth>> {
-    const response =
+    const namespaceWorkloadHealth =
       kialiData.clusters.kubernetes.workloadsHealth.namespaceWorkloadHealth;
     const ret = new Map<string, NamespaceWorkloadHealth>();
-    // @ts-ignore
-    const namespaceWorkloadHealth = response.namespaceWorkloadHealth;
     if (namespaceWorkloadHealth) {
       Object.keys(namespaceWorkloadHealth).forEach(ns => {
         if (!ret.get(ns)) {
