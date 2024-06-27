@@ -7,6 +7,7 @@ export const mockFormCurrentValues = {
     {
       permission: 'catalog-entity',
       policies: [{ policy: 'read', effect: 'allow' }],
+      policyString: 'Read',
       isResourced: true,
       plugin: 'catalog',
       conditions: {
@@ -32,6 +33,7 @@ export const mockFormInitialValues = {
       id: 1,
       permission: 'catalog-entity',
       policies: [{ policy: 'read', effect: 'allow' }],
+      policyString: 'Read',
       isResourced: true,
       plugin: 'catalog',
       conditions: {

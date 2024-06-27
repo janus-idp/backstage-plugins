@@ -295,6 +295,10 @@ export const getConditionalPermissionsData = (
     const allowedPermissions = cp.permissionMapping.map(action =>
       action.toLowerCase(),
     );
+    const policyString = allowedPermissions
+      .map(p => p[0].toUpperCase() + p.slice(1))
+      .join(', ');
+
     return [
       ...acc,
       ...(conditions
@@ -304,7 +308,7 @@ export const getConditionalPermissionsData = (
               permission: cp.resourceType,
               isResourced: true,
               policies: getPoliciesData(allowedPermissions, allPolicies),
-              policyString: allowedPermissions,
+              policyString,
               conditions,
               id: cp.id,
             },

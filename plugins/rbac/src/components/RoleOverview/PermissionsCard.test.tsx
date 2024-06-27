@@ -3,6 +3,7 @@ import React from 'react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { renderInTestApp } from '@backstage/test-utils';
 
+import { mockFormInitialValues } from '../../__fixtures__/mockFormValues';
 import { usePermissionPolicies } from '../../hooks/usePermissionPolicies';
 import { PermissionsData } from '../../types';
 import { PermissionsCard } from './PermissionsCard';
@@ -50,8 +51,11 @@ describe('PermissionsCard', () => {
     mockPermissionPolicies.mockReturnValue({
       loading: false,
       data: usePermissionPoliciesMockData,
-      conditionsData: [],
-      retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
+      retry: {
+        policiesRetry: jest.fn(),
+        permissionPoliciesRetry: jest.fn(),
+        conditionalPoliciesRetry: jest.fn(),
+      },
       error: new Error(''),
     });
     const { queryByText } = await renderInTestApp(
@@ -69,8 +73,11 @@ describe('PermissionsCard', () => {
     mockPermissionPolicies.mockReturnValue({
       loading: false,
       data: [],
-      conditionsData: [],
-      retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
+      retry: {
+        policiesRetry: jest.fn(),
+        permissionPoliciesRetry: jest.fn(),
+        conditionalPoliciesRetry: jest.fn(),
+      },
       error: new Error(''),
     });
     const { queryByText } = await renderInTestApp(
@@ -87,8 +94,11 @@ describe('PermissionsCard', () => {
     mockPermissionPolicies.mockReturnValue({
       loading: false,
       data: [],
-      conditionsData: [],
-      retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
+      retry: {
+        policiesRetry: jest.fn(),
+        permissionPoliciesRetry: jest.fn(),
+        conditionalPoliciesRetry: jest.fn(),
+      },
       error: { message: '404', name: 'Not Found' },
     });
     const { queryByText } = await renderInTestApp(
@@ -110,9 +120,12 @@ describe('PermissionsCard', () => {
     mockPermissionPolicies.mockReturnValue({
       loading: false,
       data: [],
-      conditionsData: [],
       error: new Error(''),
-      retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
+      retry: {
+        policiesRetry: jest.fn(),
+        permissionPoliciesRetry: jest.fn(),
+        conditionalPoliciesRetry: jest.fn(),
+      },
     });
     const { getByTestId } = await renderInTestApp(
       <PermissionsCard
@@ -128,9 +141,12 @@ describe('PermissionsCard', () => {
     mockPermissionPolicies.mockReturnValue({
       loading: false,
       data: [],
-      conditionsData: [],
       error: new Error(''),
-      retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
+      retry: {
+        policiesRetry: jest.fn(),
+        permissionPoliciesRetry: jest.fn(),
+        conditionalPoliciesRetry: jest.fn(),
+      },
     });
     const { queryByTestId } = await renderInTestApp(
       <PermissionsCard
@@ -139,5 +155,32 @@ describe('PermissionsCard', () => {
       />,
     );
     expect(queryByTestId('disable-update-policies')).not.toBeNull();
+  });
+
+  it('should show conditions rules count for Conditional permission policies when the data is loaded', async () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+    mockPermissionPolicies.mockReturnValue({
+      loading: false,
+      data: [
+        ...usePermissionPoliciesMockData,
+        ...mockFormInitialValues.permissionPoliciesRows,
+      ],
+      retry: {
+        policiesRetry: jest.fn(),
+        permissionPoliciesRetry: jest.fn(),
+        conditionalPoliciesRetry: jest.fn(),
+      },
+      error: new Error(''),
+    });
+    const { queryByText } = await renderInTestApp(
+      <PermissionsCard
+        entityReference="user:default/debsmita1"
+        canReadUsersAndGroups
+      />,
+    );
+    expect(queryByText('Permission Policies (4)')).not.toBeNull();
+    expect(queryByText('Read, Create, Delete', { exact: true })).not.toBeNull();
+    expect(queryByText('Read', { exact: true })).not.toBeNull();
+    expect(queryByText('1 rule')).not.toBeNull();
   });
 });

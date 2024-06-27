@@ -52,7 +52,7 @@ export const ReviewStep = ({
   isEditing: boolean;
 }) => {
   return (
-    <div style={{ overflow: 'scroll' }}>
+    <div style={{ overflow: 'auto' }}>
       <Typography variant="h6">
         {isEditing ? 'Review and save' : 'Review and create'}
       </Typography>
