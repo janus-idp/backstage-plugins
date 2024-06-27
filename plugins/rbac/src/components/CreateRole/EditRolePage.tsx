@@ -22,7 +22,7 @@ export const EditRolePage = () => {
     selectedMembers,
     members,
     role,
-    loading,
+    loading: loadingMembers,
     roleError,
     membersError,
     canReadUsersAndGroups,
@@ -30,9 +30,11 @@ export const EditRolePage = () => {
     roleName ? `${roleKind}:${roleNamespace}/${roleName}` : '',
   );
 
-  const { data: permissionPolicies, conditionsData } = usePermissionPolicies(
-    `${roleKind}:${roleNamespace}/${roleName}`,
-  );
+  const {
+    data: permissionPolicies,
+    conditionsData,
+    loading: loadingPolicies,
+  } = usePermissionPolicies(`${roleKind}:${roleNamespace}/${roleName}`);
 
   const initialValues: RoleFormValues = {
     name: roleName || '',
@@ -43,15 +45,19 @@ export const EditRolePage = () => {
     permissionPoliciesRows: [...conditionsData, ...permissionPolicies],
   };
 
-  if (loading) {
+  if (loadingMembers || loadingPolicies) {
     return <Progress />;
-  } else if (roleError.name) {
+  }
+  if (roleError.name) {
     return (
       <ErrorPage status={roleError.name} statusMessage={roleError.message} />
     );
   }
+  if (!canReadUsersAndGroups) {
+    return <ErrorPage statusMessage="Unauthorized to edit role" />;
+  }
 
-  return canReadUsersAndGroups ? (
+  return (
     <Page themeId="tool">
       <Header title="Edit role" type="RBAC" typeLink=".." />
       <Content>
@@ -65,12 +71,14 @@ export const EditRolePage = () => {
           }}
           roleName={roleName ? `${roleKind}:${roleNamespace}/${roleName}` : ''}
           step={Number(queryParamState)}
-          membersData={{ members, loading, error: membersError }}
+          membersData={{
+            members,
+            loading: loadingMembers,
+            error: membersError,
+          }}
           submitLabel="Save"
         />
       </Content>
     </Page>
-  ) : (
-    <ErrorPage statusMessage="Unauthorized to edit role" />
   );
 };
