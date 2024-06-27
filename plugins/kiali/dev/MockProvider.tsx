@@ -300,9 +300,8 @@ export class MockKialiClient implements KialiApi {
     ___?: TimeInSeconds,
   ): Promise<Map<string, NamespaceServiceHealth>> {
     const namespaceServiceHealth =
-      kialiData.clusters.kubernetes.workloadsHealth.namespaceServiceHealth;
+      kialiData.clusters.kubernetes.servicesHealth.namespaceServiceHealth;
     const ret = new Map<string, NamespaceServiceHealth>();
-
     if (namespaceServiceHealth) {
       Object.keys(namespaceServiceHealth).forEach(ns => {
         if (!ret.get(ns)) {

@@ -1,30 +1,20 @@
 {
   "namespaceWorkloadHealth": {
     "bookinfo": {
-      "bookinfo-gateway-istio": {
-        "workloadStatus": {
-          "name": "bookinfo-gateway-istio",
-          "desiredReplicas": 1,
-          "currentReplicas": 1,
-          "availableReplicas": 1,
-          "syncedProxies": -1
-        },
-        "requests": {
-          "inbound": {},
-          "outbound": {},
-          "healthAnnotations": {}
-        }
-      },
       "details-v1": {
         "workloadStatus": {
           "name": "details-v1",
           "desiredReplicas": 1,
           "currentReplicas": 1,
           "availableReplicas": 1,
-          "syncedProxies": -1
+          "syncedProxies": 1
         },
         "requests": {
-          "inbound": {},
+          "inbound": {
+            "http": {
+              "200": 0.9999999999999999
+            }
+          },
           "outbound": {},
           "healthAnnotations": {}
         }
@@ -35,7 +25,7 @@
           "desiredReplicas": 1,
           "currentReplicas": 1,
           "availableReplicas": 1,
-          "syncedProxies": -1
+          "syncedProxies": 1
         },
         "requests": {
           "inbound": {},
@@ -49,11 +39,19 @@
           "desiredReplicas": 1,
           "currentReplicas": 1,
           "availableReplicas": 1,
-          "syncedProxies": -1
+          "syncedProxies": 1
         },
         "requests": {
-          "inbound": {},
-          "outbound": {},
+          "inbound": {
+            "http": {
+              "200": 0.9999999999999999
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 1.9999999999999998
+            }
+          },
           "healthAnnotations": {}
         }
       },
@@ -63,10 +61,14 @@
           "desiredReplicas": 1,
           "currentReplicas": 1,
           "availableReplicas": 1,
-          "syncedProxies": -1
+          "syncedProxies": 1
         },
         "requests": {
-          "inbound": {},
+          "inbound": {
+            "http": {
+              "200": 0.5555555555555555
+            }
+          },
           "outbound": {},
           "healthAnnotations": {}
         }
@@ -77,10 +79,14 @@
           "desiredReplicas": 1,
           "currentReplicas": 1,
           "availableReplicas": 1,
-          "syncedProxies": -1
+          "syncedProxies": 1
         },
         "requests": {
-          "inbound": {},
+          "inbound": {
+            "http": {
+              "200": 0.4444444444444444
+            }
+          },
           "outbound": {},
           "healthAnnotations": {}
         }
@@ -91,11 +97,19 @@
           "desiredReplicas": 1,
           "currentReplicas": 1,
           "availableReplicas": 1,
-          "syncedProxies": -1
+          "syncedProxies": 1
         },
         "requests": {
-          "inbound": {},
-          "outbound": {},
+          "inbound": {
+            "http": {
+              "200": 0.2222222222222222
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 0.17777777777777776
+            }
+          },
           "healthAnnotations": {}
         }
       },
@@ -105,11 +119,19 @@
           "desiredReplicas": 1,
           "currentReplicas": 1,
           "availableReplicas": 1,
-          "syncedProxies": -1
+          "syncedProxies": 1
         },
         "requests": {
-          "inbound": {},
-          "outbound": {},
+          "inbound": {
+            "http": {
+              "200": 0.3777777777777777
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 0.3777777777777777
+            }
+          },
           "healthAnnotations": {}
         }
       }
@@ -119,20 +141,6 @@
       "grafana": {
         "workloadStatus": {
           "name": "grafana",
-          "desiredReplicas": 1,
-          "currentReplicas": 1,
-          "availableReplicas": 1,
-          "syncedProxies": -1
-        },
-        "requests": {
-          "inbound": {},
-          "outbound": {},
-          "healthAnnotations": {}
-        }
-      },
-      "istio-cni-node": {
-        "workloadStatus": {
-          "name": "istio-cni-node",
           "desiredReplicas": 1,
           "currentReplicas": 1,
           "availableReplicas": 1,
@@ -227,20 +235,6 @@
           "outbound": {},
           "healthAnnotations": {}
         }
-      },
-      "ztunnel": {
-        "workloadStatus": {
-          "name": "ztunnel",
-          "desiredReplicas": 1,
-          "currentReplicas": 1,
-          "availableReplicas": 1,
-          "syncedProxies": -1
-        },
-        "requests": {
-          "inbound": {},
-          "outbound": {},
-          "healthAnnotations": {}
-        }
       }
     },
     "travel-agency": {
@@ -255,12 +249,12 @@
         "requests": {
           "inbound": {
             "http": {
-              "200": 0.2666725927242828
+              "200": 0.2666666666666666
             }
           },
           "outbound": {
             "http": {
-              "200": 0.2666725927242828
+              "200": 0.2666666666666666
             }
           },
           "healthAnnotations": {}
@@ -277,7 +271,7 @@
         "requests": {
           "inbound": {
             "http": {
-              "200": 1.333362963621414
+              "200": 1.4
             }
           },
           "outbound": {},
@@ -295,12 +289,12 @@
         "requests": {
           "inbound": {
             "http": {
-              "200": 0.2666666666666666
+              "200": 0.33333333333333337
             }
           },
           "outbound": {
             "http": {
-              "200": 0.26666074087242503
+              "200": 0.33333333333333337
             }
           },
           "healthAnnotations": {}
@@ -380,7 +374,7 @@
           },
           "outbound": {
             "http": {
-              "200": 1.733333333333333
+              "200": 1.7777777777777775
             }
           },
           "healthAnnotations": {}

@@ -8,11 +8,15 @@
             "desiredReplicas": 1,
             "currentReplicas": 1,
             "availableReplicas": 1,
-            "syncedProxies": -1
+            "syncedProxies": 1
           }
         ],
         "requests": {
-          "inbound": {},
+          "inbound": {
+            "http": {
+              "200": 0.9999999999999999
+            }
+          },
           "outbound": {},
           "healthAnnotations": {}
         }
@@ -24,7 +28,7 @@
             "desiredReplicas": 1,
             "currentReplicas": 1,
             "availableReplicas": 1,
-            "syncedProxies": -1
+            "syncedProxies": 1
           }
         ],
         "requests": {
@@ -40,12 +44,20 @@
             "desiredReplicas": 1,
             "currentReplicas": 1,
             "availableReplicas": 1,
-            "syncedProxies": -1
+            "syncedProxies": 1
           }
         ],
         "requests": {
-          "inbound": {},
-          "outbound": {},
+          "inbound": {
+            "http": {
+              "200": 0.9999999999999999
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 1.9999999999999998
+            }
+          },
           "healthAnnotations": {}
         }
       },
@@ -56,11 +68,15 @@
             "desiredReplicas": 1,
             "currentReplicas": 1,
             "availableReplicas": 1,
-            "syncedProxies": -1
+            "syncedProxies": 1
           }
         ],
         "requests": {
-          "inbound": {},
+          "inbound": {
+            "http": {
+              "200": 0.6222222222222221
+            }
+          },
           "outbound": {},
           "healthAnnotations": {}
         }
@@ -72,26 +88,34 @@
             "desiredReplicas": 1,
             "currentReplicas": 1,
             "availableReplicas": 1,
-            "syncedProxies": -1
+            "syncedProxies": 1
           },
           {
             "name": "reviews-v2",
             "desiredReplicas": 1,
             "currentReplicas": 1,
             "availableReplicas": 1,
-            "syncedProxies": -1
+            "syncedProxies": 1
           },
           {
             "name": "reviews-v3",
             "desiredReplicas": 1,
             "currentReplicas": 1,
             "availableReplicas": 1,
-            "syncedProxies": -1
+            "syncedProxies": 1
           }
         ],
         "requests": {
-          "inbound": {},
-          "outbound": {},
+          "inbound": {
+            "http": {
+              "200": 0.9999999999999998
+            }
+          },
+          "outbound": {
+            "http": {
+              "200": 0.6222222222222221
+            }
+          },
           "healthAnnotations": {}
         }
       }
@@ -177,22 +201,6 @@
           "outbound": {},
           "healthAnnotations": {}
         }
-      },
-      "ztunnel": {
-        "workloadStatuses": [
-          {
-            "name": "ztunnel",
-            "desiredReplicas": 1,
-            "currentReplicas": 1,
-            "availableReplicas": 1,
-            "syncedProxies": -1
-          }
-        ],
-        "requests": {
-          "inbound": {},
-          "outbound": {},
-          "healthAnnotations": {}
-        }
       }
     },
     "travel-agency": {
@@ -209,12 +217,12 @@
         "requests": {
           "inbound": {
             "http": {
-              "200": 0.2666725927242828
+              "200": 0.2666666666666666
             }
           },
           "outbound": {
             "http": {
-              "200": 0.2666725927242828
+              "200": 0.2666666666666666
             }
           },
           "healthAnnotations": {}
@@ -233,7 +241,7 @@
         "requests": {
           "inbound": {
             "http": {
-              "200": 1.3333392593909492
+              "200": 1.333333333333333
             }
           },
           "outbound": {},
@@ -341,12 +349,12 @@
         "requests": {
           "inbound": {
             "http": {
-              "200": 0.8000000002633745
+              "200": 0.7999999999999998
             }
           },
           "outbound": {
             "http": {
-              "200": 1.9999674083950458
+              "200": 1.9999999999999996
             }
           },
           "healthAnnotations": {}
@@ -385,12 +393,12 @@
         "requests": {
           "inbound": {
             "http": {
-              "200": 0.8000000002633745
+              "200": 0.7999999999999998
             }
           },
           "outbound": {
             "http": {
-              "200": 0.2666725927242828
+              "200": 0.2666666666666666
             }
           },
           "healthAnnotations": {}
@@ -410,7 +418,7 @@
           "inbound": {},
           "outbound": {
             "http": {
-              "200": 0.2666607408724251
+              "200": 0.2666666666666666
             }
           },
           "healthAnnotations": {}

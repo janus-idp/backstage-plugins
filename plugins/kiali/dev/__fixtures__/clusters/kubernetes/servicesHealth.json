@@ -1,16 +1,13 @@
 {
   "namespaceServiceHealth": {
     "bookinfo": {
-      "bookinfo-gateway-istio": {
-        "requests": {
-          "inbound": {},
-          "outbound": {},
-          "healthAnnotations": {}
-        }
-      },
       "details": {
         "requests": {
-          "inbound": {},
+          "inbound": {
+            "http": {
+              "200": 0.9999999999999999
+            }
+          },
           "outbound": {},
           "healthAnnotations": {}
         }
@@ -28,63 +25,29 @@
       },
       "ratings": {
         "requests": {
-          "inbound": {},
+          "inbound": {
+            "http": {
+              "200": 0.5111111111111111
+            }
+          },
           "outbound": {},
           "healthAnnotations": {}
         }
       },
       "reviews": {
         "requests": {
-          "inbound": {},
+          "inbound": {
+            "http": {
+              "200": 1.0222222222222221
+            }
+          },
           "outbound": {},
           "healthAnnotations": {}
         }
       }
     },
     "default": {
-      "details-v1": {
-        "requests": {
-          "inbound": {},
-          "outbound": {},
-          "healthAnnotations": {}
-        }
-      },
       "kubernetes": {
-        "requests": {
-          "inbound": {},
-          "outbound": {},
-          "healthAnnotations": {}
-        }
-      },
-      "productpage-v1": {
-        "requests": {
-          "inbound": {},
-          "outbound": {},
-          "healthAnnotations": {}
-        }
-      },
-      "ratings-v1": {
-        "requests": {
-          "inbound": {},
-          "outbound": {},
-          "healthAnnotations": {}
-        }
-      },
-      "reviews-v1": {
-        "requests": {
-          "inbound": {},
-          "outbound": {},
-          "healthAnnotations": {}
-        }
-      },
-      "reviews-v2": {
-        "requests": {
-          "inbound": {},
-          "outbound": {},
-          "healthAnnotations": {}
-        }
-      },
-      "reviews-v3": {
         "requests": {
           "inbound": {},
           "outbound": {},
@@ -173,7 +136,7 @@
         "requests": {
           "inbound": {
             "http": {
-              "200": 1.333333333333333
+              "200": 1.3555555555555554
             }
           },
           "outbound": {},
@@ -184,7 +147,7 @@
         "requests": {
           "inbound": {
             "http": {
-              "200": 0.2666666666666666
+              "200": 0.28888888888888886
             }
           },
           "outbound": {},
