@@ -106,6 +106,12 @@ export type RoleConditionalPolicyDecision<
   permissionMapping: T[];
 };
 
+export const ConditionalAliases = {
+  CURRENT_USER: 'currentUser',
+} as const;
+
+export const CONDITION_ALIAS_SIGN = '$';
+
 // UnauthorizedError should be uniformely used for authorization errors.
 export class UnauthorizedError extends NotAllowedError {
   constructor() {

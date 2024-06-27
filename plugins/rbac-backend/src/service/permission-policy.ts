@@ -9,6 +9,7 @@ import {
   Permission,
   PermissionCondition,
   PermissionCriteria,
+  PermissionRuleParam,
   PermissionRuleParams,
   PolicyDecision,
   ResourcePermission,
@@ -17,11 +18,14 @@ import {
   PermissionPolicy,
   PolicyQuery,
 } from '@backstage/plugin-permission-node';
+import { JsonPrimitive } from '@backstage/types';
 
 import { Knex } from 'knex';
 
 import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
+  CONDITION_ALIAS_SIGN,
+  ConditionalAliases,
   NonEmptyArray,
   toPermissionAction,
 } from '@janus-idp/backstage-plugin-rbac-common';
@@ -471,6 +475,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
           >,
         },
       };
+
+      replaceAliases(result.conditions, userEntityRef);
+
       const msg = `Send condition to plugin with id ${pluginId} to evaluate permission ${permissionName} with resource type ${resourceType} and action ${action} for user ${userEntityRef}`;
       const auditOptions = createPermissionEvaluationOptions(
         msg,
@@ -482,5 +489,84 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       return result;
     }
     return undefined;
+  }
+}
+
+function replaceAliases(
+  conditions: PermissionCriteria<
+    PermissionCondition<string, PermissionRuleParams>
+  >,
+  userEntityRef: string,
+) {
+  if ('not' in conditions) {
+    replaceAliases(conditions.not, userEntityRef);
+    return;
+  }
+  if ('allOf' in conditions) {
+    for (const condition of conditions.allOf) {
+      replaceAliases(condition, userEntityRef);
+    }
+    return;
+  }
+  if ('anyOf' in conditions) {
+    for (const condition of conditions.anyOf) {
+      replaceAliases(condition, userEntityRef);
+      return;
+    }
+  }
+
+  interface Predicate<T> {
+    (item: T): boolean;
+  }
+
+  function replaceAliasWithValue<K extends string>(
+    params: Record<K, PermissionRuleParam> | undefined,
+    key: K,
+    predicate: Predicate<PermissionRuleParam>,
+    newValue: JsonPrimitive,
+  ): Record<K, PermissionRuleParam> | undefined {
+    if (!params) {
+      return params;
+    }
+
+    if (Array.isArray(params[key])) {
+      const oldValues = params[key] as JsonPrimitive[];
+      const newValues: JsonPrimitive[] = [];
+      for (const oldValue of oldValues) {
+        const isAliasMatched = predicate(oldValue);
+        if (isAliasMatched) {
+          newValues.push(newValue);
+        } else {
+          newValues.push(oldValue);
+        }
+      }
+      return { ...params, [key]: newValues };
+    }
+
+    if (predicate(params[key])) {
+      return { ...params, [key]: newValue };
+    }
+    return params;
+  }
+
+  function isCurrentUserAlias(value: PermissionRuleParam): boolean {
+    const alias = `${CONDITION_ALIAS_SIGN}${ConditionalAliases.CURRENT_USER}`;
+    return value === alias;
+  }
+
+  let params = (conditions as PermissionCondition<string, PermissionRuleParams>)
+    .params;
+  if (params) {
+    for (const key of Object.keys(params)) {
+      const paramsWithoutAliases = replaceAliasWithValue(
+        params,
+        key,
+        isCurrentUserAlias,
+        userEntityRef,
+      );
+      (conditions as PermissionCondition<string, PermissionRuleParams>).params =
+        paramsWithoutAliases;
+      console.log(params);
+    }
   }
 }
