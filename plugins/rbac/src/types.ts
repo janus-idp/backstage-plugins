@@ -47,7 +47,7 @@ export type PermissionsData = {
   plugin: string;
   permission: string;
   policies: RowPolicy[];
-  policyString?: string[];
+  policyString?: string[] | string;
   isResourced?: boolean;
   conditions?: ConditionsData;
 };

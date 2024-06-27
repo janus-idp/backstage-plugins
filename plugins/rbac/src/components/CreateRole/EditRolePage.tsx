@@ -30,11 +30,9 @@ export const EditRolePage = () => {
     roleName ? `${roleKind}:${roleNamespace}/${roleName}` : '',
   );
 
-  const {
-    data: permissionPolicies,
-    conditionsData,
-    loading: loadingPolicies,
-  } = usePermissionPolicies(`${roleKind}:${roleNamespace}/${roleName}`);
+  const { data, loading: loadingPolicies } = usePermissionPolicies(
+    `${roleKind}:${roleNamespace}/${roleName}`,
+  );
 
   const initialValues: RoleFormValues = {
     name: roleName || '',
@@ -42,7 +40,7 @@ export const EditRolePage = () => {
     kind: roleKind || 'role',
     description: role?.metadata?.description ?? '',
     selectedMembers,
-    permissionPoliciesRows: [...conditionsData, ...permissionPolicies],
+    permissionPoliciesRows: data,
   };
 
   if (loadingMembers || loadingPolicies) {

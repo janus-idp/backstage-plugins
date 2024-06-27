@@ -60,6 +60,10 @@ export const PermissionsCard = ({
 
   let numberOfPolicies = 0;
   (permissions || data)?.forEach(p => {
+    if (p.conditions) {
+      numberOfPolicies++;
+      return;
+    }
     numberOfPolicies =
       numberOfPolicies +
       p.policies.filter(pol => pol.effect === 'allow').length;
@@ -72,6 +76,7 @@ export const PermissionsCard = ({
       onClick: () => {
         retry.permissionPoliciesRetry();
         retry.policiesRetry();
+        retry.conditionalPoliciesRetry();
       },
     },
     {
@@ -103,14 +108,14 @@ export const PermissionsCard = ({
         )}
         <Table
           title={
-            !loading && data?.length
+            !loading && data.length > 0
               ? `Permission Policies (${numberOfPolicies})`
               : 'Permission Policies'
           }
           actions={actions}
           renderSummaryRow={summary => onSearchResultsChange(summary.data)}
           options={{ padding: 'default', search: true, paging: true }}
-          data={data ?? []}
+          data={data}
           columns={columns}
           isLoading={loading}
           emptyContent={
