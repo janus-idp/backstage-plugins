@@ -1,0 +1,15 @@
+# Attributes per path
+
+# This allows for example for customizing how changed files appear on GitHub.
+# See https://docs.github.com/en/repositories/working-with-files/managing-files/customizing-how-changed-files-appear-on-github
+
+# linguist-generated marks matching paths as ignored for the repo language stats and hidden by default in diffs.
+# See https://github.com/github-linguist/linguist/blob/master/docs/overrides.md#overrides
+
+**/yarn.lock linguist-generated=true
+
+**/openapitools.json linguist-generated=true
+
+plugins/bulk-import-backend/api-docs/**/* linguist-generated=true
+plugins/bulk-import-backend/src/openapi.d.ts linguist-generated=true
+plugins/bulk-import-backend/src/openapidocument.ts linguist-generated=true
