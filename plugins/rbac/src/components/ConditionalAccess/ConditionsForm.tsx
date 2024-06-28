@@ -22,6 +22,7 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
     flexGrow: 1,
+    overflowY: 'auto',
   },
   addConditionButton: {
     color: theme.palette.primary.light,

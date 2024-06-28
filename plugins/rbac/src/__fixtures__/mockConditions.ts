@@ -77,6 +77,27 @@ export const mockConditions: RoleConditionalPolicyDecision<PermissionAction>[] =
                   kinds: ['User'],
                 },
               },
+              {
+                not: {
+                  rule: 'HAS_LABEL',
+                  resourceType: 'catalog-entity',
+                  params: { label: 'temp' },
+                },
+              },
+              {
+                anyOf: [
+                  {
+                    rule: 'HAS_TAG',
+                    resourceType: 'catalog-entity',
+                    params: { tag: 'dev' },
+                  },
+                  {
+                    rule: 'HAS_TAG',
+                    resourceType: 'catalog-entity',
+                    params: { tag: 'test' },
+                  },
+                ],
+              },
             ],
           },
         ],

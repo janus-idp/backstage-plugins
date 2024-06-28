@@ -8,9 +8,11 @@ import {
   makeStyles,
   Radio,
   RadioGroup,
+  Tooltip,
   useTheme,
 } from '@material-ui/core';
 import AddIcon from '@mui/icons-material/Add';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -34,7 +36,7 @@ const useStyles = makeStyles(theme => ({
   },
   nestedConditionRow: {
     padding: '20px',
-    marginLeft: '20px',
+    marginLeft: '1.5rem',
     border: `1px solid ${theme.palette.border}`,
     borderRadius: '4px',
     backgroundColor: theme.palette.background.default,
@@ -60,13 +62,19 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     color: theme.palette.primary.light,
     textTransform: 'none',
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(2),
   },
   addNestedConditionButton: {
     display: 'flex',
     color: theme.palette.primary.light,
     textTransform: 'none',
     marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+  },
+  addNestedConditionLabel: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   removeRuleButton: {
     color: theme.palette.grey[500],
@@ -463,6 +471,34 @@ export const ConditionsFormRow = ({
     );
   };
 
+  const addNestedConditionLabel = () => {
+    const tooltipTitle = () => (
+      <div>
+        <p style={{ textAlign: 'center' }}>
+          Nested conditions are <b>1 layer rules within a main condition</b>. It
+          lets you allow appropriate access by using detailed permissions based
+          on various conditions. You can add multiple nested conditions.
+        </p>
+        <p style={{ textAlign: 'center' }}>
+          For example, you can allow access to all entity types in the main
+          condition and use a nested condition to limit the access to entities
+          owned by the user.
+        </p>
+      </div>
+    );
+    return (
+      <Box className={classes.addNestedConditionLabel}>
+        <span>Add Nested Condition</span>
+        <Tooltip title={tooltipTitle()} placement="top">
+          <HelpOutlineIcon
+            fontSize="inherit"
+            style={{ marginLeft: '0.25rem' }}
+          />
+        </Tooltip>
+      </Box>
+    );
+  };
+  let showMultilevelNestedConditionWarning = false;
   return (
     <Box className={classes.conditionRow} data-testid="conditions-row">
       <ToggleButtonGroup
@@ -618,7 +654,7 @@ export const ConditionsFormRow = ({
               <FormControlLabel
                 value="nested-condition"
                 control={<Radio color="primary" />}
-                label="Add nested condition"
+                label={addNestedConditionLabel()}
                 className={classes.radioLabel}
               />
             </RadioGroup>
@@ -652,7 +688,7 @@ export const ConditionsFormRow = ({
               onClick={() => handleAddNestedCondition(criteria)}
             >
               <AddIcon fontSize="small" />
-              Add nested condition
+              {addNestedConditionLabel()}
             </Button>
           )}
           {nestedConditionRow?.length > 0 &&
@@ -712,79 +748,101 @@ export const ConditionsFormRow = ({
                 </div>
                 <Box>
                   {Object.keys(nc)[0] === criterias.allOf &&
-                    nc.allOf?.map((c, index) => (
-                      <div
-                        style={{ display: 'flex' }}
-                        key={`condition-${index}`}
-                      >
-                        <ConditionsFormRowFields
-                          oldCondition={c}
-                          index={index}
-                          onRuleChange={onRuleChange}
-                          conditionRow={conditionRow}
-                          criteria={criteria}
-                          conditionRulesData={conditionRulesData}
-                          handleSetErrors={handleSetErrors}
-                          setRemoveAllClicked={setRemoveAllClicked}
-                          nestedConditionRow={nestedConditionRow}
-                          nestedConditionCriteria={Object.keys(nc)[0]}
-                          nestedConditionIndex={nestedConditionIndex}
-                          ruleIndex={index}
-                          updateRules={updateRules}
-                        />
-                        <IconButton
-                          title="Remove"
-                          className={classes.removeRuleButton}
-                          disabled={index === 0}
-                          onClick={() =>
-                            handleRemoveNestedConditionRule(
-                              criterias.allOf,
-                              nestedConditionIndex,
-                              index,
-                            )
-                          }
-                        >
-                          <RemoveIcon />
-                        </IconButton>
-                      </div>
-                    ))}
+                    nc.allOf?.map((c, index) => {
+                      if ((c as PermissionCondition).rule === undefined) {
+                        showMultilevelNestedConditionWarning = true;
+                      }
+                      return (
+                        (c as PermissionCondition).rule !== undefined && (
+                          <div
+                            style={{
+                              display:
+                                (c as PermissionCondition).rule !== undefined
+                                  ? 'flex'
+                                  : 'none',
+                            }}
+                            key={`condition-${index}`}
+                          >
+                            <ConditionsFormRowFields
+                              oldCondition={c}
+                              index={index}
+                              onRuleChange={onRuleChange}
+                              conditionRow={conditionRow}
+                              criteria={criteria}
+                              conditionRulesData={conditionRulesData}
+                              handleSetErrors={handleSetErrors}
+                              setRemoveAllClicked={setRemoveAllClicked}
+                              nestedConditionRow={nestedConditionRow}
+                              nestedConditionCriteria={Object.keys(nc)[0]}
+                              nestedConditionIndex={nestedConditionIndex}
+                              ruleIndex={index}
+                              updateRules={updateRules}
+                            />
+                            <IconButton
+                              title="Remove"
+                              className={classes.removeRuleButton}
+                              disabled={index === 0}
+                              onClick={() =>
+                                handleRemoveNestedConditionRule(
+                                  criterias.allOf,
+                                  nestedConditionIndex,
+                                  index,
+                                )
+                              }
+                            >
+                              <RemoveIcon />
+                            </IconButton>
+                          </div>
+                        )
+                      );
+                    })}
                   {Object.keys(nc)[0] === criterias.anyOf &&
-                    nc.anyOf?.map((c, index) => (
-                      <div
-                        style={{ display: 'flex' }}
-                        key={`condition-${index}`}
-                      >
-                        <ConditionsFormRowFields
-                          oldCondition={c}
-                          index={index}
-                          onRuleChange={onRuleChange}
-                          conditionRow={conditionRow}
-                          criteria={criteria}
-                          conditionRulesData={conditionRulesData}
-                          handleSetErrors={handleSetErrors}
-                          setRemoveAllClicked={setRemoveAllClicked}
-                          nestedConditionRow={nestedConditionRow}
-                          nestedConditionCriteria={Object.keys(nc)[0]}
-                          nestedConditionIndex={nestedConditionIndex}
-                          ruleIndex={index}
-                          updateRules={updateRules}
-                        />
-                        <IconButton
-                          title="Remove"
-                          className={classes.removeRuleButton}
-                          disabled={index === 0}
-                          onClick={() =>
-                            handleRemoveNestedConditionRule(
-                              criterias.anyOf,
-                              nestedConditionIndex,
-                              index,
-                            )
-                          }
+                    nc.anyOf?.map((c, index) => {
+                      if ((c as PermissionCondition).rule === undefined) {
+                        showMultilevelNestedConditionWarning = true;
+                      }
+                      return (
+                        <div
+                          style={{
+                            display:
+                              (c as PermissionCondition).rule !== undefined
+                                ? 'flex'
+                                : 'none',
+                          }}
+                          key={`condition-${index}`}
                         >
-                          <RemoveIcon />
-                        </IconButton>
-                      </div>
-                    ))}
+                          <ConditionsFormRowFields
+                            oldCondition={c}
+                            index={index}
+                            onRuleChange={onRuleChange}
+                            conditionRow={conditionRow}
+                            criteria={criteria}
+                            conditionRulesData={conditionRulesData}
+                            handleSetErrors={handleSetErrors}
+                            setRemoveAllClicked={setRemoveAllClicked}
+                            nestedConditionRow={nestedConditionRow}
+                            nestedConditionCriteria={Object.keys(nc)[0]}
+                            nestedConditionIndex={nestedConditionIndex}
+                            ruleIndex={index}
+                            updateRules={updateRules}
+                          />
+                          <IconButton
+                            title="Remove"
+                            className={classes.removeRuleButton}
+                            disabled={index === 0}
+                            onClick={() =>
+                              handleRemoveNestedConditionRule(
+                                criterias.anyOf,
+                                nestedConditionIndex,
+                                index,
+                              )
+                            }
+                          >
+                            <RemoveIcon />
+                          </IconButton>
+                        </div>
+                      );
+                    })}
                   {Object.keys(nc)[0] === criterias.not && (
                     <ConditionsFormRowFields
                       oldCondition={
@@ -811,6 +869,13 @@ export const ConditionsFormRow = ({
                       nestedConditionIndex={nestedConditionIndex}
                       updateRules={updateRules}
                     />
+                  )}
+                  {showMultilevelNestedConditionWarning && (
+                    <div style={{ width: '90%', marginTop: '2rem' }}>
+                      This condition contains multiple nested levels that the UI
+                      does not yet support. Please use the CLI to view
+                      additional levels of nested conditions.
+                    </div>
                   )}
                   {Object.keys(nc)[0] !== criterias.not && (
                     <Button
