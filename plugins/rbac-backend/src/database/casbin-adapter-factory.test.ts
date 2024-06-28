@@ -61,6 +61,7 @@ describe('CasbinAdapterFactory', () => {
             connection: {
               host: 'localhost',
               port: '5432',
+              schema: 'public',
               user: 'postgresUser',
               password: process.env.TEST,
             },
@@ -74,6 +75,7 @@ describe('CasbinAdapterFactory', () => {
         type: 'postgres',
         host: 'localhost',
         port: 5432,
+        schema: 'public',
         username: 'postgresUser',
         password: process.env.TEST,
         database: 'test-database',
@@ -89,6 +91,7 @@ describe('CasbinAdapterFactory', () => {
             connection: {
               host: 'localhost',
               port: '5432',
+              schema: 'public',
               user: 'postgresUser',
               password: process.env.TEST,
               ssl: true,
@@ -103,6 +106,7 @@ describe('CasbinAdapterFactory', () => {
         type: 'postgres',
         host: 'localhost',
         port: 5432,
+        schema: 'public',
         username: 'postgresUser',
         password: process.env.TEST,
         database: 'test-database',
@@ -118,6 +122,7 @@ describe('CasbinAdapterFactory', () => {
             connection: {
               host: 'localhost',
               port: '5432',
+              schema: 'public',
               user: 'postgresUser',
               password: process.env.TEST,
               ssl: false,
@@ -132,6 +137,7 @@ describe('CasbinAdapterFactory', () => {
         type: 'postgres',
         host: 'localhost',
         port: 5432,
+        schema: 'public',
         username: 'postgresUser',
         password: process.env.TEST,
         database: 'test-database',
@@ -147,6 +153,7 @@ describe('CasbinAdapterFactory', () => {
             connection: {
               host: 'localhost',
               port: '5432',
+              schema: 'public',
               user: 'postgresUser',
               password: process.env.TEST,
               ssl: {
@@ -163,6 +170,7 @@ describe('CasbinAdapterFactory', () => {
         type: 'postgres',
         host: 'localhost',
         port: 5432,
+        schema: 'public',
         username: 'postgresUser',
         password: process.env.TEST,
         database: 'test-database',
