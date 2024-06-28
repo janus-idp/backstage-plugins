@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAsync, useAsyncRetry, useInterval } from 'react-use';
+import { useAsyncRetry, useInterval } from 'react-use';
 
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -13,6 +13,7 @@ import {
 const getErrorText = (
   policies: any,
   permissionPolicies: any,
+  conditionalPolicies: any,
 ): { name: number; message: string } | undefined => {
   if (!Array.isArray(policies) && (policies as Response)?.statusText) {
     return {
@@ -27,6 +28,16 @@ const getErrorText = (
       name: (permissionPolicies as Response).status,
       message: `Error fetching the plugins. ${
         (permissionPolicies as Response).statusText
+      }`,
+    };
+  } else if (
+    !Array.isArray(conditionalPolicies) &&
+    (conditionalPolicies as Response)?.statusText
+  ) {
+    return {
+      name: (conditionalPolicies as Response).status,
+      message: `Error fetching the conditional permission policies. ${
+        (conditionalPolicies as Response).statusText
       }`,
     };
   }
@@ -46,7 +57,11 @@ export const usePermissionPolicies = (
     return await rbacApi.getAssociatedPolicies(entityReference);
   });
 
-  const { value: conditionalPolicies } = useAsync(async () => {
+  const {
+    value: conditionalPolicies,
+    retry: conditionalPoliciesRetry,
+    error: conditionalPoliciesError,
+  } = useAsyncRetry(async () => {
     return await rbacApi.getRoleConditions(entityReference);
   });
 
@@ -61,8 +76,8 @@ export const usePermissionPolicies = (
   const loading =
     !permissionPoliciesError &&
     !policiesError &&
-    !policies &&
-    !permissionPolicies;
+    !conditionalPoliciesError &&
+    (!permissionPolicies || !policies || !conditionalPolicies);
 
   const allPermissionPolicies = React.useMemo(
     () => (Array.isArray(permissionPolicies) ? permissionPolicies : []),
@@ -90,17 +105,18 @@ export const usePermissionPolicies = (
     () => {
       policiesRetry();
       permissionPoliciesRetry();
+      conditionalPoliciesRetry();
     },
     loading ? null : pollInterval || null,
   );
   return {
     loading,
-    data,
-    conditionsData,
-    retry: { policiesRetry, permissionPoliciesRetry },
+    data: [...conditionsData, ...data],
+    retry: { policiesRetry, permissionPoliciesRetry, conditionalPoliciesRetry },
     error:
       policiesError ||
       permissionPoliciesError ||
-      getErrorText(policies, permissionPolicies),
+      conditionalPoliciesError ||
+      getErrorText(policies, permissionPolicies, conditionalPolicies),
   };
 };
