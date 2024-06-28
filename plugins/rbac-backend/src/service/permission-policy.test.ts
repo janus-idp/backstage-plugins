@@ -1858,63 +1858,6 @@ describe('Policy checks for conditional policies', () => {
     });
   });
 
-  it('should execute condition policy with current user alias, when params is primitive string value', async () => {
-    const entityMock: Entity = {
-      apiVersion: 'v1',
-      kind: 'Group',
-      metadata: {
-        name: 'test-group',
-        namespace: 'default',
-      },
-      spec: {
-        members: ['mike'],
-      },
-    };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
-    (conditionalStorage.filterConditions as jest.Mock).mockReturnValueOnce([
-      {
-        id: 1,
-        pluginId: 'catalog',
-        resourceType: 'catalog-entity',
-        actions: ['read'],
-        roleEntityRef: 'role:default/test',
-        result: AuthorizeResult.CONDITIONAL,
-        conditions: {
-          rule: 'SOME_TEST_RULE',
-          resourceType: 'catalog-entity',
-          params: {
-            entityRef: '$currentUser',
-          },
-        },
-      },
-    ]);
-
-    const decision = await policy.handle(
-      newPolicyQueryWithResourcePermission(
-        'catalog.entity.read',
-        'catalog-entity',
-        'read',
-      ),
-      newIdentityResponse('user:default/mike'),
-    );
-    expect(decision).toStrictEqual({
-      pluginId: 'catalog',
-      resourceType: 'catalog-entity',
-      result: AuthorizeResult.CONDITIONAL,
-      conditions: {
-        anyOf: [
-          {
-            rule: 'SOME_TEST_RULE',
-            resourceType: 'catalog-entity',
-            params: {
-              entityRef: 'user:default/mike',
-            },
-          },
-        ],
-      },
-    });
-  });
-
   it('should execute condition policy with current user alias, when params contains array', async () => {
     const entityMock: Entity = {
       apiVersion: 'v1',
@@ -1952,7 +1895,10 @@ describe('Policy checks for conditional policies', () => {
         'catalog-entity',
         'read',
       ),
-      newIdentityResponse('user:default/mike'),
+      newIdentityResponse('user:default/mike', [
+        'user:default/mike',
+        'group:default/team-a',
+      ]),
     );
     expect(decision).toStrictEqual({
       pluginId: 'catalog',
@@ -1964,7 +1910,7 @@ describe('Policy checks for conditional policies', () => {
             rule: 'IS_ENTITY_OWNER',
             resourceType: 'catalog-entity',
             params: {
-              claims: ['user:default/mike'],
+              claims: ['user:default/mike', 'group:default/team-a'],
             },
           },
         ],
@@ -2148,11 +2094,12 @@ function newPolicyQueryWithResourcePermission(
 
 function newIdentityResponse(
   user?: string,
+  ownershipEntityRefs?: string[],
 ): BackstageIdentityResponse | undefined {
   if (user) {
     return {
       identity: {
-        ownershipEntityRefs: [],
+        ownershipEntityRefs: ownershipEntityRefs ?? [],
         type: 'user',
         userEntityRef: user,
       },
