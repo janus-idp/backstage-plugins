@@ -1173,12 +1173,6 @@ function setupInternalRoutes(
           .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
       });
   });
-
-  router.post('/webhook/jira', async (req, res) => {
-    const event = req.body as JiraEvent;
-    await services.jiraService.handleEvent(event);
-    res.status(200).send();
-  });
 }
 
 // ======================================================
