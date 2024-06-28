@@ -554,8 +554,9 @@ function replaceAliases(
     return value === alias;
   }
 
-  let params = (conditions as PermissionCondition<string, PermissionRuleParams>)
-    .params;
+  const params = (
+    conditions as PermissionCondition<string, PermissionRuleParams>
+  ).params;
   if (params) {
     for (const key of Object.keys(params)) {
       const paramsWithoutAliases = replaceAliasWithValue(
@@ -566,7 +567,6 @@ function replaceAliases(
       );
       (conditions as PermissionCondition<string, PermissionRuleParams>).params =
         paramsWithoutAliases;
-      console.log(params);
     }
   }
 }
