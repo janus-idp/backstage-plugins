@@ -7,7 +7,7 @@ const PermissionAlert = () => {
     <Alert severity="warning" data-testid="no-permission-alert">
       <AlertTitle>Permission required</AlertTitle>
       To view quay image registry, contact your administrator to give you the
-      quay.view.read and catalog.entity.read permissions.
+      quay.view.read permission.
     </Alert>
   );
 };

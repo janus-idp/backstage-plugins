@@ -129,9 +129,9 @@ Resource type permissions on the other hand are basic named permissions with a r
 
 ## Argocd
 
-| Name       | Resource Type | Policy | Description | Requirements |
-| -------------- | ------------- | ------ | --------------------------------------- | ------------------- |
-| argocd.view.read |                | read | Allows the user to view the argocd plugin | catalog.entity.read |
+| Name             | Resource Type | Policy | Description                               | Requirements        |
+| ---------------- | ------------- | ------ | ----------------------------------------- | ------------------- |
+| argocd.view.read |               | read   | Allows the user to view the argocd plugin | catalog.entity.read |
 
 ## Quay
 
