@@ -1,5 +1,8 @@
 import * as React from 'react';
 
+import { kubernetesProxyPermission } from '@backstage/plugin-kubernetes-common';
+import { usePermission } from '@backstage/plugin-permission-react';
+
 import { IconButton } from '@material-ui/core';
 import { Flex, FlexItem } from '@patternfly/react-core';
 import { Tooltip } from '@patternfly/react-core/dist/esm/components/Tooltip/Tooltip';
@@ -38,6 +41,10 @@ const PipelineRunRowActions: React.FC<{ pipelineRun: PipelineRunKind }> = ({
     taskRuns,
   );
   const activeTaskName = sbomTaskRun?.metadata?.name;
+
+  const hasKubernetesProxyAccess = usePermission({
+    permission: kubernetesProxyPermission,
+  });
 
   const openDialog = (viewLogs?: boolean) => {
     if (viewLogs) setNoActiveTask(true);
@@ -100,9 +107,21 @@ const PipelineRunRowActions: React.FC<{ pipelineRun: PipelineRunKind }> = ({
       />
       <Flex gap={{ default: 'gapXs' }}>
         <FlexItem>
-          <Tooltip content="View logs">
-            <IconButton size="small" onClick={() => openDialog(true)}>
-              <ViewLogsIcon />
+          <Tooltip
+            content={
+              hasKubernetesProxyAccess.allowed
+                ? 'View logs'
+                : 'Unauthorized to view logs'
+            }
+          >
+            <IconButton
+              size="small"
+              data-testid="view-logs-icon"
+              onClick={() => openDialog(true)}
+              disabled={!hasKubernetesProxyAccess.allowed}
+              style={{ pointerEvents: 'auto', padding: 0 }}
+            >
+              <ViewLogsIcon disabled={!hasKubernetesProxyAccess.allowed} />
             </IconButton>
           </Tooltip>
         </FlexItem>

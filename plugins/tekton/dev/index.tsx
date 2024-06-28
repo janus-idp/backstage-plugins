@@ -10,7 +10,8 @@ import {
   KubernetesProxyApi,
   kubernetesProxyApiRef,
 } from '@backstage/plugin-kubernetes';
-import { TestApiProvider } from '@backstage/test-utils';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { MockPermissionApi, TestApiProvider } from '@backstage/test-utils';
 
 import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
@@ -41,6 +42,7 @@ const mockEntity: Entity = {
   },
 };
 
+const mockPermissionApi = new MockPermissionApi();
 class MockKubernetesProxyApi implements KubernetesProxyApi {
   async getPodLogs(_request: any): Promise<any> {
     const delayedResponse = (data: string, ms: number) =>
@@ -177,6 +179,7 @@ createDevApp()
             new MockKubernetesClient(mockKubernetesPlrResponse),
           ],
           [kubernetesProxyApiRef, new MockKubernetesProxyApi()],
+          [permissionApiRef, mockPermissionApi],
         ]}
       >
         <EntityProvider entity={mockEntity}>
