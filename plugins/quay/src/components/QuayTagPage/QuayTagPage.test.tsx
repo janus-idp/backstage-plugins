@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { usePermission } from '@backstage/plugin-permission-react';
 import { MockErrorApi, TestApiProvider } from '@backstage/test-utils';
 import { MockTranslationApi } from '@backstage/test-utils/alpha';
 
@@ -37,12 +38,37 @@ jest.mock('../QuayTagDetails', () => ({
   QuayTagDetails: () => <div>QuayTagDetails</div>,
 }));
 
+jest.mock('@backstage/plugin-permission-react', () => ({
+  usePermission: jest.fn(),
+}));
+
+const mockUsePermission = usePermission as jest.MockedFunction<
+  typeof usePermission
+>;
+
 describe('QuayTagPage', () => {
+  beforeEach(() => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+  });
+
   afterAll(() => {
     jest.resetAllMocks();
   });
 
+  it('should render permission alert when user does not have view permission', () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: false });
+    (useParams as jest.Mock).mockReturnValue({ digest: 'digest_data' });
+
+    const { queryByText, queryByTestId } = render(<QuayTagPage />);
+
+    expect(queryByTestId('no-permission-alert')).toBeInTheDocument();
+    expect(queryByTestId('quay-tag-page-progress')).toBeNull();
+    expect(queryByText(/QuayTagDetails/i)).not.toBeInTheDocument();
+  });
+
   it('should throw error if digest is not defined', () => {
+    (useParams as jest.Mock).mockReturnValue({});
+
     expect(() => render(<QuayTagPage />)).toThrow('digest is not defined');
   });
 

@@ -4,6 +4,8 @@ import { Link, Progress, Table } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { useRepository, useTags } from '../../hooks';
+import { useQuayViewPermission } from '../../hooks/useQuayViewPermission';
+import PermissionAlert from '../PermissionAlert/PermissionAlert';
 import { columns, useStyles } from './tableHeading';
 
 type QuayRepositoryProps = Record<never, any>;
@@ -13,6 +15,8 @@ export function QuayRepository(_props: QuayRepositoryProps) {
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const quayUiUrl = configApi.getOptionalString('quay.uiUrl');
+
+  const hasViewPermission = useQuayViewPermission();
 
   const title = quayUiUrl ? (
     <>
@@ -25,6 +29,10 @@ export function QuayRepository(_props: QuayRepositoryProps) {
     `Quay repository: ${organization}/${repository}`
   );
   const { loading, data } = useTags(organization, repository);
+
+  if (!hasViewPermission) {
+    return <PermissionAlert />;
+  }
 
   if (loading) {
     return (
