@@ -461,40 +461,36 @@ Returns:
 [
   {
     "pluginId": "catalog",
-    "policies": [
+      "policies": [
       {
-        "isResourced": true,
-        "permission": "catalog-entity",
-        "policy": "read"
+        "name": "catalog.entity.read",
+        "policy": "read",
+        "resourceType": "catalog-entity"
       },
       {
-        "isResourced": false,
-        "permission": "catalog.entity.create",
+        "name": "catalog.entity.create",
         "policy": "create"
       },
       {
-        "isResourced": true,
-        "permission": "catalog-entity",
-        "policy": "delete"
+        "name": "catalog.entity.delete",
+        "policy": "delete",
+        "resourceType": "catalog-entity"
       },
       {
-        "isResourced": true,
-        "permission": "catalog-entity",
-        "policy": "update"
+        "name": "catalog.entity.refresh",
+        "policy": "update",
+        "resourceType": "catalog-entity"
       },
       {
-        "isResourced": false,
-        "permission": "catalog.location.read",
+        "name": "catalog.location.read",
         "policy": "read"
       },
       {
-        "isResourced": false,
-        "permission": "catalog.location.create",
+        "name": "catalog.location.create",
         "policy": "create"
       },
       {
-        "isResourced": false,
-        "permission": "catalog.location.delete",
+        "name": "catalog.location.delete",
         "policy": "delete"
       }
     ]
