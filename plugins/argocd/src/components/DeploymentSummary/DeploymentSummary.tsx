@@ -9,6 +9,7 @@ import moment from 'moment';
 
 import { useApplications } from '../../hooks/useApplications';
 import { useArgocdConfig } from '../../hooks/useArgocdConfig';
+import { useArgocdViewPermission } from '../../hooks/useArgocdViewPermission';
 import { Application, HealthStatus, SyncStatuses } from '../../types';
 import {
   getAppSelector,
@@ -31,6 +32,8 @@ const DeploymentSummary = () => {
     appSelector: encodeURIComponent(getAppSelector(entity)),
     projectName: getProjectName(entity),
   });
+
+  const hasArgocdViewAccess = useArgocdViewPermission();
 
   const supportsMultipleArgoInstances = !!instances.length;
   const getBaseUrl = (row: any): string | undefined => {
@@ -162,7 +165,7 @@ const DeploymentSummary = () => {
     },
   ];
 
-  return !error ? (
+  return !error && hasArgocdViewAccess ? (
     <Table
       title="Deployment summary"
       options={{
