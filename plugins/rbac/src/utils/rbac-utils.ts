@@ -13,9 +13,11 @@ import {
 } from '@backstage/plugin-permission-common';
 
 import {
+  isResourcedPolicy,
   PermissionAction,
-  PermissionPolicy,
-  Policy,
+  PluginPermissionMetaData,
+  PolicyDetails,
+  ResourcedPolicy,
   RoleBasedPolicy,
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
@@ -109,16 +111,27 @@ export const getMembersFromGroup = (group: GroupEntity): number => {
 };
 
 export const getPluginInfo = (
-  permissions: PermissionPolicy[],
+  permissions: PluginPermissionMetaData[],
   permissionName?: string,
 ): { pluginId: string; isResourced: boolean } =>
   permissions.reduce(
-    (acc: { pluginId: string; isResourced: boolean }, p: PermissionPolicy) => {
-      const policy = p.policies?.find(pol => pol.permission === permissionName);
+    (
+      acc: { pluginId: string; isResourced: boolean },
+      p: PluginPermissionMetaData,
+    ) => {
+      const policy = p.policies.find(pol => {
+        if (pol.name === permissionName) {
+          return true;
+        }
+        if (isResourcedPolicy(pol)) {
+          return (pol as ResourcedPolicy).resourceType === permissionName;
+        }
+        return false;
+      });
       if (policy) {
         return {
           pluginId: p.pluginId || '-',
-          isResourced: policy?.isResourced || false,
+          isResourced: isResourcedPolicy(policy) || false,
         };
       }
       return acc;
@@ -134,11 +147,12 @@ const getPolicy = (str: string) => {
 const getAllPolicies = (
   permission: string,
   allowedPolicies: RowPolicy[],
-  policies: Policy[],
+  policies: PolicyDetails[],
 ) => {
   const deniedPolicies = policies?.reduce((acc, p) => {
+    const perm = isResourcedPolicy(p) ? p.resourceType : p.name;
     if (
-      permission === p.permission &&
+      permission === perm &&
       !allowedPolicies.find(
         allowedPolicy =>
           allowedPolicy.policy.toLowerCase() === p.policy?.toLowerCase(),
@@ -156,7 +170,7 @@ const getAllPolicies = (
 
 export const getPermissionsData = (
   policies: RoleBasedPolicy[],
-  permissionPolicies: PermissionPolicy[],
+  permissionPolicies: PluginPermissionMetaData[],
 ): PermissionsData[] => {
   const data = policies.reduce(
     (acc: PermissionsDataSet[], policy: RoleBasedPolicy) => {
@@ -208,7 +222,7 @@ export const getPermissionsData = (
       p.permission,
       Array.from(p.policies),
       permissionPolicies.find(pp => pp.pluginId === p.plugin)
-        ?.policies as Policy[],
+        ?.policies as PolicyDetails[],
     ),
   })) as PermissionsData[];
 };

@@ -13,7 +13,7 @@ import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-them
 
 import {
   PermissionAction,
-  PermissionPolicy,
+  PluginPermissionMetaData,
   Role,
   RoleBasedPolicy,
   RoleConditionalPolicyDecision,
@@ -82,7 +82,7 @@ class MockRBACApi implements RBACAPI {
     return mockMembers;
   }
 
-  async listPermissions(): Promise<PermissionPolicy[]> {
+  async listPermissions(): Promise<PluginPermissionMetaData[]> {
     return mockPermissionPolicies;
   }
 

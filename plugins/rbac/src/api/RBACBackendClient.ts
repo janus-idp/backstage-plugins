@@ -6,7 +6,7 @@ import {
 
 import {
   PermissionAction,
-  PermissionPolicy,
+  PluginPermissionMetaData,
   Role,
   RoleBasedPolicy,
   RoleConditionalPolicyDecision,
@@ -31,7 +31,7 @@ export type RBACAPI = {
   deleteRole: (role: string) => Promise<Response>;
   getRole: (role: string) => Promise<Role[] | Response>;
   getMembers: () => Promise<MemberEntity[] | Response>;
-  listPermissions: () => Promise<PermissionPolicy[] | Response>;
+  listPermissions: () => Promise<PluginPermissionMetaData[] | Response>;
   createRole: (role: Role) => Promise<RoleError | Response>;
   updateRole: (oldRole: Role, newRole: Role) => Promise<RoleError | Response>;
   updatePolicies: (

@@ -25,14 +25,13 @@ export type RoleMetadata = {
 
 export type Policy = {
   permission?: string;
-  isResourced?: boolean;
   policy?: string;
-  effect?: string;
-  metadata?: PermissionPolicyMetadata;
 };
 
 export type RoleBasedPolicy = Policy & {
   entityReference?: string;
+  effect?: string;
+  metadata?: PermissionPolicyMetadata;
 };
 
 export type Role = {
@@ -46,9 +45,27 @@ export type UpdatePolicy = {
   newPolicy: Policy;
 };
 
-export type PermissionPolicy = {
-  pluginId?: string;
-  policies?: Policy[];
+export type NamedPolicy = {
+  name: string;
+
+  policy: string;
+};
+
+export type ResourcedPolicy = NamedPolicy & {
+  resourceType: string;
+};
+
+export type PolicyDetails = NamedPolicy | ResourcedPolicy;
+
+export function isResourcedPolicy(
+  policy: PolicyDetails,
+): policy is ResourcedPolicy {
+  return 'resourceType' in policy;
+}
+
+export type PluginPermissionMetaData = {
+  pluginId: string;
+  policies: PolicyDetails[];
 };
 
 export type NonEmptyArray<T> = [T, ...T[]];

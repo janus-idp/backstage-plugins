@@ -15,6 +15,7 @@ import {
   PermissionAction,
   PermissionInfo,
   PermissionPolicyMetadata,
+  PluginPermissionMetaData,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
   policyEntityReadPermission,
@@ -32,7 +33,6 @@ import { EnforcerDelegate } from './enforcer-delegate';
 import { RBACPermissionPolicy } from './permission-policy';
 import {
   PluginMetadataResponseSerializedRule,
-  PluginPermissionMetaData,
   PluginPermissionMetadataCollector,
 } from './plugin-endpoints';
 import { PoliciesServer } from './policies-rest-api';
@@ -3440,7 +3440,8 @@ describe('REST policies api', () => {
           pluginId: 'permissions',
           policies: [
             {
-              permission: 'policy-entity',
+              name: 'catalog.entity.read',
+              resourceType: 'policy-entity',
               policy: 'read',
             },
           ],
