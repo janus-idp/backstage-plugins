@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^1.5.0",
-    "@backstage/plugin-catalog-common": "^1.0.23",
     "@backstage/plugin-permission-react": "^0.4.22",
     "@janus-idp/backstage-plugin-quay-common": "0.1.0",
     "@backstage/core-components": "^0.14.7",
