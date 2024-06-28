@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.13.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.12.0...@janus-idp/backstage-plugin-orchestrator-backend@1.13.0) (2024-06-28)
+
+
+### Features
+
+* **orchestrator:** fix build failure from [#1833](https://github.com/janus-idp/backstage-plugins/issues/1833) ([#1850](https://github.com/janus-idp/backstage-plugins/issues/1850)) ([c0c73e6](https://github.com/janus-idp/backstage-plugins/commit/c0c73e638f66c03dae565614b8186938b38d7032))
+* **orchestrator:** remove unneeded orchestrator jira integration and endpoint ([#1833](https://github.com/janus-idp/backstage-plugins/issues/1833)) ([d2a76fd](https://github.com/janus-idp/backstage-plugins/commit/d2a76fd3db028f9774c821759bee5f38b7131c94))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.10.0
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.12.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.11.0...@janus-idp/backstage-plugin-orchestrator-backend@1.12.0) (2024-06-26)
 
 
