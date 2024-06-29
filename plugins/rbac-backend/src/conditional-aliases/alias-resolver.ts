@@ -44,9 +44,6 @@ function replaceAliasWithValue<K extends string>(
     return { ...params, [key]: nonAliasValues };
   }
 
-  //   if (predicate(params[key])) {
-  //     return { ...params, [key]: newValue };
-  //   }
   return params;
 }
 

@@ -1858,7 +1858,7 @@ describe('Policy checks for conditional policies', () => {
     });
   });
 
-  it('should execute condition policy with current user alias, when params contains array', async () => {
+  it('should execute condition policy with current user alias', async () => {
     const entityMock: Entity = {
       apiVersion: 'v1',
       kind: 'Group',
