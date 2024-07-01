@@ -3,6 +3,8 @@ import React from 'react';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 
 import { makeStyles } from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
+import WarningIcon from '@mui/icons-material/Warning';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { RJSFValidationError } from '@rjsf/utils';
@@ -169,6 +171,32 @@ export const ConditionsForm = ({
     );
   };
 
+  const hasMultiLevelNestedConditions = (): boolean => {
+    if (!Array.isArray(conditions[criteria as keyof ConditionsData])) {
+      return false;
+    }
+
+    return (conditions[criteria as keyof ConditionsData] as Condition[])
+      .filter(condition => !('rule' in condition))
+      .some((firstLevelNestedCondition: Condition) => {
+        const nestedConditionCriteria = Object.keys(
+          firstLevelNestedCondition,
+        )[0];
+        return (
+          Array.isArray(
+            firstLevelNestedCondition[
+              nestedConditionCriteria as keyof Condition
+            ],
+          ) &&
+          (
+            firstLevelNestedCondition[
+              nestedConditionCriteria as keyof Condition
+            ] as Condition[]
+          ).some((con: Condition) => !('rule' in con))
+        );
+      });
+  };
+
   return (
     <>
       <Box className={classes.form}>
@@ -182,6 +210,28 @@ export const ConditionsForm = ({
           handleSetErrors={handleSetErrors}
           setRemoveAllClicked={setRemoveAllClicked}
         />
+        {hasMultiLevelNestedConditions() && (
+          <Alert
+            icon={<WarningIcon />}
+            style={{ margin: '1.5rem 0 1rem 0' }}
+            severity="warning"
+            data-testid="multi-level-nested-conditions-warning"
+          >
+            <AlertTitle data-testid="multi-level-nested-conditions-warning-title">
+              Multiple levels of nested conditions are not supported
+            </AlertTitle>
+            Only one level is displayed. Please use the{' '}
+            <a
+              href="https://github.com/redhat-developer/red-hat-developers-documentation-rhdh/blob/main/modules/admin/proc-rbac-send-request-rbac-rest-api.adoc"
+              // TODO: Update link with the official documentation when RHIDP-3078 is resolved
+              target="blank"
+              style={{ textDecoration: 'underline' }}
+            >
+              CLI
+            </a>{' '}
+            to view all nested conditions.
+          </Alert>
+        )}
       </Box>
       <Box className={classes.footer}>
         <Button
