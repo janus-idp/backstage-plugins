@@ -11,6 +11,7 @@ import configData from './general/config.json';
 /** Metrics **/
 import crippledFeatures from './general/crippledFeatures.json';
 import grafanaInfo from './general/grafana.json';
+import bookinfoGraph from './general/graph.json';
 import istioCertsInfo from './general/istioCertsInfo.json';
 import istioConfig from './general/istioConfig.json';
 import istioContainerLogs from './general/istioLogs.json';
@@ -180,6 +181,7 @@ export const kialiData: { [index: string]: any } = {
   istioConfig: istioConfig,
   istioStatus: istioStatus,
   istioCertsInfo: istioCertsInfo,
+  graph: bookinfoGraph,
   namespacesData: {
     'istio-system': {
       tls: istioSystemTls,

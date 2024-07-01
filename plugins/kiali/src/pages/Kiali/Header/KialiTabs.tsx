@@ -8,6 +8,7 @@ import {
   istioConfigRouteRef,
   overviewRouteRef,
   servicesRouteRef,
+  trafficGraphRouteRef,
   workloadsRouteRef,
 } from '../../../routes';
 
@@ -24,6 +25,9 @@ const getPath = (loc: Location): number => {
   if (loc.pathname.includes('istio')) {
     return 4;
   }
+  if (loc.pathname.includes('graph')) {
+    return 5;
+  }
   return 0;
 };
 
@@ -37,6 +41,7 @@ export const KialiTabs = () => {
     { label: 'Services', route: servicesRouteRef.path },
     { label: 'Applications', route: appsRouteRef.path },
     { label: 'Istio Config', route: istioConfigRouteRef.path },
+    { label: 'Traffic Graph', route: trafficGraphRouteRef.path },
   ];
 
   return (

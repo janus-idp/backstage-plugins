@@ -5,6 +5,8 @@ import { Content, HeaderTabs, Page } from '@backstage/core-components';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
+import { Traffic } from '@material-ui/icons';
+
 import { getEntityRoutes } from '../src/components/Router';
 import { AppDetailsPage } from '../src/pages/AppDetails/AppDetailsPage';
 import { AppListPage } from '../src/pages/AppList/AppListPage';
@@ -15,6 +17,7 @@ import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
 import { OverviewPage } from '../src/pages/Overview/OverviewPage';
 import { ServiceDetailsPage } from '../src/pages/ServiceDetails/ServiceDetailsPage';
 import { ServiceListPage } from '../src/pages/ServiceList/ServiceListPage';
+import TrafficGraphPage from '../src/pages/TrafficGraph/TrafficGraphPage';
 import { WorkloadDetailsPage } from '../src/pages/WorkloadDetails/WorkloadDetailsPage';
 import { WorkloadListPage } from '../src/pages/WorkloadList/WorkloadListPage';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
@@ -26,6 +29,7 @@ import { CertsInfo } from '../src/types/CertsInfo';
 import { DurationInSeconds, TimeInSeconds } from '../src/types/Common';
 import { DashboardModel } from '../src/types/Dashboards';
 import { GrafanaInfo } from '../src/types/GrafanaInfo';
+import { GraphDefinition, GraphElementsQuery } from '../src/types/Graph';
 import {
   AppHealth,
   NamespaceAppHealth,
@@ -69,6 +73,10 @@ export class MockKialiClient implements KialiApi {
 
   constructor() {
     this.entity = undefined;
+  }
+
+  getGraphElements(_params: GraphElementsQuery): Promise<GraphDefinition> {
+    return kialiData.graph;
   }
 
   setEntity(entity?: Entity): void {
@@ -472,7 +480,7 @@ export class MockKialiClient implements KialiApi {
 
 const getSelected = (route: number) => {
   const pathname = window.location.pathname.split('/');
-  const paths = ['workloads', 'applications', 'services', 'istio'];
+  const paths = ['workloads', 'applications', 'services', 'istio', 'graph'];
   if (pathname && paths.includes(pathname[2])) {
     switch (pathname[2]) {
       case 'workloads':
@@ -483,6 +491,8 @@ const getSelected = (route: number) => {
         return <AppDetailsPage />;
       case 'istio':
         return <IstioConfigDetailsPage />;
+      case 'graph':
+        return <TrafficGraphPage />;
       default:
         return <OverviewPage />;
     }
@@ -498,6 +508,8 @@ const getSelected = (route: number) => {
       return <AppListPage />;
     case 4:
       return <IstioConfigListPage />;
+    case 5:
+      return <TrafficGraphPage />;
     default:
       return <KialiNoPath />;
   }
@@ -517,6 +529,7 @@ export const MockProvider = (props: Props) => {
     { label: 'Services', route: `/kiali#services` },
     { label: 'Applications', route: `/kiali#applications` },
     { label: 'Istio Config', route: `/kiali#istio` },
+    { label: 'Traffic Graph', route: `/kiali#graph` },
   ];
 
   const content = (

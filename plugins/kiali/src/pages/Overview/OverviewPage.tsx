@@ -479,7 +479,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
   return (
     <>
       {props.entity ? (
-        <div style={{ marginBottom: '20px' }}>
+        <div style={{ marginBottom: '20px', marginRight: '20px' }}>
           <TabbedCard title="Overview">
             {activeNs.map(ns => (
               <CardTab label={ns.name} key={`card_ns_${ns.name}`}>

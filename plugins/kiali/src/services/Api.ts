@@ -11,6 +11,7 @@ import { CertsInfo } from '../types/CertsInfo';
 import { DurationInSeconds, HTTP_VERBS, TimeInSeconds } from '../types/Common';
 import { DashboardModel } from '../types/Dashboards';
 import { GrafanaInfo } from '../types/GrafanaInfo';
+import { GraphDefinition, GraphElementsQuery } from '../types/Graph';
 import {
   AppHealth,
   NamespaceAppHealth,
@@ -253,6 +254,7 @@ export interface KialiApi {
     cluster?: string,
   ): Promise<Span[]>;
   getCrippledFeatures(): Promise<KialiCrippledFeatures>;
+  getGraphElements(params: GraphElementsQuery): Promise<GraphDefinition>;
 }
 
 export const kialiApiRef = createApiRef<KialiApi>({
@@ -1109,6 +1111,16 @@ export class KialiApiClient implements KialiApi {
     return this.newRequest<KialiCrippledFeatures>(
       HTTP_VERBS.GET,
       urls.crippledFeatures,
+    );
+  };
+
+  getGraphElements = async (
+    params: GraphElementsQuery,
+  ): Promise<GraphDefinition> => {
+    return this.newRequest<GraphDefinition>(
+      HTTP_VERBS.GET,
+      urls.namespacesGraphElements,
+      params,
     );
   };
 }
