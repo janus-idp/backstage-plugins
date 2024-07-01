@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.13.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.13.0...@janus-idp/backstage-plugin-orchestrator-backend@1.13.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **rbac:** update rbac common to fix compilation ([#1858](https://github.com/janus-idp/backstage-plugins/issues/1858)) ([48f142b](https://github.com/janus-idp/backstage-plugins/commit/48f142b447f0d1677ba3f16b2a3c8972b22d0588))
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.13.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.12.0...@janus-idp/backstage-plugin-orchestrator-backend@1.13.0) (2024-06-28)
 
 
