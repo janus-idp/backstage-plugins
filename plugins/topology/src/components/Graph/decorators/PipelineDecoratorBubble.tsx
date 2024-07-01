@@ -17,12 +17,8 @@ const PipelineDecoratorBubble: React.FC<PipelineDecoratorBubbleProps> = ({
   ...otherDecoratorProps
 }) => (
   <Decorator x={x} y={y} radius={radius} {...otherDecoratorProps}>
-    <g transform={`translate(-${radius / 2}, -${radius / 2})`}>
-      <foreignObject
-        width={radius}
-        height={radius}
-        style={{ fontSize: radius }}
-      >
+    <g transform="translate(-10, -12)">
+      <foreignObject width={20} height={20}>
         {children}
       </foreignObject>
     </g>
