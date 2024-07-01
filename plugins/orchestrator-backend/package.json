@@ -85,7 +85,7 @@
     "@backstage/types": "^1.1.1",
     "@janus-idp/backstage-plugin-audit-log-node": "1.2.0",
     "@janus-idp/backstage-plugin-orchestrator-common": "1.10.0",
-    "@janus-idp/backstage-plugin-rbac-common": "1.6.0",
+    "@janus-idp/backstage-plugin-rbac-common": "1.6.1",
     "@urql/core": "^4.1.4",
     "ajv-formats": "^2.1.1",
     "cloudevents": "^8.0.0",
