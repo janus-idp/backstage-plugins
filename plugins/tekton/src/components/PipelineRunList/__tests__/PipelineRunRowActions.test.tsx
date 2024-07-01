@@ -5,6 +5,7 @@ import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 
 import { LinkProps } from '@backstage/core-components';
+import { usePermission } from '@backstage/plugin-permission-react';
 
 import {
   act,
@@ -21,6 +22,14 @@ import { mockKubernetesPlrResponse } from '../../../__fixtures__/1-pipelinesData
 import { TektonResourcesContext } from '../../../hooks/TektonResourcesContext';
 import { TektonResourcesContextData } from '../../../types/types';
 import PipelineRunRowActions from '../PipelineRunRowActions';
+
+jest.mock('@backstage/plugin-permission-react', () => ({
+  usePermission: jest.fn(),
+}));
+
+const mockUsePermission = usePermission as jest.MockedFunction<
+  typeof usePermission
+>;
 
 jest.mock('@material-ui/core', () => ({
   ...jest.requireActual('@material-ui/core'),
@@ -84,6 +93,10 @@ const TestPipelineRunRowActions = ({
 );
 
 describe('PipelineRunRowActions', () => {
+  beforeEach(() => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+  });
+
   it('should render the icon space holder', () => {
     render(
       <TestPipelineRunRowActions
@@ -132,6 +145,21 @@ describe('PipelineRunRowActions', () => {
     );
 
     expect(screen.queryByTestId('external-sbom-link')).toBeInTheDocument();
+  });
+
+  it('should disable the view logs action if the user does not have enough permission', () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: false });
+
+    render(
+      <TestPipelineRunRowActions
+        pipelineRun={mockKubernetesPlrResponse.pipelineruns[1]}
+      />,
+    );
+
+    expect(screen.queryByTestId('view-logs-icon')).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('view-logs-icon')?.getAttribute('disabled'),
+    ).not.toBeNull();
   });
 
   it('should not open sbom logs modal when the view external SBOM link is clicked', async () => {

@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
+import { usePermission } from '@backstage/plugin-permission-react';
+
 import { render } from '@testing-library/react';
 
 import { ComputedStatus } from '@janus-idp/shared-react';
@@ -19,7 +21,19 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   }),
 }));
 
+jest.mock('@backstage/plugin-permission-react', () => ({
+  usePermission: jest.fn(),
+}));
+
+const mockUsePermission = usePermission as jest.MockedFunction<
+  typeof usePermission
+>;
+
 describe('PipelineRunList', () => {
+  beforeEach(() => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+  });
+
   it('should render PipelineRunList if available', () => {
     const mockContextData = {
       watchResourcesData: {
