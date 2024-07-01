@@ -3,6 +3,8 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { MockPermissionApi, TestApiProvider } from '@backstage/test-utils';
 
 import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
@@ -25,14 +27,18 @@ const mockEntity: Entity = {
   },
 };
 
+const mockPermissionApi = new MockPermissionApi();
+
 createDevApp()
   .registerPlugin(quayPlugin)
   .addThemes(createDevAppThemes())
   .addPage({
     element: (
-      <EntityProvider entity={mockEntity}>
-        <QuayPage />
-      </EntityProvider>
+      <TestApiProvider apis={[[permissionApiRef, mockPermissionApi]]}>
+        <EntityProvider entity={mockEntity}>
+          <QuayPage />
+        </EntityProvider>
+      </TestApiProvider>
     ),
     title: 'Root Page',
     path: '/quay',
