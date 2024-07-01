@@ -23,11 +23,13 @@ export type ConditionRules = {
 };
 
 export type ConditionsData = {
-  allOf?: PermissionCondition[];
-  anyOf?: PermissionCondition[];
-  not?: PermissionCondition;
+  allOf?: Condition[];
+  anyOf?: Condition[];
+  not?: Condition;
   condition?: PermissionCondition;
 };
+
+export type Condition = PermissionCondition | ConditionsData;
 
 export type RuleParamsErrors = {
   [key: string]: RJSFValidationError[];
