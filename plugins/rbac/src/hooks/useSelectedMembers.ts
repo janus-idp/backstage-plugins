@@ -60,7 +60,7 @@ export const useSelectedMembers = (
       message: (members as Response)?.statusText,
     },
     roleError: roleError,
-    loading: roleLoading && membersLoading,
+    loading: roleLoading || membersLoading,
     canReadUsersAndGroups,
   };
 };
