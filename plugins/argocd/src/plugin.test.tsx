@@ -3,8 +3,10 @@ import { Route, Routes } from 'react-router-dom';
 
 import { configApiRef } from '@backstage/core-plugin-api';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
   MockConfigApi,
+  MockPermissionApi,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -33,6 +35,8 @@ describe('argocd', () => {
     },
   };
 
+  const mockPermissionApi = new MockPermissionApi();
+
   const mockConfiguration = new MockConfigApi({
     backend: {
       baseUrl: 'http://localhost:7007',
@@ -50,6 +54,7 @@ describe('argocd', () => {
         apis={[
           [argoCDApiRef, mockedApi],
           [configApiRef, mockConfiguration],
+          [permissionApiRef, mockPermissionApi],
         ]}
       >
         <EntityProvider entity={mockEntity}>{children}</EntityProvider>
