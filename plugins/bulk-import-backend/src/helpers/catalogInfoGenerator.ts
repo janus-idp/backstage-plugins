@@ -113,11 +113,14 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     const locations = (await response.json()) as {
       data: { id: string; target: string; type: string };
     }[];
-    return new Map(
-      locations
-        .filter(location => location.data.type === 'url')
-        .map(location => [location.data.id, location.data.target]),
-    );
+    if (Array.isArray(locations)) {
+      return new Map(
+        locations
+          .filter(location => location.data.type === 'url')
+          .map(location => [location.data.id, location.data.target]),
+      );
+    }
+    return new Map<string, string>();
   }
 
   async deleteCatalogLocationById(locationId: string): Promise<void> {
