@@ -1,0 +1,17 @@
+Apis/ImportApi.md
+Apis/ManagementApi.md
+Apis/RepositoryApi.md
+Models/ApprovalTool.md
+Models/Import.md
+Models/ImportRequest.md
+Models/ImportRequest_github.md
+Models/ImportRequest_github_pullRequest.md
+Models/ImportRequest_repository.md
+Models/ImportStatus.md
+Models/Import_github.md
+Models/Import_github_pullRequest.md
+Models/Import_repository.md
+Models/Repository.md
+Models/RepositoryList.md
+Models/ping_200_response.md
+README.md
