@@ -65,7 +65,10 @@ export async function findAllRepositories(
   if (allReposAccessible.repositories) {
     for (const repo of allReposAccessible.repositories) {
       const gitUrl = gitUrlParse(repo.html_url);
-      let importStatus: Components.Schemas.ImportStatus | undefined;
+      let importStatus:
+        | { status: Components.Schemas.ImportStatus; lastUpdate?: string }
+        | null
+        | undefined = undefined;
       const errors: string[] = [];
       try {
         importStatus = checkStatus
@@ -81,13 +84,15 @@ export async function findAllRepositories(
       } catch (error: any) {
         errors.push(error.message);
       }
+      const repoUpdatedAt = repo.updated_at ? repo.updated_at : undefined;
       repoList.push({
         id: `${gitUrl.organization}/${repo.name}`,
         name: repo.name,
         organization: gitUrl.organization,
         url: repo.html_url,
         defaultBranch: repo.default_branch,
-        importStatus: importStatus,
+        importStatus: importStatus?.status,
+        lastUpdate: importStatus ? importStatus.lastUpdate : repoUpdatedAt,
         errors: errors,
       });
     }

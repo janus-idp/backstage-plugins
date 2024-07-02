@@ -23,6 +23,7 @@ declare namespace Components {
              * Specified entity name in the catalog. Filled only in response for dry-run import requests.
              */
             catalogEntityName?: string;
+            lastUpdate?: string; // date-time
             errors?: string[];
             approvalTool?: ApprovalTool;
             repository?: {
@@ -134,6 +135,7 @@ declare namespace Components {
              * default branch
              */
             defaultBranch?: string;
+            lastUpdate?: string; // date-time
             errors?: string[];
         }
         /**

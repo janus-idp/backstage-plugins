@@ -52,6 +52,10 @@ export type GithubRepository = {
    * The default "main" branch of the repository to place the `catalog-info.yaml` file into
    */
   default_branch: string;
+  /**
+   * The date-time the repository was last updated at
+   */
+  updated_at?: string | null;
 };
 
 /**

@@ -78,6 +78,7 @@ export async function findAllImports(
             status: 'ADDED',
             repository: repo,
             approvalTool: 'GIT',
+            lastUpdate: repo.lastUpdate,
           });
         }
         // No import PR
@@ -94,6 +95,7 @@ export async function findAllImports(
             url: openImportPr.prUrl,
           },
         },
+        lastUpdate: openImportPr.lastUpdate,
       });
     } catch (error: any) {
       errors.push(error.message);
@@ -104,6 +106,7 @@ export async function findAllImports(
         errors: errors,
         repository: repo,
         approvalTool: 'GIT',
+        lastUpdate: repo.lastUpdate,
       });
     }
   }

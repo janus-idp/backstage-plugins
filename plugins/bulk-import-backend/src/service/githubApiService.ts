@@ -114,6 +114,7 @@ export class GithubApiService {
           url: repo.url,
           html_url: repo.html_url,
           default_branch: repo.default_branch,
+          updated_at: repo.updated_at,
         };
         repositories.set(githubRepo.full_name, githubRepo);
       });
@@ -165,6 +166,7 @@ export class GithubApiService {
           url: repo.url,
           html_url: repo.html_url,
           default_branch: repo.default_branch,
+          updated_at: repo.updated_at,
         };
         repositories.set(githubRepo.full_name, githubRepo);
       });
@@ -344,6 +346,7 @@ export class GithubApiService {
   ): Promise<{
     prNum?: number;
     prUrl?: string;
+    lastUpdate?: string;
   }> {
     const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
     if (!ghConfig) {
@@ -405,6 +408,7 @@ export class GithubApiService {
   ): Promise<{
     prNum?: number;
     prUrl?: string;
+    lastUpdate?: string;
   }> {
     try {
       const response = await octo.rest.pulls.list({
@@ -417,6 +421,7 @@ export class GithubApiService {
           return {
             prNum: pull.number,
             prUrl: pull.html_url,
+            lastUpdate: pull.updated_at,
           };
         }
       }

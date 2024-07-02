@@ -6,6 +6,7 @@
 | **id** | **String** |  | [optional] [default to null] |
 | **status** | [**ImportStatus**](ImportStatus.md) |  | [optional] [default to null] |
 | **catalogEntityName** | **String** | Specified entity name in the catalog. Filled only in response for dry-run import requests. | [optional] [default to null] |
+| **lastUpdate** | **Date** |  | [optional] [default to null] |
 | **errors** | **List** |  | [optional] [default to null] |
 | **approvalTool** | [**ApprovalTool**](ApprovalTool.md) |  | [optional] [default to null] |
 | **repository** | [**Import_repository**](Import_repository.md) |  | [optional] [default to null] |
