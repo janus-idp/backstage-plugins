@@ -2235,6 +2235,66 @@ describe('Policy checks for conditional policies', () => {
     });
   });
 
+  it('should execute condition policy with current user alias', async () => {
+    const entityMock: Entity = {
+      apiVersion: 'v1',
+      kind: 'Group',
+      metadata: {
+        name: 'test-group',
+        namespace: 'default',
+      },
+      spec: {
+        members: ['mike'],
+      },
+    };
+    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    (conditionalStorage.filterConditions as jest.Mock).mockReturnValueOnce([
+      {
+        id: 1,
+        pluginId: 'catalog',
+        resourceType: 'catalog-entity',
+        actions: ['read'],
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        conditions: {
+          rule: 'IS_ENTITY_OWNER',
+          resourceType: 'catalog-entity',
+          params: {
+            claims: ['$currentUser'],
+          },
+        },
+      },
+    ]);
+
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/mike', [
+        'user:default/mike',
+        'group:default/team-a',
+      ]),
+    );
+    expect(decision).toStrictEqual({
+      pluginId: 'catalog',
+      resourceType: 'catalog-entity',
+      result: AuthorizeResult.CONDITIONAL,
+      conditions: {
+        anyOf: [
+          {
+            rule: 'IS_ENTITY_OWNER',
+            resourceType: 'catalog-entity',
+            params: {
+              claims: ['user:default/mike', 'group:default/team-a'],
+            },
+          },
+        ],
+      },
+    });
+  });
+
   it('should merge condition policies for user assigned to few roles', async () => {
     const entityMock: Entity = {
       apiVersion: 'v1',
@@ -2411,11 +2471,12 @@ function newPolicyQueryWithResourcePermission(
 
 function newIdentityResponse(
   user?: string,
+  ownershipEntityRefs?: string[],
 ): BackstageIdentityResponse | undefined {
   if (user) {
     return {
       identity: {
-        ownershipEntityRefs: [],
+        ownershipEntityRefs: ownershipEntityRefs ?? [],
         type: 'user',
         userEntityRef: user,
       },

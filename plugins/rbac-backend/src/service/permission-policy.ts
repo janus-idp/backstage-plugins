@@ -37,6 +37,7 @@ import {
   RoleAuditInfo,
   RoleEvents,
 } from '../audit-log/audit-logger';
+import { replaceAliases } from '../conditional-aliases/alias-resolver';
 import { ConditionalStorage } from '../database/conditional-storage';
 import {
   RoleMetadataDao,
@@ -330,6 +331,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         if (identityResp) {
           const conditionResult = await this.handleConditions(
             userEntityRef,
+            identityResp.identity.ownershipEntityRefs,
             request,
             roles,
           );
@@ -412,6 +414,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
   private async handleConditions(
     userEntityRef: string,
+    ownershipEntityRefs: string[],
     request: PolicyQuery,
     roles: string[],
   ): Promise<PolicyDecision | undefined> {
@@ -469,6 +472,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
           >,
         },
       };
+
+      replaceAliases(result.conditions, ownershipEntityRefs);
+
       const msg = `Send condition to plugin with id ${pluginId} to evaluate permission ${permissionName} with resource type ${resourceType} and action ${action} for user ${userEntityRef}`;
       const auditOptions = createPermissionEvaluationOptions(
         msg,
