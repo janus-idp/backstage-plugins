@@ -68,7 +68,7 @@ export async function findAllRepositories(
       let importStatus:
         | { status: Components.Schemas.ImportStatus; lastUpdate?: string }
         | null
-        | undefined = undefined;
+        | undefined;
       const errors: string[] = [];
       try {
         importStatus = checkStatus

@@ -233,6 +233,66 @@ export class GithubApiService {
       : undefined;
   }
 
+  async getRepositoryFromIntegrations(repoUrl: string): Promise<{
+    repository?: GithubRepository;
+    errors?: GithubRepoFetchError[];
+  }> {
+    const gitUrl = gitUrlParse(repoUrl);
+
+    const ghConfig = this.integrations.github.byUrl(repoUrl)?.config;
+    if (!ghConfig) {
+      throw new Error(
+        `No GitHub integration config found for repo ${repoUrl}. Please add a configuration entry under 'integrations.github`,
+      );
+    }
+
+    const credentials = await this.getCredentialsForConfig(ghConfig);
+    const errors = new Map<number, GithubRepoFetchError>();
+    let repository: GithubRepository | undefined = undefined;
+    for (const credential of credentials) {
+      if ('error' in credential) {
+        if (credential.error?.name !== 'NotFoundError') {
+          this.logger.error(
+            `Obtaining the Access Token Github App with appId: ${credential.appId} failed with ${credential.error}`,
+          );
+          const credentialError = this.createCredentialError(credential);
+          if (credentialError) {
+            errors.set(credential.appId, credentialError);
+          }
+        }
+        continue;
+      }
+
+      const octokit = new Octokit({
+        baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
+        auth: credential.token,
+      });
+
+      const resp = await octokit.rest.repos.get({
+        owner: gitUrl.owner,
+        repo: gitUrl.name,
+      });
+      const repo = resp?.data;
+      if (!repo) {
+        continue;
+      }
+      repository = {
+        name: repo.name,
+        full_name: repo.full_name,
+        url: repo.url,
+        html_url: repo.html_url,
+        default_branch: repo.default_branch,
+        updated_at: repo.updated_at,
+      };
+      break;
+    }
+
+    return {
+      repository,
+      errors: Array.from(errors.values()),
+    };
+  }
+
   /**
    * Returns GithubRepositoryResponse containing:
    *   - a list of unique repositories the github integrations have access to
@@ -315,12 +375,16 @@ export class GithubApiService {
       ExtendedGithubCredentials[]
     >();
     for (const ghConfig of ghConfigs) {
-      const creds = await this.githubCredentialsProvider.getAllCredentials({
-        host: ghConfig.host,
-      });
+      const creds = await this.getCredentialsForConfig(ghConfig);
       credentialsByConfig.set(ghConfig, creds);
     }
     return credentialsByConfig;
+  }
+
+  private async getCredentialsForConfig(ghConfig: GithubIntegrationConfig) {
+    return await this.githubCredentialsProvider.getAllCredentials({
+      host: ghConfig.host,
+    });
   }
 
   private verifyAndGetIntegrations() {
@@ -492,6 +556,7 @@ export class GithubApiService {
     prUrl?: string;
     prNumber?: number;
     hasChanges?: boolean;
+    lastUpdate?: string;
     errors?: string[];
   }> {
     const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
@@ -572,6 +637,7 @@ export class GithubApiService {
           return {
             prNumber: existingPrForBranch.prNum,
             prUrl: pullRequestResponse.data.html_url,
+            lastUpdate: pullRequestResponse.data.updated_at,
           };
         }
 
@@ -635,6 +701,7 @@ export class GithubApiService {
         return {
           prNumber: pullRequestResponse.data.number,
           prUrl: pullRequestResponse.data.html_url,
+          lastUpdate: pullRequestResponse.data.updated_at,
           hasChanges,
         };
       } catch (e: any) {

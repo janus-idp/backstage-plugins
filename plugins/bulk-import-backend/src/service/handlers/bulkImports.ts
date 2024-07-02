@@ -126,7 +126,7 @@ async function createPR(
   appTitle: string,
   appBaseUrl: string,
 ) {
-  const prToRepo = await githubApiService.submitPrToRepo(logger, {
+  return await githubApiService.submitPrToRepo(logger, {
     repoUrl: req.repository.url,
     gitUrl: gitUrl,
     catalogInfoContent:
@@ -145,7 +145,6 @@ After this pull request is merged, the component will become available in the [$
 For more information, read an [overview of the Backstage software catalog](https://backstage.io/docs/features/software-catalog/).
 `,
   });
-  return prToRepo;
 }
 
 async function possiblyCreateLocation(
@@ -243,8 +242,12 @@ export async function createImportJobs(
       repoCatalogUrl,
     );
     if (hasLocation) {
+      const ghRepo = await githubApiService.getRepositoryFromIntegrations(
+        req.repository.url,
+      );
       result.push({
         status: 'ADDED',
+        lastUpdate: ghRepo.repository?.updated_at ?? undefined,
         repository: {
           url: req.repository.url,
           name: gitUrl.name,
@@ -282,6 +285,7 @@ export async function createImportJobs(
         // PR created but with no changes compared to the base branch
         result.push({
           status: 'ADDED',
+          lastUpdate: prToRepo.lastUpdate,
           repository: {
             url: req.repository.url,
             name: gitUrl.name,
@@ -294,6 +298,7 @@ export async function createImportJobs(
       result.push({
         errors: prToRepo.errors,
         status: 'WAIT_PR_APPROVAL',
+        lastUpdate: prToRepo.lastUpdate,
         repository: {
           url: req.repository.url,
           name: gitUrl.name,
@@ -343,10 +348,16 @@ export async function findImportStatusByRepo(
 ): Promise<HandlerResponse<Components.Schemas.Import>> {
   logger.debug(`Getting bulk import job status for ${repoUrl}..`);
 
+  const gitUrl = gitUrlParse(repoUrl);
+
   const errors: string[] = [];
   const result = {
     id: repoUrl,
-    repository: {},
+    repository: {
+      url: repoUrl,
+      name: gitUrl.name,
+      organization: gitUrl.organization,
+    },
     approvalTool: 'GIT',
     status: null,
   } as Components.Schemas.Import;
@@ -372,7 +383,10 @@ export async function findImportStatusByRepo(
       if (exists) {
         result.status = 'ADDED';
       }
-      // No import PR
+      // No import PR => let's determine last update from the repository
+      const ghRepo =
+        await githubApiService.getRepositoryFromIntegrations(repoUrl);
+      result.lastUpdate = ghRepo.repository?.updated_at ?? undefined;
       return {
         statusCode: 200,
         responseBody: result,
@@ -385,10 +399,17 @@ export async function findImportStatusByRepo(
         url: openImportPr.prUrl,
       },
     };
+    result.lastUpdate = openImportPr.lastUpdate;
   } catch (error: any) {
     errors.push(error.message);
-    result.status = 'PR_ERROR';
     result.errors = errors;
+    if (error.message?.includes('Not Found')) {
+      return {
+        statusCode: 404,
+        responseBody: result,
+      };
+    }
+    result.status = 'PR_ERROR';
   }
 
   return {
