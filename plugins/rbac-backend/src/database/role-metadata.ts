@@ -16,6 +16,7 @@ export interface RoleMetadataDao extends RoleMetadata {
 }
 
 export interface RoleMetadataStorage {
+  filterRoleMetadata(source?: Source): Promise<RoleMetadataDao[]>;
   findRoleMetadata(
     roleEntityRef: string,
     trx?: Knex.Transaction,
@@ -37,6 +38,14 @@ export interface RoleMetadataStorage {
 
 export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
   constructor(private readonly knex: Knex<any, any[]>) {}
+
+  async filterRoleMetadata(source?: Source): Promise<RoleMetadataDao[]> {
+    return await this.knex.table(ROLE_METADATA_TABLE).where(builder => {
+      if (source) {
+        builder.where('source', source);
+      }
+    });
+  }
 
   async findRoleMetadata(
     roleEntityRef: string,

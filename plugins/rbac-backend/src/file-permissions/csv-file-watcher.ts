@@ -126,21 +126,27 @@ export class CSVFileWatcher {
 
     // Check for any old policies that will need to be removed by checking if
     // the policy no longer exists in the temp enforcer (csv file)
-    const policiesToRemove =
-      await this.enforcer.getFilteredPolicyMetadata('csv-file');
-
-    for (const policy of policiesToRemove) {
-      const convertedPolicy = metadataStringToPolicy(policy.policy);
-      if (
-        convertedPolicy.length === 2 &&
-        !(await tempEnforcer.hasGroupingPolicy(...convertedPolicy))
-      ) {
-        this.csvFilePolicies.removedGroupPolicies.push(convertedPolicy);
-      } else if (
-        convertedPolicy.length > 2 &&
-        !(await tempEnforcer.hasPolicy(...convertedPolicy))
-      ) {
-        this.csvFilePolicies.removedPolicies.push(convertedPolicy);
+    const roleMetadatas =
+      await this.roleMetadataStorage.filterRoleMetadata('csv-file');
+    for (const roleMetadata of roleMetadatas) {
+      const groupingPoliciesToRemove =
+        await this.enforcer.getFilteredGroupingPolicy(
+          1,
+          roleMetadata.roleEntityRef,
+        );
+      for (const gPolicy of groupingPoliciesToRemove) {
+        if (!(await tempEnforcer.hasGroupingPolicy(...gPolicy))) {
+          this.csvFilePolicies.removedGroupPolicies.push(gPolicy);
+        }
+      }
+      const policiesToRemove = await this.enforcer.getFilteredPolicy(
+        0,
+        roleMetadata.roleEntityRef,
+      );
+      for (const policy of policiesToRemove) {
+        if (!(await tempEnforcer.hasPolicy(...policy))) {
+          this.csvFilePolicies.removedPolicies.push(policy);
+        }
       }
     }
 
@@ -155,33 +161,9 @@ export class CSVFileWatcher {
       }
     }
 
-    for (const groupPolicy of groupPoliciesToAdd) {
-      if (!(await this.enforcer.hasGroupingPolicy(...groupPolicy))) {
-        this.csvFilePolicies.addedGroupPolicies.push(groupPolicy);
-      }
-    }
-
-    // Check for policies that might need to be updated
-    // This will involve removing legacy policies if they exist in both the
-    // temp enforcer (csv file) and the enforcer
-    // We will then add them back with the new source
-    const policiesToUpdate =
-      await this.enforcer.getFilteredPolicyMetadata('legacy');
-
-    for (const policy of policiesToUpdate) {
-      const convertedPolicy = metadataStringToPolicy(policy.policy);
-      if (
-        convertedPolicy.length === 2 &&
-        (await tempEnforcer.hasGroupingPolicy(...convertedPolicy)) &&
-        (await this.enforcer.hasGroupingPolicy(...convertedPolicy))
-      ) {
-        this.csvFilePolicies.addedGroupPolicies.push(convertedPolicy);
-      } else if (
-        convertedPolicy.length > 2 &&
-        (await tempEnforcer.hasPolicy(...convertedPolicy)) &&
-        (await this.enforcer.hasPolicy(...convertedPolicy))
-      ) {
-        this.csvFilePolicies.addedPolicies.push(convertedPolicy);
+    for (const gPolicy of groupPoliciesToAdd) {
+      if (!(await this.enforcer.hasGroupingPolicy(...gPolicy))) {
+        this.csvFilePolicies.addedGroupPolicies.push(gPolicy);
       }
     }
 
@@ -309,13 +291,13 @@ export class CSVFileWatcher {
         continue;
       }
       try {
-        await this.enforcer.addOrUpdatePolicy(policy, 'csv-file');
+        await this.enforcer.addPolicy(policy);
 
         await this.auditLogger.auditLog<PermissionAuditInfo>({
           actorId: RBAC_BACKEND,
-          message: `Created or updated policy`,
-          eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,
-          metadata: { policies: [policy], source: 'csv-file' },
+          message: `Created policy`,
+          eventName: PermissionEvents.CREATE_POLICY,
+          metadata: { policies: [policy] },
           stage: HANDLE_RBAC_DATA_STAGE,
           status: 'succeeded',
         });
@@ -340,10 +322,7 @@ export class CSVFileWatcher {
         actorId: RBAC_BACKEND,
         message: `Deleted policies`,
         eventName: PermissionEvents.DELETE_POLICY,
-        metadata: {
-          policies: this.csvFilePolicies.removedPolicies,
-          source: 'csv-file',
-        },
+        metadata: { policies: this.csvFilePolicies.removedPolicies },
         stage: HANDLE_RBAC_DATA_STAGE,
         status: 'succeeded',
       });
@@ -399,10 +378,7 @@ export class CSVFileWatcher {
           roleMetadata.roleEntityRef,
         );
 
-        await this.enforcer.addOrUpdateGroupingPolicy(
-          groupPolicy,
-          roleMetadata,
-        );
+        await this.enforcer.addGroupingPolicy(groupPolicy, roleMetadata);
 
         const eventName = currentMetadata
           ? RoleEvents.UPDATE_ROLE

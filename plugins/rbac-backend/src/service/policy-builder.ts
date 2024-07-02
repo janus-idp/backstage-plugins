@@ -23,7 +23,6 @@ import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { DataBaseConditionalStorage } from '../database/conditional-storage';
 import { migrate } from '../database/migration';
-import { DataBasePolicyMetadataStorage } from '../database/policy-metadata-storage';
 import { DataBaseRoleMetadataStorage } from '../database/role-metadata';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
@@ -91,13 +90,9 @@ export class PolicyBuilder {
 
     const conditionStorage = new DataBaseConditionalStorage(databaseClient);
 
-    const policyMetadataStorage = new DataBasePolicyMetadataStorage(
-      databaseClient,
-    );
     const roleMetadataStorage = new DataBaseRoleMetadataStorage(databaseClient);
     const enforcerDelegate = new EnforcerDelegate(
       enf,
-      policyMetadataStorage,
       roleMetadataStorage,
       databaseClient,
     );

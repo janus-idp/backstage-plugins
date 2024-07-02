@@ -20,6 +20,7 @@ import {
   RoleAuditInfo,
   RoleEvents,
 } from './audit-log/audit-logger';
+import { RoleMetadataStorage } from './database/role-metadata';
 import { EnforcerDelegate } from './service/enforcer-delegate';
 
 export function policyToString(policy: string[]): string {
@@ -121,5 +122,26 @@ export function deepSortedEqual(
 export function isPermissionAction(action: string): action is PermissionAction {
   return ['create', 'read', 'update', 'delete', 'use'].includes(
     action as PermissionAction,
+  );
+}
+
+export async function buildRoleSourceMap(
+  policies: string[][],
+  roleMetadata: RoleMetadataStorage,
+): Promise<Map<string, Source | undefined>> {
+  return await policies.reduce(
+    async (
+      acc: Promise<Map<string, Source | undefined>>,
+      policy: string[],
+    ): Promise<Map<string, Source | undefined>> => {
+      const roleEntityRef = policy[0];
+      const acummulator = await acc;
+      if (!acummulator.has(roleEntityRef)) {
+        const metadata = await roleMetadata.findRoleMetadata(roleEntityRef);
+        acummulator.set(roleEntityRef, metadata?.source);
+      }
+      return acummulator;
+    },
+    Promise.resolve(new Map<string, Source | undefined>()),
   );
 }

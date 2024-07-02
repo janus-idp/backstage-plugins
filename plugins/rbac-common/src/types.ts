@@ -11,7 +11,7 @@ export type Source =
   | 'legacy'; // preexisting policies
 
 export type PermissionPolicyMetadata = {
-  source: Source;
+  source?: Source;
 };
 
 export type RoleMetadata = {

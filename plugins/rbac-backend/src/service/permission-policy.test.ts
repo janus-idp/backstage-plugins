@@ -21,20 +21,12 @@ import {
 import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
 
-import {
-  PermissionPolicyMetadata,
-  RoleMetadata,
-  Source,
-} from '@janus-idp/backstage-plugin-rbac-common';
+import { RoleMetadata } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { resolve } from 'path';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { ConditionalStorage } from '../database/conditional-storage';
-import {
-  PermissionPolicyMetadataDao,
-  PolicyMetadataStorage,
-} from '../database/policy-metadata-storage';
 import {
   RoleMetadataDao,
   RoleMetadataStorage,
@@ -73,6 +65,7 @@ const conditionalStorage: ConditionalStorage = {
 };
 
 const roleMetadataStorageMock: RoleMetadataStorage = {
+  filterRoleMetadata: jest.fn().mockImplementation(() => []),
   findRoleMetadata: jest
     .fn()
     .mockImplementation(
@@ -86,31 +79,6 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
   createRoleMetadata: jest.fn().mockImplementation(),
   updateRoleMetadata: jest.fn().mockImplementation(),
   removeRoleMetadata: jest.fn().mockImplementation(),
-};
-
-const policyMetadataStorageMock: PolicyMetadataStorage = {
-  findPolicyMetadataBySource: jest
-    .fn()
-    .mockImplementation(
-      async (_source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-        return [];
-      },
-    ),
-  findPolicyMetadata: jest
-    .fn()
-    .mockImplementation(
-      async (
-        _policy: string[],
-        _trx: Knex.Knex.Transaction,
-      ): Promise<PermissionPolicyMetadata> => {
-        const test: PermissionPolicyMetadata = {
-          source: 'csv-file',
-        };
-        return test;
-      },
-    ),
-  createPolicyMetadata: jest.fn().mockImplementation(),
-  removePolicyMetadata: jest.fn().mockImplementation(),
 };
 
 const dbManagerMock = Knex.knex({ client: MockClient });
@@ -138,9 +106,8 @@ describe('RBACPermissionPolicy Tests', () => {
   });
 
   it('should build', async () => {
-    const stringPolicy = `p, user:default/known_user, test-resource, update, allow `;
     const config = newConfigReader();
-    const adapter = await newAdapter(config, stringPolicy);
+    const adapter = await newAdapter(config);
     const enfDelegate = await newEnforcerDelegate(adapter, config);
 
     const policy = await newPermissionPolicy(config, enfDelegate);
@@ -309,20 +276,8 @@ describe('RBACPermissionPolicy Tests', () => {
       ['role:default/known_role', 'test.resource.deny', 'use', 'allow'],
     ];
 
-    const policyMetadataStorage: PolicyMetadataStorage = {
-      findPolicyMetadataBySource: jest.fn().mockImplementation(),
-      findPolicyMetadata: jest
-        .fn()
-        .mockImplementation(async (): Promise<PermissionPolicyMetadata> => {
-          return Promise.resolve({ source: 'csv-file' });
-        }),
-      createPolicyMetadata: jest.fn().mockImplementation(),
-      removePolicyMetadata: jest.fn().mockImplementation(),
-    };
-
     beforeEach(async () => {
       (roleMetadataStorageMock.removeRoleMetadata as jest.Mock).mockReset();
-      (policyMetadataStorage.removePolicyMetadata as jest.Mock).mockReset();
 
       config = newConfigReader();
       adapter = await newAdapter(config);
@@ -331,6 +286,16 @@ describe('RBACPermissionPolicy Tests', () => {
     });
 
     it('should cleanup old group policies and metadata after re-attach policy file', async () => {
+      roleMetadataStorageMock.filterRoleMetadata = jest
+        .fn()
+        .mockImplementation(() => {
+          const roleMetadataDao: RoleMetadataDao = {
+            roleEntityRef: 'role:default/old-role',
+            source: 'csv-file',
+            modifiedBy: 'user:default/tom',
+          };
+          return [roleMetadataDao];
+        });
       const storedGroupPolicies = [
         // should be removed
         ['user:default/user-old-1', 'role:default/old-role'],
@@ -344,34 +309,11 @@ describe('RBACPermissionPolicy Tests', () => {
         ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       ];
 
-      policyMetadataStorage.findPolicyMetadataBySource = jest
-        .fn()
-        .mockImplementation(
-          async (source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-            if (source === 'csv-file') {
-              return [
-                {
-                  id: 0,
-                  policy: '[user:default/user-old-1, role:default/old-role]',
-                  source: 'csv-file',
-                },
-                {
-                  id: 1,
-                  policy: '[group:default/team-a-old-1, role:default/old-role]',
-                  source: 'csv-file',
-                },
-              ];
-            }
-            return [];
-          },
-        );
-
       enforcerDelegate = await newEnforcerDelegate(
         adapter,
         config,
         storedPolicies,
         storedGroupPolicies,
-        policyMetadataStorage,
       );
 
       await newPermissionPolicy(config, enforcerDelegate);
@@ -383,25 +325,10 @@ describe('RBACPermissionPolicy Tests', () => {
       expect(await enforcerDelegate.getAllRoles()).toEqual(allEnfRoles);
 
       const nonAdminPolicies = (await enforcerDelegate.getPolicy()).filter(
-        (policy: string[]) => {
-          return policy[0] !== 'role:default/rbac_admin';
-        },
+        (policy: string[]) => policy[0] !== 'role:default/rbac_admin',
       );
+
       expect(nonAdminPolicies).toEqual(allEnfPolicies);
-
-      // policy metadata should to be removed
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
-        2,
-      );
-
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['user:default/user-old-1', 'role:default/old-role'],
-        expect.anything(),
-      );
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['group:default/team-a-old-1', 'role:default/old-role'],
-        expect.anything(),
-      );
 
       // role metadata should be removed
       expect(roleMetadataStorageMock.removeRoleMetadata).toHaveBeenCalledWith(
@@ -423,30 +350,11 @@ describe('RBACPermissionPolicy Tests', () => {
         ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       ];
 
-      policyMetadataStorage.findPolicyMetadataBySource = jest
-        .fn()
-        .mockImplementation(
-          async (source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-            if (source === 'csv-file') {
-              return [
-                {
-                  id: 0,
-                  policy:
-                    '[role:default/old-role, test.some.resource, use, allow]',
-                  source: 'csv-file',
-                },
-              ];
-            }
-            return [];
-          },
-        );
-
       enforcerDelegate = await newEnforcerDelegate(
         adapter,
         config,
         storedPolicies,
         storedGroupPolicies,
-        policyMetadataStorage,
       );
 
       rbacPolicy = await newPermissionPolicy(config, enforcerDelegate);
@@ -463,16 +371,6 @@ describe('RBACPermissionPolicy Tests', () => {
         },
       );
       expect(nonAdminPolicies).toEqual(allEnfPolicies);
-
-      // policy metadata should to be removed
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
-        1,
-      );
-
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['role:default/old-role', 'test.some.resource', 'use', 'allow'],
-        expect.anything(),
-      );
 
       // role metadata should not be removed
       expect(
@@ -512,50 +410,11 @@ describe('RBACPermissionPolicy Tests', () => {
         ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       ];
 
-      policyMetadataStorage.findPolicyMetadataBySource = jest
-        .fn()
-        .mockImplementation(
-          async (source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-            if (source === 'csv-file') {
-              return [
-                {
-                  id: 0,
-                  policy: '[user:default/user-old-1, role:default/old-role]',
-                  source: 'csv-file',
-                },
-                {
-                  id: 1,
-                  policy: '[user:default/user-old-2, role:default/old-role]',
-                  source: 'csv-file',
-                },
-                {
-                  id: 2,
-                  policy: '[group:default/team-a-old-1, role:default/old-role]',
-                  source: 'csv-file',
-                },
-                {
-                  id: 3,
-                  policy: '[group:default/team-a-old-2, role:default/old-role]',
-                  source: 'csv-file',
-                },
-                {
-                  id: 4,
-                  policy:
-                    '[role:default/old-role, test.some.resource, use, allow]',
-                  source: 'csv-file',
-                },
-              ];
-            }
-            return [];
-          },
-        );
-
       enforcerDelegate = await newEnforcerDelegate(
         adapter,
         config,
         storedPolicies,
         storedGroupPolicies,
-        policyMetadataStorage,
       );
 
       await newPermissionPolicy(config, enforcerDelegate);
@@ -572,32 +431,6 @@ describe('RBACPermissionPolicy Tests', () => {
         },
       );
       expect(nonAdminPolicies).toEqual(allEnfPolicies);
-
-      // policy metadata should to be removed
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
-        5,
-      );
-
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['user:default/user-old-1', 'role:default/old-role'],
-        expect.anything(),
-      );
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['user:default/user-old-2', 'role:default/old-role'],
-        expect.anything(),
-      );
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['group:default/team-a-old-1', 'role:default/old-role'],
-        expect.anything(),
-      );
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['group:default/team-a-old-2', 'role:default/old-role'],
-        expect.anything(),
-      );
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['role:default/old-role', 'test.some.resource', 'use', 'allow'],
-        expect.anything(),
-      );
 
       // role metadata should be removed
       expect(roleMetadataStorageMock.removeRoleMetadata).toHaveBeenCalledWith(
@@ -620,34 +453,11 @@ describe('RBACPermissionPolicy Tests', () => {
         ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       ];
 
-      policyMetadataStorage.findPolicyMetadataBySource = jest
-        .fn()
-        .mockImplementation(
-          async (source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-            if (source === 'csv-file') {
-              return [
-                {
-                  id: 0,
-                  policy: '[user:default/user-old-1, role:default/old-role]',
-                  source: 'csv-file',
-                },
-                {
-                  id: 1,
-                  policy: '[group:default/team-a-old-1, role:default/old-role]',
-                  source: 'csv-file',
-                },
-              ];
-            }
-            return [];
-          },
-        );
-
       enforcerDelegate = await newEnforcerDelegate(
         adapter,
         config,
         storedPolicies,
         storedGroupPolicies,
-        policyMetadataStorage,
       );
 
       await newPermissionPolicy(config, enforcerDelegate);
@@ -664,20 +474,6 @@ describe('RBACPermissionPolicy Tests', () => {
         },
       );
       expect(nonAdminPolicies).toEqual(allEnfPolicies);
-
-      // policy metadata should to be removed
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
-        2,
-      );
-
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['user:default/user-old-1', 'role:default/old-role'],
-        expect.anything(),
-      );
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['group:default/team-a-old-1', 'role:default/old-role'],
-        expect.anything(),
-      );
 
       // role metadata should be removed
       expect(roleMetadataStorageMock.removeRoleMetadata).toHaveBeenCalledWith(
@@ -699,30 +495,11 @@ describe('RBACPermissionPolicy Tests', () => {
         ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       ];
 
-      policyMetadataStorage.findPolicyMetadataBySource = jest
-        .fn()
-        .mockImplementation(
-          async (source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-            if (source === 'csv-file') {
-              return [
-                {
-                  id: 0,
-                  policy:
-                    '[role:default/old-role, test.some.resource, use, allow]',
-                  source: 'csv-file',
-                },
-              ];
-            }
-            return [];
-          },
-        );
-
       enforcerDelegate = await newEnforcerDelegate(
         adapter,
         config,
         storedPolicies,
         storedGroupPolicies,
-        policyMetadataStorage,
       );
 
       await newPermissionPolicy(config, enforcerDelegate);
@@ -739,15 +516,6 @@ describe('RBACPermissionPolicy Tests', () => {
         },
       );
       expect(nonAdminPolicies).toEqual(allEnfPolicies);
-
-      // policy metadata should to be removed
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
-        1,
-      );
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['role:default/old-role', 'test.some.resource', 'use', 'allow'],
-        expect.anything(),
-      );
     });
 
     it('should cleanup old policies and group policies and metadata after detach policy file', async () => {
@@ -769,50 +537,11 @@ describe('RBACPermissionPolicy Tests', () => {
         ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       ];
 
-      policyMetadataStorage.findPolicyMetadataBySource = jest
-        .fn()
-        .mockImplementation(
-          async (source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-            if (source === 'csv-file') {
-              return [
-                {
-                  id: 0,
-                  policy: '[user:default/user-old-1, role:default/old-role]',
-                  source: 'csv-file',
-                },
-                {
-                  id: 1,
-                  policy: '[user:default/user-old-2, role:default/old-role]',
-                  source: 'csv-file',
-                },
-                {
-                  id: 2,
-                  policy: '[group:default/team-a-old-1, role:default/old-role]',
-                  source: 'csv-file',
-                },
-                {
-                  id: 3,
-                  policy: '[group:default/team-a-old-2, role:default/old-role]',
-                  source: 'csv-file',
-                },
-                {
-                  id: 4,
-                  policy:
-                    '[role:default/old-role, test.some.resource, use, allow]',
-                  source: 'csv-file',
-                },
-              ];
-            }
-            return [];
-          },
-        );
-
       enforcerDelegate = await newEnforcerDelegate(
         adapter,
         config,
         storedPolicies,
         storedGroupPolicies,
-        policyMetadataStorage,
       );
 
       await newPermissionPolicy(config, enforcerDelegate);
@@ -830,32 +559,6 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       expect(nonAdminPolicies).toEqual(allEnfPolicies);
 
-      // policy metadata should to be removed
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
-        5,
-      );
-
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['user:default/user-old-1', 'role:default/old-role'],
-        expect.anything(),
-      );
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['user:default/user-old-2', 'role:default/old-role'],
-        expect.anything(),
-      );
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['group:default/team-a-old-1', 'role:default/old-role'],
-        expect.anything(),
-      );
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['group:default/team-a-old-2', 'role:default/old-role'],
-        expect.anything(),
-      );
-      expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledWith(
-        ['role:default/old-role', 'test.some.resource', 'use', 'allow'],
-        expect.anything(),
-      );
-
       // role metadata should be removed
       expect(roleMetadataStorageMock.removeRoleMetadata).toHaveBeenCalledWith(
         'role:default/old-role',
@@ -869,6 +572,7 @@ describe('RBACPermissionPolicy Tests', () => {
     let enfDelegate: EnforcerDelegate;
 
     const roleMetadataStorageTest: RoleMetadataStorage = {
+      filterRoleMetadata: jest.fn().mockImplementation(() => []),
       findRoleMetadata: jest
         .fn()
         .mockImplementation(
@@ -887,39 +591,7 @@ describe('RBACPermissionPolicy Tests', () => {
       removeRoleMetadata: jest.fn().mockImplementation(),
     };
 
-    const policyMetadataStorageTest: PolicyMetadataStorage = {
-      findPolicyMetadataBySource: jest
-        .fn()
-        .mockImplementation(
-          async (_source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-            return [];
-          },
-        ),
-      findPolicyMetadata: jest.fn().mockImplementation(),
-      createPolicyMetadata: jest.fn().mockImplementation(),
-      removePolicyMetadata: jest.fn().mockImplementation(),
-    };
-
     beforeEach(async () => {
-      policyMetadataStorageTest.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(
-          async (
-            policyOrGPolicy: string[],
-            _trx: Knex.Knex.Transaction,
-          ): Promise<PermissionPolicyMetadata> => {
-            if (
-              (policyOrGPolicy.length > 2 &&
-                policyOrGPolicy[0].includes('rbac_admin')) ||
-              (policyOrGPolicy.length === 2 &&
-                policyOrGPolicy[1].includes('rbac_admin'))
-            ) {
-              return { source: 'configuration' };
-            }
-            return { source: 'configuration' };
-          },
-        );
-
       const basicAndResourcePermissions = resolve(
         __dirname,
         './../__fixtures__/data/valid-csv/basic-and-resource-policies.csv',
@@ -1173,6 +845,7 @@ describe('RBACPermissionPolicy Tests', () => {
     let policy: RBACPermissionPolicy;
     let enfDelegate: EnforcerDelegate;
     const roleMetadataStorageTest: RoleMetadataStorage = {
+      filterRoleMetadata: jest.fn().mockImplementation(() => []),
       findRoleMetadata: jest
         .fn()
         .mockImplementation(
@@ -1192,16 +865,8 @@ describe('RBACPermissionPolicy Tests', () => {
       removeRoleMetadata: jest.fn().mockImplementation(),
     };
 
-    const policyMetadataStorageTest: PolicyMetadataStorage = {
-      findPolicyMetadataBySource: jest.fn().mockImplementation(),
-      findPolicyMetadata: jest.fn().mockImplementation(),
-      createPolicyMetadata: jest.fn().mockImplementation(),
-      removePolicyMetadata: jest.fn().mockImplementation(),
-    };
-
     const adminRole = 'role:default/rbac_admin';
     const groupPolicy = [
-      ['user:default/old_admin', 'role:default/rbac_admin'],
       ['user:default/test_admin', 'role:default/rbac_admin'],
     ];
     const permissions = [
@@ -1223,42 +888,6 @@ describe('RBACPermissionPolicy Tests', () => {
     catalogApi.getEntities.mockReturnValue({ items: [] });
 
     beforeEach(async () => {
-      policyMetadataStorageTest.findPolicyMetadataBySource = jest
-        .fn()
-        .mockImplementation(
-          async (source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-            if (source === 'configuration') {
-              return [
-                {
-                  id: 0,
-                  policy: '[user:default/old_admin, role:default/rbac_admin]',
-                  source: 'configuration',
-                },
-                {
-                  id: 1,
-                  policy: '[user:default/test_admin, role:default/rbac_admin]',
-                  source: 'configuration',
-                },
-              ];
-            }
-            return [];
-          },
-        );
-
-      policyMetadataStorageTest.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(
-          async (
-            _policy: string[],
-            _trx: Knex.Knex.Transaction,
-          ): Promise<PermissionPolicyMetadata> => {
-            const test: PermissionPolicyMetadata = {
-              source: 'configuration',
-            };
-            return test;
-          },
-        );
-
       roleMetadataStorageMock.findRoleMetadata = jest
         .fn()
         .mockImplementation(
@@ -1421,6 +1050,7 @@ describe('RBACPermissionPolicy Tests', () => {
 // Notice: There is corner case, when "resourced" permission policy can be defined not by resource type, but by name.
 describe('Policy checks for resourced permissions defined by name', () => {
   const roleMetadataStorageTest: RoleMetadataStorage = {
+    filterRoleMetadata: jest.fn().mockImplementation(() => []),
     findRoleMetadata: jest
       .fn()
       .mockImplementation(
@@ -1464,10 +1094,12 @@ describe('Policy checks for resourced permissions defined by name', () => {
         modifiedBy,
       },
     );
-    await enfDelegate.addPolicy(
-      ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'allow'],
-      'csv-file',
-    );
+    await enfDelegate.addPolicy([
+      'role:default/catalog_reader',
+      'catalog.entity.read',
+      'read',
+      'allow',
+    ]);
 
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
@@ -1491,13 +1123,10 @@ describe('Policy checks for resourced permissions defined by name', () => {
         modifiedBy,
       },
     );
-    await enfDelegate.addPolicies(
-      [
-        ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'allow'],
-        ['role:default/catalog_reader', 'catalog-entity', 'read', 'deny'],
-      ],
-      'csv-file',
-    );
+    await enfDelegate.addPolicies([
+      ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'allow'],
+      ['role:default/catalog_reader', 'catalog-entity', 'read', 'deny'],
+    ]);
 
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
@@ -1522,13 +1151,10 @@ describe('Policy checks for resourced permissions defined by name', () => {
       },
     );
 
-    await enfDelegate.addPolicies(
-      [
-        ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'deny'],
-        ['role:default/catalog_reader', 'catalog-entity', 'read', 'allow'],
-      ],
-      'csv-file',
-    );
+    await enfDelegate.addPolicies([
+      ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'deny'],
+      ['role:default/catalog_reader', 'catalog-entity', 'read', 'allow'],
+    ]);
 
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
@@ -1573,10 +1199,9 @@ describe('Policy checks for resourced permissions defined by name', () => {
       },
     );
 
-    await enfDelegate.addPolicies(
-      [['role:default/catalog_user', 'catalog.entity.read', 'read', 'allow']],
-      'csv-file',
-    );
+    await enfDelegate.addPolicies([
+      ['role:default/catalog_user', 'catalog.entity.read', 'read', 'allow'],
+    ]);
 
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
@@ -1638,10 +1263,9 @@ describe('Policy checks for resourced permissions defined by name', () => {
       },
     );
 
-    await enfDelegate.addPolicies(
-      [['role:default/catalog_user', 'catalog.entity.read', 'read', 'allow']],
-      'csv-file',
-    );
+    await enfDelegate.addPolicies([
+      ['role:default/catalog_user', 'catalog.entity.read', 'read', 'allow'],
+    ]);
 
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
@@ -2153,14 +1777,13 @@ describe('Policy checks for conditional policies', () => {
       g, group:default/qa, role:default/qa
       `,
     );
-    const config = newConfigReader();
+    const config = newConfigReader(undefined, []);
     const theModel = newModelFromString(MODEL);
     const logger = getVoidLogger();
     const enf = await createEnforcer(theModel, adapter, logger, config);
 
     const enfDelegate = new EnforcerDelegate(
       enf,
-      policyMetadataStorageMock,
       roleMetadataStorageMock,
       knex,
     );
@@ -2502,7 +2125,6 @@ async function newEnforcerDelegate(
   config: ConfigReader,
   storedPolicies?: string[][],
   storedGroupingPolicies?: string[][],
-  policyMock?: PolicyMetadataStorage,
 ): Promise<EnforcerDelegate> {
   const theModel = newModelFromString(MODEL);
   const logger = getVoidLogger();
@@ -2517,12 +2139,7 @@ async function newEnforcerDelegate(
     await enf.addGroupingPolicies(storedGroupingPolicies);
   }
 
-  return new EnforcerDelegate(
-    enf,
-    policyMock || policyMetadataStorageMock,
-    roleMetadataStorageMock,
-    knex,
-  );
+  return new EnforcerDelegate(enf, roleMetadataStorageMock, knex);
 }
 
 async function newPermissionPolicy(
