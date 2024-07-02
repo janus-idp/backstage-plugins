@@ -31,7 +31,10 @@ export async function getImportStatus(
   catalogInfoGenerator: CatalogInfoGenerator,
   repoUrl: string,
   defaultBranch?: string,
-): Promise<Components.Schemas.ImportStatus> {
+): Promise<{
+  status: Components.Schemas.ImportStatus;
+  lastUpdate?: string;
+} | null> {
   return getImportStatusWithCheckerFn(
     logger,
     githubApiService,
@@ -50,7 +53,10 @@ export async function getImportStatusFromLocations(
   repoUrl: string,
   catalogUrlLocations: string[],
   defaultBranch?: string,
-): Promise<Components.Schemas.ImportStatus> {
+): Promise<{
+  status: Components.Schemas.ImportStatus;
+  lastUpdate?: string;
+} | null> {
   return getImportStatusWithCheckerFn(
     logger,
     githubApiService,
@@ -75,7 +81,10 @@ async function getImportStatusWithCheckerFn(
   repoUrl: string,
   catalogExistenceCheckFn: (catalogUrl: string) => Promise<boolean>,
   defaultBranch?: string,
-): Promise<Components.Schemas.ImportStatus> {
+): Promise<{
+  status: Components.Schemas.ImportStatus;
+  lastUpdate?: string;
+} | null> {
   // Check to see if there are any PR
   const openImportPr = await githubApiService.findImportOpenPr(logger, {
     repoUrl,
@@ -86,11 +95,11 @@ async function getImportStatusWithCheckerFn(
         catalogInfoGenerator.getCatalogUrl(repoUrl, defaultBranch),
       )
     ) {
-      return 'ADDED';
+      return { status: 'ADDED' };
     }
     return null;
   }
-  return 'WAIT_PR_APPROVAL';
+  return { status: 'WAIT_PR_APPROVAL', lastUpdate: openImportPr.lastUpdate };
 }
 
 /**

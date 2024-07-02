@@ -399,6 +399,10 @@ const OPENAPI = `
             "type": "string",
             "description": "default branch"
           },
+          "lastUpdate": {
+            "type": "string",
+            "format": "date-time"
+          },
           "errors": {
             "type": "array",
             "items": {
@@ -438,6 +442,10 @@ const OPENAPI = `
           "catalogEntityName": {
             "type": "string",
             "description": "Specified entity name in the catalog. Filled only in response for dry-run import requests."
+          },
+          "lastUpdate": {
+            "type": "string",
+            "format": "date-time"
           },
           "errors": {
             "type": "array",
