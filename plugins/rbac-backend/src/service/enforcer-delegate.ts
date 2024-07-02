@@ -5,7 +5,7 @@ import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
-import { policiesToString, policyToString } from '../helper';
+import { mergeRoleMetadata, policiesToString, policyToString } from '../helper';
 import { MODEL } from './permission-model';
 import { ADMIN_ROLE_NAME } from './permission-policy';
 
@@ -134,7 +134,7 @@ export class EnforcerDelegate {
 
       if (currentMetadata) {
         await this.roleMetadataStorage.updateRoleMetadata(
-          this.mergeMetadata(currentMetadata, roleMetadata),
+          mergeRoleMetadata(currentMetadata, roleMetadata),
           entityRef,
           trx,
         );
@@ -189,7 +189,7 @@ export class EnforcerDelegate {
         );
       if (currentRoleMetadata) {
         await this.roleMetadataStorage.updateRoleMetadata(
-          this.mergeMetadata(currentRoleMetadata, roleMetadata),
+          mergeRoleMetadata(currentRoleMetadata, roleMetadata),
           roleMetadata.roleEntityRef,
           trx,
         );
@@ -332,7 +332,7 @@ export class EnforcerDelegate {
           await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
         } else if (currentRoleMetadata) {
           await this.roleMetadataStorage.updateRoleMetadata(
-            this.mergeMetadata(currentRoleMetadata, roleMetadata),
+            mergeRoleMetadata(currentRoleMetadata, roleMetadata),
             roleEntity,
             trx,
           );
@@ -380,7 +380,7 @@ export class EnforcerDelegate {
           await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
         } else if (currentRoleMetadata) {
           await this.roleMetadataStorage.updateRoleMetadata(
-            this.mergeMetadata(currentRoleMetadata, roleMetadata),
+            mergeRoleMetadata(currentRoleMetadata, roleMetadata),
             roleEntity,
             trx,
           );
@@ -456,20 +456,5 @@ export class EnforcerDelegate {
 
   async getAllRoles(): Promise<string[]> {
     return this.enforcer.getAllRoles();
-  }
-
-  private mergeMetadata(
-    currentMetadata: RoleMetadataDao,
-    newMetadata: RoleMetadataDao,
-  ): RoleMetadataDao {
-    const mergedMetaData: RoleMetadataDao = { ...currentMetadata };
-    mergedMetaData.lastModified =
-      newMetadata.lastModified ?? new Date().toUTCString();
-    mergedMetaData.modifiedBy = newMetadata.modifiedBy;
-    mergedMetaData.description =
-      newMetadata.description ?? currentMetadata.description;
-    mergedMetaData.roleEntityRef = newMetadata.roleEntityRef;
-    mergedMetaData.source = newMetadata.source;
-    return mergedMetaData;
   }
 }

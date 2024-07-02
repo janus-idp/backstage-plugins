@@ -28,7 +28,7 @@ export interface RoleMetadataStorage {
   updateRoleMetadata(
     roleMetadata: RoleMetadataDao,
     oldRoleEntityRef: string,
-    trx: Knex.Transaction,
+    externalTrx?: Knex.Transaction,
   ): Promise<void>;
   removeRoleMetadata(
     roleEntityRef: string,
@@ -84,8 +84,9 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
   async updateRoleMetadata(
     newRoleMetadata: RoleMetadataDao,
     oldRoleEntityRef: string,
-    trx: Knex.Transaction,
+    externalTrx?: Knex.Transaction,
   ): Promise<void> {
+    const trx = externalTrx ?? (await this.knex.transaction());
     const currentMetadataDao = await this.findRoleMetadata(
       oldRoleEntityRef,
       trx,

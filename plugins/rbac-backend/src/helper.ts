@@ -20,7 +20,7 @@ import {
   RoleAuditInfo,
   RoleEvents,
 } from './audit-log/audit-logger';
-import { RoleMetadataStorage } from './database/role-metadata';
+import { RoleMetadataDao, RoleMetadataStorage } from './database/role-metadata';
 import { EnforcerDelegate } from './service/enforcer-delegate';
 
 export function policyToString(policy: string[]): string {
@@ -144,4 +144,19 @@ export async function buildRoleSourceMap(
     },
     Promise.resolve(new Map<string, Source | undefined>()),
   );
+}
+
+export function mergeRoleMetadata(
+  currentMetadata: RoleMetadataDao,
+  newMetadata: RoleMetadataDao,
+): RoleMetadataDao {
+  const mergedMetaData: RoleMetadataDao = { ...currentMetadata };
+  mergedMetaData.lastModified =
+    newMetadata.lastModified ?? new Date().toUTCString();
+  mergedMetaData.modifiedBy = newMetadata.modifiedBy;
+  mergedMetaData.description =
+    newMetadata.description ?? currentMetadata.description;
+  mergedMetaData.roleEntityRef = newMetadata.roleEntityRef;
+  mergedMetaData.source = newMetadata.source;
+  return mergedMetaData;
 }
