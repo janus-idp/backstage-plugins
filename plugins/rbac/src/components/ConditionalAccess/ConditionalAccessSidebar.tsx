@@ -23,6 +23,7 @@ const useDrawerContentStyles = makeStyles(theme => ({
     flexFlow: 'column',
     height: '100%',
     justifyContent: 'space-between',
+    backgroundColor: theme.palette.background.default,
   },
   header: {
     display: 'flex',
