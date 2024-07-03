@@ -110,6 +110,7 @@ export type AppCredentialFetchResult = AppCredential | AppCredentialError;
 export type AppCredential = {
   appId: number;
   accessToken: string | undefined;
+  installationAccountLogin?: string;
 };
 export type AppCredentialError = { appId: number; error: Error };
 
@@ -121,6 +122,7 @@ export type ExtendedGithubCredentials =
 export type GithubAppCredentials = GithubCredentials & {
   type: 'app';
   appId: number;
+  accountLogin?: string;
 };
 
 export type GithubAppError = {

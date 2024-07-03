@@ -373,6 +373,106 @@ export class GithubApiService {
       : undefined;
   }
 
+  private async addGithubTokenOrgRepositories(
+    octokit: Octokit,
+    credential: GithubCredentials,
+    org: string,
+    repositories: Map<string, GithubRepository>,
+    errors: Map<number, GithubRepoFetchError>,
+    pageNumber: number = DefaultPageNumber,
+    pageSize: number = DefaultPageSize,
+  ): Promise<{ totalCount?: number }> {
+    let totalCount: number | undefined;
+    try {
+      /**
+       * The listForAuthenticatedUser endpoint will grab all the repositories the github token has explicit access to.
+       * These would include repositories they own, repositories where they are a collaborator,
+       * and repositories that they can access through an organization membership.
+       */
+      const resp = await octokit.rest.repos.listForOrg({
+        org,
+        page: pageNumber,
+        per_page: pageSize,
+        sort: 'full_name',
+        direction: 'asc',
+      });
+      resp?.data?.forEach(repo => {
+        const githubRepo: GithubRepository = {
+          name: repo.name,
+          full_name: repo.full_name,
+          url: repo.url,
+          html_url: repo.html_url,
+          default_branch: repo.default_branch ?? 'main',
+          updated_at: repo.updated_at,
+        };
+        repositories.set(githubRepo.full_name, githubRepo);
+      });
+
+      totalCount = await this.computeTotalOrgRepoCountFromGitHubToken(
+        octokit,
+        org,
+        resp,
+      );
+    } catch (err) {
+      this.logger.error(
+        `Fetching repositories with token from token failed with ${err}`,
+      );
+      const credentialError = this.createCredentialError(
+        credential,
+        err as Error,
+      );
+      if (credentialError) {
+        errors.set(-1, credentialError);
+      }
+    }
+    return { totalCount };
+  }
+
+  private async computeTotalOrgRepoCountFromGitHubToken(
+    octokit: Octokit,
+    org: string,
+    resp: RestEndpointMethodTypes['repos']['listForOrg']['response'],
+  ): Promise<number | undefined> {
+    // There is no direct way to get the total count of repositories other than using octokit.paginate,
+    // but will make us retrieve all pages, thus increasing our response time.
+    // Workaround here is to analyze the headers, and get the link to the last page.
+    const pageSize = resp?.data?.length;
+    const linkHeader = resp?.headers?.link;
+    if (!linkHeader) {
+      this.logger.debug(
+        'No link header found in response from listForAuthenticatedUser GH endpoint => returning current page size',
+      );
+      return pageSize;
+    }
+    const lastPageLink = linkHeader
+      .split(',')
+      .find(s => s.includes('rel="last"'));
+    if (!lastPageLink) {
+      this.logger.debug(
+        "No rel='last' link found in response headers from listForAuthenticatedUser GH endpoint => returning current page size",
+      );
+      return pageSize;
+    }
+    const match = lastPageLink.match(/page=(\d+).*$/);
+    if (!match || match.length < 2) {
+      this.logger.debug(
+        "Unable to extract page number from rel='last' link found in response headers from listForAuthenticatedUser GH endpoint => returning current page size",
+      );
+      return pageSize;
+    }
+
+    const lastPageNumber = parseInt(match[1], 10);
+    // Fetch the last page to count its items, as it might contain fewer than the requested size
+    const lastPageResponse = await octokit.repos.listForOrg({
+      org,
+      page: lastPageNumber,
+      per_page: 1,
+    });
+    return pageSize
+      ? (lastPageNumber - 1) * pageSize + lastPageResponse.data.length
+      : undefined;
+  }
+
   async getRepositoryFromIntegrations(repoUrl: string): Promise<{
     repository?: GithubRepository;
     errors?: GithubRepoFetchError[];
@@ -503,6 +603,79 @@ export class GithubApiService {
     }
     return {
       organizations: Array.from(orgs.values()),
+      errors: Array.from(errors.values()),
+      totalCount: totalCount,
+    };
+  }
+
+  async getOrgRepositoriesFromIntegrations(
+    orgName: string,
+    pageNumber: number = DefaultPageNumber,
+    pageSize: number = DefaultPageSize,
+  ): Promise<GithubRepositoryResponse> {
+    const ghConfigs = this.verifyAndGetIntegrations();
+    const credentialsByConfig =
+      await this.getCredentialsFromIntegrations(ghConfigs);
+    const repositories = new Map<string, GithubRepository>();
+    const errors = new Map<number, GithubRepoFetchError>();
+    let totalCount = 0;
+    for (const [ghConfig, credentials] of credentialsByConfig) {
+      this.logger.debug(
+        `Got ${credentials.length} credential(s) for ${ghConfig.host}`,
+      );
+      for (const credential of credentials) {
+        if ('error' in credential) {
+          if (credential.error?.name !== 'NotFoundError') {
+            this.logger.error(
+              `Obtaining the Access Token Github App with appId: ${credential.appId} failed with ${credential.error}`,
+            );
+            const credentialError = this.createCredentialError(credential);
+            if (credentialError) {
+              errors.set(credential.appId, credentialError);
+            }
+          }
+          continue;
+        }
+
+        const octokit = new Octokit({
+          baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
+          auth: credential.token,
+        });
+
+        let resp: { totalCount?: number };
+        if (isGithubAppCredential(credential)) {
+          if (credential.accountLogin !== orgName) {
+            continue;
+          }
+          resp = await this.addGithubAppRepositories(
+            octokit,
+            credential,
+            repositories,
+            errors,
+            pageNumber,
+            pageSize,
+          );
+        } else {
+          resp = await this.addGithubTokenOrgRepositories(
+            octokit,
+            credential,
+            orgName,
+            repositories,
+            errors,
+            pageNumber,
+            pageSize,
+          );
+        }
+        this.logger.debug(
+          `Got ${resp.totalCount} repo(s) for ${ghConfig.host}`,
+        );
+        if (resp.totalCount) {
+          totalCount += resp.totalCount;
+        }
+      }
+    }
+    return {
+      repositories: Array.from(repositories.values()),
       errors: Array.from(errors.values()),
       totalCount: totalCount,
     };

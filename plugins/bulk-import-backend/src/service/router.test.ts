@@ -394,6 +394,241 @@ describe('createRouter', () => {
     });
   });
 
+  describe('GET /organizations/{org}/repositories', () => {
+    it('returns 200 when repositories are fetched without errors', async () => {
+      mockedPermissionQuery.mockImplementation(allowAll);
+
+      jest
+        .spyOn(GithubApiService.prototype, 'getOrgRepositoriesFromIntegrations')
+        .mockImplementation(
+          async (
+            orgName: string,
+            _pageNumber?: number,
+            _pageSize?: number,
+          ): Promise<GithubRepositoryResponse> => {
+            switch (orgName) {
+              case 'my-ent-org-1':
+                return {
+                  repositories: [
+                    {
+                      name: 'A',
+                      full_name: 'my-ent-org-1/A',
+                      url: 'https://api.github.com/repos/my-ent-org-1/A',
+                      html_url: 'https://github.com/my-ent-org-1/A',
+                      default_branch: 'master',
+                    },
+                    {
+                      name: 'B',
+                      full_name: 'my-ent-org-1/B',
+                      url: 'https://api.github.com/repos/my-ent-org-1/B',
+                      html_url: 'https://github.com/my-ent-org-1/B',
+                      default_branch: 'main',
+                    },
+                  ],
+                  errors: [],
+                };
+              case 'my-ent-org-2':
+                return {
+                  repositories: [
+                    {
+                      name: 'AA',
+                      full_name: 'my-ent-org-2/AA',
+                      url: 'https://api.github.com/repos/my-ent-org-2/AA',
+                      html_url: 'https://github.com/my-ent-org-2/AA',
+                      default_branch: 'master',
+                    },
+                    {
+                      name: 'BB',
+                      full_name: 'my-ent-org-2/BB',
+                      url: 'https://api.github.com/repos/my-ent-org-2/BB',
+                      html_url: 'https://github.com/my-ent-org-2/BB',
+                      default_branch: 'main',
+                    },
+                  ],
+                  errors: [],
+                };
+              default:
+                return {
+                  repositories: [],
+                  errors: [],
+                };
+            }
+          },
+        );
+      jest
+        .spyOn(GithubApiService.prototype, 'findImportOpenPr')
+        .mockResolvedValue({});
+      jest
+        .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
+        .mockResolvedValue([]);
+
+      let response = await request(app).get(
+        '/organizations/my-ent-org-1/repositories',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        errors: [],
+        repositories: [
+          {
+            id: 'my-ent-org-1/A',
+            name: 'A',
+            organization: 'my-ent-org-1',
+            url: 'https://github.com/my-ent-org-1/A',
+            errors: [],
+            defaultBranch: 'master',
+          },
+          {
+            id: 'my-ent-org-1/B',
+            name: 'B',
+            organization: 'my-ent-org-1',
+            url: 'https://github.com/my-ent-org-1/B',
+            errors: [],
+            defaultBranch: 'main',
+          },
+        ],
+      });
+
+      response = await request(app).get(
+        '/organizations/my-ent-org-2/repositories',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        errors: [],
+        repositories: [
+          {
+            defaultBranch: 'master',
+            errors: [],
+            id: 'my-ent-org-2/AA',
+            name: 'AA',
+            organization: 'my-ent-org-2',
+            url: 'https://github.com/my-ent-org-2/AA',
+          },
+          {
+            defaultBranch: 'main',
+            errors: [],
+            id: 'my-ent-org-2/BB',
+            name: 'BB',
+            organization: 'my-ent-org-2',
+            url: 'https://github.com/my-ent-org-2/BB',
+          },
+        ],
+      });
+
+      response = await request(app).get(
+        '/organizations/my-ent-org--no-repos/repositories',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        errors: [],
+        repositories: [],
+      });
+    });
+
+    it('returns 200 with the errors in the body when repositories are fetched, but errors have occurred', async () => {
+      mockedPermissionQuery.mockImplementation(allowAll);
+
+      const githubApiServiceResponse: GithubRepositoryResponse = {
+        repositories: [
+          {
+            name: 'A',
+            full_name: 'backstage/A',
+            url: 'https://api.github.com/repos/backstage/A',
+            html_url: 'https://github.com/backstage/A',
+            default_branch: 'master',
+          },
+          {
+            name: 'B',
+            full_name: 'backstage/B',
+            url: 'https://api.github.com/repos/backstage/B',
+            html_url: 'https://github.com/backstage/B',
+            default_branch: 'main',
+          },
+        ],
+        errors: [
+          {
+            error: {
+              name: 'customError',
+              message: 'Github App with ID 2 failed spectacularly',
+            },
+            type: 'app',
+            appId: 2,
+          },
+        ],
+      };
+      jest
+        .spyOn(GithubApiService.prototype, 'getOrgRepositoriesFromIntegrations')
+        .mockResolvedValue(githubApiServiceResponse);
+      jest
+        .spyOn(GithubApiService.prototype, 'findImportOpenPr')
+        .mockResolvedValue({});
+      jest
+        .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
+        .mockResolvedValue([]);
+
+      const response = await request(app).get(
+        '/organizations/some-org/repositories',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        errors: ['Github App with ID 2 failed spectacularly'],
+        repositories: [
+          {
+            defaultBranch: 'master',
+            errors: [],
+            id: 'backstage/A',
+            name: 'A',
+            organization: 'backstage',
+            url: 'https://github.com/backstage/A',
+          },
+          {
+            defaultBranch: 'main',
+            errors: [],
+            id: 'backstage/B',
+            name: 'B',
+            organization: 'backstage',
+            url: 'https://github.com/backstage/B',
+          },
+        ],
+      });
+    });
+
+    it('returns 500 when one or more errors are returned with no successful repository fetched', async () => {
+      mockedPermissionQuery.mockImplementation(allowAll);
+
+      jest
+        .spyOn(GithubApiService.prototype, 'getOrgRepositoriesFromIntegrations')
+        .mockResolvedValue({
+          repositories: [],
+          errors: [
+            {
+              error: {
+                name: 'some error',
+                message: 'Github App with ID 1234567890 returned an error',
+              },
+              type: 'app',
+              appId: 2,
+            },
+          ],
+        });
+      jest
+        .spyOn(GithubApiService.prototype, 'findImportOpenPr')
+        .mockResolvedValue({});
+      jest
+        .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
+        .mockResolvedValue([]);
+
+      const response = await request(app).get(
+        '/organizations/some-org/repositories',
+      );
+
+      expect(response.status).toEqual(500);
+      expect(response.body).toEqual({
+        errors: ['Github App with ID 1234567890 returned an error'],
+      });
+    });
+  });
+
   describe('GET /imports', () => {
     it('returns 200 with empty list when there is nothing in catalog yet and no open PR for each repo', async () => {
       mockedPermissionQuery.mockImplementation(allowAll);

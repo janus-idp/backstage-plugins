@@ -53,6 +53,7 @@ type InstallationTokenData = {
   token: string;
   expiresAt: DateTime;
   repositories?: string[];
+  installationAccountLogin?: string;
 };
 class Cache {
   private readonly tokenCache = new Map<string, InstallationTokenData>();
@@ -60,7 +61,7 @@ class Cache {
   async getOrCreateToken(
     key: string,
     supplier: () => Promise<InstallationTokenData>,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<{ accessToken: string; installationAccountLogin?: string }> {
     let existingInstallationData = this.tokenCache.get(key);
 
     if (
@@ -74,7 +75,11 @@ class Cache {
       this.tokenCache.set(key, existingInstallationData);
     }
 
-    return { accessToken: existingInstallationData.token };
+    return {
+      accessToken: existingInstallationData.token,
+      installationAccountLogin:
+        existingInstallationData.installationAccountLogin,
+    };
   }
 
   private isExpired = (date: DateTime) => DateTime.local() > date;
@@ -119,8 +124,11 @@ class GithubAppManager {
 
   async getInstallationCredentials(
     host: string,
-  ): Promise<{ accessToken: string | undefined }[]> {
-    const creds: { accessToken: string | undefined }[] = [];
+  ): Promise<{ accessToken: string | undefined; accountLogin?: string }[]> {
+    const creds: {
+      accessToken: string | undefined;
+      installationAccountLogin?: string;
+    }[] = [];
     const installationData = await this.getInstallationData();
     let installationDataFiltered: InstallationData[] = [];
     if (this.allowedInstallationOwners) {
@@ -185,6 +193,7 @@ class GithubAppManager {
             token: result.data.token,
             expiresAt: DateTime.fromISO(result.data.expires_at),
             repositories: repositoryNames,
+            installationAccountLogin: installation.accountLogin,
           };
         },
       );
@@ -297,6 +306,7 @@ export class GithubAppsCredentialManager {
           credentials.push({
             appId: cred.appId,
             accessToken: credElement.accessToken,
+            installationAccountLogin: credElement.accountLogin,
           });
         }
       } else {
@@ -424,6 +434,7 @@ export class CustomSingleInstanceGithubCredentialsProvider
           token: app.accessToken,
           type: 'app',
           appId: app.appId,
+          accountLogin: app.installationAccountLogin,
         });
       }
       // Add the app credentials with their errors as well so that user can deal with them
@@ -513,5 +524,13 @@ export class CustomGithubCredentialsProvider
 
   async getAllAppInstallations(config: GithubIntegrationConfig) {
     return new GithubAppsCredentialManager(config).getAllInstallations();
+  }
+
+  async getAppInstallationsForOrg(
+    config: GithubIntegrationConfig,
+    org: string,
+  ) {
+    const all = await this.getAllAppInstallations(config);
+    return all.filter(install => install.account?.login === org);
   }
 }

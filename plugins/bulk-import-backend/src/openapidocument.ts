@@ -131,6 +131,90 @@ const OPENAPI = `
         }
       }
     },
+    "/organizations/{organizationName}/repositories": {
+      "get": {
+        "operationId": "findRepositoriesByOrganization",
+        "summary": "Fetch Repositories in the specified GitHub organization, provided it is accessible by any of the configured GitHub Integrations.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Organization"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizationName",
+            "description": "Organization name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "checkImportStatus",
+            "description": "whether to return import status. Note that this might incur a performance penalty because the import status is computed for each repository.",
+            "schema": {
+              "type": "boolean",
+              "default": "false"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pagePerIntegration",
+            "description": "the page number for each Integration",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "sizePerIntegration",
+            "description": "the number of items per Integration to return per page",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Org Repository list was fetched successfully with no errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositoryList"
+                },
+                "examples": {
+                  "multipleRepos": {
+                    "$ref": "#/components/examples/multipleRepos"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Generic error when there are errors and no Org Repository is returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositoryList"
+                },
+                "examples": {
+                  "repositoryListErrors": {
+                    "$ref": "#/components/examples/repositoryListErrors"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/repositories": {
       "get": {
         "operationId": "findAllRepositories",

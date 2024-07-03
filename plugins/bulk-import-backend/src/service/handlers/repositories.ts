@@ -19,6 +19,7 @@ import { Logger } from 'winston';
 
 import { CatalogInfoGenerator } from '../../helpers';
 import { Components } from '../../openapi.d';
+import { GithubRepositoryResponse } from '../../types';
 import { GithubApiService } from '../githubApiService';
 import {
   DefaultPageNumber,
@@ -36,13 +37,53 @@ export async function findAllRepositories(
   pageSize: number = DefaultPageSize,
 ): Promise<HandlerResponse<Components.Schemas.RepositoryList>> {
   logger.debug(
-    `Getting all repositories (page,size)=(${pageNumber},${pageSize})..`,
+    `Getting all repositories - (page,size)=(${pageNumber},${pageSize})..`,
   );
-  const allReposAccessible =
-    await githubApiService.getRepositoriesFromIntegrations(
-      pageNumber,
-      pageSize,
+  return githubApiService
+    .getRepositoriesFromIntegrations(pageNumber, pageSize)
+    .then(response =>
+      formatResponse(
+        response,
+        catalogInfoGenerator,
+        checkStatus,
+        logger,
+        githubApiService,
+      ),
     );
+}
+
+export async function findRepositoriesByOrganization(
+  logger: Logger,
+  githubApiService: GithubApiService,
+  catalogInfoGenerator: CatalogInfoGenerator,
+  orgName: string,
+  checkStatus: boolean = false,
+  pageNumber: number = DefaultPageNumber,
+  pageSize: number = DefaultPageSize,
+): Promise<HandlerResponse<Components.Schemas.RepositoryList>> {
+  logger.debug(
+    `Getting all repositories for org "${orgName}" - (page,size)=(${pageNumber},${pageSize})..`,
+  );
+  return githubApiService
+    .getOrgRepositoriesFromIntegrations(orgName, pageNumber, pageSize)
+    .then(response =>
+      formatResponse(
+        response,
+        catalogInfoGenerator,
+        checkStatus,
+        logger,
+        githubApiService,
+      ),
+    );
+}
+
+async function formatResponse(
+  allReposAccessible: GithubRepositoryResponse,
+  catalogInfoGenerator: CatalogInfoGenerator,
+  checkStatus: boolean,
+  logger: Logger,
+  githubApiService: GithubApiService,
+) {
   const errorList: string[] = [];
   if (allReposAccessible.errors) {
     for (const err of allReposAccessible.errors) {

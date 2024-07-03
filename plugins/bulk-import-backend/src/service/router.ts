@@ -50,7 +50,10 @@ import {
 } from './handlers/bulkImports';
 import { findAllOrganizations } from './handlers/organizations';
 import { ping } from './handlers/ping';
-import { findAllRepositories } from './handlers/repositories';
+import {
+  findAllRepositories,
+  findRepositoriesByOrganization,
+} from './handlers/repositories';
 
 // TODO: Remove this when done to use the @janus-idp/backstage-plugin-bulk-import-common import instead
 /** This permission is used to access the bulk-import endpoints
@@ -178,6 +181,40 @@ export async function createRouter(
         logger,
         githubApiService,
         catalogInfoGenerator,
+        q.checkImportStatus,
+        q.pagePerIntegration,
+        q.sizePerIntegration,
+      );
+      // const paginated = paginate(response.responseBody?.repositories, q.page, q.size)
+      const repos = response.responseBody?.repositories;
+      return res.status(response.statusCode).json({
+        errors: response.responseBody?.errors,
+        repositories: repos,
+        totalCount: response.responseBody?.totalCount,
+        pagePerIntegration: q.pagePerIntegration,
+        sizePerIntegration: q.sizePerIntegration,
+      } as Components.Schemas.RepositoryList);
+    },
+  );
+
+  api.register(
+    'findRepositoriesByOrganization',
+    async (c: Context, req: express.Request, res: express.Response) => {
+      const backstageToken = getBearerTokenFromAuthorizationHeader(
+        req.header('authorization'),
+      );
+      await permissionCheck(permissions, backstageToken);
+      const q: Paths.FindRepositoriesByOrganization.QueryParameters =
+        Object.assign({}, c.request.query);
+      // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
+      q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
+      q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
+      q.checkImportStatus = stringToBoolean(q.checkImportStatus);
+      const response = await findRepositoriesByOrganization(
+        logger,
+        githubApiService,
+        catalogInfoGenerator,
+        c.request.params.organizationName?.toString(),
         q.checkImportStatus,
         q.pagePerIntegration,
         q.sizePerIntegration,

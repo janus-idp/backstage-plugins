@@ -271,6 +271,26 @@ declare namespace Paths {
             }
         }
     }
+    namespace FindRepositoriesByOrganization {
+        namespace Parameters {
+            export type CheckImportStatus = boolean;
+            export type OrganizationName = string;
+            export type PagePerIntegration = number;
+            export type SizePerIntegration = number;
+        }
+        export interface PathParameters {
+            organizationName: Parameters.OrganizationName;
+        }
+        export interface QueryParameters {
+            checkImportStatus?: Parameters.CheckImportStatus;
+            pagePerIntegration?: Parameters.PagePerIntegration;
+            sizePerIntegration?: Parameters.SizePerIntegration;
+        }
+        namespace Responses {
+            export type $200 = /* Repository List */ Components.Schemas.RepositoryList;
+            export type $500 = /* Repository List */ Components.Schemas.RepositoryList;
+        }
+    }
     namespace Ping {
         namespace Responses {
             export interface $200 {
@@ -297,6 +317,14 @@ export interface OperationMethods {
     data?: any,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.FindAllOrganizations.Responses.$200>
+  /**
+   * findRepositoriesByOrganization - Fetch Repositories in the specified GitHub organization, provided it is accessible by any of the configured GitHub Integrations.
+   */
+  'findRepositoriesByOrganization'(
+    parameters?: Parameters<Paths.FindRepositoriesByOrganization.QueryParameters & Paths.FindRepositoriesByOrganization.PathParameters> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.FindRepositoriesByOrganization.Responses.$200>
   /**
    * findAllRepositories - Fetch Organization Repositories accessible by Backstage Github Integrations
    */
@@ -359,6 +387,16 @@ export interface PathsDictionary {
       data?: any,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.FindAllOrganizations.Responses.$200>
+  }
+  ['/organizations/{organizationName}/repositories']: {
+    /**
+     * findRepositoriesByOrganization - Fetch Repositories in the specified GitHub organization, provided it is accessible by any of the configured GitHub Integrations.
+     */
+    'get'(
+      parameters?: Parameters<Paths.FindRepositoriesByOrganization.QueryParameters & Paths.FindRepositoriesByOrganization.PathParameters> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.FindRepositoriesByOrganization.Responses.$200>
   }
   ['/repositories']: {
     /**
