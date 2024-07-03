@@ -114,6 +114,10 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       .update(newRoleMetadata)
       .returning('id');
 
+    if (!externalTrx) {
+      await trx.commit();
+    }
+
     if (!result || result.length === 0) {
       throw new Error(
         `Failed to update the role metadata '${JSON.stringify(

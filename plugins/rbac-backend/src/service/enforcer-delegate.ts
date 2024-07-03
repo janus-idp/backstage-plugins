@@ -81,19 +81,6 @@ export class EnforcerDelegate {
   ): Promise<void> {
     const trx = externalTrx || (await this.knex.transaction());
 
-    const policiesToAdd: string[][] = await policies.reduce<
-      Promise<string[][]>
-    >(async (accP: Promise<string[][]>, p: string[]) => {
-      const acc = await accP;
-      const hasPolicy = await this.enforcer.hasPolicy(...p);
-      if (!hasPolicy) acc.push(p);
-      return acc;
-    }, Promise.resolve([]));
-
-    if (policiesToAdd.length === 0) {
-      return;
-    }
-
     try {
       const ok = await this.enforcer.addPolicies(policies);
       if (!ok) {

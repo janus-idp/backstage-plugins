@@ -154,30 +154,35 @@ export class CSVFileWatcher {
     // Check for policies that might need to be updated
     // This will involve update "legacy" source in the role metadata if it exist in both the
     // temp enforcer (csv file) and a role metadata storage.
-    // We will then add them back with the new source "csv-file"
-    const legacyRolesMetadata =
+    // We will update role metadata with the new source "csv-file"
+    let legacyRolesMetadata =
       await this.roleMetadataStorage.filterRoleMetadata('legacy');
-
-    for (const legacyRole of legacyRolesMetadata) {
-      const legacyGroupPolicies = await tempEnforcer.getFilteredGroupingPolicy(
-        1,
-        legacyRole.roleEntityRef,
+    const legacyRoles = legacyRolesMetadata.map(meta => meta.roleEntityRef);
+    const legacyGroupPolicies = await tempEnforcer.getFilteredGroupingPolicy(
+      1,
+      ...legacyRoles,
+    );
+    const legacyPolicies = await tempEnforcer.getFilteredPolicy(
+      0,
+      ...legacyRoles,
+    );
+    const legacyRolesFromFile = new Set([
+      ...legacyGroupPolicies.map(gp => gp[1]),
+      ...legacyPolicies.map(p => p[0]),
+    ]);
+    legacyRolesMetadata = legacyRolesMetadata.filter(meta =>
+      legacyRolesFromFile.has(meta.roleEntityRef),
+    );
+    for (const legacyRoleMeta of legacyRolesMetadata) {
+      const nonLegacyRole = mergeRoleMetadata(legacyRoleMeta, {
+        modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+        source: 'csv-file',
+        roleEntityRef: legacyRoleMeta.roleEntityRef,
+      });
+      await this.roleMetadataStorage.updateRoleMetadata(
+        nonLegacyRole,
+        legacyRoleMeta.roleEntityRef,
       );
-      const legacyPolicies = await tempEnforcer.getFilteredPolicy(
-        0,
-        legacyRole.roleEntityRef,
-      );
-      if (legacyGroupPolicies.length > 0 || legacyPolicies.length > 0) {
-        const nonLegacyRole = mergeRoleMetadata(legacyRole, {
-          modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
-          source: 'csv-file',
-          roleEntityRef: legacyRole.roleEntityRef,
-        });
-        await this.roleMetadataStorage.updateRoleMetadata(
-          nonLegacyRole,
-          legacyRole.roleEntityRef,
-        );
-      }
     }
 
     // Check for any new policies that need to be added by checking if
