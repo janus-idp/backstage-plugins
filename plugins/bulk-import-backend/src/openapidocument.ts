@@ -80,6 +80,15 @@ const OPENAPI = `
         "parameters": [
           {
             "in": "query",
+            "name": "checkImportStatus",
+            "description": "whether to return import status. Note that this might incur a performance penalty because the import status is computed for each repository.",
+            "schema": {
+              "type": "boolean",
+              "default": "false"
+            }
+          },
+          {
+            "in": "query",
             "name": "pagePerIntegration",
             "description": "the page number for each Integration",
             "schema": {

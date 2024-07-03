@@ -196,10 +196,12 @@ declare namespace Paths {
     }
     namespace FindAllRepositories {
         namespace Parameters {
+            export type CheckImportStatus = boolean;
             export type PagePerIntegration = number;
             export type SizePerIntegration = number;
         }
         export interface QueryParameters {
+            checkImportStatus?: Parameters.CheckImportStatus;
             pagePerIntegration?: Parameters.PagePerIntegration;
             sizePerIntegration?: Parameters.SizePerIntegration;
         }

@@ -144,11 +144,12 @@ export async function createRouter(
       // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
       q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
       q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
+      q.checkImportStatus = stringToBoolean(q.checkImportStatus);
       const response = await findAllRepositories(
         logger,
         githubApiService,
         catalogInfoGenerator,
-        true,
+        q.checkImportStatus,
         q.pagePerIntegration,
         q.sizePerIntegration,
       );

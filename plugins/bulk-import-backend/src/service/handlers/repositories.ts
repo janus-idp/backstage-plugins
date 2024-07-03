@@ -31,7 +31,7 @@ export async function findAllRepositories(
   logger: Logger,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
-  checkStatus: boolean,
+  checkStatus: boolean = false,
   pageNumber: number = DefaultPageNumber,
   pageSize: number = DefaultPageSize,
 ): Promise<HandlerResponse<Components.Schemas.RepositoryList>> {
