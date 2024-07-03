@@ -34,6 +34,22 @@ export type GithubRepositoryRequest = {
   backstageToken?: string; // Used for RBAC
 };
 
+// From https://docs.github.com/en/rest/orgs/orgs?apiVersion=2022-11-28#list-organizations
+export type GithubOrganization = {
+  name: string;
+  id: number;
+  description?: string;
+  url?: string;
+  html_url?: string;
+  repos_url?: string;
+  events_url?: string;
+  hooks_url?: string;
+  issues_url?: string;
+  members_url?: string;
+  public_members_url?: string;
+  avatar_url?: string;
+};
+
 export type GithubRepository = {
   name: string;
   /**
@@ -74,6 +90,14 @@ export type GithubRepoFetchError =
       type: 'token';
       error: SerializedError;
     };
+
+export type GithubFetchError = GithubRepoFetchError;
+
+export type GithubOrganizationResponse = {
+  organizations: GithubOrganization[];
+  errors: GithubFetchError[];
+  totalCount?: number;
+};
 
 export type GithubRepositoryResponse = {
   repositories: GithubRepository[];

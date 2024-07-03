@@ -26,7 +26,7 @@ import express from 'express';
 import request from 'supertest';
 
 import { CatalogInfoGenerator } from '../helpers';
-import { GithubRepositoryResponse } from '../types';
+import { GithubOrganizationResponse, GithubRepositoryResponse } from '../types';
 import { GithubApiService } from './githubApiService';
 import { createRouter } from './router';
 
@@ -105,6 +105,134 @@ describe('createRouter', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
+    });
+  });
+
+  describe('GET /organizations', () => {
+    it('returns 200 when organizations are fetched without errors', async () => {
+      mockedPermissionQuery.mockImplementation(allowAll);
+
+      jest
+        .spyOn(GithubApiService.prototype, 'getOrganizationsFromIntegrations')
+        .mockResolvedValue({
+          organizations: [
+            {
+              id: 166016847,
+              name: 'my-org-ent-1',
+              url: 'https://api.github.com/users/my-org-ent-1',
+              description: 'an awesome org',
+            },
+            {
+              id: 266016847,
+              name: 'my-org-ent-2',
+              url: 'https://api.github.com/users/my-org-ent-2',
+            },
+          ],
+          errors: [],
+        });
+
+      const response = await request(app).get('/organizations');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        errors: [],
+        organizations: [
+          {
+            id: '166016847',
+            name: 'my-org-ent-1',
+            url: 'https://api.github.com/users/my-org-ent-1',
+            description: 'an awesome org',
+            errors: [],
+          },
+          {
+            id: '266016847',
+            name: 'my-org-ent-2',
+            url: 'https://api.github.com/users/my-org-ent-2',
+            errors: [],
+          },
+        ],
+      });
+    });
+
+    it('returns 200 with the errors in the body when organizations are fetched, but errors have occurred', async () => {
+      mockedPermissionQuery.mockImplementation(allowAll);
+
+      const githubApiServiceResponse: GithubOrganizationResponse = {
+        organizations: [
+          {
+            id: 166016847,
+            name: 'my-org-ent-1',
+            url: 'https://api.github.com/users/my-org-ent-1',
+            description: 'an awesome org',
+          },
+          {
+            id: 266016847,
+            name: 'my-org-ent-2',
+            url: 'https://api.github.com/users/my-org-ent-2',
+          },
+        ],
+        errors: [
+          {
+            error: {
+              name: 'customError',
+              message: 'Github App with ID 2 failed spectacularly',
+            },
+            type: 'app',
+            appId: 2,
+          },
+        ],
+      };
+      jest
+        .spyOn(GithubApiService.prototype, 'getOrganizationsFromIntegrations')
+        .mockResolvedValue(githubApiServiceResponse);
+
+      const response = await request(app).get('/organizations');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        errors: ['Github App with ID 2 failed spectacularly'],
+        organizations: [
+          {
+            id: '166016847',
+            name: 'my-org-ent-1',
+            url: 'https://api.github.com/users/my-org-ent-1',
+            description: 'an awesome org',
+            errors: [],
+          },
+          {
+            id: '266016847',
+            name: 'my-org-ent-2',
+            url: 'https://api.github.com/users/my-org-ent-2',
+            errors: [],
+          },
+        ],
+      });
+    });
+
+    it('returns 500 when one or more errors are returned with no successful organization fetched', async () => {
+      mockedPermissionQuery.mockImplementation(allowAll);
+
+      jest
+        .spyOn(GithubApiService.prototype, 'getOrganizationsFromIntegrations')
+        .mockResolvedValue({
+          organizations: [],
+          errors: [
+            {
+              error: {
+                name: 'some error',
+                message: 'Github App with ID 1234567890 returned an error',
+              },
+              type: 'app',
+              appId: 2,
+            },
+          ],
+        });
+
+      const response = await request(app).get('/organizations');
+
+      expect(response.status).toEqual(500);
+      expect(response.body).toEqual({
+        errors: ['Github App with ID 1234567890 returned an error'],
+      });
     });
   });
 

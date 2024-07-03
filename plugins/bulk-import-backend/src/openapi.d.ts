@@ -111,6 +111,38 @@ declare namespace Components {
          */
         export type ImportStatus = "ADDED" | "WAIT_PR_APPROVAL" | "PR_ERROR" | null;
         /**
+         * Organization
+         */
+        export interface Organization {
+            /**
+             * unique identifier
+             */
+            id?: string;
+            /**
+             * organization name
+             */
+            name?: string;
+            /**
+             * organization description
+             */
+            description?: string;
+            /**
+             * organization URL
+             */
+            url?: string;
+            errors?: string[];
+        }
+        /**
+         * Organization List
+         */
+        export interface OrganizationList {
+            organizations?: /* Organization */ Organization[];
+            errors?: string[];
+            totalCount?: number;
+            pagePerIntegration?: number;
+            sizePerIntegration?: number;
+        }
+        /**
          * Repository
          */
         export interface Repository {
@@ -194,6 +226,20 @@ declare namespace Paths {
             }
         }
     }
+    namespace FindAllOrganizations {
+        namespace Parameters {
+            export type PagePerIntegration = number;
+            export type SizePerIntegration = number;
+        }
+        export interface QueryParameters {
+            pagePerIntegration?: Parameters.PagePerIntegration;
+            sizePerIntegration?: Parameters.SizePerIntegration;
+        }
+        namespace Responses {
+            export type $200 = /* Organization List */ Components.Schemas.OrganizationList;
+            export type $500 = /* Organization List */ Components.Schemas.OrganizationList;
+        }
+    }
     namespace FindAllRepositories {
         namespace Parameters {
             export type CheckImportStatus = boolean;
@@ -243,6 +289,14 @@ export interface OperationMethods {
     data?: any,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.Ping.Responses.$200>
+  /**
+   * findAllOrganizations - Fetch Organizations accessible by Backstage Github Integrations
+   */
+  'findAllOrganizations'(
+    parameters?: Parameters<Paths.FindAllOrganizations.QueryParameters> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.FindAllOrganizations.Responses.$200>
   /**
    * findAllRepositories - Fetch Organization Repositories accessible by Backstage Github Integrations
    */
@@ -295,6 +349,16 @@ export interface PathsDictionary {
       data?: any,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.Ping.Responses.$200>
+  }
+  ['/organizations']: {
+    /**
+     * findAllOrganizations - Fetch Organizations accessible by Backstage Github Integrations
+     */
+    'get'(
+      parameters?: Parameters<Paths.FindAllOrganizations.QueryParameters> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.FindAllOrganizations.Responses.$200>
   }
   ['/repositories']: {
     /**

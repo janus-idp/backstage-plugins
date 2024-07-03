@@ -12,6 +12,7 @@ All URIs are relative to *http://localhost:7007/api/bulk-import-backend*
 *ImportApi* | [**findAllImports**](Apis/ImportApi.md#findallimports) | **GET** /imports | Fetch Import Jobs |
 *ImportApi* | [**findImportStatusByRepo**](Apis/ImportApi.md#findimportstatusbyrepo) | **GET** /import/by-repo | Get Import Status by repository |
 | *ManagementApi* | [**ping**](Apis/ManagementApi.md#ping) | **GET** /ping | Check the health of the Bulk Import backend router |
+| *OrganizationApi* | [**findAllOrganizations**](Apis/OrganizationApi.md#findallorganizations) | **GET** /organizations | Fetch Organizations accessible by Backstage Github Integrations |
 | *RepositoryApi* | [**findAllRepositories**](Apis/RepositoryApi.md#findallrepositories) | **GET** /repositories | Fetch Organization Repositories accessible by Backstage Github Integrations |
 
 
@@ -28,6 +29,8 @@ All URIs are relative to *http://localhost:7007/api/bulk-import-backend*
  - [Import_github](./Models/Import_github.md)
  - [Import_github_pullRequest](./Models/Import_github_pullRequest.md)
  - [Import_repository](./Models/Import_repository.md)
+ - [Organization](./Models/Organization.md)
+ - [OrganizationList](./Models/OrganizationList.md)
  - [Repository](./Models/Repository.md)
  - [RepositoryList](./Models/RepositoryList.md)
  - [ping_200_response](./Models/ping_200_response.md)

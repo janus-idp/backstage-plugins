@@ -30,6 +30,9 @@ import { CustomGithubCredentialsProvider } from '../helpers';
 import {
   ExtendedGithubCredentials,
   GithubAppCredentials,
+  GithubFetchError,
+  GithubOrganization,
+  GithubOrganizationResponse,
   GithubRepoFetchError,
   GithubRepository,
   GithubRepositoryResponse,
@@ -86,6 +89,143 @@ export class GithubApiService {
       };
     }
     return undefined;
+  }
+
+  private async addGithubAppOrgs(
+    ghConfig: GithubIntegrationConfig,
+    orgs: Map<string, GithubOrganization>,
+    errors: GithubFetchError[],
+  ): Promise<{ totalCount?: number }> {
+    let totalCount: number | undefined;
+    try {
+      const resp =
+        await this.githubCredentialsProvider.getAllAppInstallations(ghConfig);
+      resp
+        ?.filter(
+          installation =>
+            installation.account &&
+            installation.target_type?.toLowerCase() === 'organization',
+        )
+        ?.forEach(installation => {
+          const acc = installation.account!;
+          const ghOrg: GithubOrganization = {
+            id: acc.id,
+            description: acc.description ?? undefined,
+            name: acc.login,
+            url: acc.url,
+            html_url: acc.html_url,
+            repos_url: acc.repos_url,
+            events_url: acc.events_url,
+          };
+          orgs.set(ghOrg.name, ghOrg);
+        });
+      totalCount = resp?.length;
+    } catch (err: any) {
+      this.logger.error(
+        `Fetching organizations with access token for github app, failed with ${err}`,
+      );
+      errors.push(err.message);
+    }
+    return { totalCount };
+  }
+
+  private async addGithubTokenOrgs(
+    octokit: Octokit,
+    credential: GithubCredentials,
+    orgs: Map<string, GithubOrganization>,
+    errors: Map<number, GithubFetchError>,
+    pageNumber: number = DefaultPageNumber,
+    pageSize: number = DefaultPageSize,
+  ): Promise<{ totalCount?: number }> {
+    let totalCount: number | undefined;
+    try {
+      /**
+       * The listForAuthenticatedUser endpoint will grab all the repositories the github token has explicit access to.
+       * These would include repositories they own, repositories where they are a collaborator,
+       * and repositories that they can access through an organization membership.
+       */
+      const resp = await octokit.rest.orgs.listForAuthenticatedUser({
+        page: pageNumber,
+        per_page: pageSize,
+        sort: 'full_name',
+        direction: 'asc',
+      });
+      resp?.data?.forEach(org => {
+        const ghOrg: GithubOrganization = {
+          id: org.id,
+          name: org.login,
+          description: org.description ?? undefined,
+          url: org.url,
+          repos_url: org.repos_url,
+          hooks_url: org.hooks_url,
+          issues_url: org.issues_url,
+          members_url: org.members_url,
+          public_members_url: org.public_members_url,
+          avatar_url: org.avatar_url,
+        };
+        orgs.set(org.url, ghOrg);
+      });
+
+      totalCount = await this.computeTotalOrgCountFromGitHubToken(
+        octokit,
+        resp,
+      );
+    } catch (err) {
+      this.logger.error(
+        `Fetching repositories with token from token failed with ${err}`,
+      );
+      const credentialError = this.createCredentialError(
+        credential,
+        err as Error,
+      );
+      if (credentialError) {
+        errors.set(-1, credentialError);
+      }
+    }
+    return { totalCount };
+  }
+
+  private async computeTotalOrgCountFromGitHubToken(
+    octokit: Octokit,
+    resp: RestEndpointMethodTypes['orgs']['listForAuthenticatedUser']['response'],
+  ): Promise<number | undefined> {
+    // There is no direct way to get the total count of repositories other than using octokit.paginate,
+    // but will make us retrieve all pages, thus increasing our response time.
+    // Workaround here is to analyze the headers, and get the link to the last page.
+    const pageSize = resp?.data?.length;
+    const linkHeader = resp?.headers?.link;
+    if (!linkHeader) {
+      this.logger.debug(
+        'No link header found in response from listForAuthenticatedUser GH endpoint => returning current page size',
+      );
+      return pageSize;
+    }
+    const lastPageLink = linkHeader
+      .split(',')
+      .find(s => s.includes('rel="last"'));
+    if (!lastPageLink) {
+      this.logger.debug(
+        "No rel='last' link found in response headers from listForAuthenticatedUser GH endpoint => returning current page size",
+      );
+      return pageSize;
+    }
+    const match = lastPageLink.match(/page=(\d+).*$/);
+    if (!match || match.length < 2) {
+      this.logger.debug(
+        "Unable to extract page number from rel='last' link found in response headers from listForAuthenticatedUser GH endpoint => returning current page size",
+      );
+      return pageSize;
+    }
+
+    const lastPageNumber = parseInt(match[1], 10);
+    // Fetch the last page to count its items, as it might contain fewer than the requested size
+    const lastPageResponse = await octokit.orgs.listForAuthenticatedUser({
+      page: lastPageNumber,
+      per_page: 1,
+    });
+    return pageSize
+      ? (lastPageNumber - 1) * pageSize + lastPageResponse.data.length
+      : undefined;
   }
 
   /**
@@ -290,6 +430,81 @@ export class GithubApiService {
     return {
       repository,
       errors: Array.from(errors.values()),
+    };
+  }
+
+  async getOrganizationsFromIntegrations(
+    pageNumber: number = DefaultPageNumber,
+    pageSize: number = DefaultPageSize,
+  ): Promise<GithubOrganizationResponse> {
+    const ghConfigs = this.verifyAndGetIntegrations();
+
+    const credentialsByConfig =
+      await this.getCredentialsFromIntegrations(ghConfigs);
+    const orgs = new Map<string, GithubOrganization>();
+    const errors = new Map<number, GithubFetchError>();
+    let totalCount = 0;
+    for (const [ghConfig, credentials] of credentialsByConfig) {
+      this.logger.debug(
+        `Got ${credentials.length} credential(s) for ${ghConfig.host}`,
+      );
+      let hasGithubApp = false;
+      for (const credential of credentials) {
+        if ('error' in credential) {
+          if (credential.error?.name !== 'NotFoundError') {
+            this.logger.error(
+              `Obtaining the Access Token Github App with appId: ${credential.appId} failed with ${credential.error}`,
+            );
+            const credentialError = this.createCredentialError(credential);
+            if (credentialError) {
+              errors.set(credential.appId, credentialError);
+            }
+          }
+          continue;
+        }
+
+        const octokit = new Octokit({
+          baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
+          auth: credential.token,
+        });
+
+        if (isGithubAppCredential(credential)) {
+          hasGithubApp = true;
+        } else {
+          const resp = await this.addGithubTokenOrgs(
+            octokit,
+            credential,
+            orgs,
+            errors,
+            pageNumber,
+            pageSize,
+          );
+          this.logger.debug(
+            `Got ${resp.totalCount} org(s) for ${ghConfig.host}`,
+          );
+          if (resp.totalCount) {
+            totalCount += resp.totalCount;
+          }
+        }
+      }
+      if (hasGithubApp) {
+        const errs: GithubFetchError[] = [];
+        const resp = await this.addGithubAppOrgs(ghConfig, orgs, errs);
+        if (errs) {
+          for (let i = 0; i < errs.length; i++) {
+            errors.set(i, errs[i]);
+          }
+        }
+        this.logger.debug(`Got ${resp.totalCount} org(s) for ${ghConfig.host}`);
+        if (resp.totalCount) {
+          totalCount += resp.totalCount;
+        }
+      }
+    }
+    return {
+      organizations: Array.from(orgs.values()),
+      errors: Array.from(errors.values()),
+      totalCount: totalCount,
     };
   }
 

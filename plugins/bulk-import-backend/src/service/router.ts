@@ -48,10 +48,9 @@ import {
   findAllImports,
   findImportStatusByRepo,
 } from './handlers/bulkImports';
+import { findAllOrganizations } from './handlers/organizations';
 import { ping } from './handlers/ping';
 import { findAllRepositories } from './handlers/repositories';
-
-import RepositoryList = Components.Schemas.RepositoryList;
 
 // TODO: Remove this when done to use the @janus-idp/backstage-plugin-bulk-import-common import instead
 /** This permission is used to access the bulk-import endpoints
@@ -131,6 +130,36 @@ export async function createRouter(
   );
 
   api.register(
+    'findAllOrganizations',
+    async (c: Context, req: express.Request, res: express.Response) => {
+      const backstageToken = getBearerTokenFromAuthorizationHeader(
+        req.header('authorization'),
+      );
+      await permissionCheck(permissions, backstageToken);
+      const q: Paths.FindAllOrganizations.QueryParameters = Object.assign(
+        {},
+        c.request.query,
+      );
+      // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
+      q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
+      q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
+      const response = await findAllOrganizations(
+        logger,
+        githubApiService,
+        q.pagePerIntegration,
+        q.sizePerIntegration,
+      );
+      return res.status(response.statusCode).json({
+        errors: response.responseBody?.errors,
+        organizations: response.responseBody?.organizations,
+        totalCount: response.responseBody?.totalCount,
+        pagePerIntegration: q.pagePerIntegration,
+        sizePerIntegration: q.sizePerIntegration,
+      } as Components.Schemas.OrganizationList);
+    },
+  );
+
+  api.register(
     'findAllRepositories',
     async (c: Context, req: express.Request, res: express.Response) => {
       const backstageToken = getBearerTokenFromAuthorizationHeader(
@@ -161,7 +190,7 @@ export async function createRouter(
         totalCount: response.responseBody?.totalCount,
         pagePerIntegration: q.pagePerIntegration,
         sizePerIntegration: q.sizePerIntegration,
-      } as RepositoryList);
+      } as Components.Schemas.RepositoryList);
     },
   );
 

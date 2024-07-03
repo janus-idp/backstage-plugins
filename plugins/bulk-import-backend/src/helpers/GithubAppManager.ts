@@ -510,4 +510,8 @@ export class CustomGithubCredentialsProvider
     }
     return provider.getAllCredentials(opts);
   }
+
+  async getAllAppInstallations(config: GithubIntegrationConfig) {
+    return new GithubAppsCredentialManager(config).getAllInstallations();
+  }
 }
