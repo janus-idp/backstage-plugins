@@ -721,6 +721,13 @@ describe('createRouter', () => {
           return Promise.resolve(resp);
         });
       jest
+        .spyOn(GithubApiService.prototype, 'doesCatalogInfoAlreadyExistInRepo')
+        .mockImplementation((_logger, input) => {
+          return Promise.resolve(
+            input.repoUrl === 'https://github.com/my-ent-org-1/A',
+          );
+        });
+      jest
         .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
         .mockResolvedValue([
           'https://github.com/my-ent-org-1/A/blob/dev/catalog-info.yaml',
@@ -901,6 +908,15 @@ describe('createRouter', () => {
         );
 
       jest
+        .spyOn(GithubApiService.prototype, 'doesCatalogInfoAlreadyExistInRepo')
+        .mockImplementation((_logger, input) => {
+          return Promise.resolve(
+            input.repoUrl ===
+              'https://github.com/my-org-ent-1/java-quarkus-starter',
+          );
+        });
+
+      jest
         .spyOn(GithubApiService.prototype, 'submitPrToRepo')
         .mockImplementation((_logger, input) => {
           switch (input.repoUrl) {
@@ -909,10 +925,13 @@ describe('createRouter', () => {
                 new Error('unable to create PR due to a server error'),
               );
             case 'https://github.com/my-org-ent-2/animated-happiness':
-            case 'https://github.com/my-org-ent-1/java-quarkus-starter':
               return Promise.resolve({
                 prUrl: `${input.repoUrl}/pull/345678`,
                 prNumber: 345678,
+              });
+            case 'https://github.com/my-org-ent-1/java-quarkus-starter':
+              return Promise.resolve({
+                hasChanges: false,
               });
             default:
               return Promise.reject(

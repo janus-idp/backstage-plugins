@@ -76,7 +76,13 @@ export async function findAllImports(
             break;
           }
         }
-        if (exists) {
+        if (
+          exists &&
+          (await githubApiService.doesCatalogInfoAlreadyExistInRepo(logger, {
+            repoUrl: repo.url,
+            defaultBranch: repo.defaultBranch,
+          }))
+        ) {
           result.push({
             id: repo.id,
             status: 'ADDED',
@@ -245,7 +251,13 @@ export async function createImportJobs(
       catalogApi,
       repoCatalogUrl,
     );
-    if (hasLocation) {
+    if (
+      hasLocation &&
+      (await githubApiService.doesCatalogInfoAlreadyExistInRepo(logger, {
+        repoUrl: req.repository.url,
+        defaultBranch: req.repository.defaultBranch,
+      }))
+    ) {
       const ghRepo = await githubApiService.getRepositoryFromIntegrations(
         req.repository.url,
       );
@@ -387,7 +399,13 @@ export async function findImportStatusByRepo(
           break;
         }
       }
-      if (exists) {
+      if (
+        exists &&
+        (await githubApiService.doesCatalogInfoAlreadyExistInRepo(logger, {
+          repoUrl,
+          defaultBranch,
+        }))
+      ) {
         result.status = 'ADDED';
       }
       // No import PR => let's determine last update from the repository

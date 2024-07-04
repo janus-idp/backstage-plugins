@@ -90,11 +90,15 @@ async function getImportStatusWithCheckerFn(
     repoUrl,
   });
   if (!openImportPr.prUrl) {
-    if (
-      await catalogExistenceCheckFn(
-        catalogInfoGenerator.getCatalogUrl(repoUrl, defaultBranch),
-      )
-    ) {
+    const existsInCatalog = await catalogExistenceCheckFn(
+      catalogInfoGenerator.getCatalogUrl(repoUrl, defaultBranch),
+    );
+    const existsInRepo =
+      await githubApiService.doesCatalogInfoAlreadyExistInRepo(logger, {
+        repoUrl,
+        defaultBranch,
+      });
+    if (existsInCatalog && existsInRepo) {
       return { status: 'ADDED' };
     }
     return null;

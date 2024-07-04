@@ -992,6 +992,7 @@ export class GithubApiService {
       try {
         // Check if there is already a catalogInfo in the default branch
         const catalogInfoFileExists = await this.fileExistsInDefaultBranch(
+          logger,
           octo,
           owner,
           repo,
@@ -1104,7 +1105,8 @@ export class GithubApiService {
     };
   }
 
-  async fileExistsInDefaultBranch(
+  private async fileExistsInDefaultBranch(
+    logger: Logger,
     octo: Octokit,
     owner: string,
     repo: string,
@@ -1123,8 +1125,69 @@ export class GithubApiService {
       if (error.status === 404) {
         return false;
       }
-      throw error;
+      logger.debug(
+        `Unable to determine if catalog-info already exists in repo ${repo}: ${error}`,
+      );
+      return undefined;
     }
+  }
+
+  async doesCatalogInfoAlreadyExistInRepo(
+    logger: Logger,
+    input: {
+      repoUrl: string;
+      defaultBranch?: string;
+    },
+  ) {
+    const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
+    if (!ghConfig) {
+      throw new Error(`Could not find GH integration from ${input.repoUrl}`);
+    }
+
+    const credentials = await this.githubCredentialsProvider.getAllCredentials({
+      host: ghConfig.host,
+    });
+    if (credentials.length === 0) {
+      throw new Error(`No credentials for GH integration`);
+    }
+
+    const gitUrl = gitUrlParse(input.repoUrl);
+
+    const fileName = getCatalogFilename(this.config);
+    for (const credential of credentials) {
+      if ('error' in credential) {
+        if (credential.error?.name !== 'NotFoundError') {
+          this.logger.error(
+            `Obtaining the Access Token Github App with appId: ${credential.appId} failed with ${credential.error}`,
+          );
+          const credentialError = this.createCredentialError(credential);
+          if (credentialError) {
+            logger.debug(`${credential.appId}: ${credentialError}`);
+          }
+        }
+        continue;
+      }
+      const octo = new Octokit({
+        baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
+        auth: credential.token,
+      });
+
+      const exists = await this.fileExistsInDefaultBranch(
+        logger,
+        octo,
+        gitUrl.owner,
+        gitUrl.name,
+        fileName,
+        input.defaultBranch,
+      );
+      if (exists === undefined) {
+        continue;
+      }
+      return exists;
+    }
+    throw new Error(
+      `Could not determine if ${input.repoUrl} already had a catalog-info file`,
+    );
   }
 
   async closePR(
