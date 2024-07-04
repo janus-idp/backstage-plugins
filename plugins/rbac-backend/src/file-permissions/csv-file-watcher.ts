@@ -129,12 +129,11 @@ export class CSVFileWatcher {
     // the policy no longer exists in the temp enforcer (csv file)
     const roleMetadatas =
       await this.roleMetadataStorage.filterRoleMetadata('csv-file');
-    for (const roleMetadata of roleMetadatas) {
+    const fileRoles = roleMetadatas.map(meta => meta.roleEntityRef);
+
+    if (fileRoles.length > 0) {
       const groupingPoliciesToRemove =
-        await this.enforcer.getFilteredGroupingPolicy(
-          1,
-          roleMetadata.roleEntityRef,
-        );
+        await this.enforcer.getFilteredGroupingPolicy(1, ...fileRoles);
       for (const gPolicy of groupingPoliciesToRemove) {
         if (!(await tempEnforcer.hasGroupingPolicy(...gPolicy))) {
           this.csvFilePolicies.removedGroupPolicies.push(gPolicy);
@@ -142,7 +141,7 @@ export class CSVFileWatcher {
       }
       const policiesToRemove = await this.enforcer.getFilteredPolicy(
         0,
-        roleMetadata.roleEntityRef,
+        ...fileRoles,
       );
       for (const policy of policiesToRemove) {
         if (!(await tempEnforcer.hasPolicy(...policy))) {
@@ -158,31 +157,33 @@ export class CSVFileWatcher {
     let legacyRolesMetadata =
       await this.roleMetadataStorage.filterRoleMetadata('legacy');
     const legacyRoles = legacyRolesMetadata.map(meta => meta.roleEntityRef);
-    const legacyGroupPolicies = await tempEnforcer.getFilteredGroupingPolicy(
-      1,
-      ...legacyRoles,
-    );
-    const legacyPolicies = await tempEnforcer.getFilteredPolicy(
-      0,
-      ...legacyRoles,
-    );
-    const legacyRolesFromFile = new Set([
-      ...legacyGroupPolicies.map(gp => gp[1]),
-      ...legacyPolicies.map(p => p[0]),
-    ]);
-    legacyRolesMetadata = legacyRolesMetadata.filter(meta =>
-      legacyRolesFromFile.has(meta.roleEntityRef),
-    );
-    for (const legacyRoleMeta of legacyRolesMetadata) {
-      const nonLegacyRole = mergeRoleMetadata(legacyRoleMeta, {
-        modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
-        source: 'csv-file',
-        roleEntityRef: legacyRoleMeta.roleEntityRef,
-      });
-      await this.roleMetadataStorage.updateRoleMetadata(
-        nonLegacyRole,
-        legacyRoleMeta.roleEntityRef,
+    if (legacyRoles.length > 0) {
+      const legacyGroupPolicies = await tempEnforcer.getFilteredGroupingPolicy(
+        1,
+        ...legacyRoles,
       );
+      const legacyPolicies = await tempEnforcer.getFilteredPolicy(
+        0,
+        ...legacyRoles,
+      );
+      const legacyRolesFromFile = new Set([
+        ...legacyGroupPolicies.map(gp => gp[1]),
+        ...legacyPolicies.map(p => p[0]),
+      ]);
+      legacyRolesMetadata = legacyRolesMetadata.filter(meta =>
+        legacyRolesFromFile.has(meta.roleEntityRef),
+      );
+      for (const legacyRoleMeta of legacyRolesMetadata) {
+        const nonLegacyRole = mergeRoleMetadata(legacyRoleMeta, {
+          modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+          source: 'csv-file',
+          roleEntityRef: legacyRoleMeta.roleEntityRef,
+        });
+        await this.roleMetadataStorage.updateRoleMetadata(
+          nonLegacyRole,
+          legacyRoleMeta.roleEntityRef,
+        );
+      }
     }
 
     // Check for any new policies that need to be added by checking if

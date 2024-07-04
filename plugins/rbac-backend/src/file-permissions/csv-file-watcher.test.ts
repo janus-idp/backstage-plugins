@@ -25,10 +25,7 @@ import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
 import { ADMIN_ROLE_AUTHOR } from '../service/permission-policy';
-import {
-  CSV_PERMISSION_POLICY_FILE_AUTHOR,
-  CSVFileWatcher,
-} from './csv-file-watcher';
+import { CSVFileWatcher } from './csv-file-watcher';
 
 const legacyPermission = [
   'role:default/legacy',
@@ -407,7 +404,7 @@ describe('CSVFileWatcher', () => {
 
     it('should add new permission policies on change', async () => {
       const addContents = [
-        ['g', 'user:default/guest', 'role:default/catalog-writer', 'csv-file'],
+        ['g', 'user:default/guest', 'role:default/catalog-writer'],
         [
           'p',
           'role:default/catalog-writer',
