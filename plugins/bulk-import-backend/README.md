@@ -81,40 +81,40 @@ export default async function createPlugin(
    backend.start();
    ```
 
-#### Permission Framework Support
-
-TODO: Update this section of the documentation as it doesn't work. Not sure how to setup the permission framework on vanilla backstage, but confirmed to work with the RBAC plugin.
-
-The bulk import backend plugin has support for the permission framework. A basic example permission policy is shown below to disallow access to the bulk import API for all users except those in the `backstage-admins` group. Please note that the This policy should be added to the `packages/backend/src/plugins/permissions.ts` file:
-
-```ts title="packages/backend/src/plugins/permissions.ts"
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
-import { isPermission } from '@backstage/plugin-permission-common';
-import {
-  PermissionPolicy,
-  PolicyQuery,
-} from '@backstage/plugin-permission-node';
-
-import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
-
-class BulkImportPermissionPolicy implements PermissionPolicy {
-  async handle(
-    request: PolicyQuery,
-    user?: BackstageIdentityResponse,
-  ): Promise<PolicyDecision> {
-    if (isPermission(request.permission, bulkImportPermission)) {
-      if (
-        user?.identity.ownershipEntityRefs.includes(
-          'group:default/backstage-admins',
-        )
-      ) {
-        return { result: AuthorizeResult.ALLOW };
-      }
-      return { result: AuthorizeResult.DENY };
-    }
-  }
-}
-```
+[//]: # '#### Permission Framework Support'
+[//]: #
+[//]: # "TODO: Update this section of the documentation as it doesn't work. Not sure how to setup the permission framework on vanilla backstage, but confirmed to work with the RBAC plugin."
+[//]: #
+[//]: # 'The bulk import backend plugin has support for the permission framework. A basic example permission policy is shown below to disallow access to the bulk import API for all users except those in the `backstage-admins` group. Please note that the This policy should be added to the `packages/backend/src/plugins/permissions.ts` file:'
+[//]: #
+[//]: # '```ts title="packages/backend/src/plugins/permissions.ts"'
+[//]: # "import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';"
+[//]: # "import { isPermission } from '@backstage/plugin-permission-common';"
+[//]: # 'import {'
+[//]: # '  PermissionPolicy,'
+[//]: # '  PolicyQuery,'
+[//]: # "} from '@backstage/plugin-permission-node';"
+[//]: #
+[//]: # "import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';"
+[//]: #
+[//]: # 'class BulkImportPermissionPolicy implements PermissionPolicy {'
+[//]: # '  async handle('
+[//]: # '    request: PolicyQuery,'
+[//]: # '    user?: BackstageIdentityResponse,'
+[//]: # '  ): Promise<PolicyDecision> {'
+[//]: # '    if (isPermission(request.permission, bulkImportPermission)) {'
+[//]: # '      if ('
+[//]: # '        user?.identity.ownershipEntityRefs.includes('
+[//]: # "          'group:default/backstage-admins',"
+[//]: # '        )'
+[//]: # '      ) {'
+[//]: # '        return { result: AuthorizeResult.ALLOW };'
+[//]: # '      }'
+[//]: # '      return { result: AuthorizeResult.DENY };'
+[//]: # '    }'
+[//]: # '  }'
+[//]: # '}'
+[//]: # '```'
 
 ## For Users
 

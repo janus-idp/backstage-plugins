@@ -6,6 +6,13 @@ You can run a development setup using the following command:
 yarn workspace @janus-idp/backstage-plugin-bulk-import-backend run start
 ```
 
+NOTE: For now, make sure to disable permissions by adding the following to your app-config:
+
+```yaml
+permission:
+  enabled: true
+```
+
 When you run the previous command, a standalone server for the bulk-import backend is setup utilizing the root app configurations.
 The server is available at `http://localhost:7007/api/bulk-import-backend`.
 
