@@ -129,6 +129,7 @@ async function createPR(
   return await githubApiService.submitPrToRepo(logger, {
     repoUrl: req.repository.url,
     gitUrl: gitUrl,
+    defaultBranch: req.repository.defaultBranch,
     catalogInfoContent:
       req.catalogInfoContent ??
       (await catalogInfoGenerator.generateDefaultCatalogInfoContent(
@@ -276,13 +277,17 @@ export async function createImportJobs(
         });
         continue;
       }
-      logger.debug(`Created new PR from request: ${prToRepo.prUrl}`);
+      if (prToRepo.prUrl) {
+        logger.debug(`Created new PR from request: ${prToRepo.prUrl}`);
+      }
 
       // Create Location
       await possiblyCreateLocation(auth, catalogApi, repoCatalogUrl);
 
       if (prToRepo.hasChanges === false) {
-        // PR created but with no changes compared to the base branch
+        logger.debug(
+          `No bulk import PR created on ${req.repository.url} since its default branch (${req.repository.defaultBranch}) already contains a catalog-info file`,
+        );
         result.push({
           status: 'ADDED',
           lastUpdate: prToRepo.lastUpdate,

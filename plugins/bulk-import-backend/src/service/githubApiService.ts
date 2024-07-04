@@ -936,6 +936,7 @@ export class GithubApiService {
     input: {
       repoUrl: string;
       gitUrl: gitUrlParse.GitUrl;
+      defaultBranch?: string;
       prTitle: string;
       prBody: string;
       catalogInfoContent: string;
@@ -978,15 +979,26 @@ export class GithubApiService {
         }
         continue;
       }
-      // const baseUrl =
-      //     ghHost === 'github.com'
-      //         ? 'https://api.github.com'
-      //         : `https://${ghHost}/api/v3`;
       const octo = new Octokit({
         baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
         auth: credential.token,
       });
       try {
+        // Check if there is already a catalogInfo in the default branch
+        const catalogInfoFileExists = await this.fileExistsInDefaultBranch(
+          octo,
+          owner,
+          repo,
+          fileName,
+          input.defaultBranch,
+        );
+        if (catalogInfoFileExists) {
+          // No need to create a PR => component will be imported as is
+          return {
+            hasChanges: false,
+          };
+        }
+
         const existingPrForBranch = await this.findOpenPRForBranch(
           logger,
           octo,
@@ -1065,32 +1077,11 @@ export class GithubApiService {
           head: branchName,
           base: repoData.data.default_branch,
         });
-        const prNum = pullRequestResponse.data.number;
-
-        // Check if PR has actual file changes - if no changes, it means that there is no diff compared to the base branch, so the PR can be closed.
-        const prFiles = await octo.rest.pulls.listFiles({
-          owner,
-          repo,
-          pull_number: prNum,
-          page: 1,
-          per_page: 1,
-        });
-        const hasChanges = prFiles.data.length > 0;
-        if (!hasChanges) {
-          await this.closePRWithComment(
-            octo,
-            owner,
-            repo,
-            prNum,
-            `Closing this PR because it contains no additional change compared to the base branch.`,
-          );
-        }
-
         return {
           prNumber: pullRequestResponse.data.number,
           prUrl: pullRequestResponse.data.html_url,
           lastUpdate: pullRequestResponse.data.updated_at,
-          hasChanges,
+          hasChanges: true,
         };
       } catch (e: any) {
         logger.warn(`Couldn't create PR in ${input.repoUrl}: ${e}`);
@@ -1105,6 +1096,29 @@ export class GithubApiService {
     return {
       errors: errors,
     };
+  }
+
+  async fileExistsInDefaultBranch(
+    octo: Octokit,
+    owner: string,
+    repo: string,
+    fileName: string,
+    defaultBranch: string = 'main',
+  ) {
+    try {
+      await octo.rest.repos.getContent({
+        owner,
+        repo,
+        path: fileName,
+        ref: defaultBranch,
+      });
+      return true;
+    } catch (error: any) {
+      if (error.status === 404) {
+        return false;
+      }
+      throw error;
+    }
   }
 
   async closePR(
