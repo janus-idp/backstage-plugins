@@ -26,7 +26,11 @@ import { Octokit } from '@octokit/rest';
 import gitUrlParse from 'git-url-parse';
 import { Logger } from 'winston';
 
-import { CustomGithubCredentialsProvider } from '../helpers';
+import {
+  CustomGithubCredentialsProvider,
+  getBranchName,
+  getCatalogFilename,
+} from '../helpers';
 import {
   ExtendedGithubCredentials,
   GithubAppCredentials,
@@ -44,9 +48,11 @@ export class GithubApiService {
   private readonly logger: Logger;
   private readonly integrations: ScmIntegrations;
   private readonly githubCredentialsProvider: CustomGithubCredentialsProvider;
+  private readonly config: Config;
 
   constructor(logger: Logger, config: Config) {
     this.logger = logger;
+    this.config = config;
     this.integrations = ScmIntegrations.fromConfig(config);
     this.githubCredentialsProvider =
       CustomGithubCredentialsProvider.fromIntegrations(this.integrations);
@@ -816,7 +822,7 @@ export class GithubApiService {
       throw new Error(`No credentials for GH integration`);
     }
 
-    const branchName = 'chore/janus-idp/backstage-bulk-import';
+    const branchName = getBranchName(this.config);
     for (const credential of credentials) {
       if ('error' in credential) {
         if (credential.error?.name !== 'NotFoundError') {
@@ -963,8 +969,8 @@ export class GithubApiService {
       throw new Error(`No credentials for GH integration`);
     }
 
-    const branchName = 'chore/janus-idp/backstage-bulk-import';
-    const fileName = 'catalog-info.yaml';
+    const branchName = getBranchName(this.config);
+    const fileName = getCatalogFilename(this.config);
     const errors: any[] = [];
     for (const credential of credentials) {
       if ('error' in credential) {
@@ -1144,7 +1150,7 @@ export class GithubApiService {
       throw new Error(`No credentials for GH integration`);
     }
 
-    const branchName = 'chore/janus-idp/backstage-bulk-import';
+    const branchName = getBranchName(this.config);
     const errors: any[] = [];
     for (const credential of credentials) {
       if ('error' in credential) {

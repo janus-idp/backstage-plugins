@@ -15,6 +15,7 @@
  */
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
 import jsYaml from 'js-yaml';
@@ -133,4 +134,18 @@ ${jsYaml.dump(generatedEntity.entity)}`,
       method: 'DELETE',
     });
   }
+}
+
+export function getCatalogFilename(config: Config): string {
+  return (
+    config.getOptionalString('catalog.import.entityFilename') ??
+    'catalog-info.yaml'
+  );
+}
+
+export function getBranchName(config: Config): string {
+  return (
+    config.getOptionalString('catalog.import.pullRequestBranchName') ??
+    'backstage-integration'
+  );
 }

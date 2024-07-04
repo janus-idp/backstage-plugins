@@ -21,7 +21,11 @@ import { Config } from '@backstage/config';
 import gitUrlParse from 'git-url-parse';
 import { Logger } from 'winston';
 
-import { CatalogInfoGenerator, getTokenForPlugin } from '../../helpers';
+import {
+  CatalogInfoGenerator,
+  getCatalogFilename,
+  getTokenForPlugin,
+} from '../../helpers';
 import { Components, Paths } from '../../openapi.d';
 import { GithubApiService } from '../githubApiService';
 import {
@@ -123,9 +127,12 @@ async function createPR(
   req: Components.Schemas.ImportRequest,
   gitUrl: gitUrlParse.GitUrl,
   catalogInfoGenerator: CatalogInfoGenerator,
-  appTitle: string,
-  appBaseUrl: string,
+  config: Config,
 ) {
+  const appTitle =
+    config.getOptionalString('app.title') ?? 'Red Hat Developer Hub';
+  const appBaseUrl = config.getString('app.baseUrl');
+  const catalogFileName = getCatalogFilename(config);
   return await githubApiService.submitPrToRepo(logger, {
     repoUrl: req.repository.url,
     gitUrl: gitUrl,
@@ -135,7 +142,7 @@ async function createPR(
       (await catalogInfoGenerator.generateDefaultCatalogInfoContent(
         req.repository.url,
       )),
-    prTitle: req.github?.pullRequest?.title ?? `Add catalog-info.yaml`,
+    prTitle: req.github?.pullRequest?.title ?? `Add ${catalogFileName}`,
     prBody:
       req.github?.pullRequest?.body ??
       `
@@ -194,10 +201,6 @@ export async function createImportJobs(
       responseBody: [],
     };
   }
-
-  const appTitle =
-    config.getOptionalString('app.title') ?? 'Red Hat Developer Hub';
-  const appBaseUrl = config.getString('app.baseUrl');
 
   const result: Components.Schemas.Import[] = [];
   const dryRunErrors: string[] = [];
@@ -266,8 +269,7 @@ export async function createImportJobs(
         req,
         gitUrl,
         catalogInfoGenerator,
-        appTitle,
-        appBaseUrl,
+        config,
       );
       if (prToRepo.errors && prToRepo.errors.length > 0) {
         result.push({
