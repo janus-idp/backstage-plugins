@@ -1,27 +1,18 @@
 import * as React from 'react';
 
-import { DismissableBanner, WarningIcon } from '@backstage/core-components';
+import { Alert } from '@material-ui/lab';
 
-type DismissableBannerProps = {
-  message: React.ReactElement;
-  variant: 'info' | 'warning' | 'error';
-  fixed: boolean;
+type defaultProps = {
+  message?: string;
 };
 
-const defaultProps: DismissableBannerProps = {
-  message: (
-    <>
-      <WarningIcon /> This is a tech preview feature
-    </>
-  ),
-  variant: 'warning',
-  fixed: false,
-};
-
-export const TechPreviewWarning = () => {
+export const TechPreviewWarning = (props: defaultProps) => {
+  const msg = props.message ? props.message : 'This is a tech preview feature';
   return (
-    <div>
-      <DismissableBanner {...defaultProps} id="default_dismissable" />
+    <div style={{ display: 'inline' }}>
+      <Alert severity="warning" id="default_dismissable">
+        {msg}{' '}
+      </Alert>
     </div>
   );
 };

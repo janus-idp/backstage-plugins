@@ -87,8 +87,8 @@ export const EmbeddedRouter = () => {
     <KialiNoAnnotation />
   ) : (
     <KialiProvider entity={entity}>
-      <TechPreviewWarning />
       <KialiHeaderEntity />
+      <TechPreviewWarning />
       {getEntityRoutes()}
     </KialiProvider>
   );
@@ -161,11 +161,13 @@ export const getRoutes = (dev?: boolean) => {
 export const Router = () => {
   return (
     <KialiProvider>
-      <TechPreviewWarning />
       <Page themeId="tool">
         <KialiHeader />
         <KialiTabs />
-        <Content>{getRoutes()}</Content>
+        <Content>
+          <TechPreviewWarning />
+          {getRoutes()}
+        </Content>
       </Page>
     </KialiProvider>
   );
