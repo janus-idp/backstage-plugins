@@ -185,7 +185,6 @@ export async function createRouter(
         q.pagePerIntegration,
         q.sizePerIntegration,
       );
-      // const paginated = paginate(response.responseBody?.repositories, q.page, q.size)
       const repos = response.responseBody?.repositories;
       return res.status(response.statusCode).json({
         errors: response.responseBody?.errors,
@@ -219,7 +218,6 @@ export async function createRouter(
         q.pagePerIntegration,
         q.sizePerIntegration,
       );
-      // const paginated = paginate(response.responseBody?.repositories, q.page, q.size)
       const repos = response.responseBody?.repositories;
       return res.status(response.statusCode).json({
         errors: response.responseBody?.errors,
