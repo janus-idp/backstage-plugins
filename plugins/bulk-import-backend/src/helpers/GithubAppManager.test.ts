@@ -563,12 +563,14 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
           type: 'token',
         },
         {
+          accountLogin: 'backstage',
           headers: { Authorization: `Bearer secret_token` },
           token: 'secret_token',
           type: 'app',
           appId: 1,
         },
         {
+          accountLogin: 'backstage',
           headers: { Authorization: `Bearer secret_token` },
           token: 'secret_token',
           type: 'app',
@@ -652,6 +654,7 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
 
       const expected_response = [
         {
+          accountLogin: 'backstage',
           headers: { Authorization: `Bearer secret_token` },
           token: 'secret_token',
           type: 'app',
@@ -901,6 +904,7 @@ describe('CustomGithubCredentialsProvider tests', () => {
           type: 'token',
         },
         {
+          accountLogin: 'backstage',
           headers: { Authorization: 'Bearer secret_token' },
           token: 'secret_token',
           type: 'app',
@@ -912,6 +916,7 @@ describe('CustomGithubCredentialsProvider tests', () => {
           appId: 2,
         },
         {
+          accountLogin: 'not-backstage',
           type: 'app',
           headers: {
             Authorization: 'Bearer secret_token',

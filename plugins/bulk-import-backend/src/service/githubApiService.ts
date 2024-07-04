@@ -837,6 +837,13 @@ export class GithubApiService {
         continue;
       }
 
+      if (
+        isGithubAppCredential(credential) &&
+        credential.accountLogin !== owner
+      ) {
+        continue;
+      }
+
       const octo = new Octokit({
         baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
         auth: credential.token,
@@ -985,6 +992,14 @@ export class GithubApiService {
         }
         continue;
       }
+
+      if (
+        isGithubAppCredential(credential) &&
+        credential.accountLogin !== owner
+      ) {
+        continue;
+      }
+
       const octo = new Octokit({
         baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
         auth: credential.token,
@@ -1226,6 +1241,12 @@ export class GithubApiService {
             logger.debug(`${credential.appId}: ${credentialError}`);
           }
         }
+        continue;
+      }
+      if (
+        isGithubAppCredential(credential) &&
+        credential.accountLogin !== owner
+      ) {
         continue;
       }
       const octo = new Octokit({

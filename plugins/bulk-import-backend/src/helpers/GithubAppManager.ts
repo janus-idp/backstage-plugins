@@ -124,7 +124,9 @@ class GithubAppManager {
 
   async getInstallationCredentials(
     host: string,
-  ): Promise<{ accessToken: string | undefined; accountLogin?: string }[]> {
+  ): Promise<
+    { accessToken: string | undefined; installationAccountLogin?: string }[]
+  > {
     const creds: {
       accessToken: string | undefined;
       installationAccountLogin?: string;
@@ -170,6 +172,7 @@ class GithubAppManager {
               token: '',
               expiresAt: DateTime.now().plus({ minutes: 1 }),
               repositories: [],
+              installationAccountLogin: installation.accountLogin,
             };
           }
 
@@ -306,7 +309,7 @@ export class GithubAppsCredentialManager {
           credentials.push({
             appId: cred.appId,
             accessToken: credElement.accessToken,
-            installationAccountLogin: credElement.accountLogin,
+            installationAccountLogin: credElement.installationAccountLogin,
           });
         }
       } else {
