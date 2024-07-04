@@ -81,6 +81,10 @@ export class EnforcerDelegate {
   ): Promise<void> {
     const trx = externalTrx || (await this.knex.transaction());
 
+    if (policies.length === 0) {
+      return;
+    }
+
     try {
       const ok = await this.enforcer.addPolicies(policies);
       if (!ok) {
@@ -156,18 +160,10 @@ export class EnforcerDelegate {
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
 
-    const policiesToAdd: string[][] = await policies.reduce<
-      Promise<string[][]>
-    >(async (accP: Promise<string[][]>, gp: string[]) => {
-      const acc = await accP;
-      const hasPolicy = await this.enforcer.hasGroupingPolicy(...gp);
-      if (!hasPolicy) acc.push(gp);
-      return acc;
-    }, Promise.resolve([]));
-
-    if (policiesToAdd.length === 0) {
+    if (policies.length === 0) {
       return;
     }
+
     try {
       const currentRoleMetadata =
         await this.roleMetadataStorage.findRoleMetadata(
@@ -187,10 +183,10 @@ export class EnforcerDelegate {
         await this.roleMetadataStorage.createRoleMetadata(roleMetadata, trx);
       }
 
-      const ok = await this.enforcer.addGroupingPolicies(policiesToAdd);
+      const ok = await this.enforcer.addGroupingPolicies(policies);
       if (!ok) {
         throw new Error(
-          `Failed to store policies ${policiesToString(policiesToAdd)}`,
+          `Failed to store policies ${policiesToString(policies)}`,
         );
       }
 
