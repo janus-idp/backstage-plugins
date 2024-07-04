@@ -18,7 +18,7 @@ The source of truth for the API is the OpenAPI spec file: [`src/schema/openapi.y
 After any modification to this file, you need to regenerate the type definitions and API docs. You can do so by running the following command:
 
 ```console
-yarn workspace @janus-idp/backstage-plugin-bulk-import-backend run openpi
+yarn workspace @janus-idp/backstage-plugin-bulk-import-backend run openapi
 ```
 
 If you add a new endpoint in the OpenAPI spec, you will need to:
