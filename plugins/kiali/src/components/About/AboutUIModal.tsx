@@ -50,6 +50,8 @@ const closeButton = kialiStyle({
   position: 'absolute',
   right: 10,
   top: 10,
+  float: 'right',
+  padding: 0,
 });
 
 export const AboutUIModal = (props: AboutUIModalProps) => {
@@ -153,7 +155,7 @@ export const AboutUIModal = (props: AboutUIModalProps) => {
           onClick={() => props.setShowModal(false)}
           className={closeButton}
         >
-          <CloseIcon />
+          <CloseIcon style={{ color: 'white', float: 'right' }} />
         </IconButton>
       </DialogTitle>
       <DialogContent style={{ backgroundColor: '#030303', color: 'white' }}>
