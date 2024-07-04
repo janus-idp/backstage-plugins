@@ -22,6 +22,7 @@ export const KialiHeader = () => {
       >
         <Chip
           color="primary"
+          variant="outlined"
           icon={<ClusterIcon />}
           label={homeCluster?.name}
           data-test="home-cluster"
