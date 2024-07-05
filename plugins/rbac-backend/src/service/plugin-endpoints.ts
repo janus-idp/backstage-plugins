@@ -96,19 +96,26 @@ export class PluginPermissionMetadataCollector {
     let pluginResponses: PluginMetadataResponse[] = [];
 
     for (const pluginId of this.pluginIds) {
-      const { token } = await auth.getPluginRequestToken({
-        onBehalfOf: await auth.getOwnServiceCredentials(),
-        targetPluginId: pluginId,
-      });
-      const permMetaData = await this.getMetadataByPluginId(pluginId, token);
-      if (permMetaData) {
-        pluginResponses = [
-          ...pluginResponses,
-          {
-            metaDataResponse: permMetaData,
-            pluginId,
-          },
-        ];
+      try {
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: await auth.getOwnServiceCredentials(),
+          targetPluginId: pluginId,
+        });
+
+        const permMetaData = await this.getMetadataByPluginId(pluginId, token);
+        if (permMetaData) {
+          pluginResponses = [
+            ...pluginResponses,
+            {
+              metaDataResponse: permMetaData,
+              pluginId,
+            },
+          ];
+        }
+      } catch (error) {
+        this.logger.error(
+          `Failed to retrieve permission metadata for ${pluginId}. ${error}`,
+        );
       }
     }
 
