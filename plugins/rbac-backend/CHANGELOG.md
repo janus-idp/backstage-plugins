@@ -1,3 +1,12 @@
+## @janus-idp/backstage-plugin-rbac-backend [4.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.3.1...@janus-idp/backstage-plugin-rbac-backend@4.3.2) (2024-07-05)
+
+
+### Bug Fixes
+
+* **rbac:** casbinDBAdapterFactory supporting postgres schema configuration ([#1841](https://github.com/janus-idp/backstage-plugins/issues/1841)) ([c0e63f9](https://github.com/janus-idp/backstage-plugins/commit/c0e63f9541edc121c77d6569d6fe6958ce937c0b))
+* **rbac:** correct plugin ID matching to permission policy ([#1795](https://github.com/janus-idp/backstage-plugins/issues/1795)) ([6dc4b1c](https://github.com/janus-idp/backstage-plugins/commit/6dc4b1c23d22252f394eecd8b795ac15507ecc50))
+* **rbac:** update rbac common to fix compilation ([#1858](https://github.com/janus-idp/backstage-plugins/issues/1858)) ([48f142b](https://github.com/janus-idp/backstage-plugins/commit/48f142b447f0d1677ba3f16b2a3c8972b22d0588))
+
 ## @janus-idp/backstage-plugin-rbac-backend [4.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.3.0...@janus-idp/backstage-plugin-rbac-backend@4.3.1) (2024-06-19)
 
 ## @janus-idp/backstage-plugin-rbac-backend [4.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.2.0...@janus-idp/backstage-plugin-rbac-backend@4.3.0) (2024-06-13)
