@@ -7,7 +7,6 @@ import {
   ExecuteWorkflowResponseDTO,
   ProcessInstanceListResultDTO,
   ProcessInstanceState,
-  WorkflowDataDTO,
   WorkflowDTO,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
@@ -18,7 +17,6 @@ import { Pagination } from '../../types/pagination';
 import { OrchestratorService } from '../OrchestratorService';
 import {
   mapToExecuteWorkflowResponseDTO,
-  mapToGetWorkflowInstanceResults,
   mapToProcessInstanceDTO,
   mapToWorkflowDTO,
   mapToWorkflowOverviewDTO,
@@ -126,7 +124,7 @@ export class V2 {
     }
 
     const executeWorkflowResponse = await this.v1.executeWorkflow(
-      executeWorkflowRequestDTO,
+      executeWorkflowRequestDTO as unknown as Record<string, unknown>, // Temporary fix: this will be addresses in the next PR
       workflowId,
       businessKey,
     );
@@ -141,28 +139,6 @@ export class V2 {
   public async abortWorkflow(instanceId: string): Promise<string> {
     await this.v1.abortWorkflow(instanceId);
     return `Workflow instance ${instanceId} successfully aborted`;
-  }
-
-  public async getWorkflowResults(
-    instanceId: string,
-    includeAssessment: boolean = false,
-  ): Promise<WorkflowDataDTO> {
-    if (!instanceId) {
-      throw new Error(`No instance id was provided to get workflow results`);
-    }
-
-    const instanceResult = await this.v1.getInstanceById(
-      instanceId,
-      includeAssessment,
-    );
-
-    if (!instanceResult.instance?.variables) {
-      throw new Error(
-        `Error getting workflow instance results with id ${instanceId}`,
-      );
-    }
-
-    return mapToGetWorkflowInstanceResults(instanceResult.instance.variables);
   }
 
   public async getWorkflowStatuses(): Promise<WorkflowRunStatusDTO[]> {

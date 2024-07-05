@@ -583,93 +583,6 @@ ifdef::internal-generation[]
 endif::internal-generation[]
 
 
-[.getWorkflowResults]
-==== getWorkflowResults
-
-`GET /v2/workflows/instances/{instanceId}/results`
-
-Get workflow results
-
-===== Description
-
-
-
-
-// markup not found, no include::{specDir}v2/workflows/instances/\{instanceId\}/results/GET/spec.adoc[opts=optional]
-
-
-
-===== Parameters
-
-====== Path Parameters
-
-[cols="2,3,1,1,1"]
-|===
-|Name| Description| Required| Default| Pattern
-
-| instanceId
-| ID of the workflow instance 
-| X
-| null
-| 
-
-|===
-
-
-
-
-
-
-===== Return Type
-
-<<WorkflowDataDTO>>
-
-
-===== Content Type
-
-* application/json
-
-===== Responses
-
-.HTTP Response Codes
-[cols="2,3,1"]
-|===
-| Code | Message | Datatype
-
-
-| 200
-| Successful response
-|  <<WorkflowDataDTO>>
-
-
-| 500
-| Error getting workflow results
-|  <<ErrorResponse>>
-
-|===
-
-===== Samples
-
-
-// markup not found, no include::{snippetDir}v2/workflows/instances/\{instanceId\}/results/GET/http-request.adoc[opts=optional]
-
-
-// markup not found, no include::{snippetDir}v2/workflows/instances/\{instanceId\}/results/GET/http-response.adoc[opts=optional]
-
-
-
-// file not found, no * wiremock data link :v2/workflows/instances/{instanceId}/results/GET/GET.json[]
-
-
-ifdef::internal-generation[]
-===== Implementation
-
-// markup not found, no include::{specDir}v2/workflows/instances/\{instanceId\}/results/GET/implementation.adoc[opts=optional]
-
-
-endif::internal-generation[]
-
-
 [.getWorkflowSourceById]
 ==== getWorkflowSourceById
 
@@ -1004,7 +917,7 @@ The ErrorResponse object represents a common structure for handling errors in AP
 
 | inputData
 | X
-| Map  of <<string>>
+| Object 
 | 
 |  
 

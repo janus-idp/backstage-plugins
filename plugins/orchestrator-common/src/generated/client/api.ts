@@ -69,10 +69,10 @@ export interface ErrorResponse {
 export interface ExecuteWorkflowRequestDTO {
     /**
      * 
-     * @type {{ [key: string]: string; }}
+     * @type {object}
      * @memberof ExecuteWorkflowRequestDTO
      */
-    'inputData': { [key: string]: string; };
+    'inputData': object;
 }
 /**
  * 
@@ -824,40 +824,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * 
-         * @summary Get workflow results
-         * @param {string} instanceId ID of the workflow instance
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getWorkflowResults: async (instanceId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'instanceId' is not null or undefined
-            assertParamExists('getWorkflowResults', 'instanceId', instanceId)
-            const localVarPath = `/v2/workflows/instances/{instanceId}/results`
-                .replace(`{${"instanceId"}}`, encodeURIComponent(String(instanceId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          * Get a workflow source by ID
          * @param {string} workflowId ID of the workflow to fetch
          * @param {*} [options] Override http request option.
@@ -1060,19 +1026,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
-         * @summary Get workflow results
-         * @param {string} instanceId ID of the workflow instance
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getWorkflowResults(instanceId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WorkflowDataDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getWorkflowResults(instanceId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getWorkflowResults']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
          * Get a workflow source by ID
          * @param {string} workflowId ID of the workflow to fetch
          * @param {*} [options] Override http request option.
@@ -1182,16 +1135,6 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getWorkflowOverviewById(workflowId: string, options?: any): AxiosPromise<WorkflowOverviewDTO> {
             return localVarFp.getWorkflowOverviewById(workflowId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get workflow results
-         * @param {string} instanceId ID of the workflow instance
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getWorkflowResults(instanceId: string, options?: any): AxiosPromise<WorkflowDataDTO> {
-            return localVarFp.getWorkflowResults(instanceId, options).then((request) => request(axios, basePath));
         },
         /**
          * Get a workflow source by ID
@@ -1305,18 +1248,6 @@ export class DefaultApi extends BaseAPI {
      */
     public getWorkflowOverviewById(workflowId: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getWorkflowOverviewById(workflowId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get workflow results
-     * @param {string} instanceId ID of the workflow instance
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public getWorkflowResults(instanceId: string, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getWorkflowResults(instanceId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

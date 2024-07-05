@@ -3,7 +3,6 @@ import {
   ExecuteWorkflowResponseDTO,
   ProcessInstanceListResultDTO,
   toWorkflowYaml,
-  WorkflowDataDTO,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
   WorkflowRunStatusDTO,
@@ -11,11 +10,7 @@ import {
 
 import { buildPagination } from '../../types/pagination';
 import { OrchestratorService } from '../OrchestratorService';
-import assessedProcessInstanceData from './mapping/__fixtures__/assessedProcessInstance.json';
-import {
-  mapToGetWorkflowInstanceResults,
-  mapToWorkflowOverviewDTO,
-} from './mapping/V2Mappings';
+import { mapToWorkflowOverviewDTO } from './mapping/V2Mappings';
 import {
   generateProcessInstance,
   generateProcessInstances,
@@ -419,62 +414,6 @@ describe('getInstanceById', () => {
       processInstance.businessKey,
     );
     expect(processInstanceV2.instance.id).toEqual(processInstance.id);
-  });
-});
-
-describe('getWorkflowResults', () => {
-  beforeEach(async () => {
-    jest.clearAllMocks();
-  });
-
-  it('returns process instance', async () => {
-    // Arrange
-    const mockGetWorkflowResultsV1 = { ...assessedProcessInstanceData };
-
-    (mockOrchestratorService.fetchInstance as jest.Mock).mockResolvedValue(
-      mockGetWorkflowResultsV1.instance,
-    );
-
-    const expectedResultV2 = mapToGetWorkflowInstanceResults(
-      mockGetWorkflowResultsV1.instance.variables,
-    );
-
-    // Act
-    const actualResultV2: WorkflowDataDTO =
-      await v2.getWorkflowResults('testInstanceId');
-
-    // Assert
-    expect(actualResultV2).toBeDefined();
-    expect(actualResultV2).toEqual(expectedResultV2);
-  });
-
-  it('throws error when no variables attribute is present in the instance object', async () => {
-    // Arrange
-    const mockGetWorkflowResults = { ...assessedProcessInstanceData };
-
-    // @ts-ignore
-    delete mockGetWorkflowResults.instance.variables;
-
-    (mockOrchestratorService.fetchInstance as jest.Mock).mockResolvedValue(
-      mockGetWorkflowResults,
-    );
-
-    // Act
-    const promise = v2.getWorkflowResults('instanceId');
-
-    // Assert
-    await expect(promise).rejects.toThrow(
-      'Error getting workflow instance results with id instanceId',
-    );
-  });
-
-  it('throws error when no instanceId is provided', async () => {
-    const promise = v2.getWorkflowResults('');
-
-    // Assert
-    await expect(promise).rejects.toThrow(
-      'No instance id was provided to get workflow results',
-    );
   });
 });
 
