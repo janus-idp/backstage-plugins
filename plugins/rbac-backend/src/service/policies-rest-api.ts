@@ -267,7 +267,7 @@ export class PoliciesServer {
         await this.aLog.auditLog<PermissionAuditInfo>({
           message: `Deleted permission policies`,
           eventName: PermissionEvents.DELETE_POLICY,
-          metadata: { policies: processedPolicies },
+          metadata: { policies: processedPolicies, source: 'rest' },
           stage: SEND_RESPONSE_STAGE,
           status: 'succeeded',
           request,
@@ -308,7 +308,7 @@ export class PoliciesServer {
       await this.aLog.auditLog<PermissionAuditInfo>({
         message: `Created permission policies`,
         eventName: PermissionEvents.CREATE_POLICY,
-        metadata: { policies: processedPolicies },
+        metadata: { policies: processedPolicies, source: 'rest' },
         stage: SEND_RESPONSE_STAGE,
         status: 'succeeded',
         request,
@@ -395,7 +395,7 @@ export class PoliciesServer {
         await this.aLog.auditLog<PermissionAuditInfo>({
           message: `Updated permission policies`,
           eventName: PermissionEvents.UPDATE_POLICY,
-          metadata: { policies: processedNewPolicy },
+          metadata: { policies: processedNewPolicy, source: 'rest' },
           stage: SEND_RESPONSE_STAGE,
           status: 'succeeded',
           request,
@@ -1046,7 +1046,7 @@ export class PoliciesServer {
         permission,
         policy,
         effect,
-        metadata: { source: roleToSourceMap.get(entityReference) },
+        metadata: { source: roleToSourceMap.get(entityReference)! },
       });
     }
 

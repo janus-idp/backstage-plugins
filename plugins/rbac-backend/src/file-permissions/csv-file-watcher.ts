@@ -339,7 +339,7 @@ export class CSVFileWatcher {
           actorId: RBAC_BACKEND,
           message: `Created policy`,
           eventName: PermissionEvents.CREATE_POLICY,
-          metadata: { policies: [policy] },
+          metadata: { policies: [policy], source: 'csv-file' },
           stage: HANDLE_RBAC_DATA_STAGE,
           status: 'succeeded',
         });
@@ -364,7 +364,10 @@ export class CSVFileWatcher {
         actorId: RBAC_BACKEND,
         message: `Deleted policies`,
         eventName: PermissionEvents.DELETE_POLICY,
-        metadata: { policies: this.csvFilePolicies.removedPolicies },
+        metadata: {
+          policies: this.csvFilePolicies.removedPolicies,
+          source: 'csv-file',
+        },
         stage: HANDLE_RBAC_DATA_STAGE,
         status: 'succeeded',
       });

@@ -48,6 +48,7 @@ export type RoleAuditInfo = {
 
 export type PermissionAuditInfo = {
   policies: string[][];
+  source: Source;
 };
 
 export const EvaluationEvents = {
