@@ -5,7 +5,7 @@ import { Breadcrumbs } from '@material-ui/core';
 
 import { HistoryManager } from '../../app/History';
 import { Paths } from '../../config';
-import { kialiStyle, useLinkStyle } from '../../styles/StyleUtils';
+import { kialiStyle } from '../../styles/StyleUtils';
 import { dicIstioType } from '../../types/IstioConfigList';
 import { JanusObjectLink } from '../../utils/janusLinks';
 import { FilterSelected } from '../Filters/StatefulFilters';
@@ -72,7 +72,6 @@ export const BreadcrumbView = (props: { entity?: boolean }) => {
   const item = path ? path.item : '';
   const istioType = path ? path.istioType : '';
   const pathItem = path ? path.pathItem : '';
-  const linkStyle = useLinkStyle();
 
   const isIstio = isIstioF();
 
@@ -81,12 +80,11 @@ export const BreadcrumbView = (props: { entity?: boolean }) => {
 
   return (
     <div className={breadcrumStyle}>
-      <Breadcrumbs>
+      <Breadcrumbs style={{ fontSize: '14px' }}>
         <JanusObjectLink
           root
           entity={props.entity}
           onClick={cleanFilters}
-          className={linkStyle}
           query={props.entity ? `${tab}` : ''}
           type={pathItem}
         >
@@ -97,7 +95,6 @@ export const BreadcrumbView = (props: { entity?: boolean }) => {
           entity={props.entity}
           query={props.entity ? `${tab}&${filterNs}` : filterNs}
           onClick={cleanFilters}
-          className={linkStyle}
           type={pathItem}
         >
           Namespace: {namespace}
@@ -111,7 +108,6 @@ export const BreadcrumbView = (props: { entity?: boolean }) => {
               dicIstioType[istioType || '']
             }`}
             onClick={cleanFilters}
-            className={linkStyle}
             type="istio"
           >
             {istioType ? istioTypeF(istioType) : istioType}

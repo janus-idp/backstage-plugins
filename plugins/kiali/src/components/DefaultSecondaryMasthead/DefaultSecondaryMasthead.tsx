@@ -11,7 +11,7 @@ type DefaultProps = {
 };
 
 const defaultStyle: React.CSSProperties = { marginTop: '25px', float: 'left' };
-const barStyle: React.CSSProperties = { marginTop: '0', float: 'right' };
+const justReloadStyle: React.CSSProperties = { marginTop: '0', float: 'right' };
 
 export const DefaultSecondaryMasthead: React.FC<DefaultProps> = (
   props: DefaultProps,
@@ -27,7 +27,7 @@ export const DefaultSecondaryMasthead: React.FC<DefaultProps> = (
           style={
             props.elements && props.elements.length > 0
               ? defaultStyle
-              : barStyle
+              : justReloadStyle
           }
         >
           <IconButton
