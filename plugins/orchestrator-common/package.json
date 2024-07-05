@@ -51,12 +51,12 @@
     "@backstage/plugin-permission-common": "^0.7.13",
     "@severlessworkflow/sdk-typescript": "^3.0.3",
     "js-yaml": "^4.1.0",
-    "json-schema": "^0.4.0"
+    "json-schema": "^0.4.0",
+    "axios": "1.6.8"
   },
   "devDependencies": {
     "@backstage/cli": "0.26.6",
-    "@hey-api/openapi-ts": "0.34.5",
-    "@openapitools/openapi-generator-cli": "2.7.0",
+    "@openapitools/openapi-generator-cli": "2.13.4",
     "js-yaml-cli": "0.6.0"
   },
   "maintainers": [
