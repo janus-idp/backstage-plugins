@@ -89,6 +89,7 @@ export const CreateFeedbackModal = (props: {
   const api = useApi(feedbackApiRef);
   const analytics = useAnalytics();
   const [feedbackType, setFeedbackType] = useState('BUG');
+  const [submitClicked, setSubmitClicked] = useState(false);
   const [selectedTag, setSelectedTag] = useState(issueTags[0]);
   const app = useApi(configApiRef);
   const summaryLimit = app.getOptionalNumber('feedback.summaryLimit') ?? 240;
@@ -122,6 +123,7 @@ export const CreateFeedbackModal = (props: {
   }
 
   async function handleSubmitClick() {
+    setSubmitClicked(true);
     const resp = await api.createFeedback({
       summary: summary.value,
       description: description.value,
@@ -321,7 +323,9 @@ export const CreateFeedbackModal = (props: {
           onClick={handleSubmitClick}
           color="primary"
           variant="contained"
-          disabled={summary.error || summary.value.length === 0}
+          disabled={
+            summary.error || summary.value.length === 0 || submitClicked
+          }
         >
           {feedbackType === 'FEEDBACK' ? 'Send Feedback' : 'Report Bug'}
         </Button>
