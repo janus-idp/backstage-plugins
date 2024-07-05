@@ -12,8 +12,13 @@ import { ConditionsData, RulesData } from './types';
 
 const useDrawerStyles = makeStyles(() => ({
   paper: {
-    width: '50%',
+    ['@media (max-width: 960px)']: {
+      width: '-webkit-fill-available',
+    },
+    width: '50vw',
+    height: '100vh',
     gap: '3%',
+    display: '-webkit-inline-box',
   },
 }));
 
@@ -21,7 +26,6 @@ const useDrawerContentStyles = makeStyles(theme => ({
   sidebar: {
     display: 'flex',
     flexFlow: 'column',
-    height: '100%',
     justifyContent: 'space-between',
     backgroundColor: `${theme.palette.background.default} !important`,
   },

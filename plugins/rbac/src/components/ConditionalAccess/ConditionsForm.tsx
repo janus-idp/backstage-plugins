@@ -11,9 +11,9 @@ import { ConditionsData, RuleParamsErrors, RulesData } from './types';
 const useStyles = makeStyles(theme => ({
   form: {
     padding: theme.spacing(2.5),
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
+    paddingTop: 0,
     flexGrow: 1,
+    overflow: 'auto',
   },
   addConditionButton: {
     color: theme.palette.primary.light,
