@@ -26,6 +26,8 @@ import 'ace-builds/src-noconflict/theme-twilight';
 
 import { useCallback, useEffect } from 'react';
 
+import { useTheme } from '@material-ui/core/styles';
+
 import {
   AceValidations,
   parseKialiValidations,
@@ -79,6 +81,15 @@ export const IstioConfigDetailsPage = (props: {
     annotations: [],
   };
   const yamlSource = fetchYaml();
+  const editorStyle = { border: '1px solid #dcdcdc' };
+
+  const useDefaultTheme = (): string => {
+    const muiTheme = useTheme();
+    if (muiTheme.palette.type === 'light') {
+      return 'eclipse';
+    }
+    return 'twilight';
+  };
 
   editorValidations = parseKialiValidations(
     yamlSource,
@@ -98,13 +109,16 @@ export const IstioConfigDetailsPage = (props: {
             <AceEditor
               mode="yaml"
               setOptions={{ useWorker: false }}
-              theme="eclipse"
+              theme={useDefaultTheme()}
+              fontSize={14}
               width="100%"
+              showGutter
               readOnly
               wrapEnabled
               value={yamlSource}
               annotations={editorValidations.annotations}
               markers={editorValidations.markers}
+              style={editorStyle}
             />
           </Grid>
           <Grid xs={3}>
