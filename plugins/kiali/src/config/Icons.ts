@@ -1,22 +1,19 @@
 // @ts-nocheck
 import React from 'react';
 
-import {
-  ArrowAltCircleRightIcon,
-  BanIcon,
-  BlueprintIcon,
-  BoltIcon,
-  ClockIcon,
-  CodeBranchIcon,
-  GlobeRouteIcon,
-  LockedIcon,
-  MigrationIcon,
-  SecurityIcon,
-  ShareAltIcon,
-  VirtualMachineIcon,
-  WrenchIcon,
-} from '@patternfly/react-icons';
-import deepFreeze from 'deep-freeze';
+import BlockIcon from '@material-ui/icons/Block';
+import BuildIcon from '@material-ui/icons/Build';
+import CodeIcon from '@material-ui/icons/Code';
+import CompareArrowsIcon from '@material-ui/icons/CompareArrows';
+import FilterNoneIcon from '@material-ui/icons/FilterNone';
+import ImportantDevicesIcon from '@material-ui/icons/ImportantDevices';
+import LanguageIcon from '@material-ui/icons/Language';
+import LockIcon from '@material-ui/icons/Lock';
+import OfflineBoltIcon from '@material-ui/icons/OfflineBolt';
+import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
+import ScheduleIcon from '@material-ui/icons/Schedule';
+import SecurityIcon from '@material-ui/icons/Security';
+import ShareIcon from '@material-ui/icons/Share';
 
 import hollowPinIcon from '../assets/img/hollow-pin.png';
 import solidPinIcon from '../assets/img/solid-pin.png';
@@ -41,7 +38,7 @@ const mutIcons = {
     circuitBreaker: {
       ascii: '\uf0e7 ',
       className: 'fa fa-bolt',
-      icon: BoltIcon,
+      icon: OfflineBoltIcon,
       name: 'bolt',
       text: 'Circuit Breaker',
       type: 'fa',
@@ -50,7 +47,7 @@ const mutIcons = {
       ascii: '\uE932',
       className: 'fa fa-wrench',
       color: 'red',
-      icon: WrenchIcon,
+      icon: BuildIcon,
       name: 'wrench',
       text: 'Missing Label',
       type: 'fa',
@@ -58,21 +55,21 @@ const mutIcons = {
     faultInjection: {
       ascii: '\uf05e ',
       className: 'fa fa-ban',
-      icon: BanIcon,
+      icon: BlockIcon,
       name: 'ban',
       text: 'Fault Injection',
       type: 'fa',
     } as IconType,
     gateway: {
       className: 'pf-icon pf-icon-globe-route',
-      icon: GlobeRouteIcon,
+      icon: LanguageIcon,
       name: 'globe-route',
       text: 'Gateway',
       type: 'pf',
     } as IconType,
     mirroring: {
       className: 'pf-icon pf-icon-migration',
-      icon: MigrationIcon,
+      icon: CompareArrowsIcon,
       name: 'migration',
       text: 'Mirroring',
       type: 'pf',
@@ -90,7 +87,7 @@ const mutIcons = {
       ascii: '\ue915 ',
       className: 'pf-icon pf-icon-blueprint',
       color: 'red',
-      icon: BlueprintIcon,
+      icon: FilterNoneIcon,
       name: 'blueprint',
       text: 'Missing Sidecar',
       type: 'pf',
@@ -98,7 +95,7 @@ const mutIcons = {
     mtls: {
       ascii: '\ue923 ',
       className: 'pf-icon pf-icon-locked',
-      icon: LockedIcon,
+      icon: LockIcon,
       name: 'locked',
       text: 'mTLS',
       type: 'pf',
@@ -106,7 +103,7 @@ const mutIcons = {
     requestRouting: {
       ascii: '\uf126 ',
       className: 'fa fa-code-branch',
-      icon: CodeBranchIcon,
+      icon: CodeIcon,
       name: 'code-fork',
       text: 'Request Routing',
       type: 'fa',
@@ -114,7 +111,7 @@ const mutIcons = {
     requestTimeout: {
       ascii: '\uf017 ',
       className: 'fa fa-clock',
-      icon: ClockIcon,
+      icon: ScheduleIcon,
       name: 'clock',
       text: 'request Timeout',
       type: 'fa',
@@ -122,7 +119,7 @@ const mutIcons = {
     root: {
       ascii: '\uf35a ',
       className: 'fa fa-arrow-alt-circle-right',
-      icon: ArrowAltCircleRightIcon,
+      icon: PlayCircleOutlineIcon,
       name: 'arrow-alt-circle-right',
       text: 'Traffic Source',
       type: 'fa',
@@ -130,7 +127,7 @@ const mutIcons = {
     trafficShifting: {
       ascii: '\uf1e0 ',
       className: 'fa fa-share-alt',
-      icon: ShareAltIcon,
+      icon: ShareIcon,
       name: 'share-alt',
       text: 'Traffic Shifting',
       type: 'fa',
@@ -138,7 +135,7 @@ const mutIcons = {
     virtualService: {
       ascii: '\uf126 ',
       className: 'fa fa-code-branch',
-      icon: CodeBranchIcon,
+      icon: CodeIcon,
       name: 'code-fork',
       text: 'Virtual Service',
       type: 'fa',
@@ -146,7 +143,7 @@ const mutIcons = {
     workloadEntry: {
       ascii: '\uf126 ',
       className: 'pf-icon pf-icon-virtual-machine',
-      icon: VirtualMachineIcon,
+      icon: ImportantDevicesIcon,
       name: 'virtual-machine',
       text: 'Workload Entry',
       type: 'pf',
@@ -154,4 +151,4 @@ const mutIcons = {
   },
 };
 
-export const icons = deepFreeze(mutIcons) as typeof mutIcons;
+export const icons = mutIcons as typeof mutIcons;
