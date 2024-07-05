@@ -73,12 +73,17 @@ const useAdminsFromConfig = async (
   knex: Knex,
 ) => {
   const addedGroupPolicies = new Map<string, string>();
+  const newGroupPolicies = new Map<string, string>();
 
   for (const admin of admins) {
     const entityRef = admin.getString('name');
     validateEntityReference(entityRef);
 
     addedGroupPolicies.set(entityRef, ADMIN_ROLE_NAME);
+
+    if (!(await enf.hasGroupingPolicy(...[entityRef, ADMIN_ROLE_NAME]))) {
+      newGroupPolicies.set(entityRef, ADMIN_ROLE_NAME);
+    }
   }
 
   const adminRoleMeta =
@@ -102,13 +107,13 @@ const useAdminsFromConfig = async (
     throw error;
   }
 
-  const addedRoleMembers = Array.from<string[]>(addedGroupPolicies.entries());
+  const addedRoleMembers = Array.from<string[]>(newGroupPolicies.entries());
   await enf.addGroupingPolicies(addedRoleMembers, getAdminRoleMetadata());
 
   await auditLogger.auditLog<RoleAuditInfo>({
     actorId: RBAC_BACKEND,
     message: `Created or updated role`,
-    eventName: RoleEvents.CREATE_ROLE,
+    eventName: RoleEvents.CREATE_OR_UPDATE_ROLE,
     metadata: {
       ...getAdminRoleMetadata(),
       members: addedRoleMembers.map(gp => gp[0]),

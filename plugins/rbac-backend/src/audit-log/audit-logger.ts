@@ -17,6 +17,7 @@ export const RoleEvents = {
   CREATE_ROLE: 'CreateRole',
   UPDATE_ROLE: 'UpdateRole',
   DELETE_ROLE: 'DeleteRole',
+  CREATE_OR_UPDATE_ROLE: 'CreateOrUpdateRole',
   GET_ROLE: 'GetRole',
 
   CREATE_ROLE_ERROR: 'CreateRoleError',
