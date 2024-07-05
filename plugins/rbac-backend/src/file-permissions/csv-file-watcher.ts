@@ -150,10 +150,38 @@ export class CSVFileWatcher {
       }
     }
 
-    // Check for policies that might need to be updated
-    // This will involve update "legacy" source in the role metadata if it exist in both the
-    // temp enforcer (csv file) and a role metadata storage.
-    // We will update role metadata with the new source "csv-file"
+    // Check for any new policies that need to be added by checking if
+    // the policy does not currently exist in the enforcer
+    const policiesToAdd = await tempEnforcer.getPolicy();
+    const groupPoliciesToAdd = await tempEnforcer.getGroupingPolicy();
+
+    for (const policy of policiesToAdd) {
+      if (!(await this.enforcer.hasPolicy(...policy))) {
+        this.csvFilePolicies.addedPolicies.push(policy);
+      }
+    }
+
+    for (const gPolicy of groupPoliciesToAdd) {
+      if (!(await this.enforcer.hasGroupingPolicy(...gPolicy))) {
+        this.csvFilePolicies.addedGroupPolicies.push(gPolicy);
+      }
+    }
+
+    await this.migrateLegacyMetadata(tempEnforcer);
+
+    // We pass current here because this is during initialization and it has not changed yet
+    await this.updatePolicies(content, tempEnforcer);
+
+    if (allowReload && csvFileName) {
+      this.watchFile();
+    }
+  }
+
+  // Check for policies that might need to be updated
+  // This will involve update "legacy" source in the role metadata if it exist in both the
+  // temp enforcer (csv file) and a role metadata storage.
+  // We will update role metadata with the new source "csv-file"
+  async migrateLegacyMetadata(tempEnforcer: Enforcer) {
     let legacyRolesMetadata =
       await this.roleMetadataStorage.filterRoleMetadata('legacy');
     const legacyRoles = legacyRolesMetadata.map(meta => meta.roleEntityRef);
@@ -185,30 +213,6 @@ export class CSVFileWatcher {
         );
       }
     }
-
-    // Check for any new policies that need to be added by checking if
-    // the policy does not currently exist in the enforcer
-    const policiesToAdd = await tempEnforcer.getPolicy();
-    const groupPoliciesToAdd = await tempEnforcer.getGroupingPolicy();
-
-    for (const policy of policiesToAdd) {
-      if (!(await this.enforcer.hasPolicy(...policy))) {
-        this.csvFilePolicies.addedPolicies.push(policy);
-      }
-    }
-
-    for (const gPolicy of groupPoliciesToAdd) {
-      if (!(await this.enforcer.hasGroupingPolicy(...gPolicy))) {
-        this.csvFilePolicies.addedGroupPolicies.push(gPolicy);
-      }
-    }
-
-    // We pass current here because this is during initialization and it has not changed yet
-    await this.updatePolicies(content, tempEnforcer);
-
-    if (allowReload && csvFileName) {
-      this.watchFile();
-    }
   }
 
   /**
@@ -234,6 +238,8 @@ export class CSVFileWatcher {
 
     const diffRemoved = difference(currentFlatContent, newFlatContent); // policy was removed
     const diffAdded = difference(newFlatContent, currentFlatContent); // policy was added
+
+    await this.migrateLegacyMetadata(tempEnforcer);
 
     if (diffRemoved.length === 0 && diffAdded.length === 0) {
       return;
