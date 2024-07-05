@@ -2,6 +2,7 @@ import { RoleMetadataDao } from './database/role-metadata';
 import {
   deepSortedEqual,
   isPermissionAction,
+  mergeRoleMetadata,
   metadataStringToPolicy,
   policiesToString,
   policyToString,
@@ -338,5 +339,140 @@ describe('helper.ts', () => {
       const result = isPermissionAction('unknown');
       expect(result).toBeFalsy();
     });
+  });
+});
+
+describe('mergeRoleMetadata', () => {
+  it('should merge new metadata into current metadata', () => {
+    const currentMetadata: RoleMetadataDao = {
+      lastModified: '2021-01-01T00:00:00Z',
+      modifiedBy: 'user:default/user1',
+      description: 'Initial role description',
+      roleEntityRef: 'user:default/tim',
+      source: 'legacy',
+    };
+
+    const newMetadata: RoleMetadataDao = {
+      lastModified: '2022-01-01T00:00:00Z',
+      modifiedBy: 'user:default/user2',
+      description: 'Updated role description',
+      roleEntityRef: 'user:default/dev-team',
+      source: 'rest',
+    };
+
+    const expectedMergedMetadata: RoleMetadataDao = {
+      ...currentMetadata,
+      ...newMetadata,
+    };
+
+    const result = mergeRoleMetadata(currentMetadata, newMetadata);
+
+    expect(result).toEqual(expectedMergedMetadata);
+  });
+
+  it('should use current metadata description if new metadata description is undefined', () => {
+    const currentMetadata: RoleMetadataDao = {
+      lastModified: '2021-01-01T00:00:00Z',
+      modifiedBy: 'user:default/user1',
+      description: 'Initial role description',
+      roleEntityRef: 'user:default/tim',
+      source: 'legacy',
+    };
+
+    const newMetadata: RoleMetadataDao = {
+      lastModified: '2022-01-01T00:00:00Z',
+      modifiedBy: 'user:default/user2',
+      roleEntityRef: 'user:default/dev-team',
+      source: 'csv-file',
+    };
+
+    const expectedMergedMetadata: RoleMetadataDao = {
+      ...currentMetadata,
+      ...newMetadata,
+      description: currentMetadata.description,
+    };
+
+    const result = mergeRoleMetadata(currentMetadata, newMetadata);
+
+    expect(result).toEqual(expectedMergedMetadata);
+  });
+
+  it('should use current date if new metadata lastModified is undefined', () => {
+    const currentMetadata: RoleMetadataDao = {
+      lastModified: '2021-01-01T00:00:00Z',
+      modifiedBy: 'user:default/user1',
+      description: 'Initial role description',
+      roleEntityRef: 'user:default/tim',
+      source: 'legacy',
+    };
+
+    const newMetadata: RoleMetadataDao = {
+      modifiedBy: 'user:default/user2',
+      description: 'Updated role description',
+      roleEntityRef: 'user:default/dev-team',
+      source: 'configuration',
+    };
+
+    const result = mergeRoleMetadata(currentMetadata, newMetadata);
+    const resultDate = new Date(result.lastModified!);
+    expect(resultDate).toBeInstanceOf(Date);
+    expect(result.modifiedBy).toEqual(newMetadata.modifiedBy);
+    expect(result.description).toEqual(newMetadata.description);
+    expect(result.roleEntityRef).toEqual(newMetadata.roleEntityRef);
+    expect(result.source).toEqual(newMetadata.source);
+  });
+
+  it('should not modify original metadata objects', () => {
+    const currentMetadata: RoleMetadataDao = {
+      lastModified: '2021-01-01T00:00:00Z',
+      modifiedBy: 'user:default/user1',
+      description: 'Initial role description',
+      roleEntityRef: 'user:default/tim',
+      source: 'legacy',
+    };
+
+    const newMetadata: RoleMetadataDao = {
+      lastModified: '2022-01-01T00:00:00Z',
+      modifiedBy: 'user:default/user2',
+      description: 'Updated role description',
+      roleEntityRef: 'user:default/dev-team',
+      source: 'configuration',
+    };
+
+    const currentMetadataClone = { ...currentMetadata };
+    const newMetadataClone = { ...newMetadata };
+
+    mergeRoleMetadata(currentMetadata, newMetadata);
+
+    expect(currentMetadata).toEqual(currentMetadataClone);
+    expect(newMetadata).toEqual(newMetadataClone);
+  });
+
+  it('should use current date if new metadata createdAt is undefined', () => {
+    const currentMetadata: RoleMetadataDao = {
+      createdAt: '2021-01-01T00:00:00Z',
+      lastModified: '2021-01-01T00:00:00Z',
+      modifiedBy: 'user:default/user1',
+      description: 'Initial role description',
+      roleEntityRef: 'user:default/tim',
+      source: 'legacy',
+    };
+
+    const newMetadata: RoleMetadataDao = {
+      lastModified: '2022-01-01T00:00:00Z',
+      modifiedBy: 'user:default/user2',
+      description: 'Updated role description',
+      roleEntityRef: 'user:default/dev-team',
+      source: 'configuration',
+    };
+
+    const result = mergeRoleMetadata(currentMetadata, newMetadata);
+    const resultDate = new Date(result.createdAt!);
+    expect(resultDate).toBeInstanceOf(Date);
+    expect(result.lastModified).toEqual(newMetadata.lastModified);
+    expect(result.modifiedBy).toEqual(newMetadata.modifiedBy);
+    expect(result.description).toEqual(newMetadata.description);
+    expect(result.roleEntityRef).toEqual(newMetadata.roleEntityRef);
+    expect(result.source).toEqual(newMetadata.source);
   });
 });
