@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-feedback [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.4.1...@janus-idp/backstage-plugin-feedback@1.4.2) (2024-07-05)
+
+
+### Bug Fixes
+
+* **feedback:** fixed feedback creation ([#1863](https://github.com/janus-idp/backstage-plugins/issues/1863)) ([eb2f3ac](https://github.com/janus-idp/backstage-plugins/commit/eb2f3ac372e92e2537a46aab71c4ced6480d71ec))
+
 ## @janus-idp/backstage-plugin-feedback [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.4.0...@janus-idp/backstage-plugin-feedback@1.4.1) (2024-06-19)
 
 
