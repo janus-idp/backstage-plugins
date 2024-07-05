@@ -161,9 +161,9 @@ export class CSVFileWatcher {
       }
     }
 
-    for (const gPolicy of groupPoliciesToAdd) {
-      if (!(await this.enforcer.hasGroupingPolicy(...gPolicy))) {
-        this.csvFilePolicies.addedGroupPolicies.push(gPolicy);
+    for (const groupPolicy of groupPoliciesToAdd) {
+      if (!(await this.enforcer.hasGroupingPolicy(...groupPolicy))) {
+        this.csvFilePolicies.addedGroupPolicies.push(groupPolicy);
       }
     }
 

@@ -36,7 +36,7 @@ import {
 } from './plugin-endpoints';
 import { PoliciesServer } from './policies-rest-api';
 
-jest.setTimeout(80000);
+jest.setTimeout(60000);
 
 const pluginPermissionMetadataCollectorMock = {
   getPluginPolicies: jest.fn().mockImplementation(),

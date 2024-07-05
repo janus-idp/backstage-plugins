@@ -138,9 +138,7 @@ export class EnforcerDelegate {
 
       const ok = await this.enforcer.addGroupingPolicy(...policy);
       if (!ok) {
-        throw new Error(
-          `failed to create policy ${policyToString([...policy, roleMetadata.source])}`,
-        );
+        throw new Error(`failed to create policy ${policyToString(policy)}`);
       }
       if (!externalTrx) {
         await trx.commit();
