@@ -1,3 +1,12 @@
+## @janus-idp/backstage-plugin-rbac [1.22.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.22.0...@janus-idp/backstage-plugin-rbac@1.22.1) (2024-07-05)
+
+
+### Bug Fixes
+
+* **rbac:** correct plugin ID matching to permission policy ([#1795](https://github.com/janus-idp/backstage-plugins/issues/1795)) ([6dc4b1c](https://github.com/janus-idp/backstage-plugins/commit/6dc4b1c23d22252f394eecd8b795ac15507ecc50))
+* **rbac:** edit role page loads error page ([#1849](https://github.com/janus-idp/backstage-plugins/issues/1849)) ([6782b4b](https://github.com/janus-idp/backstage-plugins/commit/6782b4bda08019c6f81b211486ff47ba1fb2d6bf))
+* **rbac:** update rbac common to fix compilation ([#1858](https://github.com/janus-idp/backstage-plugins/issues/1858)) ([48f142b](https://github.com/janus-idp/backstage-plugins/commit/48f142b447f0d1677ba3f16b2a3c8972b22d0588))
+
 ## @janus-idp/backstage-plugin-rbac [1.22.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.21.1...@janus-idp/backstage-plugin-rbac@1.22.0) (2024-06-21)
 
 
