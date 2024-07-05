@@ -318,7 +318,7 @@ export const RoleForm = ({
   };
 
   return (
-    <Card>
+    <Card style={{ overflow: 'auto' }}>
       <CardHeader title={titles.formTitle} />
       <Divider />
       <CardContent
