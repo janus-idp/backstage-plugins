@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali-backend [1.13.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.13.0...@janus-idp/backstage-plugin-kiali-backend@1.13.1) (2024-07-08)
+
+
+### Bug Fixes
+
+* **kiali:** allow unauthenticated kiali due is read-only mod ([#1872](https://github.com/janus-idp/backstage-plugins/issues/1872)) ([1990d97](https://github.com/janus-idp/backstage-plugins/commit/1990d97ace82833f5a56ec0cc7aca5bf3f739c36))
+
 ## @janus-idp/backstage-plugin-kiali-backend [1.13.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.12.0...@janus-idp/backstage-plugin-kiali-backend@1.13.0) (2024-06-28)
 
 
