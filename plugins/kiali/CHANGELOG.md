@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.24.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.24.0...@janus-idp/backstage-plugin-kiali@1.24.1) (2024-07-08)
+
+
+### Bug Fixes
+
+* **kiali:** add bearer token ([#1870](https://github.com/janus-idp/backstage-plugins/issues/1870)) ([8875276](https://github.com/janus-idp/backstage-plugins/commit/8875276d8f836111462161ef4a6e0caae9209409))
+
 ## @janus-idp/backstage-plugin-kiali [1.24.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.23.0...@janus-idp/backstage-plugin-kiali@1.24.0) (2024-06-28)
 
 
