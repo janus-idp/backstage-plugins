@@ -19,13 +19,15 @@ import {
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  BackstageCredentials,
+  HttpAuthService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import {
-  getBearerTokenFromAuthorizationHeader,
-  IdentityApi,
-} from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   createPermission,
   PermissionEvaluator,
@@ -80,16 +82,21 @@ export interface RouterOptions {
  * This will resolve to { result: AuthorizeResult.ALLOW } if the permission framework is disabled
  */
 async function permissionCheck(
-  _permissions: PermissionEvaluator,
-  _token?: string,
+  _permissions: PermissionsService,
+  _credentials: BackstageCredentials,
 ) {
   // TODO(rm3l): Implement this properly as part of https://issues.redhat.com/browse/RHIDP-1208
   return;
   // const decision = (
-  //   await permissions.authorizeConditional(
-  //     [{ permission: bulkImportPermission }],
+  //   await permissions.authorize(
+  //     [
+  //       {
+  //         permission: bulkImportPermission,
+  //         resourceRef: bulkImportPermission.resourceType,
+  //       },
+  //     ],
   //     {
-  //       token,
+  //       credentials,
   //     },
   //   )
   // )[0];
@@ -104,7 +111,7 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { logger, permissions, config, discovery, catalogApi } = options;
 
-  const { auth } = createLegacyAuthAdapters(options);
+  const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
   const githubApiService = new GithubApiService(logger, config);
   const catalogInfoGenerator = new CatalogInfoGenerator(
@@ -135,9 +142,7 @@ export async function createRouter(
   api.register(
     'findAllOrganizations',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
+      const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
       const q: Paths.FindAllOrganizations.QueryParameters = Object.assign(
         {},
@@ -165,9 +170,7 @@ export async function createRouter(
   api.register(
     'findAllRepositories',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
+      const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
       const q: Paths.FindAllRepositories.QueryParameters = Object.assign(
         {},
@@ -199,9 +202,7 @@ export async function createRouter(
   api.register(
     'findRepositoriesByOrganization',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
+      const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
       const q: Paths.FindRepositoriesByOrganization.QueryParameters =
         Object.assign({}, c.request.query);
@@ -232,9 +233,7 @@ export async function createRouter(
   api.register(
     'findAllImports',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
+      const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
       const q: Paths.FindAllRepositories.QueryParameters = Object.assign(
         {},
@@ -261,9 +260,7 @@ export async function createRouter(
       req: express.Request,
       res: express.Response,
     ) => {
-      const backstageToken = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
+      const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
       const q: Paths.CreateImportJobs.QueryParameters = Object.assign(
         {},
@@ -287,9 +284,7 @@ export async function createRouter(
   api.register(
     'findImportStatusByRepo',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
+      const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
       const q: Paths.FindImportStatusByRepo.QueryParameters = Object.assign(
         {},
@@ -312,9 +307,7 @@ export async function createRouter(
   api.register(
     'deleteImportByRepo',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
+      const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
       const q: Paths.DeleteImportByRepo.QueryParameters = Object.assign(
         {},

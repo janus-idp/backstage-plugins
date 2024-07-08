@@ -20,7 +20,7 @@ import { createPermission } from '@backstage/plugin-permission-common';
  * @public
  */
 export const bulkImportPermission = createPermission({
-  name: 'bulk-import',
+  name: 'bulk.import',
   attributes: {},
   resourceType: 'bulk-import',
 });
