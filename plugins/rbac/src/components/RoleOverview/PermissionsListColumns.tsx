@@ -1,6 +1,7 @@
 import { TableColumn } from '@backstage/core-components';
 
 import { PermissionsData } from '../../types';
+import { getRulesNumber } from '../../utils/create-role-utils';
 
 export const columns: TableColumn<PermissionsData>[] = [
   {
@@ -28,6 +29,17 @@ export const columns: TableColumn<PermissionsData>[] = [
         return 0;
       }
       return a.policies.length < b.policies.length ? -1 : 1;
+    },
+  },
+  {
+    title: 'Conditional',
+    field: 'conditions',
+    type: 'string',
+    render: (permissionsData: PermissionsData) => {
+      const totalRules = getRulesNumber(permissionsData.conditions);
+      return totalRules
+        ? `${totalRules} ${totalRules > 1 ? 'rules' : 'rule'}`
+        : '-';
     },
   },
 ];

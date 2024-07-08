@@ -85,7 +85,7 @@ test.describe('RBAC plugin', () => {
 
     // verify permission policy table
     await expect(
-      page.getByRole('heading', { name: 'Permission policies (5)' }),
+      page.getByRole('heading', { name: 'Permission policies (7)' }),
     ).toBeVisible({ timeout: 20000 });
     await verifyColumnHeading(['Plugin', 'Permission', 'Policies'], page);
     const policies =

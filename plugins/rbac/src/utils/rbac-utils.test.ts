@@ -383,7 +383,7 @@ describe('getConditionalPermissionsData', () => {
           { policy: 'update', effect: 'deny' },
           { policy: 'delete', effect: 'deny' },
         ],
-        policyString: ['read'],
+        policyString: 'Read',
         conditions: {
           condition: {
             rule: 'HAS_ANNOTATION',
