@@ -21,11 +21,15 @@ export const kialiPlugin = createBackendPlugin({
         catalogApi: catalogServiceRef,
       },
       async init({ http, logger, config }) {
-        const router = await createRouter({
-          logger,
-          config,
+        http.use(await createRouter({ logger, config }));
+        http.addAuthPolicy({
+          path: '/status',
+          allow: 'unauthenticated',
         });
-        http.use(router);
+        http.addAuthPolicy({
+          path: '/proxy',
+          allow: 'unauthenticated',
+        });
       },
     });
   },
