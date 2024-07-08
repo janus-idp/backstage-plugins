@@ -1,5 +1,9 @@
 import { Entity } from '@backstage/catalog-model';
-import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
+import {
+  createApiRef,
+  DiscoveryApi,
+  IdentityApi,
+} from '@backstage/core-plugin-api';
 
 import { AxiosError } from 'axios';
 
@@ -269,16 +273,22 @@ export interface Response<T> {
   data: T;
 }
 
+export type Options = {
+  discoveryApi: DiscoveryApi;
+  identityApi: IdentityApi;
+};
 /* End */
 
 export class KialiApiClient implements KialiApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
   private kialiUrl?: string;
   private entity?: Entity;
 
-  constructor(discoveryApi: DiscoveryApi) {
+  constructor(options: Options) {
     this.kialiUrl = '';
-    this.discoveryApi = discoveryApi;
+    this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
     this.entity = undefined;
   }
 
@@ -303,6 +313,7 @@ export class KialiApiClient implements KialiApi {
       params = new URLSearchParams(queryParams).toString();
     }
     const endpoint = queryParams ? `${url}${queryParams && `?${params}`}` : url;
+    const { token: idToken } = await this.identityApi.getCredentials();
     const dataRequest = data ? data : {};
     dataRequest.endpoint = endpoint;
     dataRequest.method = method;
@@ -313,6 +324,7 @@ export class KialiApiClient implements KialiApi {
         method: HTTP_VERBS.POST,
         headers: {
           'Content-Type': 'application/json',
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
           ...kialiHeaders,
         },
         body: JSON.stringify(dataRequest),

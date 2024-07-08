@@ -28,7 +28,8 @@ export const kialiPlugin = createPlugin({
         discoveryApi: discoveryApiRef,
         identityApi: identityApiRef,
       },
-      factory: ({ discoveryApi }) => new KialiApiClient(discoveryApi),
+      factory: ({ discoveryApi, identityApi }) =>
+        new KialiApiClient({ discoveryApi, identityApi }),
     }),
   ],
 });
