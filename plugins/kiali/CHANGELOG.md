@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.25.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.24.1...@janus-idp/backstage-plugin-kiali@1.25.0) (2024-07-09)
+
+
+### Features
+
+* **kiali:** improve styles ([#1861](https://github.com/janus-idp/backstage-plugins/issues/1861)) ([158800f](https://github.com/janus-idp/backstage-plugins/commit/158800fc3f59a4901ea43c7cc00695a6bfb86ca8))
+
 ## @janus-idp/backstage-plugin-kiali [1.24.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.24.0...@janus-idp/backstage-plugin-kiali@1.24.1) (2024-07-08)
 
 
