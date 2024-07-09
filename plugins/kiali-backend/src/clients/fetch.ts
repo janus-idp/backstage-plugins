@@ -184,13 +184,13 @@ export class KialiFetcher {
     requestInit.url = new URL(loginUrl).href;
 
     if (this.KialiDetails.skipTLSVerify) {
+      const certificate = this.bufferFromFileOrString(
+        this.KialiDetails.caFile,
+        this.KialiDetails.caData,
+      );
       requestInit.httpsAgent = new https.Agent({
         rejectUnauthorized: false,
-        ca:
-          this.bufferFromFileOrString(
-            this.KialiDetails.caFile,
-            this.KialiDetails.caData,
-          ) ?? undefined,
+        ...(certificate && { ca: certificate }),
       });
     }
     return requestInit;
