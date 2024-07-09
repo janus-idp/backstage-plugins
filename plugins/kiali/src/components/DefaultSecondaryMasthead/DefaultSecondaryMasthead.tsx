@@ -3,34 +3,42 @@ import React from 'react';
 import { Grid, IconButton, Tooltip } from '@material-ui/core';
 import Refresh from '@material-ui/icons/Refresh';
 
-type Props = {
+type DefaultProps = {
   hideNamespaceSelector?: boolean;
   elements?: JSX.Element[];
   showClusterSelector?: boolean;
   onRefresh: () => void;
 };
 
-export const DefaultSecondaryMasthead: React.FC<Props> = (props: Props) => {
-  const refresh = (
-    <Tooltip title="Refresh" style={{ marginTop: '25px', float: 'left' }}>
-      <IconButton
-        color="primary"
-        aria-label="upload picture"
-        component="label"
-        onClick={props.onRefresh}
-      >
-        <Refresh />
-      </IconButton>
-    </Tooltip>
-  );
+const defaultStyle: React.CSSProperties = { marginTop: '25px', float: 'left' };
+const justReloadStyle: React.CSSProperties = { marginTop: '0', float: 'right' };
 
+export const DefaultSecondaryMasthead: React.FC<DefaultProps> = (
+  props: DefaultProps,
+) => {
   return (
     <Grid container spacing={1} direction="row">
       {props.elements?.map(element => {
         return element;
       })}
-      <Grid item xs={1}>
-        {refresh}
+      <Grid item xs={props.elements && props.elements.length > 0 ? 1 : 12}>
+        <Tooltip
+          title="Refresh"
+          style={
+            props.elements && props.elements.length > 0
+              ? defaultStyle
+              : justReloadStyle
+          }
+        >
+          <IconButton
+            color="primary"
+            aria-label="upload picture"
+            component="label"
+            onClick={props.onRefresh}
+          >
+            <Refresh />
+          </IconButton>
+        </Tooltip>
       </Grid>
     </Grid>
   );
