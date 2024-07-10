@@ -19,7 +19,12 @@ import {
   RoleFormValues,
   SelectedMember,
 } from '../components/CreateRole/types';
-import { MemberEntity, PermissionsData, RoleBasedConditions } from '../types';
+import {
+  MemberEntity,
+  PermissionsData,
+  RoleBasedConditions,
+  UpdatedConditionsData,
+} from '../types';
 
 export const uniqBy = (arr: string[], iteratee: (arg: string) => any) => {
   return arr.filter(
@@ -218,7 +223,7 @@ export const getConditionalPermissionPoliciesData = (
 export const getUpdatedConditionalPolicies = (
   values: RoleFormValues,
   initialValues: RoleFormValues,
-) => {
+): UpdatedConditionsData => {
   const initialConditionsWithId = initialValues.permissionPoliciesRows.filter(
     ppr => ppr.id,
   );
