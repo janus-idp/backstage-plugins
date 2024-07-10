@@ -18,15 +18,8 @@ import { getEntityNs, nsEqual } from '../../helpers/namespaces';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
-import { WorkloadHealth } from '../../types/Health';
-import { validationKey } from '../../types/IstioConfigList';
 import { ENTITY } from '../../types/types';
-import {
-  ClusterWorkloadsResponse,
-  WorkloadListItem,
-} from '../../types/Workload';
-import { hasMissingAuthPolicy } from '../../utils/IstioConfigUtils';
-import { sortIstioReferences } from '../AppList/FiltersAndSorts';
+import { WorkloadListItem } from '../../types/Workload';
 import { NamespaceInfo } from '../Overview/NamespaceInfo';
 import { getNamespaces } from '../Overview/OverviewPage';
 
@@ -47,69 +40,25 @@ export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
   const prevDuration = useRef(duration);
   const [loadingData, setLoadingData] = React.useState<boolean>(true);
 
-  const getDeploymentItems = (
-    data: ClusterWorkloadsResponse,
-  ): WorkloadListItem[] => {
-    if (data.workloads) {
-      return data.workloads.map(deployment => ({
-        cluster: deployment.cluster,
-        namespace: deployment.namespace,
-        name: deployment.name,
-        type: deployment.type,
-        appLabel: deployment.appLabel,
-        versionLabel: deployment.versionLabel,
-        istioSidecar: deployment.istioSidecar,
-        istioAmbient: deployment.istioAmbient,
-        additionalDetailSample: deployment.additionalDetailSample,
-        health: WorkloadHealth.fromJson(
-          deployment.namespace,
-          deployment.name,
-          deployment.health,
-          {
-            rateInterval: duration,
-            hasSidecar: deployment.istioSidecar,
-            hasAmbient: deployment.istioAmbient,
-          },
-        ),
-        labels: deployment.labels,
-        istioReferences: sortIstioReferences(deployment.istioReferences, true),
-        notCoveredAuthPolicy: hasMissingAuthPolicy(
-          validationKey(deployment.name, deployment.namespace),
-          data.validations,
-        ),
-      }));
-    }
-
-    return [];
-  };
-
   const fetchWorkloads = (
-    clusters: string[],
+    nss: NamespaceInfo[],
     timeDuration: number,
   ): Promise<void> => {
     return Promise.all(
-      clusters.map(cluster => {
+      nss.map(nsInfo => {
         return kialiClient
-          .getClustersWorkloads(
-            activeNs.map(nss => nss).join(','),
-            {
-              health: 'true',
-              istioResources: 'true',
-              rateInterval: `${String(timeDuration)}s`,
-            },
-            cluster,
-          )
+          .getWorkloads(nsInfo.name, timeDuration)
           .then(workloadsResponse => {
             return workloadsResponse;
           });
       }),
     )
       .then(results => {
-        let workloadsItems: WorkloadListItem[] = [];
-        results.forEach(response => {
-          workloadsItems = workloadsItems.concat(getDeploymentItems(response));
+        let wkList: WorkloadListItem[] = [];
+        results.forEach(result => {
+          wkList = Array.from(wkList).concat(result);
         });
-        setWorkloads(workloadsItems);
+        setWorkloads(wkList);
       })
       .catch(err => {
         kialiState.alertUtils?.add(
@@ -119,16 +68,9 @@ export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
   };
 
   const load = async () => {
-    const uniqueClusters = new Set<string>();
-    const serverConfig = await kialiClient.getServerConfig();
-
-    Object.keys(serverConfig.clusters).forEach(cluster => {
-      uniqueClusters.add(cluster);
-    });
-
     if (kialiContext.data) {
       setNamespaces(kialiContext.data);
-      await fetchWorkloads(Array.from(uniqueClusters), duration);
+      fetchWorkloads(kialiContext.data, duration);
     } else {
       kialiClient.getNamespaces().then(namespacesResponse => {
         const allNamespaces: NamespaceInfo[] = getNamespaces(
@@ -137,7 +79,7 @@ export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
         );
         const nsl = allNamespaces.filter(ns => activeNs.includes(ns.name));
         setNamespaces(nsl);
-        fetchWorkloads(Array.from(uniqueClusters), duration);
+        fetchWorkloads(nsl, duration);
       });
     }
 

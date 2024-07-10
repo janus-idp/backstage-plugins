@@ -3,11 +3,9 @@ import {
   DestinationRule,
   EnvoyFilter,
   Gateway,
-  IstioObject,
   K8sGateway,
   K8sGRPCRoute,
   K8sHTTPRoute,
-  K8sMetadata,
   K8sReferenceGrant,
   K8sTCPRoute,
   K8sTLSRoute,
@@ -23,6 +21,7 @@ import {
   WorkloadEntry,
   WorkloadGroup,
 } from './IstioObjects';
+import { Namespace } from './Namespace';
 import { ResourcePermissions } from './Permissions';
 
 export interface IstioConfigItem {
@@ -57,27 +56,24 @@ export interface IstioConfigItem {
 export declare type IstioConfigsMap = { [key: string]: IstioConfigList };
 
 export interface IstioConfigList {
-  authorizationPolicies: AuthorizationPolicy[];
-  destinationRules: DestinationRule[];
-  envoyFilters: EnvoyFilter[];
+  namespace: Namespace;
   gateways: Gateway[];
-  k8sGRPCRoutes: K8sGRPCRoute[];
   k8sGateways: K8sGateway[];
   k8sHTTPRoutes: K8sHTTPRoute[];
-  k8sReferenceGrants: K8sReferenceGrant[];
-  k8sTCPRoutes: K8sTCPRoute[];
-  k8sTLSRoutes: K8sTLSRoute[];
-  peerAuthentications: PeerAuthentication[];
-  permissions: { [key: string]: ResourcePermissions };
-  requestAuthentications: RequestAuthentication[];
-  serviceEntries: ServiceEntry[];
-  sidecars: Sidecar[];
-  telemetries: Telemetry[];
-  validations: Validations;
   virtualServices: VirtualService[];
-  wasmPlugins: WasmPlugin[];
+  destinationRules: DestinationRule[];
+  serviceEntries: ServiceEntry[];
   workloadEntries: WorkloadEntry[];
   workloadGroups: WorkloadGroup[];
+  envoyFilters: EnvoyFilter[];
+  authorizationPolicies: AuthorizationPolicy[];
+  sidecars: Sidecar[];
+  wasmPlugins: WasmPlugin[];
+  telemetries: Telemetry[];
+  peerAuthentications: PeerAuthentication[];
+  requestAuthentications: RequestAuthentication[];
+  permissions: { [key: string]: ResourcePermissions };
+  validations: Validations;
 }
 
 export interface IstioConfigListQuery {
@@ -88,65 +84,53 @@ export interface IstioConfigListQuery {
 }
 
 export const dicIstioType = {
-  AuthorizationPolicy: 'authorizationpolicies',
-  DestinationRule: 'destinationrules',
-  EnvoyFilter: 'envoyfilters',
+  Sidecar: 'sidecars',
   Gateway: 'gateways',
   K8sGateway: 'k8sgateways',
-  K8sGRPCRoute: 'k8sgrpcroutes',
   K8sHTTPRoute: 'k8shttproutes',
-  K8sReferenceGrant: 'k8sreferencegrants',
-  K8sTCPRoute: 'k8stcproutes',
-  K8sTLSRoute: 'k8stlsroutes',
+  VirtualService: 'virtualservices',
+  DestinationRule: 'destinationrules',
+  ServiceEntry: 'serviceentries',
+  AuthorizationPolicy: 'authorizationpolicies',
   PeerAuthentication: 'peerauthentications',
   RequestAuthentication: 'requestauthentications',
-  ServiceEntry: 'serviceentries',
-  Sidecar: 'sidecars',
-  Telemetry: 'telemetries',
-  VirtualService: 'virtualservices',
-  WasmPlugin: 'wasmPlugins',
   WorkloadEntry: 'workloadentries',
   WorkloadGroup: 'workloadgroups',
+  EnvoyFilter: 'envoyfilters',
+  WasmPlugin: 'wasmPlugins',
+  Telemetry: 'telemetries',
 
-  authorizationpolicies: 'AuthorizationPolicy',
-  destinationrules: 'DestinationRule',
-  envoyfilters: 'EnvoyFilter',
   gateways: 'Gateway',
   k8sgateways: 'K8sGateway',
-  k8sgrpcroutes: 'K8sGRPCRoute',
   k8shttproutes: 'K8sHTTPRoute',
-  k8sreferencegrants: 'K8sReferenceGrant',
-  k8stcproutes: 'K8sTCPRoute',
-  k8stlsroutes: 'K8sTLSRoute',
+  virtualservices: 'VirtualService',
+  destinationrules: 'DestinationRule',
+  serviceentries: 'ServiceEntry',
+  authorizationpolicies: 'AuthorizationPolicy',
+  sidecars: 'Sidecar',
   peerauthentications: 'PeerAuthentication',
   requestauthentications: 'RequestAuthentication',
-  serviceentries: 'ServiceEntry',
-  sidecars: 'Sidecar',
-  telemetries: 'Telemetry',
-  virtualservices: 'VirtualService',
-  wasmplugins: 'WasmPlugin',
   workloadentries: 'WorkloadEntry',
   workloadgroups: 'WorkloadGroup',
+  envoyfilters: 'EnvoyFilter',
+  telemetries: 'Telemetry',
+  wasmplugins: 'WasmPlugin',
 
-  authorizationpolicy: 'AuthorizationPolicy',
-  destinationrule: 'DestinationRule',
-  envoyfilter: 'EnvoyFilter',
   gateway: 'Gateway',
   k8sgateway: 'K8sGateway',
-  k8sgrpcroute: 'K8sGRPCRoute',
   k8shttproute: 'K8sHTTPRoute',
-  k8sreferencegrant: 'K8sReferenceGrant',
-  k8stcproute: 'K8sTCPRoute',
-  k8stlsroute: 'K8sTLSRoute',
+  virtualservice: 'VirtualService',
+  destinationrule: 'DestinationRule',
+  serviceentry: 'ServiceEntry',
+  authorizationpolicy: 'AuthorizationPolicy',
+  sidecar: 'Sidecar',
+  wasmplugin: 'WasmPlugin',
+  telemetry: 'Telemetry',
   peerauthentication: 'PeerAuthentication',
   requestauthentication: 'RequestAuthentication',
-  serviceentry: 'ServiceEntry',
-  sidecar: 'Sidecar',
-  telemetry: 'Telemetry',
-  virtualservice: 'VirtualService',
-  wasmplugin: 'WasmPlugin',
   workloadentry: 'WorkloadEntry',
   workloadgroup: 'WorkloadGroup',
+  envoyfilter: 'EnvoyFilter',
 };
 
 export function validationKey(name: string, namespace?: string): string {
@@ -172,27 +156,15 @@ export const filterByName = (
   if (names && names.length === 0) {
     return unfiltered;
   }
-
   return {
+    namespace: unfiltered.namespace,
     gateways: unfiltered.gateways.filter(gw =>
       includeName(gw.metadata.name, names),
     ),
     k8sGateways: unfiltered.k8sGateways.filter(gw =>
       includeName(gw.metadata.name, names),
     ),
-    k8sGRPCRoutes: unfiltered.k8sGRPCRoutes.filter(route =>
-      includeName(route.metadata.name, names),
-    ),
     k8sHTTPRoutes: unfiltered.k8sHTTPRoutes.filter(route =>
-      includeName(route.metadata.name, names),
-    ),
-    k8sReferenceGrants: unfiltered.k8sReferenceGrants.filter(rg =>
-      includeName(rg.metadata.name, names),
-    ),
-    k8sTCPRoutes: unfiltered.k8sTCPRoutes.filter(route =>
-      includeName(route.metadata.name, names),
-    ),
-    k8sTLSRoutes: unfiltered.k8sTLSRoutes.filter(route =>
       includeName(route.metadata.name, names),
     ),
     virtualServices: unfiltered.virtualServices.filter(vs =>
@@ -230,88 +202,6 @@ export const filterByName = (
     ),
     telemetries: unfiltered.telemetries.filter(tm =>
       includeName(tm.metadata.name, names),
-    ),
-    validations: unfiltered.validations,
-    permissions: unfiltered.permissions,
-  };
-};
-
-interface ObjectWithMetadata {
-  metadata: K8sMetadata;
-}
-
-const includesNamespace = (
-  item: ObjectWithMetadata,
-  namespaces: Set<string>,
-): boolean => {
-  return (
-    item.metadata.namespace !== undefined &&
-    namespaces.has(item.metadata.namespace)
-  );
-};
-
-export const filterByNamespaces = (
-  unfiltered: IstioConfigList,
-  namespaces: string[],
-): IstioConfigList => {
-  const namespaceSet = new Set(namespaces);
-  return {
-    gateways: unfiltered.gateways.filter(gw =>
-      includesNamespace(gw, namespaceSet),
-    ),
-    k8sGateways: unfiltered.k8sGateways.filter(gw =>
-      includesNamespace(gw, namespaceSet),
-    ),
-    k8sGRPCRoutes: unfiltered.k8sGRPCRoutes.filter(route =>
-      includesNamespace(route, namespaceSet),
-    ),
-    k8sHTTPRoutes: unfiltered.k8sHTTPRoutes.filter(route =>
-      includesNamespace(route, namespaceSet),
-    ),
-    k8sReferenceGrants: unfiltered.k8sReferenceGrants.filter(rg =>
-      includesNamespace(rg, namespaceSet),
-    ),
-    k8sTCPRoutes: unfiltered.k8sTCPRoutes.filter(route =>
-      includesNamespace(route, namespaceSet),
-    ),
-    k8sTLSRoutes: unfiltered.k8sTLSRoutes.filter(route =>
-      includesNamespace(route, namespaceSet),
-    ),
-    virtualServices: unfiltered.virtualServices.filter(vs =>
-      includesNamespace(vs, namespaceSet),
-    ),
-    destinationRules: unfiltered.destinationRules.filter(dr =>
-      includesNamespace(dr, namespaceSet),
-    ),
-    serviceEntries: unfiltered.serviceEntries.filter(se =>
-      includesNamespace(se, namespaceSet),
-    ),
-    authorizationPolicies: unfiltered.authorizationPolicies.filter(rc =>
-      includesNamespace(rc, namespaceSet),
-    ),
-    sidecars: unfiltered.sidecars.filter(sc =>
-      includesNamespace(sc, namespaceSet),
-    ),
-    peerAuthentications: unfiltered.peerAuthentications.filter(pa =>
-      includesNamespace(pa, namespaceSet),
-    ),
-    requestAuthentications: unfiltered.requestAuthentications.filter(ra =>
-      includesNamespace(ra, namespaceSet),
-    ),
-    workloadEntries: unfiltered.workloadEntries.filter(we =>
-      includesNamespace(we, namespaceSet),
-    ),
-    workloadGroups: unfiltered.workloadGroups.filter(wg =>
-      includesNamespace(wg, namespaceSet),
-    ),
-    envoyFilters: unfiltered.envoyFilters.filter(ef =>
-      includesNamespace(ef, namespaceSet),
-    ),
-    wasmPlugins: unfiltered.wasmPlugins.filter(wp =>
-      includesNamespace(wp, namespaceSet),
-    ),
-    telemetries: unfiltered.telemetries.filter(tm =>
-      includesNamespace(tm, namespaceSet),
     ),
     validations: unfiltered.validations,
     permissions: unfiltered.permissions,
@@ -361,21 +251,13 @@ export const filterByConfigValidation = (
   return filtered;
 };
 
-export interface IstioConfigsMapQuery extends IstioConfigListQuery {
-  namespaces?: string;
-}
-
 export const toIstioItems = (
   istioConfigList: IstioConfigList,
   cluster?: string,
 ): IstioConfigItem[] => {
   const istioItems: IstioConfigItem[] = [];
 
-  const hasValidations = (
-    type: string,
-    name: string,
-    namespace?: string,
-  ): ObjectValidation =>
+  const hasValidations = (type: string, name: string, namespace: string) =>
     istioConfigList.validations[type] &&
     istioConfigList.validations[type][validationKey(name, namespace)];
 
@@ -386,13 +268,12 @@ export const toIstioItems = (
       // These items do not belong to the IstioConfigItem[]
       return;
     }
-
-    // @ts-ignore
+    // @ts-expect-error
     const typeNameProto = dicIstioType[field.toLowerCase()]; // ex. serviceEntries -> ServiceEntry
-    const typeName = typeNameProto.toLowerCase(); // ex. ServiceEntry -> serviceentry
-    const entryName = `${typeNameProto.charAt(0).toLowerCase()}${typeNameProto.slice(1)}`;
-
-    // @ts-ignore
+    const typeName = typeNameProto?.toLowerCase(); // ex. ServiceEntry -> serviceentry
+    const entryName =
+      typeNameProto?.charAt(0).toLowerCase() + typeNameProto?.slice(1);
+    // @ts-expect-error
     let entries = istioConfigList[field];
     if (entries && !(entries instanceof Array)) {
       // VirtualServices, DestinationRules
@@ -402,10 +283,10 @@ export const toIstioItems = (
     if (!entries) {
       return;
     }
-
-    entries.forEach((entry: IstioObject) => {
+    // @ts-expect-error
+    entries.forEach(entry => {
       const item = {
-        namespace: entry.metadata.namespace ?? '',
+        namespace: istioConfigList.namespace.name,
         cluster: cluster,
         type: typeName,
         name: entry.metadata.name,
@@ -421,8 +302,7 @@ export const toIstioItems = (
             ]
           : undefined,
       };
-
-      // @ts-ignore
+      // @ts-expect-error
       item[entryName] = entry;
       istioItems.push(item);
     });

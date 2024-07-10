@@ -13,12 +13,7 @@ import { nsEqual } from '../../helpers/namespaces';
 import { kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
-import {
-  filterByName,
-  filterByNamespaces,
-  IstioConfigItem,
-  toIstioItems,
-} from '../../types/IstioConfigList';
+import { IstioConfigItem, toIstioItems } from '../../types/IstioConfigList';
 import { NamespaceInfo } from '../../types/NamespaceInfo';
 import { ENTITY } from '../../types/types';
 import { getNamespaces } from '../Overview/OverviewPage';
@@ -36,27 +31,30 @@ export const IstioConfigListPage = (props: {
   const prevActiveNs = React.useRef(activeNs);
   const [loadingD, setLoading] = React.useState<boolean>(true);
 
-  const fetchIstioConfigs = (
-    nsl: NamespaceInfo[],
-    cluster?: string,
-  ): Promise<void> => {
+  const fetchIstioConfigs = async (nss: NamespaceInfo[]): Promise<void> => {
     return kialiClient
-      .getAllIstioConfigs([], true, '', '', cluster)
+      .getAllIstioConfigs(
+        nss.map(ns => {
+          return ns.name;
+        }),
+        [],
+        true,
+        '',
+        '',
+      )
       .then(results => {
-        const istioItems = toIstioItems(
-          filterByNamespaces(
-            filterByName(results, []),
-            nsl.map(ns => ns.name),
-          ),
-          cluster,
-        );
+        let istioItems: IstioConfigItem[] = [];
+
+        nss.forEach(ns => {
+          istioItems = istioItems.concat(toIstioItems(results[ns.name]));
+        });
 
         setIstioConfigs(istioItems);
       });
   };
 
   const load = async () => {
-    kialiClient.getNamespaces().then(async namespacesResponse => {
+    kialiClient.getNamespaces().then(namespacesResponse => {
       const allNamespaces: NamespaceInfo[] = getNamespaces(
         namespacesResponse,
         namespaces,

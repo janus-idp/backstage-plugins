@@ -18,7 +18,6 @@ import { GrafanaInfo } from '../types/GrafanaInfo';
 import {
   AppHealth,
   NamespaceAppHealth,
-  NamespaceHealthQuery,
   NamespaceServiceHealth,
   NamespaceWorkloadHealth,
   ServiceHealth,
@@ -31,7 +30,7 @@ import {
 import {
   IstioConfigList,
   IstioConfigListQuery,
-  IstioConfigsMapQuery,
+  IstioConfigsMap,
 } from '../types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
@@ -55,9 +54,9 @@ import { StatusState } from '../types/StatusState';
 import { TLSStatus } from '../types/TLSStatus';
 import { Span, TracingQuery } from '../types/Tracing';
 import {
-  ClusterWorkloadsResponse,
   Workload,
-  WorkloadListQuery,
+  WorkloadListItem,
+  WorkloadNamespaceResponse,
   WorkloadQuery,
 } from '../types/Workload';
 import { filterNsByAnnotation } from '../utils/entityFilter';
@@ -71,11 +70,6 @@ export interface Response<T> {
 interface ClusterParam {
   clusterName?: string;
 }
-
-interface Namespaces {
-  namespaces: string;
-}
-
 type QueryParams<T> = T & ClusterParam;
 
 /** API URLs */
@@ -114,36 +108,25 @@ export interface KialiApi {
   getAuthInfo(): Promise<AuthInfo>;
   getStatus(): Promise<StatusState>;
   getNamespaces(): Promise<Namespace[]>;
-  getClustersAppHealth(
-    namespaces: string,
-    duration: DurationInSeconds,
-    cluster?: string,
-    queryTime?: TimeInSeconds,
-  ): Promise<Map<string, NamespaceAppHealth>>;
-  getClustersServiceHealth(
-    namespaces: string,
-    duration: DurationInSeconds,
-    cluster?: string,
-    queryTime?: TimeInSeconds,
-  ): Promise<Map<string, NamespaceServiceHealth>>;
-  getClustersWorkloadHealth(
-    namespaces: string,
-    duration: DurationInSeconds,
-    cluster?: string,
-    queryTime?: TimeInSeconds,
-  ): Promise<Map<string, NamespaceWorkloadHealth>>;
-  getServerConfig(): Promise<ServerConfig>;
-  getWorkload(
+  getNamespaceAppHealth(
     namespace: string,
-    name: string,
-    params: WorkloadQuery,
+    duration: DurationInSeconds,
     cluster?: string,
-  ): Promise<Workload>;
-  getClustersApps(
-    namespaces: string,
-    params: AppListQuery,
+    queryTime?: TimeInSeconds,
+  ): Promise<NamespaceAppHealth>;
+  getNamespaceServiceHealth(
+    namespace: string,
+    duration: DurationInSeconds,
     cluster?: string,
-  ): Promise<AppList>;
+    queryTime?: TimeInSeconds,
+  ): Promise<NamespaceServiceHealth>;
+  getNamespaceWorkloadHealth(
+    namespace: string,
+    duration: DurationInSeconds,
+    cluster?: string,
+    queryTime?: TimeInSeconds,
+  ): Promise<NamespaceWorkloadHealth>;
+  getServerConfig(): Promise<ServerConfig>;
   getMeshTls(cluster?: string): Promise<TLSStatus>;
   getNamespaceTls(namespace: string, cluster?: string): Promise<TLSStatus>;
   getOutboundTrafficPolicyMode(): Promise<OutboundTrafficPolicy>;
@@ -151,28 +134,29 @@ export interface KialiApi {
   getIstiodResourceThresholds(): Promise<IstiodResourceThresholds>;
   getConfigValidations(cluster?: string): Promise<ValidationStatus>;
   getAllIstioConfigs(
+    namespaces: string[],
     objects: string[],
     validate: boolean,
     labelSelector: string,
     workloadSelector: string,
     cluster?: string,
-  ): Promise<IstioConfigList>;
+  ): Promise<IstioConfigsMap>;
   getNamespaceMetrics(
     namespace: string,
     params: IstioMetricsOptions,
   ): Promise<Readonly<IstioMetricsMap>>;
   getIstioStatus(cluster?: string): Promise<ComponentStatus[]>;
   getIstioCertsInfo(): Promise<CertsInfo[]>;
-  getClustersWorkloads(
-    namespaces: string,
-    params: AppListQuery,
+  getWorkload(
+    namespace: string,
+    name: string,
+    params: WorkloadQuery,
     cluster?: string,
-  ): Promise<ClusterWorkloadsResponse>;
-  getClustersServices(
-    namespaces: string,
-    params: ServiceListQuery,
-    cluster?: string,
-  ): Promise<ServiceList>;
+  ): Promise<Workload>;
+  getWorkloads(
+    namespace: string,
+    duration: number,
+  ): Promise<WorkloadListItem[]>;
   getIstioConfig(
     namespace: string,
     objects: string[],
@@ -212,6 +196,10 @@ export interface KialiApi {
     level: string,
     cluster?: string,
   ): Promise<void>;
+  getServices(
+    namespace: string,
+    params?: ServiceListQuery,
+  ): Promise<ServiceList>;
   getServiceDetail(
     namespace: string,
     service: string,
@@ -219,6 +207,7 @@ export interface KialiApi {
     cluster?: string,
     rateInterval?: DurationInSeconds,
   ): Promise<ServiceDetailsInfo>;
+  getApps(namespace: string, params: AppListQuery): Promise<AppList>;
   getApp(
     namespace: string,
     app: string,
@@ -399,15 +388,15 @@ export class KialiApiClient implements KialiApi {
   };
 
   /* HEALTH */
-  getClustersAppHealth = async (
-    namespaces: string,
+
+  getNamespaceAppHealth = (
+    namespace: string,
     duration: DurationInSeconds,
     cluster?: string,
     queryTime?: TimeInSeconds,
-  ): Promise<Map<string, NamespaceAppHealth>> => {
-    const params: QueryParams<NamespaceHealthQuery & Namespaces> = {
+  ): Promise<NamespaceAppHealth> => {
+    const params: any = {
       type: 'app',
-      namespaces: namespaces,
     };
     if (duration) {
       params.rateInterval = `${String(duration)}s`;
@@ -418,52 +407,32 @@ export class KialiApiClient implements KialiApi {
     if (cluster) {
       params.clusterName = cluster;
     }
-    return this.newRequest<Map<string, NamespaceAppHealth>>(
+    return this.newRequest<NamespaceAppHealth>(
       HTTP_VERBS.GET,
-      urls.clustersHealth(),
+      urls.namespaceHealth(namespace),
       params,
       {},
     ).then(response => {
-      const ret = new Map<string, NamespaceAppHealth>();
-      // @ts-ignore
-      const namespaceAppHealth = response.namespaceAppHealth;
-      if (namespaceAppHealth) {
-        Object.keys(namespaceAppHealth).forEach(ns => {
-          ret.set(ns, {});
-          if (!ret.get(ns)) {
-            ret.set(ns, {});
-          }
-          Object.keys(namespaceAppHealth[ns]).forEach(k => {
-            // @ts-ignore
-            if (namespaceAppHealth[ns][k]) {
-              // @ts-ignore
-              const conv = namespaceAppHealth[ns][k];
-              // @ts-ignore
-              const ah = AppHealth.fromJson(namespaces, k, conv, {
-                rateInterval: duration,
-                hasSidecar: true,
-                hasAmbient: false,
-              });
-              const nsAppHealth = ret.get(ns) || {};
-              nsAppHealth[k] = ah;
-              ret.set(ns, nsAppHealth);
-            }
-          });
+      const ret: NamespaceAppHealth = {};
+      Object.keys(response).forEach(k => {
+        ret[k] = AppHealth.fromJson(namespace, k, response[k], {
+          rateInterval: duration,
+          hasSidecar: true,
+          hasAmbient: false,
         });
-      }
+      });
       return ret;
     });
   };
 
-  getClustersServiceHealth = async (
-    namespaces: string,
+  getNamespaceServiceHealth = (
+    namespace: string,
     duration: DurationInSeconds,
     cluster?: string,
     queryTime?: TimeInSeconds,
-  ): Promise<Map<string, NamespaceServiceHealth>> => {
-    const params: QueryParams<NamespaceHealthQuery & Namespaces> = {
+  ): Promise<NamespaceServiceHealth> => {
+    const params: any = {
       type: 'service',
-      namespaces: namespaces,
     };
     if (duration) {
       params.rateInterval = `${String(duration)}s`;
@@ -474,52 +443,32 @@ export class KialiApiClient implements KialiApi {
     if (cluster) {
       params.clusterName = cluster;
     }
-    return this.newRequest<Map<string, NamespaceServiceHealth>>(
+    return this.newRequest<NamespaceServiceHealth>(
       HTTP_VERBS.GET,
-      urls.clustersHealth(),
+      urls.namespaceHealth(namespace),
       params,
       {},
     ).then(response => {
-      const ret = new Map<string, NamespaceServiceHealth>();
-      // @ts-ignore
-      const namespaceServiceHealth = response.namespaceServiceHealth;
-      if (namespaceServiceHealth) {
-        Object.keys(namespaceServiceHealth).forEach(ns => {
-          if (!ret.get(ns)) {
-            ret.set(ns, {});
-          }
-          Object.keys(namespaceServiceHealth[ns]).forEach(k => {
-            // @ts-ignore
-            if (namespaceServiceHealth[ns][k]) {
-              // @ts-ignore
-              const conv = namespaceServiceHealth[ns][k];
-              // @ts-ignore
-              const sh = ServiceHealth.fromJson(namespaces, k, conv, {
-                rateInterval: duration,
-                hasSidecar: true,
-                hasAmbient: false,
-              });
-              // @ts-ignore
-              const nsSvcHealth = ret.get(ns) || {};
-              nsSvcHealth[k] = sh;
-              ret.set(ns, nsSvcHealth);
-            }
-          });
+      const ret: NamespaceServiceHealth = {};
+      Object.keys(response).forEach(k => {
+        ret[k] = ServiceHealth.fromJson(namespace, k, response[k], {
+          rateInterval: duration,
+          hasSidecar: true,
+          hasAmbient: false,
         });
-      }
+      });
       return ret;
     });
   };
 
-  getClustersWorkloadHealth = async (
-    namespaces: string,
+  getNamespaceWorkloadHealth = (
+    namespace: string,
     duration: DurationInSeconds,
     cluster?: string,
     queryTime?: TimeInSeconds,
-  ): Promise<Map<string, NamespaceWorkloadHealth>> => {
+  ): Promise<NamespaceWorkloadHealth> => {
     const params: any = {
       type: 'workload',
-      namespaces: namespaces,
     };
     if (duration) {
       params.rateInterval = `${String(duration)}s`;
@@ -530,44 +479,25 @@ export class KialiApiClient implements KialiApi {
     if (cluster) {
       params.clusterName = cluster;
     }
-    return this.newRequest<Map<string, NamespaceWorkloadHealth>>(
+    return this.newRequest<NamespaceWorkloadHealth>(
       HTTP_VERBS.GET,
-      urls.clustersHealth(),
+      urls.namespaceHealth(namespace),
       params,
       {},
     ).then(response => {
-      const ret = new Map<string, NamespaceWorkloadHealth>();
-      // @ts-ignore
-      const namespaceWorkloadHealth = response.namespaceWorkloadHealth;
-
-      if (namespaceWorkloadHealth) {
-        Object.keys(namespaceWorkloadHealth).forEach(ns => {
-          if (!ret.get(ns)) {
-            ret.set(ns, {});
-          }
-          Object.keys(namespaceWorkloadHealth[ns]).forEach(k => {
-            // @ts-ignore
-            if (namespaceWorkloadHealth[ns][k]) {
-              // @ts-ignore
-              const conv = namespaceWorkloadHealth[ns][k];
-              // @ts-ignore
-              const wh = WorkloadHealth.fromJson(namespaces, k, conv, {
-                rateInterval: duration,
-                hasSidecar: true,
-                hasAmbient: false,
-              });
-              const nsWkHealth = ret.get(ns) || {};
-              nsWkHealth[k] = wh;
-              ret.set(ns, nsWkHealth);
-            }
-          });
+      const ret: NamespaceWorkloadHealth = {};
+      Object.keys(response).forEach(k => {
+        ret[k] = WorkloadHealth.fromJson(namespace, k, response[k], {
+          rateInterval: duration,
+          hasSidecar: true,
+          hasAmbient: false,
         });
-      }
+      });
       return ret;
     });
   };
 
-  getNamespaceTls = async (
+  getNamespaceTls = (
     namespace: string,
     cluster?: string,
   ): Promise<TLSStatus> => {
@@ -637,40 +567,38 @@ export class KialiApiClient implements KialiApi {
   };
 
   getAllIstioConfigs = (
+    namespaces: string[],
     objects: string[],
     validate: boolean,
     labelSelector: string,
     workloadSelector: string,
     cluster?: string,
-  ): Promise<IstioConfigList> => {
-    const params: QueryParams<IstioConfigsMapQuery> = {};
-
+  ): Promise<IstioConfigsMap> => {
+    const params: any =
+      namespaces && namespaces.length > 0
+        ? { namespaces: namespaces.join(',') }
+        : {};
     if (objects && objects.length > 0) {
       params.objects = objects.join(',');
     }
-
     if (validate) {
       params.validate = validate;
     }
-
     if (labelSelector) {
       params.labelSelector = labelSelector;
     }
-
     if (workloadSelector) {
       params.workloadSelector = workloadSelector;
     }
-
     if (cluster) {
       params.clusterName = cluster;
     }
-
-    return this.newRequest<IstioConfigList>(
+    return this.newRequest<IstioConfigsMap>(
       HTTP_VERBS.GET,
       urls.allIstioConfigs(),
       params,
       {},
-    );
+    ).then(resp => resp);
   };
 
   getIstioConfigDetail = async (
@@ -737,25 +665,43 @@ export class KialiApiClient implements KialiApi {
     this.entity = entity;
   };
 
-  getClustersWorkloads = async (
-    namespaces: string,
-    params: AppListQuery,
-    cluster?: string,
-  ): Promise<ClusterWorkloadsResponse> => {
-    const queryParams: QueryParams<WorkloadListQuery & Namespaces> = {
-      ...params,
-      namespaces: namespaces,
-    };
-
-    if (cluster) {
-      queryParams.clusterName = cluster;
-    }
-    return this.newRequest<ClusterWorkloadsResponse>(
+  getWorkloads = async (
+    namespace: string,
+    duration: number,
+  ): Promise<WorkloadListItem[]> => {
+    return this.newRequest<WorkloadNamespaceResponse>(
       HTTP_VERBS.GET,
-      urls.clustersWorkloads(),
-      queryParams,
+      urls.workloads(namespace),
+      { health: true, istioResources: true, rateInterval: `${duration}s` },
       {},
-    );
+    ).then(resp => {
+      return resp.workloads.map(w => {
+        return {
+          name: w.name,
+          namespace: resp.namespace.name,
+          cluster: w.cluster,
+          type: w.type,
+          istioSidecar: w.istioSidecar,
+          istioAmbient: w.istioAmbient,
+          additionalDetailSample: undefined,
+          appLabel: w.appLabel,
+          versionLabel: w.versionLabel,
+          labels: w.labels,
+          istioReferences: w.istioReferences,
+          notCoveredAuthPolicy: w.notCoveredAuthPolicy,
+          health: WorkloadHealth.fromJson(
+            resp.namespace.name,
+            w.name,
+            w.health,
+            {
+              rateInterval: duration,
+              hasSidecar: w.istioSidecar,
+              hasAmbient: w.istioAmbient,
+            },
+          ),
+        };
+      });
+    });
   };
 
   getWorkload = async (
@@ -904,23 +850,14 @@ export class KialiApiClient implements KialiApi {
     });
   };
 
-  getClustersServices = async (
-    namespaces: string,
-    params: ServiceListQuery,
-    cluster?: string,
+  getServices = async (
+    namespace: string,
+    params?: ServiceListQuery,
   ): Promise<ServiceList> => {
-    const queryParams: QueryParams<ServiceListQuery & Namespaces> = {
-      ...params,
-      namespaces: namespaces,
-    };
-
-    if (cluster) {
-      queryParams.clusterName = cluster;
-    }
     return this.newRequest<ServiceList>(
       HTTP_VERBS.GET,
-      urls.clustersServices(),
-      queryParams,
+      urls.services(namespace),
+      params,
       {},
     );
   };
@@ -966,23 +903,14 @@ export class KialiApiClient implements KialiApi {
     });
   };
 
-  getClustersApps = async (
-    namespaces: string,
+  getApps = async (
+    namespace: string,
     params: AppListQuery,
-    cluster?: string,
   ): Promise<AppList> => {
-    const queryParams: QueryParams<AppListQuery & Namespaces> = {
-      ...params,
-      namespaces: namespaces,
-    };
-
-    if (cluster) {
-      queryParams.clusterName = cluster;
-    }
     return this.newRequest<AppList>(
       HTTP_VERBS.GET,
-      urls.clustersApps(),
-      queryParams,
+      urls.apps(namespace),
+      params,
       {},
     );
   };
