@@ -18,7 +18,7 @@ export const ListViewPage = () => {
     setSearchParams({ ['tabresources']: tabvalue });
   };
   const tabStyle: React.CSSProperties = {
-    height: '600px',
+    height: '350px',
     overflowY: 'scroll',
   };
 

@@ -18,7 +18,6 @@ import { WorkloadListPage } from '../pages/WorkloadList/WorkloadListPage';
 import { DRAWER } from '../types/types';
 
 const tabStyle: React.CSSProperties = {
-  overflowY: 'scroll',
   maxHeight: '400px',
 };
 

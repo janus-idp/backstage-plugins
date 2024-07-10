@@ -18,7 +18,7 @@ import { getEntityNs, nsEqual } from '../../helpers/namespaces';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
-import { ENTITY } from '../../types/types';
+import { DRAWER, ENTITY } from '../../types/types';
 import { WorkloadListItem } from '../../types/Workload';
 import { NamespaceInfo } from '../Overview/NamespaceInfo';
 import { getNamespaces } from '../Overview/OverviewPage';
@@ -136,15 +136,16 @@ export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
     return elements;
   };
 
-  return (
-    <div className={baseStyle}>
-      <Content>
+  const mainContent = () => {
+    return (
+      <>
         {props.view !== ENTITY && (
           <DefaultSecondaryMasthead
             elements={grids()}
             onRefresh={() => load()}
           />
         )}
+
         <VirtualList
           activeNamespaces={namespaces}
           rows={allWorkloads}
@@ -154,7 +155,20 @@ export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
           loading={loadingData}
           data-test="virtual-list"
         />
-      </Content>
+      </>
+    );
+  };
+
+  return (
+    <div className={baseStyle}>
+      {props.view !== ENTITY && props.view !== DRAWER && (
+        <Content>{mainContent()}</Content>
+      )}
+      {(props.view === ENTITY || props.view === DRAWER) && (
+        <div style={{ paddingRight: '10px', paddingLeft: '10px' }}>
+          {mainContent()}
+        </div>
+      )}
     </div>
   );
 };
