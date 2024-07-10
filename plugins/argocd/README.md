@@ -47,12 +47,10 @@ export default async function createPlugin({
 ```ts
 // packages/backend/src/index.ts
 
-import argocd from './plugins/argocd';
+import {legacyPlugin} from '@backstage/backend-common';
 ...
 
-const argocdEnv = useHotMemoize(module, () => createEnv('argocd'));
-...
-apiRouter.use('/argocd', await argocd(argocdEnv));
+backend.add(legacyPlugin('argocd', import('./plugins/argocd')));
 ```
 
 - add argocd instance information in app.config.yaml
@@ -146,48 +144,14 @@ To install this plugin into Red Hat Developer Hub or Janus IDP via Helm use this
 
 ```yaml
 global:
- dynamic:
-   includes:
-     - dynamic-plugins.default.yaml
-   plugins:
+  dynamic:
+    includes:
+      - dynamic-plugins.default.yaml
+    plugins:
       - package: ./dynamic-plugins/dist/roadiehq-backstage-plugin-argo-cd-backend-dynamic
         disabled: false
-        pluginConfig:
-          argocd:
-            username: "${ARGOCD_USERNAME}"
-            password: "${ARGOCD_PASSWORD}"
-            appLocatorMethods:
-              - type: 'config'
-                instances:
-                  - name: argoInstance1
-                    url: "${ARGOCD_INSTANCE1_URL}"
-                    token: "${ARGOCD_AUTH_TOKEN}"
-        - package: ./dynamic-plugins/dist/janus-idp-backstage-plugin-argocd
-          disabled: false
-          pluginConfig:
-            dynamicPlugins:
-              frontend:
-                janus-idp.backstage-plugin-argocd:
-                  mountPoints:
-                    - mountPoint: entity.page.overview/cards
-                      importName: ArgocdDeploymentSummary
-                      config:
-                        layout:
-                          gridColumnEnd:
-                            lg: "span 8"
-                            xs: "span 12"
-                        if:
-                          allOf:
-                            - isArgocdAvailable
-                    - mountPoint: entity.page.cd/cards
-                      importName: ArgocdDeploymentLifecycle
-                      config:
-                        layout:
-                          gridColumn: '1 / -1'
-                        if:
-                          allOf:
-                            - isArgocdConfigured
-
+      - package: ./dynamic-plugins/dist/janus-idp-backstage-plugin-argocd
+        disabled: false
 ```
 
 This plugin can be loaded in backstage showcase application as a dynamic plugin.
