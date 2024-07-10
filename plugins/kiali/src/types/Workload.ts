@@ -31,18 +31,6 @@ export interface Workload {
   waypointWorkloads: Workload[];
 }
 
-export interface WorkloadListQuery {
-  health: 'true' | 'false';
-  istioResources: 'true' | 'false';
-  rateInterval: string;
-}
-
-export interface ClusterWorkloadsResponse {
-  cluster?: string;
-  validations: Validations;
-  workloads: WorkloadListItem[];
-}
-
 export const emptyWorkload: Workload = {
   name: '',
   type: '',
