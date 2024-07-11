@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.16.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.16.0...@janus-idp/backstage-plugin-orchestrator@1.16.1) (2024-07-11)
+
+
+### Bug Fixes
+
+* **orchestrator:** returned scrolling bars to instance page cards ([#1880](https://github.com/janus-idp/backstage-plugins/issues/1880)) ([08545da](https://github.com/janus-idp/backstage-plugins/commit/08545daabd02a7ba6f9f12dedf237afbff1cd67a))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.16.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.15.0...@janus-idp/backstage-plugin-orchestrator@1.16.0) (2024-06-28)
 
 
