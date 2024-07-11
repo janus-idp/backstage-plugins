@@ -15,7 +15,22 @@ import { ConditionsData, RuleParamsErrors, RulesData } from './types';
 
 const useStyles = makeStyles(theme => ({
   params: {
-    color: theme.typography.body1.color, // doesn't work
+    '& span': {
+      color: theme.palette.textSubtle,
+    },
+    '& input': {
+      color: theme.palette.textContrast,
+    },
+    '& fieldset': {
+      borderColor: theme.palette.grey[500],
+    },
+    '& div.MuiOutlinedInput-root:hover fieldset': {
+      borderColor:
+        theme.palette.type === 'dark' ? theme.palette.textContrast : 'unset',
+    },
+    '& label': {
+      color: theme.palette.textSubtle,
+    },
   },
 }));
 
@@ -91,6 +106,7 @@ export const ConditionsFormRowFields = ({
     >
       <Autocomplete
         style={{ marginTop: '27px', width: '50%' }}
+        className={classes.params}
         options={rules ?? []}
         value={oldCondition?.rule || null}
         getOptionDisabled={option =>
@@ -143,6 +159,7 @@ export const ConditionsFormRowFields = ({
           />
         ) : (
           <TextField
+            className={classes.params}
             style={{ width: '100%', marginTop: '27px' }}
             disabled
             label="string, string"
