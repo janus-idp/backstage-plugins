@@ -14,11 +14,8 @@ import { RulesDropdownOption } from './RulesDropdownOption';
 import { ConditionsData, RuleParamsErrors, RulesData } from './types';
 
 const useStyles = makeStyles(theme => ({
-  bgPaper: {
-    backgroundColor: theme.palette.background.paper,
-  },
   params: {
-    fontFamily: theme.typography.fontFamily,
+    color: theme.typography.body1.color, // doesn't work
   },
 }));
 
@@ -115,7 +112,6 @@ export const ConditionsFormRowFields = ({
         renderInput={(params: any) => (
           <TextField
             {...params}
-            className={classes.bgPaper}
             label="Rule"
             variant="outlined"
             placeholder="Select a rule"
@@ -148,7 +144,6 @@ export const ConditionsFormRowFields = ({
         ) : (
           <TextField
             style={{ width: '100%', marginTop: '27px' }}
-            className={classes.bgPaper}
             disabled
             label="string, string"
             required

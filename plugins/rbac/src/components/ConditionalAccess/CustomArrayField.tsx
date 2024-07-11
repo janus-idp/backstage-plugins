@@ -6,13 +6,10 @@ import { FieldProps } from '@rjsf/utils';
 import { getInnerSchemaForArrayItem } from '@rjsf/utils/lib/schema/getDefaultFormState';
 
 const useStyles = makeStyles(theme => ({
-  bgPaper: {
-    backgroundColor: theme.palette.background.paper,
-  },
   arrayFieldDescription: {
     marginTop: '5px',
     fontWeight: 500,
-    color: theme.palette.grey[700],
+    color: `${theme.palette.grey[500]} !important`,
   },
 }));
 
@@ -39,7 +36,6 @@ export const CustomArrayField = (props: FieldProps) => {
           setFieldVal(value);
           onChange(value ? value.split(',').map(val => val.trim()) : []);
         }}
-        className={classes.bgPaper}
         required={required}
         placeholder="string, string"
       />
