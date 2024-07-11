@@ -1,0 +1,28 @@
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: janus-idp-rbac-node
+  title: '@janus-idp/backstage-plugin-rbac-node'
+  description: Node.js library for the rbac plugin
+  annotations:
+    backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main/plugins/rbac-node
+    backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/rbac-node/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/rbac-node/catalog-info.yaml
+    github.com/project-slug: janus-idp/backstage-plugins
+    #github.com/team-slug: janus-idp/maintainers
+    sonarqube.org/project-key: janus-idp_backstage-plugins
+  tags:
+    - security
+    - rbac
+  links:
+    - url: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/rbac-node
+      title: GitHub Source
+      icon: source
+      type: source
+spec:
+  type: backstage-node-library
+  lifecycle: production
+  owner: rhdh-core-team
+  system: rhdh
+  subcomponentOf: janus-idp-rbac
