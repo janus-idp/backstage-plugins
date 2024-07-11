@@ -22,8 +22,11 @@ import { Alert } from '@material-ui/lab';
 import { RoleBasedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { rbacApiRef } from '../../api/RBACBackendClient';
-import { RoleError } from '../../types';
 import { getMembers } from '../../utils/rbac-utils';
+import {
+  removeConditions,
+  removePermissions,
+} from '../../utils/role-form-utils';
 import { useToast } from '../ToastContext';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -70,45 +73,17 @@ const DeleteRoleDialog = ({
     try {
       const policies = await rbacApi.getAssociatedPolicies(roleName);
       const conditionalPolicies = await rbacApi.getRoleConditions(roleName);
+
       if (Array.isArray(policies)) {
         const allowedPolicies = policies.filter(
           (policy: RoleBasedPolicy) => policy.effect !== 'deny',
         );
-        if (allowedPolicies.length > 0) {
-          const cleanupPoliciesResponse = await rbacApi.deletePolicies(
-            roleName,
-            allowedPolicies,
-          );
-          if ((cleanupPoliciesResponse as unknown as RoleError)?.error) {
-            setError(
-              `Unable to delete policies. ${
-                (cleanupPoliciesResponse as unknown as RoleError).error.message
-              }`,
-            );
-            return;
-          }
-        }
+        await removePermissions(roleName, allowedPolicies, rbacApi);
       }
 
-      if (
-        Array.isArray(conditionalPolicies) &&
-        conditionalPolicies.length > 0
-      ) {
-        const cleanupPoliciesPromises = conditionalPolicies.map(cp =>
-          rbacApi.deleteConditionalPolicies(cp.id),
-        );
-        const res: (Response | RoleError)[] = await Promise.all(
-          cleanupPoliciesPromises,
-        );
-        const err = res
-          .map(r => (r as unknown as RoleError).error?.message)
-          .filter(m => m);
-        if (err.length > 0) {
-          setError(
-            `Unable to remove conditions from the role. ${err.join('\n')}`,
-          );
-          return;
-        }
+      if (Array.isArray(conditionalPolicies)) {
+        const conditionalPoliciesIds = conditionalPolicies.map(cp => cp.id);
+        await removeConditions(conditionalPoliciesIds, rbacApi);
       }
 
       const response = await rbacApi.deleteRole(roleName);

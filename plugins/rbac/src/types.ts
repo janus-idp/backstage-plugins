@@ -72,3 +72,8 @@ export type PluginConditionRules = {
   pluginId: string;
   rules: ConditionRule[];
 };
+
+export type UpdatedConditionsData = {
+  id: number;
+  updateCondition: RoleBasedConditions;
+}[];

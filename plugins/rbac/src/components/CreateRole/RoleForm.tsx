@@ -32,6 +32,13 @@ import {
   isSamePermissionPolicy,
   onlyInLeft,
 } from '../../utils/rbac-utils';
+import {
+  createConditions,
+  createPermissions,
+  modifyConditions,
+  removeConditions,
+  removePermissions,
+} from '../../utils/role-form-utils';
 import { AddedMembersTable } from './AddedMembersTable';
 import { AddMembersForm } from './AddMembersForm';
 import { PermissionPoliciesForm } from './PermissionPoliciesForm';
@@ -114,79 +121,12 @@ export const RoleForm = ({
           isSamePermissionPolicy,
         );
 
-        if (newPermissions.length > 0) {
-          const permissionsRes = await rbacApi.createPolicies(newPermissions);
-          if ((permissionsRes as unknown as RoleError).error) {
-            throw new Error(
-              `Unable to create the permissions. ${
-                (permissionsRes as unknown as RoleError).error.message
-              }`,
-            );
-          }
-        }
+        await removePermissions(name, deletePermissions, rbacApi);
+        await createPermissions(newPermissions, rbacApi);
 
-        if (deletePermissions.length > 0) {
-          const permissionsRes = await rbacApi.deletePolicies(
-            name,
-            deletePermissions,
-          );
-          if ((permissionsRes as unknown as RoleError).error) {
-            throw new Error(
-              `Unable to delete the permissions. ${
-                (permissionsRes as unknown as RoleError).error.message
-              }`,
-            );
-          }
-        }
-
-        if (deleteConditions.length > 0) {
-          const promises = deleteConditions.map(cid =>
-            rbacApi.deleteConditionalPolicies(cid),
-          );
-
-          const cppRes: (Response | RoleError)[] = await Promise.all(promises);
-          const cpErr = cppRes
-            .map(r => (r as unknown as RoleError).error?.message)
-            .filter(m => m);
-
-          if (cpErr.length > 0) {
-            throw new Error(
-              `Unable to remove conditions from the role. ${cpErr.join('\n')}`,
-            );
-          }
-        }
-
-        if (newConditions.length > 0) {
-          const promises = newConditions.map(cpp =>
-            rbacApi.createConditionalPermission(cpp),
-          );
-
-          const cppRes: (Response | RoleError)[] = await Promise.all(promises);
-          const cpErr = cppRes
-            .map(r => (r as unknown as RoleError).error?.message)
-            .filter(m => m);
-
-          if (cpErr.length > 0) {
-            throw new Error(
-              `Unable to add conditions to the role. ${cpErr.join('\n')}`,
-            );
-          }
-        }
-
-        if (updateConditions.length > 0) {
-          const promises = updateConditions.map(({ id, updateCondition }) =>
-            rbacApi.updateConditionalPolicies(id, updateCondition),
-          );
-
-          const cppRes: (Response | RoleError)[] = await Promise.all(promises);
-          const cpErr = cppRes
-            .map(r => (r as unknown as RoleError).error?.message)
-            .filter(m => m);
-
-          if (cpErr.length > 0) {
-            throw new Error(`Unable to update conditions. ${cpErr.join('\n')}`);
-          }
-        }
+        await removeConditions(deleteConditions, rbacApi);
+        await modifyConditions(updateConditions, rbacApi);
+        await createConditions(newConditions, rbacApi);
 
         navigateTo(`${name} updated`);
       }
@@ -212,34 +152,17 @@ export const RoleForm = ({
         );
       }
 
-      if (newPermissionsData?.length > 0) {
-        const permissionsRes: Response | RoleError =
-          await rbacApi.createPolicies(newPermissionsData);
-        if ((permissionsRes as unknown as RoleError).error) {
-          throw new Error(
-            `Role was created successfully but unable to add permissions to the role. ${
-              (permissionsRes as unknown as RoleError).error.message
-            }`,
-          );
-        }
-      }
-
-      const promises = newConditionalPermissionPoliciesData.map(cpp =>
-        rbacApi.createConditionalPermission(cpp),
+      await createPermissions(
+        newPermissionsData,
+        rbacApi,
+        'Role was created successfully but unable to add permission policies to the role.',
       );
 
-      const cppRes: (Response | RoleError)[] = await Promise.all(promises);
-      const cpErr = cppRes
-        .map(r => (r as unknown as RoleError).error?.message)
-        .filter(m => m);
-
-      if (cpErr.length > 0) {
-        throw new Error(
-          `Role was created successfully but unable to add conditions to the role. ${cpErr.join(
-            '\n',
-          )}`,
-        );
-      }
+      await createConditions(
+        newConditionalPermissionPoliciesData,
+        rbacApi,
+        'Role created successfully but unable to add conditions to the role.',
+      );
 
       navigateTo(`${newData.name} created`);
     } catch (e) {
