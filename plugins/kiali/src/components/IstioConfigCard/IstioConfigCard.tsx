@@ -10,6 +10,7 @@ import {
   Typography,
 } from '@material-ui/core';
 
+import { cardsHeight } from '../../styles/StyleUtils';
 import { IstioConfigItem } from '../../types/IstioConfigList';
 import { PFBadge } from '../Pf/PfBadges';
 import { SimpleTable, tRow } from '../SimpleTable';
@@ -67,7 +68,7 @@ export const IstioConfigCard: React.FC<IstioConfigCardProps> = (
     });
 
   return (
-    <Card id="IstioConfigCard">
+    <Card id="IstioConfigCard" style={{ height: cardsHeight }}>
       {props.items.length > 0 && (
         <>
           <CardHeader

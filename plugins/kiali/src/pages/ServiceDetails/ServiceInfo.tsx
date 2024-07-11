@@ -3,6 +3,7 @@ import React from 'react';
 import { Grid } from '@material-ui/core';
 
 import { IstioConfigCard } from '../../components/IstioConfigCard/IstioConfigCard';
+import { cardsHeight } from '../../styles/StyleUtils';
 import { DurationInSeconds } from '../../types/Common';
 import {
   drToIstioItems,

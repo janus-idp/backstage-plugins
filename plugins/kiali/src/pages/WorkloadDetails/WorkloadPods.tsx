@@ -15,7 +15,7 @@ import { PFBadge, PFBadges } from '../../components/Pf/PfBadges';
 import { SimpleTable, tRow } from '../../components/SimpleTable';
 import { LocalTime } from '../../components/Time/LocalTime';
 import { KialiIcon } from '../../config/KialiIcon';
-import { kialiStyle } from '../../styles/StyleUtils';
+import { cardsHeight, kialiStyle } from '../../styles/StyleUtils';
 import { ObjectValidation, Pod } from '../../types/IstioObjects';
 import { PodStatus } from './PodStatus';
 
@@ -151,7 +151,7 @@ export const WorkloadPods: React.FC<WorkloadPodsProps> = (
     });
 
   return (
-    <Card id="WorkloadPodsCard">
+    <Card id="WorkloadPodsCard" style={{ height: cardsHeight }}>
       <CardHeader
         title={
           <Typography variant="h6" style={{ margin: '10px' }}>

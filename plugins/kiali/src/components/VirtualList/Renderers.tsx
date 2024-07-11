@@ -82,7 +82,7 @@ const DrawerDiv = ({
   }) => {
     return (
       <div style={{ padding: '10px', minWidth: '400px' }} data-test="drawer">
-        <div style={{ paddingBottom: '10px' }}>
+        <div style={{ paddingBottom: '30px' }}>
           <IconButton
             key="dismiss"
             id="close_drawer"
