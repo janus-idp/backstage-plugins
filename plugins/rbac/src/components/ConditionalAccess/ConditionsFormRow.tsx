@@ -3,12 +3,12 @@ import React from 'react';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 
 import { IconButton, makeStyles, useTheme } from '@material-ui/core';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import { ConditionsFormRowFields } from './ConditionsFormRowFields';
 import { conditionButtons, criterias } from './const';
@@ -21,21 +21,23 @@ const useStyles = makeStyles(theme => ({
     borderRadius: '4px',
     backgroundColor: theme.palette.background.default,
     '& input': {
-      backgroundColor: `${theme.palette.background.paper}!important`,
+      backgroundColor: `${theme.palette.background.default}!important`,
+      color: `${theme.palette.textContrast}!important`,
+    },
+    '& button': {
+      textTransform: 'none',
     },
   },
   criteriaButtonGroup: {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: 'inherit',
     width: '80%',
   },
   criteriaButton: {
     width: '100%',
-    textTransform: 'none',
-    padding: theme.spacing(1),
+    padding: `${theme.spacing(1)}px !important`,
   },
   addRuleButton: {
     color: theme.palette.primary.light,
-    textTransform: 'none',
     marginTop: theme.spacing(1),
   },
   removeRuleButton: {
@@ -149,6 +151,7 @@ export const ConditionsFormRow = ({
                 : {}
             }
             className={classes.criteriaButton}
+            disabled={val === criteria}
             size="large"
           >
             {label}

@@ -1,9 +1,9 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core';
+import Drawer from '@material-ui/core/Drawer';
 import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
@@ -27,7 +27,6 @@ const useDrawerContentStyles = makeStyles(theme => ({
     display: 'flex',
     flexFlow: 'column',
     justifyContent: 'space-between',
-    backgroundColor: `${theme.palette.background.default} !important`,
   },
   header: {
     display: 'flex',
