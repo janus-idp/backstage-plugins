@@ -1,8 +1,8 @@
 import { act } from 'react';
 
-import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
-
 import { renderHook } from '@testing-library/react';
+
+import { useKubernetesObjects } from '@janus-idp/shared-react';
 
 import { watchResourcesData } from '../__fixtures__/k8sResourcesContextData';
 import { kubernetesObject } from '../__fixtures__/kubernetesObject';
@@ -16,7 +16,7 @@ const watchedResources = [
   ModelsPlural.replicasets,
 ];
 
-jest.mock('@backstage/plugin-kubernetes', () => ({
+jest.mock('@janus-idp/shared-react', () => ({
   useKubernetesObjects: jest.fn(),
 }));
 

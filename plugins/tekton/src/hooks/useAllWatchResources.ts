@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { KubernetesObjects } from '@backstage/plugin-kubernetes';
+import { KubernetesObjects } from '@backstage/plugin-kubernetes-react';
 
 import { useDeepCompareMemoize } from '@janus-idp/shared-react';
 

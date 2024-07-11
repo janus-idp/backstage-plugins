@@ -1,3 +1,10 @@
+import { createApiRef } from '@backstage/core-plugin-api';
+import {
+  KubernetesApi,
+  KubernetesAuthProvidersApi,
+  KubernetesProxyApi,
+} from '@backstage/plugin-kubernetes-react';
+
 import {
   V1CronJob,
   V1DaemonSet,
@@ -80,3 +87,16 @@ export type FilterContextType = {
   filters?: DisplayFilters;
   setAppliedTopologyFilters?: SetAppliedTopologyFilters;
 };
+
+export const kubernetesAuthProvidersApiRef =
+  createApiRef<KubernetesAuthProvidersApi>({
+    id: 'plugin.topology-kubernetes-auth-providers.service',
+  });
+
+export const kubernetesApiRef = createApiRef<KubernetesApi>({
+  id: 'plugin.topology-kubernetes.service',
+});
+
+export const kubernetesProxyApiRef = createApiRef<KubernetesProxyApi>({
+  id: 'plugin.topology-kubernetes.proxy-service',
+});

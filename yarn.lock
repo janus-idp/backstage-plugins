@@ -2619,7 +2619,7 @@
     cross-fetch "^4.0.0"
     uri-template "^2.0.0"
 
-"@backstage/catalog-model@^1.5.0":
+"@backstage/catalog-model@1.5.0", "@backstage/catalog-model@^1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-1.5.0.tgz#7f5c4a80a3341555db5209fbc6fc2d25f6500707"
   integrity sha512-CfLO5/DMGahneuLU4KTQEs1tgNhBciUtyGUDZB4Ii9i1Uha1poWcqp4HKg61lj1hmXNDUHmlbFqY9W7kmzRC0A==
@@ -2825,7 +2825,7 @@
     "@backstage/version-bridge" "^1.0.8"
     "@types/react" "^16.13.1 || ^17.0.0"
 
-"@backstage/core-components@0.14.9", "@backstage/core-components@^0.14.9":
+"@backstage/core-components@0.14.9", "@backstage/core-components@^0.14.8", "@backstage/core-components@^0.14.9":
   version "0.14.9"
   resolved "https://registry.yarnpkg.com/@backstage/core-components/-/core-components-0.14.9.tgz#bb1f40be18d8241b70538383d324aec233586382"
   integrity sha512-tcwDUeQBMIKtM+EuLMl6BdwjWdjjTnvvUuQCJISdy5ot+Yp/znQK+d4KIA97wq3Fu/ufy1+tAAwGGaifHMRf1g==
@@ -3585,7 +3585,20 @@
     react-use "^17.2.4"
     zod "^3.22.4"
 
-"@backstage/plugin-kubernetes-common@^0.8.1":
+"@backstage/plugin-kubernetes-common@0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@backstage/plugin-kubernetes-common/-/plugin-kubernetes-common-0.8.0.tgz#8f61277eef59b603d6bbece55a71a5dcf6ddc05a"
+  integrity sha512-VlGh7MxChF07Hy1nx39KpJpaaMWKaZrx0TbVTllWeahCTWxEvHAw4oIrDfvw4S8nT+aanbS90ucbv6lcT6wLuA==
+  dependencies:
+    "@backstage/catalog-model" "^1.5.0"
+    "@backstage/plugin-permission-common" "^0.7.14"
+    "@backstage/types" "^1.1.1"
+    "@kubernetes/client-node" "0.20.0"
+    kubernetes-models "^4.3.1"
+    lodash "^4.17.21"
+    luxon "^3.0.0"
+
+"@backstage/plugin-kubernetes-common@^0.8.0", "@backstage/plugin-kubernetes-common@^0.8.1":
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-kubernetes-common/-/plugin-kubernetes-common-0.8.1.tgz#9fe97ccfdb6b9f4fcabc846f5cb9c9bfeae410e5"
   integrity sha512-kj3GwR48pPSVMd7FJKsQMhb48e/ytvdvOe5KSTI/Ux4kNMvWf6V5K7DnlfoESu7WgCs8+fxaj0qXnQmQ9FdGzA==
@@ -3597,6 +3610,34 @@
     kubernetes-models "^4.3.1"
     lodash "^4.17.21"
     luxon "^3.0.0"
+
+"@backstage/plugin-kubernetes-react@0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@backstage/plugin-kubernetes-react/-/plugin-kubernetes-react-0.4.0.tgz#719489bcb7726d3788adf88d76ad66ca5420211b"
+  integrity sha512-xfSujzFxicMH8A9MZl/ag1MvugnH3K5xLBym/ezSxoWfnXyLynbbLDhAacJ6pT2wJq5VxbDbjHNIW9u0IknVMg==
+  dependencies:
+    "@backstage/catalog-model" "^1.5.0"
+    "@backstage/core-components" "^0.14.8"
+    "@backstage/core-plugin-api" "^1.9.3"
+    "@backstage/errors" "^1.2.4"
+    "@backstage/plugin-kubernetes-common" "^0.8.0"
+    "@backstage/types" "^1.1.1"
+    "@kubernetes-models/apimachinery" "^1.1.0"
+    "@kubernetes-models/base" "^4.0.1"
+    "@kubernetes/client-node" "^0.20.0"
+    "@material-ui/core" "^4.9.13"
+    "@material-ui/icons" "^4.11.3"
+    "@material-ui/lab" "^4.0.0-alpha.61"
+    "@types/react" "^16.13.1 || ^17.0.0 || ^18.0.0"
+    cronstrue "^2.32.0"
+    js-yaml "^4.1.0"
+    kubernetes-models "^4.3.1"
+    lodash "^4.17.21"
+    luxon "^3.0.0"
+    react-use "^17.4.0"
+    xterm "^5.3.0"
+    xterm-addon-attach "^0.9.0"
+    xterm-addon-fit "^0.8.0"
 
 "@backstage/plugin-kubernetes-react@^0.4.1":
   version "0.4.1"
@@ -3698,6 +3739,18 @@
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-permission-common/-/plugin-permission-common-0.8.0.tgz#13d29c146c50e9de1da47296c167ace9d1bc86f3"
   integrity sha512-4c8QfjDKiTJbQfiG3DibUqUsclsi53kRk8GR9CwHl1Is2Xm98AkqXGWyknHGPQOvw4vJR19nqnj7w0XfhLK2Jw==
+  dependencies:
+    "@backstage/config" "^1.2.0"
+    "@backstage/errors" "^1.2.4"
+    "@backstage/types" "^1.1.1"
+    cross-fetch "^4.0.0"
+    uuid "^9.0.0"
+    zod "^3.22.4"
+
+"@backstage/plugin-permission-common@^0.7.14":
+  version "0.7.14"
+  resolved "https://registry.yarnpkg.com/@backstage/plugin-permission-common/-/plugin-permission-common-0.7.14.tgz#ecb12877c412ff271124af54fca46ec06d9c812f"
+  integrity sha512-fHbxhX9ZoT8bTVuGycfTeU/6TE2yjZ6YNvm/2ko1bcxGnvYe1p5Ug5JW+iWjDZS+F6F152tWzhRcg05wQlPNKQ==
   dependencies:
     "@backstage/config" "^1.2.0"
     "@backstage/errors" "^1.2.4"
@@ -6406,12 +6459,30 @@
     "@kubernetes-models/validate" "^3.1.1"
     tslib "^2.4.0"
 
+"@kubernetes-models/apimachinery@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@kubernetes-models/apimachinery/-/apimachinery-2.0.0.tgz#938649cbf07503325bc22cce5e114cf1ee7fdc36"
+  integrity sha512-wVeIzuXvYDMqwikrav2cLkfTMw3kuBx8Pqt6LI5bEa8a+0NWJs2p5IZONHebI3B/QLwtb2wgMKGre6JtnbQayg==
+  dependencies:
+    "@kubernetes-models/base" "^5.0.0"
+    "@kubernetes-models/validate" "^4.0.0"
+    "@swc/helpers" "^0.5.8"
+
 "@kubernetes-models/base@^4.0.1", "@kubernetes-models/base@^4.0.3":
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/@kubernetes-models/base/-/base-4.0.3.tgz#e973dfb60bb6d2fa29cbb281e2a74979d40efc9d"
   integrity sha512-9Uo/RzB1ZvvPmnnpAE6yWPaFerMkpBxIHLuObexVDF813ZwVPdn56mmOOFfA6RyZtPdIT1AlhMozlHKOX16AGQ==
   dependencies:
     "@kubernetes-models/validate" "^3.1.1"
+    is-plain-object "^5.0.0"
+    tslib "^2.4.0"
+
+"@kubernetes-models/base@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@kubernetes-models/base/-/base-5.0.0.tgz#22c2a93b3dcbe9b2c155c520cfb0f19deac92b86"
+  integrity sha512-b+pVrlF1691ft/nc/tJ/v0DEPq9NK5gKWO1OHuTEBRRk/z1inH30svoqrqQL90VZhthVJNi8L7rQRQBUWuxZiw==
+  dependencies:
+    "@kubernetes-models/validate" "^4.0.0"
     is-plain-object "^5.0.0"
     tslib "^2.4.0"
 
@@ -6424,6 +6495,20 @@
     ajv-formats "^2.1.1"
     ajv-formats-draft2019 "^1.6.1"
     tslib "^2.4.0"
+
+"@kubernetes-models/validate@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@kubernetes-models/validate/-/validate-4.0.0.tgz#669314ec4a4f0e8271d23ce4fdfa9dfffb278a9c"
+  integrity sha512-rsfF5t3sd5c+3ejUgcy8q0cVG2/BxT064L4Xz+CuKEe014u8T4MtFZiWjWZFpfMXSGKzFYEA6DJYm9CqjmIfZg==
+  dependencies:
+    ajv "^8.12.0"
+    ajv-formats "^2.1.1"
+    ajv-formats-draft2019 "^1.6.1"
+    ajv-i18n "^4.2.0"
+    is-cidr "^4.0.0"
+    tslib "^2.4.0"
+  optionalDependencies:
+    re2-wasm "^1.0.2"
 
 "@kubernetes/client-node@0.20.0", "@kubernetes/client-node@^0.20.0":
   version "0.20.0"
@@ -12481,6 +12566,13 @@
   dependencies:
     tslib "^2.4.0"
 
+"@swc/helpers@^0.5.8":
+  version "0.5.12"
+  resolved "https://registry.yarnpkg.com/@swc/helpers/-/helpers-0.5.12.tgz#37aaca95284019eb5d2207101249435659709f4b"
+  integrity sha512-KMZNXiGibsW9kvZAO1Pam2JPTDBm+KSHMMHWdsyI/1DbIZjT2A6Gy3hblVXUMEDvUAKq+e0vL0X0o54owWji7g==
+  dependencies:
+    tslib "^2.4.0"
+
 "@swc/jest@^0.2.22":
   version "0.2.36"
   resolved "https://registry.yarnpkg.com/@swc/jest/-/jest-0.2.36.tgz#2797450a30d28b471997a17e901ccad946fe693e"
@@ -14413,6 +14505,11 @@ ajv-formats@^3.0.1:
   integrity sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==
   dependencies:
     ajv "^8.0.0"
+
+ajv-i18n@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/ajv-i18n/-/ajv-i18n-4.2.0.tgz#d48750ba60e283b3dee31e3c22c8c9f7410e326f"
+  integrity sha512-v/ei2UkCEeuKNXh8RToiFsUclmU+G57LO1Oo22OagNMENIw+Yb8eMwvHu7Vn9fmkjJyv6XclhJ8TbuigSglPkg==
 
 ajv-keywords@^3.4.1, ajv-keywords@^3.5.2:
   version "3.5.2"
@@ -21951,7 +22048,7 @@ is-callable@^1.1.3, is-callable@^1.1.4, is-callable@^1.2.7:
   resolved "https://registry.yarnpkg.com/is-callable/-/is-callable-1.2.7.tgz#3bc2a85ea742d9e36205dcacdd72ca1fdc51b055"
   integrity sha512-1BC0BVFhS/p0qtw6enp8e+8OD0UrK0oFLztSjNzhcKA3WDuJxxAPXzPuPtKkjEY9UUoEWlX/8fgKeu2S8i9JTA==
 
-is-cidr@^4.0.2:
+is-cidr@^4.0.0, is-cidr@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/is-cidr/-/is-cidr-4.0.2.tgz#94c7585e4c6c77ceabf920f8cde51b8c0fda8814"
   integrity sha512-z4a1ENUajDbEl/Q6/pVBpTR1nBjjEE1X7qb7bmWYanNnPoKAvUCPFKeXV6Fe4mgTkWKBqiHIcwsI3SndiO5FeA==
@@ -23701,7 +23798,17 @@ koa@2.11.0:
     type-is "^1.6.16"
     vary "^1.1.2"
 
-kubernetes-models@^4.1.0, kubernetes-models@^4.3.1:
+kubernetes-models@^4.1.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/kubernetes-models/-/kubernetes-models-4.4.0.tgz#432f44cb7d45714d03db7875fcb8d3896cf31858"
+  integrity sha512-EiQUjoDT42xrEyELYS5HGU8SKeAMdQFHyjeX6mPkWwAdSfH553Cp0do2NmB5ubiAo2WYS+TeLHzI/YQoigtm/w==
+  dependencies:
+    "@kubernetes-models/apimachinery" "^2.0.0"
+    "@kubernetes-models/base" "^5.0.0"
+    "@kubernetes-models/validate" "^4.0.0"
+    "@swc/helpers" "^0.5.8"
+
+kubernetes-models@^4.3.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/kubernetes-models/-/kubernetes-models-4.3.1.tgz#14b8e465410f22d96270e71f9bb62bf7e5066e9c"
   integrity sha512-0/8E6tfDGo1mKq0g2gTfUwbBv9oaSQ+xjQ5xjCb4NRZD0nTvErwzBoEijym3eGX+L2RJjNKIBhI9k6VTj1dQWA==
@@ -28496,6 +28603,11 @@ rc@^1.2.7, rc@^1.2.8:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+re2-wasm@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/re2-wasm/-/re2-wasm-1.0.2.tgz#78c09dc651b8962aa814b55ae7fe5e472ec15bbb"
+  integrity sha512-VXUdgSiUrE/WZXn6gUIVVIsg0+Hp6VPZPOaHCay+OuFKy6u/8ktmeNEf+U5qSA8jzGGFsg8jrDNu1BeHpz2pJA==
+
 react-ace@9.5.0:
   version "9.5.0"
   resolved "https://registry.yarnpkg.com/react-ace/-/react-ace-9.5.0.tgz#b6c32b70d404dd821a7e01accc2d76da667ff1f7"
@@ -28949,7 +29061,7 @@ react-use@17.5.1:
     ts-easing "^0.2.0"
     tslib "^2.1.0"
 
-react-use@^17.2.4, react-use@^17.3.2, react-use@^17.4.0:
+react-use@^17.2.4, react-use@^17.3.2, react-use@^17.4.0, react-use@^17.5.0:
   version "17.5.0"
   resolved "https://registry.yarnpkg.com/react-use/-/react-use-17.5.0.tgz#1fae45638828a338291efa0f0c61862db7ee6442"
   integrity sha512-PbfwSPMwp/hoL847rLnm/qkjg3sTRCvn6YhUZiHaUa3FA6/aNoFX79ul5Xt70O1rK+9GxSVqkY0eTwMdsR/bWg==

@@ -4,12 +4,9 @@ import { Entity } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import {
-  EntityKubernetesContent,
   KubernetesApi,
-  kubernetesApiRef,
   KubernetesProxyApi,
-  kubernetesProxyApiRef,
-} from '@backstage/plugin-kubernetes';
+} from '@backstage/plugin-kubernetes-react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { MockPermissionApi, TestApiProvider } from '@backstage/test-utils';
 
@@ -23,6 +20,11 @@ import {
 } from '../src/__fixtures__/advancedClusterSecurityData';
 import { enterpriseContractResult } from '../src/__fixtures__/enterpriseContractData';
 import { TektonCI, tektonPlugin } from '../src/plugin';
+import {
+  kubernetesApiRef,
+  kubernetesAuthProvidersApiRef,
+  kubernetesProxyApiRef,
+} from '../src/types/types';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -168,6 +170,21 @@ class MockKubernetesClient implements KubernetesApi {
   }
 }
 
+const mockKubernetesAuthProviderApiRef = {
+  decorateRequestBodyForAuth: async () => {
+    return {
+      entity: {
+        apiVersion: 'v1',
+        kind: 'xyz',
+        metadata: { name: 'hey' },
+      },
+    };
+  },
+  getCredentials: async () => {
+    return {};
+  },
+};
+
 createDevApp()
   .addThemes(createDevAppThemes())
   .addPage({
@@ -180,6 +197,7 @@ createDevApp()
           ],
           [kubernetesProxyApiRef, new MockKubernetesProxyApi()],
           [permissionApiRef, mockPermissionApi],
+          [kubernetesAuthProvidersApiRef, mockKubernetesAuthProviderApiRef],
         ]}
       >
         <EntityProvider entity={mockEntity}>
@@ -189,24 +207,6 @@ createDevApp()
     ),
     title: 'Tekton CI',
     path: '/tekton',
-  })
-  .addPage({
-    element: (
-      <TestApiProvider
-        apis={[
-          [
-            kubernetesApiRef,
-            new MockKubernetesClient(mockKubernetesPlrResponse),
-          ],
-        ]}
-      >
-        <EntityProvider entity={mockEntity}>
-          <EntityKubernetesContent />
-        </EntityProvider>
-      </TestApiProvider>
-    ),
-    title: 'k8s Page',
-    path: '/kubernetes',
   })
   .registerPlugin(tektonPlugin)
   .render();

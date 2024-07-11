@@ -2,14 +2,14 @@ import React from 'react';
 import { useAsync } from 'react-use';
 
 import { useApi } from '@backstage/core-plugin-api';
-import {
-  ContainerScope,
-  kubernetesProxyApiRef,
-} from '@backstage/plugin-kubernetes';
+import { ContainerScope } from '@backstage/plugin-kubernetes-react';
 
 import { V1Pod } from '@kubernetes/client-node';
 
-import { TektonResourcesContextData } from '../types/types';
+import {
+  kubernetesProxyApiRef,
+  TektonResourcesContextData,
+} from '../types/types';
 import { TektonResourcesContext } from './TektonResourcesContext';
 
 interface PodContainerLogsOptions {
