@@ -64,21 +64,8 @@ export const mapProcessInstanceToDetails = (
   };
 };
 
-const AutoOverflowCardContent = styled(CardContent)({
-  overflow: 'auto',
-});
-
-const TopRowCard = styled(InfoCard)({
-  height: '20rem',
-});
-
-const MiddleRowCard = styled(InfoCard)({
-  height: `calc(2 * 20rem)`,
-});
-
-const BottomRowCard = styled(InfoCard)({
-  height: '100%',
-});
+const middleRowHeight = `calc(2 * 16rem)`;
+const topRowHeight = '16rem';
 
 const RecommendedLabelContainer = styled('div')({
   display: 'flex',
@@ -187,17 +174,19 @@ export const WorkflowInstancePageContent: React.FC<{
     <Content noPadding>
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <TopRowCard title="Details" divider={false}>
-            <WorkflowRunDetails
-              details={details}
-              assessedBy={assessedInstance.assessedBy}
-            />
-          </TopRowCard>
+          <InfoCard title="Details" divider={false}>
+            <CardContent style={{ height: topRowHeight }}>
+              <WorkflowRunDetails
+                details={details}
+                assessedBy={assessedInstance.assessedBy}
+              />
+            </CardContent>
+          </InfoCard>
         </Grid>
 
         <Grid item xs={6}>
-          <TopRowCard title="Results" divider={false}>
-            <AutoOverflowCardContent>
+          <InfoCard title="Results" divider={false}>
+            <CardContent style={{ height: topRowHeight, overflow: 'auto' }}>
               {nextWorkflows.length === 0 ? (
                 <WorkflowVariablesViewer variables={instanceVariables} />
               ) : (
@@ -234,39 +223,41 @@ export const WorkflowInstancePageContent: React.FC<{
                   ))}
                 </Grid>
               )}
-            </AutoOverflowCardContent>
-          </TopRowCard>
+            </CardContent>
+          </InfoCard>
         </Grid>
 
         <Grid item xs={6}>
-          <MiddleRowCard title="Workflow definition" divider={false}>
-            <WorkflowEditor
-              workflowId={assessedInstance.instance.processId}
-              kind={EditorViewKind.DIAGRAM_VIEWER}
-              editorMode="text"
-            />
-          </MiddleRowCard>
+          <InfoCard title="Workflow definition" divider={false}>
+            <CardContent style={{ height: middleRowHeight }}>
+              <WorkflowEditor
+                workflowId={assessedInstance.instance.processId}
+                kind={EditorViewKind.DIAGRAM_VIEWER}
+                editorMode="text"
+              />
+            </CardContent>
+          </InfoCard>
         </Grid>
 
         <Grid item xs={6}>
-          <MiddleRowCard title="Workflow progress" divider={false}>
-            <AutoOverflowCardContent>
+          <InfoCard title="Workflow progress" divider={false}>
+            <CardContent style={{ height: middleRowHeight, overflow: 'auto' }}>
               <WorkflowProgress
                 workflowError={assessedInstance.instance.error}
                 workflowNodes={assessedInstance.instance.nodes}
                 workflowStatus={assessedInstance.instance.state}
               />
-            </AutoOverflowCardContent>
-          </MiddleRowCard>
+            </CardContent>
+          </InfoCard>
         </Grid>
 
         {nextWorkflows.length > 0 ? (
           <Grid item xs={12}>
-            <BottomRowCard title="Variables" divider={false}>
-              <AutoOverflowCardContent>
+            <InfoCard title="Variables" divider={false}>
+              <CardContent style={{ height: '100%', overflow: 'auto' }}>
                 <WorkflowVariablesViewer variables={instanceVariables} />
-              </AutoOverflowCardContent>
-            </BottomRowCard>
+              </CardContent>
+            </InfoCard>
           </Grid>
         ) : null}
       </Grid>
