@@ -833,45 +833,6 @@ function setupInternalRoutes(
 
   // v2
   routerApi.openApiBackend.register(
-    'getWorkflowResults',
-    async (c, _req: express.Request, res: express.Response) => {
-      const instanceId = c.request.params.instanceId as string;
-      const endpointName = 'getWorkflowResults';
-      const endpoint = `/v2/workflows/instances/${instanceId}/results`;
-
-      auditLogger.auditLog({
-        eventName: endpointName,
-        stage: 'start',
-        status: 'succeeded',
-        level: 'debug',
-        request: _req,
-        message: `Received request to '${endpoint}' endpoint`,
-      });
-
-      const decision = await authorize(
-        _req,
-        orchestratorWorkflowInstanceReadPermission,
-        permissions,
-        httpAuth,
-      );
-      if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(endpointName, endpoint, _req);
-      }
-
-      await routerApi.v2
-        .getWorkflowResults(instanceId)
-        .then(result => res.status(200).json(result))
-        .catch((error: { message: string }) => {
-          auditLogRequestError(error, endpointName, endpoint, _req);
-          res
-            .status(500)
-            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
-        });
-    },
-  );
-
-  // v2
-  routerApi.openApiBackend.register(
     'getWorkflowStatuses',
     async (_c, _req: express.Request, res: express.Response) => {
       const endpointName = 'getWorkflowStatuses';

@@ -182,30 +182,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /v2/workflows/instances/{instanceId}/results:
-    get:
-      summary: Get workflow results
-      operationId: getWorkflowResults
-      parameters:
-        - name: instanceId
-          in: path
-          required: true
-          description: ID of the workflow instance
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowDataDTO'
-        '500':
-          description: Error getting workflow results
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/instances/statuses:
     get:
       operationId: getWorkflowStatuses
@@ -483,8 +459,7 @@ components:
       properties:
         inputData:
           type: object
-          additionalProperties:
-            type: string
+          additionalProperties: true
       required:
         - inputData
     ExecuteWorkflowResponseDTO:
