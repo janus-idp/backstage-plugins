@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.23.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.23.0...@janus-idp/backstage-plugin-rbac@1.23.1) (2024-07-11)
+
+
+### Other changes
+
+* **rbac:** reduce cognitive stress for create, update and delete role functions ([#1878](https://github.com/janus-idp/backstage-plugins/issues/1878)) ([38c3144](https://github.com/janus-idp/backstage-plugins/commit/38c314450b01ebe71463362685242956483fef3d))
+
 ## @janus-idp/backstage-plugin-rbac [1.23.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.22.1...@janus-idp/backstage-plugin-rbac@1.23.0) (2024-07-08)
 
 
