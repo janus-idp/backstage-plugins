@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.14.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.13.1...@janus-idp/backstage-plugin-orchestrator-backend@1.14.0) (2024-07-11)
+
+
+### Features
+
+* **orchestrator:** change openapi client generator ([#1864](https://github.com/janus-idp/backstage-plugins/issues/1864)) ([d6a4f4c](https://github.com/janus-idp/backstage-plugins/commit/d6a4f4ccfedfd55356305131029fd3d8ca0ab9c5))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.11.0
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.13.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.13.0...@janus-idp/backstage-plugin-orchestrator-backend@1.13.1) (2024-07-01)
 
 
