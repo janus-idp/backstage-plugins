@@ -52,7 +52,7 @@
     "@severlessworkflow/sdk-typescript": "^3.0.3",
     "js-yaml": "^4.1.0",
     "json-schema": "^0.4.0",
-    "axios": "1.6.8"
+    "axios": "^1.6.8"
   },
   "devDependencies": {
     "@backstage/cli": "0.26.6",
