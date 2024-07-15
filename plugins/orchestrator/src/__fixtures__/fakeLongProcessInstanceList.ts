@@ -43,11 +43,10 @@ export const generateFakeProcessInstances = (
     const randomState = valuesGenerator.getNextEnumValue(ProcessInstanceState);
     const randomCategory = valuesGenerator.getNextEnumValue(WorkflowCategory);
 
+    const overviews = fakeWorkflowOverviewList.overviews ?? [];
     instances.push({
       id: `12f767c1-9002-43af-9515-62a72d0eaf${i}`,
-      processId:
-        fakeWorkflowOverviewList[i % fakeWorkflowOverviewList.length]
-          .workflowId,
+      processId: overviews[i % overviews.length].workflowId ?? 'FAKE_ID', // This will be fixed in next PRs
       state: randomState,
       endpoint: 'enpoint/foo',
       start: valuesGenerator.getNextDate().toISOString(),

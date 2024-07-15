@@ -1,13 +1,15 @@
 import { JsonObject } from '@backstage/types';
 
+import { AxiosResponse } from 'axios';
+
 import {
   AssessedProcessInstance,
   ProcessInstance,
   WorkflowDefinition,
   WorkflowExecutionResponse,
   WorkflowInputSchemaResponse,
-  WorkflowOverview,
-  WorkflowOverviewListResult,
+  WorkflowOverviewDTO,
+  WorkflowOverviewListResultDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { hasOwnProp, isNonNullable } from '../utils/TypeGuards';
@@ -121,7 +123,9 @@ export class MockOrchestratorClient implements OrchestratorApi {
     return Promise.resolve(this._mockData.getWorkflowDataInputSchemaResponse);
   }
 
-  listWorkflowOverviews(): Promise<WorkflowOverviewListResult> {
+  listWorkflowOverviews(): Promise<
+    AxiosResponse<WorkflowOverviewListResultDTO>
+  > {
     if (
       !hasOwnProp(this._mockData, 'listWorkflowOverviewsResponse') ||
       !isNonNullable(this._mockData.listWorkflowOverviewsResponse)
@@ -132,7 +136,7 @@ export class MockOrchestratorClient implements OrchestratorApi {
     return Promise.resolve(this._mockData.listWorkflowOverviewsResponse);
   }
 
-  getWorkflowOverview(): Promise<WorkflowOverview> {
+  getWorkflowOverview(): Promise<AxiosResponse<WorkflowOverviewDTO>> {
     if (
       !hasOwnProp(this._mockData, 'getWorkflowOverviewResponse') ||
       !isNonNullable(this._mockData.getWorkflowOverviewResponse)

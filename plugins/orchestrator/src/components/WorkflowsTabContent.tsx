@@ -9,7 +9,7 @@ import { useApi } from '@backstage/core-plugin-api';
 
 import Grid from '@mui/material/Grid';
 
-import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowOverviewDTO } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../api';
 import usePolling from '../hooks/usePolling';
@@ -19,13 +19,13 @@ export const WorkflowsTabContent = () => {
   const orchestratorApi = useApi(orchestratorApiRef);
 
   const fetchWorkflowOverviews = useCallback(async () => {
-    const data = await orchestratorApi.listWorkflowOverviews();
-    return data.items;
+    const overviewsResp = await orchestratorApi.listWorkflowOverviews();
+    return overviewsResp.data.overviews;
   }, [orchestratorApi]);
 
-  const { loading, error, value } = usePolling<WorkflowOverview[]>(
-    fetchWorkflowOverviews,
-  );
+  const { loading, error, value } = usePolling<
+    WorkflowOverviewDTO[] | undefined
+  >(fetchWorkflowOverviews);
 
   const isReady = React.useMemo(() => !loading && !error, [loading, error]);
 

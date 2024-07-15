@@ -1,8 +1,8 @@
 import moment from 'moment';
 
 import {
-  WorkflowFormat,
-  WorkflowOverview,
+  WorkflowFormatDTO,
+  WorkflowOverviewDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { VALUE_UNAVAILABLE } from '../constants';
@@ -17,17 +17,17 @@ export interface FormattedWorkflowOverview {
   readonly category: string;
   readonly avgDuration: string;
   readonly description: string;
-  readonly format: WorkflowFormat;
+  readonly format: WorkflowFormatDTO;
 }
 
 const formatDuration = (milliseconds: number): string =>
   moment.duration(milliseconds).humanize();
 
 const WorkflowOverviewFormatter: DataFormatter<
-  WorkflowOverview,
+  WorkflowOverviewDTO,
   FormattedWorkflowOverview
 > = {
-  format: (data: WorkflowOverview): FormattedWorkflowOverview => {
+  format: (data: WorkflowOverviewDTO): FormattedWorkflowOverview => {
     return {
       id: data.workflowId,
       name: data.name ?? VALUE_UNAVAILABLE,

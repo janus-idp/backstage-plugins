@@ -1,14 +1,16 @@
 import { createApiRef } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 
+import { AxiosResponse } from 'axios';
+
 import {
   AssessedProcessInstance,
   ProcessInstance,
   WorkflowDefinition,
   WorkflowExecutionResponse,
   WorkflowInputSchemaResponse,
-  WorkflowOverview,
-  WorkflowOverviewListResult,
+  WorkflowOverviewDTO,
+  WorkflowOverviewListResultDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 export interface OrchestratorApi {
@@ -40,9 +42,13 @@ export interface OrchestratorApi {
     assessmentInstanceId?: string;
   }): Promise<WorkflowInputSchemaResponse>;
 
-  getWorkflowOverview(workflowId: string): Promise<WorkflowOverview>;
+  getWorkflowOverview(
+    workflowId: string,
+  ): Promise<AxiosResponse<WorkflowOverviewDTO>>;
 
-  listWorkflowOverviews(): Promise<WorkflowOverviewListResult>;
+  listWorkflowOverviews(): Promise<
+    AxiosResponse<WorkflowOverviewListResultDTO>
+  >;
 
   listInstances(): Promise<ProcessInstance[]>;
 }
