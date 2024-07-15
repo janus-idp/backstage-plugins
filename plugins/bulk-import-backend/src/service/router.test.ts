@@ -34,9 +34,6 @@ import { createRouter } from './router';
 
 const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
   jest.fn();
-const mockedPermissionQuery: jest.MockedFunction<
-  PermissionEvaluator['authorizeConditional']
-> = jest.fn();
 
 const mockUser = {
   type: 'User',
@@ -55,13 +52,18 @@ const mockDiscovery = {
 
 const permissionEvaluator: PermissionEvaluator = {
   authorize: mockedAuthorize,
-  authorizeConditional: mockedPermissionQuery,
+  authorizeConditional: jest.fn(),
 };
 
-const allowAll: PermissionEvaluator['authorize'] &
-  PermissionEvaluator['authorizeConditional'] = async queries => {
+const allowAll: PermissionEvaluator['authorize'] = async queries => {
   return queries.map(() => ({
     result: AuthorizeResult.ALLOW,
+  }));
+};
+
+const denyAll: PermissionEvaluator['authorize'] = async queries => {
+  return queries.map(() => ({
+    result: AuthorizeResult.DENY,
   }));
 };
 
@@ -102,7 +104,15 @@ describe('createRouter', () => {
   });
 
   describe('GET /ping', () => {
-    it('returns ok', async () => {
+    it('returns ok when unauthenticated', async () => {
+      const response = await request(app).get('/ping');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ status: 'ok' });
+    });
+
+    it('returns ok even when denied by permission framework', async () => {
+      mockedAuthorize.mockImplementation(denyAll);
       const response = await request(app).get('/ping');
 
       expect(response.status).toEqual(200);
@@ -111,8 +121,14 @@ describe('createRouter', () => {
   });
 
   describe('GET /organizations', () => {
+    it('returns 403 when denied by permission framework', async () => {
+      mockedAuthorize.mockImplementation(denyAll);
+      const response = await request(app).get('/organizations');
+      expect(response.status).toEqual(403);
+    });
+
     it('returns 200 when organizations are fetched without errors', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getOrganizationsFromIntegrations')
@@ -187,7 +203,7 @@ describe('createRouter', () => {
     });
 
     it('returns 200 with the errors in the body when organizations are fetched, but errors have occurred', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       const githubApiServiceResponse: GithubOrganizationResponse = {
         organizations: [
@@ -244,7 +260,7 @@ describe('createRouter', () => {
     });
 
     it('returns 500 when one or more errors are returned with no successful organization fetched', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getOrganizationsFromIntegrations')
@@ -272,8 +288,14 @@ describe('createRouter', () => {
   });
 
   describe('GET /repositories', () => {
+    it('returns 403 when denied by permission framework', async () => {
+      mockedAuthorize.mockImplementation(denyAll);
+      const response = await request(app).get('/repositories');
+      expect(response.status).toEqual(403);
+    });
+
     it('returns 200 when repositories are fetched without errors', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getRepositoriesFromIntegrations')
@@ -329,7 +351,7 @@ describe('createRouter', () => {
     });
 
     it('returns 200 with the errors in the body when repositories are fetched, but errors have occurred', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       const githubApiServiceResponse: GithubRepositoryResponse = {
         repositories: [
@@ -396,7 +418,7 @@ describe('createRouter', () => {
     });
 
     it('returns 500 when one or more errors are returned with no successful repository fetches', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getRepositoriesFromIntegrations')
@@ -430,8 +452,16 @@ describe('createRouter', () => {
   });
 
   describe('GET /organizations/{org}/repositories', () => {
+    it('returns 403 when denied by permission framework', async () => {
+      mockedAuthorize.mockImplementation(denyAll);
+      const response = await request(app).get(
+        '/organizations/my-ent-org-1/repositories',
+      );
+      expect(response.status).toEqual(403);
+    });
+
     it('returns 200 when repositories are fetched without errors', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getOrgRepositoriesFromIntegrations')
@@ -560,7 +590,7 @@ describe('createRouter', () => {
     });
 
     it('returns 200 with the errors in the body when repositories are fetched, but errors have occurred', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       const githubApiServiceResponse: GithubRepositoryResponse = {
         repositories: [
@@ -629,7 +659,7 @@ describe('createRouter', () => {
     });
 
     it('returns 500 when one or more errors are returned with no successful repository fetched', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getOrgRepositoriesFromIntegrations')
@@ -665,8 +695,14 @@ describe('createRouter', () => {
   });
 
   describe('GET /imports', () => {
+    it('returns 403 when denied by permission framework', async () => {
+      mockedAuthorize.mockImplementation(denyAll);
+      const response = await request(app).get('/imports');
+      expect(response.status).toEqual(403);
+    });
+
     it('returns 200 with empty list when there is nothing in catalog yet and no open PR for each repo', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getRepositoriesFromIntegrations')
@@ -702,7 +738,7 @@ describe('createRouter', () => {
     });
 
     it('returns 200 with appropriate import status', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getRepositoriesFromIntegrations')
@@ -824,14 +860,20 @@ describe('createRouter', () => {
   });
 
   describe('POST /imports', () => {
+    it('returns 403 when denied by permission framework', async () => {
+      mockedAuthorize.mockImplementation(denyAll);
+      const response = await request(app).post('/imports').send([]);
+      expect(response.status).toEqual(403);
+    });
+
     it('returns 400 if there is nothing in request body', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
       const response = await request(app).post('/imports').send([]);
       expect(response.status).toEqual(400);
     });
 
     it('returns 202 with appropriate import statuses', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
       mockCatalogClient.addLocation = jest
         .fn()
         .mockImplementation(
@@ -962,7 +1004,7 @@ spec:
 
   describe('POST /imports with dryRun=true', () => {
     it('return dry-run results in errors array for each item in request body', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
       mockCatalogClient.queryEntities = jest.fn().mockImplementation(
         async (req: {
           filter: {
