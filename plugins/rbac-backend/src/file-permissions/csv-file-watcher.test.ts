@@ -171,8 +171,10 @@ describe('CSVFileWatcher', () => {
     enforcerDelegate = new EnforcerDelegate(enf, roleMetadataStorageMock, knex);
 
     csvFileWatcher = new CSVFileWatcher(
-      enforcerDelegate,
+      csvFileName,
+      false,
       loggerMock,
+      enforcerDelegate,
       roleMetadataStorageMock,
       auditLoggerMock,
     );
@@ -186,7 +188,7 @@ describe('CSVFileWatcher', () => {
 
   describe('initialize', () => {
     it('should be able to add permission policies during initialization', async () => {
-      await csvFileWatcher.initialize(csvFileName, false);
+      await csvFileWatcher.initialize();
 
       const enfPolicies = await enforcerDelegate.getPolicy();
 
@@ -194,7 +196,7 @@ describe('CSVFileWatcher', () => {
     });
 
     it('should be able to add roles during initialization', async () => {
-      await csvFileWatcher.initialize(csvFileName, false);
+      await csvFileWatcher.initialize();
 
       const enfRoles = await enforcerDelegate.getGroupingPolicy();
 
@@ -231,7 +233,7 @@ describe('CSVFileWatcher', () => {
         });
       (roleMetadataStorageMock.updateRoleMetadata as jest.Mock).mockReset();
 
-      await csvFileWatcher.initialize(csvFileName, false);
+      await csvFileWatcher.initialize();
 
       const enfPolicies = await enforcerDelegate.getPolicy();
 
@@ -266,7 +268,7 @@ describe('CSVFileWatcher', () => {
         });
       (roleMetadataStorageMock.updateRoleMetadata as jest.Mock).mockReset();
 
-      await csvFileWatcher.initialize(csvFileName, false);
+      await csvFileWatcher.initialize();
 
       const enfPolicies = await enforcerDelegate.getGroupingPolicy();
 
@@ -306,7 +308,7 @@ describe('CSVFileWatcher', () => {
         'update',
       ];
 
-      await csvFileWatcher.initialize(csvFileName, false);
+      await csvFileWatcher.initialize();
 
       expect(loggerMock.warn).toHaveBeenNthCalledWith(
         1,
@@ -356,7 +358,7 @@ describe('CSVFileWatcher', () => {
         'temp',
       ];
 
-      await csvFileWatcher.initialize(csvFileName, false);
+      await csvFileWatcher.initialize();
 
       expect(loggerMock.warn).toHaveBeenNthCalledWith(
         1,
@@ -399,7 +401,7 @@ describe('CSVFileWatcher', () => {
         __dirname,
         './../__fixtures__/data/valid-csv/simple-policy.csv',
       );
-      await csvFileWatcher.initialize(csvFileName, false);
+      await csvFileWatcher.initialize();
     });
 
     it('should add new permission policies on change', async () => {

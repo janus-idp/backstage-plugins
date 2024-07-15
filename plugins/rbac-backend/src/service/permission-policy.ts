@@ -47,6 +47,7 @@ import {
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { CSVFileWatcher } from '../file-permissions/csv-file-watcher';
+import { YamlConditinalPoliciesFileWatcher } from '../file-permissions/yaml-conditional-file-watcher';
 import { removeTheDifference } from '../helper';
 import { validateEntityReference } from '../validation/policies-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
@@ -239,6 +240,10 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     const allowReload =
       configApi.getOptionalBoolean('permission.rbac.policyFileReload') || false;
 
+    const conditionalPoliciesFile = configApi.getOptionalString(
+      'permission.rbac.conditional-policies-file',
+    );
+
     if (superUsers && superUsers.length > 0) {
       for (const user of superUsers) {
         const userName = user.getString('name');
@@ -264,13 +269,28 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       );
     }
 
-    const csvFile = new CSVFileWatcher(
-      enforcerDelegate,
-      logger,
-      roleMetadataStorage,
-      auditLogger,
-    );
-    await csvFile.initialize(policiesFile, allowReload);
+    if (policiesFile) {
+      const csvFile = new CSVFileWatcher(
+        policiesFile,
+        allowReload,
+        logger,
+        enforcerDelegate,
+        roleMetadataStorage,
+        auditLogger,
+      );
+      await csvFile.initialize();
+    }
+
+    if (conditionalPoliciesFile) {
+      const conditionalFile = new YamlConditinalPoliciesFileWatcher(
+        conditionalPoliciesFile,
+        allowReload,
+        logger,
+        conditionalStorage,
+        auditLogger,
+      );
+      await conditionalFile.initialize();
+    }
 
     return new RBACPermissionPolicy(
       enforcerDelegate,
