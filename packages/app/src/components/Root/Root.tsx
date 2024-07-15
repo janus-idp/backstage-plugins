@@ -22,7 +22,6 @@ import ExtensionIcon from '@mui/icons-material/Extension';
 import HomeIcon from '@mui/icons-material/Home';
 import LibraryBooks from '@mui/icons-material/LibraryBooks';
 import MenuIcon from '@mui/icons-material/Menu';
-import MapIcon from '@mui/icons-material/MyLocation';
 import SearchIcon from '@mui/icons-material/Search';
 import { makeStyles } from 'tss-react/mui';
 
@@ -92,11 +91,7 @@ export const Root = ({
         {/* End global nav */}
         <SidebarDivider />
         <SidebarScrollWrapper>
-          <SidebarItem
-            icon={MapIcon as IconComponent}
-            to="tech-radar"
-            text="Tech Radar"
-          />
+          {/* Items in this group will be scrollable if they run out of space */}
         </SidebarScrollWrapper>
       </SidebarGroup>
       <SidebarSpace />
