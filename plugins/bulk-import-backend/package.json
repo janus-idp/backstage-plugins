@@ -57,6 +57,7 @@
     "@backstage/plugin-catalog-node": "^1.12.4",
     "@backstage/plugin-permission-common": "^0.8.0",
     "@backstage/plugin-permission-node": "^0.8.0",
+    "@janus-idp/backstage-plugin-bulk-import-common": "0.2.0",
     "@octokit/auth-app": "^6.0.3",
     "@octokit/core": "^5.1.0",
     "@octokit/rest": "^20.0.2",

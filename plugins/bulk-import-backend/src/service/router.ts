@@ -19,19 +19,11 @@ import {
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import {
-  AuthService,
-  BackstageCredentials,
-  HttpAuthService,
-  PermissionsService,
-} from '@backstage/backend-plugin-api';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import {
-  createPermission,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
 import { fullFormats } from 'ajv-formats/dist/formats';
@@ -40,6 +32,9 @@ import Router from 'express-promise-router';
 import { Context, OpenAPIBackend, Request } from 'openapi-backend';
 import { Logger } from 'winston';
 
+import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
+
+import { permissionCheck } from '../helpers/auth';
 import { CatalogInfoGenerator } from '../helpers/catalogInfoGenerator';
 import { Components, Paths } from '../openapi.d';
 import { openApiDocument } from '../openapidocument';
@@ -57,16 +52,6 @@ import {
   findRepositoriesByOrganization,
 } from './handlers/repositories';
 
-// TODO: Remove this when done to use the @janus-idp/backstage-plugin-bulk-import-common import instead
-/** This permission is used to access the bulk-import endpoints
- * @public
- */
-export const bulkImportPermission = createPermission({
-  name: 'bulk-import',
-  attributes: {},
-  resourceType: 'bulk-import',
-});
-
 export interface RouterOptions {
   logger: Logger;
   permissions: PermissionEvaluator;
@@ -76,34 +61,6 @@ export interface RouterOptions {
   httpAuth?: HttpAuthService;
   auth?: AuthService;
   catalogApi: CatalogApi;
-}
-
-/**
- * This will resolve to { result: AuthorizeResult.ALLOW } if the permission framework is disabled
- */
-async function permissionCheck(
-  _permissions: PermissionsService,
-  _credentials: BackstageCredentials,
-) {
-  // TODO(rm3l): Implement this properly as part of https://issues.redhat.com/browse/RHIDP-1208
-  return;
-  // const decision = (
-  //   await permissions.authorize(
-  //     [
-  //       {
-  //         permission: bulkImportPermission,
-  //         resourceRef: bulkImportPermission.resourceType,
-  //       },
-  //     ],
-  //     {
-  //       credentials,
-  //     },
-  //   )
-  // )[0];
-  //
-  // if (decision.result === AuthorizeResult.DENY) {
-  //   throw new NotAllowedError('Unauthorized');
-  // }
 }
 
 export async function createRouter(
@@ -142,8 +99,7 @@ export async function createRouter(
   api.register(
     'findAllOrganizations',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
+      await permissionCheck(permissions, await httpAuth.credentials(req));
       const q: Paths.FindAllOrganizations.QueryParameters = {
         ...c.request.query,
       };
@@ -169,8 +125,7 @@ export async function createRouter(
   api.register(
     'findAllRepositories',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
+      await permissionCheck(permissions, await httpAuth.credentials(req));
       const q: Paths.FindAllRepositories.QueryParameters = {
         ...c.request.query,
       };
@@ -200,8 +155,7 @@ export async function createRouter(
   api.register(
     'findRepositoriesByOrganization',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
+      await permissionCheck(permissions, await httpAuth.credentials(req));
       const q: Paths.FindRepositoriesByOrganization.QueryParameters = {
         ...c.request.query,
       };
@@ -232,8 +186,7 @@ export async function createRouter(
   api.register(
     'findAllImports',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
+      await permissionCheck(permissions, await httpAuth.credentials(req));
       const q: Paths.FindAllRepositories.QueryParameters = {
         ...c.request.query,
       };
@@ -258,8 +211,7 @@ export async function createRouter(
       req: express.Request,
       res: express.Response,
     ) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
+      await permissionCheck(permissions, await httpAuth.credentials(req));
       const q: Paths.CreateImportJobs.QueryParameters = { ...c.request.query };
       q.dryRun = stringToBoolean(q.dryRun);
       const response = await createImportJobs(
@@ -281,8 +233,7 @@ export async function createRouter(
   api.register(
     'findImportStatusByRepo',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
+      await permissionCheck(permissions, await httpAuth.credentials(req));
       const q: Paths.FindImportStatusByRepo.QueryParameters = {
         ...c.request.query,
       };
@@ -303,8 +254,7 @@ export async function createRouter(
   api.register(
     'deleteImportByRepo',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
+      await permissionCheck(permissions, await httpAuth.credentials(req));
       const q: Paths.DeleteImportByRepo.QueryParameters = {
         ...c.request.query,
       };
