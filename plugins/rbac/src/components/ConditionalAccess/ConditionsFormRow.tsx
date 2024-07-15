@@ -23,6 +23,12 @@ const useStyles = makeStyles(theme => ({
     '& input': {
       backgroundColor: `${theme.palette.background.default}!important`,
       color: `${theme.palette.textContrast}!important`,
+      '&:-internal-autofill-selected, &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active':
+        {
+          WebkitBoxShadow: `0 0 0px 1000px ${theme.palette.background.default} inset`,
+          WebkitTextFillColor: `${theme.palette.textContrast}!important`,
+          caretColor: `${theme.palette.textContrast}!important`,
+        },
     },
     '& button': {
       textTransform: 'none',
