@@ -61,10 +61,10 @@
   "author": "The Backstage Community",
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-common": "^0.22.0",
-    "@backstage/backend-plugin-api": "^0.6.18",
+    "@backstage/backend-common": "^0.23.2",
+    "@backstage/backend-plugin-api": "^0.6.21",
     "@backstage/config": "^1.2.0",
-    "@backstage/backend-dynamic-feature-service": "^0.2.10"
+    "@backstage/backend-dynamic-feature-service": "^0.2.14"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {

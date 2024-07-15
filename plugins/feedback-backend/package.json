@@ -41,10 +41,10 @@
     "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.22.0",
-    "@backstage/backend-dynamic-feature-service": "^0.2.10",
-    "@backstage/backend-plugin-api": "^0.6.18",
-    "@backstage/backend-test-utils": "^0.3.8",
+    "@backstage/backend-common": "^0.23.2",
+    "@backstage/backend-dynamic-feature-service": "^0.2.14",
+    "@backstage/backend-plugin-api": "^0.6.21",
+    "@backstage/backend-test-utils": "^0.4.3",
     "@backstage/catalog-client": "^1.6.5",
     "@backstage/catalog-model": "^1.5.0",
     "@backstage/config": "^1.2.0",
@@ -59,7 +59,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.26.6",
+    "@backstage/cli": "0.26.10",
     "@janus-idp/cli": "1.11.1",
     "@types/nodemailer": "6.4.15",
     "@types/supertest": "2.0.12",
