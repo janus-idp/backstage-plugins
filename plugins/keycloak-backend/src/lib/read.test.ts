@@ -1,4 +1,4 @@
-import KcAdminClient from '@keycloak/keycloak-admin-client';
+import { KeycloakAdminClient } from '@s3pweb/keycloak-admin-client-cjs';
 
 import {
   groups as groupsFixture,
@@ -23,7 +23,8 @@ const config: KeycloakProviderConfig = {
 
 describe('readKeycloakRealm', () => {
   it('should return the correct number of users and groups', async () => {
-    const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
+    const client =
+      new KeycloakAdminClientMock() as unknown as KeycloakAdminClient;
     const { users, groups } = await readKeycloakRealm(client, config);
 
     expect(users).toHaveLength(3);
@@ -40,7 +41,8 @@ describe('readKeycloakRealm', () => {
       return e;
     };
 
-    const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
+    const client =
+      new KeycloakAdminClientMock() as unknown as KeycloakAdminClient;
     const { users, groups } = await readKeycloakRealm(client, config, {
       userTransformer,
       groupTransformer,
@@ -142,7 +144,8 @@ describe('parseUser', () => {
 
 describe('getEntities', () => {
   it('should fetch all users', async () => {
-    const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
+    const client =
+      new KeycloakAdminClientMock() as unknown as KeycloakAdminClient;
 
     const users = await getEntities(client.users, {
       id: '',
@@ -154,7 +157,8 @@ describe('getEntities', () => {
   });
 
   it('should fetch all users with pagination', async () => {
-    const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
+    const client =
+      new KeycloakAdminClientMock() as unknown as KeycloakAdminClient;
 
     await getEntities(
       client.users,

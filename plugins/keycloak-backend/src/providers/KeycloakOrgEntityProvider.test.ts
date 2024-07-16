@@ -12,8 +12,8 @@ import {
 } from '../../__fixtures__/helpers';
 import { KeycloakOrgEntityProvider } from './KeycloakOrgEntityProvider';
 
-jest.mock('@keycloak/keycloak-admin-client', () => {
-  const actual = jest.requireActual('@keycloak/keycloak-admin-client');
+jest.mock('@s3pweb/keycloak-admin-client-cjs', () => {
+  const actual = jest.requireActual('@s3pweb/keycloak-admin-client-cjs');
   return {
     ...actual,
     default: KeycloakAdminClientMock,
