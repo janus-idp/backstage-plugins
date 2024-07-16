@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [4.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.3.2...@janus-idp/backstage-plugin-rbac-backend@4.3.3) (2024-07-16)
+
+
+### Bug Fixes
+
+* **rbac:** catch errors whenever a plugin token is not generated ([#1866](https://github.com/janus-idp/backstage-plugins/issues/1866)) ([c9abf44](https://github.com/janus-idp/backstage-plugins/commit/c9abf441591347753fe94fe2590b8059804baeb7))
+
 ## @janus-idp/backstage-plugin-rbac-backend [4.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.3.1...@janus-idp/backstage-plugin-rbac-backend@4.3.2) (2024-07-05)
 
 
