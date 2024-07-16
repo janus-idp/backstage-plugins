@@ -3,7 +3,12 @@ export interface Config {
     rbac: {
       'policies-csv-file'?: string;
       /**
-       * Allow for reloading of the CSV file.
+       * The path to the yaml file containing the conditional policies
+       * @visibility frontend
+       */
+      'conditional-policies-file'?: string;
+      /**
+       * Allow for reloading of the CSV and conditional policies files.
        * @visibility frontend
        */
       policyFileReload?: boolean;

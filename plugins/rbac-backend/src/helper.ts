@@ -1,6 +1,12 @@
+import { AuthService } from '@backstage/backend-plugin-api';
+import { MetadataResponse } from '@backstage/plugin-permission-node';
+
 import {
   difference,
+  fromPairs,
+  isArray,
   isEqual,
+  isPlainObject,
   omitBy,
   sortBy,
   toPairs,
@@ -10,7 +16,9 @@ import {
 import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
   PermissionAction,
+  PermissionInfo,
   RoleBasedPolicy,
+  RoleConditionalPolicyDecision,
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
@@ -22,6 +30,7 @@ import {
 } from './audit-log/audit-logger';
 import { RoleMetadataDao, RoleMetadataStorage } from './database/role-metadata';
 import { EnforcerDelegate } from './service/enforcer-delegate';
+import { PluginPermissionMetadataCollector } from './service/plugin-endpoints';
 
 export function policyToString(policy: string[]): string {
   return `[${policy.join(', ')}]`;
@@ -159,4 +168,68 @@ export function mergeRoleMetadata(
   mergedMetaData.roleEntityRef = newMetadata.roleEntityRef;
   mergedMetaData.source = newMetadata.source;
   return mergedMetaData;
+}
+
+export async function processConditionMapping(
+  roleConditionPolicy: RoleConditionalPolicyDecision<PermissionAction>,
+  pluginPermMetaData: PluginPermissionMetadataCollector,
+  auth: AuthService,
+): Promise<RoleConditionalPolicyDecision<PermissionInfo>> {
+  const { token } = await auth.getPluginRequestToken({
+    onBehalfOf: await auth.getOwnServiceCredentials(),
+    targetPluginId: roleConditionPolicy.pluginId,
+  });
+
+  const rule: MetadataResponse | undefined =
+    await pluginPermMetaData.getMetadataByPluginId(
+      roleConditionPolicy.pluginId,
+      token,
+    );
+  if (!rule?.permissions) {
+    throw new Error(
+      `Unable to get permission list for plugin ${roleConditionPolicy.pluginId}`,
+    );
+  }
+
+  const permInfo: PermissionInfo[] = [];
+  for (const action of roleConditionPolicy.permissionMapping) {
+    const perm = rule.permissions.find(
+      permission =>
+        permission.type === 'resource' &&
+        (action === permission.attributes.action ||
+          (action === 'use' && permission.attributes.action === undefined)),
+    );
+    if (!perm) {
+      throw new Error(
+        `Unable to find permission to get permission name for resource type '${
+          roleConditionPolicy.resourceType
+        }' and action ${JSON.stringify(action)}`,
+      );
+    }
+    permInfo.push({ name: perm.name, action });
+  }
+
+  return {
+    ...roleConditionPolicy,
+    permissionMapping: permInfo,
+  };
+}
+
+export function deepSort(value: any): any {
+  if (isArray(value)) {
+    return sortBy(value.map(deepSort));
+  } else if (isPlainObject(value)) {
+    return fromPairs(
+      sortBy(
+        toPairs(value).map(([k, v]: [string, any]) => [k, deepSort(v)]),
+        0,
+      ),
+    );
+  } else {
+    return value;
+  }
+}
+
+export function deepSortEqual(obj1: any, obj2: any): boolean {
+  return isEqual(deepSort(obj1), deepSort(obj2));
 }

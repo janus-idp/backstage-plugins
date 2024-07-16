@@ -1,7 +1,4 @@
-import {
-  BackstageUserInfo,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
+import { BackstageUserInfo, AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import {
@@ -51,6 +48,7 @@ import { YamlConditinalPoliciesFileWatcher } from '../file-permissions/yaml-cond
 import { removeTheDifference } from '../helper';
 import { validateEntityReference } from '../validation/policies-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
+import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 
 export const ADMIN_ROLE_NAME = 'role:default/rbac_admin';
 export const ADMIN_ROLE_AUTHOR = 'application configuration';
@@ -210,9 +208,6 @@ const evaluatePermMsg = (
   } and action '${toPermissionAction(permission.attributes)}'`;
 
 export class RBACPermissionPolicy implements PermissionPolicy {
-  private readonly enforcer: EnforcerDelegate;
-  private readonly auditLogger: AuditLogger;
-  private readonly conditionStorage: ConditionalStorage;
   private readonly superUserList?: string[];
 
   public static async build(
@@ -223,6 +218,8 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     enforcerDelegate: EnforcerDelegate,
     roleMetadataStorage: RoleMetadataStorage,
     knex: Knex,
+    pluginMetadataCollector: PluginPermissionMetadataCollector,
+    auth: AuthService,
   ): Promise<RBACPermissionPolicy> {
     const superUserList: string[] = [];
     const adminUsers = configApi.getOptionalConfigArray(
@@ -288,6 +285,8 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         logger,
         conditionalStorage,
         auditLogger,
+        auth,
+        pluginMetadataCollector,
       );
       await conditionalFile.initialize();
     }
@@ -301,14 +300,11 @@ export class RBACPermissionPolicy implements PermissionPolicy {
   }
 
   private constructor(
-    enforcer: EnforcerDelegate,
-    auditLogger: AuditLogger,
-    conditionStorage: ConditionalStorage,
+    private readonly enforcer: EnforcerDelegate,
+    private readonly auditLogger: AuditLogger,
+    private readonly conditionStorage: ConditionalStorage,
     superUserList?: string[],
   ) {
-    this.enforcer = enforcer;
-    this.auditLogger = auditLogger;
-    this.conditionStorage = conditionStorage;
     this.superUserList = superUserList;
   }
 
