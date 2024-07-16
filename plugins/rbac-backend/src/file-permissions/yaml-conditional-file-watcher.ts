@@ -19,6 +19,7 @@ import {
   SEND_RESPONSE_STAGE,
 } from '../audit-log/audit-logger';
 import { ConditionalStorage } from '../database/conditional-storage';
+import { RoleMetadataStorage } from '../database/role-metadata';
 import { deepSortEqual, processConditionMapping } from '../helper';
 import { PluginPermissionMetadataCollector } from '../service/plugin-endpoints';
 import { validateRoleCondition } from '../validation/condition-validation';
@@ -44,6 +45,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     private readonly auditLogger: AuditLogger,
     private readonly auth: AuthService,
     private readonly pluginMetadataCollector: PluginPermissionMetadataCollector,
+    private readonly roleMetadataStorage: RoleMetadataStorage,
   ) {
     super(filePath, allowReload, logger);
 
@@ -67,8 +69,11 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
   }
 
   async onChange(): Promise<void> {
+    console.log(`====== onChange`);
     const conditions = this.parse();
-    conditions.forEach(condition => validateRoleCondition(condition)); // todo validate only new added conditions?
+    if (conditions.length === 0) {
+      conditions.forEach(condition => validateRoleCondition(condition)); // todo validate only new added conditions?
+    }
 
     const newConditions = this.parse();
     const addedConditions: RoleConditionalPolicyDecision<PermissionAction>[] =
@@ -77,40 +82,62 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       [];
     // const updatedConditions: RoleConditionalPolicyDecision<PermissionAction>[] = [];
 
-    const existedConditions = (await this.conditionalStorage.filterConditions())
-      .map(condition => {
-        return {
-          ...condition,
-          permissionMapping: condition.permissionMapping.map(pm => pm.action),
-        };
-      })
-      .map(c => omit(c, ['id']));
-
-    console.log(
-      `========== existed conditions ${JSON.stringify(existedConditions)}`,
-    );
+    const existedConditions = (
+      await this.conditionalStorage.filterConditions()
+    ).map(condition => {
+      return {
+        ...condition,
+        permissionMapping: condition.permissionMapping.map(pm => pm.action),
+      };
+    });
 
     // Find added conditions
     for (const condition of newConditions) {
+      if (!condition) {
+        continue;
+      }
+
+      const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
+        condition.roleEntityRef,
+      );
+      if (!roleMetadata) {
+        this.logger.warn(
+          `skip to add condition for role ${condition.roleEntityRef}. Role does not exist`,
+        ); // todo: use audit log
+        continue;
+      }
+      if (roleMetadata.source !== 'csv-file') {
+        this.logger.warn(
+          `skip to add condition for role ${condition.roleEntityRef}. Role is not from csv-file`,
+        ); // todo: use audit log
+        continue;
+      }
+
       const existingCondition = existedConditions.find(c =>
-        deepSortEqual(c, omit(condition, ['id'])),
+        deepSortEqual(omit(c, ['id']), omit(condition, ['id'])),
       );
-      console.log(
-        `====== ${JSON.stringify(existingCondition)} ${JSON.stringify(condition)}`,
-      );
+
       if (!existingCondition) {
         addedConditions.push(condition);
       }
     }
 
     // Find removed conditions
-    // for (const condition of this.conditionsDiff.addedConditions) {
-    //   // this.conditionalStorage.filterConditions()
-    //   const existingCondition = newConditions.find(c => c.id === condition.id);
-    //   if (!existingCondition) {
-    //     removedConditions.push(condition);
-    //   }
-    // }
+    const existedFileConditions = await existedConditions.filter(async c => {
+      const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
+        c.roleEntityRef,
+      );
+      return roleMetadata && roleMetadata.source === 'csv-file';
+    });
+
+    console.log(
+      `====== existed file conditions ${JSON.stringify(existedFileConditions)}`,
+    );
+    for (const condition of existedConditions) {
+      if (!newConditions.find(c => deepSortEqual(c, omit(condition, ['id'])))) {
+        removedConditions.push(condition);
+      }
+    }
 
     // Find updated conditions
     // for (const condition of newConditions) {
@@ -189,7 +216,14 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
   async removeConditions(): Promise<void> {
     try {
       for (const condition of this.conditionsDiff.removedConditions) {
-        await this.conditionalStorage.deleteCondition(condition.id);
+        const conditionToDelete =
+          await this.conditionalStorage.filterConditions(
+            condition.roleEntityRef,
+            condition.pluginId,
+            condition.resourceType,
+            condition.permissionMapping,
+          );
+        await this.conditionalStorage.deleteCondition(conditionToDelete[0].id);
       }
     } catch (error) {
       console.error('Error removing conditions:', error);
