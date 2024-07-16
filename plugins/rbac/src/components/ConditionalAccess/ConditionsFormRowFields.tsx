@@ -15,14 +15,34 @@ import { ConditionsData, RuleParamsErrors, RulesData } from './types';
 
 const useStyles = makeStyles(theme => ({
   params: {
+    '& div[class*="MuiInputBase-root"]': {
+      backgroundColor: theme.palette.background.paper,
+    },
     '& span': {
       color: theme.palette.textSubtle,
     },
     '& input': {
       color: theme.palette.textContrast,
     },
-    '& fieldset': {
+    '& fieldset.MuiOutlinedInput-notchedOutline': {
       borderColor: theme.palette.grey[500],
+    },
+    '& div.MuiOutlinedInput-root': {
+      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+        borderColor: theme.palette.primary.light,
+      },
+      '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+        borderColor: theme.palette.status.error,
+        '&:hover': {
+          borderColor: theme.palette.status.error,
+        },
+      },
+    },
+    '& label.MuiFormLabel-root.Mui-focused': {
+      color: theme.palette.primary.light,
+    },
+    '& label.MuiFormLabel-root.Mui-error': {
+      color: theme.palette.status.error,
     },
     '& div.MuiOutlinedInput-root:hover fieldset': {
       borderColor:

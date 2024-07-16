@@ -21,11 +21,10 @@ const useStyles = makeStyles(theme => ({
     borderRadius: '4px',
     backgroundColor: theme.palette.background.default,
     '& input': {
-      backgroundColor: `${theme.palette.background.default}!important`,
       color: `${theme.palette.textContrast}!important`,
       '&:-internal-autofill-selected, &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active':
         {
-          WebkitBoxShadow: `0 0 0px 1000px ${theme.palette.background.default} inset`,
+          WebkitBoxShadow: `0 0 0px 1000px ${theme.palette.background.paper} inset`,
           WebkitTextFillColor: `${theme.palette.textContrast}!important`,
           caretColor: `${theme.palette.textContrast}!important`,
         },
@@ -35,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   criteriaButtonGroup: {
-    backgroundColor: 'inherit',
+    backgroundColor: theme.palette.background.paper,
     width: '80%',
   },
   criteriaButton: {
