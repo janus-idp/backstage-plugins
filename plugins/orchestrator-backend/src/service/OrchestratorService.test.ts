@@ -1,6 +1,5 @@
 import {
   ProcessInstance,
-  ProcessInstanceVariables,
   WorkflowDefinition,
   WorkflowExecutionResponse,
   WorkflowInfo,
@@ -319,7 +318,7 @@ describe('OrchestratorService', () => {
   });
 
   describe('fetchInstanceVariables', () => {
-    const variables: ProcessInstanceVariables = { foo: 'bar' };
+    const variables: object = { foo: 'bar' };
 
     beforeEach(() => {
       jest.clearAllMocks();

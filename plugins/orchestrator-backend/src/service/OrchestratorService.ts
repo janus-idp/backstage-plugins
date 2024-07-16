@@ -83,7 +83,7 @@ export class OrchestratorService {
   public async fetchInstanceVariables(args: {
     instanceId: string;
     cacheHandler?: CacheHandler;
-  }): Promise<ProcessInstanceVariables | undefined> {
+  }): Promise<object | undefined> {
     const { instanceId, cacheHandler } = args;
     const definitionId =
       await this.dataIndexService.fetchDefinitionIdByInstanceId(instanceId);

@@ -10,8 +10,8 @@ import Typography from '@mui/material/Typography';
 
 import {
   capitalize,
-  ProcessInstance,
-  ProcessInstanceStateValues,
+  ProcessInstanceDTO,
+  ProcessInstanceStatusDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { VALUE_UNAVAILABLE } from '../constants';
@@ -20,7 +20,7 @@ import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicat
 import { WorkflowRunDetail } from './WorkflowRunDetail';
 
 type WorkflowDetailsCardProps = {
-  assessedBy?: ProcessInstance;
+  assessedBy?: ProcessInstanceDTO;
   details: WorkflowRunDetail;
 };
 
@@ -49,7 +49,7 @@ export const WorkflowRunDetails: React.FC<WorkflowDetailsCardProps> = ({
           <Typography variant="subtitle2" component="div">
             <b>
               <WorkflowInstanceStatusIndicator
-                status={details.status as ProcessInstanceStateValues}
+                status={details.status as ProcessInstanceStatusDTO}
               />
             </b>
           </Typography>

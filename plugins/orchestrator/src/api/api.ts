@@ -4,8 +4,8 @@ import { JsonObject } from '@backstage/types';
 import { AxiosResponse } from 'axios';
 
 import {
-  AssessedProcessInstance,
-  ProcessInstance,
+  AssessedProcessInstanceDTO,
+  ProcessInstanceListResultDTO,
   WorkflowDefinition,
   WorkflowExecutionResponse,
   WorkflowInputSchemaResponse,
@@ -34,7 +34,7 @@ export interface OrchestratorApi {
   getInstance(
     instanceId: string,
     includeAssessment: boolean,
-  ): Promise<AssessedProcessInstance>;
+  ): Promise<AxiosResponse<AssessedProcessInstanceDTO>>;
 
   getWorkflowDataInputSchema(args: {
     workflowId: string;
@@ -50,7 +50,7 @@ export interface OrchestratorApi {
     AxiosResponse<WorkflowOverviewListResultDTO>
   >;
 
-  listInstances(): Promise<ProcessInstance[]>;
+  listInstances(): Promise<AxiosResponse<ProcessInstanceListResultDTO>>;
 }
 
 export const orchestratorApiRef = createApiRef<OrchestratorApi>({

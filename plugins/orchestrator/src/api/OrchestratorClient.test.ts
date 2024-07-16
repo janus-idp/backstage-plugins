@@ -9,8 +9,11 @@ import axios, {
 } from 'axios';
 
 import {
+  AssessedProcessInstanceDTO,
   DefaultApi,
   PaginationInfoDTO,
+  ProcessInstanceListResultDTO,
+  QUERY_PARAM_INCLUDE_ASSESSMENT,
   WorkflowExecutionResponse,
   WorkflowFormatDTO,
   WorkflowOverviewDTO,
@@ -363,7 +366,7 @@ describe('OrchestratorClient', () => {
       expect(result.data).toEqual(mockWorkflowOverviews);
       expect(axios.request).toHaveBeenCalledTimes(1);
       expect(axios.request).toHaveBeenCalledWith(
-        getAxiosTestRequest('v2/workflows/overview', paginationInfo),
+        getAxiosTestRequest('v2/workflows/overview', undefined, paginationInfo),
       );
       expect(getWorkflowsOverviewSpy).toHaveBeenCalledTimes(1);
       expect(getWorkflowsOverviewSpy).toHaveBeenCalledWith(
@@ -391,33 +394,60 @@ describe('OrchestratorClient', () => {
   describe('listInstances', () => {
     it('should return instances when successful', async () => {
       // Given
-      const mockInstances = [{ id: 'instance123', name: 'Instance 1' }];
+      const paginationInfo: PaginationInfoDTO = {
+        page: 1,
+        pageSize: 5,
+        orderBy: 'name',
+        orderDirection: 'ASC',
+      };
+      const mockInstances: ProcessInstanceListResultDTO = {
+        items: [{ id: 'instance123', processId: 'process001', nodes: [] }],
+        paginationInfo,
+      };
 
-      // Mock fetch to simulate a successful response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValue(mockInstances),
-      });
+      const mockResponse: AxiosResponse<ProcessInstanceListResultDTO> = {
+        data: mockInstances,
+        status: 200, // Set status code (optional)
+        statusText: 'OK', // Set status text (optional)
+        headers: {} as RawAxiosResponseHeaders,
+        config: {} as InternalAxiosRequestConfig,
+      };
+
+      // Spy DefaultApi
+      const getInstancesSpy = jest.spyOn(DefaultApi.prototype, 'getInstances');
+
+      // Mock axios request to simulate a successful response
+      axios.request = jest.fn().mockResolvedValueOnce(mockResponse);
 
       // When
-      const result = await orchestratorClient.listInstances();
+      const result = await orchestratorClient.listInstances(paginationInfo);
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${baseUrl}/instances`, {
-        headers: defaultAuthHeaders,
-      });
-      expect(result).toEqual(mockInstances);
+      expect(result).toBeDefined();
+      expect(result.data).toEqual(mockInstances);
+      expect(axios.request).toHaveBeenCalledTimes(1);
+      expect(axios.request).toHaveBeenCalledWith(
+        getAxiosTestRequest(
+          'v2/workflows/instances',
+          undefined,
+          paginationInfo,
+        ),
+      );
+      expect(getInstancesSpy).toHaveBeenCalledTimes(1);
+      expect(getInstancesSpy).toHaveBeenCalledWith(
+        paginationInfo.page,
+        paginationInfo.pageSize,
+        paginationInfo.orderBy,
+        paginationInfo.orderDirection,
+        getDefaultTestRequestConfig(),
+      );
     });
 
     it('should throw a ResponseError when listing instances fails', async () => {
       // Given
-      // Mock fetch to simulate a failed response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found',
-      });
-
+      axios.request = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('Simulated error'));
       // When
       const promise = orchestratorClient.listInstances();
 
@@ -429,15 +459,32 @@ describe('OrchestratorClient', () => {
     it('should return instance when successful', async () => {
       // Given
       const instanceId = 'instance123';
+      const instanceIdParent = 'instance000';
       const includeAssessment = false;
-      const mockInstance = { id: instanceId, name: 'Instance 1' };
+      const mockInstance: AssessedProcessInstanceDTO = {
+        instance: { id: instanceId, processId: 'process002', nodes: [] },
+        assessedBy: {
+          id: instanceIdParent,
+          processId: 'process001',
+          nodes: [],
+        },
+      };
 
-      // Mock fetch to simulate a successful response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValue(mockInstance),
-      });
+      const mockResponse: AxiosResponse<AssessedProcessInstanceDTO> = {
+        data: mockInstance,
+        status: 200, // Set status code (optional)
+        statusText: 'OK', // Set status text (optional)
+        headers: {} as RawAxiosResponseHeaders,
+        config: {} as InternalAxiosRequestConfig,
+      };
+      // Mock axios request to simulate a successful response
+      axios.request = jest.fn().mockResolvedValueOnce(mockResponse);
 
+      // Spy DefaultApi
+      const getInstanceSpy = jest.spyOn(
+        DefaultApi.prototype,
+        'getInstanceById',
+      );
       // When
       const result = await orchestratorClient.getInstance(
         instanceId,
@@ -445,25 +492,30 @@ describe('OrchestratorClient', () => {
       );
 
       // Then
-      const expectedEndpoint = `${baseUrl}/instances/${instanceId}?includeAssessment=${includeAssessment}`;
-
-      expect(fetch).toHaveBeenCalledWith(expectedEndpoint, {
-        headers: defaultAuthHeaders,
-      });
-      expect(result).toEqual(mockInstance);
+      expect(result).toBeDefined();
+      expect(result.data).toEqual(mockInstance);
+      expect(axios.request).toHaveBeenCalledTimes(1);
+      expect(axios.request).toHaveBeenCalledWith(
+        getAxiosTestRequest(
+          `v2/workflows/instances/${instanceId}`,
+          includeAssessment,
+        ),
+      );
+      expect(getInstanceSpy).toHaveBeenCalledTimes(1);
+      expect(getInstanceSpy).toHaveBeenCalledWith(
+        instanceId,
+        includeAssessment,
+        getDefaultTestRequestConfig(),
+      );
     });
 
     it('should throw a ResponseError when fetching the instance fails', async () => {
       // Given
       const instanceId = 'instance123';
 
-      // Mock fetch to simulate a failed response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found',
-      });
-
+      axios.request = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('Simulated error'));
       // When
       const promise = orchestratorClient.getInstance(instanceId);
 
@@ -643,6 +695,7 @@ describe('OrchestratorClient', () => {
 
   function getAxiosTestRequest(
     endpoint: string,
+    includeAssessment?: boolean,
     paginationInfo?: PaginationInfoDTO,
     method: string = 'GET',
   ): AxiosRequestConfig {
@@ -651,15 +704,22 @@ describe('OrchestratorClient', () => {
     return {
       ...req,
       method,
-      url: buildURLWithPagination(endpoint, paginationInfo),
+      url: buildURLWithPagination(endpoint, includeAssessment, paginationInfo),
     };
   }
 
   function buildURLWithPagination(
     endpoint: string,
+    includeAssessment?: boolean,
     paginationInfo?: PaginationInfoDTO,
   ): string {
     const url = new URL(endpoint, baseUrl);
+    if (includeAssessment !== undefined) {
+      url.searchParams.append(
+        QUERY_PARAM_INCLUDE_ASSESSMENT,
+        String(includeAssessment),
+      );
+    }
     if (paginationInfo?.page !== undefined) {
       url.searchParams.append('page', paginationInfo.page.toString());
     }

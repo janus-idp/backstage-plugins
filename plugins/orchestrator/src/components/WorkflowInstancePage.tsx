@@ -18,7 +18,7 @@ import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 
 import {
-  AssessedProcessInstance,
+  AssessedProcessInstanceDTO,
   orchestratorWorkflowExecutePermission,
   orchestratorWorkflowInstanceAbortPermission,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
@@ -104,34 +104,35 @@ export const WorkflowInstancePage = ({
     if (!instanceId && !queryInstanceId) {
       return undefined;
     }
-    return await orchestratorApi.getInstance(
+    const res = await orchestratorApi.getInstance(
       instanceId ?? queryInstanceId,
       true,
     );
+    return res.data;
   }, [instanceId, orchestratorApi, queryInstanceId]);
 
   const { loading, error, value, restart } = usePolling<
-    AssessedProcessInstance | undefined
+    AssessedProcessInstanceDTO | undefined
   >(
     fetchInstance,
     SHORT_REFRESH_INTERVAL,
-    (curValue: AssessedProcessInstance | undefined) =>
+    (curValue: AssessedProcessInstanceDTO | undefined) =>
       !!curValue &&
-      (curValue.instance.state === 'ACTIVE' ||
-        curValue.instance.state === 'PENDING' ||
-        !curValue.instance.state),
+      (curValue.instance.status === 'Active' ||
+        curValue.instance.status === 'Pending' ||
+        !curValue.instance.status),
   );
 
   const canAbort = React.useMemo(
     () =>
-      value?.instance.state === 'ACTIVE' || value?.instance.state === 'ERROR',
+      value?.instance.status === 'Active' || value?.instance.status === 'Error',
     [value],
   );
 
   const canRerun = React.useMemo(
     () =>
-      value?.instance.state === 'COMPLETED' ||
-      value?.instance.state === 'ABORTED',
+      value?.instance.status === 'Completed' ||
+      value?.instance.status === 'Aborted',
     [value],
   );
 
@@ -167,7 +168,7 @@ export const WorkflowInstancePage = ({
     const urlToNavigate = buildUrl(routeUrl, {
       [QUERY_PARAM_INSTANCE_ID]: value.instance.id,
       [QUERY_PARAM_ASSESSMENT_INSTANCE_ID]: value.assessedBy?.id,
-      [QUERY_PARAM_INSTANCE_STATE]: value.instance.state,
+      [QUERY_PARAM_INSTANCE_STATE]: value.instance.status,
     });
     navigate(urlToNavigate);
   }, [value, navigate, executeWorkflowLink]);

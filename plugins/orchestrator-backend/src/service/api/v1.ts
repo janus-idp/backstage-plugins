@@ -1,8 +1,6 @@
 import express from 'express';
 
 import {
-  AssessedProcessInstance,
-  ProcessInstance,
   ProcessInstanceVariables,
   WorkflowDefinition,
   WorkflowExecutionResponse,

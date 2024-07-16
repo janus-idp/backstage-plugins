@@ -7,7 +7,7 @@ import DotIcon from '@mui/icons-material/FiberManualRecord';
 
 import {
   capitalize,
-  ProcessInstanceStateValues,
+  ProcessInstanceStatusDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { VALUE_UNAVAILABLE } from '../constants';
@@ -18,7 +18,7 @@ export const WorkflowInstanceStatusIndicator = ({
   status,
   lastRunId,
 }: {
-  status?: ProcessInstanceStateValues;
+  status?: ProcessInstanceStatusDTO;
   lastRunId?: string;
 }) => {
   const iconColor = useWorkflowInstanceStateColors(status);
