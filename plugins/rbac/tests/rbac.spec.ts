@@ -43,7 +43,7 @@ test.describe('RBAC plugin', () => {
     const columns = [
       'Name',
       'Users and groups',
-      'Permission Policies',
+      'Accessible plugins',
       'Actions',
     ];
     await verifyColumnHeading(columns, page);
@@ -52,8 +52,8 @@ test.describe('RBAC plugin', () => {
     const usersAndGroups = new RegExp(
       /^(1\s(user|group)|[2-9]\s(users|groups))(, (1\s(user|group)|[2-9]\s(users|groups)))?$/,
     );
-    const permissionPolicies = /\d/;
-    const cellIdentifier = [roleName, usersAndGroups, permissionPolicies];
+    const accessiblePlugins = /\d/;
+    const cellIdentifier = [roleName, usersAndGroups, accessiblePlugins];
 
     await verifyCellsInTable(cellIdentifier, page);
   });
