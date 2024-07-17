@@ -5,6 +5,11 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { mockTransformedConditionRules } from '../../__fixtures__/mockTransformedConditionRules';
 import { ConditionsForm } from './ConditionsForm';
 
+jest.mock('@material-ui/core', () => ({
+  ...jest.requireActual('@material-ui/core'),
+  makeStyles: jest.fn().mockReturnValue(() => ({})),
+}));
+
 describe('ConditionsForm', () => {
   const selPluginResourceType = 'catalog-entity';
   const onSaveMock = jest.fn();
