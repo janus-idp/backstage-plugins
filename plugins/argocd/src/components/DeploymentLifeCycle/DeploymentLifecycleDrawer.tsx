@@ -51,6 +51,9 @@ const useDrawerStyles = makeStyles<Theme>(theme =>
       justifyContent: 'space-between',
       alignItems: 'baseline',
     },
+    commitMessage: {
+      wordBreak: 'break-word',
+    },
   }),
 );
 const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
@@ -167,7 +170,10 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
                     }}
                     label={latestRevision?.revision.slice(0, 7)}
                   />
-                  <Typography color="textSecondary">
+                  <Typography
+                    color="textSecondary"
+                    className={classes.commitMessage}
+                  >
                     {revisionsMap?.[latestRevision?.revision] ? (
                       <>
                         {revisionsMap?.[latestRevision?.revision]?.message} by{' '}
@@ -193,7 +199,11 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
                     Deployment
                   </Typography>
 
-                  <Typography variant="body2" color="textSecondary">
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    className={classes.commitMessage}
+                  >
                     Image{' '}
                     <Link
                       href={`https://${app?.status?.summary?.images?.[0]}`}
@@ -257,7 +267,11 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
                             Deployment
                           </Typography>
 
-                          <Typography variant="body2" color="textSecondary">
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            className={classes.commitMessage}
+                          >
                             {revisionsMap[dep.revision]?.message}{' '}
                             <Link
                               aria-disabled={!!commitUrl}
