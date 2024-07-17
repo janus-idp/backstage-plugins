@@ -27,7 +27,7 @@
   },
   "scripts": {},
   "dependencies": {
-    "@types/express": "4.17.20",
+    "@types/express": "4.17.21",
     "express": "^4.18.2",
     "express-promise-router": "^4.1.1",
     "http-proxy-middleware": "^2.0.6",
