@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.27.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.26.0...@janus-idp/backstage-plugin-kiali@1.27.0) (2024-07-17)
+
+
+### Features
+
+* **kiali:** sticky headers for tables ([#1877](https://github.com/janus-idp/backstage-plugins/issues/1877)) ([64578d9](https://github.com/janus-idp/backstage-plugins/commit/64578d9c409d5e0d5ed58a93d911ecfe29587679))
+
 ## @janus-idp/backstage-plugin-kiali [1.26.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.25.0...@janus-idp/backstage-plugin-kiali@1.26.0) (2024-07-10)
 
 
