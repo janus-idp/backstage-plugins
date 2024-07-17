@@ -84,6 +84,8 @@ export interface Feature {
   AddedBy: string;
   Version: string;
   Vulnerabilities?: Vulnerability[];
+  BaseScores?: number[];
+  CVEIds?: string[];
 }
 
 export interface Vulnerability {
@@ -105,7 +107,7 @@ export interface VulnerabilityMetadata {
   NVD: {
     CVSSv3: {
       Vectors: string;
-      Score: number;
+      Score: number | string;
     };
   };
 }
@@ -136,6 +138,7 @@ export interface ManifestByDigestResponse {
   manifest_data: string;
   config_media_type: string;
   layers: LayerByDigest[];
+  layers_compressed_size: number;
 }
 
 export interface LayerByDigest {
