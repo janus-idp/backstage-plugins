@@ -17,7 +17,7 @@ import { TextOrLink } from '../../components/TextOrLink';
 import { LocalTime } from '../../components/Time/LocalTime';
 import { isMultiCluster, serverConfig } from '../../config';
 import { KialiIcon } from '../../config/KialiIcon';
-import { kialiStyle } from '../../styles/StyleUtils';
+import { cardsHeight, kialiStyle } from '../../styles/StyleUtils';
 import { AppWorkload } from '../../types/App';
 import { ServiceDetailsInfo, WorkloadOverview } from '../../types/ServiceInfo';
 
@@ -170,7 +170,7 @@ export const ServiceDescription: React.FC<ServiceInfoDescriptionProps> = (
   }
 
   return (
-    <Card id="ServiceDescriptionCard">
+    <Card id="ServiceDescriptionCard" style={{ height: cardsHeight }}>
       <CardHeader
         title={
           <>

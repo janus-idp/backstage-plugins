@@ -5,6 +5,7 @@ import { NestedCSSProperties } from 'typestyle/lib/types';
 
 const cssPrefix = process.env.CSS_PREFIX ?? 'kiali';
 
+export const cardsHeight = '300px';
 /**
  * Add prefix to CSS classname (mandatory in some plugins like OSSMC)
  * Default prefix value is kiali if the environment variable CSS_PREFIX is not defined

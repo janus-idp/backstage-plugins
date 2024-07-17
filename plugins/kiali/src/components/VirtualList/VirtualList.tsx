@@ -142,13 +142,16 @@ export const VirtualList = <R extends RenderResource>(
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property.toLowerCase());
   };
-
+  const heightStyle =
+    listProps.view === ENTITY || listProps.view === DRAWER
+      ? { maxHeight: '300px' }
+      : {};
   return (
     <div>
       <Paper className="Paper">
         {listProps.tableToolbar}
-        <TableContainer>
-          <Table>
+        <TableContainer style={heightStyle}>
+          <Table stickyHeader>
             <TableHead style={{ border: 'collapse', background: 'white' }}>
               <TableRow>
                 {columns.map((column: ResourceType<any>, index: number) => (

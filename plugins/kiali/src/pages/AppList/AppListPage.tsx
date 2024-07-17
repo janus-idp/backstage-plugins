@@ -16,7 +16,7 @@ import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
 import { AppListItem } from '../../types/AppList';
-import { ENTITY } from '../../types/types';
+import { DRAWER, ENTITY } from '../../types/types';
 import { NamespaceInfo } from '../Overview/NamespaceInfo';
 import { getNamespaces } from '../Overview/OverviewPage';
 import * as AppListClass from './AppListClass';
@@ -130,15 +130,16 @@ export const AppListPage = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeNs, duration]);
 
-  return (
-    <div className={baseStyle}>
-      <Content>
+  const appContent = () => {
+    return (
+      <>
         {props.view !== ENTITY && (
           <DefaultSecondaryMasthead
             elements={grids()}
             onRefresh={() => getNS()}
           />
         )}
+
         <VirtualList
           activeNamespaces={namespaces}
           rows={allApps}
@@ -147,7 +148,20 @@ export const AppListPage = (props: {
           view={props.view}
           loading={loadingD}
         />
-      </Content>
+      </>
+    );
+  };
+
+  return (
+    <div className={baseStyle}>
+      {props.view !== ENTITY && props.view !== DRAWER && (
+        <Content>{appContent()}</Content>
+      )}
+      {(props.view === ENTITY || props.view === DRAWER) && (
+        <div style={{ paddingRight: '10px', paddingLeft: '10px' }}>
+          {appContent()}
+        </div>
+      )}
     </div>
   );
 };

@@ -7,7 +7,7 @@ import { HealthIndicator } from '../../components/Health/HealthIndicator';
 import { Labels } from '../../components/Label/Labels';
 import { PFBadge, PFBadges } from '../../components/Pf/PfBadges';
 import { isMultiCluster, serverConfig } from '../../config';
-import { kialiStyle } from '../../styles/StyleUtils';
+import { cardsHeight, kialiStyle } from '../../styles/StyleUtils';
 import { App } from '../../types/App';
 import * as H from '../../types/Health';
 
@@ -36,11 +36,15 @@ export const AppDescription: React.FC<AppDescriptionProps> = (
   }
 
   return props.app ? (
-    <Card id="AppDescriptionCard" data-test="app-description-card">
+    <Card
+      id="AppDescriptionCard"
+      data-test="app-description-card"
+      style={{ height: cardsHeight }}
+    >
       <CardHeader
         title={
           <>
-            <Typography variant="h6" style={{ margin: '10px' }}>
+            <Typography variant="h6">
               <div key="service-icon" className={iconStyle}>
                 <PFBadge badge={PFBadges.App} />
               </div>

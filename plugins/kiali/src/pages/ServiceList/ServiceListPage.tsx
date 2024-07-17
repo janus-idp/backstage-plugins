@@ -23,7 +23,7 @@ import { ServiceHealth } from '../../types/Health';
 import { validationKey } from '../../types/IstioConfigList';
 import { ObjectValidation, Validations } from '../../types/IstioObjects';
 import { ServiceList, ServiceListItem } from '../../types/ServiceList';
-import { ENTITY } from '../../types/types';
+import { DRAWER, ENTITY } from '../../types/types';
 import { sortIstioReferences } from '../AppList/FiltersAndSorts';
 import { NamespaceInfo } from '../Overview/NamespaceInfo';
 import { getNamespaces } from '../Overview/OverviewPage';
@@ -199,15 +199,16 @@ export const ServiceListPage = (props: {
     return <CircularProgress />;
   }
 
-  return (
-    <div className={baseStyle}>
-      <Content>
+  const serviceContent = () => {
+    return (
+      <>
         {props.view !== ENTITY && (
           <DefaultSecondaryMasthead
             elements={grids()}
             onRefresh={() => load()}
           />
         )}
+
         <VirtualList
           activeNamespaces={namespaces}
           rows={allServices}
@@ -216,7 +217,20 @@ export const ServiceListPage = (props: {
           view={props.view}
           loading={loadingD}
         />
-      </Content>
+      </>
+    );
+  };
+
+  return (
+    <div className={baseStyle}>
+      {props.view !== ENTITY && props.view !== DRAWER && (
+        <Content>{serviceContent()}</Content>
+      )}
+      {(props.view === ENTITY || props.view === DRAWER) && (
+        <div style={{ paddingRight: '10px', paddingLeft: '10px' }}>
+          {serviceContent()}
+        </div>
+      )}
     </div>
   );
 };

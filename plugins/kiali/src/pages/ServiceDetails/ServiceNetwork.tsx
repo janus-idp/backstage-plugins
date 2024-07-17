@@ -10,7 +10,7 @@ import {
 
 import { ValidationList } from '../../components/Validations/ValidationList';
 import { KialiIcon } from '../../config/KialiIcon';
-import { kialiStyle } from '../../styles/StyleUtils';
+import { cardsHeight, kialiStyle } from '../../styles/StyleUtils';
 import {
   Gateway,
   ObjectCheck,
@@ -106,7 +106,7 @@ export const ServiceNetwork: React.FC<ServiceNetworkProps> = (
   };
 
   return (
-    <Card id="ServiceNetworkCard">
+    <Card id="ServiceNetworkCard" style={{ height: cardsHeight }}>
       <CardHeader title={<Typography variant="h6">Network</Typography>} />
       <CardContent>
         <div key="network-list" className={resourceListStyle}>

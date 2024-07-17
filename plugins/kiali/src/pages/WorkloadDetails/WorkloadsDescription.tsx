@@ -22,7 +22,7 @@ import { LocalTime } from '../../components/Time/LocalTime';
 import { isMultiCluster, serverConfig } from '../../config';
 import { KialiIcon } from '../../config/KialiIcon';
 import { isGateway, isWaypoint } from '../../helpers/LabelFilterHelper';
-import { kialiStyle } from '../../styles/StyleUtils';
+import { cardsHeight, kialiStyle } from '../../styles/StyleUtils';
 import * as H from '../../types/Health';
 import { validationKey } from '../../types/IstioConfigList';
 import { Workload } from '../../types/Workload';
@@ -168,15 +168,11 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
   ) : undefined;
 
   return (
-    <Card>
+    <Card style={{ height: cardsHeight }}>
       <CardHeader
         title={
           <>
-            <Typography
-              variant="h6"
-              style={{ margin: '10px' }}
-              data-test="workload-title"
-            >
+            <Typography variant="h6" data-test="workload-title">
               <div key="service-icon" className={iconStyle} data-test="w-badge">
                 <PFBadge badge={PFBadges.Workload} position="top" />
               </div>
