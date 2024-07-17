@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-argocd [1.2.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.2.3...@janus-idp/backstage-plugin-argocd@1.2.4) (2024-07-17)
+
+
+### Bug Fixes
+
+* **argocd:** fix argocd commit message visibility ([#1874](https://github.com/janus-idp/backstage-plugins/issues/1874)) ([e558d75](https://github.com/janus-idp/backstage-plugins/commit/e558d7549c49a1821eafc9424f174c6d457ce414))
+
 ## @janus-idp/backstage-plugin-argocd [1.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.2.2...@janus-idp/backstage-plugin-argocd@1.2.3) (2024-06-21)
 
 
