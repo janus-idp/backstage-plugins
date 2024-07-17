@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.8.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.8.1...@janus-idp/backstage-plugin-quay@1.8.2) (2024-07-17)
+
+
+### Bug Fixes
+
+* **quay:** add mock data to quay dev mode tests ([#1860](https://github.com/janus-idp/backstage-plugins/issues/1860)) ([cbfcc49](https://github.com/janus-idp/backstage-plugins/commit/cbfcc4995f57d276abab4896efe8729761eff22f))
+
 ## @janus-idp/backstage-plugin-quay [1.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.8.0...@janus-idp/backstage-plugin-quay@1.8.1) (2024-06-19)
 
 
