@@ -7,6 +7,11 @@ import '@testing-library/jest-dom';
 import { mockTransformedConditionRules } from '../../__fixtures__/mockTransformedConditionRules';
 import { PermissionPoliciesFormRow } from './PermissionPoliciesFormRow';
 
+jest.mock('@material-ui/core', () => ({
+  ...jest.requireActual('@material-ui/core'),
+  makeStyles: jest.fn().mockReturnValue(() => ({})),
+}));
+
 describe('PermissionPoliciesFormRow', () => {
   const mockProps = {
     permissionPoliciesRowData: {
