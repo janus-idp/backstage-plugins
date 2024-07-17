@@ -33,6 +33,11 @@ const useCardStyles = makeStyles<Theme>(theme =>
       marginRight: theme.spacing(2.5),
       maxWidth: '300px',
     },
+    commitMessage: {
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+    },
   }),
 );
 
@@ -147,9 +152,25 @@ const DeploymentLifecycleCard: React.FC<DeploymentLifecycleCardProps> = ({
                     color="primary"
                     label={latestRevision?.revision.slice(0, 7)}
                   />
-                  <Typography variant="body2" color="textSecondary">
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    className={classes.commitMessage}
+                  >
                     {revisionsMap?.[latestRevision?.revision] ? (
-                      <>{revisionsMap?.[latestRevision?.revision]?.message}</>
+                      <Tooltip
+                        data-testid={`${latestRevision?.revision?.slice(
+                          0,
+                          5,
+                        )}-commit-message`}
+                        title={
+                          revisionsMap?.[latestRevision?.revision]?.message
+                        }
+                      >
+                        <span>
+                          {revisionsMap?.[latestRevision?.revision]?.message}
+                        </span>
+                      </Tooltip>
                     ) : (
                       <Skeleton />
                     )}
