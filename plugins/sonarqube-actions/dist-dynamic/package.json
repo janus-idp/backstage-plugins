@@ -27,7 +27,7 @@
   },
   "scripts": {},
   "dependencies": {
-    "yaml": "^2.3.3"
+    "yaml": "^2.4.5"
   },
   "devDependencies": {},
   "files": [
