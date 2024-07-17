@@ -28,9 +28,9 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^1.5.0",
-    "@backstage/core-components": "^0.14.8",
+    "@backstage/core-components": "^0.14.9",
     "@backstage/core-plugin-api": "^1.9.3",
-    "@backstage/plugin-catalog-react": "^1.12.1",
+    "@backstage/plugin-catalog-react": "^1.12.2",
     "@backstage/theme": "^0.5.6",
     "@mui/icons-material": "^5.15.18",
     "@mui/material": "^5.15.18",
@@ -43,10 +43,10 @@
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.26.10",
-    "@backstage/core-app-api": "1.13.0",
-    "@backstage/dev-utils": "1.0.34",
-    "@backstage/test-utils": "1.5.7",
+    "@backstage/cli": "0.26.11",
+    "@backstage/core-app-api": "1.14.0",
+    "@backstage/dev-utils": "1.0.35",
+    "@backstage/test-utils": "1.5.8",
     "@janus-idp/cli": "1.11.1",
     "@redhat-developer/red-hat-developer-hub-theme": "0.0.54",
     "@testing-library/jest-dom": "6.4.2",

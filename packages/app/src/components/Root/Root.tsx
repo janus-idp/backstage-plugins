@@ -11,6 +11,7 @@ import {
   useSidebarOpenState,
 } from '@backstage/core-components';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import { SidebarSearchModal } from '@backstage/plugin-search';
 import {
   Settings as SidebarSettings,
@@ -22,6 +23,7 @@ import ExtensionIcon from '@mui/icons-material/Extension';
 import HomeIcon from '@mui/icons-material/Home';
 import LibraryBooks from '@mui/icons-material/LibraryBooks';
 import MenuIcon from '@mui/icons-material/Menu';
+import GroupIcon from '@mui/icons-material/People';
 import SearchIcon from '@mui/icons-material/Search';
 import { makeStyles } from 'tss-react/mui';
 
@@ -72,6 +74,11 @@ export const Root = ({
           icon={HomeIcon as IconComponent}
           to="catalog"
           text="Home"
+        />
+        <MyGroupsSidebarItem
+          icon={GroupIcon as IconComponent}
+          singularTitle="My Group"
+          pluralTitle="My Groups"
         />
         <SidebarItem
           icon={ExtensionIcon as IconComponent}

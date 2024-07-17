@@ -1,5 +1,6 @@
 import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import {
   AuthorizeResult,
   BasicPermission,
