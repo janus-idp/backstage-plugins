@@ -123,7 +123,7 @@ export const PermissionPoliciesFormRow = ({
             onChange={(_e, value) =>
               onChangePermission(
                 value ?? '',
-                permissionPoliciesData?.pluginsPermissions[
+                permissionPoliciesData?.pluginsPermissions?.[
                   permissionPoliciesRowData.plugin
                 ]?.policies[value ?? '']?.isResourced ?? false,
                 value
@@ -134,6 +134,7 @@ export const PermissionPoliciesFormRow = ({
               )
             }
             getOptionDisabled={getPermissionDisabled}
+            getOptionLabel={option => option || ''}
             renderInput={(params: any) => (
               <TextField
                 {...params}

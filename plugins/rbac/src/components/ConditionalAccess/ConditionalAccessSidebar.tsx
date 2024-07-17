@@ -1,9 +1,9 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core';
+import Drawer from '@material-ui/core/Drawer';
 import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
@@ -12,8 +12,13 @@ import { ConditionsData, RulesData } from './types';
 
 const useDrawerStyles = makeStyles(() => ({
   paper: {
-    width: '50%',
+    ['@media (max-width: 960px)']: {
+      width: '-webkit-fill-available',
+    },
+    width: '50vw',
+    height: '100vh',
     gap: '3%',
+    display: '-webkit-inline-box',
   },
 }));
 
@@ -21,7 +26,6 @@ const useDrawerContentStyles = makeStyles(theme => ({
   sidebar: {
     display: 'flex',
     flexFlow: 'column',
-    height: '100%',
     justifyContent: 'space-between',
   },
   header: {

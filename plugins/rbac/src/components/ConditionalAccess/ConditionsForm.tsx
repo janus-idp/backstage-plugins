@@ -1,8 +1,6 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
+import { Box, Button, makeStyles } from '@material-ui/core';
 
 import { ConditionsFormRow } from './ConditionsFormRow';
 import { criterias } from './const';
@@ -11,9 +9,9 @@ import { ConditionsData, RuleParamsErrors, RulesData } from './types';
 const useStyles = makeStyles(theme => ({
   form: {
     padding: theme.spacing(2.5),
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
+    paddingTop: 0,
     flexGrow: 1,
+    overflow: 'auto',
   },
   addConditionButton: {
     color: theme.palette.primary.light,
@@ -25,6 +23,9 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'baseline',
     borderTop: `2px solid ${theme.palette.border}`,
     padding: theme.spacing(2.5),
+    '& button': {
+      textTransform: 'none',
+    },
   },
 }));
 
@@ -109,6 +110,7 @@ export const ConditionsForm = ({
       <Box className={classes.footer}>
         <Button
           variant="contained"
+          color="primary"
           data-testid="save-conditions"
           disabled={isSaveDisabled()}
           onClick={() => {
@@ -121,6 +123,7 @@ export const ConditionsForm = ({
         </Button>
         <Button
           variant="outlined"
+          color="primary"
           onClick={onClose}
           data-testid="cancel-conditions"
         >
@@ -128,6 +131,7 @@ export const ConditionsForm = ({
         </Button>
         <Button
           variant="text"
+          color="primary"
           disabled={removeAllClicked || isNoRuleSelected()}
           onClick={() => {
             setRemoveAllClicked(true);

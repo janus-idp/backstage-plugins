@@ -14,11 +14,43 @@ import { RulesDropdownOption } from './RulesDropdownOption';
 import { ConditionsData, RuleParamsErrors, RulesData } from './types';
 
 const useStyles = makeStyles(theme => ({
-  bgPaper: {
-    backgroundColor: theme.palette.background.paper,
-  },
   params: {
-    fontFamily: theme.typography.fontFamily,
+    '& div[class*="MuiInputBase-root"]': {
+      backgroundColor: theme.palette.background.paper,
+    },
+    '& span': {
+      color: theme.palette.textSubtle,
+    },
+    '& input': {
+      color: theme.palette.textContrast,
+    },
+    '& fieldset.MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.palette.grey[500],
+    },
+    '& div.MuiOutlinedInput-root': {
+      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+        borderColor: theme.palette.primary.light,
+      },
+      '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+        borderColor: theme.palette.status.error,
+        '&:hover': {
+          borderColor: theme.palette.status.error,
+        },
+      },
+    },
+    '& label.MuiFormLabel-root.Mui-focused': {
+      color: theme.palette.primary.light,
+    },
+    '& label.MuiFormLabel-root.Mui-error': {
+      color: theme.palette.status.error,
+    },
+    '& div.MuiOutlinedInput-root:hover fieldset': {
+      borderColor:
+        theme.palette.type === 'dark' ? theme.palette.textContrast : 'unset',
+    },
+    '& label': {
+      color: theme.palette.textSubtle,
+    },
   },
 }));
 
@@ -94,6 +126,7 @@ export const ConditionsFormRowFields = ({
     >
       <Autocomplete
         style={{ marginTop: '27px', width: '50%' }}
+        className={classes.params}
         options={rules ?? []}
         value={oldCondition?.rule || null}
         getOptionDisabled={option =>
@@ -115,7 +148,6 @@ export const ConditionsFormRowFields = ({
         renderInput={(params: any) => (
           <TextField
             {...params}
-            className={classes.bgPaper}
             label="Rule"
             variant="outlined"
             placeholder="Select a rule"
@@ -147,8 +179,8 @@ export const ConditionsFormRowFields = ({
           />
         ) : (
           <TextField
+            className={classes.params}
             style={{ width: '100%', marginTop: '27px' }}
-            className={classes.bgPaper}
             disabled
             label="string, string"
             required
