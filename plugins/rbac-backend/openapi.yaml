@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
   title: RBAC Backend API
   description: >-
@@ -134,7 +134,7 @@ paths:
               schema:
                 type: array
                 items:
-                  '#ref': '#/components/schemas/RoleResponse'
+                  '$ref': '#/components/schemas/RoleResponse'
         '403':
           description: Refusal to authorize
     post:
@@ -144,7 +144,7 @@ paths:
         content:
           application/json:
             schema:
-              '#ref': '#/components/schemas/Role'
+              '$ref': '#/components/schemas/Role'
       responses:
         '201':
           description: New resource was successfully created.
@@ -167,7 +167,7 @@ paths:
           content:
             application/json:
               schema:
-                '#ref': '#/components/schemas/RoleResponse'
+                '$ref': '#/components/schemas/RoleResponse'
         '403':
           description: Refusal to authorize
         '404':
@@ -186,9 +186,9 @@ paths:
               type: object
               properties:
                 oldRole:
-                  '#ref': '#/components/schemas/Role'
+                  '$ref': '#/components/schemas/Role'
                 newRole:
-                  '#ref': '#/components/schemas/Role'
+                  '$ref': '#/components/schemas/Role'
       responses:
         '200':
           description: Request was successful.
@@ -228,7 +228,7 @@ paths:
               schema:
                 type: array
                 items:
-                  '#ref': '#/components/schemas/PermissionResponse'
+                  '$ref': '#/components/schemas/PermissionResponse'
         '403':
           description: Refusal to authorize
     post:
@@ -240,7 +240,7 @@ paths:
             schema:
               type: array
               items:
-                '#ref': '#/components/schemas/PermissionPolicy'
+                '$ref': '#/components/schemas/PermissionPolicy'
       responses:
         '201':
           description: New resource was successfully created.
@@ -263,7 +263,7 @@ paths:
               schema:
                 type: array
                 items:
-                  '#ref': '#/components/schemas/PermissionResponse'
+                  '$ref': '#/components/schemas/PermissionResponse'
         '403':
           description: Refusal to authorize
         '404':
@@ -357,7 +357,7 @@ paths:
             schema:
               type: array
               items:
-                '#ref': '#/components/schemas/PermissionPolicy'
+                '$ref': '#/components/schemas/PermissionPolicy'
       responses:
         '204':
           description: ok
