@@ -64,7 +64,12 @@ import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
-import { deepSortedEqual, isPermissionAction, policyToString } from '../helper';
+import {
+  buildRoleSourceMap,
+  deepSortedEqual,
+  isPermissionAction,
+  policyToString,
+} from '../helper';
 import { validateRoleCondition } from '../validation/condition-validation';
 import {
   validateEntityReference,
@@ -298,7 +303,7 @@ export class PoliciesServer {
         throw new Error(`Corresponding role ${entityRef} was not found`);
       }
 
-      await this.enforcer.addPolicies(processedPolicies, 'rest');
+      await this.enforcer.addPolicies(processedPolicies);
 
       await this.aLog.auditLog<PermissionAuditInfo>({
         message: `Created permission policies`,
@@ -385,7 +390,6 @@ export class PoliciesServer {
         await this.enforcer.updatePolicies(
           processedOldPolicy,
           processedNewPolicy,
-          'rest',
         );
 
         await this.aLog.auditLog<PermissionAuditInfo>({
@@ -495,10 +499,7 @@ export class PoliciesServer {
       const roles = this.transformRoleToArray(roleRaw);
 
       for (const role of roles) {
-        if (
-          (await this.enforcer.hasGroupingPolicy(...role)) &&
-          !(await this.enforcer.hasFilteredPolicyMetadata(role, 'legacy'))
-        ) {
+        if (await this.enforcer.hasGroupingPolicy(...role)) {
           throw new ConflictError(); // 409
         }
         const roleString = JSON.stringify(role);
@@ -685,7 +686,6 @@ export class PoliciesServer {
     router.delete(
       '/roles/:kind/:namespace/:name',
       async (request, response) => {
-        let roleMembers = [];
         const decision = await this.authorize(
           request,
           identity,
@@ -698,11 +698,23 @@ export class PoliciesServer {
 
         const roleEntityRef = this.getEntityReference(request, true);
 
+        let roleMembers = [];
         if (request.query.memberReferences) {
-          const memberReferences = this.getFirstQuery(
+          const memberReference = this.getFirstQuery(
             request.query.memberReferences!,
           );
-          roleMembers.push([memberReferences, roleEntityRef]);
+          const gp = await this.enforcer.getFilteredGroupingPolicy(
+            0,
+            memberReference,
+            roleEntityRef,
+          );
+          if (gp.length > 0) {
+            roleMembers.push(gp[0]);
+          } else {
+            throw new NotFoundError(
+              `role member '${memberReference}' was not found`,
+            ); // 404
+          }
         } else {
           roleMembers = await this.enforcer.getFilteredGroupingPolicy(
             1,
@@ -712,7 +724,7 @@ export class PoliciesServer {
 
         for (const role of roleMembers) {
           if (!(await this.enforcer.hasGroupingPolicy(...role))) {
-            throw new NotFoundError(); // 404
+            throw new NotFoundError(`role member '${role[0]}' was not found`);
           }
         }
 
@@ -1021,16 +1033,20 @@ export class PoliciesServer {
   async transformPolicyArray(
     ...policies: string[][]
   ): Promise<RoleBasedPolicy[]> {
+    const roleToSourceMap = await buildRoleSourceMap(
+      policies,
+      this.roleMetadata,
+    );
+
     const roleBasedPolices: RoleBasedPolicy[] = [];
     for (const p of policies) {
       const [entityReference, permission, policy, effect] = p;
-      const metadata = await this.enforcer.getMetadata(p);
       roleBasedPolices.push({
         entityReference,
         permission,
         policy,
         effect,
-        metadata,
+        metadata: { source: roleToSourceMap.get(entityReference)! },
       });
     }
 
@@ -1176,14 +1192,7 @@ export class PoliciesServer {
         ); // 404
       }
 
-      if (
-        !isOld &&
-        (await this.enforcer.hasPolicy(...transformedPolicy)) &&
-        !(await this.enforcer.hasFilteredPolicyMetadata(
-          transformedPolicy,
-          'legacy',
-        ))
-      ) {
+      if (!isOld && (await this.enforcer.hasPolicy(...transformedPolicy))) {
         throw new ConflictError(
           `Policy '${policyToString(
             transformedPolicy,

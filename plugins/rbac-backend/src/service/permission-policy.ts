@@ -43,7 +43,7 @@ import {
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { CSVFileWatcher } from '../file-permissions/csv-file-watcher';
-import { metadataStringToPolicy, removeTheDifference } from '../helper';
+import { removeTheDifference } from '../helper';
 import { validateEntityReference } from '../validation/policies-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
 
@@ -72,14 +72,18 @@ const useAdminsFromConfig = async (
   roleMetadataStorage: RoleMetadataStorage,
   knex: Knex,
 ) => {
-  const groupPoliciesToCompare: string[] = [];
   const addedGroupPolicies = new Map<string, string>();
+  const newGroupPolicies = new Map<string, string>();
 
   for (const admin of admins) {
     const entityRef = admin.getString('name');
     validateEntityReference(entityRef);
 
     addedGroupPolicies.set(entityRef, ADMIN_ROLE_NAME);
+
+    if (!(await enf.hasGroupingPolicy(...[entityRef, ADMIN_ROLE_NAME]))) {
+      newGroupPolicies.set(entityRef, ADMIN_ROLE_NAME);
+    }
   }
 
   const adminRoleMeta =
@@ -103,11 +107,8 @@ const useAdminsFromConfig = async (
     throw error;
   }
 
-  const addedRoleMembers = Array.from<string[]>(addedGroupPolicies.entries());
-  await enf.addOrUpdateGroupingPolicies(
-    addedRoleMembers,
-    getAdminRoleMetadata(),
-  );
+  const addedRoleMembers = Array.from<string[]>(newGroupPolicies.entries());
+  await enf.addGroupingPolicies(addedRoleMembers, getAdminRoleMetadata());
 
   await auditLogger.auditLog<RoleAuditInfo>({
     actorId: RBAC_BACKEND,
@@ -121,18 +122,13 @@ const useAdminsFromConfig = async (
     status: 'succeeded',
   });
 
-  const configPoliciesMetadata =
-    await enf.getFilteredPolicyMetadata('configuration');
-
-  for (const policyMetadata of configPoliciesMetadata) {
-    if (metadataStringToPolicy(policyMetadata.policy).length === 2) {
-      const stringPolicy = metadataStringToPolicy(policyMetadata.policy);
-      groupPoliciesToCompare.push(stringPolicy.at(0)!);
-    }
-  }
+  const configGroupPolicies = await enf.getFilteredGroupingPolicy(
+    1,
+    ADMIN_ROLE_NAME,
+  );
 
   await removeTheDifference(
-    groupPoliciesToCompare,
+    configGroupPolicies.map(gp => gp[0]),
     Array.from<string>(addedGroupPolicies.keys()),
     'configuration',
     ADMIN_ROLE_NAME,
@@ -147,12 +143,12 @@ const addAdminPermission = async (
   enf: EnforcerDelegate,
   auditLogger: AuditLogger,
 ) => {
-  await enf.addOrUpdatePolicy(policy, 'configuration');
+  await enf.addPolicy(policy);
 
   await auditLogger.auditLog<PermissionAuditInfo>({
     actorId: RBAC_BACKEND,
-    message: `Created or updated policy`,
-    eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,
+    message: `Created policy`,
+    eventName: PermissionEvents.CREATE_POLICY,
     metadata: { policies: [policy], source: 'configuration' },
     stage: HANDLE_RBAC_DATA_STAGE,
     status: 'succeeded',

@@ -12,31 +12,20 @@ import {
 import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
 
-import {
-  PermissionPolicyMetadata,
-  Source,
-} from '@janus-idp/backstage-plugin-rbac-common';
+import { Source } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { resolve } from 'path';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import {
-  PermissionPolicyMetadataDao,
-  PolicyMetadataStorage,
-} from '../database/policy-metadata-storage';
-import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
-import { policyToString } from '../helper';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
 import { ADMIN_ROLE_AUTHOR } from '../service/permission-policy';
-import {
-  CSV_PERMISSION_POLICY_FILE_AUTHOR,
-  CSVFileWatcher,
-} from './csv-file-watcher';
+import { CSVFileWatcher } from './csv-file-watcher';
 
 const legacyPermission = [
   'role:default/legacy',
@@ -90,7 +79,14 @@ const loggerMock: any = {
 
 const modifiedBy = 'user:default/some-admin';
 
+const legacyRoleMetadata: RoleMetadataDao = {
+  roleEntityRef: legacyPermission[0],
+  source: 'legacy',
+  modifiedBy,
+};
+
 const roleMetadataStorageMock: RoleMetadataStorage = {
+  filterRoleMetadata: jest.fn().mockImplementation(() => []),
   findRoleMetadata: jest
     .fn()
     .mockImplementation(
@@ -99,11 +95,7 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
         _trx: Knex.Knex.Transaction,
       ): Promise<RoleMetadataDao> => {
         if (roleEntityRef === legacyPermission[0]) {
-          return {
-            roleEntityRef: legacyPermission[0],
-            source: 'legacy',
-            modifiedBy,
-          };
+          return legacyRoleMetadata;
         } else if (roleEntityRef === restPermission[0]) {
           return {
             roleEntityRef: restPermission[0],
@@ -124,70 +116,6 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
   createRoleMetadata: jest.fn().mockImplementation(),
   updateRoleMetadata: jest.fn().mockImplementation(),
   removeRoleMetadata: jest.fn().mockImplementation(),
-};
-
-const policyMetadataStorageMock: PolicyMetadataStorage = {
-  findPolicyMetadataBySource: jest
-    .fn()
-    .mockImplementation(
-      async (source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-        if (source === 'legacy') {
-          return [
-            {
-              id: 0,
-              policy: '[role:default/legacy, catalog-entity, update, allow]',
-              source: 'legacy',
-            },
-            {
-              id: 1,
-              policy: '[user:default/guest, role:default/legacy]',
-              source: 'legacy',
-            },
-          ];
-        } else if (source === 'rest') {
-          return [
-            {
-              id: 0,
-              policy: '[role:default/rest, catalog-entity, update, allow]',
-              source: 'rest',
-            },
-          ];
-        } else if (source === 'configuration') {
-          return [
-            {
-              id: 0,
-              policy: '[role:default/config, catalog-entity, update, allow]',
-              source: 'configuration',
-            },
-          ];
-        }
-        return [];
-      },
-    ),
-  findPolicyMetadata: jest
-    .fn()
-    .mockImplementation(
-      async (
-        policy: string[],
-        _trx: Knex.Knex.Transaction,
-      ): Promise<PermissionPolicyMetadata> => {
-        if (
-          policyToString(policy) === policyToString(legacyPermission) ||
-          policyToString(policy) === policyToString(legacyRole)
-        ) {
-          return { source: 'legacy' };
-        } else if (policyToString(policy) === policyToString(restPermission)) {
-          return { source: 'rest' };
-        } else if (
-          policyToString(policy) === policyToString(configPermission)
-        ) {
-          return { source: 'configuration' };
-        }
-        return { source: 'csv-file' };
-      },
-    ),
-  createPolicyMetadata: jest.fn().mockImplementation(),
-  removePolicyMetadata: jest.fn().mockImplementation(),
 };
 
 const dbManagerMock = Knex.knex({ client: MockClient });
@@ -222,11 +150,6 @@ describe('CSVFileWatcher', () => {
   let enforcerDelegate: EnforcerDelegate;
   let csvFileName: string;
 
-  let enfAddPolicySpy: jest.SpyInstance<Promise<boolean>, string[], any>;
-  let enfRemovePolicySpy: jest.SpyInstance<Promise<boolean>, string[], any>;
-  let enfAddGroupingSpy: jest.SpyInstance<Promise<boolean>, string[], any>;
-  let enfRemoveGroupingSpy: jest.SpyInstance<Promise<boolean>, string[], any>;
-
   beforeEach(async () => {
     csvFileName = resolve(
       __dirname,
@@ -245,17 +168,7 @@ describe('CSVFileWatcher', () => {
 
     const knex = Knex.knex({ client: MockClient });
 
-    enforcerDelegate = new EnforcerDelegate(
-      enf,
-      policyMetadataStorageMock,
-      roleMetadataStorageMock,
-      knex,
-    );
-
-    enfAddPolicySpy = jest.spyOn(enf, 'addPolicy');
-    enfRemovePolicySpy = jest.spyOn(enf, 'removePolicy');
-    enfAddGroupingSpy = jest.spyOn(enf, 'addGroupingPolicy');
-    enfRemoveGroupingSpy = jest.spyOn(enf, 'removeGroupingPolicy');
+    enforcerDelegate = new EnforcerDelegate(enf, roleMetadataStorageMock, knex);
 
     csvFileWatcher = new CSVFileWatcher(
       enforcerDelegate,
@@ -264,6 +177,7 @@ describe('CSVFileWatcher', () => {
       auditLoggerMock,
     );
     auditLoggerMock.auditLog.mockReset();
+    (roleMetadataStorageMock.updateRoleMetadata as jest.Mock).mockClear();
   });
 
   afterEach(() => {
@@ -287,8 +201,9 @@ describe('CSVFileWatcher', () => {
       expect(enfRoles).toStrictEqual(currentRoles);
     });
 
-    it('should be able to update legacy permission policies during initialization', async () => {
+    it('should be able to update legacy role metadata during initialization', async () => {
       const permissionPolicies = [
+        ['role:default/legacy', 'catalog-entity', 'update', 'allow'],
         ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
         ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
         [
@@ -299,44 +214,70 @@ describe('CSVFileWatcher', () => {
         ],
         ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
         ['role:default/known_role', 'test.resource.deny', 'use', 'allow'],
-        ['role:default/legacy', 'catalog-entity', 'update', 'allow'],
       ];
 
-      await enforcerDelegate.addPolicy(legacyPermission, 'legacy');
+      await enforcerDelegate.addPolicy(legacyPermission);
+      await enforcerDelegate.addGroupingPolicies(
+        [['user:default/guest', 'role:default/legacy']],
+        legacyRoleMetadata!,
+      );
+      roleMetadataStorageMock.filterRoleMetadata = jest
+        .fn()
+        .mockImplementation((source: Source) => {
+          if (source === 'legacy') {
+            return [legacyRoleMetadata];
+          }
+          return [];
+        });
+      (roleMetadataStorageMock.updateRoleMetadata as jest.Mock).mockReset();
 
       await csvFileWatcher.initialize(csvFileName, false);
 
       const enfPolicies = await enforcerDelegate.getPolicy();
 
-      expect(enfRemovePolicySpy).toHaveBeenCalledWith(...legacyPermission);
-
-      expect(enfAddPolicySpy).toHaveBeenCalledWith(...legacyPermission);
-
+      const legacyMetadatas = (
+        roleMetadataStorageMock.updateRoleMetadata as jest.Mock
+      ).mock.calls
+        .map(call => call[0])
+        .filter(metadata => metadata.roleEntityRef === 'role:default/legacy');
+      expect(legacyMetadatas.length).toEqual(1);
+      // legacy source should be updated from legacy to csv-file
+      expect(legacyMetadatas[0].source).toEqual('csv-file');
       expect(enfPolicies).toStrictEqual(permissionPolicies);
     });
 
     it('should be able to update legacy roles during initialization', async () => {
       const roles = [
+        ['user:default/guest', 'role:default/legacy'],
         ['user:default/guest', 'role:default/catalog-writer'],
         ['user:default/guest', 'role:default/catalog-reader'],
         ['user:default/guest', 'role:default/catalog-deleter'],
         ['user:default/known_user', 'role:default/known_role'],
-        ['user:default/guest', 'role:default/legacy'],
       ];
 
-      await enforcerDelegate.addGroupingPolicy(legacyRole, {
-        roleEntityRef: legacyRole[1],
-        source: 'legacy',
-        modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
-      });
+      await enforcerDelegate.addGroupingPolicy(legacyRole, legacyRoleMetadata);
+      roleMetadataStorageMock.filterRoleMetadata = jest
+        .fn()
+        .mockImplementation((source: Source) => {
+          if (source === 'legacy') {
+            return [legacyRoleMetadata];
+          }
+          return [];
+        });
+      (roleMetadataStorageMock.updateRoleMetadata as jest.Mock).mockReset();
 
       await csvFileWatcher.initialize(csvFileName, false);
 
       const enfPolicies = await enforcerDelegate.getGroupingPolicy();
 
-      expect(enfRemoveGroupingSpy).toHaveBeenCalledWith(...legacyRole);
-
-      expect(enfAddGroupingSpy).toHaveBeenCalledWith(...legacyRole);
+      const legacyMetadatas = (
+        roleMetadataStorageMock.updateRoleMetadata as jest.Mock
+      ).mock.calls
+        .map(call => call[0])
+        .filter(metadata => metadata.roleEntityRef === 'role:default/legacy');
+      expect(legacyMetadatas.length).toEqual(1);
+      // legacy source should be updated from legacy to csv-file
+      expect(legacyMetadatas[0].source).toEqual('csv-file');
 
       expect(enfPolicies).toStrictEqual(roles);
     });
@@ -545,8 +486,8 @@ describe('CSVFileWatcher', () => {
         ['role:default/rest', 'catalog-entity', 'update', 'allow'],
       ];
 
-      await enforcerDelegate.addPolicy(configPermission, 'configuration');
-      await enforcerDelegate.addPolicy(restPermission, 'rest');
+      await enforcerDelegate.addPolicy(configPermission);
+      await enforcerDelegate.addPolicy(restPermission);
 
       csvFileWatcher.parse = jest.fn().mockImplementation(() => {
         return addContents;

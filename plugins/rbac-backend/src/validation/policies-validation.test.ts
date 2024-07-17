@@ -20,6 +20,7 @@ import {
 const modifiedBy = 'user:default/some-admin';
 
 const roleMetadataStorageMock: RoleMetadataStorage = {
+  filterRoleMetadata: jest.fn().mockImplementation(() => []),
   findRoleMetadata: jest
     .fn()
     .mockImplementation(

@@ -28,7 +28,6 @@ export const RoleEvents = {
 
 export const PermissionEvents = {
   CREATE_POLICY: 'CreatePolicy',
-  CREATE_OR_UPDATE_POLICY: 'CreateOrUpdatePolicy',
   UPDATE_POLICY: 'UpdatePolicy',
   DELETE_POLICY: 'DeletePolicy',
   GET_POLICY: 'GetPolicy',

@@ -16,6 +16,7 @@ export interface RoleMetadataDao extends RoleMetadata {
 }
 
 export interface RoleMetadataStorage {
+  filterRoleMetadata(source?: Source): Promise<RoleMetadataDao[]>;
   findRoleMetadata(
     roleEntityRef: string,
     trx?: Knex.Transaction,
@@ -27,7 +28,7 @@ export interface RoleMetadataStorage {
   updateRoleMetadata(
     roleMetadata: RoleMetadataDao,
     oldRoleEntityRef: string,
-    trx: Knex.Transaction,
+    externalTrx?: Knex.Transaction,
   ): Promise<void>;
   removeRoleMetadata(
     roleEntityRef: string,
@@ -37,6 +38,14 @@ export interface RoleMetadataStorage {
 
 export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
   constructor(private readonly knex: Knex<any, any[]>) {}
+
+  async filterRoleMetadata(source?: Source): Promise<RoleMetadataDao[]> {
+    return await this.knex.table(ROLE_METADATA_TABLE).where(builder => {
+      if (source) {
+        builder.where('source', source);
+      }
+    });
+  }
 
   async findRoleMetadata(
     roleEntityRef: string,
@@ -75,8 +84,9 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
   async updateRoleMetadata(
     newRoleMetadata: RoleMetadataDao,
     oldRoleEntityRef: string,
-    trx: Knex.Transaction,
+    externalTrx?: Knex.Transaction,
   ): Promise<void> {
+    const trx = externalTrx ?? (await this.knex.transaction());
     const currentMetadataDao = await this.findRoleMetadata(
       oldRoleEntityRef,
       trx,
@@ -103,6 +113,10 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       .where('id', currentMetadataDao.id)
       .update(newRoleMetadata)
       .returning('id');
+
+    if (!externalTrx) {
+      await trx.commit();
+    }
 
     if (!result || result.length === 0) {
       throw new Error(
