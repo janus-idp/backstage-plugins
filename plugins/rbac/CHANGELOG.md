@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.23.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.23.1...@janus-idp/backstage-plugin-rbac@1.23.2) (2024-07-17)
+
+
+### Bug Fixes
+
+* **rbac:** background color of sidebar in dark theme ([#1859](https://github.com/janus-idp/backstage-plugins/issues/1859)) ([ec6a2d8](https://github.com/janus-idp/backstage-plugins/commit/ec6a2d83e134988a963b331a0e2cd3a9bb58e26a))
+
 ## @janus-idp/backstage-plugin-rbac [1.23.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.23.0...@janus-idp/backstage-plugin-rbac@1.23.1) (2024-07-11)
 
 
