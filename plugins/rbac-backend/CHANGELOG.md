@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [4.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.3.3...@janus-idp/backstage-plugin-rbac-backend@4.3.4) (2024-07-17)
+
+
+### Bug Fixes
+
+* **rbac:** simplify db logic ([#1842](https://github.com/janus-idp/backstage-plugins/issues/1842)) ([cbe263b](https://github.com/janus-idp/backstage-plugins/commit/cbe263b2901c0d57105667caf2d3ab7c0583468a))
+
 ## @janus-idp/backstage-plugin-rbac-backend [4.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.3.2...@janus-idp/backstage-plugin-rbac-backend@4.3.3) (2024-07-16)
 
 
