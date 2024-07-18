@@ -5669,13 +5669,6 @@
     "@backstage/errors" "^1.2.4"
     "@backstage/plugin-permission-common" "^0.7.13"
 
-"@janus-idp/backstage-plugin-topology-common@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/@janus-idp/backstage-plugin-topology-common/-/backstage-plugin-topology-common-1.1.0.tgz#961e4715702fbcef49256b50b6637396255e6715"
-  integrity sha512-6+YUxL6JoD5fK5NDY5lshHNCUDiSfHX4uIPAvkkdvoOdmML7qAEEdhOxe4ArcRyDlHX5h+KSKdZrF/1x6V+ACQ==
-  dependencies:
-    "@backstage/plugin-permission-common" "^0.7.13"
-
 "@janus-idp/cli@1.11.1":
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/@janus-idp/cli/-/cli-1.11.1.tgz#b0566f342558248d0d51b94edec16fdf6843a40a"
