@@ -104,7 +104,7 @@ const StyleNodeComponent: React.FC<StyleNodeProps> = ({ element, ...rest }) => {
 
   return (
     <g
-      data-test={'node-' + element.getLabel()}
+      data-test={`node-${data.getLabel}`}
       style={{ opacity: opacity }}
       ref={hoverRef as any}
     >
