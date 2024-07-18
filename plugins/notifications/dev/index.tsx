@@ -2,13 +2,13 @@ import React from 'react';
 
 import { createDevApp } from '@backstage/dev-utils';
 
-import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { NotificationsPage, notificationsPlugin } from '../src/plugin';
 
 createDevApp()
   .registerPlugin(notificationsPlugin)
-  .addThemes(createDevAppThemes())
+  .addThemes(getAllThemes())
   .addPage({
     element: <NotificationsPage />,
     title: 'Root Page',

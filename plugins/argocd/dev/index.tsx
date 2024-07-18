@@ -8,7 +8,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
 import { Box } from '@material-ui/core';
-import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import {
   ArgoCDApi,
@@ -65,7 +65,7 @@ export class MockArgoCDApiClient implements ArgoCDApi {
 
 createDevApp()
   .registerPlugin(argocdPlugin)
-  .addThemes(createDevAppThemes())
+  .addThemes(getAllThemes())
   .addPage({
     element: (
       <TestApiProvider

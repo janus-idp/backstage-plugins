@@ -4,7 +4,7 @@ import { createDevApp } from '@backstage/dev-utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
-import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { icon } from '../src/components/BulkImportIcon';
 import { mockEntities } from '../src/mocks/mockEntities';
@@ -16,7 +16,7 @@ const mockCatalogApi = {
 
 createDevApp()
   .registerPlugin(bulkImportPlugin)
-  .addThemes(createDevAppThemes())
+  .addThemes(getAllThemes())
   .addPage({
     element: (
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>

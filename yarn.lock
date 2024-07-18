@@ -8958,10 +8958,10 @@
   dependencies:
     "@react-hookz/deep-equal" "^1.0.4"
 
-"@redhat-developer/red-hat-developer-hub-theme@0.0.54":
-  version "0.0.54"
-  resolved "https://registry.yarnpkg.com/@redhat-developer/red-hat-developer-hub-theme/-/red-hat-developer-hub-theme-0.0.54.tgz#fe49b5f4cc92d3e127591d3060dd6fe2322e8b02"
-  integrity sha512-H9H4lQM+sT2fxWa9QZ3+FMnTDLnVB+ZkvOxhbCD4p0iRd5+YxqVeZH51Vkt4RK59qWj5q10MQbYXcfvytirWZg==
+"@redhat-developer/red-hat-developer-hub-theme@0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@redhat-developer/red-hat-developer-hub-theme/-/red-hat-developer-hub-theme-0.1.3.tgz#0ad384c97a1b4c512b04ed627fb1f9767425f20f"
+  integrity sha512-mpu2wTu8oCh0PGNSP2DeJRhRsYsyJUF2VrjnDTzhQ6rAV+duXHqynsHBlJURBv5DrerY51+z+2OTdeT+Lg9zqA==
 
 "@remix-run/router@1.16.0":
   version "1.16.0"
@@ -14373,18 +14373,18 @@
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-6.21.0.tgz#205724c5123a8fef7ecd195075fa6e85bac3436d"
   integrity sha512-1kFmZ1rOm5epu9NZEZm1kckCDGj5UJEf7P1kliH4LKu/RkwpsfqqGmY2OOcUs18lSlQBKLDYBOGxRVtrMN5lpg==
 
-"@typescript-eslint/types@7.11.0":
-  version "7.11.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-7.11.0.tgz#5e9702a5e8b424b7fc690e338d359939257d6722"
-  integrity sha512-MPEsDRZTyCiXkD4vd3zywDCifi7tatc4K37KqTprCvaXptP7Xlpdw0NR2hRJTetG5TxbWDB79Ys4kLmHliEo/w==
+"@typescript-eslint/types@7.16.1":
+  version "7.16.1"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-7.16.1.tgz#bbab066276d18e398bc64067b23f1ce84dfc6d8c"
+  integrity sha512-AQn9XqCzUXd4bAVEsAXM/Izk11Wx2u4H3BAfQVhSfzfDOm/wAON9nP7J5rpkCxts7E5TELmN845xTUCQrD1xIQ==
 
 "@typescript-eslint/typescript-estree@5.62.0", "@typescript-eslint/typescript-estree@6.21.0", "@typescript-eslint/typescript-estree@^7.3.1":
-  version "7.11.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-7.11.0.tgz#7cbc569bc7336c3a494ceaf8204fdee5d5dbb7fa"
-  integrity sha512-cxkhZ2C/iyi3/6U9EPc5y+a6csqHItndvN/CzbNXTNrsC3/ASoYQZEt9uMaEp+xFNjasqQyszp5TumAVKKvJeQ==
+  version "7.16.1"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-7.16.1.tgz#9b145ba4fd1dde1986697e1ce57dc501a1736dd3"
+  integrity sha512-0vFPk8tMjj6apaAZ1HlwM8w7jbghC8jc1aRNJG5vN8Ym5miyhTQGMqU++kuBFDNKe9NcPeZ6x0zfSzV8xC1UlQ==
   dependencies:
-    "@typescript-eslint/types" "7.11.0"
-    "@typescript-eslint/visitor-keys" "7.11.0"
+    "@typescript-eslint/types" "7.16.1"
+    "@typescript-eslint/visitor-keys" "7.16.1"
     debug "^4.3.4"
     globby "^11.1.0"
     is-glob "^4.0.3"
@@ -14435,12 +14435,12 @@
     "@typescript-eslint/types" "6.21.0"
     eslint-visitor-keys "^3.4.1"
 
-"@typescript-eslint/visitor-keys@7.11.0":
-  version "7.11.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-7.11.0.tgz#2c50cd292e67645eec05ac0830757071b4a4d597"
-  integrity sha512-7syYk4MzjxTEk0g/w3iqtgxnFQspDJfn6QKD36xMuuhTzjcxY7F8EmBLnALjVyaOF1/bVocu3bS/2/F7rXrveQ==
+"@typescript-eslint/visitor-keys@7.16.1":
+  version "7.16.1"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-7.16.1.tgz#4287bcf44c34df811ff3bb4d269be6cfc7d8c74b"
+  integrity sha512-Qlzzx4sE4u3FsHTPQAAQFJFNOuqtuY0LFrZHwQ8IHK705XxBiWOFkfKRWu6niB7hwfgnwIpO4jTC75ozW1PHWg==
   dependencies:
-    "@typescript-eslint/types" "7.11.0"
+    "@typescript-eslint/types" "7.16.1"
     eslint-visitor-keys "^3.4.3"
 
 "@uiw/codemirror-extensions-basic-setup@4.22.0":
@@ -31507,9 +31507,9 @@ semver@^7.0.0, semver@^7.1.1, semver@^7.1.2, semver@^7.3.2, semver@^7.3.4, semve
     lru-cache "^6.0.0"
 
 semver@^7.6.0:
-  version "7.6.2"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.6.2.tgz#1e3b34759f896e8f14d6134732ce798aeb0c6e13"
-  integrity sha512-FNAIBWCx9qcRhoHcgcJ0gvU7SN1lYU2ZXuSfl04bSC5OpvDHFyJCjdNHomPXxjQlCBU67YW64PzY7/VIEH7F2w==
+  version "7.6.3"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.6.3.tgz#980f7b5550bc175fb4dc09403085627f9eb33143"
+  integrity sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==
 
 send@0.18.0:
   version "0.18.0"

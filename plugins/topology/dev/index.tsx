@@ -10,7 +10,7 @@ import {
 } from '@backstage/plugin-kubernetes';
 import { TestApiProvider } from '@backstage/test-utils';
 
-import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { mockKubernetesResponse } from '../src/__fixtures__/1-deployments';
 import { TopologyPage, topologyPlugin } from '../src/plugin';
@@ -108,7 +108,7 @@ class MockKubernetesClient implements KubernetesApi {
 }
 
 createDevApp()
-  .addThemes(createDevAppThemes())
+  .addThemes(getAllThemes())
   .addPage({
     element: (
       <TestApiProvider
