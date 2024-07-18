@@ -5661,12 +5661,11 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@janus-idp/backstage-plugin-rbac-common@1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-rbac-common/-/backstage-plugin-rbac-common-1.6.1.tgz#679a227dd60a003a654f48a32dd45f12fb2588df"
-  integrity sha512-dYmNjluflBChDkhQ0UddNlD7XFBglWwhaETl6O57RphQBWnE1oqGY/DBxRacUyJm73AWXO6WnC3ADi1bFE1NNg==
+"@janus-idp/backstage-plugin-topology-common@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-topology-common/-/backstage-plugin-topology-common-1.1.0.tgz#961e4715702fbcef49256b50b6637396255e6715"
+  integrity sha512-6+YUxL6JoD5fK5NDY5lshHNCUDiSfHX4uIPAvkkdvoOdmML7qAEEdhOxe4ArcRyDlHX5h+KSKdZrF/1x6V+ACQ==
   dependencies:
-    "@backstage/errors" "^1.2.4"
     "@backstage/plugin-permission-common" "^0.7.13"
 
 "@janus-idp/cli@1.11.1":
