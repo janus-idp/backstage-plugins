@@ -20,6 +20,7 @@ The Quay plugin displays the information about your container images within the 
    proxy:
      '/quay/api':
        target: 'https://quay.io'
+       credentials: require
        headers:
          X-Requested-With: 'XMLHttpRequest'
          # Uncomment the following line to access a private Quay Repository using a token
@@ -32,6 +33,15 @@ The Quay plugin displays the information about your container images within the 
      # The UI url for Quay, used to generate the link to Quay
      uiUrl: 'https://quay.io'
    ```
+
+> [!NOTE]
+> The value inside each route is either a simple URL string, or an object on the format accepted by [http-proxy-middleware](https://www.npmjs.com/package/http-proxy-middleware). Additionally, it has an optional `credentials` key which can have the following values:
+>
+> - `require`: Callers must provide Backstage user or service credentials with each request. The credentials are not forwarded to the proxy target. This is the **default**.
+> - `forward`: Callers must provide Backstage user or service credentials with each request, and those credentials are forwarded to the proxy target.
+> - `dangerously-allow-unauthenticated`: No Backstage credentials are required to access this proxy target. The target can still apply its own credentials checks, but the proxy will not help block non-Backstage-blessed callers. If you also add allowedHeaders: ['Authorization'] to an endpoint configuration, then the Backstage token (if provided) WILL be forwarded.
+>
+> Note that if you have `backend.auth.dangerouslyDisableDefaultAuthPolicy` set to true, the credentials value does not apply; the proxy will behave as if all endpoints were set to dangerously-allow-unauthenticated.
 
 2. Enable an additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
 
