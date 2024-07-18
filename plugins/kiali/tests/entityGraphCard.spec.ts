@@ -14,12 +14,15 @@ test.describe('Entity traffic graph', () => {
 
       await common.loginAsGuest();
       await page.goto('/kiali-graph-card');
-      page.locator('[data-test="kiali-graph-card"]');
     });
 
     // List container is loaded
     test('Graph content', async () => {
       expect(page.locator('[data-test="kiali-graph-card"]')).toBeDefined();
+    });
+
+    test('Product page node', async () => {
+      expect(page.locator('[data-test="node-productpage"]')).toBeDefined();
     });
   });
 });

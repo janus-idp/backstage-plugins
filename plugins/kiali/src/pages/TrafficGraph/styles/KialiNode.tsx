@@ -103,7 +103,11 @@ const StyleNodeComponent: React.FC<StyleNodeProps> = ({ element, ...rest }) => {
   const { width, height } = element.getDimensions();
 
   return (
-    <g style={{ opacity: opacity }} ref={hoverRef as any}>
+    <g
+      data-test={'node-' + element.getLabel()}
+      style={{ opacity: opacity }}
+      ref={hoverRef as any}
+    >
       {data.hasSpans && (
         <ShapeComponent
           className={traceOverlayStyle}
