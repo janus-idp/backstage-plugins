@@ -14,7 +14,8 @@
   },
   "backstage": {
     "role": "web-library",
-    "supported-versions": "1.26.5"
+    "supported-versions": "1.28.4",
+    "pluginId": "orchestrator-swf-editor-envelope"
   },
   "scripts": {
     "build": "scripts/build",
