@@ -13,7 +13,7 @@ export const TrafficGraphCard = () => {
   const { entity } = useEntity();
 
   return (
-    <Card style={{ marginRight: 20, marginBottom: 20, height: 425.59 }}>
+    <Card style={{ marginBottom: 20, height: 500 }}>
       <CardHeader title="Traffic Graph" />
       <TrafficGraphPage view={ENTITY} entity={entity} />
     </Card>
