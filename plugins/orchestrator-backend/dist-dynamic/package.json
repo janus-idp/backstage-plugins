@@ -47,8 +47,6 @@
   ],
   "scripts": {},
   "dependencies": {
-    "@janus-idp/backstage-plugin-audit-log-node": "^1.2.0",
-    "@janus-idp/backstage-plugin-rbac-common": "^1.7.0",
     "@urql/core": "^4.1.4",
     "ajv-formats": "^2.1.1",
     "cloudevents": "^8.0.0",
@@ -64,13 +62,9 @@
     "axios": "^1.6.8"
   },
   "devDependencies": {},
-  "maintainers": [
-    "@janus-idp/maintainers-plugins",
-    "@janus-idp/orchestrator-codeowners"
-  ],
-  "author": "The Backstage Community",
-  "bundleDependencies": true,
   "peerDependencies": {
+    "@janus-idp/backstage-plugin-rbac-common": "^1.7.0",
+    "@janus-idp/backstage-plugin-audit-log-node": "^1.2.0",
     "@backstage/backend-app-api": "^0.7.9",
     "@backstage/backend-common": "^0.23.2",
     "@backstage/backend-dynamic-feature-service": "^0.2.14",
@@ -91,6 +85,12 @@
     "@backstage/plugin-scaffolder-node": "^0.4.7",
     "@backstage/types": "^1.1.1"
   },
+  "maintainers": [
+    "@janus-idp/maintainers-plugins",
+    "@janus-idp/orchestrator-codeowners"
+  ],
+  "author": "The Backstage Community",
+  "bundleDependencies": true,
   "overrides": {
     "@aws-sdk/util-utf8-browser": {
       "@smithy/util-utf8": "^2.0.0"
