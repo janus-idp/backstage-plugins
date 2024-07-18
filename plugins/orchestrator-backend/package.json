@@ -83,9 +83,7 @@
     "@backstage/plugin-scaffolder-backend": "^1.22.11",
     "@backstage/plugin-scaffolder-node": "^0.4.7",
     "@backstage/types": "^1.1.1",
-    "@janus-idp/backstage-plugin-audit-log-node": "1.2.0",
     "@janus-idp/backstage-plugin-orchestrator-common": "1.11.0",
-    "@janus-idp/backstage-plugin-rbac-common": "1.6.1",
     "@urql/core": "^4.1.4",
     "ajv-formats": "^2.1.1",
     "cloudevents": "^8.0.0",
@@ -104,6 +102,10 @@
     "@types/express": "4.17.21",
     "@types/fs-extra": "11.0.4",
     "@types/json-schema": "7.0.15"
+  },
+  "peerDependencies": {
+    "@janus-idp/backstage-plugin-rbac-common": "^1.7.0",
+    "@janus-idp/backstage-plugin-audit-log-node": "^1.2.0"
   },
   "maintainers": [
     "@janus-idp/maintainers-plugins",
