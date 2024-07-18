@@ -1240,7 +1240,7 @@ describe('REST policies api', () => {
               effect: 'allow',
             },
           ],
-          newPolicy: [{ permission: 'policy-entity', policy: 'write' }],
+          newPolicy: [{ permission: 'policy-entity', policy: 'create' }],
         });
 
       expect(result.statusCode).toEqual(400);
@@ -1261,7 +1261,7 @@ describe('REST policies api', () => {
               effect: 'unknown',
             },
           ],
-          newPolicy: [{ permission: 'policy-entity', policy: 'write' }],
+          newPolicy: [{ permission: 'policy-entity', policy: 'create' }],
         });
 
       expect(result.statusCode).toEqual(400);
@@ -1285,7 +1285,7 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'create',
               effect: 'allow',
             },
           ],
@@ -1344,7 +1344,7 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'create',
               effect: 'allow',
             },
           ],
@@ -1353,7 +1353,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toEqual(409);
       expect(result.body.error).toEqual({
         name: 'ConflictError',
-        message: `Policy '[user:default/permission_admin, policy-entity, write, allow]' has been already stored`,
+        message: `Policy '[user:default/permission_admin, policy-entity, create, allow]' has been already stored`,
       });
     });
 
@@ -1465,7 +1465,7 @@ describe('REST policies api', () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[2] === 'write') {
+          if (param[2] === 'create') {
             return false;
           }
           return true;
@@ -1489,7 +1489,7 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'create',
               effect: 'allow',
             },
           ],
@@ -1506,7 +1506,7 @@ describe('REST policies api', () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[2] === 'write') {
+          if (param[2] === 'create') {
             return false;
           }
           return true;
@@ -1532,7 +1532,7 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'create',
               effect: 'allow',
             },
           ],
@@ -1549,7 +1549,7 @@ describe('REST policies api', () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[2] === 'write') {
+          if (param[2] === 'create') {
             return false;
           }
           return true;
@@ -1569,7 +1569,7 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'create',
               effect: 'allow',
             },
           ],
@@ -1582,7 +1582,7 @@ describe('REST policies api', () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[2] === 'write') {
+          if (param[2] === 'create') {
             return false;
           }
           return true;
@@ -1606,7 +1606,7 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'create',
               effect: 'allow',
             },
             {
@@ -1628,7 +1628,7 @@ describe('REST policies api', () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[2] === 'write') {
+          if (param[2] === 'update') {
             return false;
           }
           return true;
@@ -1652,12 +1652,12 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'update',
               effect: 'allow',
             },
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'update',
               effect: 'allow',
             },
           ],
@@ -1666,7 +1666,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(409);
       expect(result.body.error).toEqual({
         name: 'ConflictError',
-        message: `Duplicate polices found; user:default/permission_admin, policy-entity, write, allow is a duplicate`,
+        message: `Duplicate polices found; user:default/permission_admin, policy-entity, update, allow is a duplicate`,
       });
     });
 
@@ -3649,7 +3649,7 @@ describe('REST policies api', () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[2] === 'write') {
+          if (param[2] === 'create') {
             return false;
           }
           return true;

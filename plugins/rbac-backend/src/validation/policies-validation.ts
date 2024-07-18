@@ -5,6 +5,7 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { Enforcer } from 'casbin';
 
 import {
+  PermissionAction,
   Role,
   RoleBasedPolicy,
   Source,
@@ -58,6 +59,13 @@ export function validatePolicy(policy: RoleBasedPolicy): Error | undefined {
 
   if (!policy.policy) {
     return new Error(`'policy' field must not be empty`);
+  } else if (!isValidPermissionAction(policy.policy)) {
+    const validOptions = ['create', 'read', 'update', 'delete', 'use'].join(
+      ', ',
+    );
+    return new Error(
+      `'policy' has invalid value: '${policy.policy}'. It should be one of: ${validOptions}`,
+    );
   }
 
   if (!policy.effect) {
@@ -94,6 +102,10 @@ export function validateRole(role: Role): Error | undefined {
     }
   }
   return undefined;
+}
+
+function isValidPermissionAction(action: string): action is PermissionAction {
+  return ['create', 'read', 'update', 'delete', 'use'].includes(action);
 }
 
 function isValidEffectValue(effect: string): boolean {
