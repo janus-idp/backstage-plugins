@@ -12,7 +12,8 @@
   },
   "backstage": {
     "role": "node-library",
-    "supported-versions": "1.26.5"
+    "supported-versions": "1.28.4",
+    "pluginId": "rbac"
   },
   "scripts": {
     "build": "backstage-cli package build",
