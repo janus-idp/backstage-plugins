@@ -1,8 +1,4 @@
-# Argocd plugin for Backstage
-
-Welcome to the argocd plugin!
-
-_This plugin was created through the Backstage CLI_
+# Argo CD plugin for Backstage
 
 ## Getting started
 
@@ -25,7 +21,7 @@ It is only meant for local development, and the setup for it can be found inside
 yarn workspace app add @roadiehq/backstage-plugin-argo-cd-backend
 ```
 
-- Create plugin file for ArgoCD backend in your `packages/backend/src/plugins/` directory.
+- Create plugin file for Argo CD backend in your `packages/backend/src/plugins/` directory.
 
 ```ts
 // packages/backend/src/plugins/argocd.ts
@@ -42,7 +38,7 @@ export default async function createPlugin({
 }
 ```
 
-- Modify your backend router to expose the APIs for ArgoCD backend
+- Modify your backend router to expose the APIs for Argo CD backend
 
 ```ts
 // packages/backend/src/index.ts
@@ -120,7 +116,7 @@ const cicdcontent = (
 );
 ```
 
-- The following annotation is added to the entity's `catalog-info.yaml` file to enable argocd features in the backstage instance:
+- The following annotation is added to the entity's `catalog-info.yaml` file to enable Argo CD features in the backstage instance:
 
   ```yaml
   annotations:
@@ -138,7 +134,7 @@ const cicdcontent = (
     argocd/instance-name: 'argoInstance2'
 ```
 
-**_Note: If this annotation is not set, the plugin will defaultto the first argocd instance configured in the `app.config.yaml`_**
+**_Note: If this annotation is not set, the plugin will default to the first Argo CD instance configured in the `app.config.yaml`_**
 
 ## Loading as Dynamic Plugin
 
