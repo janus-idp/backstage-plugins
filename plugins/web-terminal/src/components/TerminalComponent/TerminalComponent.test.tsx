@@ -4,7 +4,7 @@ import { configApiRef } from '@backstage/core-plugin-api';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import {
   MockConfigApi,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
   TestApiProvider,
 } from '@backstage/test-utils';
 
@@ -65,7 +65,7 @@ describe('TerminalComponent', () => {
   const VALID_TOKEN = 'valid-token';
   const NOT_VALID_PERMISSIONS_TOKEN = 'not-valid-permissions-token';
 
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   beforeEach(() => {
     server.use(
