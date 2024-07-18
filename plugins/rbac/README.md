@@ -72,13 +72,13 @@ permission:
    import { Administration } from '@janus-idp/backstage-plugin-rbac';
 
    export const Root = ({ children }: PropsWithChildren<{}>) => (
-    <SidebarPage>
-      <Sidebar>
+     <SidebarPage>
+       <Sidebar>
          ...
          <Administration />
          ...
-      <Sidebar>
-    </SidebarPage>
+       </Sidebar>
+     </SidebarPage>
    );
    ```
 
