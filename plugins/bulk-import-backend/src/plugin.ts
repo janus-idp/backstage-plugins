@@ -29,21 +29,33 @@ import { createRouter } from './service/router';
  * @alpha
  */
 export const bulkImportPlugin = createBackendPlugin({
-  pluginId: 'bulk-import',
+  pluginId: 'bulk-import-backend',
   register(env) {
     env.registerInit({
       deps: {
         logger: coreServices.logger,
         config: coreServices.rootConfig,
         http: coreServices.httpRouter,
+        discovery: coreServices.discovery,
         permissions: coreServices.permissions,
+        identity: coreServices.identity,
         catalogApi: catalogServiceRef,
       },
-      async init({ config, logger, http, permissions, catalogApi }) {
+      async init({
+        config,
+        logger,
+        http,
+        discovery,
+        permissions,
+        identity,
+        catalogApi,
+      }) {
         http.use(
           await createRouter({
             config,
+            discovery,
             permissions,
+            identity,
             logger: loggerToWinstonLogger(logger),
             catalogApi,
           }),

@@ -2,7 +2,7 @@
   "extends": ["//"],
   "pipeline": {
     "tsc": {
-      "outputs": ["../../dist-types/plugins/bulk-import/**"],
+      "outputs": ["../../dist-types/plugins/bulk-import-common/**"],
       "dependsOn": ["^tsc"]
     }
   }

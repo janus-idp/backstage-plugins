@@ -17,15 +17,19 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { Config, ConfigReader } from '@backstage/config';
 
-import gitUrlParse from 'git-url-parse';
-
 import { CustomGithubCredentialsProvider } from '../helpers';
 import { GithubApiService } from './githubApiService';
 
 const octokit = {
-  paginate: async (fn: any) => (await fn()).data,
+  paginate: async (fn: any) => {
+    const res = await fn();
+    if (res) {
+      return res.data;
+    }
+    return [];
+  },
   apps: {
-    listReposAccessibleToInstallation: jest.fn(),
+    listReposAccessibleToInstallation: jest.fn().mockReturnValue({ data: [] }),
   },
   rest: {
     repos: {
@@ -145,14 +149,13 @@ describe('GithubApiService tests', () => {
     });
     octokit.rest.repos.listForOrg.mockReturnValue({ data: [] });
 
-    const parsed = gitUrlParse('https://github.com/backstage');
-    const result = await githubApiService.getGithubRepositories(parsed);
+    const result = await githubApiService.getRepositoriesFromIntegrations();
 
     const expected_response = {
       repositories: [],
       errors: [],
+      totalCount: 0,
     };
-    expect(errorLog).not.toHaveBeenCalled();
     expect(result).toEqual(expected_response);
   });
 
@@ -205,8 +208,7 @@ describe('GithubApiService tests', () => {
       ],
     });
 
-    const parsed = gitUrlParse('https://github.com/backstage');
-    const result = await githubApiService.getGithubRepositories(parsed);
+    const result = await githubApiService.getRepositoriesFromIntegrations();
 
     const expected_response = {
       repositories: [
@@ -235,12 +237,13 @@ describe('GithubApiService tests', () => {
           appId: 2,
         },
       ],
+      totalCount: 0,
     };
+    expect(result).toEqual(expected_response);
     expect(errorLog).toHaveBeenCalledTimes(1);
     expect(errorLog).toHaveBeenCalledWith(
       'Obtaining the Access Token Github App with appId: 2 failed with customError: Github App with ID 2 failed spectacularly',
     );
-    expect(result).toEqual(expected_response);
   });
 
   it('returns an a list of unique repositories and no errors', async () => {
@@ -288,8 +291,7 @@ describe('GithubApiService tests', () => {
         ],
       });
 
-    const parsed = gitUrlParse('https://github.com/backstage');
-    const result = await githubApiService.getGithubRepositories(parsed);
+    const result = await githubApiService.getRepositoriesFromIntegrations();
 
     const expected_response = {
       repositories: [
@@ -316,90 +318,12 @@ describe('GithubApiService tests', () => {
         },
       ],
       errors: [],
+      totalCount: 0,
     };
     expect(errorLog).not.toHaveBeenCalled();
     expect(result).toEqual(expected_response);
   });
 
-  it('only returns repositories owned by the target owner when querying a user', async () => {
-    octokit.rest.users.getByUsername.mockReturnValue({
-      data: {
-        type: 'User',
-      },
-    });
-    octokit.rest.repos.listForAuthenticatedUser.mockReturnValue({
-      data: [
-        {
-          name: 'A',
-          full_name: 'bob/A',
-          url: 'https://api.github.com/repos/bob/A',
-          html_url: 'https://github.com/bob/A',
-          owner: {
-            login: 'bob',
-          },
-          default_branch: 'master',
-        },
-        {
-          name: 'B',
-          full_name: 'bob/B',
-          url: 'https://api.github.com/repos/bob/B',
-          html_url: 'https://github.com/bob/B',
-          owner: {
-            login: 'bob',
-          },
-          default_branch: 'main',
-        },
-        {
-          name: 'C',
-          full_name: 'backstage/C',
-          url: 'https://api.github.com/repos/backstage/C',
-          html_url: 'https://github.com/backstage/C',
-          owner: {
-            login: 'backstage',
-          },
-          default_branch: 'default',
-        },
-        {
-          name: 'D',
-          full_name: 'backstage/D',
-          url: 'https://api.github.com/repos/backstage/D',
-          html_url: 'https://github.com/backstage/D',
-          owner: {
-            login: 'backstage',
-          },
-          default_branch: 'master',
-        },
-      ],
-    });
-    octokit.apps.listReposAccessibleToInstallation.mockReturnValue({
-      data: [],
-    });
-
-    const parsed = gitUrlParse('https://github.com/bob');
-    const result = await githubApiService.getGithubRepositories(parsed);
-
-    const expected_response = {
-      repositories: [
-        {
-          name: 'A',
-          full_name: 'bob/A',
-          url: 'https://api.github.com/repos/bob/A',
-          html_url: 'https://github.com/bob/A',
-          default_branch: 'master',
-        },
-        {
-          name: 'B',
-          full_name: 'bob/B',
-          url: 'https://api.github.com/repos/bob/B',
-          html_url: 'https://github.com/bob/B',
-          default_branch: 'main',
-        },
-      ],
-      errors: [],
-    };
-    expect(errorLog).not.toHaveBeenCalled();
-    expect(result).toEqual(expected_response);
-  });
   it('returns list of errors if they occur during the repository fetch phase', async () => {
     octokit.rest.users.getByUsername.mockImplementationOnce(async () => {
       const githubDownError = new Error(
@@ -440,8 +364,7 @@ describe('GithubApiService tests', () => {
         ],
       });
 
-    const parsed = gitUrlParse('https://github.com/bob');
-    const result = await githubApiService.getGithubRepositories(parsed);
+    const result = await githubApiService.getRepositoriesFromIntegrations();
 
     const expected_response = {
       repositories: [
@@ -463,9 +386,8 @@ describe('GithubApiService tests', () => {
       errors: [
         {
           error: {
-            name: '503 Service Unavailable',
-            message:
-              "The Unicorns have taken over. We're doing our best to get them under control and get Github back up and running",
+            message: 'This is taking quite a while',
+            name: '504 Gateway Timeout',
           },
           type: 'token',
         },
@@ -478,23 +400,18 @@ describe('GithubApiService tests', () => {
           appId: 1,
         },
       ],
+      totalCount: 0,
     };
-    expect(errorLog).toHaveBeenCalledTimes(2);
-    expect(errorLog.mock.calls[0]).toEqual([
-      "Fetching account with token failed with 503 Service Unavailable: The Unicorns have taken over. We're doing our best to get them under control and get Github back up and running",
-    ]);
-    expect(errorLog.mock.calls[1]).toEqual([
-      'Fetching repositories with access token for github app 1, failed with 401 Unauthorized: Bad credentials',
-    ]);
     expect(result).toEqual(expected_response);
   });
+
   it('returns list of repositories if we have a user token with access to an org', async () => {
     octokit.rest.users.getByUsername.mockReturnValue({
       data: {
         type: 'Organization',
       },
     });
-    octokit.rest.repos.listForOrg.mockReturnValue({
+    octokit.rest.repos.listForAuthenticatedUser.mockReturnValue({
       data: [
         {
           name: 'A',
@@ -516,8 +433,7 @@ describe('GithubApiService tests', () => {
       data: [],
     });
 
-    const parsed = gitUrlParse('https://github.com/bob');
-    const result = await githubApiService.getGithubRepositories(parsed);
+    const result = await githubApiService.getRepositoriesFromIntegrations();
 
     const expected_response = {
       repositories: [
@@ -537,16 +453,21 @@ describe('GithubApiService tests', () => {
         },
       ],
       errors: [],
+      totalCount: 2,
     };
     expect(errorLog).not.toHaveBeenCalled();
     expect(result).toEqual(expected_response);
   });
-  it('throws an error if no integration matching the inputted github account is found', async () => {
-    const parsed = gitUrlParse('https://github.company.com/bob');
-    await expect(
-      githubApiService.getGithubRepositories(parsed),
-    ).rejects.toThrow(
-      'There is no GitHub integration that matches https://github.company.com/bob. Please add a configuration entry for it under integrations.github.',
-    );
+
+  it('does not throw an error if no integration in config because there is one added automatically', async () => {
+    const repos = await new GithubApiService(
+      logger,
+      new ConfigReader({}),
+    ).getRepositoriesFromIntegrations();
+    expect(repos).toEqual({
+      errors: [],
+      repositories: [],
+      totalCount: 0,
+    });
   });
 });

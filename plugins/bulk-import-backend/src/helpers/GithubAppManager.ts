@@ -45,6 +45,7 @@ import {
 
 type InstallationData = {
   installationId: number;
+  accountLogin?: string;
   suspended: boolean;
 };
 
@@ -57,11 +58,10 @@ class Cache {
   private readonly tokenCache = new Map<string, InstallationTokenData>();
 
   async getOrCreateToken(
-    owner: string,
-    repo: string | undefined,
+    key: string,
     supplier: () => Promise<InstallationTokenData>,
   ): Promise<{ accessToken: string }> {
-    let existingInstallationData = this.tokenCache.get(owner);
+    let existingInstallationData = this.tokenCache.get(key);
 
     if (
       !existingInstallationData ||
@@ -71,32 +71,13 @@ class Cache {
       // Allow 10 minutes grace to account for clock skew
       existingInstallationData.expiresAt =
         existingInstallationData.expiresAt.minus({ minutes: 10 });
-      this.tokenCache.set(owner, existingInstallationData);
-    }
-
-    if (!this.appliesToRepo(existingInstallationData, repo)) {
-      throw new Error(
-        `The Backstage GitHub application used in the ${owner} organization does not have access to a repository with the name ${repo}`,
-      );
+      this.tokenCache.set(key, existingInstallationData);
     }
 
     return { accessToken: existingInstallationData.token };
   }
 
   private isExpired = (date: DateTime) => DateTime.local() > date;
-
-  private appliesToRepo(tokenData: InstallationTokenData, repo?: string) {
-    // If no specific repo has been requested the token is applicable
-    if (repo === undefined) {
-      return true;
-    }
-    // If the token is restricted to repositories, the token only applies if the repo is in the allow list
-    if (tokenData.repositories !== undefined) {
-      return tokenData.repositories.includes(repo);
-    }
-    // Otherwise the token is applicable
-    return true;
-  }
 }
 
 /**
@@ -137,50 +118,80 @@ class GithubAppManager {
   }
 
   async getInstallationCredentials(
-    owner: string,
-    repo?: string,
-  ): Promise<{ accessToken: string | undefined }> {
+    host: string,
+  ): Promise<{ accessToken: string | undefined }[]> {
+    const creds: { accessToken: string | undefined }[] = [];
+    const installationData = await this.getInstallationData();
+    let installationDataFiltered: InstallationData[] = [];
     if (this.allowedInstallationOwners) {
-      if (!this.allowedInstallationOwners?.includes(owner)) {
-        return { accessToken: undefined }; // An empty token allows anonymous access to public repos
+      for (const installation of installationData) {
+        if (
+          installation.accountLogin &&
+          !this.allowedInstallationOwners.includes(installation.accountLogin)
+        ) {
+          continue;
+        }
+        installationDataFiltered.push(installation);
       }
+    } else {
+      installationDataFiltered = installationData;
     }
 
-    // Go and grab an access token for the app scoped to a repository if provided, if not use the organization installation.
-    return this.cache.getOrCreateToken(owner, repo, async () => {
-      const { installationId, suspended } =
-        await this.getInstallationData(owner);
-      if (suspended) {
-        throw new Error(`The GitHub application for ${owner} is suspended`);
-      }
+    if (installationDataFiltered.length === 0) {
+      return Array.of({ accessToken: undefined }); // An empty token allows anonymous access to public repos
+    }
 
-      const result = await this.appClient.apps.createInstallationAccessToken({
-        installation_id: installationId,
-        headers: HEADERS,
-      });
-
-      let repositoryNames;
-
-      if (result.data.repository_selection === 'selected') {
-        const installationClient = new Octokit({
-          baseUrl: this.baseUrl,
-          auth: result.data.token,
-        });
-        const repos = await installationClient.paginate(
-          installationClient.apps.listReposAccessibleToInstallation,
+    for (const installation of installationDataFiltered) {
+      const installationId = installation.installationId;
+      if (installation.suspended) {
+        throw new Error(
+          `The GitHub application for ${installationId} is suspended`,
         );
-        // The return type of the paginate method is incorrect.
-        const repositories: RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']['data']['repositories'] =
-          repos.repositories ?? repos;
-
-        repositoryNames = repositories.map(repository => repository.name);
       }
-      return {
-        token: result.data.token,
-        expiresAt: DateTime.fromISO(result.data.expires_at),
-        repositories: repositoryNames,
-      };
-    });
+      const cred = await this.cache.getOrCreateToken(
+        `${host}-${installationId}`,
+        async () => {
+          const result =
+            await this.appClient.apps.createInstallationAccessToken({
+              installation_id: installationId,
+              headers: HEADERS,
+            });
+
+          if (!result) {
+            return {
+              token: '',
+              expiresAt: DateTime.now().plus({ minutes: 1 }),
+              repositories: [],
+            };
+          }
+
+          let repositoryNames;
+
+          if (result.data.repository_selection === 'selected') {
+            const installationClient = new Octokit({
+              baseUrl: this.baseUrl,
+              auth: result.data.token,
+            });
+            const repos = await installationClient.paginate(
+              installationClient.apps.listReposAccessibleToInstallation,
+            );
+            // The return type of the paginate method is incorrect.
+            const repositories: RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']['data']['repositories'] =
+              repos.repositories ?? repos;
+
+            repositoryNames = repositories.map(repository => repository.name);
+          }
+          return {
+            token: result.data.token,
+            expiresAt: DateTime.fromISO(result.data.expires_at),
+            repositories: repositoryNames,
+          };
+        },
+      );
+      creds.push(cred);
+    }
+
+    return creds;
   }
 
   getInstallations(): Promise<
@@ -189,26 +200,15 @@ class GithubAppManager {
     return this.appClient.paginate(this.appClient.apps.listInstallations);
   }
 
-  private async getInstallationData(owner: string): Promise<InstallationData> {
+  private async getInstallationData(): Promise<InstallationData[]> {
     const allInstallations = await this.getInstallations();
-    const installation = allInstallations.find(
-      inst =>
-        inst.account &&
-        'login' in inst.account &&
-        inst.account.login?.toLocaleLowerCase('en-US') ===
-          owner.toLocaleLowerCase('en-US'),
-    );
-    if (installation) {
+    return allInstallations.map(installation => {
       return {
         installationId: installation.id,
+        accountLogin: installation.account?.login,
         suspended: Boolean(installation.suspended_by),
-      };
-    }
-    const notFoundError = new Error(
-      `No app installation found for ${owner} in ${this.getAppId()}`,
-    );
-    notFoundError.name = 'NotFoundError';
-    throw notFoundError;
+      } as InstallationData;
+    });
   }
 }
 
@@ -237,14 +237,14 @@ export class GithubAppsCredentialManager {
     return installs.flat();
   }
 
-  async getAppToken(owner: string, repo?: string): Promise<string | undefined> {
+  async getAppToken(host: string): Promise<string | undefined> {
     if (this.apps.length === 0) {
       return undefined;
     }
 
     const results = await Promise.all(
       this.apps.map(app =>
-        app.getInstallationCredentials(owner, repo).then(
+        app.getInstallationCredentials(host).then(
           credentials => ({ credentials, error: undefined }),
           error => ({ credentials: undefined, error }),
         ),
@@ -252,10 +252,13 @@ export class GithubAppsCredentialManager {
     );
 
     const result = results.find(
-      resultItem => resultItem.credentials?.accessToken,
+      resultItem =>
+        resultItem.credentials &&
+        resultItem.credentials!.length !== 0 &&
+        resultItem.credentials[0]?.accessToken,
     );
-    if (result) {
-      return result.credentials!.accessToken;
+    if (result?.credentials) {
+      return result.credentials[0].accessToken;
     }
 
     const errors = results.map(r => r.error);
@@ -272,15 +275,12 @@ export class GithubAppsCredentialManager {
    *
    * Some values in the array might not contain a token and will have an error field instead. This will need to be resolved on the user side
    */
-  async getAllAppTokens(
-    owner: string,
-    repo?: string,
-  ): Promise<AppCredentialFetchResult[]> {
+  async getAllAppTokens(host: string): Promise<AppCredentialFetchResult[]> {
     if (this.apps.length === 0) return [];
 
     const appCredentials = await Promise.all(
       this.apps.map(app =>
-        app.getInstallationCredentials(owner, repo).then(
+        app.getInstallationCredentials(host).then(
           credentials => ({
             appId: app.getAppId(),
             credentials,
@@ -290,18 +290,22 @@ export class GithubAppsCredentialManager {
         ),
       ),
     );
-    const credentials: AppCredentialFetchResult[] = appCredentials.map(cred => {
+    const credentials: AppCredentialFetchResult[] = [];
+    for (const cred of appCredentials) {
       if (cred.credentials) {
-        return {
+        for (const credElement of cred.credentials) {
+          credentials.push({
+            appId: cred.appId,
+            accessToken: credElement.accessToken,
+          });
+        }
+      } else {
+        credentials.push({
           appId: cred.appId,
-          accessToken: cred.credentials.accessToken,
-        };
+          error: cred.error,
+        });
       }
-      return {
-        appId: cred.appId,
-        error: cred.error,
-      };
-    });
+    }
     return credentials;
   }
 }
@@ -347,10 +351,9 @@ export class CustomSingleInstanceGithubCredentialsProvider
     const parsed = gitUrlParse(opts.url);
 
     const owner = parsed.owner || parsed.name;
-    const repo = parsed.owner ? parsed.name : undefined;
 
     let type: GithubCredentialType = 'app';
-    let token = await this.githubAppsCredentialManager.getAppToken(owner, repo);
+    let token = await this.githubAppsCredentialManager.getAppToken(owner);
     if (!token) {
       type = 'token';
       token = this.token;
@@ -402,15 +405,10 @@ export class CustomSingleInstanceGithubCredentialsProvider
    * @returns A promise of {@link ExtendedGithubCredentials[]}.
    */
   async getAllCredentials(opts: {
-    url: string;
+    host: string;
   }): Promise<ExtendedGithubCredentials[]> {
-    const parsed = gitUrlParse(opts.url);
-
-    const owner = parsed.owner || parsed.name;
-    const repo = parsed.owner ? parsed.name : undefined;
-
     const appCredentials =
-      await this.githubAppsCredentialManager.getAllAppTokens(owner, repo);
+      await this.githubAppsCredentialManager.getAllAppTokens(opts.host);
 
     const credentials: ExtendedGithubCredentials[] = [];
     if (this.token) {
@@ -502,14 +500,13 @@ export class CustomGithubCredentialsProvider
   }
 
   async getAllCredentials(opts: {
-    url: string;
+    host: string;
   }): Promise<ExtendedGithubCredentials[]> {
-    const parsed = new URL(opts.url);
-    const provider = this.providers.get(parsed.host);
+    const provider = this.providers.get(opts.host);
 
     if (!provider) {
       throw new Error(
-        `There is no GitHub integration that matches ${opts.url}. Please add a configuration for an integration.`,
+        `There is no GitHub integration that matches ${opts.host}. Please add a configuration for an integration.`,
       );
     }
     return provider.getAllCredentials(opts);

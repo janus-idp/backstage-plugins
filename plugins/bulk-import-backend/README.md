@@ -120,5 +120,11 @@ class BulkImportPermissionPolicy implements PermissionPolicy {
 
 ### Usage
 
-The bulk import backend plugin provides a REST API to bulk import catalog entities into the catalog. The API is available at the `api/bulk-import` endpoint.
-Please refer to the [OpenAPI spec](./openapi.yaml) for the API endpoints and their corresponding request and response formats
+The bulk import backend plugin provides a REST API to bulk import catalog entities into the catalog. The API is available at the `/api/bulk-import-backend` endpoint.
+
+As a prerequisite, you need to add at least one GitHub Integration (using either a GitHub token or a GitHub App or both) in your app-config YAML file (or a local `app-config.local.yaml` file).
+See https://backstage.io/docs/integrations/github/locations/#configuration and https://backstage.io/docs/integrations/github/github-apps/#including-in-integrations-config for more details.
+
+## REST API
+
+Please refer to [`src/schema/openapi.yaml`](src/schema/openapi.yaml) for the API definition (along with some examples) and the [generated documentation](api-docs/README.md) for more details about the request and response parameters and formats.

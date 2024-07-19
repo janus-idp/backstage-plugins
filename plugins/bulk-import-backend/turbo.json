@@ -1,9 +1,18 @@
 {
   "extends": ["//"],
   "pipeline": {
+    "start": {
+      "dependsOn": ["openapi"]
+    },
     "tsc": {
-      "outputs": ["../../dist-types/plugins/bulk-import/**"],
-      "dependsOn": ["^tsc"]
+      "outputs": ["../../dist-types/plugins/bulk-import-backend/**"],
+      "dependsOn": ["^tsc", "openapi"]
+    },
+    "openapi": {
+      "outputs": ["src/openapi.d.ts", "src/openapidocument.ts", "api-docs/**"]
+    },
+    "test": {
+      "dependsOn": ["openapi"]
     }
   }
 }

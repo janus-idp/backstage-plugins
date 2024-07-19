@@ -5,7 +5,7 @@ import request from 'supertest';
 import { bulkImportPlugin } from './plugin';
 
 describe('bulkImportPlugin test', () => {
-  it('can access verify the router is up from the /health endpoint', async () => {
+  it('can access verify the router is up from the /ping endpoint', async () => {
     const fakeConfig = { myPlugin: { value: 7 } };
     const { server } = await startTestBackend({
       features: [
@@ -15,7 +15,7 @@ describe('bulkImportPlugin test', () => {
       ],
     });
 
-    const response = await request(server).get('/api/bulk-import/health');
+    const response = await request(server).get('/api/bulk-import-backend/ping');
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ status: 'ok' });
   });

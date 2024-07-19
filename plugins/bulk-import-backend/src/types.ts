@@ -74,6 +74,7 @@ export type GithubRepoFetchError =
 export type GithubRepositoryResponse = {
   repositories: GithubRepository[];
   errors: GithubRepoFetchError[];
+  totalCount?: number;
 };
 
 export type AppCredentialFetchResult = AppCredential | AppCredentialError;
@@ -109,7 +110,7 @@ export function isGithubAppCredential(
 export interface ExtendedGithubCredentialsProvider
   extends GithubCredentialsProvider {
   getAllCredentials: (options: {
-    url: string;
+    host: string;
   }) => Promise<ExtendedGithubCredentials[]>;
 }
 

@@ -3,7 +3,7 @@
   "include": ["src"],
   "exclude": ["node_modules"],
   "compilerOptions": {
-    "outDir": "../../dist-types/plugins/bulk-import",
+    "outDir": "../../dist-types/plugins/bulk-import-common",
     "rootDir": "."
   }
 }
