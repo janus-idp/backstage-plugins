@@ -1,0 +1,510 @@
+openapi: '3.1.0'
+info:
+  version: '1.0'
+  title: 'Bulk Import'
+  description: The Bulk Import Backend APIs allow users to bulk import backstage entities into the backstage catalog from remote sources such as Git.
+paths:
+  /health:
+    get:
+      summary: Check the health of the bulk-import backend router
+      responses:
+        '200':
+          description: The backend router for the bulk-import backend is up and running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    enum: ['ok']
+              example:
+                application/json:
+                  status: 'ok'
+
+  /repositories:
+    post:
+      summary: Fetch Organization Repositories accessible by Backstage Github Integrations
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: A JSON object with the html url corresponding to the owner of the requested repositories
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                owner:
+                  type: string
+            example:
+              owner: 'https://github.com/janus-idp'
+      responses:
+        '200':
+          description: Repository Information was fetched successfully with no errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GithubRepositoryInfoResponse'
+              example:
+                repositories:
+                  - name: 'backstage-plugins'
+                    full_name: 'janus-idp/backstage-plugins'
+                    url: 'https://api.github.com/repos/janus-idp/backstage-plugins'
+                    html_url: 'https://github.com/janus-idp/backstage-plugins'
+                    default_branch: 'main'
+                    entity:
+                      apiVersion: 'backstage.io/v1alpha1'
+                      kind: 'Component'
+                      metadata:
+                        name: 'backstage-plugins'
+                        namespace: 'default'
+                        title: 'backstage-plugins'
+                        links:
+                          - title: 'Repository Link'
+                            url: https://github.com/janus-idp/backstage-plugins
+                      spec:
+                        type: 'unknown'
+                        lifecycle: 'unknown'
+                        owner: 'unknown'
+                    locationEntity:
+                      apiVersion: 'backstage.io/v1alpha1'
+                      kind: 'Location'
+                      metadata:
+                        name: 'backstage-plugins'
+                        namespace: 'default'
+                        labels:
+                          - 'bulk-import/uuid: bulk-import-session-uuid'
+                          - 'bulk-import/date-created: 2024-02-29T16-50-40.025Z'
+                      spec:
+                        target: 'https://github.com/janus-idp/backstage-plugins/blob/main/catalog-info.yaml'
+                  - name: 'backstage-showcase'
+                    full_name: 'janus-idp/backstage-showcase'
+                    url: 'https://api.github.com/repos/janus-idp/backstage-showcase'
+                    html_url: 'https://github.com/janus-idp/backstage-showcase'
+                    default_branch: 'main'
+                    exists: true
+                errors: []
+        '207':
+          description: Repository Information was fetched, but error(s) were encountered'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GithubRepositoryInfoResponse'
+              example:
+                repositories:
+                  - name: 'backstage-showcase'
+                    full_name: 'janus-idp/backstage-showcase'
+                    url: 'https://api.github.com/repos/janus-idp/backstage-showcase'
+                    html_url: 'https://github.com/janus-idp/backstage-showcase'
+                    default_branch: 'main'
+                    exists: true
+                errors:
+                  - error:
+                      name: 'customError'
+                      message: 'Something Went Wrong'
+                    type: 'app'
+                    appId: 123456
+        '400':
+          description: Bad Request. Invalid or no owner field was provided
+        '403':
+          description: Forbidden. Missing Authorization Header when permission framework is active
+        '404':
+          description: No repositories were found and no errors occurred for owner
+        '5XX':
+          description: Unexpected error
+
+components:
+  schemas:
+    GithubRepositoryInfoResponse:
+      title: Github Repository Info Response
+      type: object
+      properties:
+        repositories:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/GithubRepositoryInfo'
+              - $ref: '#/components/schemas/CatalogEntity'
+          uniqueItems: true
+        errors:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/GithubRepoTokenFetchError'
+              - $ref: '#/components/schemas/GithubRepoAppFetchError'
+          uniqueItems: true
+      required:
+        - repositories
+        - errors
+    GithubRepositoryInfo:
+      title: Github Repository Info
+      type: object
+      properties:
+        name:
+          type: string
+        full_name:
+          type: string
+        url:
+          type: string
+        html_url:
+          type: string
+        default_branch:
+          type: string
+    GithubRepoTokenFetchError:
+      title: Github Repository Fetch Error
+      type: object
+      properties:
+        type:
+          enum: ['token']
+        error:
+          $ref: '#/components/schemas/SerializedError'
+    GithubRepoAppFetchError:
+      title: Github Repository Fetch Error
+      type: object
+      properties:
+        type:
+          enum: ['app']
+        appId:
+          type: integer
+        error:
+          $ref: '#/components/schemas/SerializedError'
+    SerializedError:
+      title: Serialized Error
+      type: object
+      properties:
+        name:
+          type: string
+        message:
+          type: string
+        stack:
+          type: string
+        code:
+          type: string
+      required:
+        - name
+        - message
+    CatalogEntity:
+      title: Catalog Entity
+      type: object
+      properties:
+        apiVersion:
+          type: string
+          description: The version of specification format for that particular entity that the specification is made against
+        kind:
+          type: string
+          description: The high level entity type being described
+        metadata:
+          type: object
+          $ref: '#/components/schemas/CatalogEntityMetadata'
+          description: A structure that contains metadata about the entity, i.e. things that aren't directly part of the entity specification itself.
+        relations:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatalogEntityRelations'
+          description: A read-only list of relations, between the current entity and other entities
+        specs:
+          type: object
+          oneOf:
+            - $ref: '#/components/schemas/CatalogComponentEntitySpec'
+            - $ref: '#/components/schemas/CatalogAPIEntitySpec'
+            - $ref: '#/components/schemas/CatalogGroupEntitySpec'
+            - $ref: '#/components/schemas/CatalogUserEntitySpec'
+            - $ref: '#/components/schemas/CatalogResourceEntitySpec'
+            - $ref: '#/components/schemas/CatalogDomainEntitySpec'
+            - $ref: '#/components/schemas/CatalogSystemEntitySpec'
+            - $ref: '#/components/schemas/CatalogLocationEntitySpec'
+      required:
+        - apiVersion
+        - kind
+        - metadata
+
+    CatalogComponentEntitySpec:
+      title: Catalog Component Entity Spec
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of component as a string
+          example: 'website'
+        lifecycle:
+          type: string
+          description: The lifecycle state of the component
+          example: 'production'
+        owner:
+          type: string
+          description: An entity reference to the owner (group or user) of the component.
+          example: 'artist-relations-team'
+        system:
+          type: string
+          description: An entity reference to the system that the component belongs to
+          example: artist-engagement-portal
+        subcomponentOf:
+          type: string
+          description: An entity reference to another component of which the component is a part
+          example: spotify-ios-app
+        providesApis:
+          type: array
+          items:
+            type: string
+          description: An array of entity references to the APIs that are provided by the component.
+          example: [artist-api]
+        consumesApis:
+          type: array
+          items:
+            type: string
+          description: An array of entity references to the APIs that are consumed by the component.
+          example: [artist-api]
+        dependsOn:
+          type: array
+          items:
+            type: string
+          description: An array of entity references to the components and resources that the component depends on.
+          example: [artists-db]
+      required:
+        - type
+        - lifecycle
+        - owner
+    CatalogAPIEntitySpec:
+      title: Catalog API Entity Spec
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of the API definition as a string
+          example: 'openapi'
+        lifecycle:
+          type: string
+          description: The lifecycle state of the API
+          example: 'production'
+        owner:
+          type: string
+          description: An entity reference to the owner (group or user) of the API.
+          example: 'artist-relations-team'
+        system:
+          type: string
+          description: An entity reference to the system that the API belongs to
+          example: artist-engagement-portal
+        definition:
+          description: The definition of the API, based on the format defined by spec.type
+          oneOf:
+            - type: string
+            - type: object
+              additionalProperties:
+                type: string
+      required:
+        - type
+        - lifecycle
+        - owner
+        - definition
+    CatalogGroupEntitySpec:
+      title: Catalog Group Entity Spec
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of group as a string
+          example: 'team'
+        profile:
+          type: object
+          $ref: '#/components/schemas/Profile'
+        parent:
+          type: string
+          description: The immediate parent group in the hierarchy, if any
+        child:
+          type: array
+          items:
+            type: string
+          description: |
+            The immediate child groups of this group in the hierarchy (whose parent field points to this group). 
+            The list must be present, but may be empty if there are no child groups. 
+            The items are not guaranteed to be ordered in any particular way.
+        members:
+          type: array
+          items:
+            type: string
+          description: The users that are direct members of this group. The items are not guaranteed to be ordered in any particular way.
+      required:
+        - type
+        - child
+    CatalogUserEntitySpec:
+      title: Catalog User Entity Spec
+      type: object
+      properties:
+        profile:
+          $ref: '#/components/schemas/Profile'
+        memberOf:
+          type: array
+          items:
+            type: string
+          description: |
+            The list of groups that the user is a direct member of (i.e., no transitive memberships are listed here).
+            The list must be present, but may be empty if the user is not member of any groups.
+            The items are not guaranteed to be ordered in any particular way.
+      required:
+        - memberOf
+    CatalogResourceEntitySpec:
+      title: Catalog Resource Entity Spec
+      type: object
+      properties:
+        owner:
+          type: string
+          description: An entity reference to the owner (group/user) of the resource
+          example: 'artist-relations-team'
+        type:
+          type: string
+          description: The type of resource as a string
+          example: 'database'
+        system:
+          type: string
+          description: An entity reference to the system that the resource belongs to
+          example: 'artist-engagement-portal'
+        dependsOn:
+          type: array
+          items:
+            type: string
+          description: An array of entity references to the components and resources that the resource depends on
+        dependencyOf:
+          type: array
+          items:
+            type: string
+          description: An array of entity references to the components and resources that the resource is a dependency of
+      required:
+        - owner
+        - type
+    CatalogSystemEntitySpec:
+      title: Catalog System Entity Spec
+      type: object
+      properties:
+        owner:
+          type: string
+          description: An entity reference to the owner of the system
+        domain:
+          type: string
+          description: An entity reference to the domain that the system belongs to
+      required:
+        - owner
+    CatalogDomainEntitySpec:
+      title: Catalog Domain Entity Spec
+      type: object
+      properties:
+        owner:
+          type: string
+          description: An entity reference to the owner of the domain
+      required:
+        - owner
+    CatalogLocationEntitySpec:
+      title: Catalog Location Entity Spec
+      type: object
+      properties:
+        type:
+          enum: ['url', 'file']
+          description: The single location type, that's common to the targets specified in the spec
+        target:
+          type: string
+          description: A single target as a string. Can be either an absolute path/URL (depending on the type), or a relative path
+        targets:
+          type: array
+          items:
+            type: string
+          description: A list of targets as strings
+        presence:
+          type: string
+          description: Describes whether the target of a location is required to exist or not.
+
+    CatalogEntityRelations:
+      title: Catalog Entity relations
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of relation FROM a source entity TO the target entity.
+        targetRef:
+          type: string
+          description: A full entity reference to the other end of the relation. Often in the form [<kind>:][<namespace>/]<name>
+    CatalogEntityMetadata:
+      title: Catalog Entity Metadata
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: '^[a-zA-Z0-9][a-zA-Z0-9._-]*[a-zA-Z0-9]$'
+          minLength: 1
+          maxLength: 63
+          description: The name of the entity.
+        namespace:
+          type: string
+          pattern: '^[a-zA-Z0-9][a-zA-Z0-9._-]*[a-zA-Z0-9]$'
+          default: 'default'
+          minLength: 1
+          maxLength: 63
+          description: The ID of a namespace that the entity belongs to
+        description:
+          type: string
+          description: A human readable description of the entity, to be shown in Backstage
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels are optional key/value pairs of that are attached to the entity, and their use is identical to Kubernetes object labels.
+        annotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: An object with arbitrary non-identifying metadata attached to the entity, identical in use to Kubernetes object annotations.
+        tags:
+          type: array
+          items:
+            type: string
+          description: A list of single-valued strings, for example to classify catalog entities in various ways.
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+          description: A list of external hyperlinks related to the entity
+        uid:
+          type: string
+          description: A globally unique ID for the entity.
+        etag:
+          type: string
+          description: An opaque string that changes for each update operation to any part of the entity, including metadata.
+      required:
+        - name
+
+    Link:
+      description: Link
+      type: object
+      properties:
+        url:
+          type: string
+          description: A url in a standard uri format (e.g. https://example.com/some/page)
+        title:
+          type: string
+          description: A user friendly display name for the link.
+        icon:
+          type: string
+          description: A key representing a visual icon to be displayed in the UI.
+        type:
+          type: string
+          description: An optional value to categorize links into specific groups.
+      required:
+        - url
+    Profile:
+      description: Profile object for group or user entity
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: A human-readable name for the user/group.
+        email:
+          type: string
+          description: An email the user/group may wish to be used for contacting them.
+        picture:
+          type: string
+          description: A URL pointing to an image that's representative of the user/group.
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Backstage Permissions Framework JWT
