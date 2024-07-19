@@ -11,7 +11,9 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "supported-versions": "1.28.4",
+    "pluginId": "bulk-import-backend"
   },
   "exports": {
     ".": {
@@ -32,13 +34,13 @@
     "@types/express": "^*",
     "ajv-formats": "^3.0.1",
     "express": "^4.17.1",
-    "express-promise-router": "^4.1.0",
+    "express-promise-router": "^4.1.1",
     "git-url-parse": "^14.0.0",
     "js-yaml": "^4.1.0",
     "luxon": "^3.4.4",
     "node-fetch": "^2.6.7",
     "openapi-backend": "^5.10.6",
-    "winston": "^3.2.1",
+    "winston": "^3.11.0",
     "yn": "^4.0.0"
   },
   "devDependencies": {},
@@ -62,20 +64,19 @@
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-app-api": "^0.7.5",
-    "@backstage/backend-common": "^0.22.0",
-    "@backstage/backend-dynamic-feature-service": "^0.2.10",
-    "@backstage/backend-plugin-api": "^0.6.18",
+    "@backstage/backend-app-api": "^0.7.9",
+    "@backstage/backend-common": "^0.23.2",
+    "@backstage/backend-dynamic-feature-service": "^0.2.14",
+    "@backstage/backend-plugin-api": "^0.6.21",
     "@backstage/catalog-client": "^1.6.5",
     "@backstage/catalog-model": "^1.5.0",
     "@backstage/config": "^1.2.0",
-    "@backstage/core-plugin-api": "^1.9.2",
     "@backstage/errors": "^1.2.4",
-    "@backstage/integration": "^1.11.0",
-    "@backstage/plugin-auth-node": "^0.4.13",
-    "@backstage/plugin-catalog-node": "^1.12.0",
-    "@backstage/plugin-permission-common": "^0.7.13",
-    "@backstage/plugin-permission-node": "^0.7.29"
+    "@backstage/integration": "^1.12.0",
+    "@backstage/plugin-auth-node": "^0.4.16",
+    "@backstage/plugin-catalog-node": "^1.12.3",
+    "@backstage/plugin-permission-common": "^0.7.14",
+    "@backstage/plugin-permission-node": "^0.7.32"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {
