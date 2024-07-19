@@ -826,3 +826,43 @@ Returns a status code of 204 upon success.
 | 409  | Conflict with current state and target resource |
 
 ---
+
+## Curl Request Examples
+
+Create permission policy for `role:default/test`:
+
+```bash
+curl -X POST "http://localhost:7007/api/permission/policies" \
+     -d '[{
+           "entityReference": "role:default/test",
+           "permission": "catalog-entity",
+           "policy": "read",
+           "effect": "allow"
+         }]' \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer $token" \
+     -v
+```
+
+Create conditional permission policy for `role:default/test`:
+
+```bash
+curl -X POST "http://localhost:7007/api/permission/roles/conditions" \
+     -d '{
+           "result": "CONDITIONAL",
+           "roleEntityRef": "role:default/test",
+           "pluginId": "catalog",
+           "resourceType": "catalog-entity",
+           "permissionMapping": ["read"],
+           "conditions": {
+             "rule": "IS_ENTITY_OWNER",
+             "resourceType": "catalog-entity",
+             "params": {
+               "claims": ["group:default/janus-authors"]
+             }
+           }
+         }' \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer $token" \
+     -v
+```
