@@ -23,9 +23,9 @@ The structure of the condition JSON object is as follows:
 | resourceType      | Resource type provided by the plugin (e.g., "catalog-entity")         | String       |
 | conditions        | Condition JSON with parameters or array parameters joined by criteria | JSON         |
 
-To get the available conditional rules that can be used to create conditional permission policies, use the GET API request `api/plugins/condition-rules` as seen below.
+To get the available conditional rules that can be used to create conditional permission policies, use the GET API request `api/permission/plugins/condition-rules` as seen below.
 
-GET <api/plugins/condition-rules>
+GET <api/permission/plugins/condition-rules>
 
 Provides condition parameters schemas.
 
