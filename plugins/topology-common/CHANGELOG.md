@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-topology-common [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology-common@1.2.0...@janus-idp/backstage-plugin-topology-common@1.2.1) (2024-07-19)
+
 ## @janus-idp/backstage-plugin-topology-common [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology-common@1.1.0...@janus-idp/backstage-plugin-topology-common@1.2.0) (2024-07-18)
 
 
