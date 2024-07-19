@@ -13,7 +13,9 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "supported-versions": "1.28.4",
+    "pluginId": "bulk-import"
   },
   "sideEffects": false,
   "scripts": {

@@ -11,7 +11,9 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "supported-versions": "1.28.4",
+    "pluginId": "bulk-import-backend"
   },
   "exports": {
     ".": "./src/index.ts",
