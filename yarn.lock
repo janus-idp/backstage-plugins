@@ -3728,7 +3728,7 @@
     yn "^4.0.0"
     zod "^3.22.4"
 
-"@backstage/plugin-permission-common@0.7.14", "@backstage/plugin-permission-common@^0.7.13", "@backstage/plugin-permission-common@^0.7.14":
+"@backstage/plugin-permission-common@0.7.14", "@backstage/plugin-permission-common@^0.7.14":
   version "0.7.14"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-permission-common/-/plugin-permission-common-0.7.14.tgz#ecb12877c412ff271124af54fca46ec06d9c812f"
   integrity sha512-fHbxhX9ZoT8bTVuGycfTeU/6TE2yjZ6YNvm/2ko1bcxGnvYe1p5Ug5JW+iWjDZS+F6F152tWzhRcg05wQlPNKQ==
@@ -5660,13 +5660,6 @@
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
-
-"@janus-idp/backstage-plugin-topology-common@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-topology-common/-/backstage-plugin-topology-common-1.1.0.tgz#961e4715702fbcef49256b50b6637396255e6715"
-  integrity sha512-6+YUxL6JoD5fK5NDY5lshHNCUDiSfHX4uIPAvkkdvoOdmML7qAEEdhOxe4ArcRyDlHX5h+KSKdZrF/1x6V+ACQ==
-  dependencies:
-    "@backstage/plugin-permission-common" "^0.7.13"
 
 "@janus-idp/cli@1.11.1":
   version "1.11.1"
