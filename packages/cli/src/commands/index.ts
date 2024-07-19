@@ -140,6 +140,25 @@ export function registerScriptCommand(program: Command) {
     .action(lazy(() => import('./export-dynamic-plugin').then(m => m.command)));
 
   command
+    .command('package-dynamic-plugins')
+    .description('Package up exported dynamic plugins for deployment')
+    .option(
+      '--force-export',
+      'Regenerate the dist-dynamic folder for each plugin even if it already exists',
+    )
+    .option(
+      '--preserve-temp-dir',
+      'Leave the temporary staging directory on the filesystem instead of deleting it',
+    )
+    .requiredOption(
+      '-t, --tag <tag>',
+      'Tag name to use when building the plugin registry image',
+    )
+    .action(
+      lazy(() => import('./package-dynamic-plugins').then(m => m.command)),
+    );
+
+  command
     .command('schema')
     .description('Print configuration schema for a package')
     .action(lazy(() => import('./schema').then(m => m.default)));
