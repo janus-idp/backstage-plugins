@@ -286,39 +286,6 @@ function setupInternalRoutes(
     });
   }
 
-  // v1
-  router.get('/workflows/overview', async (req, res) => {
-    const endpointName = 'WorkflowsOverview';
-    const endpoint = '/v1/workflows/overview';
-
-    auditLogger.auditLog({
-      eventName: endpointName,
-      stage: 'start',
-      status: 'succeeded',
-      level: 'debug',
-      request: req,
-      message: `Received request to '${endpoint}' endpoint`,
-    });
-    const decision = await authorize(
-      req,
-      orchestratorWorkflowInstancesReadPermission,
-      permissions,
-      httpAuth,
-    );
-    if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint, req);
-    }
-    await routerApi.v1
-      .getWorkflowsOverview()
-      .then(result => res.status(200).json(result))
-      .catch(error => {
-        auditLogRequestError(error, endpointName, endpoint, req);
-        res
-          .status(500)
-          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
-      });
-  });
-
   // v2
   routerApi.openApiBackend.register(
     'getWorkflowsOverview',
@@ -597,38 +564,6 @@ function setupInternalRoutes(
         });
     },
   );
-
-  // v1
-  router.get('/workflows/:workflowId/overview', async (req, res) => {
-    const {
-      params: { workflowId },
-    } = req;
-    const endpointName = 'WorkflowsWorkflowIdOverview';
-    const endpoint = `/v1/workflows/${workflowId}/overview`;
-
-    auditLogger.auditLog({
-      eventName: endpointName,
-      stage: 'start',
-      status: 'succeeded',
-      level: 'debug',
-      request: req,
-      message: `Received request to '${endpoint}' endpoint`,
-    });
-
-    const decision = await authorize(
-      req,
-      orchestratorWorkflowReadPermission,
-      permissions,
-      httpAuth,
-    );
-    if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint, req);
-    }
-
-    await routerApi.v1
-      .getWorkflowOverviewById(workflowId)
-      .then(result => res.json(result));
-  });
 
   // v2
   routerApi.openApiBackend.register(

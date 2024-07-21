@@ -33,7 +33,7 @@ export const WorkflowDefinitionViewerPage = () => {
     permission: orchestratorWorkflowExecutePermission,
   });
   const {
-    value: workflowOverview,
+    value: workflowOverviewDTO,
     loading,
     error,
   } = useAsync(() => {
@@ -53,7 +53,7 @@ export const WorkflowDefinitionViewerPage = () => {
 
   return (
     <BaseOrchestratorPage
-      title={workflowOverview?.name || workflowId}
+      title={workflowOverviewDTO?.data.name || workflowId}
       type="Workflows"
       typeLink="/orchestrator"
     >
@@ -86,7 +86,7 @@ export const WorkflowDefinitionViewerPage = () => {
         </Grid>
         <Grid item>
           <WorkflowDefinitionDetailsCard
-            workflowOverview={workflowOverview}
+            workflowOverview={workflowOverviewDTO?.data}
             loading={loading}
           />
         </Grid>

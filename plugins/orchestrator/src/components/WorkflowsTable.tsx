@@ -12,7 +12,7 @@ import {
   capitalize,
   orchestratorWorkflowExecutePermission,
   ProcessInstanceStateValues,
-  WorkflowOverview,
+  WorkflowOverviewDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { VALUE_UNAVAILABLE } from '../constants';
@@ -27,7 +27,7 @@ import OverrideBackstageTable from './ui/OverrideBackstageTable';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
 
 export interface WorkflowsTableProps {
-  items: WorkflowOverview[];
+  items: WorkflowOverviewDTO[];
 }
 
 export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {

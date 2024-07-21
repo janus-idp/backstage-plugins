@@ -3,6 +3,7 @@ import {
   ExecuteWorkflowResponseDTO,
   ProcessInstanceListResultDTO,
   toWorkflowYaml,
+  WorkflowOverview,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
   WorkflowRunStatusDTO,
@@ -114,7 +115,7 @@ describe('getWorkflowOverview', () => {
 
     // Assert
     expect(result).toEqual({
-      overviews: mockOverviewsV1.items.map(item =>
+      overviews: mockOverviewsV1.items.map((item: WorkflowOverview) =>
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
@@ -148,7 +149,7 @@ describe('getWorkflowOverview', () => {
 
     // Assert
     expect(result).toEqual({
-      overviews: mockOverviewsV1.items.map(item =>
+      overviews: mockOverviewsV1.items.map((item: WorkflowOverview) =>
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {

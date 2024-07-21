@@ -285,6 +285,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WorkflowOverviewDTO'
+          minItems: 0
         paginationInfo:
           $ref: '#/components/schemas/PaginationInfoDTO'
     WorkflowOverviewDTO:
@@ -314,17 +315,28 @@ components:
           minimum: 0
         description:
           type: string
+      required:
+        - workflowId
+        - format
     PaginationInfoDTO:
       type: object
       properties:
         pageSize:
           type: number
-          minimum: 0
+          minimum: 10
         page:
           type: number
-          minimum: 0
+          default: 0
         totalCount:
           type: number
+          minimum: 0
+        orderDirection:
+          enum:
+            - ASC
+            - DESC
+          default: ASC
+        orderBy:
+          type: string
           minimum: 0
       additionalProperties: false
     WorkflowFormatDTO:

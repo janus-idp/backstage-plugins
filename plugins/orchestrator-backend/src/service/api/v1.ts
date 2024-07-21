@@ -6,8 +6,6 @@ import {
   ProcessInstanceVariables,
   WorkflowDefinition,
   WorkflowExecutionResponse,
-  WorkflowOverview,
-  WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { retryAsyncFunction } from '../Helper';
@@ -18,34 +16,6 @@ const FETCH_INSTANCE_RETRY_DELAY_MS = 1000;
 
 export class V1 {
   constructor(private readonly orchestratorService: OrchestratorService) {}
-
-  public async getWorkflowsOverview(): Promise<WorkflowOverviewListResult> {
-    const overviews = await this.orchestratorService.fetchWorkflowOverviews({});
-    if (!overviews) {
-      throw new Error("Couldn't fetch workflow overviews");
-    }
-    const result: WorkflowOverviewListResult = {
-      items: overviews,
-      limit: 0,
-      offset: 0,
-      totalCount: overviews?.length ?? 0,
-    };
-    return result;
-  }
-
-  public async getWorkflowOverviewById(
-    definitionId: string,
-  ): Promise<WorkflowOverview> {
-    const overviewObj = await this.orchestratorService.fetchWorkflowOverview({
-      definitionId,
-      cacheHandler: 'throw',
-    });
-
-    if (!overviewObj) {
-      throw new Error(`Couldn't fetch workflow overview for ${definitionId}`);
-    }
-    return overviewObj;
-  }
 
   public async getWorkflowById(
     definitionId: string,

@@ -9,7 +9,7 @@ import { styled } from '@mui/material/styles';
 
 import {
   ProcessInstanceStateValues,
-  WorkflowOverview,
+  WorkflowOverviewDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { VALUE_UNAVAILABLE } from '../../constants';
@@ -26,7 +26,7 @@ const WorkflowDefinitionDetailsCard = ({
   workflowOverview,
 }: {
   loading: boolean;
-  workflowOverview?: WorkflowOverview;
+  workflowOverview?: WorkflowOverviewDTO;
 }) => {
   const formattedWorkflowOverview = React.useMemo(
     () =>
