@@ -16,6 +16,7 @@ import fs from 'fs';
 import {
   ConditionAuditInfo,
   ConditionEvents,
+  HANDLE_RBAC_DATA_STAGE,
   SEND_RESPONSE_STAGE,
 } from '../audit-log/audit-logger';
 import { ConditionalStorage } from '../database/conditional-storage';
@@ -67,16 +68,17 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
 
   async onChange(): Promise<void> {
     try {
-      console.log(`====== onChange`);
-      const newConditions = this.parse();
+      const newConds = this.parse();
 
-      const addedConditions: RoleConditionalPolicyDecision<PermissionAction>[] =
-        [];
-      const removedConditions: RoleConditionalPolicyDecision<PermissionAction>[] =
+      const addedConds: RoleConditionalPolicyDecision<PermissionAction>[] = [];
+      const removedConds: RoleConditionalPolicyDecision<PermissionAction>[] =
         [];
 
-      const existedConditions = (
-        await this.conditionalStorage.filterConditions()
+      const csvFileRoles = (
+        await this.roleMetadataStorage.filterRoleMetadata('csv-file')
+      ).map(role => role.roleEntityRef);
+      const existedFileConds = (
+        await this.conditionalStorage.filterConditions(csvFileRoles)
       ).map(condition => {
         return {
           ...condition,
@@ -85,11 +87,10 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       });
 
       // Find added conditions
-      for (const condition of newConditions) {
+      for (const condition of newConds) {
         if (!condition) {
           continue;
         }
-        validateRoleCondition(condition);
 
         const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
           condition.roleEntityRef,
@@ -106,43 +107,34 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
           ); // todo: use audit log
           continue;
         }
+        validateRoleCondition(condition);
 
-        const existingCondition = existedConditions.find(c =>
+        const existingCondition = existedFileConds.find(c =>
           deepSortEqual(omit(c, ['id']), omit(condition, ['id'])),
         );
 
         if (!existingCondition) {
-          addedConditions.push(condition);
+          addedConds.push(condition);
         }
       }
 
       // Find removed conditions
-      const existedFileConditions = await existedConditions.filter(async c => {
-        const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
-          c.roleEntityRef,
-        );
-        return roleMetadata && roleMetadata.source === 'csv-file';
-      });
-
-      console.log(
-        `====== existed file conditions ${JSON.stringify(existedFileConditions)}`,
-      );
-      for (const condition of existedConditions) {
+      for (const condition of existedFileConds) {
         if (
-          !newConditions.find(c =>
+          !newConds.find(c =>
             deepSortEqual(omit(c, ['id']), omit(condition, ['id'])),
           )
         ) {
-          removedConditions.push(condition);
+          removedConds.push(condition);
         }
       }
 
       this.conditionsDiff = {
-        addedConditions,
-        removedConditions,
+        addedConditions: addedConds,
+        removedConditions: removedConds,
       };
 
-      console.log(`====== DIFF ${JSON.stringify(newConditions)}`);
+      console.log(`====== DIFF ${JSON.stringify(newConds)}`);
 
       await this.handleFileChanges();
     } catch (error) {
@@ -175,7 +167,6 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
   async handleFileChanges(): Promise<void> {
     await this.removeConditions();
     await this.addConditions();
-    // await this.updateConditions();
   }
 
   async addConditions(): Promise<void> {
@@ -186,20 +177,16 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
           this.pluginMetadataCollector,
           this.auth,
         );
-        console.log(
-          `------ CREATE CONDITION: ${JSON.stringify(conditionToCreate)}`,
-        );
+
         await this.conditionalStorage.createCondition(conditionToCreate);
 
-        // await this.auditLogger.auditLog<ConditionAuditInfo>({
-        //   message: `Created conditional permission policy`,
-        //   eventName: ConditionEvents.CREATE_CONDITION,
-        //   metadata: { condition: roleConditionPolicy },
-        //   stage: SEND_RESPONSE_STAGE,
-        //   status: 'succeeded',
-        //   request,
-        //   response: { status: 201, body },
-        // });
+        await this.auditLogger.auditLog<ConditionAuditInfo>({
+          message: `Created conditional permission policy`,
+          eventName: ConditionEvents.CREATE_CONDITION,
+          metadata: { condition },
+          stage: HANDLE_RBAC_DATA_STAGE,
+          status: 'succeeded',
+        });
       }
     } catch (error) {
       console.error('Error adding conditions:', error);
@@ -210,14 +197,23 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
   async removeConditions(): Promise<void> {
     try {
       for (const condition of this.conditionsDiff.removedConditions) {
-        const conditionToDelete =
+        const conditionToDelete = (
           await this.conditionalStorage.filterConditions(
             condition.roleEntityRef,
             condition.pluginId,
             condition.resourceType,
             condition.permissionMapping,
-          );
-        await this.conditionalStorage.deleteCondition(conditionToDelete[0].id);
+          )
+        )[0];
+        await this.conditionalStorage.deleteCondition(conditionToDelete.id);
+
+        await this.auditLogger.auditLog<ConditionAuditInfo>({
+          message: `Deleted conditional permission policy`,
+          eventName: ConditionEvents.DELETE_CONDITION,
+          metadata: { condition },
+          stage: HANDLE_RBAC_DATA_STAGE,
+          status: 'succeeded',
+        });
       }
     } catch (error) {
       console.error('Error removing conditions:', error);
