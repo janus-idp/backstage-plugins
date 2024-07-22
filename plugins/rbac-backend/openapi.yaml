@@ -613,18 +613,7 @@ paths:
                       type: string
                   conditions:
                     type: object
-                    properties:
-                      anyOf:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            rule:
-                              type: string
-                            resourceType:
-                              type: string
-                            params:
-                              type: object
+                    $ref: '#/components/schemas/Condition'
         '400':
           description: Input Error
         '403':
