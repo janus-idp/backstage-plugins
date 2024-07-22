@@ -13,7 +13,8 @@
   "backstage": {
     "role": "common-library",
     "supported-versions": "1.28.4",
-    "pluginId": "orchestrator"
+    "pluginId": "orchestrator",
+    "pluginPackage": "@janus-idp/backstage-plugin-orchestrator-common"
   },
   "homepage": "https://red.ht/rhdh",
   "repository": {

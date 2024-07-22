@@ -12,7 +12,8 @@
   "backstage": {
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "ocm"
+    "pluginId": "ocm",
+    "pluginPackage": "@janus-idp/backstage-plugin-ocm-backend"
   },
   "exports": {
     ".": "./src/index.ts",

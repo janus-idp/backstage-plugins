@@ -14,7 +14,8 @@
   "backstage": {
     "role": "common-library",
     "supported-versions": "1.28.4",
-    "pluginId": "rbac"
+    "pluginId": "rbac",
+    "pluginPackage": "@janus-idp/backstage-plugin-rbac-common"
   },
   "scripts": {
     "build": "backstage-cli package build",

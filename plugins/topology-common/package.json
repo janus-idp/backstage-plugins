@@ -14,7 +14,8 @@
   "backstage": {
     "role": "common-library",
     "supported-versions": "1.28.4",
-    "pluginId": "topology"
+    "pluginId": "topology",
+    "pluginPackage": "@janus-idp/backstage-plugin-topology-common"
   },
   "scripts": {
     "build": "backstage-cli package build",

@@ -12,7 +12,8 @@
   "backstage": {
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "analytics-module-matomo"
+    "pluginId": "analytics-module-matomo",
+    "pluginPackage": "@janus-idp/backstage-plugin-analytics-module-matomo"
   },
   "scripts": {
     "start": "backstage-cli package start",

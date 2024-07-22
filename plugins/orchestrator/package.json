@@ -12,7 +12,8 @@
   "backstage": {
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "orchestrator"
+    "pluginId": "orchestrator",
+    "pluginPackage": "@janus-idp/backstage-plugin-orchestrator"
   },
   "homepage": "https://red.ht/rhdh",
   "repository": {

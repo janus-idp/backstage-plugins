@@ -13,7 +13,8 @@
   "backstage": {
     "role": "backend-plugin-module",
     "supported-versions": "1.28.4",
-    "pluginId": "quay"
+    "pluginId": "quay",
+    "pluginPackage": "@janus-idp/backstage-scaffolder-backend-module-quay"
   },
   "exports": {
     ".": "./src/index.ts",
