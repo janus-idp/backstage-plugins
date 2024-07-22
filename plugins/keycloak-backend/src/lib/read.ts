@@ -24,7 +24,7 @@ import {
 import type {
   GroupRepresentation,
   UserRepresentation,
-} from '@s3pweb/keycloak-admin-client-cjs/dist/index';
+} from '@s3pweb/keycloak-admin-client-cjs';
 
 import { KeycloakProviderConfig } from './config';
 import {

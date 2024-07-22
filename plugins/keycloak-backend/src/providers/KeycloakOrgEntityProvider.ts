@@ -214,8 +214,12 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
         `username and password or clientId and clientSecret must be provided.`,
       );
     }
-
-    await kcAdminClient.auth(credentials);
+    try {
+      await kcAdminClient.auth(credentials);
+      console.log('auth successful');
+    } catch (e) {
+      console.log('Auth Error:', e);
+    }
 
     const { users, groups } = await readKeycloakRealm(kcAdminClient, provider, {
       userQuerySize: provider.userQuerySize,
