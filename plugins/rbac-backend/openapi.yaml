@@ -27,12 +27,24 @@ components:
             type: object
             description: Metadata about the role.
             properties:
+              author:
+                type: string
+                description: The author of the role.
+              createdAt:
+                type: string
+                description: The date and time the role was created.
+              lastModified:
+                type: string
+                description: The date and time the role was last modified.
+              modifiedBy:
+                type: string
+                description: The user who last modified the role.
               source:
                 type: string
                 description: The source from which the role was defined.
               description:
                 type: string
-                description: A description of the role.
+                description: A description of the role.```
     Role:
       type: object
       properties:
