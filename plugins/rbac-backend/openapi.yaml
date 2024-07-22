@@ -279,6 +279,31 @@ paths:
   /api/permission/policies:
     get:
       description: Lists all permission polices.
+      parameters:
+        - name: entityReference
+          in: query
+          description: Entity <kind>:<default>/<name>.
+          required: false
+          schema:
+            type: string
+        - name: permission
+          in: query
+          description: Permission from a specific plugin, Resource type or name
+          required: false
+          schema:
+            type: string
+        - name: policy
+          in: query
+          description: 'Policy action for the permission: create, read, update, delete, use'
+          required: false
+          schema:
+            type: string
+        - name: effect
+          in: query
+          description: allow or deny
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Request was successful.
