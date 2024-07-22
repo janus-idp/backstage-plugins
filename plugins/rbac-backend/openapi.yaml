@@ -436,25 +436,29 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  pluginId:
-                    type: string
-                  policies:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        isResourced:
-                          type: boolean
-                        permission:
-                          type: string
-                          description: Permission from a specific plugin.
-                        policy:
-                          type: string
-                          description: >-
-                            Policy action for the permission: create, read,
-                            update, delete, use.
+                type: array
+                items: 
+                  type: object
+                  properties:
+                    pluginId:
+                      type: string
+                    policies:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: Permission from a specific plugin.
+                          resourceType:
+                            type: string
+                            description: Resource type.
+                          policy:
+                            type: string
+                            description: >-
+                              Policy action for the permission: create, read,
+                              update, delete, use.
+                        required: [name, policy]
         '403':
           description: Refusal to authorize
   /api/plugins/condition-rules:
