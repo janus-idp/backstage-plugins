@@ -99,18 +99,18 @@ components:
           type: string
       required: [type, description]
     PropertyArray:
-        type: object
-        properties:
-          type:
-            type: string
-          description:
-            type: string
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-        required: [type, description, items]
+      type: object
+      properties:
+        type:
+          type: string
+        description:
+          type: string
+        items:
+          type: object
+          properties:
+            type:
+              type: string
+      required: [type, description, items]
 
     PermissionPolicy:
       type: object
@@ -461,7 +461,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   type: object
                   properties:
                     pluginId:
@@ -535,36 +535,44 @@ paths:
                 type: array
                 items:
                   type: object
-                  required: [result, roleEntityRef, pluginId, resourceType, permissionMapping, conditions]
-                    properties:
-                      id:
-                        type: integer
-                      result:
+                  required:
+                    [
+                      result,
+                      roleEntityRef,
+                      pluginId,
+                      resourceType,
+                      permissionMapping,
+                      conditions,
+                    ]
+                  properties:
+                    id:
+                      type: integer
+                    result:
+                      type: string
+                    roleEntityRef:
+                      type: string
+                    pluginId:
+                      type: string
+                    resourceType:
+                      type: string
+                    permissionMapping:
+                      type: array
+                      items:
                         type: string
-                      roleEntityRef:
-                        type: string
-                      pluginId:
-                        type: string
-                      resourceType:
-                        type: string
-                      permissionMapping:
-                        type: array
-                        items:
-                          type: string
-                      conditions:
-                        type: object
-                        properties:
-                          anyOf:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                rule:
-                                  type: string
-                                resourceType:
-                                  type: string
-                                params:
-                                  type: object
+                    conditions:
+                      type: object
+                      properties:
+                        anyOf:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              rule:
+                                type: string
+                              resourceType:
+                                type: string
+                              params:
+                                type: object
         '403':
           description: Refusal to authorize
     post:
