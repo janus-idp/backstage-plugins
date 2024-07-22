@@ -138,3 +138,9 @@ Resource type permissions on the other hand are basic named permissions with a r
 | Name           | Resource Type | Policy | Description                             | Requirements        |
 | -------------- | ------------- | ------ | --------------------------------------- | ------------------- |
 | quay.view.read |               | read   | Allows the user to view the quay plugin | catalog.entity.read |
+
+## Bulk Import
+
+| Name        | Resource Type | Policy | Description                                                                                                                                                                          | Requirements |
+| ----------- | ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| bulk.import | bulk-import   |        | Allows the user to access the bulk import endpoints (listing all repositories and organizations accessible by all GitHub integrations, as well as managing the import requests, ...) | X            |
