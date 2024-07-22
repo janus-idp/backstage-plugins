@@ -485,7 +485,7 @@ paths:
                         required: [name, policy]
         '403':
           description: Refusal to authorize
-  /api/plugins/condition-rules:
+  /api/permission/plugins/condition-rules:
     get:
       description: Provides conditional rule parameter schemas.
       responses:
