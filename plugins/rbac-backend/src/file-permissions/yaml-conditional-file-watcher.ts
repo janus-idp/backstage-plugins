@@ -67,94 +67,99 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
   }
 
   async onChange(): Promise<void> {
-    console.log(`====== onChange`);
-    const conditions = this.parse();
-    if (conditions.length === 0) {
-      conditions.forEach(condition => validateRoleCondition(condition)); // todo validate only new added conditions?
-    }
+    try {
+      console.log(`====== onChange`);
+      const newConditions = this.parse();
 
-    const newConditions = this.parse();
-    const addedConditions: RoleConditionalPolicyDecision<PermissionAction>[] =
-      [];
-    const removedConditions: RoleConditionalPolicyDecision<PermissionAction>[] =
-      [];
-    // const updatedConditions: RoleConditionalPolicyDecision<PermissionAction>[] = [];
+      const addedConditions: RoleConditionalPolicyDecision<PermissionAction>[] =
+        [];
+      const removedConditions: RoleConditionalPolicyDecision<PermissionAction>[] =
+        [];
+      // const updatedConditions: RoleConditionalPolicyDecision<PermissionAction>[] = [];
 
-    const existedConditions = (
-      await this.conditionalStorage.filterConditions()
-    ).map(condition => {
-      return {
-        ...condition,
-        permissionMapping: condition.permissionMapping.map(pm => pm.action),
+      const existedConditions = (
+        await this.conditionalStorage.filterConditions()
+      ).map(condition => {
+        return {
+          ...condition,
+          permissionMapping: condition.permissionMapping.map(pm => pm.action),
+        };
+      });
+
+      // Find added conditions
+      for (const condition of newConditions) {
+        if (!condition) {
+          continue;
+        }
+        validateRoleCondition(condition);
+
+        const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
+          condition.roleEntityRef,
+        );
+        if (!roleMetadata) {
+          this.logger.warn(
+            `skip to add condition for role ${condition.roleEntityRef}. Role does not exist`,
+          ); // todo: use audit log
+          continue;
+        }
+        if (roleMetadata.source !== 'csv-file') {
+          this.logger.warn(
+            `skip to add condition for role ${condition.roleEntityRef}. Role is not from csv-file`,
+          ); // todo: use audit log
+          continue;
+        }
+
+        const existingCondition = existedConditions.find(c =>
+          deepSortEqual(omit(c, ['id']), omit(condition, ['id'])),
+        );
+
+        if (!existingCondition) {
+          addedConditions.push(condition);
+        }
+      }
+
+      // Find removed conditions
+      const existedFileConditions = await existedConditions.filter(async c => {
+        const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
+          c.roleEntityRef,
+        );
+        return roleMetadata && roleMetadata.source === 'csv-file';
+      });
+
+      console.log(
+        `====== existed file conditions ${JSON.stringify(existedFileConditions)}`,
+      );
+      for (const condition of existedConditions) {
+        if (
+          !newConditions.find(c =>
+            deepSortEqual(omit(c, ['id']), omit(condition, ['id'])),
+          )
+        ) {
+          removedConditions.push(condition);
+        }
+      }
+
+      // Find updated conditions
+      // for (const condition of newConditions) {
+      //   const existingCondition = this.conditionsDiff.addedConditions.find(c => c.id === condition.id);
+      //   console.log(`====== ${JSON.stringify(existingCondition)} ${JSON.stringify(condition)}`);
+      //   if (existingCondition && !isEqual(existingCondition, condition)) {
+      //     updatedConditions.push(condition);
+      //   }
+      // }
+
+      this.conditionsDiff = {
+        addedConditions,
+        removedConditions,
+        // updatedConditions,
       };
-    });
 
-    // Find added conditions
-    for (const condition of newConditions) {
-      if (!condition) {
-        continue;
-      }
+      console.log(`====== DIFF ${JSON.stringify(newConditions)}`);
 
-      const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
-        condition.roleEntityRef,
-      );
-      if (!roleMetadata) {
-        this.logger.warn(
-          `skip to add condition for role ${condition.roleEntityRef}. Role does not exist`,
-        ); // todo: use audit log
-        continue;
-      }
-      if (roleMetadata.source !== 'csv-file') {
-        this.logger.warn(
-          `skip to add condition for role ${condition.roleEntityRef}. Role is not from csv-file`,
-        ); // todo: use audit log
-        continue;
-      }
-
-      const existingCondition = existedConditions.find(c =>
-        deepSortEqual(omit(c, ['id']), omit(condition, ['id'])),
-      );
-
-      if (!existingCondition) {
-        addedConditions.push(condition);
-      }
+      await this.handleFileChanges();
+    } catch (error) {
+      this.logger.error(`Error watching file: ${error}`);
     }
-
-    // Find removed conditions
-    const existedFileConditions = await existedConditions.filter(async c => {
-      const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
-        c.roleEntityRef,
-      );
-      return roleMetadata && roleMetadata.source === 'csv-file';
-    });
-
-    console.log(
-      `====== existed file conditions ${JSON.stringify(existedFileConditions)}`,
-    );
-    for (const condition of existedConditions) {
-      if (!newConditions.find(c => deepSortEqual(c, omit(condition, ['id'])))) {
-        removedConditions.push(condition);
-      }
-    }
-
-    // Find updated conditions
-    // for (const condition of newConditions) {
-    //   const existingCondition = this.conditionsDiff.addedConditions.find(c => c.id === condition.id);
-    //   console.log(`====== ${JSON.stringify(existingCondition)} ${JSON.stringify(condition)}`);
-    //   if (existingCondition && !isEqual(existingCondition, condition)) {
-    //     updatedConditions.push(condition);
-    //   }
-    // }
-
-    this.conditionsDiff = {
-      addedConditions,
-      removedConditions,
-      // updatedConditions,
-    };
-
-    console.log(`====== DIFF ${JSON.stringify(conditions)}`);
-
-    await this.handleFileChanges();
   }
 
   /**
