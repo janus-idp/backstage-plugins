@@ -535,8 +535,7 @@ paths:
                 type: array
                 items:
                   type: object
-                  items:
-                    type: object
+                  required: [result, roleEntityRef, pluginId, resourceType, permissionMapping, conditions]
                     properties:
                       id:
                         type: integer
