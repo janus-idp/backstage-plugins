@@ -513,14 +513,26 @@ paths:
                             type: string
                           paramsSchema:
                             type: object
-                          required:
-                            type: array
-                            items:
-                              type: string
-                          additionalProperties:
-                            type: boolean
-                          $schema:
-                            type: string
+                            properties:
+                              $schema:
+                                type: string
+                              additionalProperties:
+                                type: boolean
+                              required: 
+                                type: string
+                              type:
+                                type: string
+                            oneOf:
+                              - properties:
+                                  properties:
+                                    type: object
+                                    additionalProperties:
+                                      $ref: '#/components/schemas/PropertyArray'
+                              - properties:
+                                  properties:
+                                    type: object
+                                    additionalProperties:
+                                      $ref: '#/components/schemas/PropertyObject'
         '403':
           description: Refusal to authorize
   /api/permission/roles/conditions:
