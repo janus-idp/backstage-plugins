@@ -63,6 +63,54 @@ components:
             description:
               type: string
               description: A description of the role.
+    Condition:
+      type: object
+      oneOf:
+        - properties:
+            anyOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/Condition'
+          required: [anyOf]
+        - properties:
+            allOf:
+              type: array
+              items:
+                $ref: '#/components/schemas/Condition'
+          required: [allOf]
+        - properties:
+            not:
+              $ref: '#/components/schemas/Condition'
+          required: [not]
+        - properties:
+            rule:
+              type: string
+            resourceType:
+              type: string
+            params:
+              type: object
+          required: [rule, resourceType, params]
+    PropertyObject:
+      type: object
+      properties:
+        type:
+          type: string
+        description:
+          type: string
+      required: [type, description]
+    PropertyArray:
+        type: object
+        properties:
+          type:
+            type: string
+          description:
+            type: string
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+        required: [type, description, items]
 
     PermissionPolicy:
       type: object
