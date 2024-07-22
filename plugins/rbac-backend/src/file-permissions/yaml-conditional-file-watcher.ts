@@ -1,23 +1,18 @@
 import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 
-import { watch } from 'chokidar';
 import yaml from 'js-yaml';
-import { isEqual, omit } from 'lodash';
+import { omit } from 'lodash';
 
 import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
   PermissionAction,
-  PermissionInfo,
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
-
-import fs from 'fs';
 
 import {
   ConditionAuditInfo,
   ConditionEvents,
   HANDLE_RBAC_DATA_STAGE,
-  SEND_RESPONSE_STAGE,
 } from '../audit-log/audit-logger';
 import { ConditionalStorage } from '../database/conditional-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
@@ -34,7 +29,6 @@ type ConditionalPoliciesDiff = {
 export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
   RoleConditionalPolicyDecision<PermissionAction>[]
 > {
-  private watcher: fs.FSWatcher | null = null;
   private conditionsDiff: ConditionalPoliciesDiff;
 
   constructor(
@@ -52,13 +46,10 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     this.conditionsDiff = {
       addedConditions: [],
       removedConditions: [],
-      // updatedConditions: [],
     };
   }
 
   async initialize(): Promise<void> {
-    this.watcher = watch(this.filePath, { persistent: true });
-
     await this.onChange();
 
     if (this.allowReload) {
@@ -98,13 +89,13 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
         if (!roleMetadata) {
           this.logger.warn(
             `skip to add condition for role ${condition.roleEntityRef}. Role does not exist`,
-          ); // todo: use audit log
+          );
           continue;
         }
         if (roleMetadata.source !== 'csv-file') {
           this.logger.warn(
             `skip to add condition for role ${condition.roleEntityRef}. Role is not from csv-file`,
-          ); // todo: use audit log
+          );
           continue;
         }
         validateRoleCondition(condition);
@@ -134,7 +125,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
         removedConditions: removedConds,
       };
 
-      console.log(`====== DIFF ${JSON.stringify(newConds)}`);
+      console.log(`====== DIFF ${JSON.stringify(newConds)}`); // todo: remove it
 
       await this.handleFileChanges();
     } catch (error) {
@@ -155,13 +146,13 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       }
       return data;
     } catch (error: unknown) {
-      this.handleError(error as Error);
+      this.handleError(
+        'Failed to parse conditional policies file',
+        error,
+        ConditionEvents.PARSE_CONDITION_ERROR,
+      );
       return [];
     }
-  }
-
-  handleError(error: Error): void {
-    console.error('Error watching file:', error);
   }
 
   async handleFileChanges(): Promise<void> {
@@ -189,7 +180,11 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
         });
       }
     } catch (error) {
-      console.error('Error adding conditions:', error);
+      await this.handleError(
+        'Failed to create condition',
+        error,
+        ConditionEvents.CREATE_CONDITION_ERROR,
+      );
     }
     this.conditionsDiff.addedConditions = [];
   }
@@ -216,9 +211,27 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
         });
       }
     } catch (error) {
-      console.error('Error removing conditions:', error);
+      await this.handleError(
+        'Failed to delete condition by id',
+        error,
+        ConditionEvents.DELETE_CONDITION_ERROR,
+      );
     }
 
     this.conditionsDiff.removedConditions = [];
+  }
+
+  async handleError(
+    message: string,
+    error: unknown,
+    event: string,
+  ): Promise<void> {
+    await this.auditLogger.auditLog({
+      message,
+      eventName: event,
+      stage: HANDLE_RBAC_DATA_STAGE,
+      status: 'failed',
+      errors: [error],
+    });
   }
 }
