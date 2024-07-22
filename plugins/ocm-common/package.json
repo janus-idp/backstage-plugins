@@ -14,7 +14,12 @@
   "backstage": {
     "role": "common-library",
     "supported-versions": "1.28.4",
-    "pluginId": "ocm"
+    "pluginId": "ocm",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-ocm",
+      "@janus-idp/backstage-plugin-ocm-common",
+      "@janus-idp/backstage-plugin-ocm-backend"
+    ]
   },
   "scripts": {
     "build": "backstage-cli package build",

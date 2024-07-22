@@ -12,7 +12,12 @@
   "backstage": {
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "feedback"
+    "pluginId": "feedback",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-feedback",
+      "@janus-idp/backstage-plugin-feedback-common",
+      "@janus-idp/backstage-plugin-feedback-backend"
+    ]
   },
   "exports": {
     ".": "./src/index.ts",

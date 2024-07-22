@@ -12,7 +12,10 @@
   "backstage": {
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "argocd"
+    "pluginId": "argocd",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-argocd"
+    ]
   },
   "sideEffects": false,
   "scripts": {

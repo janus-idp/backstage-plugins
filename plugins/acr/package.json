@@ -12,7 +12,10 @@
   "backstage": {
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "acr"
+    "pluginId": "acr",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-acr"
+    ]
   },
   "scripts": {
     "build": "backstage-cli package build",

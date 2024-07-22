@@ -13,7 +13,12 @@
   "backstage": {
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "matomo"
+    "pluginId": "matomo",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-matomo",
+      "@janus-idp/backstage-plugin-matomo-common",
+      "@janus-idp/backstage-plugin-matomo-backend"
+    ]
   },
   "scripts": {
     "build": "backstage-cli package build",

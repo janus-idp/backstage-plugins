@@ -12,7 +12,12 @@
   "backstage": {
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "orchestrator"
+    "pluginId": "orchestrator",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-orchestrator",
+      "@janus-idp/backstage-plugin-orchestrator-common",
+      "@janus-idp/backstage-plugin-orchestrator-backend"
+    ]
   },
   "exports": {
     ".": "./src/index.ts",

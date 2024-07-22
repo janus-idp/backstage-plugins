@@ -12,7 +12,10 @@
   "backstage": {
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "3scale"
+    "pluginId": "3scale",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-3scale-backend"
+    ]
   },
   "exports": {
     ".": "./src/index.ts",

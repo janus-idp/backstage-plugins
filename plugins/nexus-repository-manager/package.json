@@ -12,7 +12,10 @@
   "backstage": {
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "nexus-repository-manager"
+    "pluginId": "nexus-repository-manager",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-nexus"
+    ]
   },
   "scripts": {
     "build": "backstage-cli package build",

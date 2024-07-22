@@ -13,7 +13,10 @@
   "backstage": {
     "role": "backend-plugin-module",
     "supported-versions": "1.28.4",
-    "pluginId": "kubernetes"
+    "pluginId": "kubernetes",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-kubernetes"
+    ]
   },
   "exports": {
     ".": "./src/index.ts",

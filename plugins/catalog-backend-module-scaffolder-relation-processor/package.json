@@ -14,7 +14,12 @@
   "backstage": {
     "role": "backend-plugin-module",
     "supported-versions": "1.28.4",
-    "pluginId": "scaffolder-relation-processor"
+    "pluginId": "scaffolder-relation-processor",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-catalog",
+      "@janus-idp/backstage-plugin-catalog-common",
+      "@janus-idp/backstage-plugin-catalog-backend"
+    ]
   },
   "exports": {
     ".": "./src/index.ts",

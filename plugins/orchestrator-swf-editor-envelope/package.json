@@ -15,7 +15,12 @@
   "backstage": {
     "role": "web-library",
     "supported-versions": "1.28.4",
-    "pluginId": "orchestrator-swf-editor-envelope"
+    "pluginId": "orchestrator-swf-editor-envelope",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-orchestrator",
+      "@janus-idp/backstage-plugin-orchestrator-common",
+      "@janus-idp/backstage-plugin-orchestrator-backend"
+    ]
   },
   "scripts": {
     "build": "scripts/build",
