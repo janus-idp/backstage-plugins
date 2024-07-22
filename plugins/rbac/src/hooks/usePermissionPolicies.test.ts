@@ -35,7 +35,7 @@ describe('usePermissionPolicies', () => {
     );
     await waitFor(() => {
       expect(result.current.loading).toBeFalsy();
-      expect(result.current.data).toHaveLength(5);
+      expect(result.current.data).toHaveLength(8);
     });
   });
 

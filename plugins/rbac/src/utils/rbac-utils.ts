@@ -235,7 +235,7 @@ export const getPermissionsData = (
 };
 
 export const getConditionUpperCriteria = (
-  conditions: PermissionCriteria<PermissionCondition>,
+  conditions: PermissionCriteria<PermissionCondition> | string,
 ): string | undefined => {
   return Object.keys(conditions).find(key =>
     [criterias.allOf, criterias.anyOf, criterias.not].includes(key),
@@ -251,26 +251,31 @@ export const getConditionsData = (
     case criterias.allOf: {
       const allOfConditions = (conditions as AllOfCriteria<PermissionCondition>)
         .allOf;
-      if (allOfConditions.find(c => !!getConditionUpperCriteria(c))) {
-        return undefined;
-      }
+      allOfConditions.map(aoc => {
+        if (getConditionUpperCriteria(aoc)) {
+          return getConditionsData(aoc);
+        }
+        return aoc;
+      });
       return { allOf: allOfConditions as PermissionCondition[] };
     }
     case criterias.anyOf: {
       const anyOfConditions = (conditions as AnyOfCriteria<PermissionCondition>)
         .anyOf;
-      if (anyOfConditions.find(c => !!getConditionUpperCriteria(c))) {
-        return undefined;
-      }
+      anyOfConditions.map(aoc => {
+        if (getConditionUpperCriteria(aoc)) {
+          return getConditionsData(aoc);
+        }
+        return aoc;
+      });
       return { anyOf: anyOfConditions as PermissionCondition[] };
     }
     case criterias.not: {
-      const notConditions = (conditions as NotCriteria<PermissionCondition>)
-        .not;
-      if (getConditionUpperCriteria(notConditions)) {
-        return undefined;
-      }
-      return { not: notConditions as PermissionCondition };
+      const notCondition = (conditions as NotCriteria<PermissionCondition>).not;
+      const nestedCondition = getConditionUpperCriteria(notCondition)
+        ? getConditionsData(notCondition)
+        : notCondition;
+      return { not: nestedCondition as PermissionCondition };
     }
     default:
       return { condition: conditions as PermissionCondition };

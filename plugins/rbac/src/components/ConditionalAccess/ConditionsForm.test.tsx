@@ -81,4 +81,40 @@ describe('ConditionsForm', () => {
 
     expect(getByTestId('save-conditions')).toBeDisabled();
   });
+
+  it('shows Multiple levels of nested conditions warning', () => {
+    const { getByTestId } = renderComponent({
+      conditionsFormVal: {
+        anyOf: [
+          {
+            rule: 'HAS_ANOTTATION',
+            resourceType: selPluginResourceType,
+            params: {},
+          },
+          {
+            allOf: [
+              {
+                rule: 'HAS_ANOTTATION',
+                resourceType: selPluginResourceType,
+                params: {},
+              },
+              {
+                not: {
+                  rule: 'HAS_LABEL',
+                  resourceType: selPluginResourceType,
+                  params: {
+                    label: 'temp',
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    expect(
+      getByTestId('multi-level-nested-conditions-warning'),
+    ).toBeInTheDocument();
+  });
 });

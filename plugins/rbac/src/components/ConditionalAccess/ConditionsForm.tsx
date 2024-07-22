@@ -1,10 +1,20 @@
 import React from 'react';
 
+import { PermissionCondition } from '@backstage/plugin-permission-common';
+
 import { Box, Button, makeStyles } from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
+import WarningIcon from '@mui/icons-material/Warning';
+import { RJSFValidationError } from '@rjsf/utils';
 
 import { ConditionsFormRow } from './ConditionsFormRow';
 import { criterias } from './const';
-import { ConditionsData, RuleParamsErrors, RulesData } from './types';
+import {
+  Condition,
+  ConditionsData,
+  RuleParamsErrors,
+  RulesData,
+} from './types';
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -59,22 +69,89 @@ export const ConditionsForm = ({
   );
   const [errors, setErrors] = React.useState<RuleParamsErrors>();
 
+  const handleSetErrors = (
+    newErrors: RJSFValidationError[],
+    currentCriteria: string,
+    nestedCriteria?: string,
+    nestedConditionIndex?: number,
+    ruleIndex?: number,
+    removeErrors = false,
+  ) => {
+    setErrors(prevErrors => {
+      const updatedErrors: RuleParamsErrors = { ...prevErrors };
+
+      let baseErrorKey = currentCriteria;
+      if (nestedConditionIndex !== undefined) {
+        baseErrorKey += `.${nestedConditionIndex}`;
+      }
+      if (nestedCriteria !== undefined) {
+        baseErrorKey += `.${nestedCriteria}`;
+      }
+      if (ruleIndex !== undefined) {
+        baseErrorKey += `.${ruleIndex}`;
+      }
+
+      if (removeErrors || newErrors.length === 0) {
+        delete updatedErrors[baseErrorKey];
+        Object.keys(updatedErrors).forEach(key => {
+          if (key.startsWith(`${baseErrorKey}.`)) {
+            delete updatedErrors[key];
+          }
+        });
+      } else {
+        updatedErrors[baseErrorKey] = newErrors;
+      }
+
+      return updatedErrors;
+    });
+  };
+
   const [removeAllClicked, setRemoveAllClicked] =
     React.useState<boolean>(false);
 
+  const flattenConditions = (
+    conditionData: Condition[],
+  ): PermissionCondition[] => {
+    const flatConditions: PermissionCondition[] = [];
+
+    const processCondition = (condition: Condition) => {
+      if ('rule' in condition) {
+        flatConditions.push(condition);
+      } else {
+        if (condition.allOf) {
+          condition.allOf.forEach(processCondition);
+        }
+        if (condition.anyOf) {
+          condition.anyOf.forEach(processCondition);
+        }
+        if (condition.not) {
+          if ('rule' in condition.not) {
+            flatConditions.push(condition.not);
+          } else {
+            processCondition(condition.not);
+          }
+        }
+      }
+    };
+    conditionData.forEach(processCondition);
+    return flatConditions;
+  };
+
   const isNoRuleSelected = () => {
     switch (criteria) {
-      case criterias.condition: {
+      case criterias.condition:
         return !conditions.condition?.rule;
-      }
       case criterias.not: {
-        return !conditions.not?.rule;
+        const flatConditions = flattenConditions([conditions.not as Condition]);
+        return flatConditions.some(c => !c.rule);
       }
       case criterias.allOf: {
-        return !!conditions.allOf?.find(c => !c.rule);
+        const flatConditions = flattenConditions(conditions.allOf || []);
+        return flatConditions.some(c => !c.rule);
       }
       case criterias.anyOf: {
-        return !!conditions.anyOf?.find(c => !c.rule);
+        const flatConditions = flattenConditions(conditions.anyOf || []);
+        return flatConditions.some(c => !c.rule);
       }
       default:
         return true;
@@ -82,7 +159,8 @@ export const ConditionsForm = ({
   };
 
   const isSaveDisabled = () => {
-    const hasErrors = !!errors?.[criteria]?.length;
+    const hasErrors =
+      errors && Object.keys(errors).some(key => errors[key].length > 0);
 
     if (removeAllClicked) return false;
 
@@ -91,6 +169,32 @@ export const ConditionsForm = ({
       isNoRuleSelected() ||
       Object.is(conditionsFormVal, conditions)
     );
+  };
+
+  const hasMultiLevelNestedConditions = (): boolean => {
+    if (!Array.isArray(conditions[criteria as keyof ConditionsData])) {
+      return false;
+    }
+
+    return (conditions[criteria as keyof ConditionsData] as Condition[])
+      .filter(condition => !('rule' in condition))
+      .some((firstLevelNestedCondition: Condition) => {
+        const nestedConditionCriteria = Object.keys(
+          firstLevelNestedCondition,
+        )[0];
+        return (
+          Array.isArray(
+            firstLevelNestedCondition[
+              nestedConditionCriteria as keyof Condition
+            ],
+          ) &&
+          (
+            firstLevelNestedCondition[
+              nestedConditionCriteria as keyof Condition
+            ] as Condition[]
+          ).some((con: Condition) => !('rule' in con))
+        );
+      });
   };
 
   return (
@@ -103,9 +207,31 @@ export const ConditionsForm = ({
           selPluginResourceType={selPluginResourceType}
           onRuleChange={newCondition => setConditions(newCondition)}
           setCriteria={setCriteria}
-          setErrors={setErrors}
+          handleSetErrors={handleSetErrors}
           setRemoveAllClicked={setRemoveAllClicked}
         />
+        {hasMultiLevelNestedConditions() && (
+          <Alert
+            icon={<WarningIcon />}
+            style={{ margin: '1.5rem 0 1rem 0' }}
+            severity="warning"
+            data-testid="multi-level-nested-conditions-warning"
+          >
+            <AlertTitle data-testid="multi-level-nested-conditions-warning-title">
+              Multiple levels of nested conditions are not supported
+            </AlertTitle>
+            Only one level is displayed. Please use the{' '}
+            <a
+              href="https://github.com/redhat-developer/red-hat-developers-documentation-rhdh/blob/main/modules/admin/proc-rbac-send-request-rbac-rest-api.adoc"
+              // TODO: Update link with the official documentation when RHIDP-3078 is resolved
+              target="blank"
+              style={{ textDecoration: 'underline' }}
+            >
+              CLI
+            </a>{' '}
+            to view all nested conditions.
+          </Alert>
+        )}
       </Box>
       <Box className={classes.footer}>
         <Button

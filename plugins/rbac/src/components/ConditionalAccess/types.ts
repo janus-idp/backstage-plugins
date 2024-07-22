@@ -23,12 +23,34 @@ export type ConditionRules = {
 };
 
 export type ConditionsData = {
-  allOf?: PermissionCondition[];
-  anyOf?: PermissionCondition[];
-  not?: PermissionCondition;
+  allOf?: Condition[];
+  anyOf?: Condition[];
+  not?: Condition;
   condition?: PermissionCondition;
 };
+
+export type Condition = PermissionCondition | ConditionsData;
 
 export type RuleParamsErrors = {
   [key: string]: RJSFValidationError[];
 };
+
+export type ConditionFormRowProps = {
+  conditionRulesData?: RulesData;
+  conditionRow: ConditionsData;
+  onRuleChange: (newCondition: ConditionsData) => void;
+  selPluginResourceType: string;
+  criteria: string;
+  setCriteria: React.Dispatch<React.SetStateAction<string>>;
+  handleSetErrors: (
+    newErrors: RJSFValidationError[],
+    criteria: string,
+    nestedCriteria?: string,
+    nestedConditionIndex?: number,
+    ruleIndex?: number,
+    removeErrors?: boolean,
+  ) => void;
+  setRemoveAllClicked: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export type NotConditionType = 'simple-condition' | 'nested-condition';

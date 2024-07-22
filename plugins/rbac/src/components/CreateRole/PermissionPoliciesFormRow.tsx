@@ -72,6 +72,17 @@ export const PermissionPoliciesFormRow = ({
 
   const [sidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
 
+  const tooltipTitle = () => (
+    <div>
+      <p style={{ textAlign: 'center' }}>
+        Define access conditions for the selected resource type using Rules.
+        Rules vary by resource type.{' '}
+        <b>Users have access to the resource type content by default</b> unless
+        configured otherwise.
+      </p>
+    </div>
+  );
+
   return (
     <div>
       <div style={{ display: 'flex', flexFlow: 'column', gap: '15px' }}>
@@ -175,10 +186,7 @@ export const PermissionPoliciesFormRow = ({
                       })`
                     : 'Configure access'}
                   &nbsp;
-                  <Tooltip
-                    title="Define access conditions for the selected resource type using Rules. Rules vary by resource type. Users have access to the resource type content by default unless configured otherwise."
-                    placement="top"
-                  >
+                  <Tooltip title={tooltipTitle()} placement="top">
                     <HelpOutlineIcon fontSize="inherit" />
                   </Tooltip>
                 </IconButton>
