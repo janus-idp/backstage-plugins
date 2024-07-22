@@ -28,7 +28,6 @@ import { AbstractFileWatcher } from './file-watcher';
 type ConditionalPoliciesDiff = {
   addedConditions: RoleConditionalPolicyDecision<PermissionAction>[];
   removedConditions: RoleConditionalPolicyDecision<PermissionAction>[];
-  // updatedConditions: RoleConditionalPolicyDecision<PermissionAction>[];
 };
 
 export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
@@ -75,7 +74,6 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
         [];
       const removedConditions: RoleConditionalPolicyDecision<PermissionAction>[] =
         [];
-      // const updatedConditions: RoleConditionalPolicyDecision<PermissionAction>[] = [];
 
       const existedConditions = (
         await this.conditionalStorage.filterConditions()
@@ -139,19 +137,9 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
         }
       }
 
-      // Find updated conditions
-      // for (const condition of newConditions) {
-      //   const existingCondition = this.conditionsDiff.addedConditions.find(c => c.id === condition.id);
-      //   console.log(`====== ${JSON.stringify(existingCondition)} ${JSON.stringify(condition)}`);
-      //   if (existingCondition && !isEqual(existingCondition, condition)) {
-      //     updatedConditions.push(condition);
-      //   }
-      // }
-
       this.conditionsDiff = {
         addedConditions,
         removedConditions,
-        // updatedConditions,
       };
 
       console.log(`====== DIFF ${JSON.stringify(newConditions)}`);
@@ -202,21 +190,21 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
           `------ CREATE CONDITION: ${JSON.stringify(conditionToCreate)}`,
         );
         await this.conditionalStorage.createCondition(conditionToCreate);
+
+        // await this.auditLogger.auditLog<ConditionAuditInfo>({
+        //   message: `Created conditional permission policy`,
+        //   eventName: ConditionEvents.CREATE_CONDITION,
+        //   metadata: { condition: roleConditionPolicy },
+        //   stage: SEND_RESPONSE_STAGE,
+        //   status: 'succeeded',
+        //   request,
+        //   response: { status: 201, body },
+        // });
       }
     } catch (error) {
       console.error('Error adding conditions:', error);
     }
     this.conditionsDiff.addedConditions = [];
-
-    // await this.auditLogger.auditLog<ConditionAuditInfo>({
-    //   message: `Created conditional permission policy`,
-    //   eventName: ConditionEvents.CREATE_CONDITION,
-    //   metadata: { condition: roleConditionPolicy },
-    //   stage: SEND_RESPONSE_STAGE,
-    //   status: 'succeeded',
-    //   request,
-    //   response: { status: 201, body },
-    // });
   }
 
   async removeConditions(): Promise<void> {
@@ -237,15 +225,4 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
 
     this.conditionsDiff.removedConditions = [];
   }
-
-  // async updateConditions(): Promise<void> {
-  //   for (const condition of this.conditionsDiff.updatedConditions) {
-  //     const conditionToUpdate = await processConditionMapping(
-  //       condition,
-  //       this.pluginMetadataCollector,
-  //       this.auth
-  //     );
-  //     await this.conditionalStorage.updateCondition(conditionToUpdate.id, conditionToUpdate);
-  //   }
-  // }
 }
