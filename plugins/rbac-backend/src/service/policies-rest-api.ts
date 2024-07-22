@@ -40,7 +40,6 @@ import {
   RoleBasedPolicy,
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
-import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import {
   ConditionAuditInfo,
@@ -62,8 +61,8 @@ import {
 } from '../database/role-metadata';
 import {
   buildRoleSourceMap,
-  isPermissionAction,
   deepSortedEqual,
+  isPermissionAction,
   policyToString,
   processConditionMapping,
 } from '../helper';

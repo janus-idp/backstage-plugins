@@ -287,6 +287,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         auditLogger,
         auth,
         pluginMetadataCollector,
+        roleMetadataStorage,
       );
       await conditionalFile.initialize();
     }

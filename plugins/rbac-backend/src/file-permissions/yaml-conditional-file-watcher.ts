@@ -58,8 +58,6 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
 
   async initialize(): Promise<void> {
     this.watcher = watch(this.filePath, { persistent: true });
-    this.watcher.on('change', this.onChange.bind(this));
-    this.watcher.on('error', this.handleError.bind(this));
 
     await this.onChange();
 
@@ -154,7 +152,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       // updatedConditions,
     };
 
-    // console.log(`====== ${JSON.stringify(conditions)}`);
+    console.log(`====== DIFF ${JSON.stringify(conditions)}`);
 
     await this.handleFileChanges();
   }
@@ -194,6 +192,9 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
           condition,
           this.pluginMetadataCollector,
           this.auth,
+        );
+        console.log(
+          `------ CREATE CONDITION: ${JSON.stringify(conditionToCreate)}`,
         );
         await this.conditionalStorage.createCondition(conditionToCreate);
       }
