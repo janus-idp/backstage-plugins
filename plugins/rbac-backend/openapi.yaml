@@ -416,24 +416,6 @@ paths:
         - $ref: '#/components/parameters/nameParam'
         - $ref: '#/components/parameters/namespaceParam'
         - $ref: '#/components/parameters/kindParam'
-        - name: permission
-          in: query
-          description: Permission from a specific plugin, Resource type or name
-          required: false
-          schema:
-            type: string
-        - name: policy
-          in: query
-          description: 'Policy action for the permission: create, read, update, delete, use'
-          required: false
-          schema:
-            type: string
-        - name: effect
-          in: query
-          description: allow or deny
-          required: false
-          schema:
-            type: string
       requestBody:
         required: false
         content:
