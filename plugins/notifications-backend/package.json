@@ -13,7 +13,10 @@
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "notifications",
-    "pluginPackage": "@janus-idp/plugin-notifications-backend"
+    "pluginPackages": [
+      "@janus-idp/plugin-notifications-backend",
+      "@janus-idp/plugin-notifications"
+    ]
   },
   "exports": {
     ".": "./src/index.ts",
