@@ -15,10 +15,11 @@
     "supported-versions": "1.28.4",
     "pluginId": "notifications",
     "pluginPackages": [
-      "@janus-idp/plugin-notifications-backend",
-      "@janus-idp/plugin-notifications"
+      "@janus-idp/plugin-notifications",
+      "@janus-idp/plugin-notifications-backend"
     ]
   },
+  "sideEffects": false,
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",

@@ -14,10 +14,9 @@
     "supported-versions": "1.28.4",
     "pluginId": "orchestrator",
     "pluginPackages": [
+      "@janus-idp/backstage-plugin-orchestrator",
       "@janus-idp/backstage-plugin-orchestrator-backend",
-      "@janus-idp/backstage-plugin-orchestrator-common",
-      "@janus-idp/backstage-plugin-orchestrator-swf-editor-envelope",
-      "@janus-idp/backstage-plugin-orchestrator"
+      "@janus-idp/backstage-plugin-orchestrator-common"
     ]
   },
   "homepage": "https://red.ht/rhdh",
@@ -40,6 +39,7 @@
     "dist",
     "dist-scalprum"
   ],
+  "sideEffects": false,
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",

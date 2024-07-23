@@ -17,12 +17,10 @@
     "supported-versions": "1.28.4",
     "pluginId": "orchestrator-swf-editor-envelope",
     "pluginPackages": [
-      "@janus-idp/backstage-plugin-orchestrator-backend",
-      "@janus-idp/backstage-plugin-orchestrator-common",
-      "@janus-idp/backstage-plugin-orchestrator-swf-editor-envelope",
-      "@janus-idp/backstage-plugin-orchestrator"
+      "@janus-idp/backstage-plugin-orchestrator-swf-editor-envelope"
     ]
   },
+  "sideEffects": false,
   "scripts": {
     "build": "scripts/build",
     "postbuild": "scripts/postbuild copy",

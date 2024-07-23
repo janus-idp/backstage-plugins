@@ -6,18 +6,14 @@
   "license": "Apache-2.0",
   "private": true,
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "backstage": {
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "bulk-import-backend",
     "pluginPackages": [
-      "@janus-idp/backstage-plugin-bulk-import-backend",
-      "@janus-idp/backstage-plugin-bulk-import",
-      "@janus-idp/backstage-plugin-bulk-import-common"
+      "@janus-idp/backstage-plugin-bulk-import-backend"
     ]
   },
   "exports": {

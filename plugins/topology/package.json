@@ -14,10 +14,11 @@
     "supported-versions": "1.28.4",
     "pluginId": "topology",
     "pluginPackages": [
-      "@janus-idp/backstage-plugin-topology-common",
-      "@janus-idp/backstage-plugin-topology"
+      "@janus-idp/backstage-plugin-topology",
+      "@janus-idp/backstage-plugin-topology-common"
     ]
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
