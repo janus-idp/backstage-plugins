@@ -518,7 +518,7 @@ paths:
                                 type: string
                               additionalProperties:
                                 type: boolean
-                              required: 
+                              required:
                                 type: string
                               type:
                                 type: string
@@ -572,19 +572,7 @@ paths:
                       items:
                         type: string
                     conditions:
-                      type: object
-                      properties:
-                        anyOf:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              rule:
-                                type: string
-                              resourceType:
-                                type: string
-                              params:
-                                type: object
+                      $ref: '#/components/schemas/Condition'
         '403':
           description: Refusal to authorize
     post:
@@ -609,14 +597,7 @@ paths:
                   items:
                     type: string
                 conditions:
-                  type: object
-                  properties:
-                    rule:
-                      type: string
-                    resourceType:
-                      type: string
-                    params:
-                      type: object
+                  $ref: '#/components/schemas/Condition'
       responses:
         '201':
           description: New resource was successfully created.
@@ -655,7 +636,6 @@ paths:
                     items:
                       type: string
                   conditions:
-                    type: object
                     $ref: '#/components/schemas/Condition'
         '400':
           description: Input Error
@@ -691,7 +671,6 @@ paths:
                   items:
                     type: string
                 conditions:
-                  type: object
                   $ref: '#/components/schemas/Condition'
       responses:
         '200':
