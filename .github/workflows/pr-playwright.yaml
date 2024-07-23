@@ -122,13 +122,15 @@ jobs:
             
             # Kill the plugin
             pid=$(lsof -i :3000 -Fp | grep p | sed s/p//)
-            kill -9 $pid && echo "$f shut down"
+            kill -9 $pid || true 
+            echo "$f shut down"
             cd $root/plugins
           done
 
           # Kill backend
           pid=$(lsof -i :7007 -Fp | grep p | sed s/p//)
-          kill -9 $pid && echo "Backend shut down"
+          kill -9 $pid || true
+          echo "Backend shut down"
       - uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4
         if: always()
         with:
