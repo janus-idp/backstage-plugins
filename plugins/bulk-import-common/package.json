@@ -36,8 +36,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/janus-idp/backstage-plugins",
-    "directory": "plugins/bulk-import"
+    "url": "git+https://github.com/janus-idp/backstage-plugins.git",
+    "directory": "plugins/bulk-import-common"
   },
   "keywords": [
     "backstage",
