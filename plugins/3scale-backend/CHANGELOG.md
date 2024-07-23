@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-3scale-backend [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.7.0...@janus-idp/backstage-plugin-3scale-backend@1.7.1) (2024-07-23)
+
 ## @janus-idp/backstage-plugin-3scale-backend [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.6.1...@janus-idp/backstage-plugin-3scale-backend@1.7.0) (2024-07-17)
 
 
