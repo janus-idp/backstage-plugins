@@ -14,7 +14,10 @@
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "matomo",
-    "pluginPackage": "@janus-idp/backstage-plugin-matomo-backend"
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-matomo-backend",
+      "@janus-idp/backstage-plugin-matomo"
+    ]
   },
   "exports": {
     ".": "./src/index.ts",
