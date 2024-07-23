@@ -15,10 +15,11 @@
     "supported-versions": "1.28.4",
     "pluginId": "matomo",
     "pluginPackages": [
-      "@janus-idp/backstage-plugin-matomo-backend",
-      "@janus-idp/backstage-plugin-matomo"
+      "@janus-idp/backstage-plugin-matomo",
+      "@janus-idp/backstage-plugin-matomo-backend"
     ]
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
