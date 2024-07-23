@@ -15,7 +15,7 @@
     "pluginId": "topology",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-topology-common",
-      "@janus-idp/backstage-plugin-topology",
+      "@janus-idp/backstage-plugin-topology"
     ]
   },
   "scripts": {
