@@ -21,7 +21,6 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 
-import type { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types';
 import { Octokit } from '@octokit/rest';
 import gitUrlParse from 'git-url-parse';
 import { Logger } from 'winston';
@@ -172,9 +171,17 @@ export class GithubApiService {
         orgs.set(org.url, ghOrg);
       });
 
-      totalCount = await this.computeTotalOrgCountFromGitHubToken(
-        octokit,
-        resp,
+      totalCount = await this.computeTotalCountFromGitHubToken(
+        async (lastPageNumber: number) =>
+          octokit.orgs
+            .listForAuthenticatedUser({
+              page: lastPageNumber,
+              per_page: 1,
+            })
+            .then(lastPageResp => lastPageResp.data.length),
+        'orgs.listForAuthenticatedUser',
+        resp?.data?.length,
+        resp?.headers?.link,
       );
     } catch (err) {
       this.logger.error(
@@ -189,49 +196,6 @@ export class GithubApiService {
       }
     }
     return { totalCount };
-  }
-
-  private async computeTotalOrgCountFromGitHubToken(
-    octokit: Octokit,
-    resp: RestEndpointMethodTypes['orgs']['listForAuthenticatedUser']['response'],
-  ): Promise<number | undefined> {
-    // There is no direct way to get the total count of repositories other than using octokit.paginate,
-    // but will make us retrieve all pages, thus increasing our response time.
-    // Workaround here is to analyze the headers, and get the link to the last page.
-    const pageSize = resp?.data?.length;
-    const linkHeader = resp?.headers?.link;
-    if (!linkHeader) {
-      this.logger.debug(
-        'No link header found in response from listForAuthenticatedUser GH endpoint => returning current page size',
-      );
-      return pageSize;
-    }
-    const lastPageLink = linkHeader
-      .split(',')
-      .find(s => s.includes('rel="last"'));
-    if (!lastPageLink) {
-      this.logger.debug(
-        "No rel='last' link found in response headers from listForAuthenticatedUser GH endpoint => returning current page size",
-      );
-      return pageSize;
-    }
-    const match = lastPageLink.match(/page=(\d+).*$/);
-    if (!match || match.length < 2) {
-      this.logger.debug(
-        "Unable to extract page number from rel='last' link found in response headers from listForAuthenticatedUser GH endpoint => returning current page size",
-      );
-      return pageSize;
-    }
-
-    const lastPageNumber = parseInt(match[1], 10);
-    // Fetch the last page to count its items, as it might contain fewer than the requested size
-    const lastPageResponse = await octokit.orgs.listForAuthenticatedUser({
-      page: lastPageNumber,
-      per_page: 1,
-    });
-    return pageSize
-      ? (lastPageNumber - 1) * pageSize + lastPageResponse.data.length
-      : undefined;
   }
 
   /**
@@ -317,9 +281,17 @@ export class GithubApiService {
         repositories.set(githubRepo.full_name, githubRepo);
       });
 
-      totalCount = await this.computeTotalRepoCountFromGitHubToken(
-        octokit,
-        resp,
+      totalCount = await this.computeTotalCountFromGitHubToken(
+        async (lastPageNumber: number) =>
+          octokit.repos
+            .listForAuthenticatedUser({
+              page: lastPageNumber,
+              per_page: 1,
+            })
+            .then(lastPageResp => lastPageResp.data.length),
+        'repos.listForAuthenticatedUser',
+        resp?.data?.length,
+        resp?.headers?.link,
       );
     } catch (err) {
       this.logger.error(
@@ -334,49 +306,6 @@ export class GithubApiService {
       }
     }
     return { totalCount };
-  }
-
-  private async computeTotalRepoCountFromGitHubToken(
-    octokit: Octokit,
-    resp: RestEndpointMethodTypes['repos']['listForAuthenticatedUser']['response'],
-  ): Promise<number | undefined> {
-    // There is no direct way to get the total count of repositories other than using octokit.paginate,
-    // but will make us retrieve all pages, thus increasing our response time.
-    // Workaround here is to analyze the headers, and get the link to the last page.
-    const pageSize = resp?.data?.length;
-    const linkHeader = resp?.headers?.link;
-    if (!linkHeader) {
-      this.logger.debug(
-        'No link header found in response from listForAuthenticatedUser GH endpoint => returning current page size',
-      );
-      return pageSize;
-    }
-    const lastPageLink = linkHeader
-      .split(',')
-      .find(s => s.includes('rel="last"'));
-    if (!lastPageLink) {
-      this.logger.debug(
-        "No rel='last' link found in response headers from listForAuthenticatedUser GH endpoint => returning current page size",
-      );
-      return pageSize;
-    }
-    const match = lastPageLink.match(/page=(\d+).*$/);
-    if (!match || match.length < 2) {
-      this.logger.debug(
-        "Unable to extract page number from rel='last' link found in response headers from listForAuthenticatedUser GH endpoint => returning current page size",
-      );
-      return pageSize;
-    }
-
-    const lastPageNumber = parseInt(match[1], 10);
-    // Fetch the last page to count its items, as it might contain fewer than the requested size
-    const lastPageResponse = await octokit.repos.listForAuthenticatedUser({
-      page: lastPageNumber,
-      per_page: 1,
-    });
-    return pageSize
-      ? (lastPageNumber - 1) * pageSize + lastPageResponse.data.length
-      : undefined;
   }
 
   private async addGithubTokenOrgRepositories(
@@ -414,10 +343,18 @@ export class GithubApiService {
         repositories.set(githubRepo.full_name, githubRepo);
       });
 
-      totalCount = await this.computeTotalOrgRepoCountFromGitHubToken(
-        octokit,
-        org,
-        resp,
+      totalCount = await this.computeTotalCountFromGitHubToken(
+        async (lastPageNumber: number) =>
+          octokit.repos
+            .listForOrg({
+              org,
+              page: lastPageNumber,
+              per_page: 1,
+            })
+            .then(lastPageResp => lastPageResp.data.length),
+        'repos.listForOrg',
+        resp?.data?.length,
+        resp?.headers?.link,
       );
     } catch (err) {
       this.logger.error(
@@ -434,19 +371,18 @@ export class GithubApiService {
     return { totalCount };
   }
 
-  private async computeTotalOrgRepoCountFromGitHubToken(
-    octokit: Octokit,
-    org: string,
-    resp: RestEndpointMethodTypes['repos']['listForOrg']['response'],
+  private async computeTotalCountFromGitHubToken(
+    lastPageDataLengthProviderFn: (lastPageNumber: number) => Promise<number>,
+    ghApiName: string,
+    pageSize?: number,
+    linkHeader?: string,
   ): Promise<number | undefined> {
     // There is no direct way to get the total count of repositories other than using octokit.paginate,
     // but will make us retrieve all pages, thus increasing our response time.
     // Workaround here is to analyze the headers, and get the link to the last page.
-    const pageSize = resp?.data?.length;
-    const linkHeader = resp?.headers?.link;
     if (!linkHeader) {
       this.logger.debug(
-        'No link header found in response from listForAuthenticatedUser GH endpoint => returning current page size',
+        `No link header found in response from ${ghApiName} GH endpoint => returning current page size`,
       );
       return pageSize;
     }
@@ -455,27 +391,24 @@ export class GithubApiService {
       .find(s => s.includes('rel="last"'));
     if (!lastPageLink) {
       this.logger.debug(
-        "No rel='last' link found in response headers from listForAuthenticatedUser GH endpoint => returning current page size",
+        `No rel='last' link found in response headers from ${ghApiName} GH endpoint => returning current page size`,
       );
       return pageSize;
     }
-    const match = lastPageLink.match(/page=(\d+).*$/);
+    const match = lastPageLink.match(/page=(\d+)/);
     if (!match || match.length < 2) {
       this.logger.debug(
-        "Unable to extract page number from rel='last' link found in response headers from listForAuthenticatedUser GH endpoint => returning current page size",
+        `Unable to extract page number from rel='last' link found in response headers from ${ghApiName} GH endpoint => returning current page size`,
       );
       return pageSize;
     }
 
     const lastPageNumber = parseInt(match[1], 10);
     // Fetch the last page to count its items, as it might contain fewer than the requested size
-    const lastPageResponse = await octokit.repos.listForOrg({
-      org,
-      page: lastPageNumber,
-      per_page: 1,
-    });
+    const lastPageDataLength =
+      await lastPageDataLengthProviderFn(lastPageNumber);
     return pageSize
-      ? (lastPageNumber - 1) * pageSize + lastPageResponse.data.length
+      ? (lastPageNumber - 1) * pageSize + lastPageDataLength
       : undefined;
   }
 
