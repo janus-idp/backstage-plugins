@@ -396,17 +396,6 @@ ex. <http://localhost:7007/api/permission/policies/role/default/test?permission=
 
 Deletes a permission policy of a specified entity.
 
-Request Parameters:
-
-| Parameter name | Description                                                                   | Type   |
-| -------------- | ----------------------------------------------------------------------------- | ------ |
-| kind           | Kind of the entity                                                            | String |
-| namespace      | Namespace of the entity                                                       | String |
-| name           | Username of the entity                                                        | String |
-| permission     | Permission from a specific plugin, Resource type or name                      | String |
-| policy         | Policy action for the permission, `create`, `read`, `update`, `delete`, `use` | String |
-| effect         | `allow` or `deny`                                                             | String |
-
 Returns a status code of 204 upon success.
 
 ---
