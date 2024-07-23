@@ -1,12 +1,28 @@
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 
-import { WorkflowExecutionResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
+import axios, {
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+  RawAxiosResponseHeaders,
+} from 'axios';
+
+import {
+  DefaultApi,
+  PaginationInfoDTO,
+  WorkflowExecutionResponse,
+  WorkflowFormatDTO,
+  WorkflowOverviewDTO,
+  WorkflowOverviewListResultDTO,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import {
   OrchestratorClient,
   OrchestratorClientOptions,
 } from './OrchestratorClient';
+
+jest.mock('axios');
 
 describe('OrchestratorClient', () => {
   let mockDiscoveryApi: jest.Mocked<DiscoveryApi>;
@@ -24,7 +40,7 @@ describe('OrchestratorClient', () => {
     jest.clearAllMocks();
     // Create a mock DiscoveryApi with a mocked implementation of getBaseUrl
     mockDiscoveryApi = {
-      getBaseUrl: jest.fn().mockResolvedValue('https://api.example.com'),
+      getBaseUrl: jest.fn().mockResolvedValue(baseUrl),
     } as jest.Mocked<DiscoveryApi>;
     mockIdentityApi = {
       getCredentials: jest.fn().mockResolvedValue({ token: mockToken }),
@@ -44,6 +60,7 @@ describe('OrchestratorClient', () => {
     };
     orchestratorClient = new OrchestratorClient(orchestratorClientOptions);
   });
+
   describe('executeWorkflow', () => {
     it('should execute workflow with empty parameters', async () => {
       // Given
@@ -298,37 +315,72 @@ describe('OrchestratorClient', () => {
   describe('listWorkflowOverviews', () => {
     it('should return workflow overviews when successful', async () => {
       // Given
-      const mockWorkflowOverviews = [
-        { id: 'workflow123', name: 'Workflow 1' },
-        { id: 'workflow456', name: 'Workflow 2' },
-      ];
+      const paginationInfo: PaginationInfoDTO = {
+        page: 1,
+        pageSize: 5,
+        orderBy: 'name',
+        orderDirection: 'ASC',
+      };
+      const mockWorkflowOverviews: WorkflowOverviewListResultDTO = {
+        overviews: [
+          {
+            workflowId: 'workflow123',
+            name: 'Workflow 1',
+            format: WorkflowFormatDTO.Yaml,
+          },
+          {
+            workflowId: 'workflow456',
+            name: 'Workflow 2',
+            format: WorkflowFormatDTO.Yaml,
+          },
+        ],
+        paginationInfo: paginationInfo,
+      };
 
-      // Mock fetch to simulate a successful response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValue(mockWorkflowOverviews),
-      });
+      const mockResponse: AxiosResponse<WorkflowOverviewListResultDTO> = {
+        data: mockWorkflowOverviews,
+        status: 200, // Set status code (optional)
+        statusText: 'OK', // Set status text (optional)
+        headers: {} as RawAxiosResponseHeaders,
+        config: {} as InternalAxiosRequestConfig,
+      };
+
+      // Spy DefaultApi
+      const getWorkflowsOverviewSpy = jest.spyOn(
+        DefaultApi.prototype,
+        'getWorkflowsOverview',
+      );
+
+      // Mock axios request to simulate a successful response
+      axios.request = jest.fn().mockResolvedValueOnce(mockResponse);
 
       // When
-      const result = await orchestratorClient.listWorkflowOverviews();
+      const result =
+        await orchestratorClient.listWorkflowOverviews(paginationInfo);
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${baseUrl}/workflows/overview`, {
-        headers: defaultAuthHeaders,
-      });
-      expect(result).toEqual(mockWorkflowOverviews);
+      expect(result).toBeDefined();
+      expect(result.data).toEqual(mockWorkflowOverviews);
+      expect(axios.request).toHaveBeenCalledTimes(1);
+      expect(axios.request).toHaveBeenCalledWith(
+        getAxiosTestRequest('v2/workflows/overview', paginationInfo),
+      );
+      expect(getWorkflowsOverviewSpy).toHaveBeenCalledTimes(1);
+      expect(getWorkflowsOverviewSpy).toHaveBeenCalledWith(
+        paginationInfo.page,
+        paginationInfo.pageSize,
+        paginationInfo.orderBy,
+        paginationInfo.orderDirection,
+        getDefaultTestRequestConfig(),
+      );
     });
-
     it('should throw a ResponseError when listing workflow overviews fails', async () => {
       // Given
 
-      // Mock fetch to simulate a failed response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error',
-      });
-
+      // Mock fetch to simulate a failure
+      axios.request = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('Simulated error'));
       // When
       const promise = orchestratorClient.listWorkflowOverviews();
 
@@ -473,35 +525,55 @@ describe('OrchestratorClient', () => {
     it('should return workflow overview when successful', async () => {
       // Given
       const workflowId = 'workflow123';
-      const mockOverview = { id: workflowId, name: 'Workflow 1' };
+      const mockOverview = {
+        workflowId: workflowId,
+        name: 'Workflow 1',
+        format: WorkflowFormatDTO.Yaml,
+      };
 
-      // Mock fetch to simulate a successful response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValue(mockOverview),
-      });
+      const mockResponse: AxiosResponse<WorkflowOverviewDTO> = {
+        data: mockOverview,
+        status: 200, // Set status code (optional)
+        statusText: 'OK', // Set status text (optional)
+        headers: {} as RawAxiosResponseHeaders,
+        config: {} as InternalAxiosRequestConfig,
+      };
+
+      // Spy DefaultApi
+      const getWorkflowOverviewByIdSpy = jest.spyOn(
+        DefaultApi.prototype,
+        'getWorkflowOverviewById',
+      );
+
+      // Mock axios request to simulate a successful response
+      axios.request = jest.fn().mockResolvedValueOnce(mockResponse);
 
       // When
       const result = await orchestratorClient.getWorkflowOverview(workflowId);
 
       // Then
-      const expectedEndpoint = `${baseUrl}/workflows/${workflowId}/overview`;
-      expect(fetch).toHaveBeenCalledWith(expectedEndpoint, {
-        headers: defaultAuthHeaders,
-      });
-      expect(result).toEqual(mockOverview);
+      expect(result).toBeDefined();
+      expect(result.data).toEqual(mockOverview);
+      expect(axios.request).toHaveBeenCalledTimes(1);
+      expect(axios.request).toHaveBeenCalledWith(
+        getAxiosTestRequest(`v2/workflows/${workflowId}/overview`),
+      );
+      expect(getWorkflowOverviewByIdSpy).toHaveBeenCalledTimes(1);
+      expect(getWorkflowOverviewByIdSpy).toHaveBeenCalledWith(
+        workflowId,
+        getDefaultTestRequestConfig(),
+      );
     });
 
     it('should throw a ResponseError when fetching the workflow overview fails', async () => {
       // Given
       const workflowId = 'workflow123';
 
-      // Mock fetch to simulate a failed response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found',
-      });
+      // Given
+      // Mock fetch to simulate a failure
+      axios.request = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('Simulated error'));
 
       // When
       const promise = orchestratorClient.getWorkflowOverview(workflowId);
@@ -561,4 +633,48 @@ describe('OrchestratorClient', () => {
       await expect(promise).rejects.toThrow();
     });
   });
+
+  function getDefaultTestRequestConfig(): AxiosRequestConfig {
+    return {
+      baseURL: baseUrl,
+      headers: { Authorization: `Bearer ${mockToken}` },
+    };
+  }
+
+  function getAxiosTestRequest(
+    endpoint: string,
+    paginationInfo?: PaginationInfoDTO,
+    method: string = 'GET',
+  ): AxiosRequestConfig {
+    const req = getDefaultTestRequestConfig();
+
+    return {
+      ...req,
+      method,
+      url: buildURLWithPagination(endpoint, paginationInfo),
+    };
+  }
+
+  function buildURLWithPagination(
+    endpoint: string,
+    paginationInfo?: PaginationInfoDTO,
+  ): string {
+    const url = new URL(endpoint, baseUrl);
+    if (paginationInfo?.page !== undefined) {
+      url.searchParams.append('page', paginationInfo.page.toString());
+    }
+
+    if (paginationInfo?.pageSize !== undefined) {
+      url.searchParams.append('pageSize', paginationInfo.pageSize.toString());
+    }
+
+    if (paginationInfo?.orderBy !== undefined) {
+      url.searchParams.append('orderBy', paginationInfo.orderBy);
+    }
+
+    if (paginationInfo?.orderDirection !== undefined) {
+      url.searchParams.append('orderDirection', paginationInfo.orderDirection);
+    }
+    return url.toString();
+  }
 });

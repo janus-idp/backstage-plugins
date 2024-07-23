@@ -1,4 +1,7 @@
-import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
+import {
+  WorkflowCategoryDTO,
+  WorkflowOverviewDTO,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import WorkflowOverviewFormatter, {
   FormattedWorkflowOverview,
@@ -7,12 +10,12 @@ import WorkflowOverviewFormatter, {
 describe('WorkflowOverviewAdapter', () => {
   it('should adapt WorkflowOverview to AdaptedWorkflowOverview', () => {
     // Mock data for testing
-    const mockWorkflowOverview: WorkflowOverview = {
+    const mockWorkflowOverview: WorkflowOverviewDTO = {
       workflowId: '123',
       name: 'Sample Workflow',
       lastTriggeredMs: 1697276096000,
       lastRunStatus: 'COMPLETED',
-      category: 'Sample Category',
+      category: WorkflowCategoryDTO.Infrastructure,
       avgDurationMs: 150000,
       description: 'Sample description',
       format: 'yaml',
@@ -35,7 +38,7 @@ describe('WorkflowOverviewAdapter', () => {
 
   it('should have --- for undefined data', () => {
     // Mock data for testing
-    const mockWorkflowOverview: WorkflowOverview = {
+    const mockWorkflowOverview: WorkflowOverviewDTO = {
       workflowId: '123',
       format: 'yaml',
     };

@@ -53,12 +53,15 @@ export class V2 {
   public async getWorkflowOverviewById(
     workflowId: string,
   ): Promise<WorkflowOverviewDTO> {
-    const overviewV1 = await this.v1.getWorkflowOverviewById(workflowId);
+    const overview = await this.orchestratorService.fetchWorkflowOverview({
+      definitionId: workflowId,
+      cacheHandler: 'throw',
+    });
 
-    if (!overviewV1) {
+    if (!overview) {
       throw new Error(`Couldn't fetch workflow overview for ${workflowId}`);
     }
-    return mapToWorkflowOverviewDTO(overviewV1);
+    return mapToWorkflowOverviewDTO(overview);
   }
 
   public async getWorkflowById(workflowId: string): Promise<WorkflowDTO> {

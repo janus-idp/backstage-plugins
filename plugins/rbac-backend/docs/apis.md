@@ -507,7 +507,7 @@ Conditional permission policies are fairly complex. For more information on how 
 
 ### GET conditional rules
 
-GET <api/plugins/condition-rules>
+GET <api/permission/plugins/condition-rules>
 
 Provides conditional rule parameter schemas.
 

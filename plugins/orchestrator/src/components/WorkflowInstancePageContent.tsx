@@ -19,7 +19,7 @@ import {
   parseWorkflowVariables,
   ProcessInstance,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
-  WorkflowOverview,
+  WorkflowOverviewDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../api';
@@ -133,7 +133,7 @@ export const WorkflowInstancePageContent: React.FC<{
     setCurrentOpenedWorkflowDescriptionModalID,
   ] = React.useState('');
   const [currentWorkflow, setCurrentWorkflow] = React.useState(
-    {} as WorkflowOverview,
+    {} as WorkflowOverviewDTO,
   );
 
   const openWorkflowDescriptionModal = (itemId: string) => {
@@ -142,7 +142,7 @@ export const WorkflowInstancePageContent: React.FC<{
         .getWorkflowOverview(itemId)
         .then(
           workflow => {
-            setCurrentWorkflow(workflow);
+            setCurrentWorkflow(workflow.data);
           },
           error => {
             throw new Error(error);
@@ -157,7 +157,7 @@ export const WorkflowInstancePageContent: React.FC<{
 
   const closeWorkflowDescriptionModal = () => {
     setCurrentOpenedWorkflowDescriptionModalID('');
-    setCurrentWorkflow({} as WorkflowOverview);
+    setCurrentWorkflow({} as WorkflowOverviewDTO);
   };
 
   const nextWorkflows = React.useMemo(

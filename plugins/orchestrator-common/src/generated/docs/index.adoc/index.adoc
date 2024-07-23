@@ -1032,6 +1032,18 @@ The ErrorResponse object represents a common structure for handling errors in AP
 | 
 |  
 
+| orderDirection
+| 
+| String 
+| 
+|  _Enum:_ ASC, DESC, 
+
+| orderBy
+| 
+| String 
+| 
+|  
+
 |===
 
 
@@ -1307,7 +1319,7 @@ Format of the workflow definition
 | Field Name| Required| Type| Description| Format
 
 | workflowId
-| 
+| X
 | String 
 | Workflow unique identifier
 |  
@@ -1319,7 +1331,7 @@ Format of the workflow definition
 |  
 
 | format
-| 
+| X
 | WorkflowFormatDTO 
 | 
 |  

@@ -2,8 +2,17 @@ import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 
+import axios, {
+  AxiosRequestConfig,
+  AxiosResponse,
+  RawAxiosRequestHeaders,
+} from 'axios';
+
 import {
   AssessedProcessInstance,
+  Configuration,
+  DefaultApi,
+  PaginationInfoDTO,
   ProcessInstance,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_BUSINESS_KEY,
@@ -12,8 +21,8 @@ import {
   WorkflowDefinition,
   WorkflowExecutionResponse,
   WorkflowInputSchemaResponse,
-  WorkflowOverview,
-  WorkflowOverviewListResult,
+  WorkflowOverviewDTO,
+  WorkflowOverviewListResultDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { buildUrl } from '../utils/UrlUtils';
@@ -32,6 +41,23 @@ export class OrchestratorClient implements OrchestratorApi {
     this.identityApi = options.identityApi;
   }
 
+  async getDefaultAPI(): Promise<DefaultApi> {
+    const baseUrl = await this.getBaseUrl();
+    const { token: idToken } = await this.identityApi.getCredentials();
+
+    const axiosInstance = axios.create({
+      baseURL: baseUrl,
+      headers: {
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
+      },
+      withCredentials: true,
+    });
+    const config = new Configuration({
+      basePath: baseUrl,
+    });
+
+    return new DefaultApi(config, baseUrl, axiosInstance);
+  }
   private async getBaseUrl(): Promise<string> {
     if (!this.baseUrl) {
       this.baseUrl = await this.discoveryApi.getBaseUrl('orchestrator');
@@ -78,10 +104,18 @@ export class OrchestratorClient implements OrchestratorApi {
     );
   }
 
-  async listWorkflowOverviews(): Promise<WorkflowOverviewListResult> {
-    const baseUrl = await this.getBaseUrl();
-    return await this.fetcher(`${baseUrl}/workflows/overview`).then(r =>
-      r.json(),
+  async listWorkflowOverviews(
+    paginationInfo?: PaginationInfoDTO,
+  ): Promise<AxiosResponse<WorkflowOverviewListResultDTO>> {
+    const defaultApi = await this.getDefaultAPI();
+    const reqConfigOption: AxiosRequestConfig =
+      await this.getDefaultReqConfig();
+    return await defaultApi.getWorkflowsOverview(
+      paginationInfo?.page,
+      paginationInfo?.pageSize,
+      paginationInfo?.orderBy,
+      paginationInfo?.orderDirection,
+      reqConfigOption,
     );
   }
 
@@ -116,11 +150,16 @@ export class OrchestratorClient implements OrchestratorApi {
     return await this.fetcher(urlToFetch).then(r => r.json());
   }
 
-  async getWorkflowOverview(workflowId: string): Promise<WorkflowOverview> {
-    const baseUrl = await this.getBaseUrl();
-    return await this.fetcher(
-      `${baseUrl}/workflows/${workflowId}/overview`,
-    ).then(r => r.json());
+  async getWorkflowOverview(
+    workflowId: string,
+  ): Promise<AxiosResponse<WorkflowOverviewDTO>> {
+    const defaultApi = await this.getDefaultAPI();
+    const reqConfigOption: AxiosRequestConfig =
+      await this.getDefaultReqConfig();
+    return await defaultApi.getWorkflowOverviewById(
+      workflowId,
+      reqConfigOption,
+    );
   }
 
   async retriggerInstanceInError(args: {
@@ -153,5 +192,20 @@ export class OrchestratorClient implements OrchestratorApi {
       throw await ResponseError.fromResponse(response);
     }
     return response;
+  }
+
+  // getDefaultReqConfig is a convenience wrapper that includes authentication and other necessary headers
+  private async getDefaultReqConfig(
+    additionalHeaders?: RawAxiosRequestHeaders,
+  ): Promise<AxiosRequestConfig> {
+    const idToken = await this.identityApi.getCredentials();
+    const reqConfigOption: AxiosRequestConfig = {
+      baseURL: await this.getBaseUrl(),
+      headers: {
+        Authorization: `Bearer ${idToken.token}`,
+        ...additionalHeaders,
+      },
+    };
+    return reqConfigOption;
   }
 }

@@ -12,7 +12,8 @@
   "configSchema": "config.d.ts",
   "backstage": {
     "role": "frontend-plugin",
-    "supported-versions": "1.26.5"
+    "supported-versions": "1.28.4",
+    "pluginId": "matomo"
   },
   "scripts": {
     "build": "backstage-cli package build",

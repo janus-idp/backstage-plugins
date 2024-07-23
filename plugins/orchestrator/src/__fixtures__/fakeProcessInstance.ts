@@ -12,8 +12,9 @@ let id = 10;
 const baseDate = '2023-11-16T10:50:34.346Z';
 export const fakeProcessInstance1: ProcessInstance = {
   id: `12f767c1-9002-43af-9515-62a72d0eaf${id++}`,
-  processName: fakeWorkflowOverviewList[0].name,
-  processId: fakeWorkflowOverviewList[0].workflowId,
+  processName: fakeWorkflowOverviewList.overviews?.[0].name,
+  processId:
+    fakeWorkflowOverviewList.overviews?.[0].workflowId ?? 'FAKE_PROCESS_ID', // This will be fixed in next PRs
   state: ProcessInstanceState.Error,
   start: baseDate,
   end: moment(baseDate).add(13, 'hours').toISOString(),
@@ -48,8 +49,9 @@ export const fakeProcessInstance1: ProcessInstance = {
 
 export const fakeCompletedInstance: ProcessInstance = {
   id: `12f767c1-9002-43af-9515-62a72d0eaf${id++}`,
-  processName: fakeWorkflowOverviewList[1].name,
-  processId: fakeWorkflowOverviewList[1].workflowId,
+  processName: fakeWorkflowOverviewList.overviews?.[1].name,
+  processId:
+    fakeWorkflowOverviewList.overviews?.[1].workflowId ?? 'FAKE_PROCESS_ID', // This will be fixed in next PRs,
   state: ProcessInstanceState.Completed,
   start: moment(baseDate).add(1, 'hour').toISOString(),
   end: moment(baseDate).add(1, 'day').toISOString(),
@@ -64,8 +66,9 @@ export const fakeCompletedInstance: ProcessInstance = {
 
 export const fakeActiveInstance: ProcessInstance = {
   id: `12f767c1-9002-43af-9515-62a72d0eaf${id++}`,
-  processName: fakeWorkflowOverviewList[2].name,
-  processId: fakeWorkflowOverviewList[2].workflowId,
+  processName: fakeWorkflowOverviewList.overviews?.[2].name,
+  processId:
+    fakeWorkflowOverviewList.overviews?.[2].workflowId ?? 'FAKE_PROCESS_ID', // This will be fixed in next PRs,
   state: ProcessInstanceState.Active,
   start: moment(baseDate).add(2, 'hours').toISOString(),
   nodes: [],
@@ -79,8 +82,9 @@ export const fakeActiveInstance: ProcessInstance = {
 
 export const fakeProcessInstance4: ProcessInstance = {
   id: `12f767c1-9002-43af-9515-62a72d0eaf${id++}`,
-  processName: fakeWorkflowOverviewList[3].name,
-  processId: fakeWorkflowOverviewList[3].workflowId,
+  processName: fakeWorkflowOverviewList.overviews?.[3].name,
+  processId:
+    fakeWorkflowOverviewList.overviews?.[3].workflowId ?? 'FAKE_PROCESS_ID', // This will be fixed in next PRs,
   state: ProcessInstanceState.Suspended,
   start: baseDate,
   nodes: [],

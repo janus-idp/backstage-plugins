@@ -11,7 +11,8 @@
   },
   "backstage": {
     "role": "backend-plugin",
-    "supported-versions": "1.26.5"
+    "supported-versions": "1.28.4",
+    "pluginId": "rbac"
   },
   "scripts": {
     "start": "backstage-cli package start",
@@ -37,7 +38,7 @@
     "@backstage/plugin-permission-common": "^0.8.0",
     "@backstage/plugin-permission-node": "^0.8.0",
     "@dagrejs/graphlib": "^2.1.13",
-    "@janus-idp/backstage-plugin-rbac-common": "1.6.1",
+    "@janus-idp/backstage-plugin-rbac-common": "1.7.0",
     "@janus-idp/backstage-plugin-rbac-node": "1.2.0",
     "@janus-idp/backstage-plugin-audit-log-node": "1.2.0",
     "casbin": "^5.27.1",

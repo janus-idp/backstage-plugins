@@ -3702,7 +3702,7 @@
     uuid "^9.0.0"
     zod "^3.22.4"
 
-"@backstage/plugin-permission-common@^0.7.13":
+"@backstage/plugin-permission-common@^0.7.14":
   version "0.7.14"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-permission-common/-/plugin-permission-common-0.7.14.tgz#ecb12877c412ff271124af54fca46ec06d9c812f"
   integrity sha512-fHbxhX9ZoT8bTVuGycfTeU/6TE2yjZ6YNvm/2ko1bcxGnvYe1p5Ug5JW+iWjDZS+F6F152tWzhRcg05wQlPNKQ==
@@ -5651,20 +5651,20 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@janus-idp/backstage-plugin-rbac-common@1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-rbac-common/-/backstage-plugin-rbac-common-1.6.1.tgz#679a227dd60a003a654f48a32dd45f12fb2588df"
-  integrity sha512-dYmNjluflBChDkhQ0UddNlD7XFBglWwhaETl6O57RphQBWnE1oqGY/DBxRacUyJm73AWXO6WnC3ADi1bFE1NNg==
+"@janus-idp/backstage-plugin-rbac-common@1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-rbac-common/-/backstage-plugin-rbac-common-1.7.0.tgz#041151c94302ae86e00f384361099dcc65f0287c"
+  integrity sha512-5qseXiBb5Pm9fZGFG1C418aiAoxRzIE6Fqf0jwRQkbbnKoxu46ipRSRzOVJFUwzfjdUc6tqcMkarW9Nw+dWIWw==
   dependencies:
     "@backstage/errors" "^1.2.4"
-    "@backstage/plugin-permission-common" "^0.7.13"
+    "@backstage/plugin-permission-common" "^0.7.14"
 
-"@janus-idp/backstage-plugin-topology-common@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-topology-common/-/backstage-plugin-topology-common-1.1.0.tgz#961e4715702fbcef49256b50b6637396255e6715"
-  integrity sha512-6+YUxL6JoD5fK5NDY5lshHNCUDiSfHX4uIPAvkkdvoOdmML7qAEEdhOxe4ArcRyDlHX5h+KSKdZrF/1x6V+ACQ==
+"@janus-idp/backstage-plugin-topology-common@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-topology-common/-/backstage-plugin-topology-common-1.2.0.tgz#1f6d3fb3fe482e55483920b53e8039488490d75d"
+  integrity sha512-ZNzL4mFUvcrl/F4SXm6sSdrdcWR1STSpsTr4JeuDCn2UvB/4H2J7E4v5YQFZmH7hcbN1LQENocALuePVgB/72g==
   dependencies:
-    "@backstage/plugin-permission-common" "^0.7.13"
+    "@backstage/plugin-permission-common" "^0.7.14"
 
 "@janus-idp/cli@1.11.1":
   version "1.11.1"

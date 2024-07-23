@@ -166,7 +166,27 @@ export interface PaginationInfoDTO {
      * @memberof PaginationInfoDTO
      */
     'totalCount'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PaginationInfoDTO
+     */
+    'orderDirection'?: PaginationInfoDTOOrderDirectionEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof PaginationInfoDTO
+     */
+    'orderBy'?: string;
 }
+
+export const PaginationInfoDTOOrderDirectionEnum = {
+    Asc: 'ASC',
+    Desc: 'DESC'
+} as const;
+
+export type PaginationInfoDTOOrderDirectionEnum = typeof PaginationInfoDTOOrderDirectionEnum[keyof typeof PaginationInfoDTOOrderDirectionEnum];
+
 /**
  * 
  * @export
@@ -414,7 +434,7 @@ export interface WorkflowOverviewDTO {
      * @type {string}
      * @memberof WorkflowOverviewDTO
      */
-    'workflowId'?: string;
+    'workflowId': string;
     /**
      * Workflow name
      * @type {string}
@@ -426,7 +446,7 @@ export interface WorkflowOverviewDTO {
      * @type {WorkflowFormatDTO}
      * @memberof WorkflowOverviewDTO
      */
-    'format'?: WorkflowFormatDTO;
+    'format': WorkflowFormatDTO;
     /**
      * 
      * @type {string}
