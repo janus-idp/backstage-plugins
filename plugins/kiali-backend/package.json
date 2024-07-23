@@ -13,7 +13,10 @@
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "kiali",
-    "pluginPackage": "@janus-idp/backstage-plugin-kiali-backend"
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-kiali-backend",
+      "@janus-idp/backstage-plugin-kiali"
+    ]
   },
   "exports": {
     ".": "./src/index.ts",
