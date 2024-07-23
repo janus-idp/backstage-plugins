@@ -13,7 +13,12 @@
   "backstage": {
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "bulk-import-backend"
+    "pluginId": "bulk-import-backend",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-bulk-import-backend",
+      "@janus-idp/backstage-plugin-bulk-import",
+      "@janus-idp/backstage-plugin-bulk-import-common"
+    ]
   },
   "exports": {
     ".": "./src/index.ts",

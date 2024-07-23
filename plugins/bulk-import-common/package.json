@@ -15,7 +15,12 @@
   "backstage": {
     "role": "common-library",
     "supported-versions": "1.28.4",
-    "pluginId": "bulk-import"
+    "pluginId": "bulk-import",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-bulk-import-backend",
+      "@janus-idp/backstage-plugin-bulk-import",
+      "@janus-idp/backstage-plugin-bulk-import-common"
+    ]
   },
   "sideEffects": false,
   "scripts": {
