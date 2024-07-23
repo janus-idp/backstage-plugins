@@ -80,7 +80,7 @@ export type GithubRepository = {
  * @public
  */
 
-export type GithubRepoFetchError =
+export type GithubFetchError =
   | {
       type: 'app';
       appId: number;
@@ -91,8 +91,6 @@ export type GithubRepoFetchError =
       error: SerializedError;
     };
 
-export type GithubFetchError = GithubRepoFetchError;
-
 export type GithubOrganizationResponse = {
   organizations: GithubOrganization[];
   errors: GithubFetchError[];
@@ -101,7 +99,7 @@ export type GithubOrganizationResponse = {
 
 export type GithubRepositoryResponse = {
   repositories: GithubRepository[];
-  errors: GithubRepoFetchError[];
+  errors: GithubFetchError[];
   totalCount?: number;
 };
 

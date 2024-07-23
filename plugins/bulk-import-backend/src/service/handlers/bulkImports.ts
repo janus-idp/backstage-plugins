@@ -191,11 +191,15 @@ export async function createImportJobs(
   catalogApi: CatalogApi,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
-  importRequests: Paths.CreateImportJobs.RequestBody,
-  dryRun: boolean = false,
+  reqParams: {
+    importRequests: Paths.CreateImportJobs.RequestBody;
+    dryRun?: boolean;
+  },
 ): Promise<
   HandlerResponse<Components.Schemas.Import[] | { errors: string[] }>
 > {
+  const dryRun = reqParams.dryRun ?? false;
+  const importRequests = reqParams.importRequests;
   logger.debug(
     `Handling request to import ${importRequests?.length ?? 0} repo(s) (dryRun=${dryRun})..`,
   );

@@ -144,10 +144,9 @@ export async function createRouter(
     async (c: Context, req: express.Request, res: express.Response) => {
       const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
-      const q: Paths.FindAllOrganizations.QueryParameters = Object.assign(
-        {},
-        c.request.query,
-      );
+      const q: Paths.FindAllOrganizations.QueryParameters = {
+        ...c.request.query,
+      };
       // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
       q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
       q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
@@ -172,10 +171,9 @@ export async function createRouter(
     async (c: Context, req: express.Request, res: express.Response) => {
       const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
-      const q: Paths.FindAllRepositories.QueryParameters = Object.assign(
-        {},
-        c.request.query,
-      );
+      const q: Paths.FindAllRepositories.QueryParameters = {
+        ...c.request.query,
+      };
       // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
       q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
       q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
@@ -204,8 +202,9 @@ export async function createRouter(
     async (c: Context, req: express.Request, res: express.Response) => {
       const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
-      const q: Paths.FindRepositoriesByOrganization.QueryParameters =
-        Object.assign({}, c.request.query);
+      const q: Paths.FindRepositoriesByOrganization.QueryParameters = {
+        ...c.request.query,
+      };
       // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
       q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
       q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
@@ -235,10 +234,9 @@ export async function createRouter(
     async (c: Context, req: express.Request, res: express.Response) => {
       const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
-      const q: Paths.FindAllRepositories.QueryParameters = Object.assign(
-        {},
-        c.request.query,
-      );
+      const q: Paths.FindAllRepositories.QueryParameters = {
+        ...c.request.query,
+      };
       // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
       q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
       q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
@@ -262,10 +260,7 @@ export async function createRouter(
     ) => {
       const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
-      const q: Paths.CreateImportJobs.QueryParameters = Object.assign(
-        {},
-        c.request.query,
-      );
+      const q: Paths.CreateImportJobs.QueryParameters = { ...c.request.query };
       q.dryRun = stringToBoolean(q.dryRun);
       const response = await createImportJobs(
         logger,
@@ -274,8 +269,10 @@ export async function createRouter(
         catalogApi,
         githubApiService,
         catalogInfoGenerator,
-        c.request.requestBody,
-        q.dryRun,
+        {
+          importRequests: c.request.requestBody,
+          dryRun: q.dryRun,
+        },
       );
       return res.status(response.statusCode).json(response.responseBody);
     },
@@ -286,10 +283,9 @@ export async function createRouter(
     async (c: Context, req: express.Request, res: express.Response) => {
       const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
-      const q: Paths.FindImportStatusByRepo.QueryParameters = Object.assign(
-        {},
-        c.request.query,
-      );
+      const q: Paths.FindImportStatusByRepo.QueryParameters = {
+        ...c.request.query,
+      };
       if (!q.repo || q.repo.trim().length === 0) {
         throw new Error('missing or blank parameter');
       }
@@ -309,10 +305,9 @@ export async function createRouter(
     async (c: Context, req: express.Request, res: express.Response) => {
       const backstageToken = await httpAuth.credentials(req);
       await permissionCheck(permissions, backstageToken);
-      const q: Paths.DeleteImportByRepo.QueryParameters = Object.assign(
-        {},
-        c.request.query,
-      );
+      const q: Paths.DeleteImportByRepo.QueryParameters = {
+        ...c.request.query,
+      };
       if (!q.repo || q.repo.trim().length === 0) {
         throw new Error('missing or blank "repo" parameter');
       }

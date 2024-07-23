@@ -893,13 +893,11 @@ describe('createRouter', () => {
           (location: { type: string; target: string; dryRun: boolean }) => {
             let exists = false;
             switch (location.target) {
-              case 'https://github.com/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation/blob/dev/catalog-info.yaml':
-              case 'https://github.com/my-org-ent-2/animated-happiness/blob/main/catalog-info.yaml':
-                exists = false;
-                break;
               case 'https://github.com/my-org-ent-1/java-quarkus-starter/blob/main/catalog-info.yaml':
                 exists = true;
                 break;
+              case 'https://github.com/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation/blob/dev/catalog-info.yaml':
+              case 'https://github.com/my-org-ent-2/animated-happiness/blob/main/catalog-info.yaml':
               default:
                 break;
             }

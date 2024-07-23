@@ -36,7 +36,6 @@ import {
   GithubFetchError,
   GithubOrganization,
   GithubOrganizationResponse,
-  GithubRepoFetchError,
   GithubRepository,
   GithubRepositoryResponse,
   isGithubAppCredential,
@@ -58,12 +57,12 @@ export class GithubApiService {
   }
 
   /**
-   * Creates the GithubRepoFetchError to be stored in the returned errors array of the returned GithubRepositoryResponse object
+   * Creates the GithubFetchError to be stored in the returned errors array of the returned GithubRepositoryResponse object
    */
   private createCredentialError(
     credential: ExtendedGithubCredentials,
     err?: Error,
-  ): GithubRepoFetchError | undefined {
+  ): GithubFetchError | undefined {
     if (err) {
       if (isGithubAppCredential(credential)) {
         return {
@@ -200,13 +199,13 @@ export class GithubApiService {
 
   /**
    * Adds the repositories accessible by the provided github app to the provided repositories Map<string, GithubRepository>
-   * If any errors occurs, adds them to the provided errors Map<number, GithubRepoFetchError>
+   * If any errors occurs, adds them to the provided errors Map<number, GithubFetchError>
    */
   private async addGithubAppRepositories(
     octokit: Octokit,
     credential: GithubAppCredentials,
     repositories: Map<string, GithubRepository>,
-    errors: Map<number, GithubRepoFetchError>,
+    errors: Map<number, GithubFetchError>,
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
   ): Promise<{ totalCount?: number }> {
@@ -246,13 +245,13 @@ export class GithubApiService {
 
   /**
    * Adds the user or organization repositories accessible by the github token to the provided repositories Map<string, GithubRepository> if they're owned by the specified owner
-   * If any errors occurs, adds them to the provided errors Map<number, GithubRepoFetchError>
+   * If any errors occurs, adds them to the provided errors Map<number, GithubFetchError>
    */
   private async addGithubTokenRepositories(
     octokit: Octokit,
     credential: GithubCredentials,
     repositories: Map<string, GithubRepository>,
-    errors: Map<number, GithubRepoFetchError>,
+    errors: Map<number, GithubFetchError>,
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
   ): Promise<{ totalCount?: number }> {
@@ -313,7 +312,7 @@ export class GithubApiService {
     credential: GithubCredentials,
     org: string,
     repositories: Map<string, GithubRepository>,
-    errors: Map<number, GithubRepoFetchError>,
+    errors: Map<number, GithubFetchError>,
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
   ): Promise<{ totalCount?: number }> {
@@ -414,7 +413,7 @@ export class GithubApiService {
 
   async getRepositoryFromIntegrations(repoUrl: string): Promise<{
     repository?: GithubRepository;
-    errors?: GithubRepoFetchError[];
+    errors?: GithubFetchError[];
   }> {
     const gitUrl = gitUrlParse(repoUrl);
 
@@ -426,7 +425,7 @@ export class GithubApiService {
     }
 
     const credentials = await this.getCredentialsForConfig(ghConfig);
-    const errors = new Map<number, GithubRepoFetchError>();
+    const errors = new Map<number, GithubFetchError>();
     let repository: GithubRepository | undefined = undefined;
     for (const credential of credentials) {
       if ('error' in credential) {
@@ -556,7 +555,7 @@ export class GithubApiService {
     const credentialsByConfig =
       await this.getCredentialsFromIntegrations(ghConfigs);
     const repositories = new Map<string, GithubRepository>();
-    const errors = new Map<number, GithubRepoFetchError>();
+    const errors = new Map<number, GithubFetchError>();
     let totalCount = 0;
     for (const [ghConfig, credentials] of credentialsByConfig) {
       this.logger.debug(
@@ -634,7 +633,7 @@ export class GithubApiService {
     const credentialsByConfig =
       await this.getCredentialsFromIntegrations(ghConfigs);
     const repositories = new Map<string, GithubRepository>();
-    const errors = new Map<number, GithubRepoFetchError>();
+    const errors = new Map<number, GithubFetchError>();
     let totalCount = 0;
     for (const [ghConfig, credentials] of credentialsByConfig) {
       this.logger.debug(
@@ -1162,7 +1161,6 @@ export class GithubApiService {
     }
 
     const branchName = getBranchName(this.config);
-    const errors: any[] = [];
     for (const credential of credentials) {
       if ('error' in credential) {
         if (credential.error?.name !== 'NotFoundError') {
@@ -1206,7 +1204,6 @@ export class GithubApiService {
         }
       } catch (e: any) {
         logger.warn(`Couldn't close PR in ${input.repoUrl}: ${e}`);
-        errors.push(e.message);
       }
     }
   }
