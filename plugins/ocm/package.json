@@ -12,7 +12,12 @@
   "backstage": {
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "ocm"
+    "pluginId": "ocm",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-ocm-backend",
+      "@janus-idp/backstage-plugin-ocm-common",
+      "@janus-idp/backstage-plugin-ocm"
+    ]
   },
   "scripts": {
     "build": "backstage-cli package build",

@@ -7,3 +7,8 @@ generated
 templates
 *.hbs
 renovate.json
+
+# Generated
+plugins/bulk-import-backend/api-docs
+plugins/bulk-import-backend/src/openapi.d.ts
+plugins/bulk-import-backend/src/openapidocument.ts

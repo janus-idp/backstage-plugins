@@ -13,7 +13,8 @@
   "backstage": {
     "role": "common-library",
     "supported-versions": "1.28.4",
-    "pluginId": "shared-react"
+    "pluginId": "shared-react",
+    "pluginPackage": "@janus-idp/shared-react"
   },
   "scripts": {
     "build": "backstage-cli package build",

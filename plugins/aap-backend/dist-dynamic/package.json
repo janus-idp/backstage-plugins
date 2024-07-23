@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-aap-backend-dynamic",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
@@ -10,8 +10,10 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin",
-    "supported-versions": "1.26.5"
+    "role": "backend-plugin-module",
+    "supported-versions": "1.28.4",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "exports": {
     ".": {

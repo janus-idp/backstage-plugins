@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-3scale-backend",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -10,9 +10,10 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin",
+    "role": "backend-plugin-module",
     "supported-versions": "1.28.4",
-    "pluginId": "3scale"
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "exports": {
     ".": "./src/index.ts",

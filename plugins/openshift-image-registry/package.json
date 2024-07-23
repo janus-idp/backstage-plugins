@@ -12,7 +12,8 @@
   "backstage": {
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "openshift-image-registry"
+    "pluginId": "openshift-image-registry",
+    "pluginPackage": "@janus-idp/backstage-plugin-openshift-image-registry"
   },
   "scripts": {
     "build": "backstage-cli package build",

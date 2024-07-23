@@ -12,7 +12,8 @@
   "backstage": {
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "web-terminal"
+    "pluginId": "web-terminal",
+    "pluginPackage": "@janus-idp/backstage-plugin-web-terminal"
   },
   "scripts": {
     "build": "backstage-cli package build",

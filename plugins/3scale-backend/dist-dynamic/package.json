@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-3scale-backend-dynamic",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
@@ -10,8 +10,10 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin",
-    "supported-versions": "1.26.5"
+    "role": "backend-plugin-module",
+    "supported-versions": "1.28.4",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "exports": {
     ".": {
