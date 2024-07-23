@@ -33,7 +33,9 @@ const mockUsePermission = usePermission as jest.MockedFunction<
 >;
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
-  useEntity: () => mockEntity,
+  useEntity: () => ({
+    entity: mockEntity,
+  }),
 }));
 
 describe('DeploymentSummary', () => {

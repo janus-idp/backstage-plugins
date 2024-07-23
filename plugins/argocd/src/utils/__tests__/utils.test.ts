@@ -1,8 +1,10 @@
 import { mockApplication, mockEntity } from '../../../dev/__data__';
 import { Application, History, Status } from '../../types';
 import {
+  ArgoCdLabels,
   getAppOperationState,
   getAppSelector,
+  getArgoCdAppConfig,
   getCommitUrl,
   getGitProvider,
   getInstanceName,
@@ -215,6 +217,52 @@ describe('Utils', () => {
       expect(getUniqueRevisions([mockApplication, mockApplicationTwo])).toEqual(
         ['90f9758b7033a4bbb7c33a35ee474d61091644bc', '12345'],
       );
+    });
+  });
+  describe('getArgoCdAppConfig', () => {
+    test('should throw error if both the annotations are missing', () => {
+      expect(() =>
+        getArgoCdAppConfig({
+          entity: {
+            ...mockEntity,
+            metadata: {
+              ...mockEntity.metadata,
+              annotations: {},
+            },
+          },
+        }),
+      ).toThrow('Argo CD annotation is missing in the catalog');
+    });
+
+    test('should throw error if both the annotations are set', () => {
+      expect(() =>
+        getArgoCdAppConfig({
+          entity: {
+            ...mockEntity,
+            metadata: {
+              ...mockEntity.metadata,
+              annotations: {
+                [ArgoCdLabels.appSelector]: 'janus-idp/quarkus-app',
+                [ArgoCdLabels.appName]: 'quarkus-app',
+              },
+            },
+          },
+        }),
+      ).toThrow(
+        `Cannot provide both ${ArgoCdLabels.appName} and ${ArgoCdLabels.appSelector} annotations`,
+      );
+    });
+
+    test('should return argocd configuration object when one of the annotations is set', () => {
+      const configuration = getArgoCdAppConfig({ entity: mockEntity });
+
+      expect(configuration).toStrictEqual({
+        appName: '',
+        appNamespace: '',
+        appSelector: 'rht-gitops.com%2Fjanus-argocd%3Dquarkus-app-bootstrap',
+        projectName: 'project-name',
+        url: '/argocd/api',
+      });
     });
   });
 });

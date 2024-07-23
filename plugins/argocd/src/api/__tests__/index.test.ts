@@ -42,12 +42,13 @@ describe('API calls', () => {
 
       await client.listApps({
         url: '',
+        appSelector: 'janus.io%253Dquarkus-app',
         projectName: 'test',
         appNamespace: 'my-test-ns',
       });
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://test.com/api/argocd/applications?project=test',
+        'https://test.com/api/argocd/applications/selector/janus.io%253Dquarkus-app?selector=janus.io%25253Dquarkus-app&project=test',
         expect.objectContaining({
           headers: {
             'Content-Type': 'application/json',
@@ -124,13 +125,68 @@ describe('API calls', () => {
       await client.listApps({
         url: '',
         projectName: 'test',
+        appSelector: 'janus.io%253Dquarkus-app',
         appNamespace: 'my-test-ns',
       });
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://test.com/api/argocd/applications?project=test',
+        'https://test.com/api/argocd/applications/selector/janus.io%253Dquarkus-app?selector=janus.io%25253Dquarkus-app&project=test',
         expect.objectContaining({
           headers: undefined,
+        }),
+      );
+    });
+  });
+
+  describe('getApplication', () => {
+    beforeEach(() => {
+      fetchSpy.mockImplementation(() =>
+        Promise.resolve<Response>({
+          ok: true,
+          json: () => Promise.resolve({}),
+        } as Response),
+      );
+    });
+
+    test('should return empty object as response', async () => {
+      const client = new ArgoCDApiClient({
+        backendBaseUrl: 'https://test.com',
+        useNamespacedApps: false,
+        identityApi: getIdentityApiStub,
+      });
+
+      const data = await client.getApplication({
+        url: '',
+        appName: 'quarkus-app',
+        appNamespace: '',
+      });
+      expect(Object.keys(data)).toHaveLength(0);
+    });
+
+    test('should return application object', async () => {
+      fetchSpy.mockImplementation(() =>
+        Promise.resolve<Response>({
+          ok: true,
+          json: () => Promise.resolve(mockApplication),
+        } as Response),
+      );
+
+      const client = new ArgoCDApiClient({
+        backendBaseUrl: 'https://test.com',
+        useNamespacedApps: false,
+        identityApi: getIdentityApiStub,
+      });
+
+      const data = await client.getApplication({
+        url: '',
+        appName: 'quarkus-app',
+        appNamespace: '',
+      });
+      expect(data).toEqual(
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            name: 'quarkus-app-dev',
+          }),
         }),
       );
     });
