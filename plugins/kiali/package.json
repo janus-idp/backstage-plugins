@@ -13,7 +13,10 @@
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "kiali",
-    "pluginPackage": "@janus-idp/backstage-plugin-kiali"
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-kiali-backend",
+      "@janus-idp/backstage-plugin-kiali"
+    ]
   },
   "scripts": {
     "build": "backstage-cli package build",
