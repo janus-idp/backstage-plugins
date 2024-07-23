@@ -13,8 +13,12 @@
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "dynamic-plugins-info",
-    "pluginPackage": "@janus-idp/backstage-plugin-dynamic-plugins-info"
+    "pluginPackage": "@janus-idp/backstage-plugin-dynamic-plugins-info",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-dynamic-plugins-info"
+    ]
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",

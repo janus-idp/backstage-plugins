@@ -13,8 +13,12 @@
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "jfrog-artifactory",
-    "pluginPackage": "@janus-idp/backstage-plugin-jfrog-artifactory"
+    "pluginPackage": "@janus-idp/backstage-plugin-jfrog-artifactory",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-jfrog-artifactory"
+    ]
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",

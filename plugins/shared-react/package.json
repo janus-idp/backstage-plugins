@@ -14,8 +14,12 @@
     "role": "common-library",
     "supported-versions": "1.28.4",
     "pluginId": "shared-react",
-    "pluginPackage": "@janus-idp/shared-react"
+    "pluginPackage": "@janus-idp/shared-react",
+    "pluginPackages": [
+      "@janus-idp/shared-react"
+    ]
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "tsc": "tsc",

@@ -13,8 +13,12 @@
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "quay",
-    "pluginPackage": "@janus-idp/backstage-plugin-quay"
+    "pluginPackage": "@janus-idp/backstage-plugin-quay",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-quay"
+    ]
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",

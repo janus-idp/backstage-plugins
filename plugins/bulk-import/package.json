@@ -14,8 +14,13 @@
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "bulk-import",
-    "pluginPackage": "@janus-idp/backstage-plugin-bulk-import"
+    "pluginPackage": "@janus-idp/backstage-plugin-bulk-import",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-bulk-import",
+      "@janus-idp/backstage-plugin-bulk-import-common"
+    ]
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",

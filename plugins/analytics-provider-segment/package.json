@@ -13,8 +13,12 @@
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "analytics-provider-segment",
-    "pluginPackage": "@janus-idp/backstage-plugin-analytics-provider-segment"
+    "pluginPackage": "@janus-idp/backstage-plugin-analytics-provider-segment",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-analytics-provider-segment"
+    ]
   },
+  "sideEffects": false,
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",

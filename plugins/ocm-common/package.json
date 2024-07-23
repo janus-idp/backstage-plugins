@@ -16,11 +16,12 @@
     "supported-versions": "1.28.4",
     "pluginId": "ocm",
     "pluginPackages": [
+      "@janus-idp/backstage-plugin-ocm",
       "@janus-idp/backstage-plugin-ocm-backend",
-      "@janus-idp/backstage-plugin-ocm-common",
-      "@janus-idp/backstage-plugin-ocm"
+      "@janus-idp/backstage-plugin-ocm-common"
     ]
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "tsc": "tsc",

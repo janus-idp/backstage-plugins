@@ -14,12 +14,13 @@
     "supported-versions": "1.28.4",
     "pluginId": "rbac",
     "pluginPackages": [
+      "@janus-idp/backstage-plugin-rbac",
       "@janus-idp/backstage-plugin-rbac-backend",
       "@janus-idp/backstage-plugin-rbac-common",
-      "@janus-idp/backstage-plugin-rbac-node",
-      "@janus-idp/backstage-plugin-rbac"
+      "@janus-idp/backstage-plugin-rbac-node"
     ]
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",

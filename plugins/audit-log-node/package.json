@@ -14,7 +14,10 @@
     "role": "node-library",
     "supported-versions": "1.28.4",
     "pluginId": "audit-log",
-    "pluginPackage": "@janus-idp/backstage-plugin-audit-log-node"
+    "pluginPackage": "@janus-idp/backstage-plugin-audit-log-node",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-audit-log-node"
+    ]
   },
   "scripts": {
     "build": "backstage-cli package build",
