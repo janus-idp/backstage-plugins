@@ -14,7 +14,10 @@
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "notifications",
-    "pluginPackage": "@janus-idp/plugin-notifications"
+    "pluginPackages": [
+      "@janus-idp/plugin-notifications-backend",
+      "@janus-idp/plugin-notifications"
+    ]
   },
   "scripts": {
     "start": "backstage-cli package start",
