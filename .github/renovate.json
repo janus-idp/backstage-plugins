@@ -3,7 +3,6 @@
     "config:best-practices",
     ":gitSignOff",
     ":rebaseStalePrs",
-    "group:linters",
     ":preserveSemverRanges",
     ":pinOnlyDevDependencies",
     "helpers:pinGitHubActionDigests"
@@ -17,9 +16,9 @@
   "npm": {
     "minimumReleaseAge": "1 day"
   },
-  "dependencyDashboardApproval": true,
-  "recreateWhen": "never",
-  "prCreation": "status-success",
+  "major": {
+    "dependencyDashboardApproval": true
+  },
   "packageRules": [
     {
       "description": "Do automerge and pin actions in GH workflows, except for versions starting with 0",
@@ -37,35 +36,14 @@
     },
     {
       "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
-      "groupName": "{{additionalBranchPrefix}} Dependencies (minor)",
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ]
-    },
-    {
-      "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
-      "groupName": "{{additionalBranchPrefix}} Dependencies",
-      "matchUpdateTypes": [
-        "major"
-      ]
-    },
-    {
-      "matchDepTypes": [
         "devDependencies"
       ],
       "matchUpdateTypes": [
         "patch",
         "minor"
       ],
-      "matchCurrentVersion": "!/^0/",      
-      "groupName": "{{additionalBranchPrefix}} DevDependencies (minor)",
+      "matchCurrentVersion": "!/^0/",
+      "groupName": "DevDependencies (non-major)",
       "automerge": true
     },
     {
@@ -75,29 +53,36 @@
       "matchUpdateTypes": [
         "major"
       ],
-      "groupName": "{{additionalBranchPrefix}} DevDependencies"
+      "groupName": "DevDependencies"
     },
     {
       "extends": [
         "packages:test"
       ],
+      "matchDepPatterns": [
+        "^@playwright/"
+      ],
       "matchUpdateTypes": [
         "patch",
         "minor"
       ],
-      "matchCurrentVersion": "!/^0/",      
-      "groupName": "{{additionalBranchPrefix}}  Test packages (minor)",
+      "matchCurrentVersion": "!/^0/",
+      "groupName": "Test packages (minor)",
       "automerge": true
     },
     {
       "extends": [
         "packages:test"
       ],
+      "matchDepPatterns": [
+        "^@playwright/"
+      ],
       "matchUpdateTypes": [
         "major"
       ],
-      "groupName": "{{additionalBranchPrefix}} Test packages"
+      "groupName": "Test packages"
     },
+
     {
       "matchDepPatterns": [
         "^@backstage/"
@@ -147,7 +132,7 @@
         "@kubernetes/client-node"
       ],
       "groupName": "Kubernetes client dependency"
-    },    
+    },
     {
       "description": "disable updates playwright.  Breaking changes in 1.44.1",
       "enabled": false,
@@ -159,7 +144,7 @@
         "@playwright/test"
       ],
       "groupName": "Playwright test dependency"
-    },    
+    },
     {
       "description": "disable updates to storybook.  Breaking changes in 7.6.19",
       "enabled": false,
@@ -171,8 +156,154 @@
         "@storybook/react-webpack5"
       ],
       "groupName": "Storybook react webpack5 dependency"
+    },
+    {
+      "extends": [
+        "monorepo:material-ui"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
+      "groupName": "material-ui (non-major)",
+      "addLabels": [
+        "team/rhdh"
+      ]
+    },
+    {
+      "extends": [
+        "monorepo:material-ui"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": "material-ui",
+      "addLabels": [
+        "team/rhdh"
+      ]
+    },
+    {
+      "extends": [
+        "monorepo:react"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
+      "groupName": "react (non-major)",
+      "addLabels": [
+        "team/rhdh"
+      ]
+    },
+    {
+      "extends": [
+        "monorepo:react"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": "react",
+      "addLabels": [
+        "team/rhdh"
+      ]
+    },
+    {
+      "extends": [
+        "monorepo:babel"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
+      "groupName": "babel (non-major)",
+      "addLabels": [
+        "team/rhdh"
+      ]   
+    },
+    {
+      "extends": [
+        "monorepo:babel"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": "babel (non-major)",
+      "addLabels": [
+        "team/rhdh"
+      ]   
     },    
-
+    {
+      "extends": [
+        "monorepo:storybook",
+        "monorepo:storybook-react-native"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
+      "matchCurrentVersion": "!/^0/",
+      "groupName": "Storybook packages (minor)",
+      "automerge": true
+    },
+    {
+      "extends": [
+        "monorepo:storybook",
+        "monorepo:storybook-react-native"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": "Storybook packages"
+    },
+    {
+      "extends": [
+        "packages:linters"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
+      "matchCurrentVersion": "!/^0/",
+      "groupName": "linters  (non-major)",
+      "automerge": true,
+      "addLabels": [
+        "team/rhdh"
+      ]
+    },
+    {
+      "extends": [
+        "packages:linters"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": "linters"
+    },
+    {
+      "matchPackagePrefixes": [
+        "@scalprum/"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
+      "groupName": "Scalprum (non-major)",
+      "addLabels": [
+        "team/rhdh"
+      ]
+    },
+    {
+      "matchPackagePrefixes": [
+        "@scalprum/"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": "Scalprum ",
+      "addLabels": [
+        "team/rhdh"
+      ]
+    },
     {
       "matchFileNames": [
         "plugins/orchestrator*/**"
@@ -180,15 +311,32 @@
       "additionalBranchPrefix": "orchestrator ",
       "addLabels": [
         "team/orchestrator"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "peerDependencies"
+      ],
+      "groupName": "Orchestrator Dependencies (non-major)",
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
       ]
     },
     {
       "matchFileNames": [
-        "plugins/notifications*/**"
+        "plugins/orchestrator*/**"
       ],
-      "additionalBranchPrefix": "notifications ",
+      "additionalBranchPrefix": "orchestrator ",
       "addLabels": [
-        "team/notifications"
+        "team/orchestrator"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "peerDependencies"
+      ],
+      "groupName": "Orchestrator Dependencies",
+      "matchUpdateTypes": [
+        "major"
       ]
     },
     {
@@ -198,7 +346,33 @@
       "additionalBranchPrefix": "kiali ",
       "addLabels": [
         "team/kiali"
-      ]
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "peerDependencies"
+      ],
+      "groupName": "Kiali Dependencies  (non-major)"
+    },
+    {
+      "matchFileNames": [
+        "plugins/kiali*/**"
+      ],
+      "additionalBranchPrefix": "kiali ",
+      "addLabels": [
+        "team/kiali"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "peerDependencies"
+      ],
+      "groupName": "Kiali Dependencies "
     },
     {
       "matchFileNames": [
@@ -209,40 +383,135 @@
       "additionalBranchPrefix": "devex ",
       "addLabels": [
         "team/devex"
-      ]
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "peerDependencies"
+      ],
+      "groupName": "Devex Dependencies (non-major)"
+    },
+    {
+      "matchFileNames": [
+        "plugins/*matomo*/**",
+        "plugins/analytics-module-matomo*/**",
+        "plugins/feedback*/**"
+      ],
+      "additionalBranchPrefix": "devex ",
+      "addLabels": [
+        "team/devex"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "peerDependencies"
+      ],
+      "groupName": "Devex Dependencies "
     },
     {
       "matchFileNames": [
         "plugins/quay*/**",
         "plugins/tekton*/**",
-        "plugins/argocd*/**"        
+        "plugins/argocd*/**"
       ],
       "additionalBranchPrefix": "rhtap ",
       "addLabels": [
         "team/rhtap"
-      ]
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "peerDependencies"
+      ],
+      "groupName": "RHTAP Dependencies (non-major) "
     },
     {
       "matchFileNames": [
-        "plugins/analytics-provider-segment*/**",  
-        "plugins/audit-log*/**",      
-        "plugins/bulk-import*/**",    
+        "plugins/quay*/**",
+        "plugins/tekton*/**",
+        "plugins/argocd*/**"
+      ],
+      "additionalBranchPrefix": "rhtap ",
+      "addLabels": [
+        "team/rhtap"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "peerDependencies"
+      ],
+      "groupName": "RHTAP Dependencies "
+    },
+    {
+      "matchFileNames": [
+        "plugins/analytics-provider-segment*/**",
+        "plugins/audit-log*/**",
+        "plugins/bulk-import*/**",
         "plugins/dynamic-plugins-info*/**",
         "plugins/keycloak*/**",
         "plugins/ocm*/**",
         "plugins/quay-actions*/**",
         "plugins/rbac*/**",
         "plugins/regex-actions*/**",
-        "plugins/scaffolder-annotator-action*/**",  
-        "plugins/shared-react*/**",                
+        "plugins/scaffolder-annotator-action*/**",
+        "plugins/shared-react*/**",
         "plugins/topology*/**",
         "packages/**",
-        "package.json" 
+        "package.json"
       ],
       "additionalBranchPrefix": "rhdh ",
       "addLabels": [
         "team/rhdh"
-      ]
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "peerDependencies"
+      ],
+      "groupName": "RHDH Dependencies (non-major)"
+    },
+    {
+      "matchFileNames": [
+        "plugins/analytics-provider-segment*/**",
+        "plugins/audit-log*/**",
+        "plugins/bulk-import*/**",
+        "plugins/dynamic-plugins-info*/**",
+        "plugins/keycloak*/**",
+        "plugins/ocm*/**",
+        "plugins/quay-actions*/**",
+        "plugins/rbac*/**",
+        "plugins/regex-actions*/**",
+        "plugins/scaffolder-annotator-action*/**",
+        "plugins/shared-react*/**",
+        "plugins/topology*/**",
+        "packages/**",
+        "package.json"
+      ],
+      "additionalBranchPrefix": "rhdh ",
+      "addLabels": [
+        "team/rhdh"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "peerDependencies"
+      ],
+      "groupName": "RHDH Dependencies "
     },
     {
       "matchFileNames": [
@@ -254,15 +523,51 @@
         "plugins/nexus-repository-manager*/**",
         "plugins/openshift-image-registry*/**",
         "plugins/servicenow-actions*/**",
-        "plugins/sonarqube-actions*/**", 
+        "plugins/sonarqube-actions*/**",
         "plugins/web-terminal*/**"
       ],
       "additionalBranchPrefix": "community ",
       "addLabels": [
         "team/community"
-      ]
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "peerDependencies"
+      ],
+      "groupName": "Community Dependencies (non-major)"
+    },
+    {
+      "matchFileNames": [
+        "plugins/3scale-backend*/**",
+        "plugins/aap-backend*/**",
+        "plugins/acr*/**",
+        "plugins/jfrog-artifactory*/**",
+        "plugins/kubernetes-actions*/**",
+        "plugins/nexus-repository-manager*/**",
+        "plugins/openshift-image-registry*/**",
+        "plugins/servicenow-actions*/**",
+        "plugins/sonarqube-actions*/**",
+        "plugins/web-terminal*/**"
+      ],
+      "additionalBranchPrefix": "community ",
+      "addLabels": [
+        "team/community"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "peerDependencies"
+      ],
+      "groupName": "Community Dependencies "
     }
   ],
+  "separateMajorMinor": true,
   "ignorePaths": [
     "**/dist-dynamic/**"
   ],
