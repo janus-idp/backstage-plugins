@@ -13,7 +13,11 @@
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "ocm",
-    "pluginPackage": "@janus-idp/backstage-plugin-ocm-backend"
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-ocm-backend",
+      "@janus-idp/backstage-plugin-ocm-common",
+      "@janus-idp/backstage-plugin-ocm"
+    ]
   },
   "exports": {
     ".": "./src/index.ts",
