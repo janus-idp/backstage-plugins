@@ -13,7 +13,12 @@
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "rbac",
-    "pluginPackage": "@janus-idp/backstage-plugin-rbac-backend"
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-rbac-backend",
+      "@janus-idp/backstage-plugin-rbac-common",
+      "@janus-idp/backstage-plugin-rbac-node",
+      "@janus-idp/backstage-plugin-rbac"
+    ]
   },
   "scripts": {
     "start": "backstage-cli package start",
