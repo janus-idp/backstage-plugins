@@ -10,7 +10,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin",
+    "role": "backend-plugin-module",
     "supported-versions": "1.28.4",
     "pluginId": "3scale",
     "pluginPackage": "@janus-idp/backstage-plugin-3scale-backend"
