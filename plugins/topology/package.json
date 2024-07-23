@@ -12,7 +12,11 @@
   "backstage": {
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "topology"
+    "pluginId": "topology",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-topology-common",
+      "@janus-idp/backstage-plugin-topology"
+    ]
   },
   "scripts": {
     "build": "backstage-cli package build",
