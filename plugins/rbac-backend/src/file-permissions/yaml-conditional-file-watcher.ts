@@ -17,6 +17,7 @@ import {
 import { ConditionalStorage } from '../database/conditional-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
 import { deepSortEqual, processConditionMapping } from '../helper';
+import { RoleEventEmitter } from '../service/enforcer-delegate';
 import { PluginPermissionMetadataCollector } from '../service/plugin-endpoints';
 import { validateRoleCondition } from '../validation/condition-validation';
 import { AbstractFileWatcher } from './file-watcher';
@@ -40,6 +41,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     private readonly auth: AuthService,
     private readonly pluginMetadataCollector: PluginPermissionMetadataCollector,
     private readonly roleMetadataStorage: RoleMetadataStorage,
+    roleEventEmitter: RoleEventEmitter,
   ) {
     super(filePath, allowReload, logger);
 
@@ -47,6 +49,8 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       addedConditions: [],
       removedConditions: [],
     };
+
+    roleEventEmitter.on('roleAdded', this.onChange.bind(this));
   }
 
   async initialize(): Promise<void> {
@@ -125,11 +129,15 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
         removedConditions: removedConds,
       };
 
-      console.log(`====== DIFF ${JSON.stringify(newConds)}`); // todo: remove it
+      console.log(`====== DIFF ${JSON.stringify(this.conditionsDiff)}`); // todo: remove it
 
       await this.handleFileChanges();
     } catch (error) {
-      this.logger.error(`Error watching file: ${error}`);
+      await this.handleError(
+        `Error handling changes from conditional policies file ${this.filePath}.`,
+        error,
+        ConditionEvents.CHANGE_CONDITIONAL_POLICIES_FILE_ERROR,
+      );
     }
   }
 

@@ -1,6 +1,8 @@
 import { Enforcer, newModelFromString } from 'casbin';
 import { Knex } from 'knex';
 
+import EventEmitter from 'events';
+
 import {
   RoleMetadataDao,
   RoleMetadataStorage,
@@ -9,12 +11,26 @@ import { mergeRoleMetadata, policiesToString, policyToString } from '../helper';
 import { MODEL } from './permission-model';
 import { ADMIN_ROLE_NAME } from './permission-policy';
 
-export class EnforcerDelegate {
+export interface RoleEventEmitter {
+  on(
+    event: 'roleAdded',
+    listener: (roleEntityRef: string | string[]) => void,
+  ): this;
+}
+
+export class EnforcerDelegate implements RoleEventEmitter {
+  private readonly roleEventEmitter = new EventEmitter();
+
   constructor(
     private readonly enforcer: Enforcer,
     private readonly roleMetadataStorage: RoleMetadataStorage,
     private readonly knex: Knex,
   ) {}
+
+  on(event: 'roleAdded', listener: (role: string) => void): this {
+    this.roleEventEmitter.on(event, listener);
+    return this;
+  }
 
   async hasPolicy(...policy: string[]): Promise<boolean> {
     return await this.enforcer.hasPolicy(...policy);
@@ -143,6 +159,9 @@ export class EnforcerDelegate {
       if (!externalTrx) {
         await trx.commit();
       }
+      if (!currentMetadata) {
+        this.roleEventEmitter.emit('roleAdded', roleMetadata.roleEntityRef);
+      }
     } catch (err) {
       if (!externalTrx) {
         await trx.rollback(err);
@@ -190,6 +209,9 @@ export class EnforcerDelegate {
 
       if (!externalTrx) {
         await trx.commit();
+      }
+      if (!currentRoleMetadata) {
+        this.roleEventEmitter.emit('roleAdded', roleMetadata.roleEntityRef);
       }
     } catch (err) {
       if (!externalTrx) {
