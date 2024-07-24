@@ -11,20 +11,16 @@ import { mergeRoleMetadata, policiesToString, policyToString } from '../helper';
 import { MODEL } from './permission-model';
 import { ADMIN_ROLE_NAME } from './permission-policy';
 
-export interface RoleEventEmitter {
-  on(
-    event: 'roleAdded',
-    listener: (roleEntityRef: string | string[]) => void,
-  ): this;
-}
-
 export type RoleEvents = 'roleAdded';
+export interface RoleEventEmitter<T extends RoleEvents> {
+  on(event: T, listener: (roleEntityRef: string | string[]) => void): this;
+}
 
 type EventMap = {
   [event in RoleEvents]: any[];
 };
 
-export class EnforcerDelegate implements RoleEventEmitter {
+export class EnforcerDelegate implements RoleEventEmitter<RoleEvents> {
   private readonly roleEventEmitter = new EventEmitter<EventMap>();
 
   constructor(
@@ -33,7 +29,7 @@ export class EnforcerDelegate implements RoleEventEmitter {
     private readonly knex: Knex,
   ) {}
 
-  on(event: 'roleAdded', listener: (role: string) => void): this {
+  on(event: RoleEvents, listener: (role: string) => void): this {
     this.roleEventEmitter.on(event, listener);
     return this;
   }
