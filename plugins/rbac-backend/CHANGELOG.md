@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [4.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.4.0...@janus-idp/backstage-plugin-rbac-backend@4.4.1) (2024-07-24)
+
+
+### Bug Fixes
+
+* **rbac:** don't start transaction if there no group policies ([#1923](https://github.com/janus-idp/backstage-plugins/issues/1923)) ([dffa964](https://github.com/janus-idp/backstage-plugins/commit/dffa9643b500a19dc70c66cedf9016508cdb5947))
+
 ## @janus-idp/backstage-plugin-rbac-backend [4.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.3.4...@janus-idp/backstage-plugin-rbac-backend@4.4.0) (2024-07-24)
 
 
