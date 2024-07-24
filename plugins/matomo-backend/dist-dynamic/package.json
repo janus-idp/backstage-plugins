@@ -1,18 +1,21 @@
 {
   "name": "@janus-idp/backstage-plugin-matomo-backend-dynamic",
   "version": "1.5.1",
-  "main": "dist/index.cjs.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs.js",
+  "types": "src/index.ts",
   "license": "Apache-2.0",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "configSchema": "config.d.ts",
   "backstage": {
     "role": "backend-plugin",
-    "supported-versions": "1.26.5"
+    "supported-versions": "1.28.4",
+    "pluginId": "matomo",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-matomo",
+      "@janus-idp/backstage-plugin-matomo-backend"
+    ]
   },
   "exports": {
     ".": {
