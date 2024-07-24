@@ -32,7 +32,14 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "plugins/*"
+      "!packages/app",
+      "!packages/backend",
+      "!packages/storybook",
+      "plugins/*",
+      "!plugins/bulk-import",
+      "!plugins/bulk-import-backend",
+      "!plugins/bulk-import-common",
+      "!plugins/orchestrator-swf-editor-envelope"
     ],
     "nohoist": [
       "@janus-idp/backstage-plugin-orchestrator",
