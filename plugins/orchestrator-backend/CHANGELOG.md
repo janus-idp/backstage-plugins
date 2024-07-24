@@ -1,3 +1,22 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.16.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.15.0...@janus-idp/backstage-plugin-orchestrator-backend@1.16.0) (2024-07-24)
+
+
+### Features
+
+* **deps:** update to backstage 1.28 ([#1891](https://github.com/janus-idp/backstage-plugins/issues/1891)) ([1ba1108](https://github.com/janus-idp/backstage-plugins/commit/1ba11088e0de60e90d138944267b83600dc446e5))
+* **orchestrator:** use v2 endpoints to retrieve workflow overviews ([#1892](https://github.com/janus-idp/backstage-plugins/issues/1892)) ([cca1e53](https://github.com/janus-idp/backstage-plugins/commit/cca1e53bc6b3019b1c544f2f62bed8723ebf6130))
+
+
+### Bug Fixes
+
+* **orchestrator:** resolve broken dynamic plugin publish ([#1906](https://github.com/janus-idp/backstage-plugins/issues/1906)) ([5f99043](https://github.com/janus-idp/backstage-plugins/commit/5f990438ebebf8b23c0c8706852753ad0812c55a))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.12.0
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.15.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.14.0...@janus-idp/backstage-plugin-orchestrator-backend@1.15.0) (2024-07-12)
 
 

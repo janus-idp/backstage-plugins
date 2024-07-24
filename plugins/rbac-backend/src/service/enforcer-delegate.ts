@@ -156,11 +156,11 @@ export class EnforcerDelegate {
     roleMetadata: RoleMetadataDao,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const trx = externalTrx ?? (await this.knex.transaction());
-
     if (policies.length === 0) {
       return;
     }
+
+    const trx = externalTrx ?? (await this.knex.transaction());
 
     try {
       const currentRoleMetadata =

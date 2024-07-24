@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-topology [1.23.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.22.1...@janus-idp/backstage-plugin-topology@1.23.0) (2024-07-24)
+
+
+### Features
+
+* **deps:** update to backstage 1.28 ([#1891](https://github.com/janus-idp/backstage-plugins/issues/1891)) ([1ba1108](https://github.com/janus-idp/backstage-plugins/commit/1ba11088e0de60e90d138944267b83600dc446e5))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.8.0
+
 ## @janus-idp/backstage-plugin-topology [1.22.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.22.0...@janus-idp/backstage-plugin-topology@1.22.1) (2024-06-19)
 
 

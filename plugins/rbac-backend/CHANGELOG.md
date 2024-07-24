@@ -1,3 +1,22 @@
+## @janus-idp/backstage-plugin-rbac-backend [4.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.3.4...@janus-idp/backstage-plugin-rbac-backend@4.4.0) (2024-07-24)
+
+
+### Features
+
+* **deps:** update to backstage 1.28 ([#1891](https://github.com/janus-idp/backstage-plugins/issues/1891)) ([1ba1108](https://github.com/janus-idp/backstage-plugins/commit/1ba11088e0de60e90d138944267b83600dc446e5))
+
+
+### Bug Fixes
+
+* **deps:** fix rbac dependencies ([#1918](https://github.com/janus-idp/backstage-plugins/issues/1918)) ([fcc4e1d](https://github.com/janus-idp/backstage-plugins/commit/fcc4e1dde55bc0fb2dd284d256330c7f9f928036))
+* **deps:** move backend-test-utils to devDependencies ([#1944](https://github.com/janus-idp/backstage-plugins/issues/1944)) ([9052a3f](https://github.com/janus-idp/backstage-plugins/commit/9052a3f41cae1cd57fb8f52033ea2c6f752f64fe))
+
+
+### Documentation
+
+* added OpenAPI spec for rbac-backend ([#1830](https://github.com/janus-idp/backstage-plugins/issues/1830)) ([4eb2035](https://github.com/janus-idp/backstage-plugins/commit/4eb20351bf9713355cb79905a2e49aeec9ad6ec9))
+* **rbac:** fix condition rules api url ([#1914](https://github.com/janus-idp/backstage-plugins/issues/1914)) ([e6fa0ae](https://github.com/janus-idp/backstage-plugins/commit/e6fa0ae7265ea56b50fffbf1466540a61d714ed8))
+
 ## @janus-idp/backstage-plugin-rbac-backend [4.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.3.3...@janus-idp/backstage-plugin-rbac-backend@4.3.4) (2024-07-17)
 
 

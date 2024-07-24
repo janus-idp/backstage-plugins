@@ -90,6 +90,7 @@ const useAdminsFromConfig = async (
     await roleMetadataStorage.findRoleMetadata(ADMIN_ROLE_NAME);
 
   const trx = await knex.transaction();
+  let addedRoleMembers;
   try {
     if (!adminRoleMeta) {
       // even if there are no user, we still create default role metadata for admins
@@ -101,14 +102,19 @@ const useAdminsFromConfig = async (
         trx,
       );
     }
+
+    addedRoleMembers = Array.from<string[]>(newGroupPolicies.entries());
+    await enf.addGroupingPolicies(
+      addedRoleMembers,
+      getAdminRoleMetadata(),
+      trx,
+    );
+
     await trx.commit();
   } catch (error) {
     await trx.rollback(error);
     throw error;
   }
-
-  const addedRoleMembers = Array.from<string[]>(newGroupPolicies.entries());
-  await enf.addGroupingPolicies(addedRoleMembers, getAdminRoleMetadata());
 
   await auditLogger.auditLog<RoleAuditInfo>({
     actorId: RBAC_BACKEND,

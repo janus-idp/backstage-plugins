@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-acr [1.6.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.6.2...@janus-idp/backstage-plugin-acr@1.6.3) (2024-07-24)
+
+
+### Bug Fixes
+
+* **deps:** move backend-test-utils to devDependencies ([#1944](https://github.com/janus-idp/backstage-plugins/issues/1944)) ([9052a3f](https://github.com/janus-idp/backstage-plugins/commit/9052a3f41cae1cd57fb8f52033ea2c6f752f64fe))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.8.0
+
 ## @janus-idp/backstage-plugin-acr [1.6.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.6.1...@janus-idp/backstage-plugin-acr@1.6.2) (2024-07-24)
 
 
