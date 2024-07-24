@@ -12,6 +12,7 @@ import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { RBACPermissionPolicy } from './permission-policy';
+import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import { PoliciesServer } from './policies-rest-api';
 import { PolicyBuilder } from './policy-builder';
 
@@ -47,6 +48,21 @@ jest.mock('../database/casbin-adapter-factory', () => {
     CasbinDBAdapterFactory: jest.fn((): Partial<CasbinDBAdapterFactory> => {
       return mockDataBaseAdapterFactory;
     }),
+  };
+});
+
+const mockPluginMetadataCollector: Partial<PluginPermissionMetadataCollector> =
+  {
+    getPluginConditionRules: jest.fn().mockImplementation(),
+    getPluginPolicies: jest.fn().mockImplementation(),
+    getMetadataByPluginId: jest.fn().mockImplementation(),
+  };
+
+jest.mock('./plugin-endpoints', () => {
+  return {
+    PluginPermissionMetadataCollector: jest
+      .fn()
+      .mockImplementation(() => mockPluginMetadataCollector),
   };
 });
 
@@ -311,14 +327,15 @@ describe('PolicyBuilder', () => {
     expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
     expect(RBACPermissionPolicy.build).toHaveBeenCalled();
 
-    expect(PoliciesServer).toHaveBeenCalled();
     expect(mockPoliciesServer.serve).toHaveBeenCalled();
     expect(router).toBeTruthy();
     expect(router).toBe(mockRouter);
     expect(loggerInfoSpy).toHaveBeenCalledWith(
       'RBAC backend plugin was enabled',
     );
-    const pIdProvider = (PoliciesServer as jest.Mock).mock.calls[0][7];
+    const pIdProvider = (
+      PluginPermissionMetadataCollector as unknown as jest.Mock
+    ).mock.calls[0][1];
     expect(pIdProvider.getPluginIds()).toEqual(['catalog']);
   });
 });

@@ -117,7 +117,7 @@ export class PoliciesServer {
   async serve(): Promise<express.Router> {
     const router = await createRouter(this.options);
 
-    const { identity, discovery, logger, config } = this.options;
+    const { identity } = this.options;
 
     if (!identity) {
       throw new NotAllowedError(

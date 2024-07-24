@@ -38,21 +38,22 @@ import { PoliciesServer } from './policies-rest-api';
 
 jest.setTimeout(60000);
 
-const pluginPermissionMetadataCollectorMock = {
-  getPluginPolicies: jest.fn().mockImplementation(),
-  getPluginConditionRules: jest.fn().mockImplementation(),
-  getMetadataByPluginId: jest.fn().mockImplementation(),
-};
-
-jest.mock('./plugin-endpoints', () => {
-  return {
-    PluginPermissionMetadataCollector: jest.fn(
-      (): Partial<PluginPermissionMetadataCollector> => {
-        return pluginPermissionMetadataCollectorMock;
-      },
-    ),
+const pluginPermissionMetadataCollectorMock: Partial<PluginPermissionMetadataCollector> =
+  {
+    getPluginPolicies: jest.fn().mockImplementation(),
+    getPluginConditionRules: jest.fn().mockImplementation(),
+    getMetadataByPluginId: jest.fn().mockImplementation(),
   };
-});
+
+// jest.mock('./plugin-endpoints', () => {
+//   return {
+//     PluginPermissionMetadataCollector: jest.fn(
+//       (): Partial<PluginPermissionMetadataCollector> => {
+//         return pluginPermissionMetadataCollectorMock;
+//       },
+//     ),
+//   };
+// });
 
 jest.mock('@backstage/plugin-auth-node', () => ({
   getBearerTokenFromAuthorizationHeader: () => 'token',
@@ -197,11 +198,11 @@ describe('REST policies api', () => {
     })),
   };
 
-  const backendPluginIDsProviderMock = {
-    getPluginIds: jest.fn().mockImplementation(() => {
-      return [];
-    }),
-  };
+  // const backendPluginIDsProviderMock = {
+  //   getPluginIds: jest.fn().mockImplementation(() => {
+  //     return [];
+  //   }),
+  // };
 
   const logger = getVoidLogger();
   const mockDiscovery = {
@@ -295,6 +296,8 @@ describe('REST policies api', () => {
         mockEnforcer as EnforcerDelegate,
         roleMetadataStorageMock,
         knex,
+        pluginPermissionMetadataCollectorMock as PluginPermissionMetadataCollector,
+        mockAuth,
       ),
     };
 
@@ -306,7 +309,7 @@ describe('REST policies api', () => {
       mockHttpAuth,
       mockAuth,
       conditionalStorage,
-      backendPluginIDsProviderMock,
+      pluginPermissionMetadataCollectorMock as PluginPermissionMetadataCollector,
       roleMetadataStorageMock,
       auditLoggerMock,
     );
