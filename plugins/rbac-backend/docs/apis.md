@@ -829,6 +829,24 @@ Returns a status code of 204 upon success.
 
 ## Curl Request Examples
 
+Create role `role:default/test` for `group:default/example`:
+
+```bash
+curl -X POST "http://localhost:7007/api/permission/roles" \
+     -d '{
+           "memberReferences": [
+             "group:default/example"
+           ],
+           "name": "role:default/test",
+           "metadata": {
+             "description": "This is a test role"
+           }
+         }' \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer $token" \
+     -v
+```
+
 Create permission policy for `role:default/test`:
 
 ```bash
