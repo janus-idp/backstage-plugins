@@ -225,9 +225,8 @@ export function deepSort(value: any): any {
         0,
       ),
     );
-  } else {
-    return value;
   }
+  return value;
 }
 
 export function deepSortEqual(obj1: any, obj2: any): boolean {
