@@ -290,6 +290,14 @@ describe('CSVFileWatcher', () => {
         __dirname,
         './../__fixtures__/data/invalid-csv/duplicate-policy.csv',
       );
+      const csvFileWatcher = new CSVFileWatcher(
+        csvFileName,
+        false,
+        loggerMock,
+        enforcerDelegate,
+        roleMetadataStorageMock,
+        auditLoggerMock,
+      );
 
       const duplicatePolicy = [
         'role:default/catalog-writer',
@@ -340,6 +348,14 @@ describe('CSVFileWatcher', () => {
       csvFileName = resolve(
         __dirname,
         './../__fixtures__/data/invalid-csv/error-policy.csv',
+      );
+      const csvFileWatcher = new CSVFileWatcher(
+        csvFileName,
+        false,
+        loggerMock,
+        enforcerDelegate,
+        roleMetadataStorageMock,
+        auditLoggerMock,
       );
 
       const entityRoleError = ['user:default/', 'role:default/catalog-deleter'];
@@ -400,6 +416,14 @@ describe('CSVFileWatcher', () => {
       csvFileName = resolve(
         __dirname,
         './../__fixtures__/data/valid-csv/simple-policy.csv',
+      );
+      csvFileWatcher = new CSVFileWatcher(
+        csvFileName,
+        false,
+        loggerMock,
+        enforcerDelegate,
+        roleMetadataStorageMock,
+        auditLoggerMock,
       );
       await csvFileWatcher.initialize();
     });
