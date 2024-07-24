@@ -63,7 +63,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
 
   async onChange(): Promise<void> {
     try {
-      const newConds = this.parse();
+      const newConds = this.parse().filter(c => c);
 
       const addedConds: RoleConditionalPolicyDecision<PermissionAction>[] = [];
       const removedConds: RoleConditionalPolicyDecision<PermissionAction>[] =
@@ -83,10 +83,6 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
 
       // Find added conditions
       for (const condition of newConds) {
-        if (!condition) {
-          continue;
-        }
-
         const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
           condition.roleEntityRef,
         );
@@ -128,8 +124,6 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
         addedConditions: addedConds,
         removedConditions: removedConds,
       };
-
-      console.log(`====== DIFF ${JSON.stringify(this.conditionsDiff)}`); // todo: remove it
 
       await this.handleFileChanges();
     } catch (error) {
