@@ -1,5 +1,4 @@
-import { getVoidLogger } from '@backstage/backend-common';
-import { LoggerService, UserInfoService } from '@backstage/backend-plugin-api';
+import { UserInfoService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
@@ -132,13 +131,9 @@ describe('PolicyBuilder', () => {
     }),
   };
 
-  const logger = getVoidLogger();
-  let loggerInfoSpy: jest.SpyInstance<LoggerService, [infoObject: object], any>;
-  let loggerWarnSpy: jest.SpyInstance<LoggerService, [infoObject: object], any>;
+  const logger = mockServices.logger.mock();
 
   beforeEach(async () => {
-    loggerInfoSpy = jest.spyOn(logger, 'info');
-    loggerWarnSpy = jest.spyOn(logger, 'warn');
     jest.clearAllMocks();
   });
 
@@ -174,9 +169,7 @@ describe('PolicyBuilder', () => {
     expect(mockPoliciesServer.serve).toHaveBeenCalled();
     expect(router).toBeTruthy();
     expect(router).toBe(mockRouter);
-    expect(loggerInfoSpy).toHaveBeenCalledWith(
-      'RBAC backend plugin was enabled',
-    );
+    expect(logger.info).toHaveBeenCalledWith('RBAC backend plugin was enabled');
   });
 
   it('should build policy server, but log warning that permission framework disabled', async () => {
@@ -211,7 +204,7 @@ describe('PolicyBuilder', () => {
     expect(mockPoliciesServer.serve).toHaveBeenCalled();
     expect(router).toBeTruthy();
     expect(router).toBe(mockRouter);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
+    expect(logger.warn).toHaveBeenCalledWith(
       'RBAC backend plugin was disabled by application config permission.enabled: false',
     );
   });
@@ -251,9 +244,7 @@ describe('PolicyBuilder', () => {
     expect(mockPoliciesServer.serve).toHaveBeenCalled();
     expect(router).toBeTruthy();
     expect(router).toBe(mockRouter);
-    expect(loggerInfoSpy).toHaveBeenCalledWith(
-      'RBAC backend plugin was enabled',
-    );
+    expect(logger.info).toHaveBeenCalledWith('RBAC backend plugin was enabled');
 
     expect(pluginIdProvider.getPluginIds()).toEqual(['catalog']);
   });
@@ -293,9 +284,7 @@ describe('PolicyBuilder', () => {
     expect(mockPoliciesServer.serve).toHaveBeenCalled();
     expect(router).toBeTruthy();
     expect(router).toBe(mockRouter);
-    expect(loggerInfoSpy).toHaveBeenCalledWith(
-      'RBAC backend plugin was enabled',
-    );
+    expect(logger.info).toHaveBeenCalledWith('RBAC backend plugin was enabled');
 
     expect(pluginIdProvider.getPluginIds()).toEqual(['catalog', 'rbac']);
   });
@@ -330,9 +319,7 @@ describe('PolicyBuilder', () => {
     expect(mockPoliciesServer.serve).toHaveBeenCalled();
     expect(router).toBeTruthy();
     expect(router).toBe(mockRouter);
-    expect(loggerInfoSpy).toHaveBeenCalledWith(
-      'RBAC backend plugin was enabled',
-    );
+    expect(logger.info).toHaveBeenCalledWith('RBAC backend plugin was enabled');
     const pIdProvider = (
       PluginPermissionMetadataCollector as unknown as jest.Mock
     ).mock.calls[0][1];

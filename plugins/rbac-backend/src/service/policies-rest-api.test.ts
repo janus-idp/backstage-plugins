@@ -45,16 +45,6 @@ const pluginPermissionMetadataCollectorMock: Partial<PluginPermissionMetadataCol
     getMetadataByPluginId: jest.fn().mockImplementation(),
   };
 
-// jest.mock('./plugin-endpoints', () => {
-//   return {
-//     PluginPermissionMetadataCollector: jest.fn(
-//       (): Partial<PluginPermissionMetadataCollector> => {
-//         return pluginPermissionMetadataCollectorMock;
-//       },
-//     ),
-//   };
-// });
-
 jest.mock('@backstage/plugin-auth-node', () => ({
   getBearerTokenFromAuthorizationHeader: () => 'token',
 }));
@@ -197,12 +187,6 @@ describe('REST policies api', () => {
       },
     })),
   };
-
-  // const backendPluginIDsProviderMock = {
-  //   getPluginIds: jest.fn().mockImplementation(() => {
-  //     return [];
-  //   }),
-  // };
 
   const logger = getVoidLogger();
   const mockDiscovery = {
