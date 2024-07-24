@@ -18,8 +18,14 @@ export interface RoleEventEmitter {
   ): this;
 }
 
+export type RoleEvents = 'roleAdded';
+
+type EventMap = {
+  [event in RoleEvents]: any[];
+};
+
 export class EnforcerDelegate implements RoleEventEmitter {
-  private readonly roleEventEmitter = new EventEmitter();
+  private readonly roleEventEmitter = new EventEmitter<EventMap>();
 
   constructor(
     private readonly enforcer: Enforcer,
