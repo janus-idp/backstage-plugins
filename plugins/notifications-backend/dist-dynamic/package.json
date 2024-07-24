@@ -1,17 +1,20 @@
 {
   "name": "@janus-idp/plugin-notifications-backend-dynamic",
-  "version": "1.5.1",
-  "main": "dist/index.cjs.js",
-  "types": "dist/index.d.ts",
+  "version": "1.6.0",
+  "main": "./dist/index.cjs.js",
+  "types": "src/index.ts",
   "license": "Apache-2.0",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "backstage": {
     "role": "backend-plugin",
-    "supported-versions": "1.26.5"
+    "supported-versions": "1.28.4",
+    "pluginId": "notifications",
+    "pluginPackages": [
+      "@janus-idp/plugin-notifications",
+      "@janus-idp/plugin-notifications-backend"
+    ]
   },
   "exports": {
     ".": {
