@@ -11,7 +11,7 @@ jobs:
     outputs:
       plugins: ${{ steps.scan.outputs.plugins }}
     steps:
-      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
         with:
           fetch-depth: 0
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
@@ -48,7 +48,7 @@ jobs:
     if: needs.changes.outputs.plugins != '[]'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
         with:
           node-version: 18
@@ -66,28 +66,6 @@ jobs:
 
           # enable permission support and RBAC plugins
           printf "\npermission:\n  enabled: true\n" >> ${root}/app-config.yaml
-
-          # Start backend
-          echo "Starting backend"
-          logfile=$(mktemp)
-          yarn start >$logfile 2>&1 &
-
-          for attempt in $(seq 1 45); do
-            sleep 1
-            if grep -q "Error:" $logfile; then
-              cat $logfile
-              exit 1
-            fi
-            if grep -q "Listening on" $logfile; then
-              echo "Backend started"
-              break
-            fi
-            if [[ attempt -eq 45 ]]; then
-              echo "Failed to launch backend"
-              cat $logfile
-              exit 1
-            fi
-          done
 
           cd $root/plugins
 
@@ -122,15 +100,10 @@ jobs:
             
             # Kill the plugin
             pid=$(lsof -i :3000 -Fp | grep p | sed s/p//)
-            kill -9 $pid || true 
+            kill -9 $pid
             echo "$f shut down"
             cd $root/plugins
           done
-
-          # Kill backend
-          pid=$(lsof -i :7007 -Fp | grep p | sed s/p//)
-          kill -9 $pid || true
-          echo "Backend shut down"
       - uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4
         if: always()
         with:

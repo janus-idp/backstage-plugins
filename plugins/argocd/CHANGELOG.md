@@ -1,3 +1,15 @@
+## @janus-idp/backstage-plugin-argocd [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.2.4...@janus-idp/backstage-plugin-argocd@1.3.0) (2024-07-23)
+
+
+### Features
+
+* **deps:** update to backstage 1.28 ([#1891](https://github.com/janus-idp/backstage-plugins/issues/1891)) ([1ba1108](https://github.com/janus-idp/backstage-plugins/commit/1ba11088e0de60e90d138944267b83600dc446e5))
+
+
+### Documentation
+
+* fix argocd naming ([#1904](https://github.com/janus-idp/backstage-plugins/issues/1904)) ([3173d79](https://github.com/janus-idp/backstage-plugins/commit/3173d79b9b226fd994d48f27b392df7d167d4e64))
+
 ## @janus-idp/backstage-plugin-argocd [1.2.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.2.3...@janus-idp/backstage-plugin-argocd@1.2.4) (2024-07-17)
 
 
