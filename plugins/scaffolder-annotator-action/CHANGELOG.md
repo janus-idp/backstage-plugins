@@ -1,3 +1,10 @@
+## @janus-idp/backstage-scaffolder-backend-module-annotator [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-annotator@1.2.0...@janus-idp/backstage-scaffolder-backend-module-annotator@1.2.1) (2024-07-24)
+
+
+### Bug Fixes
+
+* **deps:** rollback unreleased plugins ([#1951](https://github.com/janus-idp/backstage-plugins/issues/1951)) ([8b77969](https://github.com/janus-idp/backstage-plugins/commit/8b779694f02f8125587296305276b84cdfeeaebe))
+
 ## @janus-idp/backstage-scaffolder-backend-module-annotator [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-annotator@1.1.0...@janus-idp/backstage-scaffolder-backend-module-annotator@1.2.0) (2024-07-22)
 
 
