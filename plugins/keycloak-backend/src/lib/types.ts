@@ -22,6 +22,7 @@ import {
 } from '@s3pweb/keycloak-admin-client-cjs';
 
 export interface GroupRepresentationWithParent extends GroupRepresentation {
+  parentId?: string; // Why not already there in GroupRepresentation?
   parent?: string;
   members?: string[];
 }
