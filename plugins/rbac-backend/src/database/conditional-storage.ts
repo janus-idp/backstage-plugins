@@ -53,7 +53,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
   public constructor(private readonly knex: Knex<any, any[]>) {}
 
   async filterConditions(
-    roleEntityRef?: string | string,
+    roleEntityRef?: string | string[],
     pluginId?: string,
     resourceType?: string,
     actions?: PermissionAction[],
