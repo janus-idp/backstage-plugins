@@ -17,7 +17,7 @@ import {
 import { ConditionalStorage } from '../database/conditional-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
 import { deepSortEqual, processConditionMapping } from '../helper';
-import { RoleEventEmitter } from '../service/enforcer-delegate';
+import { RoleEventEmitter, RoleEvents } from '../service/enforcer-delegate';
 import { PluginPermissionMetadataCollector } from '../service/plugin-endpoints';
 import { validateRoleCondition } from '../validation/condition-validation';
 import { AbstractFileWatcher } from './file-watcher';
@@ -41,7 +41,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     private readonly auth: AuthService,
     private readonly pluginMetadataCollector: PluginPermissionMetadataCollector,
     private readonly roleMetadataStorage: RoleMetadataStorage,
-    roleEventEmitter: RoleEventEmitter,
+    roleEventEmitter: RoleEventEmitter<RoleEvents>,
   ) {
     super(filePath, allowReload, logger);
 
