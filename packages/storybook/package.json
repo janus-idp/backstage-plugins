@@ -17,7 +17,7 @@
   "devDependencies": {
     "@storybook/react-webpack5": "7.5.3",
     "@storybook/testing-library": "0.2.2",
-    "@testing-library/jest-dom": "6.4.5",
+    "@testing-library/jest-dom": "6.4.8",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "@swc/core": "1.6.1",
