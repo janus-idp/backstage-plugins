@@ -9,6 +9,8 @@ import {
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
+import fs from 'fs';
+
 import {
   ConditionAuditInfo,
   ConditionEvents,
@@ -54,6 +56,16 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
   }
 
   async initialize(): Promise<void> {
+    const fileExists = fs.existsSync(this.filePath);
+    if (!fileExists) {
+      const err = new Error(`File '${this.filePath}' was not found`);
+      this.handleError(
+        err.message,
+        err,
+        ConditionEvents.CONDITIONAL_POLICIES_FILE_NOT_FOUND,
+      );
+      return;
+    }
     await this.onChange();
 
     if (this.allowReload) {
@@ -69,11 +81,12 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       const removedConds: RoleConditionalPolicyDecision<PermissionAction>[] =
         [];
 
-      const csvFileRoles = (
-        await this.roleMetadataStorage.filterRoleMetadata('csv-file')
-      ).map(role => role.roleEntityRef);
+      const csvFileRoles =
+        await this.roleMetadataStorage.filterRoleMetadata('csv-file');
       const existedFileConds = (
-        await this.conditionalStorage.filterConditions(csvFileRoles)
+        await this.conditionalStorage.filterConditions(
+          csvFileRoles.map(role => role.roleEntityRef),
+        )
       ).map(condition => {
         return {
           ...condition,
@@ -83,18 +96,18 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
 
       // Find added conditions
       for (const condition of newConds) {
-        const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
-          condition.roleEntityRef,
+        const roleMetadata = csvFileRoles.find(
+          role => condition.roleEntityRef === role.roleEntityRef,
         );
         if (!roleMetadata) {
           this.logger.warn(
-            `skip to add condition for role ${condition.roleEntityRef}. Role does not exist`,
+            `skip to add condition for role '${condition.roleEntityRef}'. Role does not exist`,
           );
           continue;
         }
         if (roleMetadata.source !== 'csv-file') {
           this.logger.warn(
-            `skip to add condition for role ${condition.roleEntityRef}. Role is not from csv-file`,
+            `skip to add condition for role '${condition.roleEntityRef}'. Role is not from csv-file`,
           );
           continue;
         }
@@ -125,10 +138,12 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
         removedConditions: removedConds,
       };
 
+      // console.log(`==== Conditions diff is: ${JSON.stringify(this.conditionsDiff)}`);
+
       await this.handleFileChanges();
     } catch (error) {
       await this.handleError(
-        `Error handling changes from conditional policies file ${this.filePath}.`,
+        `Error handling changes from conditional policies file ${this.filePath}`,
         error,
         ConditionEvents.CHANGE_CONDITIONAL_POLICIES_FILE_ERROR,
       );
@@ -140,21 +155,12 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
    * @returns parsed data.
    */
   parse(): RoleConditionalPolicyDecision<PermissionAction>[] {
-    try {
-      const fileContents = this.getCurrentContents();
-      const data = yaml.load(fileContents);
-      if (!Array.isArray(data)) {
-        throw new Error(`yaml file ${this.filePath} must contain an array`);
-      }
-      return data;
-    } catch (error: unknown) {
-      this.handleError(
-        'Failed to parse conditional policies file',
-        error,
-        ConditionEvents.PARSE_CONDITION_ERROR,
-      );
-      return [];
+    const fileContents = this.getCurrentContents();
+    const data = yaml.load(fileContents);
+    if (!Array.isArray(data)) {
+      throw new Error(`yaml file ${this.filePath} must contain an array`);
     }
+    return data;
   }
 
   async handleFileChanges(): Promise<void> {
@@ -202,7 +208,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
             condition.permissionMapping,
           )
         )[0];
-        await this.conditionalStorage.deleteCondition(conditionToDelete.id);
+        await this.conditionalStorage.deleteCondition(conditionToDelete.id!);
 
         await this.auditLogger.auditLog<ConditionAuditInfo>({
           message: `Deleted conditional permission policy`,
