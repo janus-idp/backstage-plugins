@@ -245,6 +245,10 @@ export const readKeycloakRealm = async (
     config,
     options?.userQuerySize,
   );
+  console.log('server info');
+  const serverInfo = await client.serverInfo.find();
+  const serverVersion = serverInfo.systemInfo?.version;
+  console.log(serverVersion);
 
   const rawKGroups = await getEntitiesGroups(
     client.groups,
