@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [4.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.4.2...@janus-idp/backstage-plugin-rbac-backend@4.4.3) (2024-07-25)
+
+
+### Documentation
+
+* **rbac:** add curl request examples ([#1913](https://github.com/janus-idp/backstage-plugins/issues/1913)) ([e496eb7](https://github.com/janus-idp/backstage-plugins/commit/e496eb73349987d43caba86a29e4c98c86179250))
+
 ## @janus-idp/backstage-plugin-rbac-backend [4.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.4.1...@janus-idp/backstage-plugin-rbac-backend@4.4.2) (2024-07-24)
 
 
