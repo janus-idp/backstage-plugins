@@ -49,14 +49,15 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "node-fetch": "^2.6.7",
+    "openai": "^4.53.0",
     "yn": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "0.26.10",
     "@janus-idp/cli": "1.12.0",
     "@types/supertest": "2.0.12",
-    "supertest": "6.2.4",
-    "msw": "1.0.0"
+    "msw": "1.0.0",
+    "supertest": "6.2.4"
   },
   "files": [
     "dist",
