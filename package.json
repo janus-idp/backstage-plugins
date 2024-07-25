@@ -32,9 +32,6 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "!packages/app",
-      "!packages/backend",
-      "!packages/storybook",
       "plugins/*",
       "!plugins/bulk-import",
       "!plugins/bulk-import-backend",
