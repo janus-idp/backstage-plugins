@@ -19,7 +19,7 @@ const WorkflowProgressNodeIcon: React.FC<{
 }> = ({ status, error }) => {
   const color = useWorkflowInstanceStateColors(status);
   switch (status) {
-    case 'ERROR': {
+    case 'Error': {
       return (
         <Tooltip
           title={
@@ -31,35 +31,35 @@ const WorkflowProgressNodeIcon: React.FC<{
         </Tooltip>
       );
     }
-    case 'COMPLETED': {
+    case 'Completed': {
       return (
         <Tooltip title="Completed">
           <CheckCircleIcon style={{ color }} />
         </Tooltip>
       );
     }
-    case 'ACTIVE': {
+    case 'Active': {
       return (
         <Tooltip title="Active">
           <HourglassTopIcon className={color} />
         </Tooltip>
       );
     }
-    case 'ABORTED': {
+    case 'Aborted': {
       return (
         <Tooltip title="Aborted">
           <CancelIcon className={color} />
         </Tooltip>
       );
     }
-    case 'SUSPENDED': {
+    case 'Suspended': {
       return (
         <Tooltip title="Suspended">
           <PauseCircleIcon className={color} />
         </Tooltip>
       );
     }
-    case 'PENDING': {
+    case 'Pending': {
       return (
         <Tooltip title="Pending">
           <HourglassTopIcon className={color} />

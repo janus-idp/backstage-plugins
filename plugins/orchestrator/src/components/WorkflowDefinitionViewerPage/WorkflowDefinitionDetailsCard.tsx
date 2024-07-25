@@ -8,7 +8,7 @@ import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 
 import {
-  ProcessInstanceStateValues,
+  ProcessInstanceStatusDTO,
   WorkflowOverviewDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -57,7 +57,7 @@ const WorkflowDefinitionDetailsCard = ({
           formattedWorkflowOverview?.lastRunStatus !== VALUE_UNAVAILABLE ? (
             <WorkflowInstanceStatusIndicator
               status={
-                formattedWorkflowOverview?.lastRunStatus as ProcessInstanceStateValues
+                formattedWorkflowOverview?.lastRunStatus as ProcessInstanceStatusDTO
               }
               lastRunId={formattedWorkflowOverview?.lastRunId}
             />

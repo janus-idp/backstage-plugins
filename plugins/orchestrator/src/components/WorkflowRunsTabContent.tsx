@@ -15,7 +15,7 @@ import {
   capitalize,
   ellipsis,
   ProcessInstanceState,
-  ProcessInstanceStateValues,
+  ProcessInstanceStatusDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../api';
@@ -51,9 +51,8 @@ export const WorkflowRunsTabContent = () => {
 
   const fetchInstances = React.useCallback(async () => {
     const instances = await orchestratorApi.listInstances();
-    const clonedData: WorkflowRunDetail[] = instances.map(
-      mapProcessInstanceToDetails,
-    );
+    const clonedData: WorkflowRunDetail[] =
+      instances.data.items?.map(mapProcessInstanceToDetails) || [];
     return clonedData;
   }, [orchestratorApi]);
 
@@ -80,7 +79,7 @@ export const WorkflowRunsTabContent = () => {
         field: 'status',
         render: data => (
           <WorkflowInstanceStatusIndicator
-            status={data.status as ProcessInstanceStateValues}
+            status={data.status as ProcessInstanceStatusDTO}
           />
         ),
       },

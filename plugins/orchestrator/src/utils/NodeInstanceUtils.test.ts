@@ -1,13 +1,13 @@
-import { NodeInstance } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { NodeInstanceDTO } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { compareNodes } from './NodeInstanceUtils';
 
 const newMockNodeInstance = (
-  enter: NodeInstance['enter'] = new Date(),
-  exit?: NodeInstance['exit'],
-  id: NodeInstance['id'] = '1',
-): NodeInstance => {
-  const subject: NodeInstance = {
+  enter: NodeInstanceDTO['enter'] = new Date().toString(),
+  exit?: NodeInstanceDTO['exit'],
+  id: NodeInstanceDTO['id'] = '1',
+): NodeInstanceDTO => {
+  const subject: NodeInstanceDTO = {
     id,
     name: 'N/A',
     type: 'N/A',
@@ -29,8 +29,12 @@ describe('NodeInstanceUtils.ts', () => {
       it('should return -1', () => {
         // arrange
         const now = Date.now();
-        const nodeA: NodeInstance = newMockNodeInstance(new Date(now));
-        const nodeB: NodeInstance = newMockNodeInstance(new Date(now + 1));
+        const nodeA: NodeInstanceDTO = newMockNodeInstance(
+          new Date(now).toISOString(),
+        );
+        const nodeB: NodeInstanceDTO = newMockNodeInstance(
+          new Date(now + 1).toISOString(),
+        );
 
         // act
         const result = compareNodes(nodeA, nodeB);
@@ -43,8 +47,12 @@ describe('NodeInstanceUtils.ts', () => {
       it('should return 1', () => {
         // arrange
         const now = Date.now();
-        const nodeB: NodeInstance = newMockNodeInstance(new Date(now));
-        const nodeA: NodeInstance = newMockNodeInstance(new Date(now + 1));
+        const nodeB: NodeInstanceDTO = newMockNodeInstance(
+          new Date(now).toISOString(),
+        );
+        const nodeA: NodeInstanceDTO = newMockNodeInstance(
+          new Date(now + 1).toISOString(),
+        );
 
         // act
         const result = compareNodes(nodeA, nodeB);
@@ -59,13 +67,13 @@ describe('NodeInstanceUtils.ts', () => {
           it('should return -1', () => {
             // arrange
             const now = Date.now();
-            const nodeA: NodeInstance = newMockNodeInstance(
-              new Date(now),
-              new Date(now + 1),
+            const nodeA: NodeInstanceDTO = newMockNodeInstance(
+              new Date(now).toISOString(),
+              new Date(now + 1).toISOString(),
             );
-            const nodeB: NodeInstance = newMockNodeInstance(
-              new Date(now),
-              new Date(now + 2),
+            const nodeB: NodeInstanceDTO = newMockNodeInstance(
+              new Date(now).toISOString(),
+              new Date(now + 2).toISOString(),
             );
 
             // act
@@ -79,13 +87,13 @@ describe('NodeInstanceUtils.ts', () => {
           it('should return 1', () => {
             // arrange
             const now = Date.now();
-            const nodeB: NodeInstance = newMockNodeInstance(
-              new Date(now),
-              new Date(now + 1),
+            const nodeB: NodeInstanceDTO = newMockNodeInstance(
+              new Date(now).toISOString(),
+              new Date(now + 1).toISOString(),
             );
-            const nodeA: NodeInstance = newMockNodeInstance(
-              new Date(now),
-              new Date(now + 2),
+            const nodeA: NodeInstanceDTO = newMockNodeInstance(
+              new Date(now).toISOString(),
+              new Date(now + 2).toISOString(),
             );
 
             // act
@@ -100,11 +108,13 @@ describe('NodeInstanceUtils.ts', () => {
         it('should return -1', () => {
           // arrange
           const now = Date.now();
-          const nodeA: NodeInstance = newMockNodeInstance(
-            new Date(now),
-            new Date(now + 1),
+          const nodeA: NodeInstanceDTO = newMockNodeInstance(
+            new Date(now).toString(),
+            new Date(now + 1).toString(),
           );
-          const nodeB: NodeInstance = newMockNodeInstance(new Date(now));
+          const nodeB: NodeInstanceDTO = newMockNodeInstance(
+            new Date(now).toISOString(),
+          );
 
           // act
           const result = compareNodes(nodeA, nodeB);
@@ -117,11 +127,13 @@ describe('NodeInstanceUtils.ts', () => {
         it('should return 1', () => {
           // arrange
           const now = Date.now();
-          const nodeB: NodeInstance = newMockNodeInstance(
-            new Date(now),
-            new Date(now + 1),
+          const nodeB: NodeInstanceDTO = newMockNodeInstance(
+            new Date(now).toISOString(),
+            new Date(now + 1).toISOString(),
           );
-          const nodeA: NodeInstance = newMockNodeInstance(new Date(now));
+          const nodeA: NodeInstanceDTO = newMockNodeInstance(
+            new Date(now).toISOString(),
+          );
 
           // act
           const result = compareNodes(nodeA, nodeB);
@@ -137,14 +149,14 @@ describe('NodeInstanceUtils.ts', () => {
           // arrange
           const now = Date.now();
           const end = Date.now() + 1;
-          const nodeA: NodeInstance = newMockNodeInstance(
-            new Date(now),
-            new Date(end),
+          const nodeA: NodeInstanceDTO = newMockNodeInstance(
+            new Date(now).toISOString(),
+            new Date(end).toISOString(),
             'a',
           );
-          const nodeB: NodeInstance = newMockNodeInstance(
-            new Date(now),
-            new Date(end),
+          const nodeB: NodeInstanceDTO = newMockNodeInstance(
+            new Date(now).toISOString(),
+            new Date(end).toISOString(),
             'b',
           );
 
@@ -160,14 +172,14 @@ describe('NodeInstanceUtils.ts', () => {
           // arrange
           const now = Date.now();
           const end = Date.now() + 1;
-          const nodeA: NodeInstance = newMockNodeInstance(
-            new Date(now),
-            new Date(end),
+          const nodeA: NodeInstanceDTO = newMockNodeInstance(
+            new Date(now).toISOString(),
+            new Date(end).toISOString(),
             'f',
           );
-          const nodeB: NodeInstance = newMockNodeInstance(
-            new Date(now),
-            new Date(end),
+          const nodeB: NodeInstanceDTO = newMockNodeInstance(
+            new Date(now).toISOString(),
+            new Date(end).toISOString(),
             'e',
           );
 
@@ -182,10 +194,10 @@ describe('NodeInstanceUtils.ts', () => {
     describe('Nodes are equal', () => {
       it('should return 0', () => {
         // arrange
-        const start = new Date();
-        const end = new Date();
-        const nodeA: NodeInstance = newMockNodeInstance(start, end, 'z');
-        const nodeB: NodeInstance = newMockNodeInstance(start, end, 'z');
+        const start = new Date().toISOString();
+        const end = new Date().toISOString();
+        const nodeA: NodeInstanceDTO = newMockNodeInstance(start, end, 'z');
+        const nodeB: NodeInstanceDTO = newMockNodeInstance(start, end, 'z');
 
         // act
         const result = compareNodes(nodeA, nodeB);

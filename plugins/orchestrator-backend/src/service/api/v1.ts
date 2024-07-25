@@ -1,8 +1,6 @@
 import express from 'express';
 
 import {
-  AssessedProcessInstance,
-  ProcessInstance,
   ProcessInstanceVariables,
   WorkflowDefinition,
   WorkflowExecutionResponse,
@@ -43,39 +41,6 @@ export class V1 {
     }
 
     return source;
-  }
-
-  public async getInstances(): Promise<ProcessInstance[]> {
-    return await this.orchestratorService.fetchInstances({});
-  }
-
-  public async getInstanceById(
-    instanceId: string,
-    includeAssessment: boolean = false,
-  ): Promise<AssessedProcessInstance> {
-    const instance = await this.orchestratorService.fetchInstance({
-      instanceId,
-      cacheHandler: 'throw',
-    });
-
-    if (!instance) {
-      throw new Error(`Couldn't fetch process instance ${instanceId}`);
-    }
-
-    let assessedByInstance: ProcessInstance | undefined;
-
-    if (includeAssessment && instance.businessKey) {
-      assessedByInstance = await this.orchestratorService.fetchInstance({
-        instanceId: instance.businessKey,
-        cacheHandler: 'throw',
-      });
-    }
-
-    const response: AssessedProcessInstance = {
-      instance,
-      assessedBy: assessedByInstance,
-    };
-    return response;
   }
 
   public async executeWorkflow(

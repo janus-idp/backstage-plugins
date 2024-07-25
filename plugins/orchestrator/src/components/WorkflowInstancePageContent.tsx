@@ -15,9 +15,9 @@ import { styled } from '@mui/material/styles';
 import moment from 'moment';
 
 import {
-  AssessedProcessInstance,
+  AssessedProcessInstanceDTO,
   parseWorkflowVariables,
-  ProcessInstance,
+  ProcessInstanceDTO,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   WorkflowOverviewDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -34,7 +34,7 @@ import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowVariablesViewer } from './WorkflowVariablesViewer';
 
 export const mapProcessInstanceToDetails = (
-  instance: ProcessInstance,
+  instance: ProcessInstanceDTO,
 ): WorkflowRunDetail => {
   const name = instance.processName || instance.processId;
   const start = instance.start ? moment(instance.start) : undefined;
@@ -57,7 +57,7 @@ export const mapProcessInstanceToDetails = (
     started,
     duration,
     category: instance.category,
-    status: instance.state,
+    status: instance.status,
     description: instance.description,
     nextWorkflowSuggestions,
     businessKey: instance.businessKey,
@@ -119,7 +119,7 @@ const getNextWorkflows = (
 };
 
 export const WorkflowInstancePageContent: React.FC<{
-  assessedInstance: AssessedProcessInstance;
+  assessedInstance: AssessedProcessInstanceDTO;
 }> = ({ assessedInstance }) => {
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
   const details = React.useMemo(
@@ -245,7 +245,7 @@ export const WorkflowInstancePageContent: React.FC<{
               <WorkflowProgress
                 workflowError={assessedInstance.instance.error}
                 workflowNodes={assessedInstance.instance.nodes}
-                workflowStatus={assessedInstance.instance.state}
+                workflowStatus={assessedInstance.instance.status}
               />
             </CardContent>
           </InfoCard>

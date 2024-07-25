@@ -24,8 +24,8 @@ export interface NodeInstance {
   id: string;
   name: string;
   type: string;
-  enter: Date;
-  exit?: Date;
+  enter: string;
+  exit?: string;
   definitionId: string;
   nodeId: string;
 }

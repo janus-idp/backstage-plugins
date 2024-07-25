@@ -252,11 +252,24 @@ Get Workflow Instance by ID
 
 
 
+====== Query Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| includeAssessment
+| Whether to include assessment 
+| -
+| false
+| 
+
+|===
 
 
 ===== Return Type
 
-<<ProcessInstanceDTO>>
+<<AssessedProcessInstanceDTO>>
 
 
 ===== Content Type
@@ -273,7 +286,7 @@ Get Workflow Instance by ID
 
 | 200
 | Successful response
-|  <<ProcessInstanceDTO>>
+|  <<AssessedProcessInstanceDTO>>
 
 
 | 500
@@ -960,7 +973,7 @@ The ErrorResponse object represents a common structure for handling errors in AP
 |  
 
 | id
-| 
+| X
 | String 
 | Node instance ID
 |  
@@ -1058,18 +1071,18 @@ The ErrorResponse object represents a common structure for handling errors in AP
 | Field Name| Required| Type| Description| Format
 
 | id
-| 
+| X
 | String 
 | 
 |  
 
-| name
-| 
+| processId
+| X
 | String 
 | 
 |  
 
-| workflow
+| processName
 | 
 | String 
 | 
@@ -1078,6 +1091,18 @@ The ErrorResponse object represents a common structure for handling errors in AP
 | status
 | 
 | ProcessInstanceStatusDTO 
+| 
+|  
+
+| endpoint
+| 
+| String 
+| 
+|  
+
+| serviceUrl
+| 
+| String 
 | 
 |  
 
@@ -1117,6 +1142,30 @@ The ErrorResponse object represents a common structure for handling errors in AP
 | 
 |  
 
+| businessKey
+| 
+| String 
+| 
+|  
+
+| nodes
+| X
+| List  of <<NodeInstanceDTO>>
+| 
+|  
+
+| error
+| 
+| ProcessInstanceErrorDTO 
+| 
+|  
+
+| variables
+| 
+| Object 
+| 
+|  
+
 |===
 
 
@@ -1137,7 +1186,7 @@ The ErrorResponse object represents a common structure for handling errors in AP
 |  
 
 | nodeDefinitionId
-| 
+| X
 | String 
 | Node definition ID
 |  
@@ -1417,7 +1466,7 @@ Format of the workflow definition
 |  
 
 | id
-| 
+| X
 | oas_any_type_not_mapped 
 | Node instance ID
 |  

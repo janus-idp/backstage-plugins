@@ -3,12 +3,10 @@ import ReactJson from 'react-json-view';
 
 import { useTheme } from '@mui/material/styles';
 
-import { ProcessInstanceVariables } from '@janus-idp/backstage-plugin-orchestrator-common';
-
 import { Paragraph } from './Paragraph';
 
 interface ProcessVariablesViewerProps {
-  variables?: ProcessInstanceVariables;
+  variables?: object;
   emptyState?: React.ReactNode;
 }
 

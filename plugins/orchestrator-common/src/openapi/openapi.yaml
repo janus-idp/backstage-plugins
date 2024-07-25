@@ -169,13 +169,20 @@ paths:
           description: ID of the workflow instance
           schema:
             type: string
+        - name: includeAssessment
+          in: query
+          required: false
+          description: Whether to include assessment
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProcessInstanceDTO'
+                $ref: '#/components/schemas/AssessedProcessInstanceDTO'
         '500':
           description: Error fetching instance
           content:
@@ -412,12 +419,16 @@ components:
       properties:
         id:
           type: string
-        name:
+        processId:
           type: string
-        workflow:
+        processName:
           type: string
         status:
           $ref: '#/components/schemas/ProcessInstanceStatusDTO'
+        endpoint:
+          type: string
+        serviceUrl:
+          type: string
         start:
           type: string
         end:
@@ -430,6 +441,20 @@ components:
           type: string
         workflowdata:
           $ref: '#/components/schemas/WorkflowDataDTO'
+        businessKey:
+          type: string
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeInstanceDTO'
+        error:
+          $ref: '#/components/schemas/ProcessInstanceErrorDTO'
+        variables:
+          $ref: '#/components/schemas/ProcessInstanceVariablesDTO'
+      required:
+        - id
+        - processId
+        - nodes
     WorkflowDataDTO:
       type: object
       properties:
@@ -453,7 +478,7 @@ components:
       type: string
       description: Status of the workflow run
       enum:
-        - Running
+        - Active
         - Error
         - Completed
         - Aborted
@@ -516,6 +541,8 @@ components:
         nodeId:
           type: string
           description: Node ID
+      required:
+        - id
     ProcessInstanceErrorDTO:
       type: object
       properties:
@@ -529,3 +556,8 @@ components:
         message:
           type: string
           description: Error message (optional)
+      required:
+        - nodeDefinitionId
+    ProcessInstanceVariablesDTO:
+      type: object
+      additionalProperties: true

@@ -6,6 +6,8 @@ import {
   extractWorkflowFormat,
   fromWorkflowSource,
   getWorkflowCategory,
+  NodeInstance,
+  NodeInstanceDTO,
   ProcessInstance,
   ProcessInstanceDTO,
   ProcessInstanceState,
@@ -75,7 +77,7 @@ export function getProcessInstancesDTOFromString(
 ): ProcessInstanceStatusDTO {
   switch (state) {
     case ProcessInstanceState.Active.valueOf():
-      return 'Running';
+      return 'Active';
     case ProcessInstanceState.Error.valueOf():
       return 'Error';
     case ProcessInstanceState.Completed.valueOf():
@@ -110,18 +112,20 @@ export function mapToProcessInstanceDTO(
   }
 
   return {
+    ...processInstance,
     category: mapWorkflowCategoryDTO(processInstance.category),
-    description: processInstance.description,
-    id: processInstance.id,
-    name: processInstance.processName,
+    duration: duration,
     // @ts-ignore
     workflowdata: variables?.workflowdata,
-    start: processInstance.start,
-    end: processInstance.end,
-    duration: duration,
     status: getProcessInstancesDTOFromString(processInstance.state),
-    workflow: processInstance.processName ?? processInstance.processId,
+    nodes: processInstance.nodes.map(mapToNodeInstanceDTO),
   };
+}
+
+export function mapToNodeInstanceDTO(
+  nodeInstance: NodeInstance,
+): NodeInstanceDTO {
+  return { ...nodeInstance, __typename: 'NodeInstance' };
 }
 
 export function mapToExecuteWorkflowResponseDTO(

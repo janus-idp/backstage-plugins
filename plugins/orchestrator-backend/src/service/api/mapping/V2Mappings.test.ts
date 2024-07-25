@@ -109,9 +109,6 @@ describe('scenarios to verify mapToProcessInstanceDTO', () => {
       // @ts-ignore
       processInstanceV1?.variables?.workflowdata,
     );
-    expect(result.workflow).toEqual(
-      processInstanceV1.processName ?? processInstanceV1.processId,
-    );
   });
   it('correctly maps ProcessInstanceDTO', () => {
     // Arrange
@@ -142,9 +139,6 @@ describe('scenarios to verify mapToProcessInstanceDTO', () => {
     expect(result.workflowdata).toEqual(
       // @ts-ignore
       processIntanceV1?.variables?.workflowdata,
-    );
-    expect(result.workflow).toEqual(
-      processIntanceV1.processName ?? processIntanceV1.processId,
     );
   });
 });

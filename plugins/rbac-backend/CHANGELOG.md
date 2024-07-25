@@ -1,3 +1,31 @@
+## @janus-idp/backstage-plugin-rbac-backend [4.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.4.2...@janus-idp/backstage-plugin-rbac-backend@4.4.3) (2024-07-25)
+
+
+### Documentation
+
+* **rbac:** add curl request examples ([#1913](https://github.com/janus-idp/backstage-plugins/issues/1913)) ([e496eb7](https://github.com/janus-idp/backstage-plugins/commit/e496eb73349987d43caba86a29e4c98c86179250))
+
+## @janus-idp/backstage-plugin-rbac-backend [4.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.4.1...@janus-idp/backstage-plugin-rbac-backend@4.4.2) (2024-07-24)
+
+
+### Bug Fixes
+
+* **deps:** rollback unreleased plugins ([#1951](https://github.com/janus-idp/backstage-plugins/issues/1951)) ([8b77969](https://github.com/janus-idp/backstage-plugins/commit/8b779694f02f8125587296305276b84cdfeeaebe))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.7.2
+* **@janus-idp/backstage-plugin-rbac-node:** upgraded to 1.3.1
+
+## @janus-idp/backstage-plugin-rbac-backend [4.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.4.0...@janus-idp/backstage-plugin-rbac-backend@4.4.1) (2024-07-24)
+
+
+### Bug Fixes
+
+* **rbac:** don't start transaction if there no group policies ([#1923](https://github.com/janus-idp/backstage-plugins/issues/1923)) ([dffa964](https://github.com/janus-idp/backstage-plugins/commit/dffa9643b500a19dc70c66cedf9016508cdb5947))
+
 ## @janus-idp/backstage-plugin-rbac-backend [4.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.3.4...@janus-idp/backstage-plugin-rbac-backend@4.4.0) (2024-07-24)
 
 
