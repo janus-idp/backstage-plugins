@@ -826,3 +826,61 @@ Returns a status code of 204 upon success.
 | 409  | Conflict with current state and target resource |
 
 ---
+
+## Curl Request Examples
+
+Create role `role:default/test` for `group:default/example`:
+
+```bash
+curl -X POST "http://localhost:7007/api/permission/roles" \
+     -d '{
+           "memberReferences": [
+             "group:default/example"
+           ],
+           "name": "role:default/test",
+           "metadata": {
+             "description": "This is a test role"
+           }
+         }' \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer $token" \
+     -v
+```
+
+Create permission policy for `role:default/test`:
+
+```bash
+curl -X POST "http://localhost:7007/api/permission/policies" \
+     -d '[{
+           "entityReference": "role:default/test",
+           "permission": "catalog-entity",
+           "policy": "read",
+           "effect": "allow"
+         }]' \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer $token" \
+     -v
+```
+
+Create conditional permission policy for `role:default/test`:
+
+```bash
+curl -X POST "http://localhost:7007/api/permission/roles/conditions" \
+     -d '{
+           "result": "CONDITIONAL",
+           "roleEntityRef": "role:default/test",
+           "pluginId": "catalog",
+           "resourceType": "catalog-entity",
+           "permissionMapping": ["read"],
+           "conditions": {
+             "rule": "IS_ENTITY_OWNER",
+             "resourceType": "catalog-entity",
+             "params": {
+               "claims": ["group:default/janus-authors"]
+             }
+           }
+         }' \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer $token" \
+     -v
+```
