@@ -23,7 +23,7 @@
     "@swc/core": "1.6.1",
     "eslint-plugin-storybook": "0.8.0",
     "prop-types": "15.8.1",
-    "swc-loader": "0.2.3"
+    "swc-loader": "0.2.6"
   },
   "dependencies": {
     "@material-ui/core": "^4.12.4",
