@@ -69,9 +69,9 @@
     "react-dom": "^18",
     "vscode-languageserver-types": "3.17.5",
     "@typescript-eslint/typescript-estree": "^7.3.1",
-    "@babel/core": "7.24.6",
-    "@babel/traverse": "7.24.6",
-    "@babel/generator": "7.24.6"
+    "@babel/core": "7.24.9",
+    "@babel/traverse": "7.24.8",
+    "@babel/generator": "7.24.10"
   },
   "lint-staged": {
     "*": "turbo run prettier:fix --",
