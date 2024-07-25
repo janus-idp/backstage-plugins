@@ -1,3 +1,15 @@
+## @janus-idp/cli [1.13.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.12.0...@janus-idp/cli@1.13.0) (2024-07-25)
+
+
+### Features
+
+* **deps:** update to backstage 1.29 ([#1900](https://github.com/janus-idp/backstage-plugins/issues/1900)) ([f53677f](https://github.com/janus-idp/backstage-plugins/commit/f53677fb02d6df43a9de98c43a9f101a6db76802))
+
+
+### Bug Fixes
+
+* **deps:** update rhdh dependencies (non-major) ([#1960](https://github.com/janus-idp/backstage-plugins/issues/1960)) ([8b6c249](https://github.com/janus-idp/backstage-plugins/commit/8b6c249f1d2e8097cac0260785c26496a5be1a06))
+
 ## @janus-idp/cli [1.12.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.11.1...@janus-idp/cli@1.12.0) (2024-07-17)
 
 
