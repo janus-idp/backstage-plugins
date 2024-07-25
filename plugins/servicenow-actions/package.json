@@ -59,7 +59,7 @@
     "@backstage/config": "1.2.0",
     "@backstage/plugin-scaffolder-node-test-utils": "0.1.8",
     "@backstage/types": "1.1.1",
-    "@hey-api/openapi-ts": "0.34.5",
+    "@hey-api/openapi-ts": "0.50.1",
     "@janus-idp/cli": "1.12.0",
     "@types/node-fetch": "2.6.11",
     "msw": "1.3.3"
