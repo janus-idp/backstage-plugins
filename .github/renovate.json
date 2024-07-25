@@ -19,6 +19,8 @@
   "major": {
     "dependencyDashboardApproval": true
   },
+  "recreateWhen": "never",
+  "prCreation": "status-success",
   "packageRules": [
     {
       "description": "Do automerge and pin actions in GH workflows, except for versions starting with 0",
