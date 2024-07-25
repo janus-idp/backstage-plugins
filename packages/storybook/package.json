@@ -43,7 +43,7 @@
     "@backstage/core-app-api": "^1.14.1",
     "@backstage/core-components": "^0.14.9",
     "@backstage/core-plugin-api": "^1.9.3",
-    "@backstage/test-utils": "^1.5.8",
+    "@backstage/test-utils": "^1.5.9",
     "@backstage/theme": "^0.5.6"
   }
 }

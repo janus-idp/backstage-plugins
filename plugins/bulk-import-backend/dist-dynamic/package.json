@@ -1,19 +1,19 @@
 {
   "name": "@janus-idp/backstage-plugin-bulk-import-backend-dynamic",
   "version": "0.1.0",
-  "main": "dist/index.cjs.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs.js",
+  "types": "src/index.ts",
   "license": "Apache-2.0",
-  "private": true,
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "backstage": {
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "bulk-import-backend"
+    "pluginId": "bulk-import-backend",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-bulk-import-backend"
+    ]
   },
   "exports": {
     ".": {
@@ -53,8 +53,8 @@
   "configSchema": "config.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/janus-idp/backstage-plugins",
-    "directory": "plugins/bulk-import"
+    "url": "git+https://github.com/janus-idp/backstage-plugins.git",
+    "directory": "plugins/bulk-import-backend"
   },
   "keywords": [
     "backstage",
@@ -65,18 +65,18 @@
   "bundleDependencies": true,
   "peerDependencies": {
     "@backstage/backend-app-api": "^0.8.0",
-    "@backstage/backend-common": "^0.23.2",
-    "@backstage/backend-dynamic-feature-service": "^0.2.14",
-    "@backstage/backend-plugin-api": "^0.6.21",
+    "@backstage/backend-common": "^0.23.3",
+    "@backstage/backend-dynamic-feature-service": "^0.2.15",
+    "@backstage/backend-plugin-api": "^0.7.0",
     "@backstage/catalog-client": "^1.6.5",
     "@backstage/catalog-model": "^1.5.0",
     "@backstage/config": "^1.2.0",
     "@backstage/errors": "^1.2.4",
-    "@backstage/integration": "^1.12.0",
-    "@backstage/plugin-auth-node": "^0.4.16",
-    "@backstage/plugin-catalog-node": "^1.12.3",
-    "@backstage/plugin-permission-common": "^0.7.14",
-    "@backstage/plugin-permission-node": "^0.7.32"
+    "@backstage/integration": "^1.13.0",
+    "@backstage/plugin-auth-node": "^0.4.17",
+    "@backstage/plugin-catalog-node": "^1.12.4",
+    "@backstage/plugin-permission-common": "^0.8.0",
+    "@backstage/plugin-permission-node": "^0.8.0"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {
