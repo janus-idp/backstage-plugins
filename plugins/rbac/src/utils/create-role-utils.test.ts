@@ -6,6 +6,7 @@ import {
 } from '../__fixtures__/mockFormValues';
 import { mockMembers } from '../__fixtures__/mockMembers';
 import { mockPermissionPolicies } from '../__fixtures__/mockPermissionPolicies';
+import { ConditionsData } from '../components/ConditionalAccess/types';
 import {
   getChildGroupsCount,
   getConditionalPermissionPoliciesData,
@@ -17,6 +18,7 @@ import {
   getPluginsPermissionPoliciesData,
   getRemovedConditionalPoliciesIds,
   getRoleData,
+  getRulesNumber,
   getUpdatedConditionalPolicies,
 } from './create-role-utils';
 
@@ -561,5 +563,127 @@ describe('getRemovedConditionalPoliciesIds', () => {
     const result = getRemovedConditionalPoliciesIds(values, initialValues);
 
     expect(result).toEqual([]);
+  });
+});
+
+describe('getRulesNumber', () => {
+  it('should return the correct number of rules', () => {
+    const conditions: ConditionsData = {
+      allOf: [
+        {
+          rule: 'HAS_ANNOTATION',
+          resourceType: 'catalog-entity',
+          params: {
+            annotation: 'k',
+          },
+        },
+        {
+          allOf: [
+            {
+              rule: 'HAS_LABEL',
+              resourceType: 'catalog-entity',
+              params: {
+                label: 'h',
+              },
+            },
+          ],
+        },
+        {
+          anyOf: [
+            {
+              rule: 'HAS_LABEL',
+              resourceType: 'catalog-entity',
+              params: {
+                label: 'h',
+              },
+            },
+            {
+              rule: 'HAS_ANNOTATION',
+              resourceType: 'catalog-entity',
+              params: {
+                annotation: 'k',
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const result = getRulesNumber(conditions);
+    expect(result).toBe(4);
+  });
+
+  it('should return 0 when there are no conditions', () => {
+    const result = getRulesNumber(undefined);
+    expect(result).toBe(0);
+  });
+
+  it('should count rules correctly with nested anyOf and allOf', () => {
+    const conditions: ConditionsData = {
+      anyOf: [
+        {
+          rule: 'HAS_LABEL',
+          resourceType: 'catalog-entity',
+          params: {
+            label: 'x',
+          },
+        },
+        {
+          allOf: [
+            {
+              rule: 'HAS_ANNOTATION',
+              resourceType: 'catalog-entity',
+              params: {
+                annotation: 'y',
+              },
+            },
+            {
+              anyOf: [
+                {
+                  rule: 'HAS_LABEL',
+                  resourceType: 'catalog-entity',
+                  params: {
+                    label: 'z',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const result = getRulesNumber(conditions);
+    expect(result).toBe(3);
+  });
+
+  it('should count single condition correctly', () => {
+    const conditions: ConditionsData = {
+      condition: {
+        rule: 'HAS_LABEL',
+        resourceType: 'catalog-entity',
+        params: {
+          label: 'a',
+        },
+      },
+    };
+
+    const result = getRulesNumber(conditions);
+    expect(result).toBe(1);
+  });
+
+  it('should count rules correctly with not condition', () => {
+    const conditions: ConditionsData = {
+      not: {
+        rule: 'HAS_LABEL',
+        resourceType: 'catalog-entity',
+        params: {
+          label: 'b',
+        },
+      },
+    };
+
+    const result = getRulesNumber(conditions);
+    expect(result).toBe(1);
   });
 });

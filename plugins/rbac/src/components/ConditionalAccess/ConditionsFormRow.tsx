@@ -318,8 +318,9 @@ export const ConditionsFormRow = ({
     const rowKey = isNestedCondition
       ? `nestedCondition-rule-${index}`
       : `condition-rule-${index}`;
-    const rs =
-      (c[activeCriteria as keyof Condition] as PermissionCondition[]) ?? [];
+    const rs = isNestedCondition
+      ? (c[activeCriteria as keyof Condition] as PermissionCondition[])
+      : conditionRow[activeCriteria as keyof Condition];
     return (
       (c as PermissionCondition).resourceType && (
         <div style={rowStyle} key={rowKey}>
