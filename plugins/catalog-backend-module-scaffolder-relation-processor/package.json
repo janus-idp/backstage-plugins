@@ -43,17 +43,17 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.23.2",
-    "@backstage/backend-dynamic-feature-service": "^0.2.14",
-    "@backstage/backend-plugin-api": "^0.6.21",
+    "@backstage/backend-common": "^0.23.3",
+    "@backstage/backend-dynamic-feature-service": "^0.2.15",
+    "@backstage/backend-plugin-api": "^0.7.0",
     "@backstage/catalog-model": "^1.5.0",
-    "@backstage/plugin-catalog-common": "^1.0.24",
-    "@backstage/plugin-catalog-node": "^1.12.3"
+    "@backstage/plugin-catalog-common": "^1.0.25",
+    "@backstage/plugin-catalog-node": "^1.12.4"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "0.4.3",
-    "@backstage/cli": "0.26.10",
-    "@janus-idp/cli": "1.12.1"
+    "@backstage/backend-test-utils": "0.4.4",
+    "@backstage/cli": "0.26.11",
+    "@janus-idp/cli": "1.12.0"
   },
   "files": [
     "dist",

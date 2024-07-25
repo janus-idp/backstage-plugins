@@ -166,9 +166,9 @@ call-bind@^1.0.2, call-bind@^1.0.7:
     set-function-length "^1.2.1"
 
 cloudevents@^8.0.0:
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/cloudevents/-/cloudevents-8.0.1.tgz#d96a2dcffb95f75501ebb02bdd4d405874dcec69"
-  integrity sha512-E8BC4CpxF60q+6jqFctWG8pnFo9S9s3nVStyg9FgVUZ5v0DEdbT+gLYcxFNJBWc2ATNZmC8CUm4FaBWbgVj1Sw==
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/cloudevents/-/cloudevents-8.0.2.tgz#034bde4e1a0ee21a8a34b8fe837e7d98c8bbdf8d"
+  integrity sha512-93KKRR61D2NNE+2lg2HmLbl17beVTKpf1UYd/8BcXpuiDxbU2fb8gAfriSmVGmj1xX/Oh2t5Fh/xGOWFdu6F4A==
   dependencies:
     ajv "^8.11.0"
     ajv-formats "^2.1.1"
