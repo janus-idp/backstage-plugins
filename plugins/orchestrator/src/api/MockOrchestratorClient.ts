@@ -3,8 +3,8 @@ import { JsonObject } from '@backstage/types';
 import { AxiosResponse } from 'axios';
 
 import {
-  AssessedProcessInstance,
-  ProcessInstance,
+  AssessedProcessInstanceDTO,
+  ProcessInstanceListResultDTO,
   WorkflowDefinition,
   WorkflowExecutionResponse,
   WorkflowInputSchemaResponse,
@@ -64,7 +64,7 @@ export class MockOrchestratorClient implements OrchestratorApi {
   getInstance(
     _instanceId: string,
     _includeAssessment: boolean,
-  ): Promise<AssessedProcessInstance> {
+  ): Promise<AxiosResponse<AssessedProcessInstanceDTO>> {
     if (
       !hasOwnProp(this._mockData, 'getInstanceResponse') ||
       !isNonNullable(this._mockData.getInstanceResponse)
@@ -75,7 +75,7 @@ export class MockOrchestratorClient implements OrchestratorApi {
     return Promise.resolve(this._mockData.getInstanceResponse());
   }
 
-  listInstances(): Promise<ProcessInstance[]> {
+  listInstances(): Promise<AxiosResponse<ProcessInstanceListResultDTO>> {
     if (
       !hasOwnProp(this._mockData, 'listInstancesResponse') ||
       !isNonNullable(this._mockData.listInstancesResponse)

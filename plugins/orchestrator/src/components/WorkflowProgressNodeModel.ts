@@ -1,44 +1,44 @@
 import {
-  NodeInstance,
-  ProcessInstanceError,
-  ProcessInstanceStateValues,
+  NodeInstanceDTO,
+  ProcessInstanceErrorDTO,
+  ProcessInstanceStatusDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { isNonNullable } from '../utils/TypeGuards';
 
-export type WorkflowProgressNodeModel = NodeInstance & {
-  status?: ProcessInstanceStateValues;
-  error?: ProcessInstanceError;
+export type WorkflowProgressNodeModel = NodeInstanceDTO & {
+  status?: ProcessInstanceStatusDTO;
+  error?: ProcessInstanceErrorDTO;
 };
 
 export const fromNodeInstanceToWorkflowProgressNodeModel =
   (
-    workflowStatus?: ProcessInstanceStateValues,
-    workflowError?: ProcessInstanceError,
+    workflowStatus?: ProcessInstanceStatusDTO,
+    workflowError?: ProcessInstanceErrorDTO,
   ) =>
   (
-    node: NodeInstance,
+    node: NodeInstanceDTO,
     nodeIndex: number,
-    nodes: NodeInstance[],
+    nodes: NodeInstanceDTO[],
   ): WorkflowProgressNodeModel => {
     const isLastNode = nodeIndex === nodes.length - 1;
     const model: WorkflowProgressNodeModel = {
       ...node,
       status: workflowStatus,
-      enter: new Date(node.enter),
+      enter: node.enter,
     };
 
     if (isNonNullable(node.exit)) {
-      model.exit = new Date(node.exit);
+      model.exit = node.exit;
     }
 
     if (node.definitionId === workflowError?.nodeDefinitionId) {
-      model.status = 'ERROR';
+      model.status = 'Error';
       model.error = workflowError;
     } else if (node.enter && node.exit) {
-      model.status = 'COMPLETED';
+      model.status = 'Completed';
     } else if (!node.exit) {
-      model.status = 'ACTIVE';
+      model.status = 'Active';
     }
 
     if (

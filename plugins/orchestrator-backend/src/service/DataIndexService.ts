@@ -7,7 +7,6 @@ import {
   getWorkflowCategory,
   parseWorkflowVariables,
   ProcessInstance,
-  ProcessInstanceVariables,
   WorkflowDefinition,
   WorkflowInfo,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -282,7 +281,7 @@ export class DataIndexService {
 
   public async fetchInstanceVariables(
     instanceId: string,
-  ): Promise<ProcessInstanceVariables | undefined> {
+  ): Promise<object | undefined> {
     const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { variables } }`;
 
     const result = await this.client.query(graphQlQuery, {});
@@ -304,7 +303,7 @@ export class DataIndexService {
       return undefined;
     }
 
-    return parseWorkflowVariables(processInstances[0].variables);
+    return parseWorkflowVariables(processInstances[0].variables as object);
   }
 
   public async fetchDefinitionIdByInstanceId(

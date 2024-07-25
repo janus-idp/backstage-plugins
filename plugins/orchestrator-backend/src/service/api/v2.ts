@@ -1,10 +1,10 @@
 import { ParsedRequest } from 'openapi-backend';
 
 import {
-  AssessedProcessInstance,
   AssessedProcessInstanceDTO,
   ExecuteWorkflowRequestDTO,
   ExecuteWorkflowResponseDTO,
+  ProcessInstance,
   ProcessInstanceListResultDTO,
   ProcessInstanceState,
   WorkflowDTO,
@@ -98,19 +98,28 @@ export class V2 {
     instanceId: string,
     includeAssessment: boolean = false,
   ): Promise<AssessedProcessInstanceDTO> {
-    const instance: AssessedProcessInstance = await this.v1.getInstanceById(
+    const instance = await this.orchestratorService.fetchInstance({
       instanceId,
-      includeAssessment,
-    );
+      cacheHandler: 'throw',
+    });
 
     if (!instance) {
       throw new Error(`Couldn't fetch process instance ${instanceId}`);
     }
 
+    let assessedByInstance: ProcessInstance | undefined;
+
+    if (includeAssessment && instance.businessKey) {
+      assessedByInstance = await this.orchestratorService.fetchInstance({
+        instanceId: instance.businessKey,
+        cacheHandler: 'throw',
+      });
+    }
+
     return {
-      instance: mapToProcessInstanceDTO(instance.instance),
-      assessedBy: instance.assessedBy
-        ? mapToProcessInstanceDTO(instance.assessedBy)
+      instance: mapToProcessInstanceDTO(instance),
+      assessedBy: assessedByInstance
+        ? mapToProcessInstanceDTO(assessedByInstance)
         : undefined,
     };
   }

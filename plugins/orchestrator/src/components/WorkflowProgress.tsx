@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ProcessInstance } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { ProcessInstanceDTO } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { compareNodes } from '../utils/NodeInstanceUtils';
 import { Paragraph } from './Paragraph';
@@ -8,9 +8,9 @@ import { WorkflowProgressNode } from './WorkflowProgressNode';
 import { fromNodeInstanceToWorkflowProgressNodeModel } from './WorkflowProgressNodeModel';
 
 export interface WorkflowProgressProps {
-  workflowStatus: ProcessInstance['state'];
-  workflowNodes: ProcessInstance['nodes'];
-  workflowError?: ProcessInstance['error'];
+  workflowStatus: ProcessInstanceDTO['status'];
+  workflowNodes: ProcessInstanceDTO['nodes'];
+  workflowError?: ProcessInstanceDTO['error'];
   emptyState?: React.ReactNode;
 }
 

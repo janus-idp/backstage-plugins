@@ -34,7 +34,7 @@ const WorkflowOverviewFormatter: DataFormatter<
       lastTriggered: data.lastTriggeredMs
         ? moment(data.lastTriggeredMs).toDate().toLocaleString()
         : VALUE_UNAVAILABLE,
-      lastRunStatus: data.lastRunStatus ?? VALUE_UNAVAILABLE,
+      lastRunStatus: data.lastRunStatus?.toString() ?? VALUE_UNAVAILABLE,
       lastRunId: data.lastRunId ?? VALUE_UNAVAILABLE,
       category: data.category ?? VALUE_UNAVAILABLE,
       avgDuration: data.avgDurationMs

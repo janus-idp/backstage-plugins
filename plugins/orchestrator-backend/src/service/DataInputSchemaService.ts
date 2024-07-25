@@ -7,7 +7,6 @@ import {
   isComposedSchema,
   isJsonObjectSchema,
   JsonObjectSchema,
-  ProcessInstanceVariables,
   WorkflowDefinition,
   WorkflowInputSchemaResponse,
   WorkflowInputSchemaStep,
@@ -96,8 +95,8 @@ export class DataInputSchemaService {
   public getWorkflowInputSchemaResponse(
     definition: WorkflowDefinition,
     inputSchema: JSONSchema7,
-    instanceVariables?: ProcessInstanceVariables,
-    assessmentInstanceVariables?: ProcessInstanceVariables,
+    instanceVariables?: object,
+    assessmentInstanceVariables?: object,
   ): WorkflowInputSchemaResponse {
     const instanceWorkflowData = this.extractWorkflowData(instanceVariables);
     const assessmentInstanceWorkflowData = this.extractWorkflowData(
@@ -159,10 +158,10 @@ export class DataInputSchemaService {
     return res;
   }
 
-  private extractWorkflowData(
-    variables?: ProcessInstanceVariables,
-  ): JsonObject | undefined {
-    return variables ? (variables[WORKFLOW_DATA_KEY] as JsonObject) : undefined;
+  private extractWorkflowData(variables?: object): JsonObject | undefined {
+    return variables && WORKFLOW_DATA_KEY in variables
+      ? (variables[WORKFLOW_DATA_KEY] as JsonObject)
+      : undefined;
   }
 
   private extractObjectKeys(obj: JsonObject | undefined): string[] {

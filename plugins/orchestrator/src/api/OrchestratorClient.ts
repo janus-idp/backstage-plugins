@@ -9,14 +9,13 @@ import axios, {
 } from 'axios';
 
 import {
-  AssessedProcessInstance,
+  AssessedProcessInstanceDTO,
   Configuration,
   DefaultApi,
   PaginationInfoDTO,
-  ProcessInstance,
+  ProcessInstanceListResultDTO,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_BUSINESS_KEY,
-  QUERY_PARAM_INCLUDE_ASSESSMENT,
   QUERY_PARAM_INSTANCE_ID,
   WorkflowDefinition,
   WorkflowExecutionResponse,
@@ -119,21 +118,37 @@ export class OrchestratorClient implements OrchestratorApi {
     );
   }
 
-  async listInstances(): Promise<ProcessInstance[]> {
-    const baseUrl = await this.getBaseUrl();
-    return await this.fetcher(`${baseUrl}/instances`).then(r => r.json());
+  async listInstances(
+    paginationInfo?: PaginationInfoDTO,
+  ): Promise<AxiosResponse<ProcessInstanceListResultDTO>> {
+    const defaultApi = await this.getDefaultAPI();
+    const reqConfigOption: AxiosRequestConfig =
+      await this.getDefaultReqConfig();
+    return await defaultApi.getInstances(
+      paginationInfo?.page,
+      paginationInfo?.pageSize,
+      paginationInfo?.orderBy,
+      paginationInfo?.orderDirection,
+      reqConfigOption,
+    );
   }
 
   async getInstance(
     instanceId: string,
     includeAssessment = false,
-  ): Promise<AssessedProcessInstance> {
-    const baseUrl = await this.getBaseUrl();
-    const endpoint = `${baseUrl}/instances/${instanceId}`;
-    const urlToFetch = buildUrl(endpoint, {
-      [QUERY_PARAM_INCLUDE_ASSESSMENT]: includeAssessment,
-    });
-    return await this.fetcher(urlToFetch).then(r => r.json());
+  ): Promise<AxiosResponse<AssessedProcessInstanceDTO>> {
+    const defaultApi = await this.getDefaultAPI();
+    const reqConfigOption: AxiosRequestConfig =
+      await this.getDefaultReqConfig();
+    try {
+      return await defaultApi.getInstanceById(
+        instanceId,
+        includeAssessment,
+        reqConfigOption,
+      );
+    } catch (error: any) {
+      throw new Error(error);
+    }
   }
 
   async getWorkflowDataInputSchema(args: {

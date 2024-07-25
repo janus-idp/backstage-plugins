@@ -802,40 +802,6 @@ function setupInternalRoutes(
     },
   );
 
-  // v1
-  router.get('/instances', async (req, res) => {
-    const endpointName = 'Instances';
-    const endpoint = '/v1/instances';
-
-    auditLogger.auditLog({
-      eventName: endpointName,
-      stage: 'start',
-      status: 'succeeded',
-      level: 'debug',
-      request: req,
-      message: `Received request to '${endpoint}' endpoint`,
-    });
-
-    const decision = await authorize(
-      req,
-      orchestratorWorkflowInstancesReadPermission,
-      permissions,
-      httpAuth,
-    );
-    if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint, req);
-    }
-    await routerApi.v1
-      .getInstances()
-      .then(result => res.status(200).json(result))
-      .catch(error => {
-        auditLogRequestError(error, endpointName, endpoint, req);
-        res
-          .status(500)
-          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
-      });
-  });
-
   // v2
   routerApi.openApiBackend.register(
     'getInstances',
@@ -867,49 +833,6 @@ function setupInternalRoutes(
         .catch(next);
     },
   );
-
-  // v1
-  router.get('/instances/:instanceId', async (req, res) => {
-    const {
-      params: { instanceId },
-    } = req;
-    const endpointName = 'InstancesInstanceId';
-    const endpoint = `/v1/instances/${instanceId}`;
-
-    auditLogger.auditLog({
-      eventName: endpointName,
-      stage: 'start',
-      status: 'succeeded',
-      level: 'debug',
-      request: req,
-      message: `Received request to '${endpoint}' endpoint`,
-    });
-
-    const decision = await authorize(
-      req,
-      orchestratorWorkflowInstanceReadPermission,
-      permissions,
-      httpAuth,
-    );
-    if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint, req);
-    }
-
-    const includeAssessment = routerApi.v1.extractQueryParam(
-      req,
-      QUERY_PARAM_INCLUDE_ASSESSMENT,
-    );
-
-    await routerApi.v1
-      .getInstanceById(instanceId, !!includeAssessment)
-      .then(result => res.status(200).json(result))
-      .catch(error => {
-        auditLogRequestError(error, endpointName, endpoint, req);
-        res
-          .status(500)
-          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
-      });
-  });
 
   // v2
   routerApi.openApiBackend.register(

@@ -11,7 +11,7 @@ import PlayArrow from '@mui/icons-material/PlayArrow';
 import {
   capitalize,
   orchestratorWorkflowExecutePermission,
-  ProcessInstanceStateValues,
+  ProcessInstanceStatusDTO,
   WorkflowOverviewDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -113,7 +113,7 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
           rowData.lastRunStatus !== VALUE_UNAVAILABLE &&
           rowData.lastRunId !== VALUE_UNAVAILABLE ? (
             <WorkflowInstanceStatusIndicator
-              status={rowData.lastRunStatus as ProcessInstanceStateValues}
+              status={rowData.lastRunStatus as ProcessInstanceStatusDTO}
               lastRunId={rowData.lastRunId}
             />
           ) : (

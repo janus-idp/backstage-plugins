@@ -1,10 +1,13 @@
 import moment from 'moment';
 
-import { NodeInstance } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { NodeInstanceDTO } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { isNonNullable } from './TypeGuards';
 
-export const compareNodes = (nodeA: NodeInstance, nodeB: NodeInstance) => {
+export const compareNodes = (
+  nodeA: NodeInstanceDTO,
+  nodeB: NodeInstanceDTO,
+) => {
   const aEnter = moment(nodeA.enter);
   const bEnter = moment(nodeB.enter);
   if (aEnter.isBefore(bEnter)) {

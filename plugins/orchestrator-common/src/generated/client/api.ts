@@ -104,7 +104,7 @@ export interface NodeInstanceDTO {
      * @type {string}
      * @memberof NodeInstanceDTO
      */
-    'id'?: string;
+    'id': string;
     /**
      * Node name
      * @type {string}
@@ -198,25 +198,37 @@ export interface ProcessInstanceDTO {
      * @type {string}
      * @memberof ProcessInstanceDTO
      */
-    'id'?: string;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof ProcessInstanceDTO
      */
-    'name'?: string;
+    'processId': string;
     /**
      * 
      * @type {string}
      * @memberof ProcessInstanceDTO
      */
-    'workflow'?: string;
+    'processName'?: string;
     /**
      * 
      * @type {ProcessInstanceStatusDTO}
      * @memberof ProcessInstanceDTO
      */
     'status'?: ProcessInstanceStatusDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProcessInstanceDTO
+     */
+    'endpoint'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProcessInstanceDTO
+     */
+    'serviceUrl'?: string;
     /**
      * 
      * @type {string}
@@ -253,6 +265,30 @@ export interface ProcessInstanceDTO {
      * @memberof ProcessInstanceDTO
      */
     'workflowdata'?: WorkflowDataDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProcessInstanceDTO
+     */
+    'businessKey'?: string;
+    /**
+     * 
+     * @type {Array<NodeInstanceDTO>}
+     * @memberof ProcessInstanceDTO
+     */
+    'nodes': Array<NodeInstanceDTO>;
+    /**
+     * 
+     * @type {ProcessInstanceErrorDTO}
+     * @memberof ProcessInstanceDTO
+     */
+    'error'?: ProcessInstanceErrorDTO;
+    /**
+     * 
+     * @type {object}
+     * @memberof ProcessInstanceDTO
+     */
+    'variables'?: object;
 }
 
 
@@ -273,7 +309,7 @@ export interface ProcessInstanceErrorDTO {
      * @type {string}
      * @memberof ProcessInstanceErrorDTO
      */
-    'nodeDefinitionId'?: string;
+    'nodeDefinitionId': string;
     /**
      * Error message (optional)
      * @type {string}
@@ -307,7 +343,7 @@ export interface ProcessInstanceListResultDTO {
  */
 
 export const ProcessInstanceStatusDTO = {
-    Running: 'Running',
+    Active: 'Active',
     Error: 'Error',
     Completed: 'Completed',
     Aborted: 'Aborted',
@@ -522,7 +558,7 @@ export interface WorkflowProgressDTO {
      * @type {any}
      * @memberof WorkflowProgressDTO
      */
-    'id'?: any;
+    'id': any;
     /**
      * Node name
      * @type {any}
@@ -697,10 +733,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * 
          * @summary Get Workflow Instance by ID
          * @param {string} instanceId ID of the workflow instance
+         * @param {boolean} [includeAssessment] Whether to include assessment
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getInstanceById: async (instanceId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getInstanceById: async (instanceId: string, includeAssessment?: boolean, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'instanceId' is not null or undefined
             assertParamExists('getInstanceById', 'instanceId', instanceId)
             const localVarPath = `/v2/workflows/instances/{instanceId}`
@@ -715,6 +752,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (includeAssessment !== undefined) {
+                localVarQueryParameter['includeAssessment'] = includeAssessment;
+            }
 
 
     
@@ -996,11 +1037,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * 
          * @summary Get Workflow Instance by ID
          * @param {string} instanceId ID of the workflow instance
+         * @param {boolean} [includeAssessment] Whether to include assessment
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getInstanceById(instanceId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProcessInstanceDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getInstanceById(instanceId, options);
+        async getInstanceById(instanceId: string, includeAssessment?: boolean, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AssessedProcessInstanceDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getInstanceById(instanceId, includeAssessment, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.getInstanceById']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1119,11 +1161,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * 
          * @summary Get Workflow Instance by ID
          * @param {string} instanceId ID of the workflow instance
+         * @param {boolean} [includeAssessment] Whether to include assessment
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getInstanceById(instanceId: string, options?: any): AxiosPromise<ProcessInstanceDTO> {
-            return localVarFp.getInstanceById(instanceId, options).then((request) => request(axios, basePath));
+        getInstanceById(instanceId: string, includeAssessment?: boolean, options?: any): AxiosPromise<AssessedProcessInstanceDTO> {
+            return localVarFp.getInstanceById(instanceId, includeAssessment, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieve an array of instances
@@ -1225,12 +1268,13 @@ export class DefaultApi extends BaseAPI {
      * 
      * @summary Get Workflow Instance by ID
      * @param {string} instanceId ID of the workflow instance
+     * @param {boolean} [includeAssessment] Whether to include assessment
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getInstanceById(instanceId: string, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getInstanceById(instanceId, options).then((request) => request(this.axios, this.basePath));
+    public getInstanceById(instanceId: string, includeAssessment?: boolean, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getInstanceById(instanceId, includeAssessment, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
