@@ -8772,6 +8772,11 @@
   resolved "https://registry.yarnpkg.com/@redhat-developer/red-hat-developer-hub-theme/-/red-hat-developer-hub-theme-0.0.54.tgz#fe49b5f4cc92d3e127591d3060dd6fe2322e8b02"
   integrity sha512-H9H4lQM+sT2fxWa9QZ3+FMnTDLnVB+ZkvOxhbCD4p0iRd5+YxqVeZH51Vkt4RK59qWj5q10MQbYXcfvytirWZg==
 
+"@redhat-developer/red-hat-developer-hub-theme@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@redhat-developer/red-hat-developer-hub-theme/-/red-hat-developer-hub-theme-0.1.10.tgz#b1f6eb73a8d339e4025be7a055f12fb09db890b8"
+  integrity sha512-w8RS+FvQbnHW8HUEaMFGlilt+DXNM11KW0BYupXweK3qfKisd9n4GmdkGOCz0BVGyEonYm6e1WWUwXnZrlv9uQ==
+
 "@remix-run/router@1.16.0":
   version "1.16.0"
   resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.16.0.tgz#0e10181e5fec1434eb071a9bc4bdaac843f16dcc"
