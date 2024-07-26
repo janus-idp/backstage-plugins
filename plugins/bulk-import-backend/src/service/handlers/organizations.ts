@@ -58,13 +58,21 @@ export async function findAllOrganizations(
   const orgMap = new Map<string, Components.Schemas.Organization>();
   if (allOrgsAccessible.organizations) {
     for (const org of allOrgsAccessible.organizations) {
-      const errors: string[] = [];
+      let totalRepoCount: number | undefined;
+      if (
+        org.public_repos !== undefined ||
+        org.total_private_repos !== undefined
+      ) {
+        totalRepoCount =
+          (org.public_repos ?? 0) + (org.total_private_repos ?? 0);
+      }
       orgMap.set(org.name, {
         id: `${org.id}`,
         name: org.name,
         description: org.description,
         url: org.url,
-        errors: errors,
+        totalRepoCount,
+        errors: [],
       });
     }
   }
