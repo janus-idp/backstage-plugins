@@ -79,11 +79,11 @@ export class EnforcerDelegate {
     policies: string[][],
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const trx = externalTrx || (await this.knex.transaction());
-
     if (policies.length === 0) {
       return;
     }
+
+    const trx = externalTrx || (await this.knex.transaction());
 
     try {
       const ok = await this.enforcer.addPolicies(policies);
