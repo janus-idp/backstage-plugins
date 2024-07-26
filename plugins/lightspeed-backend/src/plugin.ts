@@ -19,8 +19,8 @@ export const lightspeedPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         http: coreServices.httpRouter,
       },
-      async init({ config, logger, http }) {
-        http.use(await createRouter({ ...config, logger }));
+      async init({ logger, config, http }) {
+        http.use(await createRouter({ config: config, logger }));
       },
     });
   },

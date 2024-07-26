@@ -1,4 +1,7 @@
-import { createServiceBuilder } from '@backstage/backend-common';
+import {
+  createServiceBuilder,
+  loadBackendConfig,
+} from '@backstage/backend-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 import { Server } from 'http';
@@ -15,9 +18,11 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'lightspeed-backend' });
+  const config = await loadBackendConfig({ logger, argv: process.argv });
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,
+    config,
   });
 
   let service = createServiceBuilder(module)
