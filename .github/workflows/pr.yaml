@@ -4,7 +4,7 @@ on: pull_request
 
 jobs:
   test:
-    name: Test with Node.js ${{ matrix.node-version }}
+    name: Test-build with Node.js ${{ matrix.node-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -34,19 +34,8 @@ jobs:
             exit 42
           fi
 
-  build:
-    name: Build all packages with Node.js ${{ matrix.node-version }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18, 20]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
-        with:
-          fetch-depth: 0
-
-      - name: Build
+      - name: Build all packages
         uses: ./.github/actions/build
         with:
           args: '[HEAD^1]'
+          node-version: ${{ matrix.node-version }}
