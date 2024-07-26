@@ -1,0 +1,14 @@
+dynamicPlugins:
+  frontend:
+    janus-idp.backstage-plugin-lightspeed:
+      appIcons:
+        - name: LightspeedIcon
+          module: LightspeedPlugin
+          importName: LightspeedIcon
+      dynamicRoutes:
+        - path: /lightspeed
+          importName: LightspeedPage
+          module: LightspeedPlugin
+          menuItem:
+            icon: LightspeedIcon
+            text: Lightspeed
