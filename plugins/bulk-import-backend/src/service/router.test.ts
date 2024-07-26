@@ -28,6 +28,7 @@ import request from 'supertest';
 import { CatalogInfoGenerator } from '../helpers';
 import { GithubOrganizationResponse, GithubRepositoryResponse } from '../types';
 import { GithubApiService } from './githubApiService';
+import { DefaultPageNumber, DefaultPageSize } from './handlers/handlers';
 import { createRouter } from './router';
 
 const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
@@ -121,11 +122,25 @@ describe('createRouter', () => {
               name: 'my-org-ent-1',
               url: 'https://api.github.com/users/my-org-ent-1',
               description: 'an awesome org',
+              public_repos: 10,
+              total_private_repos: 25,
             },
             {
               id: 266016847,
               name: 'my-org-ent-2',
               url: 'https://api.github.com/users/my-org-ent-2',
+              total_private_repos: 1234,
+            },
+            {
+              id: 987654321,
+              name: 'my-org-ent-3-undefined-repo-count',
+              url: 'https://api.github.com/users/my-org-ent-3-undefined-repo-count',
+            },
+            {
+              id: 123,
+              name: 'my-org-ent-4-only-internal-repos',
+              url: 'https://api.github.com/users/my-org-ent-4-only-internal-repos',
+              owned_private_repos: 7,
             },
           ],
           errors: [],
@@ -135,18 +150,35 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         errors: [],
+        pagePerIntegration: DefaultPageNumber,
+        sizePerIntegration: DefaultPageSize,
         organizations: [
           {
             id: '166016847',
             name: 'my-org-ent-1',
             url: 'https://api.github.com/users/my-org-ent-1',
             description: 'an awesome org',
+            totalRepoCount: 35,
             errors: [],
           },
           {
             id: '266016847',
             name: 'my-org-ent-2',
             url: 'https://api.github.com/users/my-org-ent-2',
+            totalRepoCount: 1234,
+            errors: [],
+          },
+          {
+            id: '987654321',
+            name: 'my-org-ent-3-undefined-repo-count',
+            url: 'https://api.github.com/users/my-org-ent-3-undefined-repo-count',
+            errors: [],
+          },
+          {
+            id: '123',
+            name: 'my-org-ent-4-only-internal-repos',
+            url: 'https://api.github.com/users/my-org-ent-4-only-internal-repos',
+            totalRepoCount: 7,
             errors: [],
           },
         ],
@@ -190,6 +222,8 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         errors: ['Github App with ID 2 failed spectacularly'],
+        pagePerIntegration: DefaultPageNumber,
+        sizePerIntegration: DefaultPageSize,
         organizations: [
           {
             id: '166016847',
