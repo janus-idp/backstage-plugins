@@ -44,10 +44,10 @@ export type ConditionFormRowProps = {
   setCriteria: React.Dispatch<React.SetStateAction<string>>;
   handleSetErrors: (
     newErrors: RJSFValidationError[],
-    criteria: string,
+    currentCriteria: string,
     nestedCriteria?: string,
-    nestedConditionIndex?: number,
-    ruleIndex?: number,
+    conditionIndex?: number,
+    nestedConditionRuleIndex?: number,
     removeErrors?: boolean,
   ) => void;
   setRemoveAllClicked: React.Dispatch<React.SetStateAction<boolean>>;

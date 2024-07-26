@@ -69,26 +69,27 @@ export const ConditionsForm = ({
   );
   const [errors, setErrors] = React.useState<RuleParamsErrors>();
 
+  // TODO: change the type of `errors`
   const handleSetErrors = (
     newErrors: RJSFValidationError[],
     currentCriteria: string,
     nestedCriteria?: string,
-    nestedConditionIndex?: number,
-    ruleIndex?: number,
+    conditionIndex?: number,
+    nestedConditionRuleIndex?: number,
     removeErrors = false,
   ) => {
     setErrors(prevErrors => {
       const updatedErrors: RuleParamsErrors = { ...prevErrors };
 
       let baseErrorKey = currentCriteria;
-      if (nestedConditionIndex !== undefined) {
-        baseErrorKey += `.${nestedConditionIndex}`;
+      if (conditionIndex !== undefined) {
+        baseErrorKey += `.${conditionIndex}`;
       }
       if (nestedCriteria !== undefined) {
         baseErrorKey += `.${nestedCriteria}`;
       }
-      if (ruleIndex !== undefined) {
-        baseErrorKey += `.${ruleIndex}`;
+      if (nestedConditionRuleIndex !== undefined) {
+        baseErrorKey += `.${nestedConditionRuleIndex}`;
       }
 
       if (removeErrors || newErrors.length === 0) {

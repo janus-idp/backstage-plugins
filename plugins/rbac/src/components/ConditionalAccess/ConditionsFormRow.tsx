@@ -16,6 +16,7 @@ import Button from '@mui/material/Button';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import {
+  calculateConditionIndex,
   extractNestedConditions,
   getDefaultRule,
   nestedConditionButtons,
@@ -43,6 +44,8 @@ export const ConditionsFormRow = ({
   handleSetErrors,
   setRemoveAllClicked,
 }: ConditionFormRowProps) => {
+  console.log('conditionRow', conditionRow);
+
   const classes = useConditionsFormRowStyles();
   const theme = useTheme();
   const [nestedConditionRow, setNestedConditionRow] = React.useState<
@@ -134,14 +137,7 @@ export const ConditionsFormRow = ({
     val: string,
     nestedConditionIndex: number,
   ) => {
-    handleSetErrors(
-      [],
-      criteria,
-      undefined,
-      nestedConditionIndex,
-      undefined,
-      true,
-    );
+    handleSetErrors([], criteria, undefined, undefined, undefined, true);
     const defaultRule = getDefaultRule(selPluginResourceType);
 
     const nestedConditionMap = {
@@ -185,12 +181,11 @@ export const ConditionsFormRow = ({
     setNotConditionType(val as NotConditionType);
     if (val === 'nested-condition') {
       handleAddNestedCondition(criterias.not);
-      handleSetErrors([], criteria, criterias.not, 0, 0, true);
+      handleSetErrors([], criteria, undefined, undefined, undefined, true);
     } else {
       onRuleChange({
         not: getDefaultRule(selPluginResourceType),
       });
-      handleSetErrors([], criteria, criterias.not, 0, 0, true);
       handleSetErrors([], criteria, undefined, undefined, undefined, true);
     }
   };
@@ -230,12 +225,17 @@ export const ConditionsFormRow = ({
       (_, index) => index !== nestedConditionIndex,
     );
 
+    const conditionIndex = calculateConditionIndex(
+      conditionRow,
+      nestedConditionIndex,
+      criteria,
+    );
     updateRules(updatedNestedConditionRow);
     handleSetErrors(
       [],
       criteria,
       nestedConditionCriteria,
-      nestedConditionIndex,
+      conditionIndex,
       undefined,
       true,
     );
@@ -269,11 +269,17 @@ export const ConditionsFormRow = ({
         : updatedNestedConditionRow,
     );
 
+    const conditionIndex = calculateConditionIndex(
+      conditionRow,
+      nestedConditionIndex,
+      criteria,
+    );
+
     handleSetErrors(
       [],
       criteria,
       nestedConditionCriteria,
-      nestedConditionIndex,
+      conditionIndex,
       ruleIndex,
       true,
     );
@@ -285,6 +291,7 @@ export const ConditionsFormRow = ({
         oldCondition={
           conditionRow.condition ?? getDefaultRule(selPluginResourceType)
         }
+        index={0}
         onRuleChange={onRuleChange}
         conditionRow={conditionRow}
         criteria={criteria}
@@ -321,6 +328,19 @@ export const ConditionsFormRow = ({
     const rs = isNestedCondition
       ? (c[activeCriteria as keyof Condition] as PermissionCondition[])
       : conditionRow[activeCriteria as keyof Condition];
+    const disabled =
+      !isNestedCondition &&
+      (conditionRow[criteria as keyof Condition] as Condition[]).length === 1 &&
+      nestedConditionRow.length === 0 &&
+      index === 0;
+    const nestedDisabled =
+      isNestedCondition &&
+      (
+        nestedConditionRow[nestedConditionIndex ?? 0][
+          activeNestedCriteria as keyof Condition
+        ] as Condition[]
+      ).length === 1 &&
+      index === 0;
     return (
       (c as PermissionCondition).resourceType && (
         <div style={rowStyle} key={rowKey}>
@@ -342,13 +362,13 @@ export const ConditionsFormRow = ({
             nestedConditionIndex={
               isNestedCondition ? nestedConditionIndex : undefined
             }
-            ruleIndex={isNestedCondition ? index : undefined}
+            nestedConditionRuleIndex={isNestedCondition ? index : undefined}
             updateRules={isNestedCondition ? updateRules : undefined}
           />
           <IconButton
             title="Remove"
             className={classes.removeRuleButton}
-            disabled={index === 0}
+            disabled={isNestedCondition ? nestedDisabled : disabled}
             onClick={
               isNestedCondition
                 ? () =>
@@ -366,8 +386,8 @@ export const ConditionsFormRow = ({
                       [],
                       criteria,
                       undefined,
-                      undefined,
                       index,
+                      undefined,
                       true,
                     );
                   }
@@ -415,6 +435,12 @@ export const ConditionsFormRow = ({
     nestedConditionIndex: number,
   ) => {
     const selectedNestedConditionCriteria = Object.keys(nc)[0];
+    const simpleRulesCount = calculateConditionIndex(
+      conditionRow,
+      nestedConditionIndex,
+      criteria,
+    );
+    const nestedConditionsCount = nestedConditionRow.length;
     return (
       <Box
         mt={2}
@@ -446,6 +472,7 @@ export const ConditionsFormRow = ({
             <IconButton
               title="Remove nested condition"
               className={classes.removeNestedRuleButton}
+              disabled={simpleRulesCount === 0 && nestedConditionsCount === 1} // 0 simple rules and this is the only 1 nested condition
               onClick={() =>
                 handleRemoveNestedCondition(
                   selectedNestedConditionCriteria,

@@ -13,6 +13,7 @@ import {
 } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 
+import { calculateConditionIndex } from '../../utils/conditional-access-utils';
 import { criterias } from './const';
 import { CustomArrayField } from './CustomArrayField';
 import { RulesDropdownOption } from './RulesDropdownOption';
@@ -83,10 +84,10 @@ type ConditionFormRowFieldsProps = {
   conditionRulesData?: RulesData;
   handleSetErrors: (
     newErrors: RJSFValidationError[],
-    criteria: string,
+    currentCriteria: string,
     nestedCriteria?: string,
-    nestedConditionIndex?: number,
-    ruleIndex?: number,
+    conditionIndex?: number,
+    nestedConditionRuleIndex?: number,
     removeErrors?: boolean,
   ) => void;
   optionDisabled?: (ruleOption: string) => boolean;
@@ -94,7 +95,7 @@ type ConditionFormRowFieldsProps = {
   nestedConditionRow?: Condition[];
   nestedConditionCriteria?: string;
   nestedConditionIndex?: number;
-  ruleIndex?: number;
+  nestedConditionRuleIndex?: number;
   updateRules?: (newCondition: Condition[] | Condition) => void;
 };
 
@@ -111,7 +112,7 @@ export const ConditionsFormRowFields = ({
   nestedConditionRow,
   nestedConditionCriteria,
   nestedConditionIndex,
-  ruleIndex,
+  nestedConditionRuleIndex,
   updateRules,
 }: ConditionFormRowFieldsProps) => {
   const classes = useStyles({
@@ -183,7 +184,7 @@ export const ConditionsFormRowFields = ({
               nestedConditionCriteria as keyof Condition
             ] as PermissionCondition[]) || []
           ).map((rule, rindex) => {
-            return rindex === ruleIndex ? newCondition : rule;
+            return rindex === nestedConditionRuleIndex ? newCondition : rule;
           });
 
           return {
@@ -205,7 +206,7 @@ export const ConditionsFormRowFields = ({
         criteria,
         nestedConditionCriteria,
         nestedConditionIndex,
-        ruleIndex,
+        nestedConditionRuleIndex,
         true,
       );
     }
@@ -268,13 +269,21 @@ export const ConditionsFormRowFields = ({
             }
             transformErrors={errors => {
               const hasErrors = errors.length > 0;
+              const conditionIndex =
+                nestedConditionIndex !== undefined
+                  ? calculateConditionIndex(
+                      conditionRow as ConditionsData,
+                      nestedConditionIndex,
+                      criteria,
+                    )
+                  : index;
               if (nestedConditionRow) {
                 handleSetErrors(
                   errors,
                   criteria,
                   nestedConditionCriteria,
-                  nestedConditionIndex,
-                  ruleIndex,
+                  conditionIndex,
+                  nestedConditionRuleIndex,
                   !hasErrors,
                 );
               } else {
@@ -282,8 +291,8 @@ export const ConditionsFormRowFields = ({
                   errors,
                   criteria,
                   undefined,
+                  conditionIndex,
                   undefined,
-                  index,
                   !hasErrors,
                 );
               }

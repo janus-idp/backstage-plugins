@@ -2,8 +2,14 @@ import { PermissionCondition } from '@backstage/plugin-permission-common';
 
 import { makeStyles } from '@material-ui/core';
 
-import { conditionButtons } from '../components/ConditionalAccess/const';
-import { Condition } from '../components/ConditionalAccess/types';
+import {
+  conditionButtons,
+  criterias,
+} from '../components/ConditionalAccess/const';
+import {
+  Condition,
+  ConditionsData,
+} from '../components/ConditionalAccess/types';
 
 export const ruleOptionDisabled = (
   ruleOption: string,
@@ -106,3 +112,18 @@ export const useConditionsFormRowStyles = makeStyles(theme => ({
     marginTop: theme.spacing(1),
   },
 }));
+
+export const calculateConditionIndex = (
+  conditionRow: ConditionsData,
+  nestedConditionIndex: number,
+  criteria: string,
+): number => {
+  const simpleRulesCount =
+    criteria === criterias.not
+      ? 0
+      : (conditionRow[criteria as keyof Condition] as Condition[]).filter(
+          (e: Condition) => 'rule' in e,
+        ).length;
+
+  return simpleRulesCount + nestedConditionIndex;
+};
