@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor@1.3.0...@janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor@1.3.1) (2024-07-26)
+
 ## @janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor@1.2.1...@janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor@1.3.0) (2024-07-25)
 
 
