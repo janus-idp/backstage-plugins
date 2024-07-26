@@ -16,15 +16,15 @@
 
 import {
   createLegacyAuthAdapters,
-  errorHandler,
-  PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import {
   coreServices,
   createBackendPlugin,
+  DiscoveryService,
   HttpAuthService,
   LoggerService,
-  PermissionsService,
+  PermissionsService
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { NotAllowedError } from '@backstage/errors';
@@ -68,7 +68,7 @@ import { ManagedClusterInfo } from '../types';
 export interface RouterOptions {
   logger: LoggerService;
   config: Config;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   permissions: PermissionsService;
   httpAuth?: HttpAuthService;
 }
@@ -185,7 +185,9 @@ const buildRouter = (
     return response.send(allClusters.flat());
   });
 
-  router.use(errorHandler({ logClientErrors: true }));
+  const middleware = MiddlewareFactory.create({ logger, config });
+
+  router.use(middleware.error());
   return router;
 };
 

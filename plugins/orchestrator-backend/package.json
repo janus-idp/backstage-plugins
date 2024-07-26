@@ -70,6 +70,7 @@
   "dependencies": {
     "@backstage/backend-app-api": "^0.8.0",
     "@backstage/backend-common": "^0.23.3",
+    "@backstage/backend-defaults": "^0.4.1",
     "@backstage/backend-dynamic-feature-service": "^0.2.15",
     "@backstage/backend-plugin-api": "^0.7.0",
     "@backstage/backend-tasks": "^0.5.27",
@@ -108,8 +109,8 @@
     "@types/json-schema": "7.0.15"
   },
   "peerDependencies": {
-    "@janus-idp/backstage-plugin-rbac-common": "1.8.0",
-    "@janus-idp/backstage-plugin-audit-log-node": "1.4.0"
+    "@janus-idp/backstage-plugin-audit-log-node": "1.4.0",
+    "@janus-idp/backstage-plugin-rbac-common": "1.8.0"
   },
   "maintainers": [
     "@janus-idp/maintainers-plugins",

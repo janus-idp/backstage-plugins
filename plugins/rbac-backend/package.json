@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.23.3",
+    "@backstage/backend-defaults": "^0.4.1",
     "@backstage/backend-plugin-api": "^0.7.0",
     "@backstage/catalog-client": "^1.6.5",
     "@backstage/catalog-model": "^1.5.0",
@@ -43,14 +44,13 @@
     "@backstage/plugin-permission-common": "^0.8.0",
     "@backstage/plugin-permission-node": "^0.8.0",
     "@dagrejs/graphlib": "^2.1.13",
+    "@janus-idp/backstage-plugin-audit-log-node": "1.4.0",
     "@janus-idp/backstage-plugin-rbac-common": "1.8.0",
     "@janus-idp/backstage-plugin-rbac-node": "1.4.0",
-    "@janus-idp/backstage-plugin-audit-log-node": "1.4.0",
     "casbin": "^5.27.1",
     "chokidar": "^3.6.0",
     "csv-parse": "^5.5.5",
     "express": "^4.18.2",
-    "express-promise-router": "^4.1.1",
     "knex": "^3.0.0",
     "lodash": "^4.17.21",
     "qs": "^6.11.2",
@@ -58,8 +58,8 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.26.11",
     "@backstage/backend-test-utils": "0.4.4",
+    "@backstage/cli": "0.26.11",
     "@types/express": "4.17.21",
     "@types/node": "18.19.34",
     "@types/supertest": "2.0.16",

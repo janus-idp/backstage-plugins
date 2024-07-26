@@ -1,12 +1,13 @@
-import { createLegacyAuthAdapters, UrlReader } from '@backstage/backend-common';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import {
   AuthService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
   PermissionsService,
+  SchedulerService,
+  UrlReaderService,
 } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 
@@ -15,19 +16,19 @@ import express from 'express';
 import { DevModeService } from '../service/DevModeService';
 import { createBackendRouter } from '../service/router';
 
-export interface RouterArgs {
+export interface RouterOptions {
   config: Config;
   logger: LoggerService;
   discovery: DiscoveryService;
   catalogApi: CatalogApi;
-  urlReader: UrlReader;
-  scheduler: PluginTaskScheduler;
+  urlReader: UrlReaderService;
+  scheduler: SchedulerService;
   permissions: PermissionsService;
   httpAuth?: HttpAuthService;
   auth?: AuthService;
 }
 
-export async function createRouter(args: RouterArgs): Promise<express.Router> {
+export async function createRouter(args: RouterOptions): Promise<express.Router> {
   const autoStartDevMode =
     args.config.getOptionalBoolean(
       'orchestrator.sonataFlowService.autoStart',
