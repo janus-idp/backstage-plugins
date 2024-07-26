@@ -50,6 +50,10 @@ export type GithubOrganization = {
   avatar_url?: string;
   public_repos?: number;
   total_private_repos?: number;
+  /**
+   * Number of internal repositories, accessible to all members in a GH enterprise
+   */
+  owned_private_repos?: number;
 };
 
 export type GithubRepository = {

@@ -61,10 +61,12 @@ export async function findAllOrganizations(
       let totalRepoCount: number | undefined;
       if (
         org.public_repos !== undefined ||
-        org.total_private_repos !== undefined
+        org.total_private_repos !== undefined ||
+        org.owned_private_repos !== undefined
       ) {
         totalRepoCount =
-          (org.public_repos ?? 0) + (org.total_private_repos ?? 0);
+          (org.public_repos ?? 0) +
+          (org.owned_private_repos ?? org.total_private_repos ?? 0);
       }
       orgMap.set(org.name, {
         id: `${org.id}`,
@@ -83,6 +85,8 @@ export async function findAllOrganizations(
       errors: errorList,
       organizations: Array.from(orgMap.values()),
       totalCount: allOrgsAccessible.totalCount,
+      pagePerIntegration: pageNumber,
+      sizePerIntegration: pageSize,
     },
   };
 }

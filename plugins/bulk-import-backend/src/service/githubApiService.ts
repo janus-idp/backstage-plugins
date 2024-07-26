@@ -96,39 +96,52 @@ export class GithubApiService {
   }
 
   private async addGithubAppOrgs(
+    octokit: Octokit,
+    credentialAccountLogin: string | undefined,
     ghConfig: GithubIntegrationConfig,
     orgs: Map<string, GithubOrganization>,
-    errors: GithubFetchError[],
+    errors: Map<number, GithubFetchError>,
   ): Promise<{ totalCount?: number }> {
-    let totalCount: number | undefined;
+    let totalCount = 0;
     try {
       const resp =
         await this.githubCredentialsProvider.getAllAppInstallations(ghConfig);
-      resp
-        ?.filter(
-          installation =>
+      for (const installation of resp ?? []) {
+        if (
+          !(
             installation.account &&
-            installation.target_type?.toLowerCase() === 'organization',
-        )
-        ?.forEach(installation => {
-          const acc = installation.account!;
-          const ghOrg: GithubOrganization = {
-            id: acc.id,
-            description: acc.description ?? undefined,
-            name: acc.login,
-            url: acc.url,
-            html_url: acc.html_url,
-            repos_url: acc.repos_url,
-            events_url: acc.events_url,
-          };
-          orgs.set(ghOrg.name, ghOrg);
-        });
-      totalCount = resp?.length;
+            installation.target_type?.toLowerCase() === 'organization'
+          )
+        ) {
+          continue;
+        }
+        const acc = installation.account!;
+        if (credentialAccountLogin !== acc.login) {
+          continue;
+        }
+        const orgData = await octokit.request(
+          acc.url.replace('/users/', '/orgs/'),
+        );
+        const ghOrg: GithubOrganization = {
+          id: acc.id,
+          description: acc.description ?? undefined,
+          name: acc.login,
+          url: acc.url,
+          html_url: acc.html_url,
+          repos_url: acc.repos_url,
+          events_url: acc.events_url,
+          public_repos: orgData?.data?.public_repos,
+          total_private_repos: orgData?.data?.total_private_repos,
+          owned_private_repos: orgData?.data?.owned_private_repos,
+        };
+        orgs.set(ghOrg.name, ghOrg);
+        totalCount++;
+      }
     } catch (err: any) {
       this.logger.error(
         `Fetching organizations with access token for github app, failed with ${err}`,
       );
-      errors.push(err.message);
+      errors.set(-1, err.message);
     }
     return { totalCount };
   }
@@ -169,8 +182,9 @@ export class GithubApiService {
           avatar_url: org.avatar_url,
           public_repos: orgData?.data?.public_repos,
           total_private_repos: orgData?.data?.total_private_repos,
+          owned_private_repos: orgData?.data?.owned_private_repos,
         };
-        orgs.set(org.url, ghOrg);
+        orgs.set(org.login, ghOrg);
       }
 
       totalCount = await this.computeTotalCountFromGitHubToken(
@@ -178,7 +192,7 @@ export class GithubApiService {
           octokit.orgs
             .listForAuthenticatedUser({
               page: lastPageNumber,
-              per_page: 1,
+              per_page: 100,
             })
             .then(lastPageResp => lastPageResp.data.length),
         'orgs.listForAuthenticatedUser',
@@ -288,7 +302,7 @@ export class GithubApiService {
           octokit.repos
             .listForAuthenticatedUser({
               page: lastPageNumber,
-              per_page: 1,
+              per_page: 100,
             })
             .then(lastPageResp => lastPageResp.data.length),
         'repos.listForAuthenticatedUser',
@@ -351,7 +365,7 @@ export class GithubApiService {
             .listForOrg({
               org,
               page: lastPageNumber,
-              per_page: 1,
+              per_page: 100,
             })
             .then(lastPageResp => lastPageResp.data.length),
         'repos.listForOrg',
@@ -489,7 +503,6 @@ export class GithubApiService {
       this.logger.debug(
         `Got ${credentials.length} credential(s) for ${ghConfig.host}`,
       );
-      let hasGithubApp = false;
       for (const credential of credentials) {
         if ('error' in credential) {
           if (credential.error?.name !== 'NotFoundError') {
@@ -509,10 +522,17 @@ export class GithubApiService {
           auth: credential.token,
         });
 
+        let resp: { totalCount?: number } = {};
         if (isGithubAppCredential(credential)) {
-          hasGithubApp = true;
+          resp = await this.addGithubAppOrgs(
+            octokit,
+            credential.accountLogin,
+            ghConfig,
+            orgs,
+            errors,
+          );
         } else {
-          const resp = await this.addGithubTokenOrgs(
+          resp = await this.addGithubTokenOrgs(
             octokit,
             credential,
             orgs,
@@ -520,27 +540,15 @@ export class GithubApiService {
             pageNumber,
             pageSize,
           );
-          this.logger.debug(
-            `Got ${resp.totalCount} org(s) for ${ghConfig.host}`,
-          );
-          if (resp.totalCount) {
-            totalCount += resp.totalCount;
-          }
-        }
-      }
-      if (hasGithubApp) {
-        const errs: GithubFetchError[] = [];
-        const resp = await this.addGithubAppOrgs(ghConfig, orgs, errs);
-        if (errs) {
-          for (let i = 0; i < errs.length; i++) {
-            errors.set(i, errs[i]);
-          }
         }
         this.logger.debug(`Got ${resp.totalCount} org(s) for ${ghConfig.host}`);
         if (resp.totalCount) {
           totalCount += resp.totalCount;
         }
       }
+    }
+    if (totalCount < pageSize) {
+      totalCount = orgs.size;
     }
     return {
       organizations: Array.from(orgs.values()),

@@ -160,8 +160,8 @@ export async function createRouter(
         errors: response.responseBody?.errors,
         organizations: response.responseBody?.organizations,
         totalCount: response.responseBody?.totalCount,
-        pagePerIntegration: q.pagePerIntegration,
-        sizePerIntegration: q.sizePerIntegration,
+        pagePerIntegration: response.responseBody?.pagePerIntegration,
+        sizePerIntegration: response.responseBody?.sizePerIntegration,
       } as Components.Schemas.OrganizationList);
     },
   );
