@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.10.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.10.0...@janus-idp/backstage-plugin-quay@1.10.1) (2024-07-26)
+
+
+### Documentation
+
+* **quay:** add documentation for the new credential settings in proxy backend ([#1902](https://github.com/janus-idp/backstage-plugins/issues/1902)) ([e04d231](https://github.com/janus-idp/backstage-plugins/commit/e04d2310efe40da60a7b5c314ca6051ccdae99ba))
+
 ## @janus-idp/backstage-plugin-quay [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.9.0...@janus-idp/backstage-plugin-quay@1.10.0) (2024-07-26)
 
 
