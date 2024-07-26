@@ -214,12 +214,8 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
         `username and password or clientId and clientSecret must be provided.`,
       );
     }
-    try {
-      await kcAdminClient.auth(credentials);
-      console.log('auth successful');
-    } catch (e) {
-      console.log('Auth Error:', e);
-    }
+
+    await kcAdminClient.auth(credentials);
 
     const { users, groups } = await readKeycloakRealm(kcAdminClient, provider, {
       userQuerySize: provider.userQuerySize,
@@ -280,10 +276,10 @@ function trackProgress(logger: LoggerService) {
   logger.info('Reading Keycloak users and groups');
 
   function markReadComplete(read: { users: unknown[]; groups: unknown[] }) {
-    console.log('groups');
-    console.log(read.groups);
-    read.groups.forEach(g => console.log(g.spec.parent)); // for testing
-    read.groups.forEach(g => console.log(g.spec.children)); // for testing
+    // console.log('groups');
+    // console.log(read.groups);
+    // read.groups.forEach(g => console.log(g.spec.parent)); // for testing
+    // read.groups.forEach(g => console.log(g.spec.children)); // for testing
     summary = `${read.users.length} Keycloak users and ${read.groups.length} Keycloak groups`;
     const readDuration = ((Date.now() - timestamp) / 1000).toFixed(1);
     timestamp = Date.now();

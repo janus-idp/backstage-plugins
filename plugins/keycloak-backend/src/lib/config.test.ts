@@ -22,7 +22,7 @@ describe('readProviderConfigs', () => {
     expect(result).toEqual([
       {
         id: 'default',
-        baseUrl: 'http://localhost:8080/auth',
+        baseUrl: 'http://localhost:8080',
         loginRealm: 'master',
         realm: 'master',
         username: undefined,
@@ -68,7 +68,7 @@ describe('readProviderConfigs', () => {
     expect(result).toEqual([
       {
         id: 'default',
-        baseUrl: 'http://localhost:8080/auth',
+        baseUrl: 'http://localhost:8080',
         loginRealm: 'myloginrealm',
         realm: 'myrealm',
         username: 'myusername',

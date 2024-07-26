@@ -1,23 +1,11 @@
-backend:
-  baseUrl: http://localhost:7007
-  auth:
-    dangerouslyDisableDefaultAuthPolicy: true
-
 enabled:
   keycloak: true
 catalog:
   providers:
     keycloakOrg:
       default:
-        baseUrl: https://keycloak.apps-crc.testing
-        loginRealm: keycloak-admin-client-cjs
-        realm: keycloak-admin-client-cjs
-        clientId: backstage-test
+        baseUrl: '${KEYCLOAK_BASE_URL}'
+        loginRealm: '${KEYCLOAK_LOGIN_REALM}'
+        realm: '${KEYCLOAK_REALM}'
+        clientId: '${KEYCLOAK_CLIENT_ID}'
         clientSecret: '${KEYCLOAK_CLIENT_SECRET}'
-        schedule:
-          frequency:
-            minutes: 1
-          timeout:
-            minutes: 1
-          initialDelay:
-            seconds: 7

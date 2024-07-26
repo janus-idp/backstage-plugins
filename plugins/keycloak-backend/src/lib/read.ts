@@ -48,8 +48,6 @@ export const parseGroup = async (
   groupTransformer?: GroupTransformer,
 ): Promise<GroupEntity | undefined> => {
   const transformer = groupTransformer ?? noopGroupTransformer;
-  // console.log("keycloakGroup in read.ts");
-  // console.log(keycloakGroup);
   const entity: GroupEntity = {
     apiVersion: 'backstage.io/v1beta1',
     kind: 'Group',
@@ -113,20 +111,7 @@ export const parseUser = async (
   return await transformer(entity, user, realm, keycloakGroups);
 };
 
-// eslint-disable-next-line consistent-return
-export function* traverseGroups(
-  group: GroupRepresentation,
-): IterableIterator<GroupRepresentationWithParent> {
-  // console.log("group from read.ts");
-  // console.log(group);
-  yield group;
-  for (const g of group.subGroups ?? []) {
-    (g as GroupRepresentationWithParent).parent = group.name!;
-    yield* traverseGroups(g);
-  }
-}
-
-export async function getEntitiesUser<T extends Users>(
+export async function getEntities<T extends Users | Groups>(
   entities: T,
   config: KeycloakProviderConfig,
   entityQuerySize: number = KEYCLOAK_ENTITY_QUERY_SIZE,
@@ -151,60 +136,15 @@ export async function getEntitiesUser<T extends Users>(
   const entityResults = (await Promise.all(entityPromises)).flat() as Awaited<
     ReturnType<T['find']>
   >;
-
-  // console.log('entityResults in read.ts');
-  // console.log(entityResults)
 
   return entityResults;
 }
 
-export async function getEntitiesGroups<T extends Groups>(
-  entities: T,
-  config: KeycloakProviderConfig,
-  entityQuerySize: number = KEYCLOAK_ENTITY_QUERY_SIZE,
-): Promise<Awaited<ReturnType<T['find']>>> {
-  const rawEntityCount = await entities.count({ realm: config.realm });
-  const entityCount =
-    typeof rawEntityCount === 'number' ? rawEntityCount : rawEntityCount.count;
-
-  const pageCount = Math.ceil(entityCount / entityQuerySize);
-
-  // The next line acts like range in python
-  const entityPromises = Array.from(
-    { length: pageCount },
-    (_, i) =>
-      entities.find({
-        realm: config.realm,
-        max: entityQuerySize,
-        first: i * entityQuerySize,
-      }) as ReturnType<T['find']>,
-  );
-
-  const entityResults = (await Promise.all(entityPromises)).flat() as Awaited<
-    ReturnType<T['find']>
-  >;
-
-  // console.log('entityResults in read.ts');
-  // console.log(entityResults)
-
-  // get all subgroups: for all groups in top-level, if subGroupCount >0, get subgroups
-  // from these subgroups if subGroupCount >0, again get subgroups
-  // maybe have an array of groups with subGroupCount >0, after getting subgroups for a particular group from this list, remove it, go through the newly fetched subgroups and add those which have subgroups to this list.
-  // continue till the list is empty
-  // subgroups have a parentId field which will make it easier
-  const allGroups = await processGroupsRecursively(entityResults, entities);
-
-  console.log('allGroups in read.ts');
-  console.log(allGroups);
-  allGroups.forEach(g => console.log(g.parentId));
-  return allGroups;
-}
-
 export async function processGroupsRecursively<T extends Groups>(
-  topLevelGroups: Awaited<ReturnType<T['find']>>,
+  topLevelGroups: T[],
   entities: T,
 ) {
-  const allGroups: any[] = [];
+  const allGroups: T[] = [];
   for (const group of topLevelGroups) {
     allGroups.push(group);
 
@@ -215,7 +155,6 @@ export async function processGroupsRecursively<T extends Groups>(
         max: group.subGroupCount,
         briefRepresentation: true,
       });
-
       const subGroupResults = await processGroupsRecursively(
         subgroups,
         entities,
@@ -240,45 +179,54 @@ export const readKeycloakRealm = async (
   users: UserEntity[];
   groups: GroupEntity[];
 }> => {
-  const kUsers = await getEntitiesUser(
+  const kUsers = await getEntities(
     client.users,
     config,
     options?.userQuerySize,
   );
-  console.log('server info');
-  const serverInfo = await client.serverInfo.find();
-  const serverVersion = serverInfo.systemInfo?.version;
-  console.log(serverVersion);
 
-  const rawKGroups = await getEntitiesGroups(
+  // console.log('server info');
+  // const serverInfo = await client.serverInfo.find();
+  // const serverVersion = serverInfo.systemInfo?.version?.slice(0, 2);
+
+  // console.log(serverVersion);
+
+  const topLevelKGroups = (await getEntities(
     client.groups,
     config,
     options?.groupQuerySize,
+    // serverVersion,
+  )) as GroupRepresentationWithParent[];
+
+  const rawKGroups = await processGroupsRecursively(
+    topLevelKGroups,
+    client.groups as Groups,
   );
-  const flatKGroups = rawKGroups.reduce((acc, g) => {
-    const newAcc = acc.concat(...traverseGroups(g));
-    return newAcc;
-  }, [] as GroupRepresentationWithParent[]);
+
   const kGroups = await Promise.all(
-    flatKGroups.map(async g => {
+    rawKGroups.map(async g => {
       g.members = (
         await client.groups.listMembers({
           id: g.id!,
           max: options?.userQuerySize,
           realm: config.realm,
         })
-      ).map(m => m.username!);
-      g.subGroups = await client.groups.listSubGroups({
-        parentId: g.id!,
-        first: 0,
-        max: g.subGroupCount,
-        briefRepresentation: false,
-      });
-      const groupParent = await client.groups.findOne({
-        id: g.parentId!,
-        realm: config.realm,
-      });
-      g.parent = groupParent?.name;
+      )?.map(m => m.username!);
+      if (g.subGroupCount! > 0) {
+        g.subGroups = await client.groups.listSubGroups({
+          parentId: g.id!,
+          first: 0,
+          max: g.subGroupCount,
+          briefRepresentation: false,
+        });
+      }
+      if (g.parentId) {
+        const groupParent = await client.groups.findOne({
+          id: g.parentId!,
+          realm: config.realm,
+        });
+        g.parent = groupParent?.name;
+      }
       return g;
     }),
   );
