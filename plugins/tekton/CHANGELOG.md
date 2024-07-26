@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [3.11.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.10.0...@janus-idp/backstage-plugin-tekton@3.11.0) (2024-07-26)
+
+
+### Features
+
+* **tekton:** add permissions support for tekton plugin ([#1854](https://github.com/janus-idp/backstage-plugins/issues/1854)) ([f744896](https://github.com/janus-idp/backstage-plugins/commit/f7448963c252574e0309a091563c19e1ed9a58fd))
+
 ## @janus-idp/backstage-plugin-tekton [3.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.9.0...@janus-idp/backstage-plugin-tekton@3.10.0) (2024-07-26)
 
 
