@@ -21,6 +21,9 @@ jobs:
       - name: Test
         uses: ./.github/actions/test
 
+      - name: Regen yarn.lock
+        uses: ./.github/actions/yarn-lock
+
   release:
     name: Release
     needs:

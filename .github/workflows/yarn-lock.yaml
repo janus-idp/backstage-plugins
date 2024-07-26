@@ -1,0 +1,38 @@
+name: Regen yarn.lock
+
+on:
+  workflow_dispatch:
+    inputs:
+      node-version:
+        description: Node.js version
+        required: true
+        default: '20'
+
+concurrency:
+  group: yarn-lock
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test yarn.lock
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'yarn'
+
+      - name: Setup local Turbo cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@cc723b4600e40a6b8815b65701d8614b91e2669e # v1
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          yarn install
+
+      - name: Regen yarn.lock
+        uses: ./.github/actions/yarn-lock

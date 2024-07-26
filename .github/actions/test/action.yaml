@@ -7,7 +7,7 @@ inputs:
   node-version:
     description: Node.js version
     required: true
-    default: 20
+    default: '20'
 runs:
   using: 'composite'
   steps:
@@ -24,11 +24,11 @@ runs:
       shell: bash
       run: |
         yarn install
-        if [[ $(git diff --name-only . || true) ]]; then
+        changed_files="$(git diff --name-only . || true)"
+        if [[ $changed_files ]]; then
           echo "After 'yarn install', workspace is dirty! The following files have changed:"
           echo
-          git diff --name-only . || true
-          exit 42
+          echo "$changed_files"
         fi
 
     - name: Run prettier

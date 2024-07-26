@@ -1,0 +1,20 @@
+name: Regen yarn.lock
+description: Regenerate yarn.lock
+runs:
+  using: 'composite'
+  steps:
+    - name: Create PR if yarn.lock has changed
+      shell: bash
+      run: |
+        changed_files="$(git diff --name-only . || true)"
+        if [[ $changed_files ]]; then
+          echo "After 'yarn install', workspace is dirty! The following files have changed:"
+          echo
+          echo "$changed_files"
+          echo
+          git add yarn.lock || true
+          git commit -s -m "chore(deps): regen yarn.lock" yarn.lock || true
+          gh pr create -B main --title "chore(deps): regen yarn.lock" --body "Created by Github action due to dirty workspace."
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
