@@ -16,5 +16,3 @@ runs:
           git commit -s -m "chore(deps): regen yarn.lock" yarn.lock || true
           gh pr create -B main --title "chore(deps): regen yarn.lock" --body "Created by Github action due to dirty workspace."
         fi
-      env:
-        GITHUB_TOKEN: ${{ secrets.RHDHBOT_PAT }}
