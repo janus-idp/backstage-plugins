@@ -154,7 +154,8 @@ export class GithubApiService {
         sort: 'full_name',
         direction: 'asc',
       });
-      resp?.data?.forEach(org => {
+      for (const org of resp?.data ?? []) {
+        const orgData = await octokit.request(org.url);
         const ghOrg: GithubOrganization = {
           id: org.id,
           name: org.login,
@@ -166,9 +167,11 @@ export class GithubApiService {
           members_url: org.members_url,
           public_members_url: org.public_members_url,
           avatar_url: org.avatar_url,
+          public_repos: orgData?.data?.public_repos,
+          total_private_repos: orgData?.data?.total_private_repos,
         };
         orgs.set(org.url, ghOrg);
-      });
+      }
 
       totalCount = await this.computeTotalCountFromGitHubToken(
         async (lastPageNumber: number) =>
