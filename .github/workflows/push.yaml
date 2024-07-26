@@ -48,6 +48,7 @@ jobs:
 
       - name: Release via semantic-release
         run: |
+          echo -n "Loading tags... ";tagsFound="$(git fetch --tags 2>&1)"; echo "found $(echo "$tagsFound" | wc -l) tags."
           npm config set workspaces-update false
           yarn release --ignore-private-packages
         env:
