@@ -113,6 +113,13 @@ Resource type permissions on the other hand are basic named permissions with a r
 | ocm.entity.read  |               | read   | Allows the user to read from the ocm plugin                       | X            |
 | ocm.cluster.read |               | read   | Allows the user to read the cluster information in the ocm plugin | X            |
 
+## Tekton
+
+| Name             | Resource Type | Policy | Description                                                                                                        | Requirements        |
+| ---------------- | ------------- | ------ | ------------------------------------------------------------------------------------------------------------------ | ------------------- |
+| tekton.view.read |               | read   | Allows the user to view the tekton plugin                                                                          | catalog.entity.read |
+| kubernetes.proxy |               |        | Allows the user to access the proxy endpoint (ability to read tekton pod logs and events within Showcase and RHDH) | catalog.entity.read |
+
 ## Topology
 
 | Name               | Resource Type | Policy | Description                                                                                                 | Requirements        |
