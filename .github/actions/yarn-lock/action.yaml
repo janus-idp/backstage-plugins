@@ -17,4 +17,4 @@ runs:
           gh pr create -B main --title "chore(deps): regen yarn.lock" --body "Created by Github action due to dirty workspace."
         fi
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.RHDHBOT_PAT }}
