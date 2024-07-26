@@ -5,6 +5,15 @@ import { render } from '@testing-library/react';
 import { mockTektonResources } from '../../../__fixtures__/1-tektonResources';
 import PLRlist from './PLRlist';
 
+jest.mock('@material-ui/styles', () => ({
+  ...jest.requireActual('@material-ui/styles'),
+  makeStyles: () => (_theme: any) => {
+    return {
+      ok: 'ok',
+    };
+  },
+}));
+
 describe('PLRlist', () => {
   it('shows the workload pipeline', () => {
     const pipelines = mockTektonResources.pipelines;

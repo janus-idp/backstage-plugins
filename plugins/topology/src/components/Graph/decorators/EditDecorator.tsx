@@ -7,7 +7,7 @@ import {
   getCheDecoratorData,
   getEditURL,
 } from '../../../utils/edit-decorator-utils';
-import RouteDecoratorIcon from '../../DecoratorIcons/RouteDecoratorIcon';
+import RouteDecoratorIcon from '../../Icons/RouteDecoratorIcon';
 import Decorator from './Decorator';
 
 interface DefaultDecoratorProps {

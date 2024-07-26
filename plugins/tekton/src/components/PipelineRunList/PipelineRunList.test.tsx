@@ -19,6 +19,15 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   }),
 }));
 
+jest.mock('@material-ui/styles', () => ({
+  ...jest.requireActual('@material-ui/styles'),
+  makeStyles: () => (_theme: any) => {
+    return {
+      ok: 'ok',
+    };
+  },
+}));
+
 describe('PipelineRunList', () => {
   it('should render PipelineRunList if available', () => {
     const mockContextData = {

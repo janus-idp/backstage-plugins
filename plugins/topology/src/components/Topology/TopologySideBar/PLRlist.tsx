@@ -4,11 +4,11 @@ import {
   PipelineKind,
   PipelineRunKind,
   pipelineRunStatus,
+  Status,
 } from '@janus-idp/shared-react';
 
 import ResourceName from '../../../common/components/ResourceName';
 import ResourceStatus from '../../../common/components/ResourceStatus';
-import Status from '../../../common/components/Status';
 import { MAXSHOWRESCOUNT } from '../../../const';
 import { PipelineRunModel } from '../../../pipeline-models';
 import PLRlastUpdated from './PLRlastUpdated';

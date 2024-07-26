@@ -5,7 +5,7 @@ import { render } from '@testing-library/react';
 
 import EditDecorator from './EditDecorator';
 
-jest.mock('../../DecoratorIcons/RouteDecoratorIcon', () => {
+jest.mock('../../Icons/RouteDecoratorIcon', () => {
   return ({ routeURL }: any) =>
     routeURL && <svg data-testid="mocked-icon">Mocked Icon</svg>;
 });

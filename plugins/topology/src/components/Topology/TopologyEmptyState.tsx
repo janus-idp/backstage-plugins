@@ -1,5 +1,6 @@
 import React from 'react';
 
+import TopologyIcon from '@mui/icons-material/HubOutlined';
 import {
   EmptyState,
   EmptyStateBody,
@@ -7,7 +8,8 @@ import {
   EmptyStateIcon,
   EmptyStateVariant,
 } from '@patternfly/react-core';
-import { TopologyIcon } from '@patternfly/react-icons';
+
+import './TopologyEmptyState.css';
 
 type TopologyEmptyStateProps = {
   title?: string;
@@ -26,7 +28,12 @@ export const TopologyEmptyState = ({
     >
       <EmptyStateHeader
         titleText={title || 'No resources found'}
-        icon={<EmptyStateIcon icon={TopologyIcon} />}
+        icon={
+          <EmptyStateIcon
+            icon={TopologyIcon}
+            className="bs-topology-empty-state"
+          />
+        }
         headingLevel="h3"
       >
         <EmptyStateBody>{description}</EmptyStateBody>

@@ -39,7 +39,6 @@ import {
   WHEN_EXPRESSION_SPACING,
 } from '../consts/pipeline-topology-const';
 import {
-  BuilderNodeModelData,
   FinallyNodeModel,
   LoadingNodeModel,
   NodeCreator,
@@ -47,8 +46,6 @@ import {
   PipelineEdgeModel,
   PipelineMixedNodeModel,
   PipelineRunAfterNodeModelData,
-  TaskListNodeModelData,
-  TaskNodeModelData,
 } from '../types/pipeline-topology-types';
 import { appendPipelineRunStatus, getPLRTaskRuns } from './pipelineRun-utils';
 
@@ -70,19 +67,6 @@ const getMaxFinallyNode = (finallyTaskList: PipelineTaskWithStatus[]) => {
   return sortedFinallyTaskList[0]?.name || '';
 };
 
-// Node variations
-export const createTaskNode: NodeCreator<TaskNodeModelData> = createGenericNode(
-  NodeType.TASK_NODE,
-);
-export const createSpacerNode: NodeCreator<PipelineRunAfterNodeModelData> =
-  createGenericNode(NodeType.SPACER_NODE, 0);
-export const createTaskListNode: NodeCreator<TaskListNodeModelData> =
-  createGenericNode(NodeType.TASK_LIST_NODE);
-export const createInvalidTaskListNode: NodeCreator<TaskListNodeModelData> =
-  createGenericNode(NodeType.INVALID_TASK_LIST_NODE);
-export const createBuilderNode: NodeCreator<BuilderNodeModelData> =
-  createGenericNode(NodeType.BUILDER_NODE);
-
 export const createFinallyNode = (
   height: number,
 ): NodeCreator<FinallyNodeModel> =>
@@ -99,26 +83,6 @@ const createPipelineTaskNode = (
   type: NodeType,
   data: PipelineRunAfterNodeModelData,
 ) => createGenericNode(type, data.width, data.height)(data.id ?? '', data);
-
-export const getNodeCreator = (
-  type: NodeType,
-): NodeCreator<PipelineRunAfterNodeModelData> => {
-  switch (type) {
-    case NodeType.TASK_LIST_NODE:
-      return createTaskListNode as NodeCreator<PipelineRunAfterNodeModelData>;
-    case NodeType.BUILDER_NODE:
-      return createBuilderNode as NodeCreator<PipelineRunAfterNodeModelData>;
-    case NodeType.SPACER_NODE:
-      return createSpacerNode;
-    case NodeType.LOADING_NODE:
-      return createLoadingNode as NodeCreator<PipelineRunAfterNodeModelData>;
-    case NodeType.INVALID_TASK_LIST_NODE:
-      return createInvalidTaskListNode as NodeCreator<PipelineRunAfterNodeModelData>;
-    case NodeType.TASK_NODE:
-    default:
-      return createTaskNode;
-  }
-};
 
 export const getTextWidth = (
   text: string,
