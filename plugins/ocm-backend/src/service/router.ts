@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  createLegacyAuthAdapters,
-} from '@backstage/backend-common';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import {
   coreServices,
@@ -24,7 +22,7 @@ import {
   DiscoveryService,
   HttpAuthService,
   LoggerService,
-  PermissionsService
+  PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { NotAllowedError } from '@backstage/errors';

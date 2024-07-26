@@ -28,7 +28,9 @@ export interface RouterOptions {
   auth?: AuthService;
 }
 
-export async function createRouter(args: RouterOptions): Promise<express.Router> {
+export async function createRouter(
+  args: RouterOptions,
+): Promise<express.Router> {
   const autoStartDevMode =
     args.config.getOptionalBoolean(
       'orchestrator.sonataFlowService.autoStart',

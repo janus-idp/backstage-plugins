@@ -64,7 +64,7 @@ import { DefaultAuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 
 export interface RouterOptions {
   logger: LoggerService;
-  config: Config,
+  config: Config;
   auth: AuthService;
   httpAuth: HttpAuthService;
 }
