@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-bulk-import [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-bulk-import@1.1.0...@janus-idp/backstage-plugin-bulk-import@1.1.1) (2024-07-26)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.9.0
+
 ## @janus-idp/backstage-plugin-bulk-import [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-bulk-import@1.0.6...@janus-idp/backstage-plugin-bulk-import@1.1.0) (2024-07-25)
 
 
