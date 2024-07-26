@@ -12,7 +12,21 @@ runs:
           echo
           echo "$changed_files"
           echo
+          git config --global user.name "RHDH Bot"
+          git config --global user.email rhdh-bot@redhat.com
+          git config --global pull.rebase true 
+          git config --global push.default matching
+
+          git stash || true
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          PR_BRANCH="ci-regen-yarn-lock-$(date +%s)"
+          git branch "${PR_BRANCH}"
+          git checkout "${PR_BRANCH}"
+          git pull origin "${PR_BRANCH}" || true
+
+          git stash pop || true
           git add yarn.lock || true
           git commit -s -m "chore(deps): regen yarn.lock" yarn.lock || true
-          gh pr create -B main --title "chore(deps): regen yarn.lock" --body "Created by Github action due to dirty workspace."
+          git push origin "${PR_BRANCH}"
+          gh pr create -B "${CURRENT_BRANCH}" -H "${PR_BRANCH}" --title "chore(deps): regen yarn.lock" --body "Created by Github action due to dirty workspace."
         fi
