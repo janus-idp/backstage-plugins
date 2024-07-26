@@ -6,7 +6,7 @@ on:
       node-version:
         description: Node.js version
         required: true
-        default: "20"
+        default: '20'
 
 concurrency:
   group: yarn-lock
