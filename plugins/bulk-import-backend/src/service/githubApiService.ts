@@ -1097,19 +1097,8 @@ export class GithubApiService {
       defaultBranch?: string;
     },
   ) {
-    const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
-    if (!ghConfig) {
-      throw new Error(`Could not find GH integration from ${input.repoUrl}`);
-    }
-
-    const credentials = await this.githubCredentialsProvider.getAllCredentials({
-      host: ghConfig.host,
-    });
-    if (credentials.length === 0) {
-      throw new Error(`No credentials for GH integration`);
-    }
-
-    const gitUrl = gitUrlParse(input.repoUrl);
+    const { ghConfig, credentials, gitUrl } =
+      await this.extractConfigAndCreds(input);
 
     const fileName = getCatalogFilename(this.config);
     for (const credential of credentials) {
@@ -1146,6 +1135,26 @@ export class GithubApiService {
     throw new Error(
       `Could not determine if ${input.repoUrl} already had a catalog-info file`,
     );
+  }
+
+  private async extractConfigAndCreds(input: {
+    repoUrl: string;
+    defaultBranch?: string;
+  }) {
+    const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
+    if (!ghConfig) {
+      throw new Error(`Could not find GH integration from ${input.repoUrl}`);
+    }
+
+    const credentials = await this.githubCredentialsProvider.getAllCredentials({
+      host: ghConfig.host,
+    });
+    if (credentials.length === 0) {
+      throw new Error(`No credentials for GH integration`);
+    }
+
+    const gitUrl = gitUrlParse(input.repoUrl);
+    return { ghConfig, credentials, gitUrl };
   }
 
   async closePR(
@@ -1246,19 +1255,8 @@ export class GithubApiService {
       repoUrl: string;
     },
   ) {
-    const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
-    if (!ghConfig) {
-      throw new Error(`Could not find GH integration from ${input.repoUrl}`);
-    }
-
-    const credentials = await this.githubCredentialsProvider.getAllCredentials({
-      host: ghConfig.host,
-    });
-    if (credentials.length === 0) {
-      throw new Error(`No credentials for GH integration`);
-    }
-
-    const gitUrl = gitUrlParse(input.repoUrl);
+    const { ghConfig, credentials, gitUrl } =
+      await this.extractConfigAndCreds(input);
     const owner = gitUrl.organization;
     const repo = gitUrl.name;
 
