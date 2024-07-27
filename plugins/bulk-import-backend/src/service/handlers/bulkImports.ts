@@ -36,6 +36,11 @@ import {
 import { hasEntityInCatalog, verifyLocationExistence } from './importStatus';
 import { findAllRepositories } from './repositories';
 
+type CreateImportDryRunStatus =
+  | 'CATALOG_ENTITY_CONFLICT'
+  | 'CATALOG_INFO_FILE_EXISTS_IN_REPO'
+  | 'REPO_EMPTY';
+
 export async function findAllImports(
   logger: Logger,
   githubApiService: GithubApiService,
@@ -213,35 +218,31 @@ export async function createImportJobs(
   }
 
   const result: Components.Schemas.Import[] = [];
-  const dryRunErrors: string[] = [];
   for (const req of importRequests) {
     const gitUrl = gitUrlParse(req.repository.url);
 
     if (dryRun) {
-      if (!req.catalogEntityName || req.catalogEntityName.trim().length === 0) {
-        dryRunErrors.push(
-          `ERROR: 'catalogEntityName' field must be specified in request body for ${req.repository.url} for dry-run operations`,
+      const dryRunChecks = await performDryRunChecks(
+        logger,
+        auth,
+        catalogApi,
+        githubApiService,
+        req,
+      );
+      if (dryRunChecks.errors && dryRunChecks.errors.length > 0) {
+        logger.warn(
+          `Errors while performing dry-run checks: ${dryRunChecks.errors}`,
         );
-      } else {
-        const errs: string[] = [];
-        const hasEntity = await hasEntityInCatalog(
-          auth,
-          catalogApi,
-          req.catalogEntityName,
-        );
-        if (hasEntity) {
-          errs.push('CONFLICT');
-        }
-        result.push({
-          errors: errs,
-          catalogEntityName: req.catalogEntityName,
-          repository: {
-            url: req.repository.url,
-            name: gitUrl.name,
-            organization: gitUrl.organization,
-          },
-        });
       }
+      result.push({
+        errors: dryRunChecks.dryRunStatuses,
+        catalogEntityName: req.catalogEntityName,
+        repository: {
+          url: req.repository.url,
+          name: gitUrl.name,
+          organization: gitUrl.organization,
+        },
+      });
       continue;
     }
 
@@ -347,18 +348,94 @@ export async function createImportJobs(
     }
   }
 
-  if (dryRun && dryRunErrors.length > 0) {
-    return {
-      statusCode: 400,
-      responseBody: {
-        errors: dryRunErrors,
-      },
-    };
-  }
-
   return {
     statusCode: 202,
     responseBody: result,
+  };
+}
+
+async function performDryRunChecks(
+  logger: Logger,
+  auth: AuthService,
+  catalogApi: CatalogApi,
+  githubApiService: GithubApiService,
+  req: Components.Schemas.ImportRequest,
+): Promise<{ dryRunStatuses: CreateImportDryRunStatus[]; errors: string[] }> {
+  const checkCatalog = async (): Promise<{
+    dryRunStatuses?: CreateImportDryRunStatus[];
+    errors?: string[];
+  }> => {
+    if (!req.catalogEntityName || req.catalogEntityName.trim().length === 0) {
+      return {
+        errors: [
+          `WARNING: skipped checking against catalog. Missing 'catalogEntityName' field in request body for ${req.repository.url} for dry-run check`,
+        ],
+      };
+    }
+    const hasEntity = await hasEntityInCatalog(
+      auth,
+      catalogApi,
+      req.catalogEntityName,
+    );
+    if (hasEntity) {
+      return { dryRunStatuses: ['CATALOG_ENTITY_CONFLICT'] };
+    }
+    return {};
+  };
+
+  const checkEmptyRepo = async (): Promise<{
+    dryRunStatuses?: CreateImportDryRunStatus[];
+    errors?: string[];
+  }> => {
+    const empty = await githubApiService.isRepoEmpty(logger, {
+      repoUrl: req.repository.url,
+    });
+    if (empty) {
+      return {
+        dryRunStatuses: ['REPO_EMPTY'],
+      };
+    }
+    return {};
+  };
+
+  const checkCatalogInfoPresenceInRepo = async (): Promise<{
+    dryRunStatuses?: CreateImportDryRunStatus[];
+    errors?: string[];
+  }> => {
+    const exists = await githubApiService.doesCatalogInfoAlreadyExistInRepo(
+      logger,
+      {
+        repoUrl: req.repository.url,
+        defaultBranch: req.repository.defaultBranch,
+      },
+    );
+    if (exists) {
+      return {
+        dryRunStatuses: ['CATALOG_INFO_FILE_EXISTS_IN_REPO'],
+      };
+    }
+    return {};
+  };
+
+  const dryRunStatuses: CreateImportDryRunStatus[] = [];
+  const errors: string[] = [];
+  const allChecks = await Promise.all([
+    checkCatalog(),
+    checkEmptyRepo(),
+    checkCatalogInfoPresenceInRepo(),
+  ]);
+  allChecks.flat().forEach(res => {
+    if (res.dryRunStatuses) {
+      dryRunStatuses.push(...res.dryRunStatuses);
+    }
+    if (res.errors) {
+      errors.push(...res.errors);
+    }
+  });
+
+  return {
+    dryRunStatuses: dryRunStatuses.sort(),
+    errors,
   };
 }
 

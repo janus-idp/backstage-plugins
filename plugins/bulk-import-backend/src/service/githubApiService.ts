@@ -1239,4 +1239,57 @@ export class GithubApiService {
       state: 'closed',
     });
   }
+
+  async isRepoEmpty(
+    logger: Logger,
+    input: {
+      repoUrl: string;
+    },
+  ) {
+    const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
+    if (!ghConfig) {
+      throw new Error(`Could not find GH integration from ${input.repoUrl}`);
+    }
+
+    const credentials = await this.githubCredentialsProvider.getAllCredentials({
+      host: ghConfig.host,
+    });
+    if (credentials.length === 0) {
+      throw new Error(`No credentials for GH integration`);
+    }
+
+    const gitUrl = gitUrlParse(input.repoUrl);
+    const owner = gitUrl.organization;
+    const repo = gitUrl.name;
+
+    for (const credential of credentials) {
+      if ('error' in credential) {
+        if (credential.error?.name !== 'NotFoundError') {
+          this.logger.error(
+            `Obtaining the Access Token Github App with appId: ${credential.appId} failed with ${credential.error}`,
+          );
+          const credentialError = this.createCredentialError(credential);
+          if (credentialError) {
+            logger.debug(`${credential.appId}: ${credentialError}`);
+          }
+        }
+        continue;
+      }
+      const octo = new Octokit({
+        baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
+        auth: credential.token,
+      });
+      const resp = await octo.rest.repos.listContributors({
+        owner,
+        repo,
+        page: 1,
+        per_page: 1,
+      });
+      const status = resp.status as 200 | 204;
+      if (status === 204) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
