@@ -28,6 +28,7 @@
   },
   "scripts": {},
   "dependencies": {
+    "@janus-idp/backstage-plugin-audit-log-node": "^1.4.0",
     "@octokit/auth-app": "^6.0.3",
     "@octokit/core": "^5.1.0",
     "@octokit/rest": "^20.0.2",
