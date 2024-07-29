@@ -19,19 +19,11 @@ import {
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import {
-  AuthService,
-  BackstageCredentials,
-  HttpAuthService,
-  PermissionsService,
-} from '@backstage/backend-plugin-api';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import {
-  createPermission,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
 import { fullFormats } from 'ajv-formats/dist/formats';
@@ -40,6 +32,17 @@ import Router from 'express-promise-router';
 import { Context, OpenAPIBackend, Request } from 'openapi-backend';
 import { Logger } from 'winston';
 
+import {
+  AuditLogger,
+  DefaultAuditLogger,
+} from '@janus-idp/backstage-plugin-audit-log-node';
+import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
+
+import {
+  auditLogRequestError,
+  auditLogRequestSuccess,
+} from '../helpers/auditLogUtils';
+import { permissionCheck } from '../helpers/auth';
 import { CatalogInfoGenerator } from '../helpers/catalogInfoGenerator';
 import { Components, Paths } from '../openapi.d';
 import { openApiDocument } from '../openapidocument';
@@ -57,16 +60,6 @@ import {
   findRepositoriesByOrganization,
 } from './handlers/repositories';
 
-// TODO: Remove this when done to use the @janus-idp/backstage-plugin-bulk-import-common import instead
-/** This permission is used to access the bulk-import endpoints
- * @public
- */
-export const bulkImportPermission = createPermission({
-  name: 'bulk-import',
-  attributes: {},
-  resourceType: 'bulk-import',
-});
-
 export interface RouterOptions {
   logger: Logger;
   permissions: PermissionEvaluator;
@@ -78,40 +71,18 @@ export interface RouterOptions {
   catalogApi: CatalogApi;
 }
 
-/**
- * This will resolve to { result: AuthorizeResult.ALLOW } if the permission framework is disabled
- */
-async function permissionCheck(
-  _permissions: PermissionsService,
-  _credentials: BackstageCredentials,
-) {
-  // TODO(rm3l): Implement this properly as part of https://issues.redhat.com/browse/RHIDP-1208
-  return;
-  // const decision = (
-  //   await permissions.authorize(
-  //     [
-  //       {
-  //         permission: bulkImportPermission,
-  //         resourceRef: bulkImportPermission.resourceType,
-  //       },
-  //     ],
-  //     {
-  //       credentials,
-  //     },
-  //   )
-  // )[0];
-  //
-  // if (decision.result === AuthorizeResult.DENY) {
-  //   throw new NotAllowedError('Unauthorized');
-  // }
-}
-
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { logger, permissions, config, discovery, catalogApi } = options;
 
   const { auth, httpAuth } = createLegacyAuthAdapters(options);
+
+  const auditLogger: AuditLogger = new DefaultAuditLogger({
+    logger: logger,
+    authService: auth,
+    httpAuthService: httpAuth,
+  });
 
   const githubApiService = new GithubApiService(logger, config);
   const catalogInfoGenerator = new CatalogInfoGenerator(
@@ -123,131 +94,170 @@ export async function createRouter(
   // create openapi requests handler
   const api = new OpenAPIBackend({
     ajvOpts: {
+      verbose: true,
       formats: fullFormats, // open issue: https://github.com/openapistack/openapi-backend/issues/280
     },
     validate: true,
     definition: openApiDocument,
+    handlers: {
+      validationFail: async (
+        c,
+        _req: express.Request,
+        res: express.Response,
+      ) => {
+        console.log('validationFail', c.operation);
+        res.status(400).json({ err: c.validation.errors });
+      },
+      notFound: async (_c, req: express.Request, res: express.Response) => {
+        res.status(404).json({ err: `${req.path} path not found` });
+      },
+      notImplemented: async (_c, req: express.Request, res: express.Response) =>
+        res.status(500).json({ err: `${req.path} not implemented` }),
+    },
   });
 
   await api.init();
 
   api.register(
     'ping',
-    (_c: Context, _req: express.Request, res: express.Response) =>
-      ping(logger).then(result =>
-        res.status(result.statusCode).json(result.responseBody),
-      ),
+    (c: Context, req: express.Request, res: express.Response) =>
+      ping(logger)
+        .then(result => {
+          res.status(result.statusCode).json(result.responseBody);
+          auditLogRequestSuccess(c, auditLogger, req, result.statusCode);
+        })
+        .catch((err: any) => auditLogRequestError(c, auditLogger, req, err)),
   );
 
   api.register(
     'findAllOrganizations',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
-      const q: Paths.FindAllOrganizations.QueryParameters = {
-        ...c.request.query,
-      };
-      // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
-      q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
-      q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
-      const response = await findAllOrganizations(
-        logger,
-        githubApiService,
-        q.pagePerIntegration,
-        q.sizePerIntegration,
-      );
-      return res.status(response.statusCode).json({
-        errors: response.responseBody?.errors,
-        organizations: response.responseBody?.organizations,
-        totalCount: response.responseBody?.totalCount,
-        pagePerIntegration: q.pagePerIntegration,
-        sizePerIntegration: q.sizePerIntegration,
-      } as Components.Schemas.OrganizationList);
+      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
+      try {
+        const q: Paths.FindAllOrganizations.QueryParameters = {
+          ...c.request.query,
+        };
+        // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
+        q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
+        q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
+        const response = await findAllOrganizations(
+          logger,
+          githubApiService,
+          q.pagePerIntegration,
+          q.sizePerIntegration,
+        );
+        auditLogRequestSuccess(c, auditLogger, req, response.statusCode);
+        return res.status(response.statusCode).json({
+          errors: response.responseBody?.errors,
+          organizations: response.responseBody?.organizations,
+          totalCount: response.responseBody?.totalCount,
+          pagePerIntegration: q.pagePerIntegration,
+          sizePerIntegration: q.sizePerIntegration,
+        } as Components.Schemas.OrganizationList);
+      } catch (err: any) {
+        auditLogRequestError(c, auditLogger, req, err);
+        throw err;
+      }
     },
   );
 
   api.register(
     'findAllRepositories',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
-      const q: Paths.FindAllRepositories.QueryParameters = {
-        ...c.request.query,
-      };
-      // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
-      q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
-      q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
-      q.checkImportStatus = stringToBoolean(q.checkImportStatus);
-      const response = await findAllRepositories(
-        logger,
-        githubApiService,
-        catalogInfoGenerator,
-        q.checkImportStatus,
-        q.pagePerIntegration,
-        q.sizePerIntegration,
-      );
-      const repos = response.responseBody?.repositories;
-      return res.status(response.statusCode).json({
-        errors: response.responseBody?.errors,
-        repositories: repos,
-        totalCount: response.responseBody?.totalCount,
-        pagePerIntegration: q.pagePerIntegration,
-        sizePerIntegration: q.sizePerIntegration,
-      } as Components.Schemas.RepositoryList);
+      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
+      try {
+        const q: Paths.FindAllRepositories.QueryParameters = {
+          ...c.request.query,
+        };
+        // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
+        q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
+        q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
+        q.checkImportStatus = stringToBoolean(q.checkImportStatus);
+        const response = await findAllRepositories(
+          logger,
+          githubApiService,
+          catalogInfoGenerator,
+          q.checkImportStatus,
+          q.pagePerIntegration,
+          q.sizePerIntegration,
+        );
+        const repos = response.responseBody?.repositories;
+        auditLogRequestSuccess(c, auditLogger, req, response.statusCode);
+        return res.status(response.statusCode).json({
+          errors: response.responseBody?.errors,
+          repositories: repos,
+          totalCount: response.responseBody?.totalCount,
+          pagePerIntegration: q.pagePerIntegration,
+          sizePerIntegration: q.sizePerIntegration,
+        } as Components.Schemas.RepositoryList);
+      } catch (err: any) {
+        auditLogRequestError(c, auditLogger, req, err);
+        throw err;
+      }
     },
   );
 
   api.register(
     'findRepositoriesByOrganization',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
-      const q: Paths.FindRepositoriesByOrganization.QueryParameters = {
-        ...c.request.query,
-      };
-      // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
-      q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
-      q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
-      q.checkImportStatus = stringToBoolean(q.checkImportStatus);
-      const response = await findRepositoriesByOrganization(
-        logger,
-        githubApiService,
-        catalogInfoGenerator,
-        c.request.params.organizationName?.toString(),
-        q.checkImportStatus,
-        q.pagePerIntegration,
-        q.sizePerIntegration,
-      );
-      const repos = response.responseBody?.repositories;
-      return res.status(response.statusCode).json({
-        errors: response.responseBody?.errors,
-        repositories: repos,
-        totalCount: response.responseBody?.totalCount,
-        pagePerIntegration: q.pagePerIntegration,
-        sizePerIntegration: q.sizePerIntegration,
-      } as Components.Schemas.RepositoryList);
+      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
+      try {
+        const q: Paths.FindRepositoriesByOrganization.QueryParameters = {
+          ...c.request.query,
+        };
+        // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
+        q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
+        q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
+        q.checkImportStatus = stringToBoolean(q.checkImportStatus);
+        const response = await findRepositoriesByOrganization(
+          logger,
+          githubApiService,
+          catalogInfoGenerator,
+          c.request.params.organizationName?.toString(),
+          q.checkImportStatus,
+          q.pagePerIntegration,
+          q.sizePerIntegration,
+        );
+        const repos = response.responseBody?.repositories;
+        auditLogRequestSuccess(c, auditLogger, req, response.statusCode);
+        return res.status(response.statusCode).json({
+          errors: response.responseBody?.errors,
+          repositories: repos,
+          totalCount: response.responseBody?.totalCount,
+          pagePerIntegration: q.pagePerIntegration,
+          sizePerIntegration: q.sizePerIntegration,
+        } as Components.Schemas.RepositoryList);
+      } catch (err: any) {
+        auditLogRequestError(c, auditLogger, req, err);
+        throw err;
+      }
     },
   );
 
   api.register(
     'findAllImports',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
-      const q: Paths.FindAllRepositories.QueryParameters = {
-        ...c.request.query,
-      };
-      // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
-      q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
-      q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
-      const response = await findAllImports(
-        logger,
-        githubApiService,
-        catalogInfoGenerator,
-        q.pagePerIntegration,
-        q.sizePerIntegration,
-      );
-      return res.status(response.statusCode).json(response.responseBody);
+      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
+      try {
+        const q: Paths.FindAllRepositories.QueryParameters = {
+          ...c.request.query,
+        };
+        // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
+        q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
+        q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
+        const response = await findAllImports(
+          logger,
+          githubApiService,
+          catalogInfoGenerator,
+          q.pagePerIntegration,
+          q.sizePerIntegration,
+        );
+        auditLogRequestSuccess(c, auditLogger, req, response.statusCode);
+        return res.status(response.statusCode).json(response.responseBody);
+      } catch (err: any) {
+        auditLogRequestError(c, auditLogger, req, err);
+        throw err;
+      }
     },
   );
 
@@ -258,67 +268,84 @@ export async function createRouter(
       req: express.Request,
       res: express.Response,
     ) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
-      const q: Paths.CreateImportJobs.QueryParameters = { ...c.request.query };
-      q.dryRun = stringToBoolean(q.dryRun);
-      const response = await createImportJobs(
-        logger,
-        config,
-        auth,
-        catalogApi,
-        githubApiService,
-        catalogInfoGenerator,
-        {
-          importRequests: c.request.requestBody,
-          dryRun: q.dryRun,
-        },
-      );
-      return res.status(response.statusCode).json(response.responseBody);
+      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
+      try {
+        const q: Paths.CreateImportJobs.QueryParameters = {
+          ...c.request.query,
+        };
+        q.dryRun = stringToBoolean(q.dryRun);
+        const response = await createImportJobs(
+          logger,
+          config,
+          auth,
+          catalogApi,
+          githubApiService,
+          catalogInfoGenerator,
+          {
+            importRequests: c.request.requestBody,
+            dryRun: q.dryRun,
+          },
+        );
+        auditLogRequestSuccess(c, auditLogger, req, response.statusCode);
+        return res.status(response.statusCode).json(response.responseBody);
+      } catch (err: any) {
+        auditLogRequestError(c, auditLogger, req, err);
+        throw err;
+      }
     },
   );
 
   api.register(
     'findImportStatusByRepo',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
-      const q: Paths.FindImportStatusByRepo.QueryParameters = {
-        ...c.request.query,
-      };
-      if (!q.repo || q.repo.trim().length === 0) {
-        throw new Error('missing or blank parameter');
+      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
+      try {
+        const q: Paths.FindImportStatusByRepo.QueryParameters = {
+          ...c.request.query,
+        };
+        if (!q.repo || q.repo.trim().length === 0) {
+          throw new Error('missing or blank parameter');
+        }
+        const response = await findImportStatusByRepo(
+          logger,
+          githubApiService,
+          catalogInfoGenerator,
+          q.repo,
+          q.defaultBranch,
+        );
+        auditLogRequestSuccess(c, auditLogger, req, response.statusCode);
+        return res.status(response.statusCode).json(response.responseBody);
+      } catch (err: any) {
+        auditLogRequestError(c, auditLogger, req, err);
+        throw err;
       }
-      const response = await findImportStatusByRepo(
-        logger,
-        githubApiService,
-        catalogInfoGenerator,
-        q.repo,
-        q.defaultBranch,
-      );
-      return res.status(response.statusCode).json(response.responseBody);
     },
   );
 
   api.register(
     'deleteImportByRepo',
     async (c: Context, req: express.Request, res: express.Response) => {
-      const backstageToken = await httpAuth.credentials(req);
-      await permissionCheck(permissions, backstageToken);
-      const q: Paths.DeleteImportByRepo.QueryParameters = {
-        ...c.request.query,
-      };
-      if (!q.repo || q.repo.trim().length === 0) {
-        throw new Error('missing or blank "repo" parameter');
+      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
+      try {
+        const q: Paths.DeleteImportByRepo.QueryParameters = {
+          ...c.request.query,
+        };
+        if (!q.repo || q.repo.trim().length === 0) {
+          throw new Error('missing or blank "repo" parameter');
+        }
+        const response = await deleteImportByRepo(
+          logger,
+          githubApiService,
+          catalogInfoGenerator,
+          q.repo,
+          q.defaultBranch,
+        );
+        auditLogRequestSuccess(c, auditLogger, req, response.statusCode);
+        return res.status(response.statusCode).json(response.responseBody);
+      } catch (err: any) {
+        auditLogRequestError(c, auditLogger, req, err);
+        throw err;
       }
-      const response = await deleteImportByRepo(
-        logger,
-        githubApiService,
-        catalogInfoGenerator,
-        q.repo,
-        q.defaultBranch,
-      );
-      return res.status(response.statusCode).json(response.responseBody);
     },
   );
 
@@ -334,12 +361,6 @@ export async function createRouter(
     if (!next) {
       throw new Error('next is undefined');
     }
-    const validation = api.validateRequest(req as Request);
-    if (!validation.valid) {
-      res.status(500).json({ status: 500, err: validation.errors });
-      return;
-    }
-
     api.handleRequest(req as Request, req, res).catch(next);
   });
 
