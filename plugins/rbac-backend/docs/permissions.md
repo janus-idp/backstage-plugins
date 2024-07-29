@@ -126,3 +126,9 @@ Resource type permissions on the other hand are basic named permissions with a r
 | ------------------ | ------------- | ------ | ----------------------------------------------------------------------------------------------------------- | ------------------- |
 | topology.view.read |               | read   | Allows the user to view the topology plugin                                                                 | X                   |
 | kubernetes.proxy   |               |        | Allows the user to access the proxy endpoint (ability to read pod logs and events within Showcase and RHDH) | catalog.entity.read |
+
+## Bulk Import
+
+| Name        | Resource Type | Policy | Description                                                                                                                                                                          | Requirements |
+| ----------- | ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| bulk.import | bulk-import   |        | Allows the user to access the bulk import endpoints (listing all repositories and organizations accessible by all GitHub integrations, as well as managing the import requests, ...) | X            |
