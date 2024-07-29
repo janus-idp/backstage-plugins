@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [4.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.6.0...@janus-idp/backstage-plugin-rbac-backend@4.6.1) (2024-07-29)
+
+
+### Bug Fixes
+
+* **rbac:** fix uncommited knex transaction in the addGroupingPolicies ([#1968](https://github.com/janus-idp/backstage-plugins/issues/1968)) ([24d5eef](https://github.com/janus-idp/backstage-plugins/commit/24d5eeffbce685bbe05f8895fe3a69ee26a4eb8a))
+
 ## @janus-idp/backstage-plugin-rbac-backend [4.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.5.0...@janus-idp/backstage-plugin-rbac-backend@4.6.0) (2024-07-26)
 
 
