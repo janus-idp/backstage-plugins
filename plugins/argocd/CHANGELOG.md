@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-argocd [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.4.1...@janus-idp/backstage-plugin-argocd@1.5.0) (2024-07-30)
+
+
+### Features
+
+* **argocd:** add permission support for argocd ([#1855](https://github.com/janus-idp/backstage-plugins/issues/1855)) ([3b78237](https://github.com/janus-idp/backstage-plugins/commit/3b782377683605ea4d584c43bea14be2f435003d))
+
 ## @janus-idp/backstage-plugin-argocd [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.4.0...@janus-idp/backstage-plugin-argocd@1.4.1) (2024-07-26)
 
 
