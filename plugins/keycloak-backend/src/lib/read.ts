@@ -21,10 +21,7 @@ import {
   KeycloakAdminClient,
   Users,
 } from '@s3pweb/keycloak-admin-client-cjs';
-import type {
-  GroupRepresentation,
-  UserRepresentation,
-} from '@s3pweb/keycloak-admin-client-cjs';
+import type { UserRepresentation } from '@s3pweb/keycloak-admin-client-cjs';
 
 import { KeycloakProviderConfig } from './config';
 import {
@@ -140,10 +137,10 @@ export async function getEntities<T extends Users | Groups>(
 }
 
 export async function processGroupsRecursively(
-  topLevelGroups: GroupRepresentation[],
+  topLevelGroups: GroupRepresentationWithParent[],
   entities: Groups,
 ) {
-  const allGroups: T[] = [];
+  const allGroups: GroupRepresentationWithParent[] = [];
   for (const group of topLevelGroups) {
     allGroups.push(group);
 
