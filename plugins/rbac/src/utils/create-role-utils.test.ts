@@ -614,7 +614,7 @@ describe('getRulesNumber', () => {
   });
 
   it('should return 0 when there are no conditions', () => {
-    const result = getRulesNumber(undefined);
+    const result = getRulesNumber();
     expect(result).toBe(0);
   });
 

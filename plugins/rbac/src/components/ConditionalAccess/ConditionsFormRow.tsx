@@ -63,23 +63,24 @@ export const ConditionsFormRow = ({
     switch (criteria) {
       case criterias.allOf:
         extractNestedConditions(
-          (conditionRow.allOf as Condition[]) || [],
+          conditionRow.allOf || [],
           criteriaTypes,
           nestedConditions,
         );
         break;
       case criterias.anyOf:
         extractNestedConditions(
-          (conditionRow.anyOf as Condition[]) || [],
+          conditionRow.anyOf || [],
           criteriaTypes,
           nestedConditions,
         );
         break;
       case criterias.not:
         if (
-          criteriaTypes.includes(Object.keys(conditionRow.not as Condition)[0])
+          conditionRow.not &&
+          criteriaTypes.includes(Object.keys(conditionRow.not)[0])
         ) {
-          nestedConditions.push(conditionRow.not as Condition);
+          nestedConditions.push(conditionRow.not);
           setNotConditionType('nested-condition');
         }
         break;
@@ -129,9 +130,12 @@ export const ConditionsFormRow = ({
       onRuleChange({
         [criteria]: newCondition,
       });
-    } else if (criteria === criterias.not) {
+    } else if (
+      criteria === criterias.not &&
+      !Array.isArray(updatedNestedConditionRow)
+    ) {
       onRuleChange({
-        not: updatedNestedConditionRow as Condition,
+        not: updatedNestedConditionRow,
       });
     }
   };
@@ -224,7 +228,7 @@ export const ConditionsFormRow = ({
   };
 
   const handleNotConditionTypeChange = (val: NotConditionType) => {
-    setNotConditionType(val as NotConditionType);
+    setNotConditionType(val);
     setErrors(initializeErrors(criteria, val));
     if (val === 'nested-condition') {
       handleAddNestedCondition(criterias.not);
@@ -436,7 +440,7 @@ export const ConditionsFormRow = ({
             nestedConditionIndex
           ] as NestedCriteriaErrors;
 
-          if (nestedErrors && nestedErrors[nestedConditionCriteria]) {
+          if (nestedErrors?.nestedConditionCriteria) {
             const updatedNestedErrors = (
               nestedErrors[nestedConditionCriteria] as string[]
             ).filter((_error, index) => index !== ruleIndex);
@@ -549,11 +553,13 @@ export const ConditionsFormRow = ({
             className={classes.removeRuleButton}
             disabled={isNestedCondition ? nestedDisabled : disabled}
             onClick={
-              isNestedCondition
+              isNestedCondition &&
+              activeNestedCriteria &&
+              nestedConditionIndex !== undefined
                 ? () =>
                     handleRemoveNestedConditionRule(
-                      activeNestedCriteria as 'allOf' | 'anyOf',
-                      nestedConditionIndex as number,
+                      activeNestedCriteria,
+                      nestedConditionIndex,
                       ruleIndex,
                     )
                 : () => {
@@ -653,6 +659,7 @@ export const ConditionsFormRow = ({
           >
             {nestedConditionButtons.map(({ val, label }) => (
               <CriteriaToggleButton
+                key={`nested-criteria-${val}`}
                 val={val}
                 label={label}
                 selectedCriteria={selectedNestedConditionCriteria}
@@ -743,6 +750,7 @@ export const ConditionsFormRow = ({
       >
         {conditionButtons.map(({ val, label }) => (
           <CriteriaToggleButton
+            key={`criteria-${val}`}
             val={val}
             label={label}
             selectedCriteria={criteria}

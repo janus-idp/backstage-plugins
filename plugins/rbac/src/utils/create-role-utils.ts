@@ -1,5 +1,3 @@
-import { PermissionCondition } from '@backstage/plugin-permission-common';
-
 import * as yup from 'yup';
 
 import {
@@ -13,10 +11,7 @@ import {
 import { getTitleCase } from '@janus-idp/shared-react';
 
 import { criterias } from '../components/ConditionalAccess/const';
-import {
-  Condition,
-  ConditionsData,
-} from '../components/ConditionalAccess/types';
+import { ConditionsData } from '../components/ConditionalAccess/types';
 import {
   PermissionPolicies,
   PluginsPermissionPoliciesData,

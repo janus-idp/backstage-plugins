@@ -223,9 +223,7 @@ export const ConditionsFormRowFields = ({
     if (
       criteria === criterias.not &&
       nestedConditionCriteria &&
-      !Object.keys(
-        conditionRow[criteria as keyof Condition] as Condition,
-      ).includes('rule')
+      !Object.keys(conditionRow[criteria as keyof Condition]).includes('rule')
     ) {
       setErrors(prevErrors => {
         const updatedErrors = { ...prevErrors };
@@ -260,12 +258,10 @@ export const ConditionsFormRowFields = ({
         const updatedErrors = { ...prevErrors };
         // simple rule errors
         const simpleRuleErrors = (
-          updatedErrors[
+          (updatedErrors[
             criteria as keyof AccessConditionsErrors
-          ] as ComplexErrors[]
+          ] as ComplexErrors[]) || []
         ).filter(e => typeof e === 'string');
-        // console.log('simpleRuleErrors', simpleRuleErrors);
-        // console.log('index', index);
         if (
           Array.isArray(simpleRuleErrors) &&
           simpleRuleErrors.length > 0 &&
@@ -278,9 +274,9 @@ export const ConditionsFormRowFields = ({
 
         // nested rule errors
         const nestedRuleErrors = (
-          updatedErrors[
+          (updatedErrors[
             criteria as keyof AccessConditionsErrors
-          ] as ComplexErrors[]
+          ] as ComplexErrors[]) || []
         ).filter(e => typeof e !== 'string');
 
         // nestedCriteria: allOf or anyOf

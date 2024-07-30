@@ -1,7 +1,5 @@
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 
-import { RJSFValidationError } from '@rjsf/utils';
-
 export type RulesData = {
   rules: string[];
   [rule: string]: {
@@ -31,30 +29,14 @@ export type ConditionsData = {
 
 export type Condition = PermissionCondition | ConditionsData;
 
-// export type RuleParamsErrors = {
-//   [key: string]: RJSFValidationError[];
-// };
-
-// export type ComplexErrors = RJSFValidationError | NestedCriteriaErrors | {};
 export type ComplexErrors = string | NestedCriteriaErrors;
-// => string | NestedCriteriaErrors
 
 export type NestedCriteriaErrors = {
-  // [nestedCriteria: string]: (RJSFValidationError | {})[] | RJSFValidationError; // => string[] | string
   [nestedCriteria: string]: string[] | string;
-  // allOf: RJSFValidationError[]; => string[]
-  // anyOf: RJSFValidationError[]; => string[]
-  // not: RJSFValidationError; => string
 };
 
 export type AccessConditionsErrors = {
-  // [criteria: string]: ComplexErrors[] | RJSFValidationError | {};
   [criteria: string]: ComplexErrors[] | NestedCriteriaErrors | string;
-  // condition: RJSFValidationError; => string
-  // not(simple): RJSFValidationError; => string
-  // not(nested): NestedCriteriaErrors; => NestedCriteriaErrors
-  // allOf: ComplexErrors[]
-  // anyOf: ComplexErrors[]
 };
 
 export type ConditionFormRowProps = {

@@ -37,7 +37,7 @@ describe('ruleOptionDisabled', () => {
   });
 
   it('should return false if conditions is undefined', () => {
-    expect(ruleOptionDisabled('someRule', undefined)).toBe(false);
+    expect(ruleOptionDisabled('someRule')).toBe(false);
   });
 });
 

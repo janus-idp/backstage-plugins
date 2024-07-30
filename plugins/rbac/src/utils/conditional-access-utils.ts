@@ -1,7 +1,6 @@
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 
 import { makeStyles } from '@material-ui/core';
-import { RJSFValidationError } from '@rjsf/utils';
 
 import {
   conditionButtons,
@@ -12,8 +11,6 @@ import {
   ComplexErrors,
   Condition,
   ConditionsData,
-  NestedCriteriaErrors,
-  NotConditionType,
 } from '../components/ConditionalAccess/types';
 
 export const ruleOptionDisabled = (
