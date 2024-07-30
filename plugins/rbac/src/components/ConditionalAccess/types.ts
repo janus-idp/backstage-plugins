@@ -31,8 +31,30 @@ export type ConditionsData = {
 
 export type Condition = PermissionCondition | ConditionsData;
 
-export type RuleParamsErrors = {
-  [key: string]: RJSFValidationError[];
+// export type RuleParamsErrors = {
+//   [key: string]: RJSFValidationError[];
+// };
+
+// export type ComplexErrors = RJSFValidationError | NestedCriteriaErrors | {};
+export type ComplexErrors = string | NestedCriteriaErrors;
+// => string | NestedCriteriaErrors
+
+export type NestedCriteriaErrors = {
+  // [nestedCriteria: string]: (RJSFValidationError | {})[] | RJSFValidationError; // => string[] | string
+  [nestedCriteria: string]: string[] | string;
+  // allOf: RJSFValidationError[]; => string[]
+  // anyOf: RJSFValidationError[]; => string[]
+  // not: RJSFValidationError; => string
+};
+
+export type AccessConditionsErrors = {
+  // [criteria: string]: ComplexErrors[] | RJSFValidationError | {};
+  [criteria: string]: ComplexErrors[] | NestedCriteriaErrors | string;
+  // condition: RJSFValidationError; => string
+  // not(simple): RJSFValidationError; => string
+  // not(nested): NestedCriteriaErrors; => NestedCriteriaErrors
+  // allOf: ComplexErrors[]
+  // anyOf: ComplexErrors[]
 };
 
 export type ConditionFormRowProps = {
@@ -42,14 +64,9 @@ export type ConditionFormRowProps = {
   selPluginResourceType: string;
   criteria: string;
   setCriteria: React.Dispatch<React.SetStateAction<string>>;
-  handleSetErrors: (
-    newErrors: RJSFValidationError[],
-    currentCriteria: string,
-    nestedCriteria?: string,
-    conditionIndex?: number,
-    nestedConditionRuleIndex?: number,
-    removeErrors?: boolean,
-  ) => void;
+  setErrors: React.Dispatch<
+    React.SetStateAction<AccessConditionsErrors | undefined>
+  >;
   setRemoveAllClicked: React.Dispatch<React.SetStateAction<boolean>>;
 };
 

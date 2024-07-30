@@ -13,11 +13,17 @@ import {
 } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 
-import { calculateConditionIndex } from '../../utils/conditional-access-utils';
 import { criterias } from './const';
 import { CustomArrayField } from './CustomArrayField';
 import { RulesDropdownOption } from './RulesDropdownOption';
-import { Condition, ConditionsData, RulesData } from './types';
+import {
+  AccessConditionsErrors,
+  ComplexErrors,
+  Condition,
+  ConditionsData,
+  NestedCriteriaErrors,
+  RulesData,
+} from './types';
 
 interface StyleProps {
   isNotSimpleCondition: boolean;
@@ -80,16 +86,11 @@ type ConditionFormRowFieldsProps = {
   index?: number;
   criteria: string;
   onRuleChange: (newCondition: ConditionsData) => void;
-  conditionRow: Condition;
+  conditionRow: ConditionsData | Condition;
   conditionRulesData?: RulesData;
-  handleSetErrors: (
-    newErrors: RJSFValidationError[],
-    currentCriteria: string,
-    nestedCriteria?: string,
-    conditionIndex?: number,
-    nestedConditionRuleIndex?: number,
-    removeErrors?: boolean,
-  ) => void;
+  setErrors: React.Dispatch<
+    React.SetStateAction<AccessConditionsErrors | undefined>
+  >;
   optionDisabled?: (ruleOption: string) => boolean;
   setRemoveAllClicked: React.Dispatch<React.SetStateAction<boolean>>;
   nestedConditionRow?: Condition[];
@@ -106,7 +107,7 @@ export const ConditionsFormRowFields = ({
   onRuleChange,
   conditionRow,
   conditionRulesData,
-  handleSetErrors,
+  setErrors,
   optionDisabled,
   setRemoveAllClicked,
   nestedConditionRow,
@@ -200,16 +201,118 @@ export const ConditionsFormRowFields = ({
         ? updatedNestedConditionRow[0]
         : updatedNestedConditionRow,
     );
-    if (newCondition.params && Object.keys(newCondition.params).length > 0) {
-      handleSetErrors(
-        [],
-        criteria,
-        nestedConditionCriteria,
-        nestedConditionIndex,
-        nestedConditionRuleIndex,
-        true,
-      );
+  };
+
+  const handleTransformErrors = (errors: RJSFValidationError[]) => {
+    if (
+      criteria === criterias.condition ||
+      (criteria === criterias.not &&
+        Object.keys(conditionRow[criteria as keyof Condition]).includes('rule'))
+    ) {
+      setErrors(prevErrors => {
+        const updatedErrors = { ...prevErrors };
+        updatedErrors[criteria] = errors[0]
+          ? `error in ${errors[0].property} input`
+          : '';
+
+        return updatedErrors;
+      });
     }
+
+    // not criteria nested-condition
+    if (
+      criteria === criterias.not &&
+      nestedConditionCriteria &&
+      !Object.keys(
+        conditionRow[criteria as keyof Condition] as Condition,
+      ).includes('rule')
+    ) {
+      setErrors(prevErrors => {
+        const updatedErrors = { ...prevErrors };
+        const nestedErrors = (
+          updatedErrors[criteria as keyof ConditionsData] as ComplexErrors
+        )[nestedConditionCriteria as keyof Condition] as NestedCriteriaErrors;
+
+        // nestedCriteria: allOf or anyOf
+        if (
+          Array.isArray(nestedErrors) &&
+          nestedConditionRuleIndex !== undefined
+        ) {
+          nestedErrors[nestedConditionRuleIndex] = errors[0]
+            ? `error in ${errors[0].property} input`
+            : '';
+        } else {
+          // nestedCriteria: not
+          updatedErrors[criteria] = {
+            [nestedConditionCriteria]: errors[0]
+              ? `error in ${errors[0].property} input`
+              : '',
+          };
+        }
+
+        return updatedErrors;
+      });
+    }
+
+    // criteria: allOf or anyOf
+    if (criteria === criterias.allOf || criteria === criterias.anyOf) {
+      setErrors(prevErrors => {
+        const updatedErrors = { ...prevErrors };
+        // simple rule errors
+        const simpleRuleErrors = (
+          updatedErrors[
+            criteria as keyof AccessConditionsErrors
+          ] as ComplexErrors[]
+        ).filter(e => typeof e === 'string');
+        // console.log('simpleRuleErrors', simpleRuleErrors);
+        // console.log('index', index);
+        if (
+          Array.isArray(simpleRuleErrors) &&
+          simpleRuleErrors.length > 0 &&
+          index !== undefined
+        ) {
+          simpleRuleErrors[index] = errors[0]
+            ? `error in ${errors[0].property} input`
+            : '';
+        }
+
+        // nested rule errors
+        const nestedRuleErrors = (
+          updatedErrors[
+            criteria as keyof AccessConditionsErrors
+          ] as ComplexErrors[]
+        ).filter(e => typeof e !== 'string');
+
+        // nestedCriteria: allOf or anyOf
+        if (
+          nestedConditionCriteria &&
+          nestedConditionIndex !== undefined &&
+          nestedConditionRuleIndex !== undefined
+        ) {
+          (nestedRuleErrors[nestedConditionIndex][nestedConditionCriteria][
+            nestedConditionRuleIndex
+          ] as string) = errors[0]
+            ? `error in ${errors[0].property} input`
+            : '';
+        }
+
+        // nestedCriteria: not
+        if (
+          Array.isArray(nestedRuleErrors) &&
+          nestedRuleErrors.length > 0 &&
+          nestedConditionCriteria === criterias.not &&
+          nestedConditionIndex !== undefined
+        ) {
+          nestedRuleErrors[nestedConditionIndex][nestedConditionCriteria] =
+            errors[0] ? `error in ${errors[0].property} input` : '';
+        }
+
+        updatedErrors[criteria] = [...simpleRuleErrors, ...nestedRuleErrors];
+        return updatedErrors;
+      });
+    }
+
+    return errors;
   };
 
   const onConditionChange = (newCondition: PermissionCondition) => {
@@ -267,37 +370,7 @@ export const ConditionsFormRowFields = ({
                 params: data.formData || {},
               } as PermissionCondition)
             }
-            transformErrors={errors => {
-              const hasErrors = errors.length > 0;
-              const conditionIndex =
-                nestedConditionIndex !== undefined
-                  ? calculateConditionIndex(
-                      conditionRow as ConditionsData,
-                      nestedConditionIndex,
-                      criteria,
-                    )
-                  : index;
-              if (nestedConditionRow) {
-                handleSetErrors(
-                  errors,
-                  criteria,
-                  nestedConditionCriteria,
-                  conditionIndex,
-                  nestedConditionRuleIndex,
-                  !hasErrors,
-                );
-              } else {
-                handleSetErrors(
-                  errors,
-                  criteria,
-                  undefined,
-                  conditionIndex,
-                  undefined,
-                  !hasErrors,
-                );
-              }
-              return errors;
-            }}
+            transformErrors={handleTransformErrors}
             showErrorList={false}
             liveValidate
           />

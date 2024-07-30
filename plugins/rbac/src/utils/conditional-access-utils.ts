@@ -1,14 +1,19 @@
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 
 import { makeStyles } from '@material-ui/core';
+import { RJSFValidationError } from '@rjsf/utils';
 
 import {
   conditionButtons,
   criterias,
 } from '../components/ConditionalAccess/const';
 import {
+  AccessConditionsErrors,
+  ComplexErrors,
   Condition,
   ConditionsData,
+  NestedCriteriaErrors,
+  NotConditionType,
 } from '../components/ConditionalAccess/types';
 
 export const ruleOptionDisabled = (
@@ -121,9 +126,41 @@ export const calculateConditionIndex = (
   const simpleRulesCount =
     criteria === criterias.not
       ? 0
-      : (conditionRow[criteria as keyof Condition] as Condition[]).filter(
-          (e: Condition) => 'rule' in e,
-        ).length;
+      : (
+          (conditionRow[criteria as keyof Condition] as Condition[]) || []
+        ).filter((e: Condition) => 'rule' in e).length;
 
   return simpleRulesCount + nestedConditionIndex;
+};
+
+export const initializeErrors = (
+  criteria: string,
+  notConditionType = 'simple-condition',
+): AccessConditionsErrors => {
+  const errors: AccessConditionsErrors = {};
+
+  if (
+    criteria === criterias.condition ||
+    (criteria === criterias.not && notConditionType === 'simple-condition')
+  ) {
+    errors[criteria] = '';
+  }
+
+  if (criteria === criterias.allOf || criteria === criterias.anyOf) {
+    errors[criteria] = [''] as ComplexErrors[];
+  }
+
+  if (criteria === criterias.not && notConditionType === 'nested-condition') {
+    (errors[criteria] as ComplexErrors) = { [criterias.allOf]: [''] };
+  }
+
+  return errors;
+};
+
+export const isNestedConditionRule = (r: Condition): boolean => {
+  return (
+    criterias.allOf in (r as ConditionsData) ||
+    criterias.anyOf in (r as ConditionsData) ||
+    criterias.not in (r as ConditionsData)
+  );
 };

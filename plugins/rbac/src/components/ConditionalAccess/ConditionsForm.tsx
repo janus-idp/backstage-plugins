@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 
 import { Box, Button, makeStyles } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import WarningIcon from '@mui/icons-material/Warning';
-import { RJSFValidationError } from '@rjsf/utils';
 
+import { initializeErrors } from '../../utils/conditional-access-utils';
 import { ConditionsFormRow } from './ConditionsFormRow';
 import { criterias } from './const';
 import {
+  AccessConditionsErrors,
   Condition,
   ConditionsData,
-  RuleParamsErrors,
+  NestedCriteriaErrors,
   RulesData,
 } from './types';
 
@@ -67,45 +68,7 @@ export const ConditionsForm = ({
   const [criteria, setCriteria] = React.useState<string>(
     Object.keys(conditions)[0] ?? criterias.condition,
   );
-  const [errors, setErrors] = React.useState<RuleParamsErrors>();
-
-  // TODO: change the type of `errors`
-  const handleSetErrors = (
-    newErrors: RJSFValidationError[],
-    currentCriteria: string,
-    nestedCriteria?: string,
-    conditionIndex?: number,
-    nestedConditionRuleIndex?: number,
-    removeErrors = false,
-  ) => {
-    setErrors(prevErrors => {
-      const updatedErrors: RuleParamsErrors = { ...prevErrors };
-
-      let baseErrorKey = currentCriteria;
-      if (conditionIndex !== undefined) {
-        baseErrorKey += `.${conditionIndex}`;
-      }
-      if (nestedCriteria !== undefined) {
-        baseErrorKey += `.${nestedCriteria}`;
-      }
-      if (nestedConditionRuleIndex !== undefined) {
-        baseErrorKey += `.${nestedConditionRuleIndex}`;
-      }
-
-      if (removeErrors || newErrors.length === 0) {
-        delete updatedErrors[baseErrorKey];
-        Object.keys(updatedErrors).forEach(key => {
-          if (key.startsWith(`${baseErrorKey}.`)) {
-            delete updatedErrors[key];
-          }
-        });
-      } else {
-        updatedErrors[baseErrorKey] = newErrors;
-      }
-
-      return updatedErrors;
-    });
-  };
+  const [errors, setErrors] = React.useState<AccessConditionsErrors>();
 
   const [removeAllClicked, setRemoveAllClicked] =
     React.useState<boolean>(false);
@@ -143,7 +106,9 @@ export const ConditionsForm = ({
       case criterias.condition:
         return !conditions.condition?.rule;
       case criterias.not: {
-        const flatConditions = flattenConditions([conditions.not as Condition]);
+        const flatConditions = flattenConditions([
+          conditions.not as PermissionCondition,
+        ]);
         return flatConditions.some(c => !c.rule);
       }
       case criterias.allOf: {
@@ -160,13 +125,96 @@ export const ConditionsForm = ({
   };
 
   const isSaveDisabled = () => {
-    const hasErrors =
-      errors && Object.keys(errors).some(key => errors[key].length > 0);
+    let hasAnyErrors = false;
+    if (
+      errors !== undefined &&
+      (criteria === criterias.condition ||
+        (criteria === criterias.not &&
+          Object.keys(
+            conditions[criteria as keyof ConditionsData] as Condition,
+          ).includes('rule')))
+    ) {
+      hasAnyErrors =
+        ((errors[criteria as keyof AccessConditionsErrors] as string) || '')
+          .length > 0;
+    }
+
+    // criteria: not && nested
+    if (
+      errors !== undefined &&
+      criteria === criterias.not &&
+      !Object.keys(
+        conditions[criteria as keyof ConditionsData] as Condition,
+      ).includes('rule')
+    ) {
+      const nestedCriteria = Object.keys(
+        conditions[criteria as keyof ConditionsData] as Condition,
+      )[0] as keyof Condition;
+
+      // nestedCriteria: allOf or anyOf
+      if (
+        Array.isArray(
+          errors[criterias.not as keyof AccessConditionsErrors][
+            nestedCriteria
+          ] as string[],
+        )
+      ) {
+        (
+          (errors[criterias.not as keyof AccessConditionsErrors][
+            nestedCriteria
+          ] as string[]) || []
+        ).forEach((e: string) => {
+          if (e) hasAnyErrors = true;
+        });
+      } else {
+        // nestedCriteria: not
+        hasAnyErrors =
+          (
+            (errors[criterias.not as keyof AccessConditionsErrors][
+              nestedCriteria
+            ] as string) || ''
+          ).length > 0;
+      }
+    }
+
+    if (
+      errors !== undefined &&
+      (criteria === criterias.allOf || criteria === criterias.anyOf)
+    ) {
+      const simpleRuleErrors = (
+        (errors[criteria as keyof AccessConditionsErrors] as string[]) || []
+      ).filter(e => typeof e === 'string');
+      const nestedRuleErrors = (
+        (errors[
+          criteria as keyof AccessConditionsErrors
+        ] as NestedCriteriaErrors[]) || []
+      ).filter(e => typeof e !== 'string');
+      simpleRuleErrors.forEach((e: string) => {
+        if (e) hasAnyErrors = true;
+      });
+
+      if (Array.isArray(nestedRuleErrors) && nestedRuleErrors.length > 0) {
+        nestedRuleErrors.forEach((err: NestedCriteriaErrors) => {
+          const nestedCriteria = Object.keys(
+            err,
+          )[0] as keyof NestedCriteriaErrors;
+          // nestedCriteria: allOf, anyOf
+          if (typeof err[nestedCriteria] !== 'string') {
+            ((err[nestedCriteria] as string[]) || []).forEach((e: string) => {
+              if (e) hasAnyErrors = true;
+            });
+          } else {
+            // nestedCriteria: not
+            hasAnyErrors = (err[nestedCriteria] as string).length > 0;
+          }
+        });
+      }
+    }
 
     if (removeAllClicked) return false;
 
     return (
-      hasErrors ||
+      hasAnyErrors ||
       isNoRuleSelected() ||
       Object.is(conditionsFormVal, conditions)
     );
@@ -208,7 +256,7 @@ export const ConditionsForm = ({
           selPluginResourceType={selPluginResourceType}
           onRuleChange={newCondition => setConditions(newCondition)}
           setCriteria={setCriteria}
-          handleSetErrors={handleSetErrors}
+          setErrors={setErrors}
           setRemoveAllClicked={setRemoveAllClicked}
         />
         {hasMultiLevelNestedConditions() && (
@@ -270,6 +318,7 @@ export const ConditionsForm = ({
                 params: {},
               },
             });
+            setErrors(initializeErrors(criterias.condition));
           }}
           data-testid="remove-conditions"
         >
