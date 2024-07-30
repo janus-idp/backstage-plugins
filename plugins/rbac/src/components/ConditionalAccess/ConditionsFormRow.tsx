@@ -14,7 +14,6 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import { RJSFValidationError } from '@rjsf/utils';
 
 import {
   calculateConditionIndex,
@@ -288,9 +287,9 @@ export const ConditionsFormRow = ({
         ).filter((err: ComplexErrors) => typeof err !== 'string');
 
         (
-          (nestedConditionErrors[nestedConditionIndex] as NestedCriteriaErrors)[
-            nestedConditionCriteria
-          ] as (RJSFValidationError | {})[]
+          ((
+            nestedConditionErrors[nestedConditionIndex] as NestedCriteriaErrors
+          )[nestedConditionCriteria] as string[]) || []
         ).push('');
         updatedErrors[criteria] = [
           ...simpleRuleErrors,
@@ -433,14 +432,11 @@ export const ConditionsFormRow = ({
         );
         const nestedConditionErrors = criteriaErrors.filter(
           (err: ComplexErrors) => typeof err !== 'string',
-        );
+        ) as NestedCriteriaErrors[];
 
         if (Array.isArray(nestedConditionErrors)) {
-          const nestedErrors = nestedConditionErrors[
-            nestedConditionIndex
-          ] as NestedCriteriaErrors;
-
-          if (nestedErrors?.nestedConditionCriteria) {
+          const nestedErrors = nestedConditionErrors[nestedConditionIndex];
+          if (nestedErrors[nestedConditionCriteria]) {
             const updatedNestedErrors = (
               nestedErrors[nestedConditionCriteria] as string[]
             ).filter((_error, index) => index !== ruleIndex);
@@ -578,55 +574,78 @@ export const ConditionsFormRow = ({
     );
   };
 
-  const renderComplexConditionRowButtons = () =>
-    (criteria === criterias.allOf || criteria === criterias.anyOf) && (
-      <Box mt={1} mb={1}>
-        <Button
-          className={classes.addRuleButton}
-          size="small"
-          onClick={() => {
-            const updatedRules = [
-              ...(conditionRow.allOf ?? []),
-              ...(conditionRow.anyOf ?? []),
-            ];
-            const firstNestedConditionIndex =
-              updatedRules.findIndex(e => isNestedConditionRule(e)) || 0;
-            updatedRules.splice(
-              firstNestedConditionIndex,
-              0,
-              getDefaultRule(selPluginResourceType),
-            );
-            onRuleChange({
-              [criteria]: [...updatedRules],
-            });
-            setErrors(prevErrors => {
-              const updatedErrors = { ...prevErrors };
-              const firstNestedConditionErrorIndex =
-                (updatedErrors[criteria] as string[]).findIndex(
-                  e => typeof e !== 'string',
-                ) || 0;
-              (updatedErrors[criteria] as string[]).splice(
-                firstNestedConditionErrorIndex,
-                0,
-                '',
-              );
-              return updatedErrors;
-            });
-          }}
-        >
-          <AddIcon fontSize="small" />
-          Add rule
-        </Button>
-        <Button
-          className={classes.addNestedConditionButton}
-          size="small"
-          onClick={() => handleAddNestedCondition(criteria)}
-        >
-          <AddIcon fontSize="small" />
-          <AddNestedConditionButton />
-        </Button>
-      </Box>
+  const renderComplexConditionRowButtons = () => {
+    const updateErrors = (_index: number) => {
+      setErrors(prevErrors => {
+        const updatedErrors = { ...prevErrors };
+
+        if (!Array.isArray(updatedErrors[criteria])) {
+          updatedErrors[criteria] = [];
+        }
+
+        const firstNestedConditionErrorIndex =
+          (updatedErrors[criteria] as ComplexErrors[]).findIndex(
+            e => typeof e !== 'string',
+          ) || 0;
+
+        (updatedErrors[criteria] as ComplexErrors[]).splice(
+          firstNestedConditionErrorIndex,
+          0,
+          '',
+        );
+
+        return updatedErrors;
+      });
+    };
+
+    const findFirstNestedConditionIndex = (rules: Condition[]): number => {
+      return rules.findIndex(e => isNestedConditionRule(e)) || 0;
+    };
+    const handleAddRule = () => {
+      const updatedRules = [
+        ...(conditionRow.allOf ?? []),
+        ...(conditionRow.anyOf ?? []),
+      ];
+
+      const firstNestedConditionIndex =
+        findFirstNestedConditionIndex(updatedRules);
+      if (firstNestedConditionIndex !== -1) {
+        updatedRules.splice(
+          firstNestedConditionIndex,
+          0,
+          getDefaultRule(selPluginResourceType),
+        );
+      } else {
+        updatedRules.push(getDefaultRule(selPluginResourceType));
+      }
+
+      onRuleChange({ [criteria]: [...updatedRules] });
+      updateErrors(firstNestedConditionIndex);
+    };
+
+    return (
+      (criteria === criterias.allOf || criteria === criterias.anyOf) && (
+        <Box mt={1} mb={1}>
+          <Button
+            className={classes.addRuleButton}
+            size="small"
+            onClick={handleAddRule}
+          >
+            <AddIcon fontSize="small" />
+            Add rule
+          </Button>
+          <Button
+            className={classes.addNestedConditionButton}
+            size="small"
+            onClick={() => handleAddNestedCondition(criteria)}
+          >
+            <AddIcon fontSize="small" />
+            <AddNestedConditionButton />
+          </Button>
+        </Box>
+      )
     );
+  };
 
   const renderNestedConditionRow = (
     nc: Condition,
