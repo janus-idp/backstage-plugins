@@ -53,6 +53,18 @@ export const EntityKialiResourcesCard = kialiPlugin.provide(
     },
   }),
 );
+
+export const EntityKialiGraphCard = kialiPlugin.provide(
+  createComponentExtension({
+    name: 'EntityKialiGraphCard',
+    component: {
+      lazy: () =>
+        import('./dynamic/EntityKialiGraphCard').then(
+          m => m.EntityKialiGraphCard,
+        ),
+    },
+  }),
+);
 /**
  * Props of EntityExampleComponent
  *

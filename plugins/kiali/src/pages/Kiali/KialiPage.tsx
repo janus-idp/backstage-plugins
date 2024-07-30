@@ -6,6 +6,7 @@ import { AppListPage } from '../AppList/AppListPage';
 import { IstioConfigListPage } from '../IstioConfigList/IstioConfigListPage';
 import { OverviewPage } from '../Overview/OverviewPage';
 import { ServiceListPage } from '../ServiceList/ServiceListPage';
+import TrafficGraphPage from '../TrafficGraph/TrafficGraphPage';
 import { WorkloadListPage } from '../WorkloadList/WorkloadListPage';
 import { KialiHeader } from './Header/KialiHeader';
 import { KialiTabs } from './Header/KialiTabs';
@@ -37,6 +38,8 @@ export const KialiPage = () => {
         return <AppListPage />;
       case 'istio':
         return <IstioConfigListPage />;
+      case 'graph':
+        return <TrafficGraphPage />;
       default:
         return <KialiNoPath />;
     }
