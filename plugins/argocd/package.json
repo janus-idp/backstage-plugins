@@ -15,7 +15,8 @@
     "pluginId": "argocd",
     "pluginPackage": "@janus-idp/backstage-plugin-argocd",
     "pluginPackages": [
-      "@janus-idp/backstage-plugin-argocd"
+      "@janus-idp/backstage-plugin-argocd",
+      "@janus-idp/backstage-plugin-argocd-common"
     ]
   },
   "sideEffects": false,
@@ -37,6 +38,8 @@
     "@backstage/core-components": "^0.14.9",
     "@backstage/core-plugin-api": "^1.9.3",
     "@backstage/plugin-catalog-react": "^1.12.2",
+    "@backstage/plugin-permission-react": "^0.4.24",
+    "@janus-idp/backstage-plugin-argocd-common": "0.1.0",
     "@backstage/theme": "^0.5.6",
     "@kubernetes/client-node": "^0.20.0",
     "@material-ui/core": "^4.9.13",

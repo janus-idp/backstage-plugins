@@ -5,7 +5,8 @@ import { ConfigReader } from '@backstage/config';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { TestApiProvider } from '@backstage/test-utils';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { MockPermissionApi, TestApiProvider } from '@backstage/test-utils';
 
 import { Box } from '@material-ui/core';
 import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
@@ -47,7 +48,7 @@ const mockEntity: Entity = {
     owner: 'user:guest',
   },
 };
-
+const mockPermissionApi = new MockPermissionApi();
 export class MockArgoCDApiClient implements ArgoCDApi {
   async listApps(_options: listAppsOptions): Promise<any> {
     return { items: [mockApplication, preProdApplication, prodApplication] };
@@ -72,6 +73,7 @@ createDevApp()
         apis={[
           [configApiRef, new ConfigReader(mockArgocdConfig)],
           [argoCDApiRef, new MockArgoCDApiClient()],
+          [permissionApiRef, mockPermissionApi],
         ]}
       >
         <EntityProvider entity={mockEntity}>

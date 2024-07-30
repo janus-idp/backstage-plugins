@@ -1,6 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 
 import { useApi } from '@backstage/core-plugin-api';
+import { usePermission } from '@backstage/plugin-permission-react';
 
 import { createTheme, ThemeProvider } from '@material-ui/core';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
@@ -12,6 +13,13 @@ import DeploymentLifecycle from '../DeploymentLifecycle';
 jest.mock('../../../hooks/useArgocdConfig', () => ({
   useArgocdConfig: jest.fn(),
 }));
+jest.mock('@backstage/plugin-permission-react', () => ({
+  usePermission: jest.fn(),
+}));
+
+const mockUsePermission = usePermission as jest.MockedFunction<
+  typeof usePermission
+>;
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
@@ -33,6 +41,8 @@ describe('DeploymentLifecycle', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+
     (useArgocdConfig as any).mockReturnValue({
       baseUrl: 'https://baseurl.com',
       instances: [{ name: 'main', url: 'https://main-instance-url.com' }],
@@ -53,6 +63,12 @@ describe('DeploymentLifecycle', () => {
       },
     });
     jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  it('should render Permission alert if the user does not have view permission', () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: false });
+    const { getByTestId } = render(<DeploymentLifecycle />);
+    expect(getByTestId('no-permission-alert')).toBeInTheDocument();
   });
 
   test('should render the loader component', async () => {
