@@ -27,7 +27,8 @@
     "release": "multi-semantic-release",
     "prepare": "husky install",
     "export-dynamic": "turbo run export-dynamic",
-    "versions:bump": "backstage-cli versions:bump && find . -name 'package.json' ! -path '*/node_modules/*' -exec sed -i -e '/devDependencies/,/\\\\}/{ s/\\\"\\\\^/\\\"/; }' {} ; && yarn install && yarn run export-dynamic --no-cache -- -- --clean"
+    "versions:bump": "backstage-cli versions:bump && find . -name 'package.json' ! -path '*/node_modules/*' -exec sed -i -e '/devDependencies/,/\\\\}/{ s/\\\"\\\\^/\\\"/; }' {} ; && yarn install && yarn run export-dynamic --no-cache -- -- --clean",
+    "postinstall": "patch-package"
   },
   "workspaces": {
     "packages": [

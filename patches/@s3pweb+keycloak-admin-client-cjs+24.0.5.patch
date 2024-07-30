@@ -1,0 +1,20 @@
+diff --git a/node_modules/@s3pweb/keycloak-admin-client-cjs/dist/index.d.ts b/node_modules/@s3pweb/keycloak-admin-client-cjs/dist/index.d.ts
+index a32d4a7..33b8efa 100644
+--- a/node_modules/@s3pweb/keycloak-admin-client-cjs/dist/index.d.ts
++++ b/node_modules/@s3pweb/keycloak-admin-client-cjs/dist/index.d.ts
+@@ -67,6 +67,8 @@ import UserProfileConfig from '@keycloak/keycloak-admin-client/lib/defs/userProf
+ import UserSessionRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userSessionRepresentation'
+ import WhoAmIRepresentation from '@keycloak/keycloak-admin-client/lib/defs/whoAmIRepresentation'
+ import { Credentials, Settings, TokenResponse, TokenResponseRaw } from '@keycloak/keycloak-admin-client/lib/utils/auth'
++import { Groups } from '@keycloak/keycloak-admin-client/lib/resources/groups';
++import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
+ 
+ export { KeycloakAdminClient }
+ export type {
+@@ -141,4 +143,6 @@ export type {
+   Settings,
+   TokenResponse,
+   TokenResponseRaw,
++  Groups,
++  Users
+ }
