@@ -277,7 +277,7 @@ export const ConditionsFormRowFields = ({
           (updatedErrors[
             criteria as keyof AccessConditionsErrors
           ] as ComplexErrors[]) || []
-        ).filter(e => typeof e !== 'string');
+        ).filter(e => typeof e !== 'string') as NestedCriteriaErrors[];
 
         // nestedCriteria: allOf or anyOf
         if (
@@ -285,9 +285,9 @@ export const ConditionsFormRowFields = ({
           nestedConditionIndex !== undefined &&
           nestedConditionRuleIndex !== undefined
         ) {
-          ((nestedRuleErrors[nestedConditionIndex] as NestedCriteriaErrors)[
-            nestedConditionCriteria
-          ][nestedConditionRuleIndex] as string) = errors[0]
+          (nestedRuleErrors[nestedConditionIndex][nestedConditionCriteria][
+            nestedConditionRuleIndex
+          ] as string) = errors[0]
             ? `error in ${errors[0].property} input`
             : '';
         }
