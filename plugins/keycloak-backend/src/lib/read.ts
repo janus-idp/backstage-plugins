@@ -211,7 +211,7 @@ export const readKeycloakRealm = async (
       }
       if (g.parentId) {
         const groupParent = await client.groups.findOne({
-          id: g.parentId!,
+          id: g.parentId,
           realm: config.realm,
         });
         g.parent = groupParent?.name;
