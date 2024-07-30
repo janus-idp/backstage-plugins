@@ -27,8 +27,8 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 
-import KcAdminClient from '@keycloak/keycloak-admin-client';
-import type { Credentials } from '@keycloak/keycloak-admin-client/lib/utils/auth';
+import { KeycloakAdminClient } from '@s3pweb/keycloak-admin-client-cjs';
+import type { Credentials } from '@s3pweb/keycloak-admin-client-cjs';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
 
@@ -189,7 +189,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
     const provider = this.options.provider;
 
     const { markReadComplete } = trackProgress(logger);
-    const kcAdminClient = new KcAdminClient({
+    const kcAdminClient = new KeycloakAdminClient({
       baseUrl: provider.baseUrl,
       realmName: provider.loginRealm,
     });
@@ -215,7 +215,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
       );
     }
 
-    await kcAdminClient.auth(credentials);
+      await kcAdminClient.auth(credentials);
 
     const { users, groups } = await readKeycloakRealm(kcAdminClient, provider, {
       userQuerySize: provider.userQuerySize,
@@ -276,6 +276,10 @@ function trackProgress(logger: LoggerService) {
   logger.info('Reading Keycloak users and groups');
 
   function markReadComplete(read: { users: unknown[]; groups: unknown[] }) {
+    // console.log('groups');
+    // console.log(read.groups);
+    // read.groups.forEach(g => console.log(g.spec.parent)); // for testing
+    // read.groups.forEach(g => console.log(g.spec.children)); // for testing
     summary = `${read.users.length} Keycloak users and ${read.groups.length} Keycloak groups`;
     const readDuration = ((Date.now() - timestamp) / 1000).toFixed(1);
     timestamp = Date.now();

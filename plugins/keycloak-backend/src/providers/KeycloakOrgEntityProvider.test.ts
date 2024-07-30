@@ -12,11 +12,11 @@ import {
 } from '../../__fixtures__/helpers';
 import { KeycloakOrgEntityProvider } from './KeycloakOrgEntityProvider';
 
-jest.mock('@keycloak/keycloak-admin-client', () => {
-  const actual = jest.requireActual('@keycloak/keycloak-admin-client');
+jest.mock('@s3pweb/keycloak-admin-client-cjs', () => {
+  const actual = jest.requireActual('@s3pweb/keycloak-admin-client-cjs');
   return {
     ...actual,
-    default: KeycloakAdminClientMock,
+    KeycloakAdminClient: KeycloakAdminClientMock,
   };
 });
 
@@ -124,7 +124,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               clientId: 'myclientid',
             },
           },
@@ -148,7 +148,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               clientId: 'myclientid',
               clientSecret: 'myclientsecret',
             },
@@ -187,7 +187,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               username: 'myusername',
             },
           },
@@ -211,7 +211,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               username: 'myusername',
               password: 'mypassword', // NOSONAR
             },
@@ -262,7 +262,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               username: 'myusername',
               password: 'mypassword', // NOSONAR
             },
@@ -324,7 +324,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               username: 'myusername',
               password: 'mypassword', // NOSONAR
             },
