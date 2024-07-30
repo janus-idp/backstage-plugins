@@ -164,11 +164,3 @@ describe('getEntitiesUser', () => {
     expect(client.users.find).toHaveBeenCalledTimes(3);
   });
 });
-
-// describe('traverseGroups', () => {
-//   it('should traverse groups', async () => {
-//     const groups = [...traverseGroups(groupsFixture[0])];
-
-//     expect(groups).toHaveLength(2);
-//   });
-// });

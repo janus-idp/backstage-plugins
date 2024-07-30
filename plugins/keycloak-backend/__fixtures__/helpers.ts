@@ -130,4 +130,3 @@ export const connection = {
   applyMutation: jest.fn(),
   refresh: jest.fn(),
 } as unknown as EntityProviderConnection;
-

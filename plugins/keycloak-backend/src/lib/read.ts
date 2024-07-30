@@ -22,6 +22,7 @@ import {
   Users,
 } from '@s3pweb/keycloak-admin-client-cjs';
 import type {
+  GroupRepresentation,
   UserRepresentation,
 } from '@s3pweb/keycloak-admin-client-cjs';
 
@@ -138,9 +139,9 @@ export async function getEntities<T extends Users | Groups>(
   return entityResults;
 }
 
-export async function processGroupsRecursively<T extends Groups>(
-  topLevelGroups: T[],
-  entities: T,
+export async function processGroupsRecursively(
+  topLevelGroups: GroupRepresentation[],
+  entities: Groups,
 ) {
   const allGroups: T[] = [];
   for (const group of topLevelGroups) {
@@ -183,17 +184,10 @@ export const readKeycloakRealm = async (
     options?.userQuerySize,
   );
 
-  // console.log('server info');
-  // const serverInfo = await client.serverInfo.find();
-  // const serverVersion = serverInfo.systemInfo?.version?.slice(0, 2);
-
-  // console.log(serverVersion);
-
   const topLevelKGroups = (await getEntities(
     client.groups,
     config,
     options?.groupQuerySize,
-    // serverVersion,
   )) as GroupRepresentationWithParent[];
 
   const rawKGroups = await processGroupsRecursively(
