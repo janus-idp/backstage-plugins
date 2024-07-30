@@ -6,9 +6,9 @@ describe('buildPagination()', () => {
       query: {},
     };
     expect(buildPagination(mockRequest)).toEqual({
-      limit: 10,
-      offset: 0,
-      order: 'ASC',
+      limit: undefined,
+      offset: undefined,
+      order: undefined,
       sortField: undefined,
     });
   });
@@ -19,9 +19,9 @@ describe('buildPagination()', () => {
       },
     };
     expect(buildPagination(mockRequest)).toEqual({
-      limit: 10,
-      offset: 0,
-      order: 'ASC',
+      limit: undefined,
+      offset: undefined,
+      order: undefined,
       sortField: 'lastUpdated',
     });
   });
@@ -49,9 +49,9 @@ describe('buildPagination()', () => {
       },
     };
     expect(buildPagination(mockRequest)).toEqual({
-      limit: 10,
-      offset: 0,
-      order: 'ASC',
+      limit: undefined,
+      offset: undefined,
+      order: undefined,
       sortField: undefined,
     });
   });
