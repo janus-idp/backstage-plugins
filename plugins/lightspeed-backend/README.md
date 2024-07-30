@@ -1,14 +1,78 @@
-# lightspeed
+# Lightspeed Backend
 
-Welcome to the lightspeed backend plugin!
+This is the lightspeed backend plugin that enables you to interact with any LLM server running a model with OpenAI's API compatibility.
 
-_This plugin was created through the Backstage CLI_
+## Getting Started
 
-## Getting started
+### Installing the plugin
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn
-start` in the root directory, and then navigating to [/lightspeed](http://localhost:3000/lightspeed).
+```bash
+yarn add --cwd packages/backend  @janus-idp/plugin-lightspeed-backend
+```
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+### Configuring the Backend
+
+#### Old Backend System
+
+1. Create a new file `packages/backend/src/plugins/lightspeed.ts`, and add the following
+
+```ts title="packages/backend/src/plugins/lightspeed.ts"
+import { Router } from 'express';
+
+import { createRouter } from '@janus-idp/plugin-lightspeed-backend';
+
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({ config: env.config });
+}
+```
+
+2. Next, in your overall backend router (typically `packages/backend/src/index.ts`) add a route for `/lightspeed`:
+
+```ts title="packages/backend/src/index.ts"
+import lightspeed from './plugins/lightspeed';
+
+/ ...
+async function main() {
+  / ...
+  / Add the following line
+  const lightspeedEnv = useHotMemoize(module, () => createEnv('lightspeed'));
+  / ...
+  / Add the following line under the other lines that add their routers to apiRouter
+  apiRouter.use('/lightspeed', await lightspeed(lightspeedEnv)); / ...
+}
+```
+
+#### New Backend System
+
+Add the following to your `packages/backend/src/index.ts` file:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Add the following line
+backend.add(import('@janus-idp/backstage-plugin-lightspeed-backend/alpha'));
+
+backend.start();
+```
+
+### Plugin Configurations
+
+Add the following configurations into your `app-config.yaml` file:
+
+```yaml
+lightspeed:
+  baseURL: ${LLM_BASE_URL}
+  apiKey: ${LLM_API_KEY}
+```
+
+Example local development configuration:
+
+```yaml
+lightspeed:
+  baseURL: http://localhost:11434/v1
+  apiKey: dummy-key
+```
