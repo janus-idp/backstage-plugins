@@ -19,15 +19,17 @@ import {
   calculateConditionIndex,
   extractNestedConditions,
   getDefaultRule,
-  getRowKey,
-  getRowStyle,
   isNestedConditionRule,
+  isSimpleRule,
+  makeConditionsFormRowStyles,
   nestedConditionButtons,
   resetErrors,
   ruleOptionDisabled,
-  useConditionsFormRowStyles,
 } from '../../utils/conditional-access-utils';
 import { AddNestedConditionButton } from './AddNestedConditionButton';
+import { ComplexConditionRow } from './ComplexConditionRow';
+import { ComplexConditionRowButtons } from './ComplexConditionRowButtons';
+import { ConditionRule } from './ConditionRule';
 import { ConditionsFormRowFields } from './ConditionsFormRowFields';
 import { conditionButtons, criterias } from './const';
 import { CriteriaToggleButton } from './CriteriaToggleButton';
@@ -50,13 +52,13 @@ export const ConditionsFormRow = ({
   setErrors,
   setRemoveAllClicked,
 }: ConditionFormRowProps) => {
-  const classes = useConditionsFormRowStyles();
+  const classes = makeConditionsFormRowStyles();
   const theme = useTheme();
   const [nestedConditionRow, setNestedConditionRow] = React.useState<
     Condition[]
   >([]);
   const [notConditionType, setNotConditionType] =
-    React.useState<NotConditionType>('simple-condition');
+    React.useState<NotConditionType>(NotConditionType.SimpleCondition);
 
   React.useEffect(() => {
     const nestedConditions: Condition[] = [];
@@ -82,7 +84,7 @@ export const ConditionsFormRow = ({
           criteriaTypes.includes(Object.keys(conditionRow.not)[0])
         ) {
           nestedConditions.push(conditionRow.not);
-          setNotConditionType('nested-condition');
+          setNotConditionType(NotConditionType.NestedCondition);
         }
         break;
       default:
@@ -106,7 +108,7 @@ export const ConditionsFormRow = ({
     };
 
     if (val === criterias.not) {
-      setNotConditionType('simple-condition');
+      setNotConditionType(NotConditionType.SimpleCondition);
     }
 
     const ruleChange = ruleMap[val];
@@ -119,7 +121,7 @@ export const ConditionsFormRow = ({
     const existingSimpleCondition =
       criteria !== criterias.not
         ? (conditionRow[criteria as keyof Condition] as Condition[])?.filter(
-            con => Object.keys(con).includes('rule'),
+            con => isSimpleRule(con),
           ) || []
         : [];
 
@@ -302,58 +304,6 @@ export const ConditionsFormRow = ({
     });
   };
 
-  const handleRemoveSimpleConditionRule = (
-    activeCriteria: string,
-    index: number,
-    rs: PermissionCondition[],
-  ) => {
-    const updatedSimpleRules = rs.filter((_r, rindex) => index !== rindex);
-    const nestedConditions =
-      (
-        conditionRow[criteria as keyof ConditionsData] as PermissionCondition[]
-      )?.filter(
-        (con: PermissionCondition) =>
-          criterias.allOf in con ||
-          criterias.anyOf in con ||
-          criterias.not in con,
-      ) || [];
-
-    onRuleChange({
-      [activeCriteria as keyof Condition]: [
-        ...updatedSimpleRules,
-        ...nestedConditions,
-      ],
-    });
-
-    setErrors(prevErrors => {
-      const updatedErrors = { ...prevErrors };
-
-      if (updatedErrors[activeCriteria]) {
-        const criteriaErrors = updatedErrors[activeCriteria] as ComplexErrors[];
-        const simpleRuleErrors = criteriaErrors.filter(
-          (err: ComplexErrors) => typeof err === 'string',
-        );
-        const nestedConditionErrors = criteriaErrors.filter(
-          (err: ComplexErrors) => typeof err !== 'string',
-        );
-
-        if (Array.isArray(simpleRuleErrors) && simpleRuleErrors.length > 0) {
-          const updatedCriteriaErrors = [
-            ...simpleRuleErrors.filter((_, rindex) => rindex !== index),
-            ...nestedConditionErrors,
-          ];
-
-          updatedErrors[activeCriteria] =
-            updatedCriteriaErrors.length > 0 ? updatedCriteriaErrors : [];
-        } else {
-          delete updatedErrors[activeCriteria];
-        }
-      }
-
-      return updatedErrors;
-    });
-  };
-
   const handleRemoveNestedCondition = (nestedConditionIndex: number) => {
     const updatedNestedConditionRow = nestedConditionRow.filter(
       (_, index) => index !== nestedConditionIndex,
@@ -383,193 +333,6 @@ export const ConditionsFormRow = ({
     });
   };
 
-  const handleRemoveNestedConditionRule = (
-    nestedConditionCriteria: string,
-    nestedConditionIndex: number,
-    ruleIndex: number,
-  ) => {
-    const updatedNestedConditionRow: Condition[] = [];
-
-    nestedConditionRow.forEach((c, index) => {
-      if (index === nestedConditionIndex) {
-        const updatedRules = (
-          (c[
-            nestedConditionCriteria as keyof Condition
-          ] as PermissionCondition[]) || []
-        ).filter((_r, rindex) => rindex !== ruleIndex);
-        updatedNestedConditionRow.push({
-          [nestedConditionCriteria as keyof Condition]: updatedRules,
-        });
-      } else {
-        updatedNestedConditionRow.push(c);
-      }
-    });
-
-    updateRules(
-      criteria === criterias.not
-        ? updatedNestedConditionRow[0]
-        : updatedNestedConditionRow,
-    );
-
-    setErrors(prevErrors => {
-      const updatedErrors = { ...prevErrors };
-
-      if (updatedErrors[criteria] !== undefined) {
-        const criteriaErrors = updatedErrors[criteria] as ComplexErrors[];
-
-        if (
-          criteria === criterias.not &&
-          notConditionType === 'nested-condition'
-        ) {
-          (
-            (updatedErrors[criteria] as NestedCriteriaErrors)[
-              nestedConditionCriteria
-            ] as string[]
-          ).splice(ruleIndex, 1);
-          return updatedErrors;
-        }
-
-        const simpleRuleErrors = criteriaErrors.filter(
-          (err: ComplexErrors) => typeof err === 'string',
-        );
-        const nestedConditionErrors = criteriaErrors.filter(
-          (err: ComplexErrors) => typeof err !== 'string',
-        ) as NestedCriteriaErrors[];
-
-        if (Array.isArray(nestedConditionErrors)) {
-          const nestedErrors = nestedConditionErrors[nestedConditionIndex];
-          if (nestedErrors[nestedConditionCriteria]) {
-            const updatedNestedErrors = (
-              nestedErrors[nestedConditionCriteria] as string[]
-            ).filter((_error, index) => index !== ruleIndex);
-
-            if (updatedNestedErrors.length > 0) {
-              nestedErrors[nestedConditionCriteria] = updatedNestedErrors;
-            } else {
-              delete nestedErrors[nestedConditionCriteria];
-            }
-
-            nestedConditionErrors[nestedConditionIndex] = nestedErrors;
-          }
-
-          updatedErrors[criteria] = [
-            ...simpleRuleErrors,
-            ...nestedConditionErrors,
-          ];
-        }
-      }
-
-      return updatedErrors;
-    });
-  };
-
-  const renderConditionRule = () => {
-    return (
-      <ConditionsFormRowFields
-        oldCondition={
-          conditionRow.condition ?? getDefaultRule(selPluginResourceType)
-        }
-        onRuleChange={onRuleChange}
-        conditionRow={conditionRow}
-        criteria={criteria}
-        conditionRulesData={conditionRulesData}
-        setErrors={setErrors}
-        optionDisabled={ruleOption =>
-          ruleOptionDisabled(
-            ruleOption,
-            conditionRow.condition ? [conditionRow.condition] : undefined,
-          )
-        }
-        setRemoveAllClicked={setRemoveAllClicked}
-      />
-    );
-  };
-
-  const renderComplexConditionRow = (
-    c: Condition,
-    ruleIndex: number,
-    activeCriteria?: 'allOf' | 'anyOf',
-    isNestedCondition = false,
-    nestedConditionIndex?: number,
-    activeNestedCriteria?: 'allOf' | 'anyOf',
-  ) => {
-    const rs = isNestedCondition
-      ? (c[activeCriteria as keyof Condition] as PermissionCondition[])
-      : ((
-          conditionRow[activeCriteria as keyof Condition] as Condition[]
-        ).filter(r =>
-          Object.keys(r).includes('rule'),
-        ) as PermissionCondition[]);
-    const disabled =
-      !isNestedCondition &&
-      (conditionRow[criteria as keyof Condition] as Condition[]).length === 1 &&
-      nestedConditionRow.length === 0 &&
-      ruleIndex === 0;
-    const nestedDisabled =
-      isNestedCondition &&
-      (
-        nestedConditionRow[nestedConditionIndex ?? 0][
-          activeNestedCriteria as keyof Condition
-        ] as Condition[]
-      ).length === 1 &&
-      ruleIndex === 0;
-    return (
-      (c as PermissionCondition).resourceType && (
-        <div
-          style={getRowStyle(c, isNestedCondition)}
-          key={getRowKey(isNestedCondition, ruleIndex)}
-        >
-          <ConditionsFormRowFields
-            oldCondition={c}
-            index={isNestedCondition ? undefined : ruleIndex}
-            onRuleChange={onRuleChange}
-            conditionRow={conditionRow}
-            criteria={criteria}
-            conditionRulesData={conditionRulesData}
-            setErrors={setErrors}
-            setRemoveAllClicked={setRemoveAllClicked}
-            nestedConditionRow={
-              isNestedCondition ? nestedConditionRow : undefined
-            }
-            nestedConditionCriteria={
-              isNestedCondition ? activeNestedCriteria : undefined
-            }
-            nestedConditionIndex={
-              isNestedCondition ? nestedConditionIndex : undefined
-            }
-            nestedConditionRuleIndex={isNestedCondition ? ruleIndex : undefined}
-            updateRules={isNestedCondition ? updateRules : undefined}
-          />
-          <IconButton
-            title="Remove"
-            className={classes.removeRuleButton}
-            disabled={isNestedCondition ? nestedDisabled : disabled}
-            onClick={
-              isNestedCondition &&
-              activeNestedCriteria &&
-              nestedConditionIndex !== undefined
-                ? () =>
-                    handleRemoveNestedConditionRule(
-                      activeNestedCriteria,
-                      nestedConditionIndex,
-                      ruleIndex,
-                    )
-                : () => {
-                    handleRemoveSimpleConditionRule(
-                      activeCriteria as string,
-                      ruleIndex,
-                      rs,
-                    );
-                  }
-            }
-          >
-            <RemoveIcon />
-          </IconButton>
-        </div>
-      )
-    );
-  };
-
   const updateErrors = (_index: number) => {
     setErrors(prevErrors => {
       const updatedErrors = { ...prevErrors };
@@ -591,56 +354,6 @@ export const ConditionsFormRow = ({
 
       return updatedErrors;
     });
-  };
-
-  const renderComplexConditionRowButtons = () => {
-    const findFirstNestedConditionIndex = (rules: Condition[]): number => {
-      return rules.findIndex(e => isNestedConditionRule(e)) || 0;
-    };
-    const handleAddRule = () => {
-      const updatedRules = [
-        ...(conditionRow.allOf ?? []),
-        ...(conditionRow.anyOf ?? []),
-      ];
-
-      const firstNestedConditionIndex =
-        findFirstNestedConditionIndex(updatedRules);
-      if (firstNestedConditionIndex !== -1) {
-        updatedRules.splice(
-          firstNestedConditionIndex,
-          0,
-          getDefaultRule(selPluginResourceType),
-        );
-      } else {
-        updatedRules.push(getDefaultRule(selPluginResourceType));
-      }
-
-      onRuleChange({ [criteria]: [...updatedRules] });
-      updateErrors(firstNestedConditionIndex);
-    };
-
-    return (
-      (criteria === criterias.allOf || criteria === criterias.anyOf) && (
-        <Box mt={1} mb={1}>
-          <Button
-            className={classes.addRuleButton}
-            size="small"
-            onClick={handleAddRule}
-          >
-            <AddIcon fontSize="small" />
-            Add rule
-          </Button>
-          <Button
-            className={classes.addNestedConditionButton}
-            size="small"
-            onClick={() => handleAddNestedCondition(criteria)}
-          >
-            <AddIcon fontSize="small" />
-            <AddNestedConditionButton />
-          </Button>
-        </Box>
-      )
-    );
   };
 
   const renderNestedConditionRow = (
@@ -699,16 +412,28 @@ export const ConditionsFormRow = ({
               nc[
                 selectedNestedConditionCriteria as keyof Condition
               ] as PermissionCondition[]
-            ).map((c, ncrIndex) =>
-              renderComplexConditionRow(
-                c,
-                ncrIndex,
-                undefined,
-                true,
-                nestedConditionIndex,
-                selectedNestedConditionCriteria as 'allOf' | 'anyOf',
-              ),
-            )}
+            ).map((c, ncrIndex) => (
+              <ComplexConditionRow
+                key={`nested-condition-${nestedConditionIndex}-${ncrIndex}`}
+                conditionRow={conditionRow}
+                nestedConditionRow={nestedConditionRow}
+                criteria={criteria}
+                onRuleChange={onRuleChange}
+                updateRules={updateRules}
+                setErrors={setErrors}
+                setRemoveAllClicked={setRemoveAllClicked}
+                conditionRulesData={conditionRulesData}
+                notConditionType={notConditionType}
+                classes={classes}
+                currentCondition={c}
+                ruleIndex={ncrIndex}
+                isNestedCondition
+                nestedConditionIndex={nestedConditionIndex}
+                activeNestedCriteria={
+                  selectedNestedConditionCriteria as 'allOf' | 'anyOf'
+                }
+              />
+            ))}
           {selectedNestedConditionCriteria === criterias.not && (
             <ConditionsFormRowFields
               oldCondition={
@@ -773,7 +498,15 @@ export const ConditionsFormRow = ({
           />
         ))}
       </ToggleButtonGroup>
-      {criteria === criterias.condition && renderConditionRule()}
+      <ConditionRule
+        conditionRow={conditionRow}
+        selPluginResourceType={selPluginResourceType}
+        onRuleChange={onRuleChange}
+        criteria={criteria}
+        conditionRulesData={conditionRulesData}
+        setErrors={setErrors}
+        setRemoveAllClicked={setRemoveAllClicked}
+      />
       {criteria !== criterias.condition && (
         <Box>
           {criteria !== criterias.not &&
@@ -781,13 +514,24 @@ export const ConditionsFormRow = ({
               conditionRow[
                 criteria as keyof ConditionsData
               ] as PermissionCondition[]
-            )?.map((c, srIndex) =>
-              renderComplexConditionRow(
-                c,
-                srIndex,
-                criteria as 'allOf' | 'anyOf',
-              ),
-            )}
+            )?.map((c, srIndex) => (
+              <ComplexConditionRow
+                key={`${criteria}-simple-condition-${srIndex}`}
+                conditionRow={conditionRow}
+                nestedConditionRow={nestedConditionRow}
+                criteria={criteria}
+                onRuleChange={onRuleChange}
+                updateRules={updateRules}
+                setErrors={setErrors}
+                setRemoveAllClicked={setRemoveAllClicked}
+                conditionRulesData={conditionRulesData}
+                notConditionType={notConditionType}
+                classes={classes}
+                currentCondition={c}
+                ruleIndex={srIndex}
+                activeCriteria={criteria as 'allOf' | 'anyOf'}
+              />
+            ))}
           {criteria === criterias.not && (
             <RadioGroup
               className={classes.radioGroup}
@@ -831,7 +575,16 @@ export const ConditionsFormRow = ({
               />
             </RadioGroup>
           )}
-          {renderComplexConditionRowButtons()}
+          <ComplexConditionRowButtons
+            conditionRow={conditionRow}
+            onRuleChange={onRuleChange}
+            criteria={criteria}
+            classes={classes}
+            selPluginResourceType={selPluginResourceType}
+            updateErrors={updateErrors}
+            isNestedConditionRule={isNestedConditionRule}
+            handleAddNestedCondition={handleAddNestedCondition}
+          />
           {nestedConditionRow?.length > 0 &&
             nestedConditionRow.map((nc, nestedConditionIndex) =>
               renderNestedConditionRow(nc, nestedConditionIndex),

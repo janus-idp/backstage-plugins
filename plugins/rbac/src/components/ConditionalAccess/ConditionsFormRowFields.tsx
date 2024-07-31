@@ -2,7 +2,7 @@ import React from 'react';
 
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 
-import { Box, makeStyles, TextField, Theme } from '@material-ui/core';
+import { Box, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import Form from '@rjsf/mui';
 import {
@@ -13,6 +13,13 @@ import {
 } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 
+import {
+  getNestedRuleErrors,
+  getSimpleRuleErrors,
+  isSimpleRule,
+  makeConditionsFormRowFieldsStyles,
+  setErrorMessage,
+} from '../../utils/conditional-access-utils';
 import { criterias } from './const';
 import { CustomArrayField } from './CustomArrayField';
 import { RulesDropdownOption } from './RulesDropdownOption';
@@ -24,62 +31,6 @@ import {
   NestedCriteriaErrors,
   RulesData,
 } from './types';
-
-interface StyleProps {
-  isNotSimpleCondition: boolean;
-}
-
-const useStyles = makeStyles<Theme, StyleProps>(theme => ({
-  bgPaper: {
-    backgroundColor: theme.palette.background.paper,
-  },
-  params: {
-    '& div[class*="MuiInputBase-root"]': {
-      backgroundColor: theme.palette.background.paper,
-    },
-    '& span': {
-      color: theme.palette.textSubtle,
-    },
-    '& input': {
-      color: theme.palette.textContrast,
-    },
-    '& fieldset.MuiOutlinedInput-notchedOutline': {
-      borderColor: theme.palette.grey[500],
-    },
-    '& div.MuiOutlinedInput-root': {
-      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-        borderColor: theme.palette.primary.light,
-      },
-      '&.Mui-error .MuiOutlinedInput-notchedOutline': {
-        borderColor: theme.palette.status.error,
-        '&:hover': {
-          borderColor: theme.palette.status.error,
-        },
-      },
-    },
-    '& label.MuiFormLabel-root.Mui-focused': {
-      color: theme.palette.primary.light,
-    },
-    '& label.MuiFormLabel-root.Mui-error': {
-      color: theme.palette.status.error,
-    },
-    '& div.MuiOutlinedInput-root:hover fieldset': {
-      borderColor:
-        theme.palette.type === 'dark' ? theme.palette.textContrast : 'unset',
-    },
-    '& label': {
-      color: theme.palette.textSubtle,
-    },
-  },
-  inputFieldContainer: {
-    display: 'flex',
-    flexFlow: 'row',
-    gap: '10px',
-    flexGrow: 1,
-    margin: ({ isNotSimpleCondition }) =>
-      isNotSimpleCondition ? '-1.5rem 0 0 1.85rem' : '0',
-  },
-}));
 
 type ConditionFormRowFieldsProps = {
   oldCondition: Condition;
@@ -116,7 +67,7 @@ export const ConditionsFormRowFields = ({
   nestedConditionRuleIndex,
   updateRules,
 }: ConditionFormRowFieldsProps) => {
-  const classes = useStyles({
+  const classes = makeConditionsFormRowFieldsStyles({
     isNotSimpleCondition:
       criteria === criterias.not && !nestedConditionCriteria,
   });
@@ -204,26 +155,25 @@ export const ConditionsFormRowFields = ({
   };
 
   const handleTransformErrors = (errors: RJSFValidationError[]) => {
+    // criteria: condition or not simple-condition
     if (
       criteria === criterias.condition ||
       (criteria === criterias.not &&
-        Object.keys(conditionRow[criteria as keyof Condition]).includes('rule'))
+        isSimpleRule(conditionRow[criteria as keyof Condition]))
     ) {
       setErrors(prevErrors => {
         const updatedErrors = { ...prevErrors };
-        updatedErrors[criteria] = errors[0]
-          ? `error in ${errors[0].property} input`
-          : '';
+        updatedErrors[criteria] = setErrorMessage(errors);
 
         return updatedErrors;
       });
     }
 
-    // not criteria nested-condition
+    // criteria: not nested-condition
     if (
       criteria === criterias.not &&
       nestedConditionCriteria &&
-      !Object.keys(conditionRow[criteria as keyof Condition]).includes('rule')
+      !isSimpleRule(conditionRow[criteria as keyof Condition])
     ) {
       setErrors(prevErrors => {
         const updatedErrors = { ...prevErrors };
@@ -236,15 +186,11 @@ export const ConditionsFormRowFields = ({
           Array.isArray(nestedErrors) &&
           nestedConditionRuleIndex !== undefined
         ) {
-          nestedErrors[nestedConditionRuleIndex] = errors[0]
-            ? `error in ${errors[0].property} input`
-            : '';
+          nestedErrors[nestedConditionRuleIndex] = setErrorMessage(errors);
         } else {
           // nestedCriteria: not
           updatedErrors[criteria] = {
-            [nestedConditionCriteria]: errors[0]
-              ? `error in ${errors[0].property} input`
-              : '',
+            [nestedConditionCriteria]: setErrorMessage(errors),
           };
         }
 
@@ -256,28 +202,24 @@ export const ConditionsFormRowFields = ({
     if (criteria === criterias.allOf || criteria === criterias.anyOf) {
       setErrors(prevErrors => {
         const updatedErrors = { ...prevErrors };
-        // simple rule errors
-        const simpleRuleErrors = (
-          (updatedErrors[
+        const simpleRuleErrors = getSimpleRuleErrors(
+          updatedErrors[
             criteria as keyof AccessConditionsErrors
-          ] as ComplexErrors[]) || []
-        ).filter(e => typeof e === 'string');
+          ] as ComplexErrors[],
+        );
         if (
           Array.isArray(simpleRuleErrors) &&
           simpleRuleErrors.length > 0 &&
           index !== undefined
         ) {
-          simpleRuleErrors[index] = errors[0]
-            ? `error in ${errors[0].property} input`
-            : '';
+          simpleRuleErrors[index] = setErrorMessage(errors);
         }
 
-        // nested rule errors
-        const nestedRuleErrors = (
-          (updatedErrors[
+        const nestedRuleErrors = getNestedRuleErrors(
+          updatedErrors[
             criteria as keyof AccessConditionsErrors
-          ] as ComplexErrors[]) || []
-        ).filter(e => typeof e !== 'string') as NestedCriteriaErrors[];
+          ] as ComplexErrors[],
+        );
 
         // nestedCriteria: allOf or anyOf
         if (
@@ -285,11 +227,13 @@ export const ConditionsFormRowFields = ({
           nestedConditionIndex !== undefined &&
           nestedConditionRuleIndex !== undefined
         ) {
-          (nestedRuleErrors[nestedConditionIndex][nestedConditionCriteria][
-            nestedConditionRuleIndex
-          ] as string) = errors[0]
-            ? `error in ${errors[0].property} input`
-            : '';
+          const nestedConditionRuleList =
+            nestedRuleErrors[nestedConditionIndex][nestedConditionCriteria];
+
+          if (Array.isArray(nestedConditionRuleList)) {
+            nestedConditionRuleList[nestedConditionRuleIndex] =
+              setErrorMessage(errors);
+          }
         }
 
         // nestedCriteria: not
@@ -300,7 +244,7 @@ export const ConditionsFormRowFields = ({
           nestedConditionIndex !== undefined
         ) {
           nestedRuleErrors[nestedConditionIndex][nestedConditionCriteria] =
-            errors[0] ? `error in ${errors[0].property} input` : '';
+            setErrorMessage(errors);
         }
 
         updatedErrors[criteria] = [...simpleRuleErrors, ...nestedRuleErrors];

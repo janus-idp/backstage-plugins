@@ -1,6 +1,7 @@
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/core';
+import { RJSFValidationError } from '@rjsf/utils';
 
 import {
   conditionButtons,
@@ -45,7 +46,7 @@ export const getDefaultRule = (selPluginResourceType: string) => ({
   params: {},
 });
 
-export const useConditionsFormRowStyles = makeStyles(theme => ({
+export const makeConditionsFormRowStyles = makeStyles(theme => ({
   conditionRow: {
     padding: '20px',
     border: `1px solid ${theme.palette.border}`,
@@ -115,6 +116,63 @@ export const useConditionsFormRowStyles = makeStyles(theme => ({
     marginTop: theme.spacing(1),
   },
 }));
+
+interface StyleProps {
+  isNotSimpleCondition: boolean;
+}
+export const makeConditionsFormRowFieldsStyles = makeStyles<Theme, StyleProps>(
+  theme => ({
+    bgPaper: {
+      backgroundColor: theme.palette.background.paper,
+    },
+    params: {
+      '& div[class*="MuiInputBase-root"]': {
+        backgroundColor: theme.palette.background.paper,
+      },
+      '& span': {
+        color: theme.palette.textSubtle,
+      },
+      '& input': {
+        color: theme.palette.textContrast,
+      },
+      '& fieldset.MuiOutlinedInput-notchedOutline': {
+        borderColor: theme.palette.grey[500],
+      },
+      '& div.MuiOutlinedInput-root': {
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+          borderColor: theme.palette.primary.light,
+        },
+        '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+          borderColor: theme.palette.status.error,
+          '&:hover': {
+            borderColor: theme.palette.status.error,
+          },
+        },
+      },
+      '& label.MuiFormLabel-root.Mui-focused': {
+        color: theme.palette.primary.light,
+      },
+      '& label.MuiFormLabel-root.Mui-error': {
+        color: theme.palette.status.error,
+      },
+      '& div.MuiOutlinedInput-root:hover fieldset': {
+        borderColor:
+          theme.palette.type === 'dark' ? theme.palette.textContrast : 'unset',
+      },
+      '& label': {
+        color: theme.palette.textSubtle,
+      },
+    },
+    inputFieldContainer: {
+      display: 'flex',
+      flexFlow: 'row',
+      gap: '10px',
+      flexGrow: 1,
+      margin: ({ isNotSimpleCondition }) =>
+        isNotSimpleCondition ? '-1.5rem 0 0 1.85rem' : '0',
+    },
+  }),
+);
 
 export const calculateConditionIndex = (
   conditionRow: ConditionsData,
@@ -204,6 +262,21 @@ export const resetErrors = (
 
   return errors;
 };
+
+export const setErrorMessage = (errors: RJSFValidationError[]) =>
+  errors[0] ? `Error in the ${errors[0].property} field.` : '';
+
+export const getSimpleRuleErrors = (errors: ComplexErrors[]): string[] =>
+  (errors.filter(
+    (err: ComplexErrors) => typeof err === 'string',
+  ) as string[]) || [];
+
+export const getNestedRuleErrors = (
+  errors: ComplexErrors[],
+): NestedCriteriaErrors[] =>
+  (errors.filter(
+    (err: ComplexErrors) => typeof err !== 'string',
+  ) as NestedCriteriaErrors[]) || [];
 
 export const isNestedConditionRule = (r: Condition): boolean => {
   return (
@@ -297,3 +370,5 @@ export const hasNestedNotErrors = (
   }
   return nestedErrors?.length > 0;
 };
+
+export const isSimpleRule = (con: Condition): boolean => 'rule' in con;

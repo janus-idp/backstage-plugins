@@ -52,4 +52,7 @@ export type ConditionFormRowProps = {
   setRemoveAllClicked: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export type NotConditionType = 'simple-condition' | 'nested-condition';
+export enum NotConditionType {
+  SimpleCondition = 'simple-condition',
+  NestedCondition = 'nested-condition',
+}
