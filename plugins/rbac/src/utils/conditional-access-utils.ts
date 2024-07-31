@@ -191,7 +191,7 @@ export const calculateConditionIndex = (
 };
 
 export const initializeErrors = (
-  criteria: string,
+  criteria: keyof ConditionsData,
   conditions: ConditionsData,
 ): AccessConditionsErrors => {
   const errors: AccessConditionsErrors = {};
@@ -214,9 +214,9 @@ export const initializeErrors = (
     return nestedErrors;
   };
 
-  if (criteria === 'condition') {
+  if (criteria === criterias.condition) {
     errors.condition = '';
-  } else if (criteria === 'not') {
+  } else if (criteria === criterias.not) {
     const notCondition = conditions.not;
 
     let notConditionType;
@@ -233,8 +233,10 @@ export const initializeErrors = (
     } else {
       errors.not = initialize(conditions.not!);
     }
-  } else if (criteria === 'allOf' || criteria === 'anyOf') {
-    errors[criteria] = conditions[criteria]!.map(initialize);
+  } else if (criteria === criterias.allOf || criteria === criterias.anyOf) {
+    errors[criteria] = Array.isArray(conditions[criteria])
+      ? (conditions[criteria] as Condition[]).map(initialize)
+      : [''];
   }
 
   return errors;
