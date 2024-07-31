@@ -4,7 +4,7 @@ Welcome to the argocd-common plugin!
 
 This plugin contains common utilities for the argocd plugin.
 
-# Argocd plugin for Backstage
+# Argo CD plugin for Backstage
 
 The Argocd plugin displays the information about your argocd applications in your Backstage application.
 
