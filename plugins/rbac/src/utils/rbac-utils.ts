@@ -38,17 +38,24 @@ import {
 } from '../types';
 import { getMembersCount } from './create-role-utils';
 
-export const getPermissions = (
+export const getPermissionsArray = (
   role: string,
   policies: RoleBasedPolicy[],
-): number => {
+): RoleBasedPolicy[] => {
   if (!policies || policies?.length === 0 || !Array.isArray(policies)) {
-    return 0;
+    return [];
   }
   return policies.filter(
     (policy: RoleBasedPolicy) =>
       policy.entityReference === role && policy.effect !== 'deny',
-  ).length;
+  );
+};
+
+export const getPermissions = (
+  role: string,
+  policies: RoleBasedPolicy[],
+): number => {
+  return getPermissionsArray(role, policies).length;
 };
 
 export const getMembersString = (res: {
