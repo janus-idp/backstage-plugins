@@ -274,6 +274,41 @@ To utilize this condition to the RBAC REST api you need to wrap it with more inf
 }
 ```
 
+## Conditional Policy Aliases
+
+The RBAC-backend plugin allows for the use of aliases in the conditional policy rule parameters. These aliases are dynamically replaced with corresponding values during the policy evaluation process. Each alias is prefixed with a `$` sign to denote its special function.
+
+### Supported Aliases
+
+1. **`$currentUser`**:
+
+   - **Description**: This alias is replaced with the user entity reference for the user currently requesting access to the resource.
+   - **Example**: If the user "Tom" from the "default" namespace is requesting access, `$currentUser` will be replaced with `user:default/tom`.
+
+2. **`$ownerRefs`**:
+   - **Description**: This alias is replaced with ownership references, typically in the form of an array. The array usually contains the user entity reference and the user's parent group entity reference.
+   - **Example**: For a user "Tom" who belongs to "team-a", `$ownerRefs` will be replaced with `['user:default/tom', 'group:default/team-a']`.
+
+### Example of a Conditional Policy Object with Alias
+
+This condition should allow members of the `role:default/developer` to delete only their own catalogs and no others:
+
+````json
+{
+  "result": "CONDITIONAL",
+  "roleEntityRef": "role:default/developer",
+  "pluginId": "catalog",
+  "resourceType": "catalog-entity",
+  "permissionMapping": ["delete"],
+  "conditions": {
+     "rule": "IS_ENTITY_OWNER",
+     "resourceType": "catalog-entity",
+     "params": {
+       "claims": ["$currentUser"]
+     }
+   }
+}
+
 ## Examples of Conditional Policies
 
 Below are a few examples that can be used on some of the Janus IDP plugins. These can help in determining how based to define conditional policies
@@ -295,7 +330,7 @@ Below are a few examples that can be used on some of the Janus IDP plugins. Thes
     }
   }
 }
-```
+````
 
 This example will prevent users in the role `role:default/developer` from updating or deleting users that ingested into the catalog from the Keycloak plugin.
 
