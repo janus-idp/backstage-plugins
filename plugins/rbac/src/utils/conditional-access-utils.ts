@@ -175,9 +175,7 @@ export const initializeErrors = (
       errors.not = initialize(conditions.not!);
     }
   } else if (criteria === 'allOf' || criteria === 'anyOf') {
-    errors[criteria] = ((conditions[criteria] as Condition[]) || [])!.map(
-      initialize,
-    );
+    errors[criteria] = conditions[criteria]!.map(initialize);
   }
 
   return errors;
@@ -274,9 +272,9 @@ export const hasSimpleNotRule = (
   conditions: ConditionsData,
   criteria: string,
 ): boolean => {
-  return Object.keys(
-    conditions[criteria as keyof ConditionsData] as Condition,
-  ).includes('rule');
+  return Object.keys(conditions[criteria as keyof ConditionsData]!).includes(
+    'rule',
+  );
 };
 
 export const hasNestedNotErrors = (
@@ -286,7 +284,7 @@ export const hasNestedNotErrors = (
 ): boolean => {
   if (!errors) return false;
   const nestedCriteria = Object.keys(
-    conditions[criteria as keyof ConditionsData] as Condition,
+    conditions[criteria as keyof ConditionsData]!,
   )[0] as keyof ConditionsData;
   const nestedErrors = (
     errors[
