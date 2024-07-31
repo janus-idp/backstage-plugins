@@ -11,7 +11,7 @@ import {
   resetErrors,
 } from '../../utils/conditional-access-utils';
 import { ConditionsFormRow } from './ConditionsFormRow';
-import { criterias } from './const';
+import { criterias, rbacAPIDocLink } from './const';
 import {
   AccessConditionsErrors,
   ComplexErrors,
@@ -129,105 +129,6 @@ export const ConditionsForm = ({
         return true;
     }
   };
-
-  // const hasAnyErrors = (): boolean => {
-  //   let hasAnyErrors = false;
-  //   if (
-  //     errors !== undefined &&
-  //     (criteria === criterias.condition ||
-  //       (criteria === criterias.not &&
-  //         Object.keys(
-  //           conditions[criteria as keyof ConditionsData] as Condition,
-  //         ).includes('rule')))
-  //   ) {
-  //     hasAnyErrors =
-  //       ((errors[criteria as keyof AccessConditionsErrors] as string) || '')
-  //         .length > 0;
-  //   }
-
-  //   // criteria: not && nested
-  //   if (
-  //     errors !== undefined &&
-  //     criteria === criterias.not &&
-  //     !Object.keys(
-  //       conditions[criteria as keyof ConditionsData] as Condition,
-  //     ).includes('rule')
-  //   ) {
-  //     const nestedCriteria = Object.keys(
-  //       conditions[criteria as keyof ConditionsData] as Condition,
-  //     )[0] as keyof Condition;
-
-  //     // nestedCriteria: allOf or anyOf
-  //     if (
-  //       Array.isArray(
-  //         errors[criterias.not as keyof AccessConditionsErrors][
-  //           nestedCriteria
-  //         ] as string[],
-  //       )
-  //     ) {
-  //       (
-  //         (errors[criterias.not as keyof AccessConditionsErrors][
-  //           nestedCriteria
-  //         ] as string[]) || []
-  //       ).forEach((e: string) => {
-  //         if (e) hasAnyErrors = true;
-  //       });
-  //     } else {
-  //       // nestedCriteria: not
-  //       hasAnyErrors =
-  //         (
-  //           (errors[criterias.not as keyof AccessConditionsErrors][
-  //             nestedCriteria
-  //           ] as string) || ''
-  //         ).length > 0;
-  //     }
-  //   }
-
-  //   if (
-  //     errors !== undefined &&
-  //     (criteria === criterias.allOf || criteria === criterias.anyOf)
-  //   ) {
-  //     const simpleRuleErrors = (
-  //       (errors[criteria as keyof AccessConditionsErrors] as string[]) || []
-  //     ).filter(e => typeof e === 'string');
-  //     const nestedRuleErrors = (
-  //       (errors[
-  //         criteria as keyof AccessConditionsErrors
-  //       ] as NestedCriteriaErrors[]) || []
-  //     ).filter(e => typeof e !== 'string');
-  //     simpleRuleErrors.forEach((e: string) => {
-  //       if (e) hasAnyErrors = true;
-  //     });
-
-  //     if (Array.isArray(nestedRuleErrors) && nestedRuleErrors.length > 0) {
-  //       nestedRuleErrors.forEach((err: NestedCriteriaErrors) => {
-  //         const nestedCriteria = Object.keys(
-  //           err,
-  //         )[0] as keyof NestedCriteriaErrors;
-  //         // nestedCriteria: allOf, anyOf
-  //         if (typeof err[nestedCriteria] !== 'string') {
-  //           ((err[nestedCriteria] as string[]) || []).forEach((e: string) => {
-  //             if (e) hasAnyErrors = true;
-  //           });
-  //         } else {
-  //           // nestedCriteria: not
-  //           hasAnyErrors = (err[nestedCriteria] as string).length > 0;
-  //         }
-  //       });
-  //     }
-  //   }
-
-  //   return hasAnyErrors;
-  // }
-
-  // useEffect(() => {
-  //   console.log('errors: ', errors);
-  // }, [errors]);
-
-  // useEffect(() => {
-  //   // console.log('conditions: ', conditions);
-  //   setErrors(initializeErrors(criteria, conditions));
-  // }, []);
 
   const hasAnyErrors = (): boolean => {
     if (!errors) return false;
@@ -368,8 +269,7 @@ export const ConditionsForm = ({
             </AlertTitle>
             Only one level is displayed. Please use the{' '}
             <a
-              href="https://github.com/redhat-developer/red-hat-developers-documentation-rhdh/blob/main/modules/admin/proc-rbac-send-request-rbac-rest-api.adoc"
-              // TODO: Update link with the official documentation when RHIDP-3078 is resolved
+              href={rbacAPIDocLink}
               target="blank"
               style={{ textDecoration: 'underline' }}
             >
