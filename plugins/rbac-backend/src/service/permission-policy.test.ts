@@ -3,12 +3,14 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   createPermission,
 } from '@backstage/plugin-permission-common';
-import { PolicyQuery } from '@backstage/plugin-permission-node';
+import {
+  PolicyQuery,
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
 
 import {
   Adapter,
@@ -2095,7 +2097,7 @@ function newPolicyQueryWithResourcePermission(
 function newIdentityResponse(
   user?: string,
   ownershipEntityRefs?: string[],
-): BackstageIdentityResponse | undefined {
+): PolicyQueryUser | undefined {
   if (user) {
     return {
       identity: {
@@ -2103,7 +2105,16 @@ function newIdentityResponse(
         type: 'user',
         userEntityRef: user,
       },
-      token: '',
+      credentials: {
+        $$type: '@backstage/BackstageCredentials',
+        principal: true,
+        expiresAt: new Date('2021-01-01T00:00:00Z'),
+      },
+      info: {
+        userEntityRef: user,
+        ownershipEntityRefs: ownershipEntityRefs ?? [],
+      },
+      token: 'token',
     };
   }
   return undefined;
