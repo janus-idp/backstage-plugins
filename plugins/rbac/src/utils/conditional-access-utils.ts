@@ -158,9 +158,9 @@ export const initializeErrors = (
   if (criteria === 'condition') {
     errors.condition = '';
   } else if (criteria === 'not') {
-    const notCondition = conditions.not as Condition;
+    const notCondition = conditions.not;
 
-    let notConditionType = 'nested-condition';
+    let notConditionType;
     if (notCondition === undefined) {
       notConditionType = 'simple-condition';
     } else if ('rule' in notCondition) {
@@ -175,9 +175,9 @@ export const initializeErrors = (
       errors.not = initialize(conditions.not!);
     }
   } else if (criteria === 'allOf' || criteria === 'anyOf') {
-    errors[criteria] = ((conditions[
-      criteria as keyof Condition
-    ] as Condition[]) || [])!.map(initialize);
+    errors[criteria] = ((conditions[criteria] as Condition[]) || [])!.map(
+      initialize,
+    );
   }
 
   return errors;
@@ -227,3 +227,75 @@ export const getRowKey = (isNestedCondition: boolean, ruleIndex: number) =>
   isNestedCondition
     ? `nestedCondition-rule-${ruleIndex}`
     : `condition-rule-${ruleIndex}`;
+
+export const hasAllOfOrAnyOfErrors = (
+  errors: AccessConditionsErrors,
+  criteria: string,
+): boolean => {
+  if (!errors) return false;
+
+  const criteriaErrors = errors[
+    criteria as keyof AccessConditionsErrors
+  ] as ComplexErrors[];
+  const simpleRuleErrors = criteriaErrors.filter(
+    e => typeof e === 'string',
+  ) as string[];
+  const nestedRuleErrors = criteriaErrors.filter(
+    e => typeof e !== 'string',
+  ) as NestedCriteriaErrors[];
+
+  if (simpleRuleErrors.some(e => e.length > 0)) {
+    return true;
+  }
+
+  return nestedRuleErrors.some(err => {
+    const nestedCriteria = Object.keys(err)[0] as keyof NestedCriteriaErrors;
+    const nestedErrors = err[nestedCriteria];
+
+    if (Array.isArray(nestedErrors)) {
+      return nestedErrors.some(e => e.length > 0);
+    }
+    return nestedErrors?.length > 0;
+  });
+};
+
+export const hasSimpleConditionOrNotErrors = (
+  errors: AccessConditionsErrors,
+  criteria: string,
+): boolean => {
+  if (!errors) return false;
+  return (
+    ((errors[criteria as keyof AccessConditionsErrors] as string) || '')
+      .length > 0
+  );
+};
+
+export const hasSimpleNotRule = (
+  conditions: ConditionsData,
+  criteria: string,
+): boolean => {
+  return Object.keys(
+    conditions[criteria as keyof ConditionsData] as Condition,
+  ).includes('rule');
+};
+
+export const hasNestedNotErrors = (
+  errors: AccessConditionsErrors,
+  conditions: ConditionsData,
+  criteria: string,
+): boolean => {
+  if (!errors) return false;
+  const nestedCriteria = Object.keys(
+    conditions[criteria as keyof ConditionsData] as Condition,
+  )[0] as keyof ConditionsData;
+  const nestedErrors = (
+    errors[
+      criterias.not as keyof AccessConditionsErrors
+    ] as NestedCriteriaErrors
+  )[nestedCriteria];
+
+  if (Array.isArray(nestedErrors)) {
+    return nestedErrors.some(e => e.length > 0);
+  }
+  return nestedErrors?.length > 0;
+};

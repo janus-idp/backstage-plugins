@@ -7,6 +7,10 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import WarningIcon from '@mui/icons-material/Warning';
 
 import {
+  hasAllOfOrAnyOfErrors,
+  hasNestedNotErrors,
+  hasSimpleConditionOrNotErrors,
+  hasSimpleNotRule,
   initializeErrors,
   resetErrors,
 } from '../../utils/conditional-access-utils';
@@ -14,10 +18,8 @@ import { ConditionsFormRow } from './ConditionsFormRow';
 import { criterias, rbacAPIDocLink } from './const';
 import {
   AccessConditionsErrors,
-  ComplexErrors,
   Condition,
   ConditionsData,
-  NestedCriteriaErrors,
   RulesData,
 } from './types';
 
@@ -133,76 +135,19 @@ export const ConditionsForm = ({
   const hasAnyErrors = (): boolean => {
     if (!errors) return false;
 
-    const hasSimpleNotRule = (): boolean => {
-      return Object.keys(
-        conditions[criteria as keyof ConditionsData] as Condition,
-      ).includes('rule');
-    };
-
-    const hasSimpleConditionOrNotErrors = (): boolean => {
-      return (
-        ((errors[criteria as keyof AccessConditionsErrors] as string) || '')
-          .length > 0
-      );
-    };
-
-    const hasNestedNotErrors = (): boolean => {
-      const nestedCriteria = Object.keys(
-        conditions[criteria as keyof ConditionsData] as Condition,
-      )[0] as keyof ConditionsData;
-      const nestedErrors = (
-        errors[
-          criterias.not as keyof AccessConditionsErrors
-        ] as NestedCriteriaErrors
-      )[nestedCriteria];
-
-      if (Array.isArray(nestedErrors)) {
-        return nestedErrors.some(e => e.length > 0);
-      }
-      return (nestedErrors as string)?.length > 0;
-    };
-
-    const hasAllOfOrAnyOfErrors = (): boolean => {
-      const criteriaErrors = errors[
-        criteria as keyof AccessConditionsErrors
-      ] as ComplexErrors[];
-      const simpleRuleErrors = criteriaErrors.filter(
-        e => typeof e === 'string',
-      ) as string[];
-      const nestedRuleErrors = criteriaErrors.filter(
-        e => typeof e !== 'string',
-      ) as NestedCriteriaErrors[];
-
-      if (simpleRuleErrors.some(e => e.length > 0)) {
-        return true;
-      }
-
-      return nestedRuleErrors.some(err => {
-        const nestedCriteria = Object.keys(
-          err,
-        )[0] as keyof NestedCriteriaErrors;
-        const nestedErrors = err[nestedCriteria];
-
-        if (Array.isArray(nestedErrors)) {
-          return nestedErrors.some(e => e.length > 0);
-        }
-        return (nestedErrors as string)?.length > 0;
-      });
-    };
-
     if (
       criteria === criterias.condition ||
-      (criteria === criterias.not && hasSimpleNotRule())
+      (criteria === criterias.not && hasSimpleNotRule(errors, criteria))
     ) {
-      return hasSimpleConditionOrNotErrors();
+      return hasSimpleConditionOrNotErrors(errors, criteria);
     }
 
-    if (criteria === criterias.not && !hasSimpleNotRule()) {
-      return hasNestedNotErrors();
+    if (criteria === criterias.not && !hasSimpleNotRule(errors, criteria)) {
+      return hasNestedNotErrors(errors, conditions, criteria);
     }
 
     if (criteria === criterias.allOf || criteria === criterias.anyOf) {
-      return hasAllOfOrAnyOfErrors();
+      return hasAllOfOrAnyOfErrors(errors, criteria);
     }
 
     return false;
