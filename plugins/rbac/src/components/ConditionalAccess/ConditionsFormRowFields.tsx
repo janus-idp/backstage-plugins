@@ -299,9 +299,8 @@ export const ConditionsFormRowFields = ({
           nestedConditionCriteria === criterias.not &&
           nestedConditionIndex !== undefined
         ) {
-          (nestedRuleErrors[nestedConditionIndex] as NestedCriteriaErrors)[
-            nestedConditionCriteria
-          ] = errors[0] ? `error in ${errors[0].property} input` : '';
+          nestedRuleErrors[nestedConditionIndex][nestedConditionCriteria] =
+            errors[0] ? `error in ${errors[0].property} input` : '';
         }
 
         updatedErrors[criteria] = [...simpleRuleErrors, ...nestedRuleErrors];

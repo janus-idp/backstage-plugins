@@ -11,6 +11,7 @@ import {
   ComplexErrors,
   Condition,
   ConditionsData,
+  NestedCriteriaErrors,
 } from '../components/ConditionalAccess/types';
 
 export const ruleOptionDisabled = (
@@ -132,6 +133,58 @@ export const calculateConditionIndex = (
 
 export const initializeErrors = (
   criteria: string,
+  conditions: ConditionsData,
+): AccessConditionsErrors => {
+  const errors: AccessConditionsErrors = {};
+  const initialize = (cond: Condition | ConditionsData): ComplexErrors => {
+    if ('rule' in cond) {
+      return '';
+    }
+
+    const nestedErrors: NestedCriteriaErrors = {};
+    if (cond.allOf) {
+      nestedErrors.allOf = (cond.allOf.map(initialize) as string[]) || [];
+    }
+    if (cond.anyOf) {
+      nestedErrors.anyOf = (cond.anyOf.map(initialize) as string[]) || [];
+    }
+    if (cond.not) {
+      nestedErrors.not = (initialize(cond.not) as string) || '';
+    }
+
+    return nestedErrors;
+  };
+
+  if (criteria === 'condition') {
+    errors.condition = '';
+  } else if (criteria === 'not') {
+    const notCondition = conditions.not as Condition;
+
+    let notConditionType = 'nested-condition';
+    if (notCondition === undefined) {
+      notConditionType = 'simple-condition';
+    } else if ('rule' in notCondition) {
+      notConditionType = 'simple-condition';
+    } else {
+      notConditionType = 'nested-condition';
+    }
+
+    if (notConditionType === 'simple-condition') {
+      errors.not = '';
+    } else {
+      errors.not = initialize(conditions.not!);
+    }
+  } else if (criteria === 'allOf' || criteria === 'anyOf') {
+    errors[criteria] = ((conditions[
+      criteria as keyof Condition
+    ] as Condition[]) || [])!.map(initialize);
+  }
+
+  return errors;
+};
+
+export const resetErrors = (
+  criteria: string,
   notConditionType = 'simple-condition',
 ): AccessConditionsErrors => {
   const errors: AccessConditionsErrors = {};
@@ -161,3 +214,16 @@ export const isNestedConditionRule = (r: Condition): boolean => {
     criterias.not in (r as ConditionsData)
   );
 };
+
+export const getRowStyle = (c: Condition, isNestedCondition: boolean) =>
+  isNestedCondition
+    ? {
+        display:
+          (c as PermissionCondition).rule !== undefined ? 'flex' : 'none',
+      }
+    : { display: 'flex', gap: '10px' };
+
+export const getRowKey = (isNestedCondition: boolean, ruleIndex: number) =>
+  isNestedCondition
+    ? `nestedCondition-rule-${ruleIndex}`
+    : `condition-rule-${ruleIndex}`;

@@ -19,9 +19,11 @@ import {
   calculateConditionIndex,
   extractNestedConditions,
   getDefaultRule,
-  initializeErrors,
+  getRowKey,
+  getRowStyle,
   isNestedConditionRule,
   nestedConditionButtons,
+  resetErrors,
   ruleOptionDisabled,
   useConditionsFormRowStyles,
 } from '../../utils/conditional-access-utils';
@@ -92,7 +94,7 @@ export const ConditionsFormRow = ({
 
   const handleCriteriaChange = (val: string) => {
     setCriteria(val);
-    setErrors(initializeErrors(val));
+    setErrors(resetErrors(val));
 
     const defaultRule = getDefaultRule(selPluginResourceType);
 
@@ -228,7 +230,7 @@ export const ConditionsFormRow = ({
 
   const handleNotConditionTypeChange = (val: NotConditionType) => {
     setNotConditionType(val);
-    setErrors(initializeErrors(criteria, val));
+    setErrors(resetErrors(criteria, val));
     if (val === 'nested-condition') {
       handleAddNestedCondition(criterias.not);
     } else {
@@ -491,15 +493,6 @@ export const ConditionsFormRow = ({
     nestedConditionIndex?: number,
     activeNestedCriteria?: 'allOf' | 'anyOf',
   ) => {
-    const rowStyle = isNestedCondition
-      ? {
-          display:
-            (c as PermissionCondition).rule !== undefined ? 'flex' : 'none',
-        }
-      : { display: 'flex', gap: '10px' };
-    const rowKey = isNestedCondition
-      ? `nestedCondition-rule-${ruleIndex}`
-      : `condition-rule-${ruleIndex}`;
     const rs = isNestedCondition
       ? (c[activeCriteria as keyof Condition] as PermissionCondition[])
       : ((
@@ -522,7 +515,10 @@ export const ConditionsFormRow = ({
       ruleIndex === 0;
     return (
       (c as PermissionCondition).resourceType && (
-        <div style={rowStyle} key={rowKey}>
+        <div
+          style={getRowStyle(c, isNestedCondition)}
+          key={getRowKey(isNestedCondition, ruleIndex)}
+        >
           <ConditionsFormRowFields
             oldCondition={c}
             index={isNestedCondition ? undefined : ruleIndex}
@@ -574,30 +570,30 @@ export const ConditionsFormRow = ({
     );
   };
 
+  const updateErrors = (_index: number) => {
+    setErrors(prevErrors => {
+      const updatedErrors = { ...prevErrors };
+
+      if (!Array.isArray(updatedErrors[criteria])) {
+        updatedErrors[criteria] = [];
+      }
+
+      const firstNestedConditionErrorIndex =
+        (updatedErrors[criteria] as ComplexErrors[]).findIndex(
+          e => typeof e !== 'string',
+        ) || 0;
+
+      (updatedErrors[criteria] as ComplexErrors[]).splice(
+        firstNestedConditionErrorIndex,
+        0,
+        '',
+      );
+
+      return updatedErrors;
+    });
+  };
+
   const renderComplexConditionRowButtons = () => {
-    const updateErrors = (_index: number) => {
-      setErrors(prevErrors => {
-        const updatedErrors = { ...prevErrors };
-
-        if (!Array.isArray(updatedErrors[criteria])) {
-          updatedErrors[criteria] = [];
-        }
-
-        const firstNestedConditionErrorIndex =
-          (updatedErrors[criteria] as ComplexErrors[]).findIndex(
-            e => typeof e !== 'string',
-          ) || 0;
-
-        (updatedErrors[criteria] as ComplexErrors[]).splice(
-          firstNestedConditionErrorIndex,
-          0,
-          '',
-        );
-
-        return updatedErrors;
-      });
-    };
-
     const findFirstNestedConditionIndex = (rules: Condition[]): number => {
       return rules.findIndex(e => isNestedConditionRule(e)) || 0;
     };
