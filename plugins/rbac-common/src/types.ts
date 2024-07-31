@@ -108,6 +108,7 @@ export type RoleConditionalPolicyDecision<
 
 export const ConditionalAliases = {
   CURRENT_USER: 'currentUser',
+  OWNER_REFS: 'ownerRefs',
 } as const;
 
 export const CONDITION_ALIAS_SIGN = '$';

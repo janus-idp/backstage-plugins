@@ -1,3 +1,4 @@
+import { BackstageUserInfo } from '@backstage/backend-plugin-api';
 import {
   PermissionCondition,
   PermissionCriteria,
@@ -15,16 +16,24 @@ interface Predicate<T> {
   (item: T): boolean;
 }
 
+function isOwnerRefsAlias(value: PermissionRuleParam): boolean {
+  const alias = `${CONDITION_ALIAS_SIGN}${ConditionalAliases.OWNER_REFS}`;
+  return value === alias;
+}
+
 function isCurrentUserAlias(value: PermissionRuleParam): boolean {
   const alias = `${CONDITION_ALIAS_SIGN}${ConditionalAliases.CURRENT_USER}`;
   return value === alias;
 }
 
-function replaceAliasWithValue<K extends string>(
+function replaceAliasWithValue<
+  K extends string,
+  V extends JsonPrimitive | JsonPrimitive[],
+>(
   params: Record<K, PermissionRuleParam> | undefined,
   key: K,
   predicate: Predicate<PermissionRuleParam>,
-  newValues: JsonPrimitive[],
+  newValue: V,
 ): Record<K, PermissionRuleParam> | undefined {
   if (!params) {
     return params;
@@ -36,12 +45,19 @@ function replaceAliasWithValue<K extends string>(
     for (const oldValue of oldValues) {
       const isAliasMatched = predicate(oldValue);
       if (isAliasMatched) {
+        const newValues = Array.isArray(newValue) ? newValue : [newValue];
         nonAliasValues.push(...newValues);
       } else {
         nonAliasValues.push(oldValue);
       }
     }
     return { ...params, [key]: nonAliasValues };
+  }
+
+  const oldValue = params[key] as JsonPrimitive;
+  const isAliasMatched = predicate(oldValue);
+  if (isAliasMatched && !Array.isArray(newValue)) {
+    return { ...params, [key]: newValue };
   }
 
   return params;
@@ -51,21 +67,21 @@ export function replaceAliases(
   conditions: PermissionCriteria<
     PermissionCondition<string, PermissionRuleParams>
   >,
-  ownershipEntityRefs: string[],
+  userInfo: BackstageUserInfo,
 ) {
   if ('not' in conditions) {
-    replaceAliases(conditions.not, ownershipEntityRefs);
+    replaceAliases(conditions.not, userInfo);
     return;
   }
   if ('allOf' in conditions) {
     for (const condition of conditions.allOf) {
-      replaceAliases(condition, ownershipEntityRefs);
+      replaceAliases(condition, userInfo);
     }
     return;
   }
   if ('anyOf' in conditions) {
     for (const condition of conditions.anyOf) {
-      replaceAliases(condition, ownershipEntityRefs);
+      replaceAliases(condition, userInfo);
       return;
     }
   }
@@ -75,14 +91,22 @@ export function replaceAliases(
   ).params;
   if (params) {
     for (const key of Object.keys(params)) {
-      const paramsWithoutAliases = replaceAliasWithValue(
+      let modifiedParams = replaceAliasWithValue(
         params,
         key,
         isCurrentUserAlias,
-        ownershipEntityRefs,
+        userInfo.userEntityRef,
       );
+
+      modifiedParams = replaceAliasWithValue(
+        modifiedParams,
+        key,
+        isOwnerRefsAlias,
+        userInfo.ownershipEntityRefs,
+      );
+
       (conditions as PermissionCondition<string, PermissionRuleParams>).params =
-        paramsWithoutAliases;
+        modifiedParams;
     }
   }
 }

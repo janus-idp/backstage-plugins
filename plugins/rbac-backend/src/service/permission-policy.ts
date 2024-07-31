@@ -1,4 +1,7 @@
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  BackstageUserInfo,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import {
@@ -332,9 +335,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         if (user) {
           const conditionResult = await this.handleConditions(
             userEntityRef,
-            user.info.ownershipEntityRefs,
             request,
             roles,
+            user.info,
           );
           if (conditionResult) {
             return conditionResult;
@@ -415,9 +418,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
   private async handleConditions(
     userEntityRef: string,
-    ownershipEntityRefs: string[],
     request: PolicyQuery,
     roles: string[],
+    userInfo: BackstageUserInfo,
   ): Promise<PolicyDecision | undefined> {
     const permissionName = request.permission.name;
     const resourceType = (request.permission as ResourcePermission)
@@ -474,7 +477,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         },
       };
 
-      replaceAliases(result.conditions, ownershipEntityRefs);
+      replaceAliases(result.conditions, userInfo);
 
       const msg = `Send condition to plugin with id ${pluginId} to evaluate permission ${permissionName} with resource type ${resourceType} and action ${action} for user ${userEntityRef}`;
       const auditOptions = createPermissionEvaluationOptions(
