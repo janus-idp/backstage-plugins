@@ -16,6 +16,7 @@ import {
 import {
   PermissionPolicy,
   PolicyQuery,
+  PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 
 import { Knex } from 'knex';
@@ -291,10 +292,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
   async handle(
     request: PolicyQuery,
-    identityResp?: BackstageIdentityResponse | undefined,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
-    const userEntityRef =
-      identityResp?.identity.userEntityRef ?? `user without entity`;
+    const userEntityRef = user?.info.userEntityRef ?? `user without entity`;
 
     let auditOptions = createPermissionEvaluationOptions(
       `Policy check for ${userEntityRef}`,
@@ -307,7 +307,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       let status = false;
 
       const action = toPermissionAction(request.permission.attributes);
-      if (!identityResp) {
+      if (!user) {
         const msg = evaluatePermMsg(
           userEntityRef,
           AuthorizeResult.DENY,
@@ -330,10 +330,10 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         const resourceType = request.permission.resourceType;
 
         // handle conditions if they are present
-        if (identityResp) {
+        if (user) {
           const conditionResult = await this.handleConditions(
             userEntityRef,
-            identityResp.identity.ownershipEntityRefs,
+            user.info.ownershipEntityRefs,
             request,
             roles,
           );
