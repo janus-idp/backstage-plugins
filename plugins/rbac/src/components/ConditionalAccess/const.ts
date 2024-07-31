@@ -1,8 +1,10 @@
+import { ConditionsData } from './types';
+
 export const criterias = {
-  condition: 'condition',
-  anyOf: 'anyOf',
-  allOf: 'allOf',
-  not: 'not',
+  condition: 'condition' as keyof ConditionsData,
+  anyOf: 'anyOf' as keyof ConditionsData,
+  allOf: 'allOf' as keyof ConditionsData,
+  not: 'not' as keyof ConditionsData,
 };
 
 export const criteriasLabels = {

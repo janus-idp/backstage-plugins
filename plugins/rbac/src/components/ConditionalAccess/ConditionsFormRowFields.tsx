@@ -177,9 +177,9 @@ export const ConditionsFormRowFields = ({
     ) {
       setErrors(prevErrors => {
         const updatedErrors = { ...prevErrors };
-        const nestedErrors = (
-          updatedErrors[criteria as keyof ConditionsData] as ComplexErrors
-        )[nestedConditionCriteria as keyof Condition] as NestedCriteriaErrors;
+        const nestedErrors = (updatedErrors[criteria] as ComplexErrors)[
+          nestedConditionCriteria as keyof Condition
+        ] as NestedCriteriaErrors;
 
         // nestedCriteria: allOf or anyOf
         if (

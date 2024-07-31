@@ -27,7 +27,7 @@ import {
 type ComplexConditionRowProps = {
   conditionRow: ConditionsData;
   nestedConditionRow: Condition[];
-  criteria: string;
+  criteria: keyof ConditionsData;
   onRuleChange: (newCondition: ConditionsData) => void;
   updateRules: (updatedNestedConditionRow: Condition[] | Condition) => void;
   setErrors: React.Dispatch<
@@ -74,9 +74,7 @@ export const ComplexConditionRow = ({
       (_r, rindex) => index !== rindex,
     );
     const nestedConditions =
-      (
-        conditionRow[criteria as keyof ConditionsData] as PermissionCondition[]
-      )?.filter(
+      (conditionRow[criteria] as PermissionCondition[])?.filter(
         (con: PermissionCondition) =>
           criterias.allOf in con ||
           criterias.anyOf in con ||
@@ -84,7 +82,7 @@ export const ComplexConditionRow = ({
       ) || [];
 
     onRuleChange({
-      [activeCriteria as keyof Condition]: [
+      [activeCriteria as keyof ConditionsData]: [
         ...updatedSimpleRules,
         ...nestedConditions,
       ],

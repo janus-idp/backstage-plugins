@@ -81,7 +81,9 @@ export const ConditionsFormRow = ({
       case criterias.not:
         if (
           conditionRow.not &&
-          criteriaTypes.includes(Object.keys(conditionRow.not)[0])
+          criteriaTypes.includes(
+            Object.keys(conditionRow.not)[0] as keyof ConditionsData,
+          )
         ) {
           nestedConditions.push(conditionRow.not);
           setNotConditionType(NotConditionType.NestedCondition);
@@ -94,7 +96,7 @@ export const ConditionsFormRow = ({
     setNestedConditionRow(nestedConditions);
   }, [conditionRow, criteria]);
 
-  const handleCriteriaChange = (val: string) => {
+  const handleCriteriaChange = (val: keyof ConditionsData) => {
     setCriteria(val);
     setErrors(resetErrors(val));
 
@@ -510,28 +512,26 @@ export const ConditionsFormRow = ({
       {criteria !== criterias.condition && (
         <Box>
           {criteria !== criterias.not &&
-            (
-              conditionRow[
-                criteria as keyof ConditionsData
-              ] as PermissionCondition[]
-            )?.map((c, srIndex) => (
-              <ComplexConditionRow
-                key={`${criteria}-simple-condition-${srIndex}`}
-                conditionRow={conditionRow}
-                nestedConditionRow={nestedConditionRow}
-                criteria={criteria}
-                onRuleChange={onRuleChange}
-                updateRules={updateRules}
-                setErrors={setErrors}
-                setRemoveAllClicked={setRemoveAllClicked}
-                conditionRulesData={conditionRulesData}
-                notConditionType={notConditionType}
-                classes={classes}
-                currentCondition={c}
-                ruleIndex={srIndex}
-                activeCriteria={criteria as 'allOf' | 'anyOf'}
-              />
-            ))}
+            (conditionRow[criteria] as PermissionCondition[])?.map(
+              (c, srIndex) => (
+                <ComplexConditionRow
+                  key={`${criteria}-simple-condition-${srIndex}`}
+                  conditionRow={conditionRow}
+                  nestedConditionRow={nestedConditionRow}
+                  criteria={criteria}
+                  onRuleChange={onRuleChange}
+                  updateRules={updateRules}
+                  setErrors={setErrors}
+                  setRemoveAllClicked={setRemoveAllClicked}
+                  conditionRulesData={conditionRulesData}
+                  notConditionType={notConditionType}
+                  classes={classes}
+                  currentCondition={c}
+                  ruleIndex={srIndex}
+                  activeCriteria={criteria as 'allOf' | 'anyOf'}
+                />
+              ),
+            )}
           {criteria === criterias.not && (
             <RadioGroup
               className={classes.radioGroup}
@@ -541,12 +541,12 @@ export const ConditionsFormRow = ({
               }
             >
               <FormControlLabel
-                value="simple-condition"
+                value={NotConditionType.SimpleCondition}
                 control={<Radio color="primary" />}
                 label="Add rule"
                 className={classes.radioLabel}
               />
-              {notConditionType === 'simple-condition' && (
+              {notConditionType === NotConditionType.SimpleCondition && (
                 <ConditionsFormRowFields
                   oldCondition={
                     conditionRow.not ?? getDefaultRule(selPluginResourceType)
@@ -568,7 +568,7 @@ export const ConditionsFormRow = ({
                 />
               )}
               <FormControlLabel
-                value="nested-condition"
+                value={NotConditionType.NestedCondition}
                 control={<Radio color="primary" />}
                 label={<AddNestedConditionButton />}
                 className={classes.radioLabel}

@@ -17,7 +17,6 @@ import {
   PermissionAction,
   PluginPermissionMetaData,
   PolicyDetails,
-  ResourcedPolicy,
   RoleBasedPolicy,
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
@@ -114,7 +113,7 @@ export const getMembersFromGroup = (group: GroupEntity): number => {
     }
     return temp;
   }, 0);
-  return membersList || 0;
+  return membersList ?? 0;
 };
 
 export const getPluginInfo = (
@@ -131,7 +130,7 @@ export const getPluginInfo = (
           return true;
         }
         if (isResourcedPolicy(pol)) {
-          return (pol as ResourcedPolicy).resourceType === permissionName;
+          return pol.resourceType === permissionName;
         }
         return false;
       });
@@ -166,7 +165,7 @@ const getAllPolicies = (
       )
     ) {
       acc.push({
-        policy: getTitleCase(p.policy as string) || 'Use',
+        policy: getTitleCase(p.policy) || 'Use',
         effect: 'deny',
       });
     }
@@ -183,7 +182,7 @@ export const getPermissionsData = (
     (acc: PermissionsDataSet[], policy: RoleBasedPolicy) => {
       if (policy?.effect === 'allow') {
         const policyStr =
-          policy?.policy || getPolicy(policy.permission as string);
+          policy?.policy ?? getPolicy(policy.permission as string);
         const policyTitleCase = getTitleCase(policyStr);
         const permission = acc.find(
           plugin =>
@@ -205,7 +204,7 @@ export const getPermissionsData = (
           const policyString = new Set<string>();
           const policiesSet = new Set<{ policy: string; effect: string }>();
           acc.push({
-            permission: policy.permission || '-',
+            permission: policy.permission ?? '-',
             plugin: getPluginInfo(permissionPolicies, policy?.permission)
               .pluginId,
             policyString: policyString.add(policyTitleCase || 'Use'),
@@ -238,14 +237,17 @@ export const getConditionUpperCriteria = (
   conditions: PermissionCriteria<PermissionCondition> | string,
 ): string | undefined => {
   return Object.keys(conditions).find(key =>
-    [criterias.allOf, criterias.anyOf, criterias.not].includes(key),
+    [criterias.allOf, criterias.anyOf, criterias.not].includes(
+      key as keyof ConditionsData,
+    ),
   );
 };
 
 export const getConditionsData = (
   conditions: PermissionCriteria<PermissionCondition>,
 ): ConditionsData | undefined => {
-  const upperCriteria = getConditionUpperCriteria(conditions) || 'condition';
+  const upperCriteria =
+    getConditionUpperCriteria(conditions) ?? criterias.condition;
 
   switch (upperCriteria) {
     case criterias.allOf: {

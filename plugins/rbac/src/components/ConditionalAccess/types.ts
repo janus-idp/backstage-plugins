@@ -44,8 +44,8 @@ export type ConditionFormRowProps = {
   conditionRow: ConditionsData;
   onRuleChange: (newCondition: ConditionsData) => void;
   selPluginResourceType: string;
-  criteria: string;
-  setCriteria: React.Dispatch<React.SetStateAction<string>>;
+  criteria: keyof ConditionsData;
+  setCriteria: React.Dispatch<React.SetStateAction<keyof ConditionsData>>;
   setErrors: React.Dispatch<
     React.SetStateAction<AccessConditionsErrors | undefined>
   >;

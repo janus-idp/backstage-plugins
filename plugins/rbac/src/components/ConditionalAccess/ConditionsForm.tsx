@@ -10,8 +10,8 @@ import {
   hasAllOfOrAnyOfErrors,
   hasNestedNotErrors,
   hasSimpleConditionOrNotErrors,
-  hasSimpleNotRule,
   initializeErrors,
+  isSimpleRule,
   resetErrors,
 } from '../../utils/conditional-access-utils';
 import { ConditionsFormRow } from './ConditionsFormRow';
@@ -71,8 +71,8 @@ export const ConditionsForm = ({
       },
     },
   );
-  const [criteria, setCriteria] = React.useState<string>(
-    Object.keys(conditions)[0] ?? criterias.condition,
+  const [criteria, setCriteria] = React.useState<keyof ConditionsData>(
+    (Object.keys(conditions)[0] as keyof ConditionsData) ?? criterias.condition,
   );
   const [errors, setErrors] = React.useState<
     AccessConditionsErrors | undefined
@@ -137,12 +137,16 @@ export const ConditionsForm = ({
 
     if (
       criteria === criterias.condition ||
-      (criteria === criterias.not && hasSimpleNotRule(errors, criteria))
+      (criteria === criterias.not &&
+        isSimpleRule(conditions[criteria] as Condition))
     ) {
       return hasSimpleConditionOrNotErrors(errors, criteria);
     }
 
-    if (criteria === criterias.not && !hasSimpleNotRule(errors, criteria)) {
+    if (
+      criteria === criterias.not &&
+      !isSimpleRule(conditions[criteria] as Condition)
+    ) {
       return hasNestedNotErrors(errors, conditions, criteria);
     }
 
@@ -164,11 +168,11 @@ export const ConditionsForm = ({
   };
 
   const hasMultiLevelNestedConditions = (): boolean => {
-    if (!Array.isArray(conditions[criteria as keyof ConditionsData])) {
+    if (!Array.isArray(conditions[criteria])) {
       return false;
     }
 
-    return (conditions[criteria as keyof ConditionsData] as Condition[])
+    return (conditions[criteria] as Condition[])
       .filter(condition => !('rule' in condition))
       .some((firstLevelNestedCondition: Condition) => {
         const nestedConditionCriteria = Object.keys(
