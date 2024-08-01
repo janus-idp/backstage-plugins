@@ -1,5 +1,6 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { LoggerService, UserInfoService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
@@ -72,9 +73,7 @@ jest.mock('./permission-policy', () => {
   };
 });
 
-const userInfoServiceMock: UserInfoService = {
-  getUserInfo: jest.fn().mockImplementation(),
-};
+const userInfoServiceMock: UserInfoService = mockServices.userInfo();
 
 describe('PolicyBuilder', () => {
   const mockedAuthorize = jest.fn().mockImplementation(async () => [
