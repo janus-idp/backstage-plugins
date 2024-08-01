@@ -8,7 +8,7 @@ import { replaceAliases } from './alias-resolver';
 
 describe('replaceAliases', () => {
   describe('should replace "currentUser" aliases', () => {
-    it('should replace aliases with string type', () => {
+    it('should replace aliases in the string value', () => {
       const conditionParam: PermissionCriteria<
         PermissionCondition<string, PermissionRuleParams>
       > = {
