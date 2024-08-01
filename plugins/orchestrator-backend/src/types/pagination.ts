@@ -1,12 +1,5 @@
 import { Request } from 'express-serve-static-core';
 
-import {
-  DEFAULT_PAGE_NUMBER,
-  DEFAULT_PAGE_SIZE,
-  DEFAULT_SORT_FIELD,
-  DEFAULT_SORT_ORDER,
-} from '../service/constants';
-
 export interface Pagination {
   offset?: number;
   limit?: number;
@@ -15,18 +8,23 @@ export interface Pagination {
 }
 
 export function buildPagination(req: Request): Pagination {
-  return {
-    offset: isNaN(req.query.page as any)
-      ? DEFAULT_PAGE_NUMBER
-      : Number(req.query.page),
-    limit: isNaN(req.query.pageSize as any)
-      ? DEFAULT_PAGE_SIZE
-      : Number(req.query.pageSize),
-    sortField: req.query.orderBy
-      ? String(req.query.orderBy)
-      : DEFAULT_SORT_FIELD,
-    order: req.query.orderDirection
-      ? String(req.query.orderDirection)
-      : DEFAULT_SORT_ORDER,
-  };
+  const pagination: Pagination = {};
+
+  if (!isNaN(Number(req.query.page))) {
+    pagination.offset = Number(req.query.page);
+  }
+
+  if (!isNaN(Number(req.query.pageSize))) {
+    pagination.limit = Number(req.query.pageSize);
+  }
+
+  if (req.query.orderBy) {
+    pagination.sortField = String(req.query.orderBy);
+  }
+
+  if (req.query.orderDirection) {
+    pagination.order = String(req.query.orderDirection);
+  }
+
+  return pagination;
 }

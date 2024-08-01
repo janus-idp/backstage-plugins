@@ -119,8 +119,8 @@ describe('getWorkflowOverview', () => {
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
-        page: 0,
-        pageSize: 10,
+        page: undefined,
+        pageSize: undefined,
         totalCount: mockOverviewsV1.items.length,
       },
     });
