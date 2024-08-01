@@ -293,7 +293,7 @@ The RBAC-backend plugin allows for the use of aliases in the conditional policy 
 
 This condition should allow members of the `role:default/developer` to delete only their own catalogs and no others:
 
-````json
+```json
 {
   "result": "CONDITIONAL",
   "roleEntityRef": "role:default/developer",
@@ -301,13 +301,14 @@ This condition should allow members of the `role:default/developer` to delete on
   "resourceType": "catalog-entity",
   "permissionMapping": ["delete"],
   "conditions": {
-     "rule": "IS_ENTITY_OWNER",
-     "resourceType": "catalog-entity",
-     "params": {
-       "claims": ["$currentUser"]
-     }
-   }
+    "rule": "IS_ENTITY_OWNER",
+    "resourceType": "catalog-entity",
+    "params": {
+      "claims": ["$currentUser"]
+    }
+  }
 }
+```
 
 ## Examples of Conditional Policies
 
@@ -315,7 +316,7 @@ Below are a few examples that can be used on some of the Janus IDP plugins. Thes
 
 ### Keycloak plugin
 
-```JSON
+```json
 {
   "result": "CONDITIONAL",
   "roleEntityRef": "role:default/developer",
@@ -330,7 +331,7 @@ Below are a few examples that can be used on some of the Janus IDP plugins. Thes
     }
   }
 }
-````
+```
 
 This example will prevent users in the role `role:default/developer` from updating or deleting users that ingested into the catalog from the Keycloak plugin.
 
@@ -338,7 +339,7 @@ Notice the use of the annotation `keycloak.org/realm` requires the value of `<YO
 
 ### Quay Actions
 
-```JSON
+```json
 {
   "result": "CONDITIONAL",
   "roleEntityRef": "role:default/developer",
