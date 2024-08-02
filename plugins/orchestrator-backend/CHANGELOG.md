@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.17.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.17.0...@janus-idp/backstage-plugin-orchestrator-backend@1.17.1) (2024-08-02)
+
+
+### Bug Fixes
+
+* **orchestrator:** remove default pagination on v2 endpoints ([#1983](https://github.com/janus-idp/backstage-plugins/issues/1983)) ([5e30274](https://github.com/janus-idp/backstage-plugins/commit/5e302748a25cbad127122407e5258576054eac3d))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.13.1
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.17.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.16.1...@janus-idp/backstage-plugin-orchestrator-backend@1.17.0) (2024-07-26)
 
 
