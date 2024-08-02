@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [4.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.7.0...@janus-idp/backstage-plugin-rbac-backend@4.7.1) (2024-08-02)
+
+
+### Bug Fixes
+
+* **rbac:** log when plugin has no permissions ([#1917](https://github.com/janus-idp/backstage-plugins/issues/1917)) ([cc8752b](https://github.com/janus-idp/backstage-plugins/commit/cc8752b159364fdab62e7bbdaa51ca811288197b))
+
 ## @janus-idp/backstage-plugin-rbac-backend [4.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.6.1...@janus-idp/backstage-plugin-rbac-backend@4.7.0) (2024-07-30)
 
 
