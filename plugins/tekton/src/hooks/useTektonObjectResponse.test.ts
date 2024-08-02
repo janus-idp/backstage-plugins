@@ -1,8 +1,8 @@
 import { act } from 'react';
 
-import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
-
 import { renderHook, waitFor } from '@testing-library/react';
+
+import { useKubernetesObjects } from '@janus-idp/shared-react';
 
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
 import { kubernetesObjects } from '../__fixtures__/kubernetesObject';
@@ -11,8 +11,10 @@ import { useTektonObjectsResponse } from './useTektonObjectsResponse';
 
 const watchedResources = [ModelsPlural.pipelineruns, ModelsPlural.taskruns];
 
-jest.mock('@backstage/plugin-kubernetes', () => ({
+jest.mock('@janus-idp/shared-react', () => ({
   useKubernetesObjects: jest.fn(),
+  useDeepCompareMemoize: (val: any) => val,
+  useDebounceCallback: (val: any) => jest.fn(val),
 }));
 
 const mockUseKubernetesObjects = useKubernetesObjects as jest.Mock;

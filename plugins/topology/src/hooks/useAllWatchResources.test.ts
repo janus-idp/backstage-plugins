@@ -1,4 +1,4 @@
-import { KubernetesObjects } from '@backstage/plugin-kubernetes';
+import { KubernetesObjects } from '@backstage/plugin-kubernetes-react';
 
 import { renderHook } from '@testing-library/react';
 
