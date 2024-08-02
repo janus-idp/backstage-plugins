@@ -43,7 +43,7 @@
     "@backstage/plugin-kubernetes-common": "^0.8.1",
     "@backstage/plugin-kubernetes-react": "^0.4.1",
     "@backstage/theme": "^0.5.6",
-    "@janus-idp/shared-react": "2.10.0",
+    "@janus-idp/shared-react": "2.9.0",
     "@backstage/plugin-permission-react": "^0.4.24",
     "@janus-idp/backstage-plugin-tekton-common": "1.0.0",
     "@kubernetes/client-node": "^0.20.0",
