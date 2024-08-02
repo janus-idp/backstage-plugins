@@ -138,8 +138,6 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
         removedConditions: removedConds,
       };
 
-      // console.log(`==== Conditions diff is: ${JSON.stringify(this.conditionsDiff)}`);
-
       await this.handleFileChanges();
     } catch (error) {
       await this.handleError(

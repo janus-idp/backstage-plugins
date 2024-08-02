@@ -41,7 +41,7 @@ export abstract class AbstractFileWatcher<T> {
 
   /**
    * getCurrentContents reads the current contents of the CSV file.
-   * @returns The current contents of the CSV file.
+   * @returns The current contents of the file.
    */
   getCurrentContents(): string {
     return fs.readFileSync(this.filePath, 'utf-8');
