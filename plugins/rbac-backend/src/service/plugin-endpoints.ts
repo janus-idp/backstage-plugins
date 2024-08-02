@@ -142,6 +142,9 @@ export class PluginPermissionMetadataCollector {
       }
     } catch (err) {
       if (isError(err) && err.name === 'NotFoundError') {
+        this.logger.warn(
+          `No permission metadata found for ${pluginId}. ${err}`,
+        );
         return undefined;
       }
       this.logger.error(
