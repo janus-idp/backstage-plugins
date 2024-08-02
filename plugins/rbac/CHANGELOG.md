@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-rbac [1.26.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.25.0...@janus-idp/backstage-plugin-rbac@1.26.0) (2024-08-02)
+
+
+### Features
+
+* **rbac:** show list of accessible plugins in roles list page ([#1894](https://github.com/janus-idp/backstage-plugins/issues/1894)) ([62d9d6c](https://github.com/janus-idp/backstage-plugins/commit/62d9d6c30ab393755003c9a7387b67e25dd4c3d9))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.10.0
+
 ## @janus-idp/backstage-plugin-rbac [1.25.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.24.1...@janus-idp/backstage-plugin-rbac@1.25.0) (2024-07-26)
 
 
