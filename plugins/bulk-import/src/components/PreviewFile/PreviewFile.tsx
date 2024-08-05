@@ -145,14 +145,14 @@ export const PreviewFileSidebar = ({
             {repositoryType === RepositorySelection.Repository ? (
               <>
                 <Typography variant="h5">
-                  {`${data.orgName || data.organizationUrl}/${data.repoName}`}
+                  {`${data.orgName ?? data.organizationUrl}/${data.repoName}`}
                 </Typography>
-                <Link to={data.repoUrl || ''}>{data.repoUrl}</Link>
+                <Link to={data.repoUrl ?? ''}>{data.repoUrl}</Link>
               </>
             ) : (
               <>
                 <Typography variant="h5">{`${data.orgName}`}</Typography>
-                <Link to={data.repoUrl || ''}>{data.organizationUrl}</Link>
+                <Link to={data.repoUrl ?? ''}>{data.organizationUrl}</Link>
               </>
             )}
           </div>
@@ -171,7 +171,7 @@ export const PreviewFileSidebar = ({
           {repositoryType === RepositorySelection.Repository &&
             data.catalogInfoYaml?.prTemplate && (
               <PreviewPullRequest
-                repoName={data.repoName || ''}
+                repoName={data.repoName ?? ''}
                 pullRequest={pullRequest}
                 setPullRequest={setPullRequest}
                 formErrors={formErrors as PullRequestPreviewData}
