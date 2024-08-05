@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-backend",
-  "version": "1.17.1",
+  "version": "1.17.2",
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -108,7 +108,7 @@
     "@types/json-schema": "7.0.15"
   },
   "peerDependencies": {
-    "@janus-idp/backstage-plugin-rbac-common": "1.8.0",
+    "@janus-idp/backstage-plugin-rbac-common": "1.8.1",
     "@janus-idp/backstage-plugin-audit-log-node": "1.4.0"
   },
   "maintainers": [
