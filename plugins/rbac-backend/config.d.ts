@@ -6,7 +6,7 @@ export interface Config {
        * The path to the yaml file containing the conditional policies
        * @visibility frontend
        */
-      'conditional-policies-file'?: string;
+      conditionalPoliciesFile?: string;
       /**
        * Allow for reloading of the CSV and conditional policies files.
        * @visibility frontend

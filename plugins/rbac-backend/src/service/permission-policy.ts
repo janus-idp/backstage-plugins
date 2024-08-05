@@ -238,7 +238,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       configApi.getOptionalBoolean('permission.rbac.policyFileReload') || false;
 
     const conditionalPoliciesFile = configApi.getOptionalString(
-      'permission.rbac.conditional-policies-file',
+      'permission.rbac.conditionalPoliciesFile',
     );
 
     if (superUsers && superUsers.length > 0) {

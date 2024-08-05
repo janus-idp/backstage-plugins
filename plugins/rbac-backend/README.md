@@ -180,6 +180,52 @@ For more information on the available permissions within Showcase and RHDH, refe
 
 We also have a fairly strict validation for permission policies and roles based on the originating role's source information, refer to the [api documentation](./docs/apis.md).
 
+### Configuring conditional policies via file
+
+The RBAC plugin allows you to import conditional policies from an external file. User can defined conditional policies for roles created with help of policies-csv-file. Conditional policies should be defined like array in the yaml format.
+
+You can specify the path to this configuration file in your application configuration:
+
+```YAML
+permission:
+  enabled: true
+  rbac:
+    conditionalPoliciesFile: /some/path/conditional-policies.yaml
+    policies-csv-file: /some/path/rbac-policy.csv
+```
+
+Also, there is an additional configuration value that allows for the reloading of the file without the need to restart.
+
+```YAML
+permission:
+  enabled: true
+  rbac:
+    conditionalPoliciesFile: /some/path/conditional-policies.yaml
+    policies-csv-file: /some/path/rbac-policy.csv
+    policyFileReload: true
+```
+
+This feature supports nested conditional policies.
+
+Example of the conditional policies file:
+
+```yaml
+- result: CONDITIONAL
+  roleEntityRef: 'role:default/test'
+  pluginId: catalog
+  resourceType: catalog-entity
+  permissionMapping:
+    - read
+  conditions:
+    rule: IS_ENTITY_KIND
+    resourceType: catalog-entity
+    params:
+      kinds:
+        - 'group'
+```
+
+Information about condition policies format you can find in the doc: [Conditional policies documentation](./docs/conditions.md). There is only one difference: yaml format compare to json. But yaml and json are back convertiable.
+
 ### Configuring Database Storage for policies
 
 The RBAC plugin offers the option to store policies in a database. It supports two database storage options:
