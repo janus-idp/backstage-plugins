@@ -1,4 +1,4 @@
-import { getVoidLogger } from '@backstage/backend-common';
+import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 
 import express from 'express';
@@ -22,7 +22,7 @@ beforeAll(() =>
 afterEach(() => server.restoreHandlers());
 afterAll(() => server.close());
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('createRouter', () => {
   let app: express.Express;
