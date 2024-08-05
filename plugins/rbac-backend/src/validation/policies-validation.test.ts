@@ -68,6 +68,20 @@ describe('rest data validation', () => {
       expect(err?.message).toEqual(`'policy' field must not be empty`);
     });
 
+    it('should return an error when policy has an invalid value', () => {
+      const policy: RoleBasedPolicy = {
+        entityReference: 'user:default/guest',
+        permission: 'catalog-entity',
+        policy: 'invalid-policy',
+        effect: 'allow',
+      };
+      const err = validatePolicy(policy);
+      expect(err).toBeTruthy();
+      expect(err?.message).toEqual(
+        `'policy' has invalid value: 'invalid-policy'. It should be one of: create, read, update, delete, use`,
+      );
+    });
+
     it('should return an error when effect is empty', () => {
       const policy: RoleBasedPolicy = {
         entityReference: 'user:default/guest',

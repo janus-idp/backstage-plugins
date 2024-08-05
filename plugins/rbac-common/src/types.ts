@@ -73,10 +73,23 @@ export type NonEmptyArray<T> = [T, ...T[]];
 // Permission framework attributes action has values: 'create' | 'read' | 'update' | 'delete' | undefined.
 // But we are introducing an action named "use" when action does not exist('undefined') to avoid
 // a more complicated model with multiple policy and request shapes.
-export type PermissionAction = 'create' | 'read' | 'update' | 'delete' | 'use';
+export const PermissionActionValues = [
+  'create',
+  'read',
+  'update',
+  'delete',
+  'use',
+] as const;
+export type PermissionAction = (typeof PermissionActionValues)[number];
 export const toPermissionAction = (
   attr: PermissionAttributes,
 ): PermissionAction => attr.action ?? 'use';
+
+export function isValidPermissionAction(
+  action: string,
+): action is PermissionAction {
+  return (PermissionActionValues as readonly string[]).includes(action);
+}
 
 export type PermissionInfo = {
   name: string;

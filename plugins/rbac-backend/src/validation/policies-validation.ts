@@ -5,6 +5,8 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { Enforcer } from 'casbin';
 
 import {
+  isValidPermissionAction,
+  PermissionActionValues,
   Role,
   RoleBasedPolicy,
   Source,
@@ -58,6 +60,10 @@ export function validatePolicy(policy: RoleBasedPolicy): Error | undefined {
 
   if (!policy.policy) {
     return new Error(`'policy' field must not be empty`);
+  } else if (!isValidPermissionAction(policy.policy)) {
+    return new Error(
+      `'policy' has invalid value: '${policy.policy}'. It should be one of: ${PermissionActionValues.join(', ')}`,
+    );
   }
 
   if (!policy.effect) {
