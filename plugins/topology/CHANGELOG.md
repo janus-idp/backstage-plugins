@@ -1,3 +1,15 @@
+## @janus-idp/backstage-plugin-topology [1.25.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.24.0...@janus-idp/backstage-plugin-topology@1.25.0) (2024-08-05)
+
+
+### Features
+
+* **topology:** remove usage of k8s plugin from topology & tekton plugins ([#1869](https://github.com/janus-idp/backstage-plugins/issues/1869)) ([ae7d8ee](https://github.com/janus-idp/backstage-plugins/commit/ae7d8ee7014c109a5f5265967590559fc778eec7))
+
+
+### Bug Fixes
+
+* **topology:** bump shared-react dependency ([#2006](https://github.com/janus-idp/backstage-plugins/issues/2006)) ([5c939fb](https://github.com/janus-idp/backstage-plugins/commit/5c939fb2a874061dcf9805f9a5027845b9481eb1))
+
 ## @janus-idp/backstage-plugin-topology [1.24.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.23.1...@janus-idp/backstage-plugin-topology@1.24.0) (2024-07-26)
 
 
