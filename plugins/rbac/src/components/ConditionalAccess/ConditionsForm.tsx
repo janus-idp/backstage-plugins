@@ -15,7 +15,7 @@ import {
   resetErrors,
 } from '../../utils/conditional-access-utils';
 import { ConditionsFormRow } from './ConditionsFormRow';
-import { criterias, rbacAPIDocLink } from './const';
+import { criterias } from './const';
 import {
   AccessConditionsErrors,
   Condition,
@@ -216,15 +216,8 @@ export const ConditionsForm = ({
             <AlertTitle data-testid="multi-level-nested-conditions-warning-title">
               Multiple levels of nested conditions are not supported
             </AlertTitle>
-            Only one level is displayed. Please use the{' '}
-            <a
-              href={rbacAPIDocLink}
-              target="blank"
-              style={{ textDecoration: 'underline' }}
-            >
-              CLI
-            </a>{' '}
-            to view all nested conditions.
+            Only one level is displayed. Please use the CLI to view all nested
+            conditions.
           </Alert>
         )}
       </Box>
