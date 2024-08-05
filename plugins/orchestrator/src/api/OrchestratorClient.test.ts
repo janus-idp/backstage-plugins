@@ -365,15 +365,18 @@ describe('OrchestratorClient', () => {
       expect(result).toBeDefined();
       expect(result.data).toEqual(mockWorkflowOverviews);
       expect(axios.request).toHaveBeenCalledTimes(1);
-      expect(axios.request).toHaveBeenCalledWith(
-        getAxiosTestRequest('v2/workflows/overview', undefined, paginationInfo),
-      );
+      expect(axios.request).toHaveBeenCalledWith({
+        ...getAxiosTestRequest('v2/workflows/overview'),
+        data: JSON.stringify({ paginationInfo }),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...defaultAuthHeaders,
+        },
+      });
       expect(getWorkflowsOverviewSpy).toHaveBeenCalledTimes(1);
       expect(getWorkflowsOverviewSpy).toHaveBeenCalledWith(
-        paginationInfo.page,
-        paginationInfo.pageSize,
-        paginationInfo.orderBy,
-        paginationInfo.orderDirection,
+        { paginationInfo },
         getDefaultTestRequestConfig(),
       );
     });
@@ -400,6 +403,7 @@ describe('OrchestratorClient', () => {
         orderBy: 'name',
         orderDirection: 'ASC',
       };
+
       const mockInstances: ProcessInstanceListResultDTO = {
         items: [{ id: 'instance123', processId: 'process001', nodes: [] }],
         paginationInfo,
@@ -420,25 +424,23 @@ describe('OrchestratorClient', () => {
       axios.request = jest.fn().mockResolvedValueOnce(mockResponse);
 
       // When
-      const result = await orchestratorClient.listInstances(paginationInfo);
-
+      const result = await orchestratorClient.listInstances({ paginationInfo });
       // Then
       expect(result).toBeDefined();
       expect(result.data).toEqual(mockInstances);
       expect(axios.request).toHaveBeenCalledTimes(1);
-      expect(axios.request).toHaveBeenCalledWith(
-        getAxiosTestRequest(
-          'v2/workflows/instances',
-          undefined,
-          paginationInfo,
-        ),
-      );
+      expect(axios.request).toHaveBeenCalledWith({
+        ...getAxiosTestRequest('v2/workflows/instances'),
+        data: JSON.stringify({ paginationInfo }),
+        headers: {
+          'Content-Type': 'application/json',
+          ...defaultAuthHeaders,
+        },
+        method: 'POST',
+      });
       expect(getInstancesSpy).toHaveBeenCalledTimes(1);
       expect(getInstancesSpy).toHaveBeenCalledWith(
-        paginationInfo.page,
-        paginationInfo.pageSize,
-        paginationInfo.orderBy,
-        paginationInfo.orderDirection,
+        { paginationInfo },
         getDefaultTestRequestConfig(),
       );
     });
@@ -449,7 +451,7 @@ describe('OrchestratorClient', () => {
         .fn()
         .mockRejectedValueOnce(new Error('Simulated error'));
       // When
-      const promise = orchestratorClient.listInstances();
+      const promise = orchestratorClient.listInstances({});
 
       // Then
       await expect(promise).rejects.toThrow();
