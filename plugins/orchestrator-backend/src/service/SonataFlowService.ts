@@ -2,6 +2,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 
 import {
   extractWorkflowFormat,
+  FilterInfo,
   fromWorkflowSource,
   getWorkflowCategory,
   ProcessInstance,
@@ -66,12 +67,14 @@ export class SonataFlowService {
   public async fetchWorkflowOverviews(args: {
     definitionIds?: string[];
     pagination?: Pagination;
+    filter?: FilterInfo;
   }): Promise<WorkflowOverview[] | undefined> {
-    const { definitionIds, pagination } = args;
+    const { definitionIds, pagination, filter } = args;
     try {
       const workflowInfos = await this.dataIndexService.fetchWorkflowInfos({
         definitionIds,
         pagination,
+        filter,
       });
       if (!workflowInfos?.length) {
         return [];

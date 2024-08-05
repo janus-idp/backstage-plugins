@@ -4,6 +4,7 @@ import {
   AssessedProcessInstanceDTO,
   ExecuteWorkflowRequestDTO,
   ExecuteWorkflowResponseDTO,
+  FilterInfo,
   ProcessInstance,
   ProcessInstanceListResultDTO,
   ProcessInstanceState,
@@ -32,9 +33,11 @@ export class V2 {
 
   public async getWorkflowsOverview(
     pagination: Pagination,
+    filter?: FilterInfo,
   ): Promise<WorkflowOverviewListResultDTO> {
     const overviews = await this.orchestratorService.fetchWorkflowOverviews({
       pagination,
+      filter,
     });
     if (!overviews) {
       throw new Error("Couldn't fetch workflow overviews");
@@ -75,10 +78,12 @@ export class V2 {
   }
 
   public async getInstances(
-    pagination: Pagination,
+    pagination?: Pagination,
+    filter?: FilterInfo,
   ): Promise<ProcessInstanceListResultDTO> {
     const instances = await this.orchestratorService.fetchInstances({
       pagination,
+      filter,
     });
     const totalCount =
       await this.orchestratorService.fetchInstancesTotalCount();
@@ -86,8 +91,8 @@ export class V2 {
     const result: ProcessInstanceListResultDTO = {
       items: instances?.map(mapToProcessInstanceDTO),
       paginationInfo: {
-        pageSize: pagination.limit,
-        page: pagination.offset,
+        pageSize: pagination?.limit,
+        page: pagination?.offset,
         totalCount: totalCount,
       },
     };

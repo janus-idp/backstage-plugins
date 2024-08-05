@@ -3,19 +3,16 @@ import { buildPagination } from './types/pagination';
 describe('buildPagination()', () => {
   it('should build the correct pagination obj when no query parameters are passed', () => {
     const mockRequest: any = {
-      query: {},
+      body: {},
     };
-    expect(buildPagination(mockRequest)).toEqual({
-      limit: undefined,
-      offset: undefined,
-      order: undefined,
-      sortField: undefined,
-    });
+    expect(buildPagination(mockRequest)).toEqual({});
   });
   it('should build the correct pagination obj when partial query parameters are passed', () => {
     const mockRequest: any = {
-      query: {
-        orderBy: 'lastUpdated',
+      body: {
+        paginationInfo: {
+          orderBy: 'lastUpdated',
+        },
       },
     };
     expect(buildPagination(mockRequest)).toEqual({
@@ -27,11 +24,13 @@ describe('buildPagination()', () => {
   });
   it('should build the correct pagination obj when all query parameters are passed', () => {
     const mockRequest: any = {
-      query: {
-        page: 1,
-        pageSize: 50,
-        orderBy: 'lastUpdated',
-        orderDirection: 'DESC',
+      body: {
+        paginationInfo: {
+          page: 1,
+          pageSize: 50,
+          orderBy: 'lastUpdated',
+          orderDirection: 'DESC',
+        },
       },
     };
     expect(buildPagination(mockRequest)).toEqual({
@@ -43,9 +42,11 @@ describe('buildPagination()', () => {
   });
   it('should build the correct pagination obj when non numeric value passed to number fields', () => {
     const mockRequest: any = {
-      query: {
-        page: 'abc',
-        pageSize: 'cde',
+      body: {
+        paginationInfo: {
+          page: 'abc',
+          pageSize: 'cde',
+        },
       },
     };
     expect(buildPagination(mockRequest)).toEqual({

@@ -46,6 +46,7 @@ import { UnauthorizedError } from '@janus-idp/backstage-plugin-rbac-common';
 
 import * as pkg from '../../package.json';
 import { RouterArgs } from '../routerWrapper';
+import { buildFilter } from '../types/filters';
 import { buildPagination } from '../types/pagination';
 import { V1 } from './api/v1';
 import { V2 } from './api/v2';
@@ -311,7 +312,7 @@ function setupInternalRoutes(
         manageDenyAuthorization(endpointName, endpoint, req);
       }
       await routerApi.v2
-        .getWorkflowsOverview(buildPagination(req))
+        .getWorkflowsOverview(buildPagination(req), buildFilter(req))
         .then(result => res.json(result))
         .catch(error => {
           auditLogRequestError(error, endpointName, endpoint, req);
@@ -828,7 +829,7 @@ function setupInternalRoutes(
         manageDenyAuthorization(endpointName, endpoint, req);
       }
       await routerApi.v2
-        .getInstances(buildPagination(req))
+        .getInstances(buildPagination(req), buildFilter(req))
         .then(result => res.json(result))
         .catch(next);
     },

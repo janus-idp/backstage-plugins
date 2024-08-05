@@ -1,3 +1,5 @@
+import { FilterInfo } from '@janus-idp/backstage-plugin-orchestrator-common';
+
 import { Pagination } from '../types/pagination';
 
 export function buildGraphQlQuery(args: {
@@ -28,7 +30,14 @@ export function buildGraphQlQuery(args: {
 
     query += `) `;
   }
+  query = query.trimEnd();
   query += ` {${args.queryBody} } }`;
 
   return query;
+}
+
+export function buildFilterCondition(filter?: FilterInfo): string {
+  return filter?.fieldName && filter?.operator && filter?.fieldValue
+    ? `${filter?.fieldName}:{ ${filter?.operator}: ${filter?.fieldValue}}`
+    : '';
 }
