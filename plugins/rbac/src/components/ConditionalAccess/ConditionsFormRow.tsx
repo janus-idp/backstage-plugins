@@ -404,7 +404,7 @@ export const ConditionsFormRow = ({
               disabled={simpleRulesCount === 0 && nestedConditionsCount === 1} // 0 simple rules and this is the only 1 nested condition
               onClick={() => handleRemoveNestedCondition(nestedConditionIndex)}
             >
-              <RemoveIcon />
+              <RemoveIcon data-testid="remove-nested-condition" />
             </IconButton>
           )}
         </div>
