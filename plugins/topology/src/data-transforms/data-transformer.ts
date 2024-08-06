@@ -1,7 +1,7 @@
 import { V1Service } from '@kubernetes/client-node';
-import { Model, NodeModel } from '@patternfly/react-topology';
+import { Model, NodeModel, NodeShape } from '@patternfly/react-topology';
 
-import { TYPE_APPLICATION_GROUP, TYPE_WORKLOAD } from '../const';
+import { TYPE_APPLICATION_GROUP, TYPE_VM, TYPE_WORKLOAD } from '../const';
 import { CronJobModel } from '../models';
 import { K8sResponseData, K8sWorkloadResource } from '../types/types';
 import { getPipelinesDataForResource } from '../utils/pipeline-utils';
@@ -17,6 +17,7 @@ import {
 } from '../utils/resource-utils';
 import {
   createTopologyNodeData,
+  VM_TYPES,
   WORKLOAD_TYPES,
 } from '../utils/topology-utils';
 import {
@@ -33,6 +34,55 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
     nodes: [],
     edges: [],
   };
+  VM_TYPES.forEach((key: string) => {
+    if (resources?.[key]?.data?.length) {
+      const typedDataModel: Model = {
+        nodes: [],
+        edges: [],
+      };
+      resources[key].data.forEach((resource: K8sWorkloadResource) => {
+        const item = createOverviewItemForType(key, resource);
+        if (item) {
+          const data = createTopologyNodeData(
+            resource,
+            item,
+            TYPE_VM,
+            'icon-default',
+            getUrlForResource(resources, resource),
+            {
+              podsData: getPodsDataForResource(resource, resources),
+              services: getServicesForResource(
+                resource,
+                resources.services?.data as V1Service[],
+              ),
+              ingressesData: getIngressesDataForResourceServices(
+                resources,
+                resource,
+              ),
+              routesData: getRoutesDataForResourceServices(resources, resource),
+            },
+          );
+
+          typedDataModel.nodes?.push(
+            getTopologyNodeItem(
+              resource,
+              TYPE_VM,
+              data,
+              WorkloadModelProps,
+              undefined,
+              undefined,
+              NodeShape.rect,
+            ),
+          );
+          mergeGroup(
+            getTopologyGroupItems(resource) as NodeModel,
+            typedDataModel.nodes as NodeModel[],
+          );
+        }
+      });
+      addToTopologyDataModel(typedDataModel, baseDataModel);
+    }
+  });
 
   WORKLOAD_TYPES.forEach((key: string) => {
     if (resources?.[key]?.data?.length) {

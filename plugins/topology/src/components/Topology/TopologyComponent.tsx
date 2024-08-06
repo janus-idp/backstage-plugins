@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { makeStyles } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 
 import { FilterContext } from '../../hooks/FilterContext';
@@ -44,15 +45,24 @@ export const TopologyComponent = () => {
     TektonModels.pipelineruns,
     TektonModels.pipelines,
     ModelsPlural.checlusters,
+    ModelsPlural.virtualmachines,
   ];
 
   const k8sResourcesContextData = useK8sObjectsResponse(watchedResources);
   const filterContextData = useFilterContextValues();
-
+  // below lines added due to custom styles not working once started working remove usestyles and replace className={classes.pfRITopology} -> className="pf-ri__topology"
+  const useStyles = makeStyles(theme => ({
+    pfRITopology: {
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+  }));
+  const classes = useStyles();
   return (
     <K8sResourcesContext.Provider value={k8sResourcesContextData}>
       <FilterContext.Provider value={filterContextData}>
-        <div className="pf-ri__topology">
+        <div className={classes.pfRITopology}>
           <TopologyWorkloadView />
         </div>
       </FilterContext.Provider>

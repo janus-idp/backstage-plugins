@@ -26,6 +26,8 @@ export const WORKLOAD_TYPES: string[] = [
   ModelsPlural.daemonsets,
 ];
 
+export const VM_TYPES: string[] = [ModelsPlural.virtualmachines];
+
 const apiVersionForWorkloadType = (type: string) => {
   return resourceGVKs[type]?.apiGroup
     ? `${resourceGVKs[type].apiGroup}/${resourceGVKs[type].apiVersion}`

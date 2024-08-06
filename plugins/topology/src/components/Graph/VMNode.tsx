@@ -1,0 +1,81 @@
+import React from 'react';
+
+import { makeStyles } from '@material-ui/core';
+import { VirtualMachineIcon } from '@patternfly/react-icons/dist/esm/icons/virtual-machine-icon';
+import {
+  WithDragNodeProps,
+  WithSelectionProps,
+} from '@patternfly/react-topology';
+
+import BaseNode from './BaseNode';
+
+const VM_STATUS_GAP = 7;
+const VM_STATUS_WIDTH = 7;
+const VM_STATUS_RADIUS = 7;
+type VmNodeProps = {
+  element: any;
+  hover?: boolean;
+  dragging?: boolean;
+  edgeDragging?: boolean;
+  highlight?: boolean;
+  canDrop?: boolean;
+  dropTarget?: boolean;
+  children: any;
+} & Partial<WithSelectionProps & WithDragNodeProps>;
+
+const VmNode = ({
+  element,
+  onSelect,
+  canDrop,
+  dropTarget,
+  children,
+  ...rest
+}: VmNodeProps) => {
+  const { width, height } = element.getBounds();
+  const vmData = element.getData().data;
+  const { kind, osImage, vmStatusBundle } = vmData;
+  const iconRadius = Math.min(width, height) * 0.25;
+
+  const onNodeSelect = (e: React.MouseEvent) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set('selectedId', element.getId());
+    history.replaceState(null, '', `?${params.toString()}`);
+    if (onSelect) onSelect(e);
+  };
+  const imageProps = {
+    x: width / 2 - iconRadius,
+    y: height / 2 - iconRadius,
+    width: iconRadius * 2,
+    height: iconRadius * 2,
+  };
+  const imageComponent = osImage ? (
+    <image {...imageProps} xlinkHref={osImage} />
+  ) : (
+    <VirtualMachineIcon {...imageProps} />
+  );
+
+  const useStyles = makeStyles(theme => ({
+    kubevirtbg: {
+      fill: 'var(--pf-v5-global--BackgroundColor--light-100)',
+    },
+  }));
+  const classes = useStyles();
+  return (
+    <g>
+      <BaseNode kind={kind} element={element} onSelect={onNodeSelect} {...rest}>
+        <rect
+          className={classes.kubevirtbg}
+          x={VM_STATUS_GAP + VM_STATUS_WIDTH}
+          y={VM_STATUS_GAP + VM_STATUS_WIDTH}
+          rx={VM_STATUS_RADIUS}
+          ry={VM_STATUS_RADIUS}
+          width={width - (VM_STATUS_GAP + VM_STATUS_WIDTH) * 2}
+          height={height - (VM_STATUS_GAP + VM_STATUS_WIDTH) * 2}
+        />
+        {imageComponent}
+      </BaseNode>
+    </g>
+  );
+};
+
+export default VmNode;
