@@ -1,10 +1,27 @@
 import React from 'react';
 
-import { Box, Button, makeStyles } from '@material-ui/core';
+import { PermissionCondition } from '@backstage/plugin-permission-common';
 
+import { Box, Button, makeStyles } from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
+import WarningIcon from '@mui/icons-material/Warning';
+
+import {
+  hasAllOfOrAnyOfErrors,
+  hasNestedNotErrors,
+  hasSimpleConditionOrNotErrors,
+  initializeErrors,
+  isSimpleRule,
+  resetErrors,
+} from '../../utils/conditional-access-utils';
 import { ConditionsFormRow } from './ConditionsFormRow';
 import { criterias } from './const';
-import { ConditionsData, RuleParamsErrors, RulesData } from './types';
+import {
+  AccessConditionsErrors,
+  Condition,
+  ConditionsData,
+  RulesData,
+} from './types';
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -54,43 +71,126 @@ export const ConditionsForm = ({
       },
     },
   );
-  const [criteria, setCriteria] = React.useState<string>(
-    Object.keys(conditions)[0] ?? criterias.condition,
+  const [criteria, setCriteria] = React.useState<keyof ConditionsData>(
+    (Object.keys(conditions)[0] as keyof ConditionsData) ?? criterias.condition,
   );
-  const [errors, setErrors] = React.useState<RuleParamsErrors>();
+  const [errors, setErrors] = React.useState<
+    AccessConditionsErrors | undefined
+  >(initializeErrors(criteria, conditions));
 
   const [removeAllClicked, setRemoveAllClicked] =
     React.useState<boolean>(false);
 
+  const flattenConditions = (
+    conditionData: Condition[],
+  ): PermissionCondition[] => {
+    const flatConditions: PermissionCondition[] = [];
+
+    const processCondition = (condition: Condition) => {
+      if ('rule' in condition) {
+        flatConditions.push(condition);
+      } else {
+        if (condition.allOf) {
+          condition.allOf.forEach(processCondition);
+        }
+        if (condition.anyOf) {
+          condition.anyOf.forEach(processCondition);
+        }
+        if (condition.not) {
+          if ('rule' in condition.not) {
+            flatConditions.push(condition.not);
+          } else {
+            processCondition(condition.not);
+          }
+        }
+      }
+    };
+    conditionData.forEach(processCondition);
+    return flatConditions;
+  };
+
   const isNoRuleSelected = () => {
     switch (criteria) {
-      case criterias.condition: {
+      case criterias.condition:
         return !conditions.condition?.rule;
-      }
       case criterias.not: {
-        return !conditions.not?.rule;
+        const flatConditions = flattenConditions([
+          conditions.not as PermissionCondition,
+        ]);
+        return flatConditions.some(c => !c.rule);
       }
       case criterias.allOf: {
-        return !!conditions.allOf?.find(c => !c.rule);
+        const flatConditions = flattenConditions(conditions.allOf || []);
+        return flatConditions.some(c => !c.rule);
       }
       case criterias.anyOf: {
-        return !!conditions.anyOf?.find(c => !c.rule);
+        const flatConditions = flattenConditions(conditions.anyOf || []);
+        return flatConditions.some(c => !c.rule);
       }
       default:
         return true;
     }
   };
 
-  const isSaveDisabled = () => {
-    const hasErrors = !!errors?.[criteria]?.length;
+  const hasAnyErrors = (): boolean => {
+    if (!errors) return false;
 
+    if (
+      criteria === criterias.condition ||
+      (criteria === criterias.not &&
+        isSimpleRule(conditions[criteria] as Condition))
+    ) {
+      return hasSimpleConditionOrNotErrors(errors, criteria);
+    }
+
+    if (
+      criteria === criterias.not &&
+      !isSimpleRule(conditions[criteria] as Condition)
+    ) {
+      return hasNestedNotErrors(errors, conditions, criteria);
+    }
+
+    if (criteria === criterias.allOf || criteria === criterias.anyOf) {
+      return hasAllOfOrAnyOfErrors(errors, criteria);
+    }
+
+    return false;
+  };
+
+  const isSaveDisabled = () => {
     if (removeAllClicked) return false;
 
     return (
-      hasErrors ||
+      hasAnyErrors() ||
       isNoRuleSelected() ||
       Object.is(conditionsFormVal, conditions)
     );
+  };
+
+  const hasMultiLevelNestedConditions = (): boolean => {
+    if (!Array.isArray(conditions[criteria])) {
+      return false;
+    }
+
+    return (conditions[criteria] as Condition[])
+      .filter(condition => !('rule' in condition))
+      .some((firstLevelNestedCondition: Condition) => {
+        const nestedConditionCriteria = Object.keys(
+          firstLevelNestedCondition,
+        )[0];
+        return (
+          Array.isArray(
+            firstLevelNestedCondition[
+              nestedConditionCriteria as keyof Condition
+            ],
+          ) &&
+          (
+            firstLevelNestedCondition[
+              nestedConditionCriteria as keyof Condition
+            ] as Condition[]
+          ).some((con: Condition) => !('rule' in con))
+        );
+      });
   };
 
   return (
@@ -106,6 +206,20 @@ export const ConditionsForm = ({
           setErrors={setErrors}
           setRemoveAllClicked={setRemoveAllClicked}
         />
+        {hasMultiLevelNestedConditions() && (
+          <Alert
+            icon={<WarningIcon />}
+            style={{ margin: '1.5rem 0 1rem 0' }}
+            severity="warning"
+            data-testid="multi-level-nested-conditions-warning"
+          >
+            <AlertTitle data-testid="multi-level-nested-conditions-warning-title">
+              Multiple levels of nested conditions are not supported
+            </AlertTitle>
+            Only one level is displayed. Please use the CLI to view all nested
+            conditions.
+          </Alert>
+        )}
       </Box>
       <Box className={classes.footer}>
         <Button
@@ -143,6 +257,7 @@ export const ConditionsForm = ({
                 params: {},
               },
             });
+            setErrors(resetErrors(criterias.condition));
           }}
           data-testid="remove-conditions"
         >

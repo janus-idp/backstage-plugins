@@ -85,7 +85,7 @@ test.describe('RBAC plugin', () => {
 
     // verify permission policy table
     await expect(
-      page.getByRole('heading', { name: 'Permission policies (7)' }),
+      page.getByRole('heading', { name: 'Permission policies (10)' }),
     ).toBeVisible({ timeout: 20000 });
     await verifyColumnHeading(['Plugin', 'Permission', 'Policies'], page);
     const policies =
@@ -271,6 +271,48 @@ test.describe('RBAC plugin', () => {
 
     expect(
       page.getByText('Configure access (1 rule)', { exact: true }),
+    ).toBeVisible();
+
+    await common.clickButton('Next');
+    await common.clickButton('Save');
+    await verifyText('Role role:default/guests updated successfully', page);
+
+    await page.locator(`a`).filter({ hasText: 'RBAC' }).click();
+  });
+
+  test('Edit role to convert conditional policy into nested conditional policy', async () => {
+    await expect(
+      page.getByRole('heading', { name: 'All roles (2)' }),
+    ).toBeVisible({ timeout: 20000 });
+
+    // edit/update policies
+    await page.locator(`a`).filter({ hasText: 'role:default/guests' }).click();
+    await expect(
+      page.getByRole('heading', { name: 'role:default/guests' }),
+    ).toBeVisible({
+      timeout: 20000,
+    });
+    await page.getByRole('tab', { name: 'Overview' }).click();
+
+    await page.locator(RoleOverviewPO.updatePolicies).click();
+    await expect(page.getByRole('heading', { name: 'Edit Role' })).toBeVisible({
+      timeout: 20000,
+    });
+
+    // update conditional policy to nested conditions
+    await page.getByText('Configure access', { exact: true }).click();
+    await page.getByText('AllOf', { exact: true }).click();
+    await page.getByPlaceholder('Select a rule').first().click();
+    await page.getByText('HAS_LABEL').click();
+    await page.getByLabel('label').fill('dev');
+    await page.getByText('Add nested condition').click();
+    await page.getByPlaceholder('Select a rule').last().click();
+    await page.getByText('HAS_METADATA').click();
+    await page.getByLabel('key').fill('status');
+    await page.getByTestId('save-conditions').click();
+
+    expect(
+      page.getByText('Configure access (2 rules)', { exact: true }),
     ).toBeVisible();
 
     await common.clickButton('Next');
