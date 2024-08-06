@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-bulk-import [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-bulk-import@1.1.5...@janus-idp/backstage-plugin-bulk-import@1.2.0) (2024-08-06)
+
+
+### Features
+
+* **bulk-import:** add fields for annotations, labels and spec input ([#1950](https://github.com/janus-idp/backstage-plugins/issues/1950)) ([a1b790a](https://github.com/janus-idp/backstage-plugins/commit/a1b790a021a355046fc9c592812fc15f7cbda1fb))
+
 ## @janus-idp/backstage-plugin-bulk-import [1.1.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-bulk-import@1.1.4...@janus-idp/backstage-plugin-bulk-import@1.1.5) (2024-08-02)
 
 
