@@ -1,7 +1,9 @@
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  BackstageUserInfo,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   ConditionalPolicyDecision,
@@ -16,6 +18,7 @@ import {
 import {
   PermissionPolicy,
   PolicyQuery,
+  PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 
 import { Knex } from 'knex';
@@ -37,6 +40,7 @@ import {
   RoleAuditInfo,
   RoleEvents,
 } from '../audit-log/audit-logger';
+import { replaceAliases } from '../conditional-aliases/alias-resolver';
 import { ConditionalStorage } from '../database/conditional-storage';
 import {
   RoleMetadataDao,
@@ -290,10 +294,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
   async handle(
     request: PolicyQuery,
-    identityResp?: BackstageIdentityResponse | undefined,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
-    const userEntityRef =
-      identityResp?.identity.userEntityRef ?? `user without entity`;
+    const userEntityRef = user?.info.userEntityRef ?? `user without entity`;
 
     let auditOptions = createPermissionEvaluationOptions(
       `Policy check for ${userEntityRef}`,
@@ -306,7 +309,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       let status = false;
 
       const action = toPermissionAction(request.permission.attributes);
-      if (!identityResp) {
+      if (!user) {
         const msg = evaluatePermMsg(
           userEntityRef,
           AuthorizeResult.DENY,
@@ -329,11 +332,12 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         const resourceType = request.permission.resourceType;
 
         // handle conditions if they are present
-        if (identityResp) {
+        if (user) {
           const conditionResult = await this.handleConditions(
             userEntityRef,
             request,
             roles,
+            user.info,
           );
           if (conditionResult) {
             return conditionResult;
@@ -416,6 +420,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     userEntityRef: string,
     request: PolicyQuery,
     roles: string[],
+    userInfo: BackstageUserInfo,
   ): Promise<PolicyDecision | undefined> {
     const permissionName = request.permission.name;
     const resourceType = (request.permission as ResourcePermission)
@@ -471,6 +476,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
           >,
         },
       };
+
+      replaceAliases(result.conditions, userInfo);
+
       const msg = `Send condition to plugin with id ${pluginId} to evaluate permission ${permissionName} with resource type ${resourceType} and action ${action} for user ${userEntityRef}`;
       const auditOptions = createPermissionEvaluationOptions(
         msg,

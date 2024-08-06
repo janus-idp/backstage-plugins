@@ -7,6 +7,7 @@ import {
   AuthService,
   HttpAuthService,
   LoggerService,
+  UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
@@ -40,6 +41,7 @@ export class PolicyBuilder {
       permissions: PermissionEvaluator;
       auth?: AuthService;
       httpAuth?: HttpAuthService;
+      userInfo: UserInfoService;
     },
     pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
   ): Promise<Router> {
@@ -108,6 +110,7 @@ export class PolicyBuilder {
       logger: env.logger,
       discovery: env.discovery,
       identity: env.identity,
+      userInfo: env.userInfo,
       policy: await RBACPermissionPolicy.build(
         env.logger,
         defAuditLog,
