@@ -12,6 +12,9 @@ export type RepositoriesData = {
 export type PullRequestPreview = {
   prTitle?: string;
   prDescription?: string;
+  prAnnotations?: string;
+  prLabels?: string;
+  prSpec?: string;
   componentName?: string;
   entityOwner?: string;
   useCodeOwnersFile: boolean;

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useAsync } from 'react-use';
 
+import { Entity, EntityMeta } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   PreviewCatalogInfoComponent,
@@ -22,7 +23,13 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
 
-import { AddRepositoriesFormValues, PullRequestPreviewData } from '../../types';
+import {
+  AddRepositoriesFormValues,
+  PullRequestPreview,
+  PullRequestPreviewData,
+} from '../../types';
+import { getYamlKeyValuePairs } from '../../utils/repository-utils';
+import KeyValueTextField from './KeyValueTextField';
 
 const useDrawerContentStyles = makeStyles(theme => ({
   previewCard: {
@@ -53,7 +60,7 @@ export const PreviewPullRequest = ({
     values.approvalTool === 'git' ? 'Pull request' : 'ServiceNow ticket';
 
   const [entityOwner, setEntityOwner] = React.useState<string | null>(
-    pullRequest[repoName]?.entityOwner || '',
+    pullRequest[repoName]?.entityOwner ?? '',
   );
   const { loading: entitiesLoading, value: entities } = useAsync(async () => {
     const allEntities = await catalogApi.getEntities({
@@ -64,7 +71,7 @@ export const PreviewPullRequest = ({
 
     return allEntities.items
       .map(e => humanizeEntityRef(e, { defaultNamespace: 'true' }))
-      .sort();
+      .sort((a, b) => a.localeCompare(b));
   });
   React.useEffect(() => {
     const newFormErrors = {
@@ -82,83 +89,160 @@ export const PreviewPullRequest = ({
     }
   }, [entityOwner, pullRequest, setFormErrors, formErrors, repoName]);
 
+  const updatePullRequestKeyValuePairFields = (
+    field: string,
+    value: string,
+    yamlKey: string,
+  ) => {
+    const yamlUpdate: Entity = { ...pullRequest[repoName]?.yaml };
+
+    if (value.length === 0) {
+      if (yamlKey.includes('.')) {
+        // annotations or labels
+        const [key, subKey] = yamlKey.split('.');
+        if ((yamlUpdate[key as keyof Entity] as EntityMeta)?.[subKey]) {
+          delete (yamlUpdate[key as keyof Entity] as EntityMeta)[subKey];
+        }
+      } else {
+        // specs
+        delete yamlUpdate[yamlKey as keyof Entity];
+      }
+    } else if (yamlKey.includes('.')) {
+      const [key, subKey] = yamlKey.split('.');
+      (yamlUpdate[key as keyof Entity] as EntityMeta)[subKey] =
+        getYamlKeyValuePairs(value);
+    } else {
+      yamlUpdate.spec = getYamlKeyValuePairs(value);
+    }
+
+    setPullRequest({
+      ...pullRequest,
+      [repoName]: {
+        ...pullRequest[repoName],
+        [field]: value,
+        yaml: yamlUpdate,
+      },
+    });
+  };
+
+  const updateFieldAndErrors = (
+    field: string,
+    value: string,
+    errorMessage: string,
+  ) => {
+    setPullRequest({
+      ...pullRequest,
+      [repoName]: {
+        ...pullRequest[repoName],
+        [field]: value,
+      },
+    });
+
+    if (!value) {
+      setFormErrors({
+        ...formErrors,
+        [repoName]: {
+          ...formErrors?.[repoName],
+          [field]: errorMessage,
+        },
+      });
+    } else {
+      const err = { ...formErrors };
+      delete err[repoName]?.[field as keyof PullRequestPreview];
+      setFormErrors(err);
+    }
+  };
+
   const handleChange = (
     event: React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
-    if (event.target.name.split('.').find(s => s === 'prTitle')) {
-      setPullRequest({
-        ...pullRequest,
-        [repoName]: {
-          ...pullRequest[repoName],
-          prTitle: event.target.value,
-        },
-      });
-      if (!event.target.value) {
-        setFormErrors({
-          ...formErrors,
+    const targetName = event.target.name
+      .split('.')
+      .find(s =>
+        [
+          'prTitle',
+          'prDescription',
+          'componentName',
+          'prAnnotations',
+          'prLabels',
+          'prSpec',
+        ].includes(s),
+      );
+
+    if (!targetName) return;
+
+    const inputValue = event.target.value;
+    switch (targetName) {
+      case 'prTitle':
+        updateFieldAndErrors(
+          'prTitle',
+          inputValue,
+          `${approvalTool} title is missing`,
+        );
+        break;
+      case 'prDescription':
+        updateFieldAndErrors(
+          'prDescription',
+          inputValue,
+          `${approvalTool} description is missing`,
+        );
+        break;
+      case 'componentName':
+        setPullRequest({
+          ...pullRequest,
           [repoName]: {
-            ...formErrors?.[repoName],
-            prTitle: `${approvalTool} title is missing`,
-          },
-        });
-      } else {
-        const err = { ...formErrors };
-        delete err[repoName]?.prTitle;
-        setFormErrors(err);
-      }
-    }
-    if (event.target.name.split('.').find(s => s === 'prDescription')) {
-      setPullRequest({
-        ...pullRequest,
-        [repoName]: {
-          ...pullRequest[repoName],
-          prDescription: event.target.value,
-        },
-      });
-      if (!event.target.value) {
-        setFormErrors({
-          ...formErrors,
-          [repoName]: {
-            ...formErrors?.[repoName],
-            prDescription: `${approvalTool} description is missing`,
-          },
-        });
-      } else {
-        const err = { ...formErrors };
-        delete err[repoName]?.prDescription;
-        setFormErrors(err);
-      }
-    }
-    if (event.target.name.split('.').find(s => s === 'componentName')) {
-      setPullRequest({
-        ...pullRequest,
-        [repoName]: {
-          ...pullRequest[repoName],
-          componentName: event.target.value,
-          yaml: {
-            ...pullRequest[repoName]?.yaml,
-            metadata: {
-              ...pullRequest[repoName]?.yaml.metadata,
-              name: event.target.value,
+            ...pullRequest[repoName],
+            componentName: inputValue,
+            yaml: {
+              ...pullRequest[repoName]?.yaml,
+              metadata: {
+                ...pullRequest[repoName]?.yaml.metadata,
+                name: inputValue,
+              },
             },
           },
-        },
-      });
-      if (!event.target.value) {
-        setFormErrors({
-          ...formErrors,
-          [repoName]: {
-            ...formErrors?.[repoName],
-            componentName: 'Component name is missing',
-          },
         });
-      } else {
-        const err = { ...formErrors };
-        delete err[repoName]?.componentName;
-        setFormErrors(err);
-      }
+        updateFieldAndErrors(
+          'componentName',
+          inputValue,
+          'Component name is missing',
+        );
+        break;
+      case 'prAnnotations':
+        updatePullRequestKeyValuePairFields(
+          'prAnnotations',
+          inputValue,
+          'metadata.annotations',
+        );
+        break;
+      case 'prLabels':
+        updatePullRequestKeyValuePairFields(
+          'prLabels',
+          inputValue,
+          'metadata.labels',
+        );
+        break;
+      case 'prSpec':
+        updatePullRequestKeyValuePairFields('prSpec', inputValue, 'spec');
+        break;
+      default:
+        break;
     }
   };
+
+  const keyValueTextFields = [
+    {
+      label: 'Annotations',
+      name: 'prAnnotations',
+      value: pullRequest?.[repoName]?.prAnnotations,
+    },
+    {
+      label: 'Labels',
+      name: 'prLabels',
+      value: pullRequest?.[repoName]?.prLabels,
+    },
+    { label: 'Spec', name: 'prSpec', value: pullRequest?.[repoName]?.prSpec },
+  ];
 
   return (
     <>
@@ -214,7 +298,7 @@ export const PreviewPullRequest = ({
 
       <Autocomplete
         options={entities || []}
-        value={entityOwner || ''}
+        value={entityOwner ?? ''}
         loading={entitiesLoading}
         loadingText="Loading groups and users"
         disableClearable
@@ -224,7 +308,7 @@ export const PreviewPullRequest = ({
             ...pullRequest,
             [repoName]: {
               ...pullRequest[repoName],
-              entityOwner: value || '',
+              entityOwner: value ?? '',
             },
           });
         }}
@@ -304,6 +388,18 @@ export const PreviewPullRequest = ({
         WARNING: This may fail if no CODEOWNERS file is found at the target
         location.
       </FormHelperText>
+      {keyValueTextFields.map(field => (
+        <KeyValueTextField
+          key={field.name}
+          label={field.label}
+          name={`repositories.${pullRequest[repoName].componentName}.${field.name}`}
+          value={field.value ?? ''}
+          onChange={handleChange}
+          setFormErrors={setFormErrors}
+          formErrors={formErrors}
+          repoName={repoName}
+        />
+      ))}
       <Box marginTop={2}>
         <Typography variant="h6">
           Preview {`${approvalTool.toLowerCase()}`}
@@ -311,8 +407,8 @@ export const PreviewPullRequest = ({
       </Box>
 
       <PreviewPullRequestComponent
-        title={pullRequest?.[repoName]?.prTitle || ''}
-        description={pullRequest?.[repoName]?.prDescription || ''}
+        title={pullRequest?.[repoName]?.prTitle ?? ''}
+        description={pullRequest?.[repoName]?.prDescription ?? ''}
         classes={{
           card: contentClasses.previewCard,
           cardContent: contentClasses.previewCardContent,

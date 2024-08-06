@@ -4,6 +4,7 @@ import {
   getNewOrgsData,
   getSelectedRepositories,
   getSelectedRepositoriesCount,
+  getYamlKeyValuePairs,
   updateWithNewSelectedRepositories,
   urlHelper,
 } from './repository-utils';
@@ -114,5 +115,59 @@ describe('Repository utils', () => {
     expect(newOrgsData.find(o => o.id === 1)?.selectedRepositories).toEqual(
       getDataForRepositories('user:default/guest').slice(1, 3),
     );
+  });
+
+  it('should parse key-value pairs correctly with semicolons', () => {
+    const prKeyValuePairInput = `argocd/app-name: 'guestbook'; github.com/project-slug: janus-idp/backstage-showcase; backstage.io/createdAt: '5/12/2021, 07:03:18 AM'; quay.io/repository-slug: janus-idp/backstage-showcase; backstage.io/kubernetes-id: test-backstage`;
+
+    const expectedOutput = {
+      'argocd/app-name': 'guestbook',
+      'github.com/project-slug': 'janus-idp/backstage-showcase',
+      'backstage.io/createdAt': '5/12/2021, 07:03:18 AM',
+      'quay.io/repository-slug': 'janus-idp/backstage-showcase',
+      'backstage.io/kubernetes-id': 'test-backstage',
+    };
+
+    expect(getYamlKeyValuePairs(prKeyValuePairInput)).toEqual(expectedOutput);
+  });
+
+  it('should handle empty input', () => {
+    const prKeyValuePairInput = '';
+    const expectedOutput = {};
+    expect(getYamlKeyValuePairs(prKeyValuePairInput)).toEqual(expectedOutput);
+  });
+
+  it('should handle input without quotes', () => {
+    const prKeyValuePairInput = `backstage.io/kubernetes-id: my-kubernetes-component`;
+
+    const expectedOutput = {
+      'backstage.io/kubernetes-id': 'my-kubernetes-component',
+    };
+
+    expect(getYamlKeyValuePairs(prKeyValuePairInput)).toEqual(expectedOutput);
+  });
+
+  it('should handle extra whitespace around key-value pairs', () => {
+    const prKeyValuePairInput = ` argocd/app-name :  'guestbook' ; github.com/project-slug : janus-idp/backstage-showcase ; backstage.io/createdAt : '5/12/2021, 07:03:18 AM' `;
+
+    const expectedOutput = {
+      'argocd/app-name': 'guestbook',
+      'github.com/project-slug': 'janus-idp/backstage-showcase',
+      'backstage.io/createdAt': '5/12/2021, 07:03:18 AM',
+    };
+
+    expect(getYamlKeyValuePairs(prKeyValuePairInput)).toEqual(expectedOutput);
+  });
+
+  it('should parse key-value pairs correctly with semicolon in value', () => {
+    const prKeyValuePairInput = `type: other; lifecycle: production; owner: user:guest`;
+
+    const expectedOutput = {
+      type: 'other',
+      lifecycle: 'production',
+      owner: 'user:guest',
+    };
+
+    expect(getYamlKeyValuePairs(prKeyValuePairInput)).toEqual(expectedOutput);
   });
 });
