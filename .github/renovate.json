@@ -7,12 +7,8 @@
     ":pinOnlyDevDependencies",
     "helpers:pinGitHubActionDigests"
   ],
-  "ignorePresets": [
-    "group:monorepos"
-  ],
-  "labels": [
-    "kind/dependency upgrade"
-  ],
+  "ignorePresets": ["group:monorepos"],
+  "labels": ["kind/dependency upgrade"],
   "npm": {
     "minimumReleaseAge": "1 day"
   },
@@ -25,355 +21,193 @@
     {
       "description": "Do automerge and pin actions in GH workflows, except for versions starting with 0",
       "enabled": true,
-      "matchManagers": [
-        "github-actions"
-      ],
+      "matchManagers": ["github-actions"],
       "matchCurrentVersion": "!/^0/",
       "groupName": "GitHub Actions",
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
+      "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
     },
     {
-      "matchDepTypes": [
-        "devDependencies"
-      ],
-      "matchUpdateTypes": [
-        "patch",
-        "minor"
-      ],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
       "matchCurrentVersion": "!/^0/",
       "groupName": "DevDependencies (non-major)",
       "automerge": true
     },
     {
-      "matchDepTypes": [
-        "devDependencies"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["major"],
       "groupName": "DevDependencies"
     },
     {
-      "extends": [
-        "packages:test"
-      ],
-      "matchDepPatterns": [
-        "^@playwright/"
-      ],
-      "matchUpdateTypes": [
-        "patch",
-        "minor"
-      ],
+      "extends": ["packages:test"],
+      "matchUpdateTypes": ["patch", "minor"],
       "matchCurrentVersion": "!/^0/",
       "groupName": "Test packages (minor)",
-      "automerge": true
+      "automerge": true,
+      "matchDepNames": ["/^@playwright//"]
     },
     {
-      "extends": [
-        "packages:test"
-      ],
-      "matchDepPatterns": [
-        "^@playwright/"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "groupName": "Test packages"
+      "extends": ["packages:test"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "Test packages",
+      "matchDepNames": ["/^@playwright//"]
     },
-
     {
-      "matchDepPatterns": [
-        "^@backstage/"
-      ],
       "groupName": "Core Backstage packages",
-      "enabled": false
+      "enabled": false,
+      "matchDepNames": ["/^@backstage//"]
     },
     {
-      "matchDepPatterns": [
-        "^@semantic-release/",
-        "^@semrel-extra/",
-        "^multi-semantic-release$"
-      ],
-      "groupName": "semantic-release monorepo"
+      "groupName": "semantic-release monorepo",
+      "matchDepNames": [
+        "/^@semantic-release//",
+        "/^@semrel-extra//",
+        "/^multi-semantic-release$/"
+      ]
     },
     {
       "description": "disable updates to the keycloak admin client - see https://github.com/janus-idp/backstage-plugins/issues/47 https://github.com/janus-idp/backstage-plugins/issues/1046",
       "enabled": false,
-      "matchDatasources": [
-        "npm"
-      ],
-      "matchPackageNames": [
-        "@keycloak/keycloak-admin-client"
-      ],
+      "matchDatasources": ["npm"],
+      "matchPackageNames": ["@keycloak/keycloak-admin-client"],
       "groupName": "Keycloak dependency"
     },
     {
       "description": "ignore updates to the axios to version that keycloak 18 needs",
       "enabled": false,
-      "matchDatasources": [
-        "npm"
-      ],
-      "matchPackageNames": [
-        "axios"
-      ],
+      "matchDatasources": ["npm"],
+      "matchPackageNames": ["axios"],
       "matchCurrentVersion": "0.26.1",
       "groupName": "Keycloak dependency"
     },
     {
       "description": "disable updates to the kubernetes client. Lock it down to the same version as Backstage",
       "enabled": false,
-      "matchDatasources": [
-        "npm"
-      ],
+      "matchDatasources": ["npm"],
       "matchCurrentVersion": "0.20.0",
-      "matchPackageNames": [
-        "@kubernetes/client-node"
-      ],
+      "matchPackageNames": ["@kubernetes/client-node"],
       "groupName": "Kubernetes client dependency"
     },
     {
       "description": "disable updates playwright.  Breaking changes in 1.44.1",
       "enabled": false,
-      "matchDatasources": [
-        "npm"
-      ],
+      "matchDatasources": ["npm"],
       "matchCurrentVersion": "1.41.2",
-      "matchPackageNames": [
-        "@playwright/test"
-      ],
+      "matchPackageNames": ["@playwright/test"],
       "groupName": "Playwright test dependency"
     },
     {
       "description": "disable updates to storybook.  Breaking changes in 7.6.19",
       "enabled": false,
-      "matchDatasources": [
-        "npm"
-      ],
+      "matchDatasources": ["npm"],
       "matchCurrentVersion": "7.5.3",
-      "matchPackageNames": [
-        "@storybook/react-webpack5"
-      ],
+      "matchPackageNames": ["@storybook/react-webpack5"],
       "groupName": "Storybook react webpack5 dependency"
     },
     {
-      "extends": [
-        "monorepo:material-ui"
-      ],
-      "matchUpdateTypes": [
-        "patch",
-        "minor"
-      ],
+      "extends": ["monorepo:material-ui"],
+      "matchUpdateTypes": ["patch", "minor"],
       "groupName": "material-ui (non-major)",
-      "addLabels": [
-        "team/rhdh"
-      ]
+      "addLabels": ["team/rhdh"]
     },
     {
-      "extends": [
-        "monorepo:material-ui"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "extends": ["monorepo:material-ui"],
+      "matchUpdateTypes": ["major"],
       "groupName": "material-ui",
-      "addLabels": [
-        "team/rhdh"
-      ]
+      "addLabels": ["team/rhdh"]
     },
     {
-      "extends": [
-        "monorepo:react"
-      ],
-      "matchUpdateTypes": [
-        "patch",
-        "minor"
-      ],
+      "extends": ["monorepo:react"],
+      "matchUpdateTypes": ["patch", "minor"],
       "groupName": "react (non-major)",
-      "addLabels": [
-        "team/rhdh"
-      ]
+      "addLabels": ["team/rhdh"]
     },
     {
-      "extends": [
-        "monorepo:react"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "extends": ["monorepo:react"],
+      "matchUpdateTypes": ["major"],
       "groupName": "react",
-      "addLabels": [
-        "team/rhdh"
-      ]
+      "addLabels": ["team/rhdh"]
     },
     {
-      "extends": [
-        "monorepo:babel"
-      ],
-      "matchUpdateTypes": [
-        "patch",
-        "minor"
-      ],
+      "extends": ["monorepo:babel"],
+      "matchUpdateTypes": ["patch", "minor"],
       "groupName": "babel (non-major)",
-      "addLabels": [
-        "team/rhdh"
-      ]   
+      "addLabels": ["team/rhdh"]
     },
     {
-      "extends": [
-        "monorepo:babel"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "extends": ["monorepo:babel"],
+      "matchUpdateTypes": ["major"],
       "groupName": "babel (non-major)",
-      "addLabels": [
-        "team/rhdh"
-      ]   
-    },    
+      "addLabels": ["team/rhdh"]
+    },
     {
-      "extends": [
-        "monorepo:storybook",
-        "monorepo:storybook-react-native"
-      ],
-      "matchUpdateTypes": [
-        "patch",
-        "minor"
-      ],
+      "extends": ["monorepo:storybook", "monorepo:storybook-react-native"],
+      "matchUpdateTypes": ["patch", "minor"],
       "matchCurrentVersion": "!/^0/",
       "groupName": "Storybook packages (minor)",
       "automerge": true
     },
     {
-      "extends": [
-        "monorepo:storybook",
-        "monorepo:storybook-react-native"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "extends": ["monorepo:storybook", "monorepo:storybook-react-native"],
+      "matchUpdateTypes": ["major"],
       "groupName": "Storybook packages"
     },
     {
-      "extends": [
-        "packages:linters"
-      ],
-      "matchUpdateTypes": [
-        "patch",
-        "minor"
-      ],
+      "extends": ["packages:linters"],
+      "matchUpdateTypes": ["patch", "minor"],
       "matchCurrentVersion": "!/^0/",
       "groupName": "linters  (non-major)",
       "automerge": true,
-      "addLabels": [
-        "team/rhdh"
-      ]
+      "addLabels": ["team/rhdh"]
     },
     {
-      "extends": [
-        "packages:linters"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "extends": ["packages:linters"],
+      "matchUpdateTypes": ["major"],
       "groupName": "linters"
     },
     {
-      "matchPackagePrefixes": [
-        "@scalprum/"
-      ],
-      "matchUpdateTypes": [
-        "patch",
-        "minor"
-      ],
+      "matchUpdateTypes": ["patch", "minor"],
       "groupName": "Scalprum (non-major)",
-      "addLabels": [
-        "team/rhdh"
-      ]
+      "addLabels": ["team/rhdh"],
+      "matchPackageNames": ["@scalprum/{/,}**"]
     },
     {
-      "matchPackagePrefixes": [
-        "@scalprum/"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "matchUpdateTypes": ["major"],
       "groupName": "Scalprum ",
-      "addLabels": [
-        "team/rhdh"
-      ]
+      "addLabels": ["team/rhdh"],
+      "matchPackageNames": ["@scalprum/{/,}**"]
     },
     {
-      "matchFileNames": [
-        "plugins/orchestrator*/**"
-      ],
+      "matchFileNames": ["plugins/orchestrator*/**"],
       "additionalBranchPrefix": "orchestrator ",
-      "addLabels": [
-        "team/orchestrator"
-      ],
-      "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
+      "addLabels": ["team/orchestrator"],
+      "matchDepTypes": ["dependencies", "peerDependencies"],
       "groupName": "Orchestrator Dependencies (non-major)",
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ]
+      "matchUpdateTypes": ["minor", "patch"]
     },
     {
-      "matchFileNames": [
-        "plugins/orchestrator*/**"
-      ],
+      "matchFileNames": ["plugins/orchestrator*/**"],
       "additionalBranchPrefix": "orchestrator ",
-      "addLabels": [
-        "team/orchestrator"
-      ],
-      "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
+      "addLabels": ["team/orchestrator"],
+      "matchDepTypes": ["dependencies", "peerDependencies"],
       "groupName": "Orchestrator Dependencies",
-      "matchUpdateTypes": [
-        "major"
-      ]
+      "matchUpdateTypes": ["major"]
     },
     {
-      "matchFileNames": [
-        "plugins/kiali*/**"
-      ],
+      "matchFileNames": ["plugins/kiali*/**"],
       "additionalBranchPrefix": "kiali ",
-      "addLabels": [
-        "team/kiali"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
+      "addLabels": ["team/kiali"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchDepTypes": ["dependencies", "peerDependencies"],
       "groupName": "Kiali Dependencies  (non-major)"
     },
     {
-      "matchFileNames": [
-        "plugins/kiali*/**"
-      ],
+      "matchFileNames": ["plugins/kiali*/**"],
       "additionalBranchPrefix": "kiali ",
-      "addLabels": [
-        "team/kiali"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
+      "addLabels": ["team/kiali"],
+      "matchUpdateTypes": ["major"],
+      "matchDepTypes": ["dependencies", "peerDependencies"],
       "groupName": "Kiali Dependencies "
     },
     {
@@ -383,17 +217,9 @@
         "plugins/feedback*/**"
       ],
       "additionalBranchPrefix": "devex ",
-      "addLabels": [
-        "team/devex"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
+      "addLabels": ["team/devex"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchDepTypes": ["dependencies", "peerDependencies"],
       "groupName": "Devex Dependencies (non-major)"
     },
     {
@@ -403,16 +229,9 @@
         "plugins/feedback*/**"
       ],
       "additionalBranchPrefix": "devex ",
-      "addLabels": [
-        "team/devex"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
+      "addLabels": ["team/devex"],
+      "matchUpdateTypes": ["major"],
+      "matchDepTypes": ["dependencies", "peerDependencies"],
       "groupName": "Devex Dependencies "
     },
     {
@@ -422,17 +241,9 @@
         "plugins/argocd*/**"
       ],
       "additionalBranchPrefix": "rhtap ",
-      "addLabels": [
-        "team/rhtap"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
+      "addLabels": ["team/rhtap"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchDepTypes": ["dependencies", "peerDependencies"],
       "groupName": "RHTAP Dependencies (non-major) "
     },
     {
@@ -442,16 +253,9 @@
         "plugins/argocd*/**"
       ],
       "additionalBranchPrefix": "rhtap ",
-      "addLabels": [
-        "team/rhtap"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
+      "addLabels": ["team/rhtap"],
+      "matchUpdateTypes": ["major"],
+      "matchDepTypes": ["dependencies", "peerDependencies"],
       "groupName": "RHTAP Dependencies "
     },
     {
@@ -472,17 +276,9 @@
         "package.json"
       ],
       "additionalBranchPrefix": "rhdh ",
-      "addLabels": [
-        "team/rhdh"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
+      "addLabels": ["team/rhdh"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchDepTypes": ["dependencies", "peerDependencies"],
       "groupName": "RHDH Dependencies (non-major)"
     },
     {
@@ -503,16 +299,9 @@
         "package.json"
       ],
       "additionalBranchPrefix": "rhdh ",
-      "addLabels": [
-        "team/rhdh"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
+      "addLabels": ["team/rhdh"],
+      "matchUpdateTypes": ["major"],
+      "matchDepTypes": ["dependencies", "peerDependencies"],
       "groupName": "RHDH Dependencies "
     },
     {
@@ -529,17 +318,9 @@
         "plugins/web-terminal*/**"
       ],
       "additionalBranchPrefix": "community ",
-      "addLabels": [
-        "team/community"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
+      "addLabels": ["team/community"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchDepTypes": ["dependencies", "peerDependencies"],
       "groupName": "Community Dependencies (non-major)"
     },
     {
@@ -556,29 +337,18 @@
         "plugins/web-terminal*/**"
       ],
       "additionalBranchPrefix": "community ",
-      "addLabels": [
-        "team/community"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "matchDepTypes": [
-        "dependencies",
-        "peerDependencies"
-      ],
+      "addLabels": ["team/community"],
+      "matchUpdateTypes": ["major"],
+      "matchDepTypes": ["dependencies", "peerDependencies"],
       "groupName": "Community Dependencies "
     }
   ],
   "separateMajorMinor": true,
-  "ignorePaths": [
-    "**/dist-dynamic/**"
-  ],
+  "ignorePaths": ["**/dist-dynamic/**"],
   "vulnerabilityAlerts": {
     "additionalBranchPrefix": "",
     "enabled": true,
-    "addLabels": [
-      "kind/security"
-    ]
+    "addLabels": ["kind/security"]
   },
   "osvVulnerabilityAlerts": true
 }
