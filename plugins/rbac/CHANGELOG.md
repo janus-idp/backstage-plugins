@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.27.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.26.1...@janus-idp/backstage-plugin-rbac@1.27.0) (2024-08-06)
+
+
+### Features
+
+* **rbac:** nested condition ([#1814](https://github.com/janus-idp/backstage-plugins/issues/1814)) ([228f1a9](https://github.com/janus-idp/backstage-plugins/commit/228f1a986f851885bbdba49686449b97350097d2))
+
 ## @janus-idp/backstage-plugin-rbac [1.26.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.26.0...@janus-idp/backstage-plugin-rbac@1.26.1) (2024-08-05)
 
 
