@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-acr [1.7.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.7.7...@janus-idp/backstage-plugin-acr@1.7.8) (2024-08-06)
+
+
+### Bug Fixes
+
+* **acr:** revert downgrade of shared-react and janus-cli ([#2009](https://github.com/janus-idp/backstage-plugins/issues/2009)) ([8c28891](https://github.com/janus-idp/backstage-plugins/commit/8c288913e07a6b744aa1b78afbbb9b267d3aad05))
+
 ## @janus-idp/backstage-plugin-acr [1.7.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.7.6...@janus-idp/backstage-plugin-acr@1.7.7) (2024-08-06)
 
 
