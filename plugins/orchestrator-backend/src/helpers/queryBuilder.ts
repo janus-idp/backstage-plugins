@@ -10,30 +10,47 @@ export function buildGraphQlQuery(args: {
 }): string {
   let query = `{${args.type}`;
 
-  if (args.whereClause || args.pagination) {
-    query += ` (`;
+  const whereClause = buildWhereClause(args.whereClause);
+  const paginationClause = buildPaginationClause(args.pagination);
 
-    if (args.whereClause) {
-      query += `where: {${args.whereClause}}`;
-      if (args.pagination) {
-        query += `, `;
-      }
-    }
-    if (args.pagination) {
-      if (args.pagination.sortField) {
-        query += `orderBy: {${
-          args.pagination.sortField
-        }: ${args.pagination.order?.toUpperCase()}}, `;
-      }
-      query += `pagination: {limit: ${args.pagination.limit} , offset: ${args.pagination.offset}}`;
-    }
-
-    query += `) `;
+  if (whereClause || paginationClause) {
+    query += ' (';
+    query += [whereClause, paginationClause].filter(Boolean).join(', ');
+    query += ') ';
   }
-  query = query.trimEnd();
+
   query += ` {${args.queryBody} } }`;
 
-  return query;
+  return query.replace(/\s+/g, ' ').trim();
+}
+
+function buildWhereClause(whereClause?: string): string {
+  return whereClause ? `where: {${whereClause}}` : '';
+}
+
+function buildPaginationClause(pagination?: Pagination): string {
+  if (!pagination) return '';
+
+  const parts = [];
+
+  if (pagination.sortField !== undefined) {
+    parts.push(
+      `orderBy: {${pagination.sortField}: ${pagination.order !== undefined ? pagination.order?.toUpperCase() : 'ASC'}}`,
+    );
+  }
+
+  const paginationParts = [];
+  if (pagination.limit !== undefined) {
+    paginationParts.push(`limit: ${pagination.limit}`);
+  }
+  if (pagination.offset !== undefined) {
+    paginationParts.push(`offset: ${pagination.offset}`);
+  }
+  if (paginationParts.length) {
+    parts.push(`pagination: {${paginationParts.join(', ')}}`);
+  }
+
+  return parts.join(', ');
 }
 
 export function buildFilterCondition(filter?: FilterInfo): string {

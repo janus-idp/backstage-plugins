@@ -15,7 +15,7 @@ describe('buildGraphQlQuery', () => {
     sortField,
   };
 
-  const paginationString = `orderBy: {${sortField}: ${order.toUpperCase()}}, pagination: {limit: ${limit} , offset: ${offset}})`;
+  const paginationString = `orderBy: {${sortField}: ${order.toUpperCase()}}, pagination: {limit: ${limit}, offset: ${offset}})`;
   const whereClause = 'version: "1.0"';
 
   it('should build a basic query without where clause and pagination', () => {
