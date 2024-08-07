@@ -72,7 +72,7 @@ export const fakeWorkflowOverviewList: WorkflowOverviewListResultDTO = {
     },
   ],
   paginationInfo: {
-    page: 1,
+    offset: 1,
     pageSize: 10,
     orderDirection: PaginationInfoDTOOrderDirectionEnum.Asc,
     totalCount: 9,

@@ -245,7 +245,7 @@ export interface PaginationInfoDTO {
      * @type {number}
      * @memberof PaginationInfoDTO
      */
-    'page'?: number;
+    'offset'?: number;
     /**
      * 
      * @type {number}

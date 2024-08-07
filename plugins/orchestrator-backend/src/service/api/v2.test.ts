@@ -71,7 +71,7 @@ describe('getWorkflowOverview', () => {
       params: {},
       body: {
         paginationInfo: {
-          page: 1,
+          offset: 1,
           pageSize: 50,
           orderBy: 'lastUpdated',
           orderDirection: 'DESC',
@@ -98,7 +98,7 @@ describe('getWorkflowOverview', () => {
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
-        page: 1,
+        offset: 1,
         pageSize: 50,
         totalCount: mockOverviewsV1.items.length,
       },
@@ -127,7 +127,7 @@ describe('getWorkflowOverview', () => {
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
-        page: undefined,
+        offset: undefined,
         pageSize: undefined,
         totalCount: mockOverviewsV1.items.length,
       },
@@ -139,7 +139,7 @@ describe('getWorkflowOverview', () => {
     const mockRequest: any = {
       body: {
         paginationInfo: {
-          page: 1,
+          offset: 1,
           pageSize: 50,
           orderBy: 'lastUpdated',
           orderDirection: 'DESC',
@@ -163,7 +163,7 @@ describe('getWorkflowOverview', () => {
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
-        page: 1,
+        offset: 1,
         pageSize: 50,
         totalCount: mockOverviewsV1.items.length,
       },

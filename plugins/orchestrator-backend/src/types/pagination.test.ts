@@ -1,4 +1,4 @@
-import { buildPagination } from './types/pagination';
+import { buildPagination } from './pagination';
 
 describe('buildPagination()', () => {
   it('should build the correct pagination obj when no query parameters are passed', () => {
@@ -26,7 +26,7 @@ describe('buildPagination()', () => {
     const mockRequest: any = {
       body: {
         paginationInfo: {
-          page: 1,
+          offset: 1,
           pageSize: 50,
           orderBy: 'lastUpdated',
           orderDirection: 'DESC',
@@ -44,7 +44,7 @@ describe('buildPagination()', () => {
     const mockRequest: any = {
       body: {
         paginationInfo: {
-          page: 'abc',
+          offset: 'abc',
           pageSize: 'cde',
         },
       },

@@ -20,11 +20,11 @@ export function buildPagination(req: Request): Pagination {
   if (!req.body?.paginationInfo) {
     return pagination;
   }
-  const { page, pageSize, orderBy, orderDirection } = req.body
+  const { offset, pageSize, orderBy, orderDirection } = req.body
     .paginationInfo as PaginationInfoDTO;
 
-  if (!isNaN(Number(page))) {
-    pagination.offset = Number(page);
+  if (!isNaN(Number(offset))) {
+    pagination.offset = Number(offset);
   }
 
   if (!isNaN(Number(pageSize))) {

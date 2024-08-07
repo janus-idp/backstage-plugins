@@ -46,7 +46,7 @@ export class V2 {
       overviews: overviews.map(item => mapToWorkflowOverviewDTO(item)),
       paginationInfo: {
         pageSize: pagination.limit,
-        page: pagination.offset,
+        offset: pagination.offset,
         totalCount: overviews.length,
       },
     };
@@ -92,7 +92,7 @@ export class V2 {
       items: instances?.map(mapToProcessInstanceDTO),
       paginationInfo: {
         pageSize: pagination?.limit,
-        page: pagination?.offset,
+        offset: pagination?.offset,
         totalCount: totalCount,
       },
     };

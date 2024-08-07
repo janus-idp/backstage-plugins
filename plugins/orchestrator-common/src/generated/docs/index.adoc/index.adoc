@@ -1104,7 +1104,7 @@ The operator to use for filtering, such as equality or inclusion
 | 
 |  
 
-| page
+| offset
 | 
 | BigDecimal 
 | 

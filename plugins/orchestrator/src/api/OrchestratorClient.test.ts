@@ -319,7 +319,7 @@ describe('OrchestratorClient', () => {
     it('should return workflow overviews when successful', async () => {
       // Given
       const paginationInfo: PaginationInfoDTO = {
-        page: 1,
+        offset: 1,
         pageSize: 5,
         orderBy: 'name',
         orderDirection: 'ASC',
@@ -398,7 +398,7 @@ describe('OrchestratorClient', () => {
     it('should return instances when successful', async () => {
       // Given
       const paginationInfo: PaginationInfoDTO = {
-        page: 1,
+        offset: 1,
         pageSize: 5,
         orderBy: 'name',
         orderDirection: 'ASC',
@@ -722,8 +722,8 @@ describe('OrchestratorClient', () => {
         String(includeAssessment),
       );
     }
-    if (paginationInfo?.page !== undefined) {
-      url.searchParams.append('page', paginationInfo.page.toString());
+    if (paginationInfo?.offset !== undefined) {
+      url.searchParams.append('page', paginationInfo.offset.toString());
     }
 
     if (paginationInfo?.pageSize !== undefined) {
