@@ -182,7 +182,7 @@ We also have a fairly strict validation for permission policies and roles based 
 
 ### Configuring conditional policies via file
 
-The RBAC plugin allows you to import conditional policies from an external file. User can defined conditional policies for roles created with help of policies-csv-file. Conditional policies should be defined like array in the yaml format.
+The RBAC plugin allows you to import conditional policies from an external file. User can defined conditional policies for roles created with help of policies-csv-file. Conditional policies should be defined as object sequences in the YAML format.
 
 You can specify the path to this configuration file in your application configuration:
 
@@ -210,18 +210,34 @@ This feature supports nested conditional policies.
 Example of the conditional policies file:
 
 ```yaml
-- result: CONDITIONAL
-  roleEntityRef: 'role:default/test'
-  pluginId: catalog
+---
+result: CONDITIONAL
+roleEntityRef: 'role:default/test'
+pluginId: catalog
+resourceType: catalog-entity
+permissionMapping:
+  - read
+  - update
+conditions:
+  rule: IS_ENTITY_OWNER
   resourceType: catalog-entity
-  permissionMapping:
-    - read
-  conditions:
-    rule: IS_ENTITY_KIND
-    resourceType: catalog-entity
-    params:
-      kinds:
-        - 'group'
+  params:
+    claims:
+      - 'group:default/team-a'
+      - 'group:default/team-b'
+---
+result: CONDITIONAL
+roleEntityRef: 'role:default/test'
+pluginId: catalog
+resourceType: catalog-entity
+permissionMapping:
+  - delete
+conditions:
+  rule: IS_ENTITY_OWNER
+  resourceType: catalog-entity
+  params:
+    claims:
+      - 'group:default/team-a'
 ```
 
 Information about condition policies format you can find in the doc: [Conditional policies documentation](./docs/conditions.md). There is only one difference: yaml format compare to json. But yaml and json are back convertiable.

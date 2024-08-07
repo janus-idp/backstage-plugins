@@ -221,24 +221,6 @@ describe('YamlConditionalFileWatcher', () => {
     );
   });
 
-  test('handles error on parse invalid conditional policy from file', async () => {
-    const invalidFilePath = resolve(
-      __dirname,
-      './../__fixtures__/data/invalid-conditions/bad-conditions-yaml.yaml',
-    );
-    const watcher = createWatcher(invalidFilePath);
-    await watcher.initialize();
-
-    const auditEvents = auditLoggerMock.auditLog.mock.calls;
-    expect(auditEvents.length).toBe(1);
-    expect(auditEvents[0][0].message).toBe(
-      `Error handling changes from conditional policies file ${invalidFilePath}`,
-    );
-    expect(auditEvents[0][0].errors[0].message).toBe(
-      `yaml file ${invalidFilePath} must contain an array`,
-    );
-  });
-
   test('handles error on parse invalid yaml file', async () => {
     const invalidFilePath = resolve(
       __dirname,
@@ -253,7 +235,7 @@ describe('YamlConditionalFileWatcher', () => {
       `Error handling changes from conditional policies file ${invalidFilePath}`,
     );
     expect(auditEvents[0][0].errors[0].message).toBe(
-      `Cannot read properties of undefined (reading 'map')`,
+      `'roleEntityRef' must be specified in the role condition`,
     );
   });
 
@@ -373,11 +355,11 @@ describe('YamlConditionalFileWatcher', () => {
     expect(auditEvents.length).toBe(0);
     expect(loggerWarnSpy).toHaveBeenNthCalledWith(
       1,
-      `skip to add condition for role 'role:default/test'. Role does not exist`,
+      `skip to add condition for role 'role:default/test'. The role either does not exist or was not created from a CSV file.`,
     );
     expect(loggerWarnSpy).toHaveBeenNthCalledWith(
       2,
-      `skip to add condition for role 'role:default/test'. Role does not exist`,
+      `skip to add condition for role 'role:default/test'. The role either does not exist or was not created from a CSV file.`,
     );
   });
 

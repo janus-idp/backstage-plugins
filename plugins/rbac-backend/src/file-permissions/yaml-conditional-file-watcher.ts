@@ -101,7 +101,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
         );
         if (!roleMetadata) {
           this.logger.warn(
-            `skip to add condition for role '${condition.roleEntityRef}'. Role does not exist`,
+            `skip to add condition for role '${condition.roleEntityRef}'. The role either does not exist or was not created from a CSV file.`,
           );
           continue;
         }
@@ -111,7 +111,6 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
           );
           continue;
         }
-        validateRoleCondition(condition);
 
         const existingCondition = existedFileConds.find(c =>
           deepSortEqual(omit(c, ['id']), omit(condition, ['id'])),
@@ -154,10 +153,14 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
    */
   parse(): RoleConditionalPolicyDecision<PermissionAction>[] {
     const fileContents = this.getCurrentContents();
-    const data = yaml.load(fileContents);
-    if (!Array.isArray(data)) {
-      throw new Error(`yaml file ${this.filePath} must contain an array`);
+    const data = yaml.loadAll(
+      fileContents,
+    ) as RoleConditionalPolicyDecision<PermissionAction>[];
+
+    for (const condition of data) {
+      validateRoleCondition(condition);
     }
+
     return data;
   }
 
