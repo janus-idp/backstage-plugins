@@ -28,7 +28,10 @@ import {
   PullRequestPreview,
   PullRequestPreviewData,
 } from '../../types';
-import { getYamlKeyValuePairs } from '../../utils/repository-utils';
+import {
+  convertKeyValuePairsToString,
+  getYamlKeyValuePairs,
+} from '../../utils/repository-utils';
 import KeyValueTextField from './KeyValueTextField';
 
 const useDrawerContentStyles = makeStyles(theme => ({
@@ -234,14 +237,30 @@ export const PreviewPullRequest = ({
     {
       label: 'Annotations',
       name: 'prAnnotations',
-      value: pullRequest?.[repoName]?.prAnnotations,
+      value:
+        pullRequest?.[repoName]?.prAnnotations ??
+        convertKeyValuePairsToString(
+          pullRequest?.[repoName]?.yaml?.metadata?.annotations,
+        ),
     },
     {
       label: 'Labels',
       name: 'prLabels',
-      value: pullRequest?.[repoName]?.prLabels,
+      value:
+        pullRequest?.[repoName]?.prLabels ??
+        convertKeyValuePairsToString(
+          pullRequest?.[repoName]?.yaml?.metadata?.labels,
+        ),
     },
-    { label: 'Spec', name: 'prSpec', value: pullRequest?.[repoName]?.prSpec },
+    {
+      label: 'Spec',
+      name: 'prSpec',
+      value:
+        pullRequest?.[repoName]?.prSpec ??
+        convertKeyValuePairsToString(
+          pullRequest?.[repoName]?.yaml?.spec as Record<string, string>,
+        ),
+    },
   ];
 
   return (
