@@ -912,7 +912,7 @@ The ErrorResponse object represents a common structure for handling errors in AP
 | Field Name| Required| Type| Description| Format
 
 | id
-| 
+| X
 | String 
 | 
 |  
