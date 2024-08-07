@@ -108,44 +108,6 @@
           ]
         }
       ],
-      [
-        "@semantic-release/release-notes-generator",
-        {
-          "preset": "conventionalcommits",
-          "presetConfig": {
-            "types": [
-              {
-                "type": "feat",
-                "section": "Features"
-              },
-              {
-                "type": "fix",
-                "section": "Bug Fixes"
-              },
-              {
-                "type": "docs",
-                "section": "Documentation"
-              },
-              {
-                "type": "style",
-                "section": "Other changes"
-              },
-              {
-                "type": "refactor",
-                "section": "Other changes"
-              },
-              {
-                "type": "perf",
-                "section": "Other changes"
-              },
-              {
-                "type": "test",
-                "section": "Other changes"
-              }
-            ]
-          }
-        }
-      ],
       "@semantic-release/changelog",
       "@semrel-extra/npm",
       [
