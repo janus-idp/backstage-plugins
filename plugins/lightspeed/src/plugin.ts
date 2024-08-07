@@ -1,8 +1,15 @@
 import {
+  configApiRef,
+  createApiFactory,
   createPlugin,
   createRoutableExtension,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
+import {
+  lightspeedApiRef,
+  LightspeedProxyClient,
+} from './api/LightspeedProxyClient';
 import { rootRouteRef } from './routes';
 
 export const lightspeedPlugin = createPlugin({
@@ -10,6 +17,17 @@ export const lightspeedPlugin = createPlugin({
   routes: {
     root: rootRouteRef,
   },
+  apis: [
+    createApiFactory({
+      api: lightspeedApiRef,
+      deps: {
+        configApi: configApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ configApi, identityApi }) =>
+        new LightspeedProxyClient({ configApi, identityApi }),
+    }),
+  ],
 });
 
 export const LightspeedPage = lightspeedPlugin.provide(
