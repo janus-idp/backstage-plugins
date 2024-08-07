@@ -1,4 +1,5 @@
 import {
+  AuthService,
   BackstageUserInfo,
   LoggerService,
 } from '@backstage/backend-plugin-api';
@@ -47,9 +48,11 @@ import {
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { CSVFileWatcher } from '../file-permissions/csv-file-watcher';
+import { YamlConditinalPoliciesFileWatcher } from '../file-permissions/yaml-conditional-file-watcher';
 import { removeTheDifference } from '../helper';
 import { validateEntityReference } from '../validation/policies-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
+import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 
 export const ADMIN_ROLE_NAME = 'role:default/rbac_admin';
 export const ADMIN_ROLE_AUTHOR = 'application configuration';
@@ -209,9 +212,6 @@ const evaluatePermMsg = (
   } and action '${toPermissionAction(permission.attributes)}'`;
 
 export class RBACPermissionPolicy implements PermissionPolicy {
-  private readonly enforcer: EnforcerDelegate;
-  private readonly auditLogger: AuditLogger;
-  private readonly conditionStorage: ConditionalStorage;
   private readonly superUserList?: string[];
 
   public static async build(
@@ -222,6 +222,8 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     enforcerDelegate: EnforcerDelegate,
     roleMetadataStorage: RoleMetadataStorage,
     knex: Knex,
+    pluginMetadataCollector: PluginPermissionMetadataCollector,
+    auth: AuthService,
   ): Promise<RBACPermissionPolicy> {
     const superUserList: string[] = [];
     const adminUsers = configApi.getOptionalConfigArray(
@@ -238,6 +240,10 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
     const allowReload =
       configApi.getOptionalBoolean('permission.rbac.policyFileReload') || false;
+
+    const conditionalPoliciesFile = configApi.getOptionalString(
+      'permission.rbac.conditionalPoliciesFile',
+    );
 
     if (superUsers && superUsers.length > 0) {
       for (const user of superUsers) {
@@ -264,13 +270,32 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       );
     }
 
-    const csvFile = new CSVFileWatcher(
-      enforcerDelegate,
-      logger,
-      roleMetadataStorage,
-      auditLogger,
-    );
-    await csvFile.initialize(policiesFile, allowReload);
+    if (policiesFile) {
+      const csvFile = new CSVFileWatcher(
+        policiesFile,
+        allowReload,
+        logger,
+        enforcerDelegate,
+        roleMetadataStorage,
+        auditLogger,
+      );
+      await csvFile.initialize();
+    }
+
+    if (conditionalPoliciesFile) {
+      const conditionalFile = new YamlConditinalPoliciesFileWatcher(
+        conditionalPoliciesFile,
+        allowReload,
+        logger,
+        conditionalStorage,
+        auditLogger,
+        auth,
+        pluginMetadataCollector,
+        roleMetadataStorage,
+        enforcerDelegate,
+      );
+      await conditionalFile.initialize();
+    }
 
     return new RBACPermissionPolicy(
       enforcerDelegate,
@@ -281,14 +306,11 @@ export class RBACPermissionPolicy implements PermissionPolicy {
   }
 
   private constructor(
-    enforcer: EnforcerDelegate,
-    auditLogger: AuditLogger,
-    conditionStorage: ConditionalStorage,
+    private readonly enforcer: EnforcerDelegate,
+    private readonly auditLogger: AuditLogger,
+    private readonly conditionStorage: ConditionalStorage,
     superUserList?: string[],
   ) {
-    this.enforcer = enforcer;
-    this.auditLogger = auditLogger;
-    this.conditionStorage = conditionStorage;
     this.superUserList = superUserList;
   }
 

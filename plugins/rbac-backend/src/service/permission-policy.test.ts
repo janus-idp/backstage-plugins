@@ -37,6 +37,7 @@ import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 import { ADMIN_ROLE_NAME, RBACPermissionPolicy } from './permission-policy';
+import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 
 type PermissionAction = 'create' | 'read' | 'update' | 'delete';
 
@@ -99,6 +100,15 @@ const auditLoggerMock = {
   createAuditLogDetails: jest.fn().mockImplementation(),
   auditLog: jest.fn().mockImplementation(),
 };
+
+const pluginMetadataCollectorMock: Partial<PluginPermissionMetadataCollector> =
+  {
+    getPluginConditionRules: jest.fn().mockImplementation(),
+    getPluginPolicies: jest.fn().mockImplementation(),
+    getMetadataByPluginId: jest.fn().mockImplementation(),
+  };
+
+const mockAuth = mockServices.auth();
 
 const modifiedBy = 'user:default/some-admin';
 
@@ -1798,6 +1808,8 @@ describe('Policy checks for conditional policies', () => {
       enfDelegate,
       roleMetadataStorageMock,
       knex,
+      pluginMetadataCollectorMock as PluginPermissionMetadataCollector,
+      mockAuth,
     );
 
     catalogApi.getEntities.mockReset();
@@ -2228,6 +2240,8 @@ async function newPermissionPolicy(
     enfDelegate,
     roleMock || roleMetadataStorageMock,
     knex,
+    pluginMetadataCollectorMock as PluginPermissionMetadataCollector,
+    mockAuth,
   );
   auditLoggerMock.auditLog.mockReset();
   return permissionPolicy;

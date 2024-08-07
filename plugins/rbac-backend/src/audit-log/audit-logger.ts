@@ -86,6 +86,9 @@ export const ConditionEvents = {
   UPDATE_CONDITION_ERROR: 'UpdateConditionError',
   DELETE_CONDITION_ERROR: 'DeleteConditionError',
   GET_CONDITION_ERROR: 'GetConditionError',
+  PARSE_CONDITION_ERROR: 'ParseConditionError',
+  CHANGE_CONDITIONAL_POLICIES_FILE_ERROR: 'ChangeConditionalPoliciesError',
+  CONDITIONAL_POLICIES_FILE_NOT_FOUND: 'ConditionalPoliciesFileNotFound',
 };
 
 export type ConditionAuditInfo = {

@@ -1,13 +1,10 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
-import chokidar from 'chokidar';
 import { parse } from 'csv-parse/sync';
 import { difference } from 'lodash';
 
 import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
-
-import fs from 'fs';
 
 import {
   HANDLE_RBAC_DATA_STAGE,
@@ -36,6 +33,7 @@ import {
   validatePolicy,
   validateSource,
 } from '../validation/policies-validation';
+import { AbstractFileWatcher } from './file-watcher';
 
 export const CSV_PERMISSION_POLICY_FILE_AUTHOR = 'csv permission policy file';
 
@@ -46,17 +44,19 @@ type CSVFilePolicies = {
   removedGroupPolicies: string[][];
 };
 
-export class CSVFileWatcher {
+export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
   private currentContent: string[][];
   private csvFilePolicies: CSVFilePolicies;
-  private csvFileName: string;
+
   constructor(
+    filePath: string,
+    allowReload: boolean,
+    logger: LoggerService,
     private readonly enforcer: EnforcerDelegate,
-    private readonly logger: LoggerService,
     private readonly roleMetadataStorage: RoleMetadataStorage,
     private readonly auditLogger: AuditLogger,
   ) {
-    this.csvFileName = '';
+    super(filePath, allowReload, logger);
     this.currentContent = [];
     this.csvFilePolicies = {
       addedPolicies: [],
@@ -64,14 +64,6 @@ export class CSVFileWatcher {
       removedPolicies: [],
       removedGroupPolicies: [],
     };
-  }
-
-  /**
-   * getCurrentContents reads the current contents of the CSV file.
-   * @returns The current contents of the CSV file.
-   */
-  getCurrentContents(): string {
-    return fs.readFileSync(this.csvFileName, 'utf-8');
   }
 
   /**
@@ -90,17 +82,6 @@ export class CSVFileWatcher {
   }
 
   /**
-   * watchFile initializes the file watcher and sets it to begin watching for changes.
-   */
-  watchFile(): void {
-    const watcher = chokidar.watch(this.csvFileName);
-    watcher.on('change', async path => {
-      this.logger.info(`file ${path} has changed`);
-      await this.onChange();
-    });
-  }
-
-  /**
    * initialize will initialize the CSV file by loading all of the permission policies and roles into
    * the enforcer.
    * First, we will remove all roles and permission policies if they do not exist in the temporary file enforcer.
@@ -109,20 +90,14 @@ export class CSVFileWatcher {
    * @param csvFileName The name of the csvFile
    * @param allowReload Whether or not we will allow reloads of the CSV file
    */
-  async initialize(
-    csvFileName: string | undefined,
-    allowReload: boolean,
-  ): Promise<void> {
+  async initialize(): Promise<void> {
     let content: string[][] = [];
     // If the file is set load the file contents
-    if (csvFileName) {
-      this.csvFileName = csvFileName;
-      content = this.parse();
-    }
+    content = this.parse();
 
     const tempEnforcer = await newEnforcer(
       newModelFromString(MODEL),
-      new FileAdapter(this.csvFileName),
+      new FileAdapter(this.filePath),
     );
 
     // Check for any old policies that will need to be removed by checking if
@@ -172,7 +147,7 @@ export class CSVFileWatcher {
     // We pass current here because this is during initialization and it has not changed yet
     await this.updatePolicies(content, tempEnforcer);
 
-    if (allowReload && csvFileName) {
+    if (this.allowReload) {
       this.watchFile();
     }
   }
@@ -225,7 +200,7 @@ export class CSVFileWatcher {
   async onChange(): Promise<void> {
     const tempEnforcer = await newEnforcer(
       newModelFromString(MODEL),
-      new FileAdapter(this.csvFileName),
+      new FileAdapter(this.filePath),
     );
 
     const newContent = this.parse();
@@ -310,7 +285,7 @@ export class CSVFileWatcher {
       let err = validatePolicy(transformedPolicy);
       if (err) {
         this.logger.warn(
-          `Failed to validate policy from file ${this.csvFileName}. Cause: ${err.message}`,
+          `Failed to validate policy from file ${this.filePath}. Cause: ${err.message}`,
         );
         continue;
       }
@@ -318,7 +293,7 @@ export class CSVFileWatcher {
       err = await validateSource('csv-file', metadata);
       if (err) {
         this.logger.warn(
-          `Unable to add policy ${policy} from file ${this.csvFileName}. Cause: ${err.message}`,
+          `Unable to add policy ${policy} from file ${this.filePath}. Cause: ${err.message}`,
         );
         continue;
       }
@@ -326,7 +301,7 @@ export class CSVFileWatcher {
       err = await checkForDuplicatePolicies(
         tempEnforcer,
         policy,
-        this.csvFileName,
+        this.filePath,
       );
       if (err) {
         this.logger.warn(err.message);
@@ -345,7 +320,7 @@ export class CSVFileWatcher {
         });
       } catch (e) {
         this.logger.warn(
-          `Failed to add or update policy ${policy} after modification ${this.csvFileName}. Cause: ${e}`,
+          `Failed to add or update policy ${policy} after modification ${this.filePath}. Cause: ${e}`,
         );
       }
     }
@@ -375,7 +350,7 @@ export class CSVFileWatcher {
       this.logger.warn(
         `Failed to remove policies ${JSON.stringify(
           this.csvFilePolicies.removedPolicies,
-        )} after modification ${this.csvFileName}. Cause: ${e}`,
+        )} after modification ${this.filePath}. Cause: ${e}`,
       );
     }
     this.csvFilePolicies.removedPolicies = [];
@@ -396,7 +371,7 @@ export class CSVFileWatcher {
       );
       if (err) {
         this.logger.warn(
-          `${err.message}, error originates from file ${this.csvFileName}`,
+          `${err.message}, error originates from file ${this.filePath}`,
         );
         continue;
       }
@@ -404,7 +379,7 @@ export class CSVFileWatcher {
       err = await checkForDuplicateGroupPolicies(
         tempEnforcer,
         groupPolicy,
-        this.csvFileName,
+        this.filePath,
       );
       if (err) {
         this.logger.warn(err.message);
@@ -439,7 +414,7 @@ export class CSVFileWatcher {
         });
       } catch (e) {
         this.logger.warn(
-          `Failed to add or update group policy ${groupPolicy} after modification ${this.csvFileName}. Cause: ${e}`,
+          `Failed to add or update group policy ${groupPolicy} after modification ${this.filePath}. Cause: ${e}`,
         );
       }
     }
@@ -493,7 +468,7 @@ export class CSVFileWatcher {
         });
       } catch (e) {
         this.logger.warn(
-          `Failed to remove group policy ${groupPolicy} after modification ${this.csvFileName}. Cause: ${e}`,
+          `Failed to remove group policy ${groupPolicy} after modification ${this.filePath}. Cause: ${e}`,
         );
       }
     }

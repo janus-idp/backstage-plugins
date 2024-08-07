@@ -146,7 +146,6 @@ const currentRoles = [
 ];
 
 describe('CSVFileWatcher', () => {
-  let csvFileWatcher: CSVFileWatcher;
   let enforcerDelegate: EnforcerDelegate;
   let csvFileName: string;
 
@@ -170,12 +169,6 @@ describe('CSVFileWatcher', () => {
 
     enforcerDelegate = new EnforcerDelegate(enf, roleMetadataStorageMock, knex);
 
-    csvFileWatcher = new CSVFileWatcher(
-      enforcerDelegate,
-      loggerMock,
-      roleMetadataStorageMock,
-      auditLoggerMock,
-    );
     auditLoggerMock.auditLog.mockReset();
     (roleMetadataStorageMock.updateRoleMetadata as jest.Mock).mockClear();
   });
@@ -184,9 +177,21 @@ describe('CSVFileWatcher', () => {
     (loggerMock.warn as jest.Mock).mockReset();
   });
 
+  function createCSVFileWatcher(fileName?: string): CSVFileWatcher {
+    return new CSVFileWatcher(
+      fileName ?? csvFileName,
+      false,
+      loggerMock,
+      enforcerDelegate,
+      roleMetadataStorageMock,
+      auditLoggerMock,
+    );
+  }
+
   describe('initialize', () => {
     it('should be able to add permission policies during initialization', async () => {
-      await csvFileWatcher.initialize(csvFileName, false);
+      const csvFileWatcher = createCSVFileWatcher();
+      await csvFileWatcher.initialize();
 
       const enfPolicies = await enforcerDelegate.getPolicy();
 
@@ -194,7 +199,8 @@ describe('CSVFileWatcher', () => {
     });
 
     it('should be able to add roles during initialization', async () => {
-      await csvFileWatcher.initialize(csvFileName, false);
+      const csvFileWatcher = createCSVFileWatcher();
+      await csvFileWatcher.initialize();
 
       const enfRoles = await enforcerDelegate.getGroupingPolicy();
 
@@ -231,7 +237,8 @@ describe('CSVFileWatcher', () => {
         });
       (roleMetadataStorageMock.updateRoleMetadata as jest.Mock).mockReset();
 
-      await csvFileWatcher.initialize(csvFileName, false);
+      const csvFileWatcher = createCSVFileWatcher();
+      await csvFileWatcher.initialize();
 
       const enfPolicies = await enforcerDelegate.getPolicy();
 
@@ -266,7 +273,8 @@ describe('CSVFileWatcher', () => {
         });
       (roleMetadataStorageMock.updateRoleMetadata as jest.Mock).mockReset();
 
-      await csvFileWatcher.initialize(csvFileName, false);
+      const csvFileWatcher = createCSVFileWatcher();
+      await csvFileWatcher.initialize();
 
       const enfPolicies = await enforcerDelegate.getGroupingPolicy();
 
@@ -288,6 +296,7 @@ describe('CSVFileWatcher', () => {
         __dirname,
         './../__fixtures__/data/invalid-csv/duplicate-policy.csv',
       );
+      const csvFileWatcher = createCSVFileWatcher(csvFileName);
 
       const duplicatePolicy = [
         'role:default/catalog-writer',
@@ -306,7 +315,7 @@ describe('CSVFileWatcher', () => {
         'update',
       ];
 
-      await csvFileWatcher.initialize(csvFileName, false);
+      await csvFileWatcher.initialize();
 
       expect(loggerMock.warn).toHaveBeenNthCalledWith(
         1,
@@ -339,6 +348,7 @@ describe('CSVFileWatcher', () => {
         __dirname,
         './../__fixtures__/data/invalid-csv/error-policy.csv',
       );
+      const csvFileWatcher = createCSVFileWatcher(csvFileName);
 
       const entityRoleError = ['user:default/', 'role:default/catalog-deleter'];
       const roleError = ['user:default/test', 'role:default/'];
@@ -356,7 +366,7 @@ describe('CSVFileWatcher', () => {
         'temp',
       ];
 
-      await csvFileWatcher.initialize(csvFileName, false);
+      await csvFileWatcher.initialize();
 
       expect(loggerMock.warn).toHaveBeenNthCalledWith(
         1,
@@ -394,12 +404,15 @@ describe('CSVFileWatcher', () => {
   });
 
   describe('onChange', () => {
+    let csvFileWatcher: CSVFileWatcher;
+
     beforeEach(async () => {
       csvFileName = resolve(
         __dirname,
         './../__fixtures__/data/valid-csv/simple-policy.csv',
       );
-      await csvFileWatcher.initialize(csvFileName, false);
+      csvFileWatcher = createCSVFileWatcher();
+      await csvFileWatcher.initialize();
     });
 
     it('should add new permission policies on change', async () => {
