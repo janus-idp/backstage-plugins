@@ -107,6 +107,16 @@ export const getYamlKeyValuePairs = (
   return keyValuePairs;
 };
 
+export const convertKeyValuePairsToString = (
+  keyValuePairs?: Record<string, string>,
+): string => {
+  return keyValuePairs
+    ? Object.entries(keyValuePairs)
+        .map(([key, value]) => `${key.trim()}: ${value.trim()}`)
+        .join('; ')
+    : '';
+};
+
 export const createData = (
   id: number,
   name: string,
