@@ -182,7 +182,7 @@ We also have a fairly strict validation for permission policies and roles based 
 
 ### Configuring conditional policies via file
 
-The RBAC plugin allows you to import conditional policies from an external file. User can defined conditional policies for roles created with help of policies-csv-file. Conditional policies should be defined as object sequences in the YAML format.
+The RBAC plugin allows you to import conditional policies from an external file. User can defined conditional policies for roles created with the help of the policies-csv-file. Conditional policies should be defined as object sequences in the YAML format.
 
 You can specify the path to this configuration file in your application configuration:
 
