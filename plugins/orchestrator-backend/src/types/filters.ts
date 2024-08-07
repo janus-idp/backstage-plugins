@@ -33,8 +33,8 @@ export function buildFilter(req: Request): FilterInfo | undefined {
 }
 
 function parseFilterValue(value: FilterValue): string | number | boolean {
-  if (typeof value === 'boolean') return Boolean(value);
+  if (typeof value === 'boolean') return value;
   if (typeof value === 'string') return `"${value}"`;
-  if (typeof value === 'boolean' && !isNaN(Number(value))) return Number(value);
+  if (typeof value === 'number' && !isNaN(Number(value))) return Number(value);
   return value;
 }
