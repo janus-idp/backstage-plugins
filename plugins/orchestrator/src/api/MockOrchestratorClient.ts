@@ -4,9 +4,9 @@ import { AxiosResponse } from 'axios';
 
 import {
   AssessedProcessInstanceDTO,
+  ExecuteWorkflowResponseDTO,
   ProcessInstanceListResultDTO,
   WorkflowDefinition,
-  WorkflowExecutionResponse,
   WorkflowInputSchemaResponse,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
@@ -50,7 +50,7 @@ export class MockOrchestratorClient implements OrchestratorApi {
   executeWorkflow(_args: {
     workflowId: string;
     parameters: JsonObject;
-  }): Promise<WorkflowExecutionResponse> {
+  }): Promise<AxiosResponse<ExecuteWorkflowResponseDTO>> {
     if (
       !hasOwnProp(this._mockData, 'executeWorkflowResponse') ||
       !isNonNullable(this._mockData.executeWorkflowResponse)
@@ -161,7 +161,7 @@ export class MockOrchestratorClient implements OrchestratorApi {
   retriggerInstanceInError(_args: {
     instanceId: string;
     inputData: JsonObject;
-  }): Promise<WorkflowExecutionResponse> {
+  }): Promise<AxiosResponse<ExecuteWorkflowResponseDTO>> {
     if (
       !hasOwnProp(this._mockData, 'retriggerInstanceInErrorResponse') ||
       !isNonNullable(this._mockData.retriggerInstanceInErrorResponse)
