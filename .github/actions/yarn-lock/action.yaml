@@ -17,6 +17,8 @@ runs:
           git config --global user.email rhdh-bot@redhat.com
           git config --global pull.rebase true 
           git config --global push.default matching
+          # workaround for "fatal: could not read Username for 'https://github.com'"
+          git config remote.origin.url "https://${GITHUB_TOKEN}:x-oauth-basic@github.com/janus-idp/backstage-plugins.git"
 
           git stash || true
           CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
