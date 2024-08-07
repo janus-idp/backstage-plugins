@@ -16,10 +16,13 @@
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 
-import GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
-import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
+import {
+  GroupRepresentation,
+  UserRepresentation,
+} from '@s3pweb/keycloak-admin-client-cjs';
 
 export interface GroupRepresentationWithParent extends GroupRepresentation {
+  parentId?: string; // Why not already there in GroupRepresentation?
   parent?: string;
   members?: string[];
 }

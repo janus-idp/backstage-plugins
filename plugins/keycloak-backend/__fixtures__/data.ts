@@ -3,26 +3,75 @@ export const groups = [
     id: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
     name: 'biggroup',
     path: '/biggroup',
-    subGroups: [
-      {
-        id: 'eefa5b46-0509-41d8-b8b3-7ddae9c83632',
-        name: 'subgroup',
-        path: '/biggroup/subgroup',
-        subGroups: [],
-      },
-    ],
+    subGroupCount: 1,
+    subGroups: [],
+    access: {
+      view: true,
+      viewMembers: true,
+      manageMembers: false,
+      manage: false,
+      manageMembership: false,
+    },
+  },
+  {
+    id: 'eefa5b46-0509-41d8-b8b3-7ddae9c83632',
+    name: 'subgroup',
+    path: '/biggroup/subgroup',
+    parentId: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
+    subGroupCount: 0,
+    subGroups: [],
+    access: {
+      view: true,
+      viewMembers: true,
+      manageMembers: false,
+      manage: false,
+      manageMembership: false,
+    },
   },
   {
     id: '557501bd-8188-41c0-a2d5-43ff3d5b0258',
     name: 'emptygroup',
     path: '/emptygroup',
+    subGroupCount: 0,
     subGroups: [],
+    access: {
+      view: true,
+      viewMembers: true,
+      manageMembers: false,
+      manage: false,
+      manageMembership: false,
+    },
+  },
+];
+
+export const topLevelGroups = [
+  {
+    id: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
+    name: 'biggroup',
+    path: '/biggroup',
+    subGroupCount: 1,
+    subGroups: [],
+    access: {
+      view: true,
+      viewMembers: true,
+      manageMembers: false,
+      manage: false,
+      manageMembership: false,
+    },
   },
   {
-    id: 'bb10231b-2939-4b1a-b8bb-9249ed7b76f7',
-    name: 'testgroup',
-    path: '/testgroup',
+    id: '557501bd-8188-41c0-a2d5-43ff3d5b0258',
+    name: 'emptygroup',
+    path: '/emptygroup',
+    subGroupCount: 0,
     subGroups: [],
+    access: {
+      view: true,
+      viewMembers: true,
+      manageMembers: false,
+      manage: false,
+      manageMembership: false,
+    },
   },
 ];
 
@@ -95,4 +144,94 @@ export const groupMembers = [
   [],
   [],
   ['jamesdoe', 'joedoe', 'johndoe'],
+];
+
+export const subgroups = [
+  [
+    {
+      id: 'd6eea811-2324-44b4-a272-c7a080e6f26c',
+      name: 'test-nested-gp-1',
+      path: '/test-group-1/test-nested-gp-1',
+      parentId: 'fa8eef02-0cea-42a8-937f-e1046e05c241',
+      subGroupCount: 0,
+      subGroups: [],
+      access: {
+        view: true,
+        viewMembers: true,
+        manageMembers: false,
+        manage: false,
+        manageMembership: false,
+      },
+    },
+  ],
+  [],
+  [],
+];
+
+export const kGroups = [
+  {
+    id: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
+    name: 'biggroup',
+    path: '/biggroup',
+    subGroupCount: 1,
+    subGroups: [
+      {
+        id: 'eefa5b46-0509-41d8-b8b3-7ddae9c83632',
+        name: 'subgroup',
+        path: '/biggroup/subgroup',
+        parentId: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
+        subGroupCount: 0,
+        subGroups: [],
+        access: {
+          view: true,
+          viewMembers: true,
+          manageMembers: false,
+          manage: false,
+          manageMembership: false,
+        },
+        members: [],
+        parent: 'biggroup',
+      },
+    ],
+    access: {
+      view: true,
+      viewMembers: true,
+      manageMembers: false,
+      manage: false,
+      manageMembership: false,
+    },
+    members: ['jamesdoe'],
+  },
+  {
+    id: 'eefa5b46-0509-41d8-b8b3-7ddae9c83632',
+    name: 'subgroup',
+    path: '/biggroup/subgroup',
+    parentId: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
+    subGroupCount: 0,
+    subGroups: [],
+    access: {
+      view: true,
+      viewMembers: true,
+      manageMembers: false,
+      manage: false,
+      manageMembership: false,
+    },
+    members: [],
+    parent: 'biggroup',
+  },
+  {
+    id: '557501bd-8188-41c0-a2d5-43ff3d5b0258',
+    name: 'emptygroup',
+    path: '/emptygroup',
+    subGroupCount: 0,
+    subGroups: [],
+    access: {
+      view: true,
+      viewMembers: true,
+      manageMembers: false,
+      manage: false,
+      manageMembership: false,
+    },
+    members: [],
+  },
 ];

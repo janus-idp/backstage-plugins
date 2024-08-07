@@ -27,8 +27,8 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 
-import KcAdminClient from '@keycloak/keycloak-admin-client';
-import type { Credentials } from '@keycloak/keycloak-admin-client/lib/utils/auth';
+import { KeycloakAdminClient } from '@s3pweb/keycloak-admin-client-cjs';
+import type { Credentials } from '@s3pweb/keycloak-admin-client-cjs';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
 
@@ -189,7 +189,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
     const provider = this.options.provider;
 
     const { markReadComplete } = trackProgress(logger);
-    const kcAdminClient = new KcAdminClient({
+    const kcAdminClient = new KeycloakAdminClient({
       baseUrl: provider.baseUrl,
       realmName: provider.loginRealm,
     });
