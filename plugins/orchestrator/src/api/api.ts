@@ -5,6 +5,7 @@ import { AxiosResponse } from 'axios';
 
 import {
   AssessedProcessInstanceDTO,
+  ExecuteWorkflowResponseDTO,
   FilterInfo,
   PaginationInfoDTO,
   ProcessInstanceListResultDTO,
@@ -22,7 +23,7 @@ export interface OrchestratorApi {
     workflowId: string;
     parameters: JsonObject;
     businessKey?: string;
-  }): Promise<WorkflowExecutionResponse>;
+  }): Promise<AxiosResponse<ExecuteWorkflowResponseDTO>>;
 
   retriggerInstanceInError(args: {
     instanceId: string;
