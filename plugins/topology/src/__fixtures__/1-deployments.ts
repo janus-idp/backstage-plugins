@@ -54,6 +54,718 @@ export const customResourceRoute = {
   },
 };
 export const mockKubernetesResponse = {
+  virtualMachine: [
+    {
+      apiVersion: 'kubevirt.io/v1',
+      kind: 'VirtualMachine',
+      metadata: {
+        annotations: {
+          'kubemacpool.io/transaction-timestamp':
+            '2024-08-07T10:46:35.842565627Z',
+          'kubevirt.io/latest-observed-api-version': 'v1',
+          'kubevirt.io/storage-observed-api-version': 'v1',
+          'vm.kubevirt.io/validations':
+            '[\n  {\n    "name": "minimal-required-memory",\n    "path": "jsonpath::.spec.domain.memory.guest",\n    "rule": "integer",\n    "message": "This VM requires more memory.",\n    "min": 2147483648\n  }\n]\n',
+        },
+        creationTimestamp: '2024-08-07T10:46:02Z',
+        finalizers: ['kubevirt.io/virtualMachineControllerFinalize'],
+        generation: 1,
+        labels: {
+          app: 'fedora-turquoise-rooster-85',
+          'backstage.io/kubernetes-id': 'nationalparks-py',
+          'kubevirt.io/dynamic-credentials-support': 'true',
+          'vm.kubevirt.io/template': 'fedora-server-small',
+          'vm.kubevirt.io/template.namespace': 'openshift',
+          'vm.kubevirt.io/template.revision': '1',
+          'vm.kubevirt.io/template.version': 'v0.29.1',
+        },
+        managedFields: [
+          {
+            apiVersion: 'kubevirt.io/v1',
+            fieldsType: 'FieldsV1',
+            fieldsV1: {
+              'f:metadata': {
+                'f:annotations': {
+                  'f:kubevirt.io/latest-observed-api-version': {},
+                  'f:kubevirt.io/storage-observed-api-version': {},
+                },
+                'f:finalizers': {
+                  '.': {},
+                  'v:"kubevirt.io/virtualMachineControllerFinalize"': {},
+                },
+              },
+            },
+            manager: 'virt-controller',
+            operation: 'Update',
+            time: '2024-08-07T10:46:02Z',
+          },
+          {
+            apiVersion: 'kubevirt.io/v1',
+            fieldsType: 'FieldsV1',
+            fieldsV1: {
+              'f:status': {
+                '.': {},
+                'f:conditions': {},
+                'f:created': {},
+                'f:desiredGeneration': {},
+                'f:observedGeneration': {},
+                'f:printableStatus': {},
+                'f:runStrategy': {},
+                'f:volumeSnapshotStatuses': {},
+              },
+            },
+            manager: 'virt-controller',
+            operation: 'Update',
+            subresource: 'status',
+            time: '2024-08-07T10:46:03Z',
+          },
+          {
+            apiVersion: 'kubevirt.io/v1',
+            fieldsType: 'FieldsV1',
+            fieldsV1: {
+              'f:metadata': {
+                'f:annotations': {
+                  '.': {},
+                  'f:vm.kubevirt.io/validations': {},
+                },
+                'f:labels': {
+                  '.': {},
+                  'f:app': {},
+                  'f:backstage.io/kubernetes-id': {},
+                  'f:kubevirt.io/dynamic-credentials-support': {},
+                  'f:vm.kubevirt.io/template': {},
+                  'f:vm.kubevirt.io/template.namespace': {},
+                  'f:vm.kubevirt.io/template.revision': {},
+                  'f:vm.kubevirt.io/template.version': {},
+                },
+              },
+              'f:spec': {
+                '.': {},
+                'f:dataVolumeTemplates': {},
+                'f:running': {},
+                'f:template': {
+                  '.': {},
+                  'f:metadata': {
+                    '.': {},
+                    'f:annotations': {
+                      '.': {},
+                      'f:vm.kubevirt.io/flavor': {},
+                      'f:vm.kubevirt.io/os': {},
+                      'f:vm.kubevirt.io/workload': {},
+                    },
+                    'f:labels': {
+                      '.': {},
+                      'f:kubevirt.io/domain': {},
+                      'f:kubevirt.io/size': {},
+                      'f:network.kubevirt.io/headlessService': {},
+                    },
+                  },
+                  'f:spec': {
+                    '.': {},
+                    'f:architecture': {},
+                    'f:domain': {
+                      '.': {},
+                      'f:cpu': {
+                        '.': {},
+                        'f:cores': {},
+                        'f:sockets': {},
+                        'f:threads': {},
+                      },
+                      'f:devices': {
+                        '.': {},
+                        'f:disks': {},
+                        'f:interfaces': {},
+                        'f:rng': {},
+                      },
+                      'f:features': {
+                        '.': {},
+                        'f:smm': {
+                          '.': {},
+                          'f:enabled': {},
+                        },
+                      },
+                      'f:firmware': {
+                        '.': {},
+                        'f:bootloader': {
+                          '.': {},
+                          'f:efi': {},
+                        },
+                      },
+                      'f:memory': {
+                        '.': {},
+                        'f:guest': {},
+                      },
+                    },
+                    'f:networks': {},
+                    'f:terminationGracePeriodSeconds': {},
+                    'f:volumes': {},
+                  },
+                },
+              },
+            },
+            manager: 'Mozilla',
+            operation: 'Update',
+            time: '2024-08-07T10:46:35Z',
+          },
+        ],
+        name: 'fedora-turquoise-rooster-85',
+        namespace: 'mitesh',
+        resourceVersion: '307175',
+        uid: 'd6a524d8-a41e-42b3-8c61-3e99c7e76234',
+      },
+      spec: {
+        dataVolumeTemplates: [
+          {
+            apiVersion: 'cdi.kubevirt.io/v1beta1',
+            kind: 'DataVolume',
+            metadata: {
+              creationTimestamp: null,
+              name: 'fedora-turquoise-rooster-85',
+            },
+            spec: {
+              sourceRef: {
+                kind: 'DataSource',
+                name: 'fedora',
+                namespace: 'openshift-virtualization-os-images',
+              },
+              storage: {
+                resources: {
+                  requests: {
+                    storage: '30Gi',
+                  },
+                },
+              },
+            },
+          },
+        ],
+        running: true,
+        template: {
+          metadata: {
+            annotations: {
+              'vm.kubevirt.io/flavor': 'small',
+              'vm.kubevirt.io/os': 'fedora',
+              'vm.kubevirt.io/workload': 'server',
+            },
+            creationTimestamp: null,
+            labels: {
+              'kubevirt.io/domain': 'fedora-turquoise-rooster-85',
+              'kubevirt.io/size': 'small',
+              'network.kubevirt.io/headlessService': 'headless',
+            },
+          },
+          spec: {
+            architecture: 'amd64',
+            domain: {
+              cpu: {
+                cores: 1,
+                sockets: 1,
+                threads: 1,
+              },
+              devices: {
+                disks: [
+                  {
+                    disk: {
+                      bus: 'virtio',
+                    },
+                    name: 'rootdisk',
+                  },
+                  {
+                    disk: {
+                      bus: 'virtio',
+                    },
+                    name: 'cloudinitdisk',
+                  },
+                ],
+                interfaces: [
+                  {
+                    macAddress: '02:05:b4:00:00:01',
+                    masquerade: {},
+                    model: 'virtio',
+                    name: 'default',
+                  },
+                ],
+                rng: {},
+              },
+              features: {
+                acpi: {},
+                smm: {
+                  enabled: true,
+                },
+              },
+              firmware: {
+                bootloader: {
+                  efi: {},
+                },
+              },
+              machine: {
+                type: 'pc-q35-rhel9.4.0',
+              },
+              memory: {
+                guest: '2Gi',
+              },
+              resources: {},
+            },
+            networks: [
+              {
+                name: 'default',
+                pod: {},
+              },
+            ],
+            terminationGracePeriodSeconds: 180,
+            volumes: [
+              {
+                dataVolume: {
+                  name: 'fedora-turquoise-rooster-85',
+                },
+                name: 'rootdisk',
+              },
+              {
+                cloudInitNoCloud: {
+                  userData:
+                    '#cloud-config\nuser: fedora\npassword: kfi7-yxx7-ub8h\nchpasswd: { expire: False }',
+                },
+                name: 'cloudinitdisk',
+              },
+            ],
+          },
+        },
+      },
+      status: {
+        conditions: [
+          {
+            lastProbeTime: '2024-08-07T10:46:03Z',
+            lastTransitionTime: '2024-08-07T10:46:03Z',
+            message: 'Guest VM is not reported as running',
+            reason: 'GuestNotRunning',
+            status: 'False',
+            type: 'Ready',
+          },
+          {
+            lastProbeTime: null,
+            lastTransitionTime: null,
+            message: "Not all of the VMI's DVs are ready",
+            reason: 'NotAllDVsReady',
+            status: 'False',
+            type: 'DataVolumesReady',
+          },
+          {
+            lastProbeTime: null,
+            lastTransitionTime: '2024-08-07T10:46:03Z',
+            message:
+              '0/6 nodes are available: 3 Insufficient devices.kubevirt.io/kvm, 3 node(s) had untolerated taint {node-role.kubernetes.io/master: }. preemption: 0/6 nodes are available: 3 No preemption victims found for incoming pod, 3 Preemption is not helpful for scheduling.',
+            reason: 'Unschedulable',
+            status: 'False',
+            type: 'PodScheduled',
+          },
+        ],
+        created: true,
+        desiredGeneration: 1,
+        observedGeneration: 1,
+        printableStatus: 'ErrorUnschedulable',
+        runStrategy: 'Always',
+        volumeSnapshotStatuses: [
+          {
+            enabled: true,
+            name: 'rootdisk',
+          },
+          {
+            enabled: false,
+            name: 'cloudinitdisk',
+            reason:
+              'Snapshot is not supported for this volumeSource type [cloudinitdisk]',
+          },
+        ],
+      },
+    },
+    {
+      apiVersion: 'kubevirt.io/v1',
+      kind: 'VirtualMachine',
+      metadata: {
+        annotations: {
+          'kubemacpool.io/transaction-timestamp':
+            '2024-08-07T10:47:43.467479762Z',
+          'kubevirt.io/latest-observed-api-version': 'v1',
+          'kubevirt.io/storage-observed-api-version': 'v1',
+          'vm.kubevirt.io/validations':
+            '[\n  {\n    "name": "minimal-required-memory",\n    "path": "jsonpath::.spec.domain.memory.guest",\n    "rule": "integer",\n    "message": "This VM requires more memory.",\n    "min": 536870912\n  }, {\n    "name": "windows-virtio-bus",\n    "path": "jsonpath::.spec.domain.devices.disks[*].disk.bus",\n    "valid": "jsonpath::.spec.domain.devices.disks[*].disk.bus",\n    "rule": "enum",\n    "message": "virtio disk bus type has better performance, install virtio drivers in VM and change bus type",\n    "values": ["virtio"],\n    "justWarning": true\n  }, {\n    "name": "windows-disk-bus",\n    "path": "jsonpath::.spec.domain.devices.disks[*].disk.bus",\n    "valid": "jsonpath::.spec.domain.devices.disks[*].disk.bus",\n    "rule": "enum",\n    "message": "disk bus has to be either virtio or sata or scsi",\n    "values": ["virtio", "sata", "scsi"]\n  }, {\n    "name": "windows-cd-bus",\n    "path": "jsonpath::.spec.domain.devices.disks[*].cdrom.bus",\n    "valid": "jsonpath::.spec.domain.devices.disks[*].cdrom.bus",\n    "rule": "enum",\n    "message": "cd bus has to be sata",\n    "values": ["sata"]\n  }\n]\n',
+        },
+        creationTimestamp: '2024-08-07T10:47:23Z',
+        finalizers: ['kubevirt.io/virtualMachineControllerFinalize'],
+        generation: 1,
+        labels: {
+          app: 'win2k22-purple-aphid-31',
+          'backstage.io/kubernetes-id': 'nationalparks-py',
+          'vm.kubevirt.io/template': 'windows2k22-server-medium',
+          'vm.kubevirt.io/template.namespace': 'openshift',
+          'vm.kubevirt.io/template.revision': '1',
+          'vm.kubevirt.io/template.version': 'v0.29.1',
+        },
+        managedFields: [
+          {
+            apiVersion: 'kubevirt.io/v1',
+            fieldsType: 'FieldsV1',
+            fieldsV1: {
+              'f:metadata': {
+                'f:annotations': {
+                  'f:kubevirt.io/latest-observed-api-version': {},
+                  'f:kubevirt.io/storage-observed-api-version': {},
+                },
+                'f:finalizers': {
+                  '.': {},
+                  'v:"kubevirt.io/virtualMachineControllerFinalize"': {},
+                },
+              },
+            },
+            manager: 'virt-controller',
+            operation: 'Update',
+            time: '2024-08-07T10:47:24Z',
+          },
+          {
+            apiVersion: 'kubevirt.io/v1',
+            fieldsType: 'FieldsV1',
+            fieldsV1: {
+              'f:status': {
+                '.': {},
+                'f:conditions': {},
+                'f:printableStatus': {},
+                'f:volumeSnapshotStatuses': {},
+              },
+            },
+            manager: 'virt-controller',
+            operation: 'Update',
+            subresource: 'status',
+            time: '2024-08-07T10:47:24Z',
+          },
+          {
+            apiVersion: 'kubevirt.io/v1',
+            fieldsType: 'FieldsV1',
+            fieldsV1: {
+              'f:metadata': {
+                'f:annotations': {
+                  '.': {},
+                  'f:kubemacpool.io/transaction-timestamp': {},
+                  'f:vm.kubevirt.io/validations': {},
+                },
+                'f:labels': {
+                  '.': {},
+                  'f:app': {},
+                  'f:backstage.io/kubernetes-id': {},
+                  'f:vm.kubevirt.io/template': {},
+                  'f:vm.kubevirt.io/template.namespace': {},
+                  'f:vm.kubevirt.io/template.revision': {},
+                  'f:vm.kubevirt.io/template.version': {},
+                },
+              },
+              'f:spec': {
+                '.': {},
+                'f:dataVolumeTemplates': {},
+                'f:running': {},
+                'f:template': {
+                  '.': {},
+                  'f:metadata': {
+                    '.': {},
+                    'f:annotations': {
+                      '.': {},
+                      'f:vm.kubevirt.io/flavor': {},
+                      'f:vm.kubevirt.io/os': {},
+                      'f:vm.kubevirt.io/workload': {},
+                    },
+                    'f:creationTimestamp': {},
+                    'f:labels': {
+                      '.': {},
+                      'f:kubevirt.io/domain': {},
+                      'f:kubevirt.io/size': {},
+                      'f:network.kubevirt.io/headlessService': {},
+                    },
+                  },
+                  'f:spec': {
+                    '.': {},
+                    'f:architecture': {},
+                    'f:domain': {
+                      '.': {},
+                      'f:clock': {
+                        '.': {},
+                        'f:timer': {
+                          '.': {},
+                          'f:hpet': {
+                            '.': {},
+                            'f:present': {},
+                          },
+                          'f:hyperv': {},
+                          'f:pit': {
+                            '.': {},
+                            'f:tickPolicy': {},
+                          },
+                          'f:rtc': {
+                            '.': {},
+                            'f:tickPolicy': {},
+                          },
+                        },
+                        'f:utc': {},
+                      },
+                      'f:cpu': {
+                        '.': {},
+                        'f:cores': {},
+                        'f:sockets': {},
+                        'f:threads': {},
+                      },
+                      'f:devices': {
+                        '.': {},
+                        'f:disks': {},
+                        'f:inputs': {},
+                        'f:interfaces': {},
+                        'f:tpm': {},
+                      },
+                      'f:features': {
+                        '.': {},
+                        'f:acpi': {},
+                        'f:apic': {},
+                        'f:hyperv': {
+                          '.': {},
+                          'f:frequencies': {},
+                          'f:ipi': {},
+                          'f:reenlightenment': {},
+                          'f:relaxed': {},
+                          'f:reset': {},
+                          'f:runtime': {},
+                          'f:spinlocks': {
+                            '.': {},
+                            'f:spinlocks': {},
+                          },
+                          'f:synic': {},
+                          'f:synictimer': {
+                            '.': {},
+                            'f:direct': {},
+                          },
+                          'f:tlbflush': {},
+                          'f:vapic': {},
+                          'f:vpindex': {},
+                        },
+                        'f:smm': {},
+                      },
+                      'f:firmware': {
+                        '.': {},
+                        'f:bootloader': {
+                          '.': {},
+                          'f:efi': {
+                            '.': {},
+                            'f:secureBoot': {},
+                          },
+                        },
+                      },
+                      'f:machine': {
+                        '.': {},
+                        'f:type': {},
+                      },
+                      'f:memory': {
+                        '.': {},
+                        'f:guest': {},
+                      },
+                      'f:resources': {},
+                    },
+                    'f:networks': {},
+                    'f:terminationGracePeriodSeconds': {},
+                    'f:volumes': {},
+                  },
+                },
+              },
+            },
+            manager: 'Mozilla',
+            operation: 'Update',
+            time: '2024-08-07T10:47:43Z',
+          },
+        ],
+        name: 'win2k22-purple-aphid-31',
+        namespace: 'mitesh',
+        resourceVersion: '308786',
+        uid: '1957cf88-52c0-4e61-ad1d-211eaa72e56b',
+      },
+      spec: {
+        dataVolumeTemplates: [
+          {
+            apiVersion: 'cdi.kubevirt.io/v1beta1',
+            kind: 'DataVolume',
+            metadata: {
+              creationTimestamp: null,
+              name: 'win2k22-purple-aphid-31',
+            },
+            spec: {
+              sourceRef: {
+                kind: 'DataSource',
+                name: 'win2k22',
+                namespace: 'openshift-virtualization-os-images',
+              },
+              storage: {
+                resources: {
+                  requests: {
+                    storage: '60Gi',
+                  },
+                },
+              },
+            },
+          },
+        ],
+        running: true,
+        template: {
+          metadata: {
+            annotations: {
+              'vm.kubevirt.io/flavor': 'medium',
+              'vm.kubevirt.io/os': 'windows2k22',
+              'vm.kubevirt.io/workload': 'server',
+            },
+            creationTimestamp: null,
+            labels: {
+              'kubevirt.io/domain': 'win2k22-purple-aphid-31',
+              'kubevirt.io/size': 'medium',
+              'network.kubevirt.io/headlessService': 'headless',
+            },
+          },
+          spec: {
+            architecture: 'amd64',
+            domain: {
+              clock: {
+                timer: {
+                  hpet: {
+                    present: false,
+                  },
+                  hyperv: {},
+                  pit: {
+                    tickPolicy: 'delay',
+                  },
+                  rtc: {
+                    tickPolicy: 'catchup',
+                  },
+                },
+                utc: {},
+              },
+              cpu: {
+                cores: 1,
+                sockets: 1,
+                threads: 1,
+              },
+              devices: {
+                disks: [
+                  {
+                    disk: {
+                      bus: 'sata',
+                    },
+                    name: 'rootdisk',
+                  },
+                  {
+                    cdrom: {
+                      bus: 'sata',
+                    },
+                    name: 'windows-drivers-disk',
+                  },
+                ],
+                inputs: [
+                  {
+                    bus: 'usb',
+                    name: 'tablet',
+                    type: 'tablet',
+                  },
+                ],
+                interfaces: [
+                  {
+                    macAddress: '02:05:b4:00:00:02',
+                    masquerade: {},
+                    model: 'e1000e',
+                    name: 'default',
+                  },
+                ],
+                tpm: {},
+              },
+              features: {
+                acpi: {},
+                apic: {},
+                hyperv: {
+                  frequencies: {},
+                  ipi: {},
+                  reenlightenment: {},
+                  relaxed: {},
+                  reset: {},
+                  runtime: {},
+                  spinlocks: {
+                    spinlocks: 8191,
+                  },
+                  synic: {},
+                  synictimer: {
+                    direct: {},
+                  },
+                  tlbflush: {},
+                  vapic: {},
+                  vpindex: {},
+                },
+                smm: {},
+              },
+              firmware: {
+                bootloader: {
+                  efi: {
+                    secureBoot: true,
+                  },
+                },
+              },
+              machine: {
+                type: 'pc-q35-rhel9.4.0',
+              },
+              memory: {
+                guest: '4Gi',
+              },
+              resources: {},
+            },
+            networks: [
+              {
+                name: 'default',
+                pod: {},
+              },
+            ],
+            terminationGracePeriodSeconds: 3600,
+            volumes: [
+              {
+                dataVolume: {
+                  name: 'win2k22-purple-aphid-31',
+                },
+                name: 'rootdisk',
+              },
+              {
+                containerDisk: {
+                  image:
+                    'registry.redhat.io/container-native-virtualization/virtio-win-rhel9@sha256:584857c3d7cee20877a4ea135fb58fd7721dfc04a23a6c76580eba9facd6e6c0',
+                },
+                name: 'windows-drivers-disk',
+              },
+            ],
+          },
+        },
+      },
+      status: {
+        conditions: [
+          {
+            lastProbeTime: '2024-08-07T10:47:24Z',
+            lastTransitionTime: '2024-08-07T10:47:24Z',
+            message: 'VMI does not exist',
+            reason: 'VMINotExists',
+            status: 'False',
+            type: 'Ready',
+          },
+        ],
+        printableStatus: 'Provisioning',
+        volumeSnapshotStatuses: [
+          {
+            enabled: false,
+            name: 'rootdisk',
+            reason: 'PVC not found',
+          },
+          {
+            enabled: false,
+            name: 'windows-drivers-disk',
+            reason:
+              'Snapshot is not supported for this volumeSource type [windows-drivers-disk]',
+          },
+        ],
+      },
+    },
+  ],
   pods: [
     {
       kind: 'Pod',
@@ -2510,6 +3222,9 @@ export const mockK8sResourcesData = {
     },
     routes: {
       data: mockKubernetesResponse.routes,
+    },
+    virtualmachines: {
+      data: mockKubernetesResponse.virtualMachine,
     },
   },
 };
