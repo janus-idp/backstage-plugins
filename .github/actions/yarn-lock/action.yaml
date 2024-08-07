@@ -12,6 +12,7 @@ runs:
           echo
           echo "$changed_files"
           echo
+          set -x
           git config --global user.name "RHDH Bot"
           git config --global user.email rhdh-bot@redhat.com
           git config --global pull.rebase true 
