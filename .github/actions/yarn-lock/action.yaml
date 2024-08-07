@@ -12,13 +12,10 @@ runs:
           echo
           echo "$changed_files"
           echo
-          set -x
           git config --global user.name "RHDH Bot"
           git config --global user.email rhdh-bot@redhat.com
           git config --global pull.rebase true 
           git config --global push.default matching
-          # workaround for "fatal: could not read Username for 'https://github.com'"
-          git config remote.origin.url "https://${GITHUB_TOKEN}:x-oauth-basic@github.com/janus-idp/backstage-plugins.git"
 
           git stash || true
           CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -30,6 +27,9 @@ runs:
           git stash pop || true
           git add yarn.lock || true
           git commit -s -m "chore(deps): regen yarn.lock" yarn.lock || true
+          export GITHUB_TOKEN="${GITHUB_TOKEN}"
+          set -x
+          echo "$(git config user.name) <$(git config user.email)>"; echo; gh auth status
           git push origin "${PR_BRANCH}"
           gh pr create -B "${CURRENT_BRANCH}" -H "${PR_BRANCH}" --title "chore(deps): regen yarn.lock" --body "Created by Github action due to dirty workspace."
         fi

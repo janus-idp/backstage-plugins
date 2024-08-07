@@ -32,13 +32,6 @@ jobs:
           app-id: ${{ vars.JANUS_IDP_GITHUB_APP_ID }}
           private-key: ${{ secrets.JANUS_IDP_GITHUB_APP_PRIVATE_KEY }}
 
-      # - name: Setup git credentials
-      #   run: |
-      #     git config --global url.https://rhdh-bot:${{ steps.generate-token.outputs.token }}@github.com/.insteadOf https://github.com/
-      #     # Fix for Could not read Username / No such device or address :: https://github.com/github/hub/issues/1644
-      #     # git config --global hub.protocol https
-      #     # git remote set-url origin 'https://\$GITHUB_TOKEN:x-oauth-basic@'
-
       - name: Regen yarn.lock
         uses: ./.github/actions/yarn-lock
         env:
