@@ -12,6 +12,7 @@ import {
   AssessedProcessInstanceDTO,
   Configuration,
   DefaultApi,
+  FilterInfo,
   PaginationInfoDTO,
   ProcessInstanceListResultDTO,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
@@ -105,32 +106,25 @@ export class OrchestratorClient implements OrchestratorApi {
 
   async listWorkflowOverviews(
     paginationInfo?: PaginationInfoDTO,
+    filterInfo?: FilterInfo,
   ): Promise<AxiosResponse<WorkflowOverviewListResultDTO>> {
     const defaultApi = await this.getDefaultAPI();
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
     return await defaultApi.getWorkflowsOverview(
-      paginationInfo?.page,
-      paginationInfo?.pageSize,
-      paginationInfo?.orderBy,
-      paginationInfo?.orderDirection,
+      { paginationInfo, filterInfo },
       reqConfigOption,
     );
   }
 
-  async listInstances(
-    paginationInfo?: PaginationInfoDTO,
-  ): Promise<AxiosResponse<ProcessInstanceListResultDTO>> {
+  async listInstances(args: {
+    paginationInfo?: PaginationInfoDTO;
+    filterInfo?: FilterInfo;
+  }): Promise<AxiosResponse<ProcessInstanceListResultDTO>> {
     const defaultApi = await this.getDefaultAPI();
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
-    return await defaultApi.getInstances(
-      paginationInfo?.page,
-      paginationInfo?.pageSize,
-      paginationInfo?.orderBy,
-      paginationInfo?.orderDirection,
-      reqConfigOption,
-    );
+    return await defaultApi.getInstances(args, reqConfigOption);
   }
 
   async getInstance(

@@ -90,6 +90,78 @@ export interface ExecuteWorkflowResponseDTO {
 /**
  * 
  * @export
+ * @interface FilterInfo
+ */
+export interface FilterInfo {
+    /**
+     * The name of the field to filter on
+     * @type {string}
+     * @memberof FilterInfo
+     */
+    'fieldName': string;
+    /**
+     * 
+     * @type {Operator}
+     * @memberof FilterInfo
+     */
+    'operator': Operator;
+    /**
+     * 
+     * @type {FilterValue}
+     * @memberof FilterInfo
+     */
+    'fieldValue': FilterValue;
+}
+
+
+/**
+ * @type FilterValue
+ * The value to filter by, which can be a string, number, boolean, or ProcessInstanceStatusDTO
+ * @export
+ */
+export type FilterValue = boolean | number | string;
+
+/**
+ * 
+ * @export
+ * @interface GetInstancesRequestParams
+ */
+export interface GetInstancesRequestParams {
+    /**
+     * 
+     * @type {PaginationInfoDTO}
+     * @memberof GetInstancesRequestParams
+     */
+    'paginationInfo'?: PaginationInfoDTO;
+    /**
+     * 
+     * @type {FilterInfo}
+     * @memberof GetInstancesRequestParams
+     */
+    'filterInfo'?: FilterInfo;
+}
+/**
+ * 
+ * @export
+ * @interface GetOverviewsRequestParams
+ */
+export interface GetOverviewsRequestParams {
+    /**
+     * 
+     * @type {PaginationInfoDTO}
+     * @memberof GetOverviewsRequestParams
+     */
+    'paginationInfo'?: PaginationInfoDTO;
+    /**
+     * 
+     * @type {FilterInfo}
+     * @memberof GetOverviewsRequestParams
+     */
+    'filterInfo'?: FilterInfo;
+}
+/**
+ * 
+ * @export
  * @interface NodeInstanceDTO
  */
 export interface NodeInstanceDTO {
@@ -143,6 +215,20 @@ export interface NodeInstanceDTO {
     'nodeId'?: string;
 }
 /**
+ * The operator to use for filtering, such as equality or inclusion
+ * @export
+ * @enum {string}
+ */
+
+export const Operator = {
+    Equal: 'equal',
+    In: 'in'
+} as const;
+
+export type Operator = typeof Operator[keyof typeof Operator];
+
+
+/**
  * 
  * @export
  * @interface PaginationInfoDTO
@@ -159,7 +245,7 @@ export interface PaginationInfoDTO {
      * @type {number}
      * @memberof PaginationInfoDTO
      */
-    'page'?: number;
+    'offset'?: number;
     /**
      * 
      * @type {number}
@@ -771,14 +857,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Retrieve an array of instances
          * @summary Get instances
-         * @param {number} [page] page number
-         * @param {number} [pageSize] page size
-         * @param {string} [orderBy] field name to order the data
-         * @param {string} [orderDirection] ascending or descending
+         * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving instances
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getInstances: async (page?: number, pageSize?: number, orderBy?: string, orderDirection?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getInstances: async (getInstancesRequestParams?: GetInstancesRequestParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v2/workflows/instances`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -787,31 +870,18 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            if (page !== undefined) {
-                localVarQueryParameter['page'] = page;
-            }
-
-            if (pageSize !== undefined) {
-                localVarQueryParameter['pageSize'] = pageSize;
-            }
-
-            if (orderBy !== undefined) {
-                localVarQueryParameter['orderBy'] = orderBy;
-            }
-
-            if (orderDirection !== undefined) {
-                localVarQueryParameter['orderDirection'] = orderDirection;
-            }
-
 
     
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(getInstancesRequestParams, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -949,14 +1019,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * Get a list of workflow overviews
-         * @param {number} [page] page number
-         * @param {number} [pageSize] page size
-         * @param {string} [orderBy] field name to order the data
-         * @param {string} [orderDirection] ascending or descending
+         * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Parameters for retrieving of workflow overviews
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWorkflowsOverview: async (page?: number, pageSize?: number, orderBy?: string, orderDirection?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getWorkflowsOverview: async (getOverviewsRequestParams?: GetOverviewsRequestParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v2/workflows/overview`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -965,31 +1032,18 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            if (page !== undefined) {
-                localVarQueryParameter['page'] = page;
-            }
-
-            if (pageSize !== undefined) {
-                localVarQueryParameter['pageSize'] = pageSize;
-            }
-
-            if (orderBy !== undefined) {
-                localVarQueryParameter['orderBy'] = orderBy;
-            }
-
-            if (orderDirection !== undefined) {
-                localVarQueryParameter['orderDirection'] = orderDirection;
-            }
-
 
     
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(getOverviewsRequestParams, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1050,15 +1104,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * Retrieve an array of instances
          * @summary Get instances
-         * @param {number} [page] page number
-         * @param {number} [pageSize] page size
-         * @param {string} [orderBy] field name to order the data
-         * @param {string} [orderDirection] ascending or descending
+         * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving instances
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getInstances(page?: number, pageSize?: number, orderBy?: string, orderDirection?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProcessInstanceListResultDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getInstances(page, pageSize, orderBy, orderDirection, options);
+        async getInstances(getInstancesRequestParams?: GetInstancesRequestParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProcessInstanceListResultDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getInstances(getInstancesRequestParams, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.getInstances']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1113,15 +1164,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * Get a list of workflow overviews
-         * @param {number} [page] page number
-         * @param {number} [pageSize] page size
-         * @param {string} [orderBy] field name to order the data
-         * @param {string} [orderDirection] ascending or descending
+         * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Parameters for retrieving of workflow overviews
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getWorkflowsOverview(page?: number, pageSize?: number, orderBy?: string, orderDirection?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WorkflowOverviewListResultDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getWorkflowsOverview(page, pageSize, orderBy, orderDirection, options);
+        async getWorkflowsOverview(getOverviewsRequestParams?: GetOverviewsRequestParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WorkflowOverviewListResultDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getWorkflowsOverview(getOverviewsRequestParams, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.getWorkflowsOverview']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1171,15 +1219,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * Retrieve an array of instances
          * @summary Get instances
-         * @param {number} [page] page number
-         * @param {number} [pageSize] page size
-         * @param {string} [orderBy] field name to order the data
-         * @param {string} [orderDirection] ascending or descending
+         * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving instances
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getInstances(page?: number, pageSize?: number, orderBy?: string, orderDirection?: string, options?: any): AxiosPromise<ProcessInstanceListResultDTO> {
-            return localVarFp.getInstances(page, pageSize, orderBy, orderDirection, options).then((request) => request(axios, basePath));
+        getInstances(getInstancesRequestParams?: GetInstancesRequestParams, options?: any): AxiosPromise<ProcessInstanceListResultDTO> {
+            return localVarFp.getInstances(getInstancesRequestParams, options).then((request) => request(axios, basePath));
         },
         /**
          * Get a workflow by ID
@@ -1219,15 +1264,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * Get a list of workflow overviews
-         * @param {number} [page] page number
-         * @param {number} [pageSize] page size
-         * @param {string} [orderBy] field name to order the data
-         * @param {string} [orderDirection] ascending or descending
+         * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Parameters for retrieving of workflow overviews
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWorkflowsOverview(page?: number, pageSize?: number, orderBy?: string, orderDirection?: string, options?: any): AxiosPromise<WorkflowOverviewListResultDTO> {
-            return localVarFp.getWorkflowsOverview(page, pageSize, orderBy, orderDirection, options).then((request) => request(axios, basePath));
+        getWorkflowsOverview(getOverviewsRequestParams?: GetOverviewsRequestParams, options?: any): AxiosPromise<WorkflowOverviewListResultDTO> {
+            return localVarFp.getWorkflowsOverview(getOverviewsRequestParams, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1280,16 +1322,13 @@ export class DefaultApi extends BaseAPI {
     /**
      * Retrieve an array of instances
      * @summary Get instances
-     * @param {number} [page] page number
-     * @param {number} [pageSize] page size
-     * @param {string} [orderBy] field name to order the data
-     * @param {string} [orderDirection] ascending or descending
+     * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving instances
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getInstances(page?: number, pageSize?: number, orderBy?: string, orderDirection?: string, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getInstances(page, pageSize, orderBy, orderDirection, options).then((request) => request(this.axios, this.basePath));
+    public getInstances(getInstancesRequestParams?: GetInstancesRequestParams, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getInstances(getInstancesRequestParams, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1338,16 +1377,13 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * Get a list of workflow overviews
-     * @param {number} [page] page number
-     * @param {number} [pageSize] page size
-     * @param {string} [orderBy] field name to order the data
-     * @param {string} [orderDirection] ascending or descending
+     * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Parameters for retrieving of workflow overviews
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getWorkflowsOverview(page?: number, pageSize?: number, orderBy?: string, orderDirection?: string, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getWorkflowsOverview(page, pageSize, orderBy, orderDirection, options).then((request) => request(this.axios, this.basePath));
+    public getWorkflowsOverview(getOverviewsRequestParams?: GetOverviewsRequestParams, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getWorkflowsOverview(getOverviewsRequestParams, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

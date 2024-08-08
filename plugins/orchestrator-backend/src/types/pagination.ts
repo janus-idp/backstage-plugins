@@ -1,5 +1,7 @@
 import { Request } from 'express-serve-static-core';
 
+import { PaginationInfoDTO } from '@janus-idp/backstage-plugin-orchestrator-common';
+
 export interface Pagination {
   offset?: number;
   limit?: number;
@@ -8,23 +10,33 @@ export interface Pagination {
 }
 
 export function buildPagination(req: Request): Pagination {
-  const pagination: Pagination = {};
+  const pagination: Pagination = {
+    limit: undefined,
+    offset: undefined,
+    order: undefined,
+    sortField: undefined,
+  };
 
-  if (!isNaN(Number(req.query.page))) {
-    pagination.offset = Number(req.query.page);
+  if (!req.body?.paginationInfo) {
+    return pagination;
+  }
+  const { offset, pageSize, orderBy, orderDirection } = req.body
+    .paginationInfo as PaginationInfoDTO;
+
+  if (!isNaN(Number(offset))) {
+    pagination.offset = Number(offset);
   }
 
-  if (!isNaN(Number(req.query.pageSize))) {
-    pagination.limit = Number(req.query.pageSize);
+  if (!isNaN(Number(pageSize))) {
+    pagination.limit = Number(pageSize);
   }
 
-  if (req.query.orderBy) {
-    pagination.sortField = String(req.query.orderBy);
+  if (orderBy) {
+    pagination.sortField = String(orderBy);
   }
 
-  if (req.query.orderDirection) {
-    pagination.order = String(req.query.orderDirection);
+  if (orderDirection) {
+    pagination.order = String(orderDirection).toUpperCase();
   }
-
   return pagination;
 }
