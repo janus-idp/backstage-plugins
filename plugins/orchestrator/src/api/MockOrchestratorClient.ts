@@ -87,7 +87,7 @@ export class MockOrchestratorClient implements OrchestratorApi {
     return Promise.resolve(this._mockData.listInstancesResponse);
   }
 
-  getWorkflowSource(_workflowId: string): Promise<string> {
+  getWorkflowSource(_workflowId: string): Promise<AxiosResponse<string>> {
     if (
       !hasOwnProp(this._mockData, 'getWorkflowSourceResponse') ||
       !isNonNullable(this._mockData.getWorkflowSourceResponse)

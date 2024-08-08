@@ -32,7 +32,7 @@ export interface OrchestratorApi {
 
   getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition>;
 
-  getWorkflowSource(workflowId: string): Promise<string>;
+  getWorkflowSource(workflowId: string): Promise<AxiosResponse<string>>;
 
   getInstance(
     instanceId: string,
