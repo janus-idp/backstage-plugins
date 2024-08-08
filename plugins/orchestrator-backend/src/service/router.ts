@@ -900,45 +900,6 @@ function setupInternalRoutes(
     },
   );
 
-  // v1
-  router.delete('/instances/:instanceId/abort', async (req, res) => {
-    const {
-      params: { instanceId },
-    } = req;
-    const endpointName = 'InstancesInstanceIdAbort';
-    const endpoint = `/v1/instances/${instanceId}/abort`;
-
-    auditLogger.auditLog({
-      eventName: endpointName,
-      stage: 'start',
-      status: 'succeeded',
-      level: 'debug',
-      request: req,
-      message: `Received request to '${endpoint}' endpoint`,
-    });
-
-    const decision = await authorize(
-      req,
-      orchestratorWorkflowInstanceAbortPermission,
-      permissions,
-      httpAuth,
-    );
-    if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint, req);
-    }
-
-    try {
-      await routerApi.v1.abortWorkflow(instanceId);
-      res.status(200).send();
-    } catch (error) {
-      auditLogRequestError(error, endpointName, endpoint, req);
-      res
-        .status(500)
-        .contentType('plain/text')
-        .send((error as Error)?.message || INTERNAL_SERVER_ERROR_MESSAGE);
-    }
-  });
-
   // v2
   routerApi.openApiBackend.register(
     'abortWorkflow',

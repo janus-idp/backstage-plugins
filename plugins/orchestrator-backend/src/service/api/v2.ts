@@ -188,7 +188,10 @@ export class V2 {
   }
 
   public async abortWorkflow(instanceId: string): Promise<string> {
-    await this.v1.abortWorkflow(instanceId);
+    await this.orchestratorService.abortWorkflowInstance({
+      instanceId,
+      cacheHandler: 'throw',
+    });
     return `Workflow instance ${instanceId} successfully aborted`;
   }
 
