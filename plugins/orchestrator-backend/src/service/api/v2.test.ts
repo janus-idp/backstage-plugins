@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import {
   AssessedProcessInstanceDTO,
   ExecuteWorkflowResponseDTO,
@@ -63,14 +65,20 @@ describe('getWorkflowOverview', () => {
 
   it('0 items in workflow overview list', async () => {
     // Arrange
-    const mockRequest: any = {
-      query: {
-        page: 1,
-        pageSize: 50,
-        orderBy: 'lastUpdated',
-        orderDirection: 'DESC',
+    const mockRequest = {
+      query: {},
+      headers: {},
+      params: {},
+      body: {
+        paginationInfo: {
+          offset: 1,
+          pageSize: 50,
+          orderBy: 'lastUpdated',
+          orderDirection: 'DESC',
+        },
       },
-    };
+    } as Request;
+
     const mockOverviewsV1 = {
       items: [],
     };
@@ -90,7 +98,7 @@ describe('getWorkflowOverview', () => {
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
-        page: 1,
+        offset: 1,
         pageSize: 50,
         totalCount: mockOverviewsV1.items.length,
       },
@@ -100,7 +108,7 @@ describe('getWorkflowOverview', () => {
   it('1 item in workflow overview list', async () => {
     // Arrange
     const mockRequest: any = {
-      query: {},
+      body: {},
     };
     const mockOverviewsV1 = generateTestWorkflowOverviewList(1, {});
 
@@ -119,8 +127,8 @@ describe('getWorkflowOverview', () => {
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
-        page: 0,
-        pageSize: 10,
+        offset: undefined,
+        pageSize: undefined,
         totalCount: mockOverviewsV1.items.length,
       },
     });
@@ -129,11 +137,13 @@ describe('getWorkflowOverview', () => {
   it('many items in workflow overview list', async () => {
     // Arrange
     const mockRequest: any = {
-      query: {
-        page: 1,
-        pageSize: 50,
-        orderBy: 'lastUpdated',
-        orderDirection: 'DESC',
+      body: {
+        paginationInfo: {
+          offset: 1,
+          pageSize: 50,
+          orderBy: 'lastUpdated',
+          orderDirection: 'DESC',
+        },
       },
     };
     const mockOverviewsV1 = generateTestWorkflowOverviewList(100, {});
@@ -153,7 +163,7 @@ describe('getWorkflowOverview', () => {
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
-        page: 1,
+        offset: 1,
         pageSize: 50,
         totalCount: mockOverviewsV1.items.length,
       },

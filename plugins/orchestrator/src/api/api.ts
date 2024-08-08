@@ -5,6 +5,8 @@ import { AxiosResponse } from 'axios';
 
 import {
   AssessedProcessInstanceDTO,
+  FilterInfo,
+  PaginationInfoDTO,
   ProcessInstanceListResultDTO,
   WorkflowDefinition,
   WorkflowExecutionResponse,
@@ -50,7 +52,10 @@ export interface OrchestratorApi {
     AxiosResponse<WorkflowOverviewListResultDTO>
   >;
 
-  listInstances(): Promise<AxiosResponse<ProcessInstanceListResultDTO>>;
+  listInstances(args?: {
+    paginationInfo?: PaginationInfoDTO;
+    filterInfo?: FilterInfo;
+  }): Promise<AxiosResponse<ProcessInstanceListResultDTO>>;
 }
 
 export const orchestratorApiRef = createApiRef<OrchestratorApi>({

@@ -320,7 +320,7 @@ endif::internal-generation[]
 [.getInstances]
 ==== getInstances
 
-`GET /v2/workflows/instances`
+`POST /v2/workflows/instances`
 
 Get instances
 
@@ -329,47 +329,29 @@ Get instances
 Retrieve an array of instances
 
 
-// markup not found, no include::{specDir}v2/workflows/instances/GET/spec.adoc[opts=optional]
+// markup not found, no include::{specDir}v2/workflows/instances/POST/spec.adoc[opts=optional]
 
 
 
 ===== Parameters
 
 
-
-
-
-====== Query Parameters
+====== Body Parameter
 
 [cols="2,3,1,1,1"]
 |===
 |Name| Description| Required| Default| Pattern
 
-| page
-| page number 
+| GetInstancesRequestParams
+| Parameters for retrieving instances <<GetInstancesRequestParams>>
 | -
-| null
 | 
-
-| pageSize
-| page size 
-| -
-| null
-| 
-
-| orderBy
-| field name to order the data 
-| -
-| null
-| 
-
-| orderDirection
-| ascending or descending 
-| -
-| null
 | 
 
 |===
+
+
+
 
 
 ===== Return Type
@@ -403,20 +385,20 @@ Retrieve an array of instances
 ===== Samples
 
 
-// markup not found, no include::{snippetDir}v2/workflows/instances/GET/http-request.adoc[opts=optional]
+// markup not found, no include::{snippetDir}v2/workflows/instances/POST/http-request.adoc[opts=optional]
 
 
-// markup not found, no include::{snippetDir}v2/workflows/instances/GET/http-response.adoc[opts=optional]
+// markup not found, no include::{snippetDir}v2/workflows/instances/POST/http-response.adoc[opts=optional]
 
 
 
-// file not found, no * wiremock data link :v2/workflows/instances/GET/GET.json[]
+// file not found, no * wiremock data link :v2/workflows/instances/POST/POST.json[]
 
 
 ifdef::internal-generation[]
 ===== Implementation
 
-// markup not found, no include::{specDir}v2/workflows/instances/GET/implementation.adoc[opts=optional]
+// markup not found, no include::{specDir}v2/workflows/instances/POST/implementation.adoc[opts=optional]
 
 
 endif::internal-generation[]
@@ -762,7 +744,7 @@ endif::internal-generation[]
 [.getWorkflowsOverview]
 ==== getWorkflowsOverview
 
-`GET /v2/workflows/overview`
+`POST /v2/workflows/overview`
 
 
 
@@ -771,47 +753,29 @@ endif::internal-generation[]
 Get a list of workflow overviews
 
 
-// markup not found, no include::{specDir}v2/workflows/overview/GET/spec.adoc[opts=optional]
+// markup not found, no include::{specDir}v2/workflows/overview/POST/spec.adoc[opts=optional]
 
 
 
 ===== Parameters
 
 
-
-
-
-====== Query Parameters
+====== Body Parameter
 
 [cols="2,3,1,1,1"]
 |===
 |Name| Description| Required| Default| Pattern
 
-| page
-| page number 
+| GetOverviewsRequestParams
+| Parameters for retrieving of workflow overviews <<GetOverviewsRequestParams>>
 | -
-| null
 | 
-
-| pageSize
-| page size 
-| -
-| null
-| 
-
-| orderBy
-| field name to order the data 
-| -
-| null
-| 
-
-| orderDirection
-| ascending or descending 
-| -
-| null
 | 
 
 |===
+
+
+
 
 
 ===== Return Type
@@ -845,20 +809,20 @@ Get a list of workflow overviews
 ===== Samples
 
 
-// markup not found, no include::{snippetDir}v2/workflows/overview/GET/http-request.adoc[opts=optional]
+// markup not found, no include::{snippetDir}v2/workflows/overview/POST/http-request.adoc[opts=optional]
 
 
-// markup not found, no include::{snippetDir}v2/workflows/overview/GET/http-response.adoc[opts=optional]
+// markup not found, no include::{snippetDir}v2/workflows/overview/POST/http-response.adoc[opts=optional]
 
 
 
-// file not found, no * wiremock data link :v2/workflows/overview/GET/GET.json[]
+// file not found, no * wiremock data link :v2/workflows/overview/POST/POST.json[]
 
 
 ifdef::internal-generation[]
 ===== Implementation
 
-// markup not found, no include::{specDir}v2/workflows/overview/GET/implementation.adoc[opts=optional]
+// markup not found, no include::{specDir}v2/workflows/overview/POST/implementation.adoc[opts=optional]
 
 
 endif::internal-generation[]
@@ -956,6 +920,100 @@ The ErrorResponse object represents a common structure for handling errors in AP
 |===
 
 
+[#FilterInfo]
+=== _FilterInfo_ 
+
+
+
+[.fields-FilterInfo]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| fieldName
+| X
+| String 
+| The name of the field to filter on
+|  
+
+| operator
+| X
+| Operator 
+| 
+|  
+
+| fieldValue
+| X
+| FilterValue 
+| 
+|  
+
+|===
+
+
+[#FilterValue]
+=== _FilterValue_ FilterValue
+
+The value to filter by, which can be a string, number, boolean, or ProcessInstanceStatusDTO
+
+[.fields-FilterValue]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+|===
+
+
+[#GetInstancesRequestParams]
+=== _GetInstancesRequestParams_ 
+
+
+
+[.fields-GetInstancesRequestParams]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| paginationInfo
+| 
+| PaginationInfoDTO 
+| 
+|  
+
+| filterInfo
+| 
+| FilterInfo 
+| 
+|  
+
+|===
+
+
+[#GetOverviewsRequestParams]
+=== _GetOverviewsRequestParams_ 
+
+
+
+[.fields-GetOverviewsRequestParams]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| paginationInfo
+| 
+| PaginationInfoDTO 
+| 
+|  
+
+| filterInfo
+| 
+| FilterInfo 
+| 
+|  
+
+|===
+
+
 [#NodeInstanceDTO]
 === _NodeInstanceDTO_ 
 
@@ -1017,6 +1075,19 @@ The ErrorResponse object represents a common structure for handling errors in AP
 |===
 
 
+[#Operator]
+=== _Operator_ 
+
+The operator to use for filtering, such as equality or inclusion
+
+[.fields-Operator]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+|===
+
+
 [#PaginationInfoDTO]
 === _PaginationInfoDTO_ 
 
@@ -1033,7 +1104,7 @@ The ErrorResponse object represents a common structure for handling errors in AP
 | 
 |  
 
-| page
+| offset
 | 
 | BigDecimal 
 | 

@@ -3,9 +3,9 @@ import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import useInterval from 'react-use/lib/useInterval';
 
 import { useApi } from '@backstage/core-plugin-api';
-import { kubernetesProxyApiRef } from '@backstage/plugin-kubernetes';
 
 import { ContainerScope } from '../components/Topology/TopologySideBar/PodLogs/types';
+import { kubernetesProxyApiRef } from '../types/types';
 
 interface PodLogsOptions {
   podScope: ContainerScope;

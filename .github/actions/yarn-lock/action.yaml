@@ -27,6 +27,12 @@ runs:
           git stash pop || true
           git add yarn.lock || true
           git commit -s -m "chore(deps): regen yarn.lock" yarn.lock || true
+          export GITHUB_TOKEN="${GITHUB_TOKEN}"
+          set -x
+          echo "$(git config user.name) <$(git config user.email)>"; echo; gh auth status
+          # switch to ssh login for GH repo
+          git config remote.origin.url git@github.com:$(git config remote.origin.url | sed -r -e "s#.+github.com(/|:)(.*)#\2#")
+          git config remote.origin.url
           git push origin "${PR_BRANCH}"
           gh pr create -B "${CURRENT_BRANCH}" -H "${PR_BRANCH}" --title "chore(deps): regen yarn.lock" --body "Created by Github action due to dirty workspace."
         fi

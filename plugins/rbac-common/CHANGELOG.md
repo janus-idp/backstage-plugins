@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-rbac-common [1.8.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-common@1.8.1...@janus-idp/backstage-plugin-rbac-common@1.8.2) (2024-08-06)
+
+
+### Bug Fixes
+
+* **rbac:** implement conditional aliases ([#1847](https://github.com/janus-idp/backstage-plugins/issues/1847)) ([dbc9a0b](https://github.com/janus-idp/backstage-plugins/commit/dbc9a0bc92f19a4382e406f83b4889905dc6e33d))
+
+## @janus-idp/backstage-plugin-rbac-common [1.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-common@1.8.0...@janus-idp/backstage-plugin-rbac-common@1.8.1) (2024-08-05)
+
+
+### Bug Fixes
+
+* **rbac:** add additional validation for permission policies ([#1908](https://github.com/janus-idp/backstage-plugins/issues/1908)) ([592498f](https://github.com/janus-idp/backstage-plugins/commit/592498f34a3b605162d3c242184aa6877b0360e8)), closes [#1939](https://github.com/janus-idp/backstage-plugins/issues/1939)
+
 ## @janus-idp/backstage-plugin-rbac-common [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-common@1.7.2...@janus-idp/backstage-plugin-rbac-common@1.8.0) (2024-07-26)
 
 

@@ -17,7 +17,6 @@ import {
   PermissionAction,
   PluginPermissionMetaData,
   PolicyDetails,
-  ResourcedPolicy,
   RoleBasedPolicy,
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
@@ -38,17 +37,24 @@ import {
 } from '../types';
 import { getMembersCount } from './create-role-utils';
 
-export const getPermissions = (
+export const getPermissionsArray = (
   role: string,
   policies: RoleBasedPolicy[],
-): number => {
+): RoleBasedPolicy[] => {
   if (!policies || policies?.length === 0 || !Array.isArray(policies)) {
-    return 0;
+    return [];
   }
   return policies.filter(
     (policy: RoleBasedPolicy) =>
       policy.entityReference === role && policy.effect !== 'deny',
-  ).length;
+  );
+};
+
+export const getPermissions = (
+  role: string,
+  policies: RoleBasedPolicy[],
+): number => {
+  return getPermissionsArray(role, policies).length;
 };
 
 export const getMembersString = (res: {
@@ -107,7 +113,7 @@ export const getMembersFromGroup = (group: GroupEntity): number => {
     }
     return temp;
   }, 0);
-  return membersList || 0;
+  return membersList ?? 0;
 };
 
 export const getPluginInfo = (
@@ -124,7 +130,7 @@ export const getPluginInfo = (
           return true;
         }
         if (isResourcedPolicy(pol)) {
-          return (pol as ResourcedPolicy).resourceType === permissionName;
+          return pol.resourceType === permissionName;
         }
         return false;
       });
@@ -159,7 +165,7 @@ const getAllPolicies = (
       )
     ) {
       acc.push({
-        policy: getTitleCase(p.policy as string) || 'Use',
+        policy: getTitleCase(p.policy) || 'Use',
         effect: 'deny',
       });
     }
@@ -176,7 +182,7 @@ export const getPermissionsData = (
     (acc: PermissionsDataSet[], policy: RoleBasedPolicy) => {
       if (policy?.effect === 'allow') {
         const policyStr =
-          policy?.policy || getPolicy(policy.permission as string);
+          policy?.policy ?? getPolicy(policy.permission as string);
         const policyTitleCase = getTitleCase(policyStr);
         const permission = acc.find(
           plugin =>
@@ -198,7 +204,7 @@ export const getPermissionsData = (
           const policyString = new Set<string>();
           const policiesSet = new Set<{ policy: string; effect: string }>();
           acc.push({
-            permission: policy.permission || '-',
+            permission: policy.permission ?? '-',
             plugin: getPluginInfo(permissionPolicies, policy?.permission)
               .pluginId,
             policyString: policyString.add(policyTitleCase || 'Use'),
@@ -228,42 +234,50 @@ export const getPermissionsData = (
 };
 
 export const getConditionUpperCriteria = (
-  conditions: PermissionCriteria<PermissionCondition>,
+  conditions: PermissionCriteria<PermissionCondition> | string,
 ): string | undefined => {
   return Object.keys(conditions).find(key =>
-    [criterias.allOf, criterias.anyOf, criterias.not].includes(key),
+    [criterias.allOf, criterias.anyOf, criterias.not].includes(
+      key as keyof ConditionsData,
+    ),
   );
 };
 
 export const getConditionsData = (
   conditions: PermissionCriteria<PermissionCondition>,
 ): ConditionsData | undefined => {
-  const upperCriteria = getConditionUpperCriteria(conditions) || 'condition';
+  const upperCriteria =
+    getConditionUpperCriteria(conditions) ?? criterias.condition;
 
   switch (upperCriteria) {
     case criterias.allOf: {
       const allOfConditions = (conditions as AllOfCriteria<PermissionCondition>)
         .allOf;
-      if (allOfConditions.find(c => !!getConditionUpperCriteria(c))) {
-        return undefined;
-      }
+      allOfConditions.map(aoc => {
+        if (getConditionUpperCriteria(aoc)) {
+          return getConditionsData(aoc);
+        }
+        return aoc;
+      });
       return { allOf: allOfConditions as PermissionCondition[] };
     }
     case criterias.anyOf: {
       const anyOfConditions = (conditions as AnyOfCriteria<PermissionCondition>)
         .anyOf;
-      if (anyOfConditions.find(c => !!getConditionUpperCriteria(c))) {
-        return undefined;
-      }
+      anyOfConditions.map(aoc => {
+        if (getConditionUpperCriteria(aoc)) {
+          return getConditionsData(aoc);
+        }
+        return aoc;
+      });
       return { anyOf: anyOfConditions as PermissionCondition[] };
     }
     case criterias.not: {
-      const notConditions = (conditions as NotCriteria<PermissionCondition>)
-        .not;
-      if (getConditionUpperCriteria(notConditions)) {
-        return undefined;
-      }
-      return { not: notConditions as PermissionCondition };
+      const notCondition = (conditions as NotCriteria<PermissionCondition>).not;
+      const nestedCondition = getConditionUpperCriteria(notCondition)
+        ? getConditionsData(notCondition)
+        : notCondition;
+      return { not: nestedCondition as PermissionCondition };
     }
     default:
       return { condition: conditions as PermissionCondition };

@@ -1,7 +1,10 @@
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  BackstageUserInfo,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   ConditionalPolicyDecision,
@@ -16,6 +19,7 @@ import {
 import {
   PermissionPolicy,
   PolicyQuery,
+  PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 
 import { Knex } from 'knex';
@@ -37,15 +41,18 @@ import {
   RoleAuditInfo,
   RoleEvents,
 } from '../audit-log/audit-logger';
+import { replaceAliases } from '../conditional-aliases/alias-resolver';
 import { ConditionalStorage } from '../database/conditional-storage';
 import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { CSVFileWatcher } from '../file-permissions/csv-file-watcher';
+import { YamlConditinalPoliciesFileWatcher } from '../file-permissions/yaml-conditional-file-watcher';
 import { removeTheDifference } from '../helper';
 import { validateEntityReference } from '../validation/policies-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
+import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 
 export const ADMIN_ROLE_NAME = 'role:default/rbac_admin';
 export const ADMIN_ROLE_AUTHOR = 'application configuration';
@@ -205,9 +212,6 @@ const evaluatePermMsg = (
   } and action '${toPermissionAction(permission.attributes)}'`;
 
 export class RBACPermissionPolicy implements PermissionPolicy {
-  private readonly enforcer: EnforcerDelegate;
-  private readonly auditLogger: AuditLogger;
-  private readonly conditionStorage: ConditionalStorage;
   private readonly superUserList?: string[];
 
   public static async build(
@@ -218,6 +222,8 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     enforcerDelegate: EnforcerDelegate,
     roleMetadataStorage: RoleMetadataStorage,
     knex: Knex,
+    pluginMetadataCollector: PluginPermissionMetadataCollector,
+    auth: AuthService,
   ): Promise<RBACPermissionPolicy> {
     const superUserList: string[] = [];
     const adminUsers = configApi.getOptionalConfigArray(
@@ -234,6 +240,10 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
     const allowReload =
       configApi.getOptionalBoolean('permission.rbac.policyFileReload') || false;
+
+    const conditionalPoliciesFile = configApi.getOptionalString(
+      'permission.rbac.conditionalPoliciesFile',
+    );
 
     if (superUsers && superUsers.length > 0) {
       for (const user of superUsers) {
@@ -260,13 +270,32 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       );
     }
 
-    const csvFile = new CSVFileWatcher(
-      enforcerDelegate,
-      logger,
-      roleMetadataStorage,
-      auditLogger,
-    );
-    await csvFile.initialize(policiesFile, allowReload);
+    if (policiesFile) {
+      const csvFile = new CSVFileWatcher(
+        policiesFile,
+        allowReload,
+        logger,
+        enforcerDelegate,
+        roleMetadataStorage,
+        auditLogger,
+      );
+      await csvFile.initialize();
+    }
+
+    if (conditionalPoliciesFile) {
+      const conditionalFile = new YamlConditinalPoliciesFileWatcher(
+        conditionalPoliciesFile,
+        allowReload,
+        logger,
+        conditionalStorage,
+        auditLogger,
+        auth,
+        pluginMetadataCollector,
+        roleMetadataStorage,
+        enforcerDelegate,
+      );
+      await conditionalFile.initialize();
+    }
 
     return new RBACPermissionPolicy(
       enforcerDelegate,
@@ -277,23 +306,19 @@ export class RBACPermissionPolicy implements PermissionPolicy {
   }
 
   private constructor(
-    enforcer: EnforcerDelegate,
-    auditLogger: AuditLogger,
-    conditionStorage: ConditionalStorage,
+    private readonly enforcer: EnforcerDelegate,
+    private readonly auditLogger: AuditLogger,
+    private readonly conditionStorage: ConditionalStorage,
     superUserList?: string[],
   ) {
-    this.enforcer = enforcer;
-    this.auditLogger = auditLogger;
-    this.conditionStorage = conditionStorage;
     this.superUserList = superUserList;
   }
 
   async handle(
     request: PolicyQuery,
-    identityResp?: BackstageIdentityResponse | undefined,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
-    const userEntityRef =
-      identityResp?.identity.userEntityRef ?? `user without entity`;
+    const userEntityRef = user?.info.userEntityRef ?? `user without entity`;
 
     let auditOptions = createPermissionEvaluationOptions(
       `Policy check for ${userEntityRef}`,
@@ -306,7 +331,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       let status = false;
 
       const action = toPermissionAction(request.permission.attributes);
-      if (!identityResp) {
+      if (!user) {
         const msg = evaluatePermMsg(
           userEntityRef,
           AuthorizeResult.DENY,
@@ -329,11 +354,12 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         const resourceType = request.permission.resourceType;
 
         // handle conditions if they are present
-        if (identityResp) {
+        if (user) {
           const conditionResult = await this.handleConditions(
             userEntityRef,
             request,
             roles,
+            user.info,
           );
           if (conditionResult) {
             return conditionResult;
@@ -416,6 +442,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     userEntityRef: string,
     request: PolicyQuery,
     roles: string[],
+    userInfo: BackstageUserInfo,
   ): Promise<PolicyDecision | undefined> {
     const permissionName = request.permission.name;
     const resourceType = (request.permission as ResourcePermission)
@@ -471,6 +498,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
           >,
         },
       };
+
+      replaceAliases(result.conditions, userInfo);
+
       const msg = `Send condition to plugin with id ${pluginId} to evaluate permission ${permissionName} with resource type ${resourceType} and action ${action} for user ${userEntityRef}`;
       const auditOptions = createPermissionEvaluationOptions(
         msg,

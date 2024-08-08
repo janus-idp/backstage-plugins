@@ -7,6 +7,7 @@ import {
   AuthService,
   HttpAuthService,
   LoggerService,
+  UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
@@ -28,6 +29,7 @@ import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
+import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import { PoliciesServer } from './policies-rest-api';
 
 export class PolicyBuilder {
@@ -40,6 +42,7 @@ export class PolicyBuilder {
       permissions: PermissionEvaluator;
       auth?: AuthService;
       httpAuth?: HttpAuthService;
+      userInfo: UserInfoService;
     },
     pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
   ): Promise<Router> {
@@ -103,24 +106,6 @@ export class PolicyBuilder {
       httpAuthService: httpAuth,
     });
 
-    const options: RouterOptions = {
-      config: env.config,
-      logger: env.logger,
-      discovery: env.discovery,
-      identity: env.identity,
-      policy: await RBACPermissionPolicy.build(
-        env.logger,
-        defAuditLog,
-        env.config,
-        conditionStorage,
-        enforcerDelegate,
-        roleMetadataStorage,
-        databaseClient,
-      ),
-      auth: auth,
-      httpAuth: httpAuth,
-    };
-
     const pluginIdsConfig = env.config.getOptionalStringArray(
       'permission.rbac.pluginsWithPermission',
     );
@@ -134,6 +119,33 @@ export class PolicyBuilder {
       };
     }
 
+    const pluginPermMetaData = new PluginPermissionMetadataCollector(
+      env.discovery,
+      pluginIdProvider,
+      env.logger,
+      env.config,
+    );
+
+    const options: RouterOptions = {
+      config: env.config,
+      logger: env.logger,
+      discovery: env.discovery,
+      identity: env.identity,
+      policy: await RBACPermissionPolicy.build(
+        env.logger,
+        defAuditLog,
+        env.config,
+        conditionStorage,
+        enforcerDelegate,
+        roleMetadataStorage,
+        databaseClient,
+        pluginPermMetaData,
+        auth,
+      ),
+      auth: auth,
+      httpAuth: httpAuth,
+    };
+
     const server = new PoliciesServer(
       env.permissions,
       options,
@@ -142,7 +154,7 @@ export class PolicyBuilder {
       httpAuth,
       auth,
       conditionStorage,
-      pluginIdProvider,
+      pluginPermMetaData,
       roleMetadataStorage,
       defAuditLog,
     );

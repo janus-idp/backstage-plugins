@@ -3,11 +3,13 @@ import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import useInterval from 'react-use/lib/useInterval';
 
 import { useApi } from '@backstage/core-plugin-api';
-import { kubernetesProxyApiRef } from '@backstage/plugin-kubernetes';
 
 import { V1Container, V1Pod } from '@kubernetes/client-node';
 
-import { TektonResourcesContextData } from '../types/types';
+import {
+  kubernetesProxyApiRef,
+  TektonResourcesContextData,
+} from '../types/types';
 import { TektonResourcesContext } from './TektonResourcesContext';
 
 export interface ContainerScope {

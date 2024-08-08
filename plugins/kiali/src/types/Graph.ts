@@ -1,4 +1,4 @@
-import { DurationInSeconds, TimeInSeconds } from './Common';
+import { AppenderString, DurationInSeconds, TimeInSeconds } from './Common';
 import { Health } from './Health';
 import { HealthAnnotationType } from './HealthAnnotation';
 import { Namespace } from './Namespace';
@@ -435,6 +435,23 @@ export interface GraphEdgeData {
   sourcePrincipal?: string;
   traffic?: ProtocolTraffic;
   isMTLS?: number;
+}
+
+export interface GraphElementsQuery {
+  appenders?: AppenderString;
+  boxBy?: string;
+  duration?: string;
+  graphType?: GraphType;
+  includeIdleEdges?: boolean;
+  injectServiceNodes?: boolean;
+  namespaces?: string;
+  queryTime?: string;
+  rateGrpc?: string;
+  rateHttp?: string;
+  rateTcp?: string;
+  responseTime?: string;
+  throughputType?: string;
+  waypoints?: boolean;
 }
 
 export interface GraphNodeWrapper {

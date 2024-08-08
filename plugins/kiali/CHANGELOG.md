@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.30.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.29.0...@janus-idp/backstage-plugin-kiali@1.30.0) (2024-07-30)
+
+
+### Features
+
+* **kiali:** traffic graph ([#1606](https://github.com/janus-idp/backstage-plugins/issues/1606)) ([657fef9](https://github.com/janus-idp/backstage-plugins/commit/657fef97d73e8ba2ad6a3e0c5bc95379f802aa69))
+
 ## @janus-idp/backstage-plugin-kiali [1.29.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.28.0...@janus-idp/backstage-plugin-kiali@1.29.0) (2024-07-26)
 
 

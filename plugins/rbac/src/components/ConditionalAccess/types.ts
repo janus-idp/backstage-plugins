@@ -1,7 +1,5 @@
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 
-import { RJSFValidationError } from '@rjsf/utils';
-
 export type RulesData = {
   rules: string[];
   [rule: string]: {
@@ -23,12 +21,38 @@ export type ConditionRules = {
 };
 
 export type ConditionsData = {
-  allOf?: PermissionCondition[];
-  anyOf?: PermissionCondition[];
-  not?: PermissionCondition;
+  allOf?: Condition[];
+  anyOf?: Condition[];
+  not?: Condition;
   condition?: PermissionCondition;
 };
 
-export type RuleParamsErrors = {
-  [key: string]: RJSFValidationError[];
+export type Condition = PermissionCondition | ConditionsData;
+
+export type ComplexErrors = string | NestedCriteriaErrors;
+
+export type NestedCriteriaErrors = {
+  [nestedCriteria: string]: string[] | string;
 };
+
+export type AccessConditionsErrors = {
+  [criteria: string]: ComplexErrors[] | NestedCriteriaErrors | string;
+};
+
+export type ConditionFormRowProps = {
+  conditionRulesData?: RulesData;
+  conditionRow: ConditionsData;
+  onRuleChange: (newCondition: ConditionsData) => void;
+  selPluginResourceType: string;
+  criteria: keyof ConditionsData;
+  setCriteria: React.Dispatch<React.SetStateAction<keyof ConditionsData>>;
+  setErrors: React.Dispatch<
+    React.SetStateAction<AccessConditionsErrors | undefined>
+  >;
+  setRemoveAllClicked: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export enum NotConditionType {
+  SimpleCondition = 'simple-condition',
+  NestedCondition = 'nested-condition',
+}

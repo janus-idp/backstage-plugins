@@ -2,68 +2,53 @@ import React from 'react';
 
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 
-import { Box, makeStyles, TextField } from '@material-ui/core';
+import { Box, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import Form from '@rjsf/mui';
-import { RegistryFieldsType, RJSFSchema, UiSchema } from '@rjsf/utils';
+import {
+  RegistryFieldsType,
+  RJSFSchema,
+  RJSFValidationError,
+  UiSchema,
+} from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 
+import {
+  getNestedRuleErrors,
+  getSimpleRuleErrors,
+  isSimpleRule,
+  makeConditionsFormRowFieldsStyles,
+  setErrorMessage,
+} from '../../utils/conditional-access-utils';
 import { criterias } from './const';
 import { CustomArrayField } from './CustomArrayField';
 import { RulesDropdownOption } from './RulesDropdownOption';
-import { ConditionsData, RuleParamsErrors, RulesData } from './types';
-
-const useStyles = makeStyles(theme => ({
-  params: {
-    '& div[class*="MuiInputBase-root"]': {
-      backgroundColor: theme.palette.background.paper,
-    },
-    '& span': {
-      color: theme.palette.textSubtle,
-    },
-    '& input': {
-      color: theme.palette.textContrast,
-    },
-    '& fieldset.MuiOutlinedInput-notchedOutline': {
-      borderColor: theme.palette.grey[500],
-    },
-    '& div.MuiOutlinedInput-root': {
-      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-        borderColor: theme.palette.primary.light,
-      },
-      '&.Mui-error .MuiOutlinedInput-notchedOutline': {
-        borderColor: theme.palette.status.error,
-        '&:hover': {
-          borderColor: theme.palette.status.error,
-        },
-      },
-    },
-    '& label.MuiFormLabel-root.Mui-focused': {
-      color: theme.palette.primary.light,
-    },
-    '& label.MuiFormLabel-root.Mui-error': {
-      color: theme.palette.status.error,
-    },
-    '& div.MuiOutlinedInput-root:hover fieldset': {
-      borderColor:
-        theme.palette.type === 'dark' ? theme.palette.textContrast : 'unset',
-    },
-    '& label': {
-      color: theme.palette.textSubtle,
-    },
-  },
-}));
+import {
+  AccessConditionsErrors,
+  ComplexErrors,
+  Condition,
+  ConditionsData,
+  NestedCriteriaErrors,
+  RulesData,
+} from './types';
 
 type ConditionFormRowFieldsProps = {
-  oldCondition: PermissionCondition;
+  oldCondition: Condition;
   index?: number;
   criteria: string;
   onRuleChange: (newCondition: ConditionsData) => void;
-  conditionRow: ConditionsData;
+  conditionRow: ConditionsData | Condition;
   conditionRulesData?: RulesData;
-  setErrors: React.Dispatch<React.SetStateAction<RuleParamsErrors | undefined>>;
+  setErrors: React.Dispatch<
+    React.SetStateAction<AccessConditionsErrors | undefined>
+  >;
   optionDisabled?: (ruleOption: string) => boolean;
   setRemoveAllClicked: React.Dispatch<React.SetStateAction<boolean>>;
+  nestedConditionRow?: Condition[];
+  nestedConditionCriteria?: string;
+  nestedConditionIndex?: number;
+  nestedConditionRuleIndex?: number;
+  updateRules?: (newCondition: Condition[] | Condition) => void;
 };
 
 export const ConditionsFormRowFields = ({
@@ -76,10 +61,19 @@ export const ConditionsFormRowFields = ({
   setErrors,
   optionDisabled,
   setRemoveAllClicked,
+  nestedConditionRow,
+  nestedConditionCriteria,
+  nestedConditionIndex,
+  nestedConditionRuleIndex,
+  updateRules,
 }: ConditionFormRowFieldsProps) => {
-  const classes = useStyles();
+  const classes = makeConditionsFormRowFieldsStyles({
+    isNotSimpleCondition:
+      criteria === criterias.not && !nestedConditionCriteria,
+  });
   const rules = conditionRulesData?.rules ?? [];
-  const paramsSchema = conditionRulesData?.[oldCondition.rule]?.schema;
+  const paramsSchema =
+    conditionRulesData?.[(oldCondition as PermissionCondition).rule]?.schema;
 
   const schema: RJSFSchema = paramsSchema;
 
@@ -101,13 +95,13 @@ export const ConditionsFormRowFields = ({
         break;
       }
       case criterias.allOf: {
-        const updatedCriteria = conditionRow.allOf ?? [];
+        const updatedCriteria = (conditionRow as ConditionsData).allOf ?? [];
         updatedCriteria[index ?? 0] = newCondition;
         onRuleChange({ allOf: updatedCriteria });
         break;
       }
       case criterias.anyOf: {
-        const updatedCriteria = conditionRow.anyOf ?? [];
+        const updatedCriteria = (conditionRow as ConditionsData).anyOf ?? [];
         updatedCriteria[index ?? 0] = newCondition;
         onRuleChange({ anyOf: updatedCriteria });
         break;
@@ -120,24 +114,171 @@ export const ConditionsFormRowFields = ({
     }
   };
 
+  const handleNestedConditionChange = (newCondition: PermissionCondition) => {
+    if (
+      !nestedConditionRow ||
+      !nestedConditionCriteria ||
+      nestedConditionIndex === undefined ||
+      !updateRules
+    ) {
+      return;
+    }
+    const updatedNestedConditionRow: Condition[] = nestedConditionRow.map(
+      (c, i) => {
+        if (i === nestedConditionIndex) {
+          if (nestedConditionCriteria === criterias.not) {
+            return {
+              [nestedConditionCriteria]: newCondition,
+            };
+          }
+          const updatedNestedConditionRules = (
+            (c[
+              nestedConditionCriteria as keyof Condition
+            ] as PermissionCondition[]) || []
+          ).map((rule, rindex) => {
+            return rindex === nestedConditionRuleIndex ? newCondition : rule;
+          });
+
+          return {
+            [nestedConditionCriteria]: updatedNestedConditionRules,
+          };
+        }
+        return c;
+      },
+    );
+
+    updateRules(
+      criteria === criterias.not
+        ? updatedNestedConditionRow[0]
+        : updatedNestedConditionRow,
+    );
+  };
+
+  const handleTransformErrors = (errors: RJSFValidationError[]) => {
+    // criteria: condition or not simple-condition
+    if (
+      criteria === criterias.condition ||
+      (criteria === criterias.not &&
+        isSimpleRule(conditionRow[criteria as keyof Condition]))
+    ) {
+      setErrors(prevErrors => {
+        const updatedErrors = { ...prevErrors };
+        updatedErrors[criteria] = setErrorMessage(errors);
+
+        return updatedErrors;
+      });
+    }
+
+    // criteria: not nested-condition
+    if (
+      criteria === criterias.not &&
+      nestedConditionCriteria &&
+      !isSimpleRule(conditionRow[criteria as keyof Condition])
+    ) {
+      setErrors(prevErrors => {
+        const updatedErrors = { ...prevErrors };
+        const nestedErrors = (updatedErrors[criteria] as ComplexErrors)[
+          nestedConditionCriteria as keyof Condition
+        ] as NestedCriteriaErrors;
+
+        // nestedCriteria: allOf or anyOf
+        if (
+          Array.isArray(nestedErrors) &&
+          nestedConditionRuleIndex !== undefined
+        ) {
+          nestedErrors[nestedConditionRuleIndex] = setErrorMessage(errors);
+        } else {
+          // nestedCriteria: not
+          updatedErrors[criteria] = {
+            [nestedConditionCriteria]: setErrorMessage(errors),
+          };
+        }
+
+        return updatedErrors;
+      });
+    }
+
+    // criteria: allOf or anyOf
+    if (criteria === criterias.allOf || criteria === criterias.anyOf) {
+      setErrors(prevErrors => {
+        const updatedErrors = { ...prevErrors };
+        const simpleRuleErrors = getSimpleRuleErrors(
+          updatedErrors[
+            criteria as keyof AccessConditionsErrors
+          ] as ComplexErrors[],
+        );
+        if (
+          Array.isArray(simpleRuleErrors) &&
+          simpleRuleErrors.length > 0 &&
+          index !== undefined
+        ) {
+          simpleRuleErrors[index] = setErrorMessage(errors);
+        }
+
+        const nestedRuleErrors = getNestedRuleErrors(
+          updatedErrors[
+            criteria as keyof AccessConditionsErrors
+          ] as ComplexErrors[],
+        );
+
+        // nestedCriteria: allOf or anyOf
+        if (
+          nestedConditionCriteria &&
+          nestedConditionIndex !== undefined &&
+          nestedConditionRuleIndex !== undefined
+        ) {
+          const nestedConditionRuleList =
+            nestedRuleErrors[nestedConditionIndex][nestedConditionCriteria];
+
+          if (Array.isArray(nestedConditionRuleList)) {
+            nestedConditionRuleList[nestedConditionRuleIndex] =
+              setErrorMessage(errors);
+          }
+        }
+
+        // nestedCriteria: not
+        if (
+          Array.isArray(nestedRuleErrors) &&
+          nestedRuleErrors.length > 0 &&
+          nestedConditionCriteria === criterias.not &&
+          nestedConditionIndex !== undefined
+        ) {
+          nestedRuleErrors[nestedConditionIndex][nestedConditionCriteria] =
+            setErrorMessage(errors);
+        }
+
+        updatedErrors[criteria] = [...simpleRuleErrors, ...nestedRuleErrors];
+        return updatedErrors;
+      });
+    }
+
+    return errors;
+  };
+
+  const onConditionChange = (newCondition: PermissionCondition) => {
+    if (nestedConditionRow) {
+      handleNestedConditionChange(newCondition);
+    } else {
+      handleConditionChange(newCondition);
+    }
+  };
+
   return (
-    <Box
-      style={{ display: 'flex', flexFlow: 'row', gap: '10px', flexGrow: '1' }}
-    >
+    <Box className={classes.inputFieldContainer}>
       <Autocomplete
-        style={{ marginTop: '27px', width: '50%' }}
+        style={{ width: '50%', marginTop: '26px' }}
         className={classes.params}
         options={rules ?? []}
-        value={oldCondition?.rule || null}
+        value={(oldCondition as PermissionCondition)?.rule || null}
         getOptionDisabled={option =>
           optionDisabled ? optionDisabled(option) : false
         }
         onChange={(_event, ruleVal?: string | null) =>
-          handleConditionChange({
+          onConditionChange({
             ...oldCondition,
             rule: ruleVal ?? '',
             params: {},
-          })
+          } as PermissionCondition)
         }
         renderOption={option => (
           <RulesDropdownOption
@@ -155,32 +296,28 @@ export const ConditionsFormRowFields = ({
           />
         )}
       />
-
       <Box style={{ width: '50%' }}>
         {schema ? (
           <Form
             schema={paramsSchema}
-            formData={oldCondition?.params || {}}
+            formData={(oldCondition as PermissionCondition)?.params || {}}
             validator={validator}
             uiSchema={uiSchema}
             fields={customFields}
             onChange={data =>
-              handleConditionChange({
+              onConditionChange({
                 ...oldCondition,
                 params: data.formData || {},
-              })
+              } as PermissionCondition)
             }
-            transformErrors={errors => {
-              setErrors({ [criteria]: errors });
-              return errors;
-            }}
+            transformErrors={handleTransformErrors}
             showErrorList={false}
             liveValidate
           />
         ) : (
           <TextField
+            style={{ width: '100%', marginTop: '26px' }}
             className={classes.params}
-            style={{ width: '100%', marginTop: '27px' }}
             disabled
             label="string, string"
             required

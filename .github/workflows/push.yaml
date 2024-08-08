@@ -1,6 +1,12 @@
 name: Push
 
 on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
   push:
     branches:
       # since we use multi-semantic-release, which assumes that all plugins in the 1.1.x branch

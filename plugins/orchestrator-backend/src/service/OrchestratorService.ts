@@ -1,4 +1,5 @@
 import {
+  FilterInfo,
   ProcessInstance,
   ProcessInstanceVariables,
   WorkflowDefinition,
@@ -53,10 +54,12 @@ export class OrchestratorService {
 
   public async fetchInstances(args: {
     pagination?: Pagination;
+    filter?: FilterInfo;
   }): Promise<ProcessInstance[]> {
     return await this.dataIndexService.fetchInstances({
       definitionIds: this.workflowCacheService.definitionIds,
       pagination: args.pagination,
+      filter: args.filter,
     });
   }
 
@@ -142,10 +145,12 @@ export class OrchestratorService {
 
   public async fetchWorkflowOverviews(args: {
     pagination?: Pagination;
+    filter?: FilterInfo;
   }): Promise<WorkflowOverview[] | undefined> {
     return await this.sonataFlowService.fetchWorkflowOverviews({
       definitionIds: this.workflowCacheService.definitionIds,
       pagination: args.pagination,
+      filter: args.filter,
     });
   }
 

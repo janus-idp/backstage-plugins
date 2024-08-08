@@ -1,12 +1,12 @@
 import React from 'react';
 
 import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 
 import { Paper } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import OpenAI from 'openai';
 
+import { lightspeedApiRef } from '../api/LightspeedProxyClient';
 import { LightspeedInput } from './LightspeedInput';
 import { SystemMessage, UserMessage } from './Message';
 
@@ -38,51 +38,31 @@ const useStyles = makeStyles(() =>
 export const LightspeedPage = () => {
   const classes = useStyles();
 
-  const configApi = useApi(configApiRef);
+  const lightspeedApi = useApi(lightspeedApiRef);
 
   const [, setChunkIndex] = React.useState(0);
   const [prompts, setPrompts] = React.useState<string[]>([]);
   const [completions, setCompletions] = React.useState<{
     [key: string]: string;
   }>({});
-  const backendUrl = configApi.getString('backend.baseUrl');
-  const openai = new OpenAI({
-    baseURL: `${backendUrl}/api/proxy/lightspeed/api`,
-
-    // required but ignored
-    apiKey: 'random-key',
-    dangerouslyAllowBrowser: true,
-  });
 
   const handleInputPrompt = React.useCallback(
     async (prompt: string) => {
       setPrompts(p => [...p, prompt]);
       setChunkIndex(0);
 
-      const result = await openai.chat.completions.create({
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are a helpful assistant that can answer question in Red Hat Developer Hub.',
-          },
-          { role: 'user', content: prompt },
-        ],
-        model: 'llama3',
-        stream: true,
-      });
+      const result = await lightspeedApi.createChatCompletions(prompt);
 
       for await (const chunk of result) {
         setChunkIndex(index => index + 1);
         setCompletions(c => {
-          // console.log('string ---', s);
           c[prompt] =
             `${c[prompt] || ''}${chunk.choices[0]?.delta?.content || ''}`;
           return c;
         });
       }
     },
-    [openai.chat.completions],
+    [lightspeedApi],
   );
 
   return (

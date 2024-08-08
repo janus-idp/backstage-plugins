@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { usePermission } from '@backstage/plugin-permission-react';
+
 import {
   fireEvent,
   render,
@@ -22,6 +24,14 @@ jest.mock('../../../hooks/useApplications', () => ({
   useApplications: jest.fn(),
 }));
 
+jest.mock('@backstage/plugin-permission-react', () => ({
+  usePermission: jest.fn(),
+}));
+
+const mockUsePermission = usePermission as jest.MockedFunction<
+  typeof usePermission
+>;
+
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntity: () => mockEntity,
 }));
@@ -33,6 +43,8 @@ describe('DeploymentSummary', () => {
       loading: false,
       error: undefined,
     });
+
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
 
     (useArgocdConfig as any).mockReturnValue({
       baseUrl: '',
@@ -74,6 +86,15 @@ describe('DeploymentSummary', () => {
 
     await waitFor(() => {
       expect(screen.queryByText('No records to display')).toBeInTheDocument();
+    });
+  });
+  test('should not render deployment summary table when the user does not have view permission', async () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: false });
+
+    render(<DeploymentSummary />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Deployment summary')).not.toBeInTheDocument();
     });
   });
 

@@ -90,6 +90,33 @@ export const getPRTemplate = (componentName: string, entityOwner: string) => {
   };
 };
 
+export const getYamlKeyValuePairs = (
+  prYamlInput: string,
+): Record<string, string> => {
+  const keyValuePairs: Record<string, string> = {};
+  const keyValueEntries = prYamlInput.split(';').map(entry => entry.trim());
+
+  keyValueEntries.forEach(entry => {
+    const [key, ...valueParts] = entry.split(':');
+    const value = valueParts.join(':').trim();
+    if (key && value) {
+      keyValuePairs[key.trim()] = value.replace(/(^['"])|(['"]$)/g, '');
+    }
+  });
+
+  return keyValuePairs;
+};
+
+export const convertKeyValuePairsToString = (
+  keyValuePairs?: Record<string, string>,
+): string => {
+  return keyValuePairs
+    ? Object.entries(keyValuePairs)
+        .map(([key, value]) => `${key.trim()}: ${value.trim()}`)
+        .join('; ')
+    : '';
+};
+
 export const createData = (
   id: number,
   name: string,

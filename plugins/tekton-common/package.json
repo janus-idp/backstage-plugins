@@ -1,10 +1,9 @@
 {
   "name": "@janus-idp/backstage-plugin-tekton-common",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
-  "private": true,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
@@ -15,6 +14,7 @@
     "role": "common-library",
     "supported-versions": "1.28.4",
     "pluginId": "tekton",
+    "pluginPackage": "@janus-idp/backstage-plugin-tekton-common",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-tekton",
       "@janus-idp/backstage-plugin-tekton-common"
@@ -41,7 +41,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/janus-idp/backstage-plugins",
+    "url": "git+https://github.com/janus-idp/backstage-plugins.git",
     "directory": "plugins/tekton-common"
   },
   "keywords": [
@@ -50,10 +50,10 @@
     "backstage",
     "plugin"
   ],
-  "author": "Red Hat",
   "homepage": "https://red.ht/rhdh",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "maintainers": [
-    "janus-idp/rhtap"
-  ]
+    "@janus-idp/rhtap"
+  ],
+  "author": "Red Hat"
 }

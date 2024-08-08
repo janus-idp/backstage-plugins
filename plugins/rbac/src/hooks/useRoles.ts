@@ -5,6 +5,8 @@ import { useApi } from '@backstage/core-plugin-api';
 import { usePermission } from '@backstage/plugin-permission-react';
 
 import {
+  isResourcedPolicy,
+  PluginPermissionMetaData,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
   policyEntityUpdatePermission,
@@ -14,10 +16,11 @@ import {
 
 import { rbacApiRef } from '../api/RBACBackendClient';
 import { RolesData } from '../types';
-import { getPermissions } from '../utils/rbac-utils';
+import { getPermissions, getPermissionsArray } from '../utils/rbac-utils';
 
 type RoleWithConditionalPoliciesCount = Role & {
   conditionalPoliciesCount: number;
+  accessiblePlugins: string[];
 };
 
 export const useRoles = (
@@ -58,6 +61,14 @@ export const useRoles = (
     error: membersError,
   } = useAsync(async () => {
     return await rbacApi.getMembers();
+  });
+
+  const {
+    value: permissionPolicies,
+    loading: loadingPermissionPolicies,
+    error: permissionPoliciesError,
+  } = useAsync(async () => {
+    return await rbacApi.listPermissions();
   });
 
   const canReadUsersAndGroups =
@@ -103,11 +114,16 @@ export const useRoles = (
               (conditionalPolicies as any as Response).statusText,
             );
           }
+          const accessiblePlugins =
+            Array.isArray(conditionalPolicies) && conditionalPolicies.length > 0
+              ? conditionalPolicies.map(c => c.pluginId)
+              : [];
           return {
             ...role,
             conditionalPoliciesCount: Array.isArray(conditionalPolicies)
               ? conditionalPolicies.length
               : 0,
+            accessiblePlugins,
           };
         } catch (error) {
           setRoleConditionError(
@@ -116,6 +132,7 @@ export const useRoles = (
           return {
             ...role,
             conditionalPoliciesCount: 0,
+            accessiblePlugins: [],
           };
         }
       });
@@ -137,6 +154,32 @@ export const useRoles = (
                 policies as RoleBasedPolicy[],
               );
 
+              let accPls = role.accessiblePlugins;
+              if (
+                !loadingPermissionPolicies &&
+                !permissionPoliciesError &&
+                (permissionPolicies as PluginPermissionMetaData[])?.length > 0
+              ) {
+                const pls = getPermissionsArray(
+                  role.name,
+                  policies as RoleBasedPolicy[],
+                ).map(
+                  po =>
+                    (permissionPolicies as PluginPermissionMetaData[]).find(
+                      pp =>
+                        pp.policies?.find(pol =>
+                          isResourcedPolicy(pol)
+                            ? po.permission === pol.resourceType
+                            : po.permission === pol.name,
+                        ),
+                    )?.pluginId,
+                );
+                accPls = [...accPls, ...pls].filter(val => !!val) as string[];
+              }
+              const accessiblePlugins = accPls
+                .filter((val, index, plugins) => plugins.indexOf(val) === index)
+                .sort();
+
               return [
                 ...acc,
                 {
@@ -155,6 +198,7 @@ export const useRoles = (
                       loading: editPermissionResult.loading,
                     },
                   },
+                  accessiblePlugins,
                 },
               ];
             },
@@ -164,6 +208,9 @@ export const useRoles = (
     [
       newRoles,
       policies,
+      loadingPermissionPolicies,
+      permissionPoliciesError,
+      permissionPolicies,
       deletePermissionResult,
       editPermissionResult.allowed,
       editPermissionResult.loading,
