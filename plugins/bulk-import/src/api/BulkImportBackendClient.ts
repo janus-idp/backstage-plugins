@@ -13,6 +13,7 @@ import { CreateImportJobRepository } from '../types/types';
 
 // @public
 export type BulkImportAPI = {
+  getUserAuthorization: () => Promise<{ status: string }>;
   getRepositories: (page: number, size: number) => Promise<OrgAndRepoResponse>;
   getRepositoriesFromOrg: (
     orgName: string,
@@ -45,22 +46,36 @@ export const bulkImportApiRef = createApiRef<BulkImportAPI>({
 export class BulkImportBackendClient implements BulkImportAPI {
   // @ts-ignore
   private readonly configApi: ConfigApi;
-  // private readonly identityApi: IdentityApi;
+  private readonly identityApi: IdentityApi;
 
   constructor(options: Options) {
     this.configApi = options.configApi;
-    // this.identityApi = options.identityApi;
+    this.identityApi = options.identityApi;
+  }
+
+  async getUserAuthorization() {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const jsonResponse = await fetch(
+      `${backendUrl}/api/bulk-import-backend/ping`,
+      {
+        headers: {
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+        },
+      },
+    );
+    return jsonResponse.json();
   }
 
   async getRepositories(page: number, size: number) {
-    // const { token: idToken } = await this.identityApi.getCredentials();
+    const { token: idToken } = await this.identityApi.getCredentials();
 
     const backendUrl = this.configApi.getString('backend.baseUrl');
     const jsonResponse = await fetch(
       `${backendUrl}/api/bulk-import-backend/repositories?pagePerIntegration=${page}&sizePerIntegration=${size}`,
       {
         headers: {
-          // ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
           'Content-Type': 'application/json',
         },
       },
@@ -72,14 +87,14 @@ export class BulkImportBackendClient implements BulkImportAPI {
   }
 
   async getOrganizations(page: number, size: number) {
-    // const { token: idToken } = await this.identityApi.getCredentials();
+    const { token: idToken } = await this.identityApi.getCredentials();
 
     const backendUrl = this.configApi.getString('backend.baseUrl');
     const jsonResponse = await fetch(
       `${backendUrl}/api/bulk-import-backend/organizations?pagePerIntegration=${page}&sizePerIntegration=${size}`,
       {
         headers: {
-          // ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
           'Content-Type': 'application/json',
         },
       },
@@ -91,14 +106,14 @@ export class BulkImportBackendClient implements BulkImportAPI {
   }
 
   async getRepositoriesFromOrg(orgName: string, page: number, size: number) {
-    // const { token: idToken } = await this.identityApi.getCredentials();
+    const { token: idToken } = await this.identityApi.getCredentials();
 
     const backendUrl = this.configApi.getString('backend.baseUrl');
     const jsonResponse = await fetch(
       `${backendUrl}/api/bulk-import-backend/organizations/${orgName}/repositories?pagePerIntegration=${page}&sizePerIntegration=${size}`,
       {
         headers: {
-          // ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
           'Content-Type': 'application/json',
         },
       },
@@ -113,7 +128,7 @@ export class BulkImportBackendClient implements BulkImportAPI {
     importRepositories: CreateImportJobRepository[],
     dryRun?: boolean,
   ) {
-    // const { token: idToken } = await this.identityApi.getCredentials();
+    const { token: idToken } = await this.identityApi.getCredentials();
 
     const backendUrl = this.configApi.getString('backend.baseUrl');
     const jsonResponse = await fetch(
@@ -123,7 +138,7 @@ export class BulkImportBackendClient implements BulkImportAPI {
       {
         method: 'POST',
         headers: {
-          // ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(importRepositories),
@@ -133,7 +148,7 @@ export class BulkImportBackendClient implements BulkImportAPI {
   }
 
   async getImportJobs(page: number, size: number) {
-    // const { token: idToken } = await this.identityApi.getCredentials();
+    const { token: idToken } = await this.identityApi.getCredentials();
 
     const backendUrl = this.configApi.getString('backend.baseUrl');
     const jsonResponse = await fetch(
@@ -141,7 +156,7 @@ export class BulkImportBackendClient implements BulkImportAPI {
       {
         method: 'GET',
         headers: {
-          // ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
           'Content-Type': 'application/json',
         },
       },
@@ -153,7 +168,7 @@ export class BulkImportBackendClient implements BulkImportAPI {
   }
 
   async checkImportStatus(repo: string, defaultBranch: string) {
-    // const { token: idToken } = await this.identityApi.getCredentials();
+    const { token: idToken } = await this.identityApi.getCredentials();
 
     const backendUrl = this.configApi.getString('backend.baseUrl');
     const jsonResponse = await fetch(
@@ -161,7 +176,7 @@ export class BulkImportBackendClient implements BulkImportAPI {
       {
         method: 'GET',
         headers: {
-          // ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
           'Content-Type': 'application/json',
         },
       },
@@ -171,7 +186,7 @@ export class BulkImportBackendClient implements BulkImportAPI {
   }
 
   async removeRepository(repo: string, defaultBranch: string) {
-    // const { token: idToken } = await this.identityApi.getCredentials();
+    const { token: idToken } = await this.identityApi.getCredentials();
 
     const backendUrl = this.configApi.getString('backend.baseUrl');
     const jsonResponse = await fetch(
@@ -179,7 +194,7 @@ export class BulkImportBackendClient implements BulkImportAPI {
       {
         method: 'DELETE',
         headers: {
-          // ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
           'Content-Type': 'application/json',
         },
       },
