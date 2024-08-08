@@ -270,31 +270,38 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       );
     }
 
+    const csvFile = new CSVFileWatcher(
+      policiesFile ?? '',
+      allowReload,
+      logger,
+      enforcerDelegate,
+      roleMetadataStorage,
+      auditLogger,
+    );
     if (policiesFile) {
-      const csvFile = new CSVFileWatcher(
-        policiesFile,
-        allowReload,
-        logger,
-        enforcerDelegate,
-        roleMetadataStorage,
-        auditLogger,
-      );
       await csvFile.initialize();
     }
 
+    const conditionalFile = new YamlConditinalPoliciesFileWatcher(
+      conditionalPoliciesFile ?? '',
+      allowReload,
+      logger,
+      conditionalStorage,
+      auditLogger,
+      auth,
+      pluginMetadataCollector,
+      roleMetadataStorage,
+      enforcerDelegate,
+    );
     if (conditionalPoliciesFile) {
-      const conditionalFile = new YamlConditinalPoliciesFileWatcher(
-        conditionalPoliciesFile,
-        allowReload,
-        logger,
-        conditionalStorage,
-        auditLogger,
-        auth,
-        pluginMetadataCollector,
-        roleMetadataStorage,
-        enforcerDelegate,
-      );
       await conditionalFile.initialize();
+    }
+
+    if (!conditionalPoliciesFile) {
+      await conditionalFile.cleanUpPolicies();
+    }
+    if (!policiesFile) {
+      await csvFile.cleanUpPolicies();
     }
 
     return new RBACPermissionPolicy(

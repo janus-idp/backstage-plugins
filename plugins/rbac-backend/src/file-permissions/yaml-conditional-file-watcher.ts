@@ -43,7 +43,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     private readonly auth: AuthService,
     private readonly pluginMetadataCollector: PluginPermissionMetadataCollector,
     private readonly roleMetadataStorage: RoleMetadataStorage,
-    roleEventEmitter: RoleEventEmitter<RoleEvents>,
+    private readonly roleEventEmitter: RoleEventEmitter<RoleEvents>,
   ) {
     super(filePath, allowReload, logger);
 
@@ -51,8 +51,6 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       addedConditions: [],
       removedConditions: [],
     };
-
-    roleEventEmitter.on('roleAdded', this.onChange.bind(this));
   }
 
   async initialize(): Promise<void> {
@@ -71,6 +69,8 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     if (this.allowReload) {
       this.watchFile();
     }
+
+    this.roleEventEmitter.on('roleAdded', this.onChange.bind(this));
   }
 
   async onChange(): Promise<void> {
@@ -242,5 +242,22 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       status: 'failed',
       errors: [error],
     });
+  }
+
+  async cleanUpPolicies(): Promise<void> {
+    const csvFileRoles =
+      await this.roleMetadataStorage.filterRoleMetadata('csv-file');
+    const existedFileConds = (
+      await this.conditionalStorage.filterConditions(
+        csvFileRoles.map(role => role.roleEntityRef),
+      )
+    ).map(condition => {
+      return {
+        ...condition,
+        permissionMapping: condition.permissionMapping.map(pm => pm.action),
+      };
+    });
+    this.conditionsDiff.removedConditions = existedFileConds;
+    await this.removeConditions();
   }
 }

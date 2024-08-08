@@ -474,4 +474,19 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
     }
     this.csvFilePolicies.removedGroupPolicies = [];
   }
+
+  async cleanUpPolicies(): Promise<void> {
+    const roleMetadatas =
+      await this.roleMetadataStorage.filterRoleMetadata('csv-file');
+    const fileRoles = roleMetadatas.map(meta => meta.roleEntityRef);
+
+    if (fileRoles.length > 0) {
+      this.csvFilePolicies.removedGroupPolicies =
+        await this.enforcer.getFilteredGroupingPolicy(1, ...fileRoles);
+      this.csvFilePolicies.removedPolicies =
+        await this.enforcer.getFilteredPolicy(0, ...fileRoles);
+    }
+    await this.removePermissionPolicies();
+    await this.removeRoles();
+  }
 }
