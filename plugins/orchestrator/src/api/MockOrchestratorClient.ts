@@ -148,7 +148,7 @@ export class MockOrchestratorClient implements OrchestratorApi {
     return Promise.resolve(this._mockData.getWorkflowOverviewResponse);
   }
 
-  abortWorkflowInstance(_instanceId: string): Promise<void> {
+  abortWorkflowInstance(_instanceId: string): Promise<AxiosResponse<string>> {
     if (
       !hasOwnProp(this._mockData, 'abortWorkflowInstanceResponse') ||
       !isNonNullable(this._mockData.abortWorkflowInstanceResponse)
