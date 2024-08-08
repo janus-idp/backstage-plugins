@@ -26,19 +26,6 @@ export class V1 {
     return definition;
   }
 
-  public async getWorkflowSourceById(definitionId: string): Promise<string> {
-    const source = await this.orchestratorService.fetchWorkflowSource({
-      definitionId,
-      cacheHandler: 'throw',
-    });
-
-    if (!source) {
-      throw new Error(`Couldn't fetch workflow source for ${definitionId}`);
-    }
-
-    return source;
-  }
-
   public async retriggerInstanceInError(
     instanceId: string,
     inputData: ProcessInstanceVariables,

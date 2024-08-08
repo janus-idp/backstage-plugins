@@ -73,13 +73,21 @@ export class V2 {
   }
 
   public async getWorkflowById(workflowId: string): Promise<WorkflowDTO> {
-    const resultV1 = await this.v1.getWorkflowSourceById(workflowId);
+    const resultV1 = await this.getWorkflowSourceById(workflowId);
     return mapToWorkflowDTO(resultV1);
   }
 
   public async getWorkflowSourceById(workflowId: string): Promise<string> {
-    const resultV1 = await this.v1.getWorkflowSourceById(workflowId);
-    return resultV1;
+    const source = await this.orchestratorService.fetchWorkflowSource({
+      definitionId: workflowId,
+      cacheHandler: 'throw',
+    });
+
+    if (!source) {
+      throw new Error(`Couldn't fetch workflow source for ${workflowId}`);
+    }
+
+    return source;
   }
 
   public async getInstances(
