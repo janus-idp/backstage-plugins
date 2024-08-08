@@ -436,32 +436,34 @@ export const ConditionsFormRow = ({
                 }
               />
             ))}
-          {selectedNestedConditionCriteria === criterias.not && (
-            <ConditionsFormRowFields
-              oldCondition={
-                (nc as ConditionsData).not ??
-                getDefaultRule(selPluginResourceType)
-              }
-              onRuleChange={onRuleChange}
-              conditionRow={conditionRow}
-              criteria={criteria}
-              conditionRulesData={conditionRulesData}
-              setErrors={setErrors}
-              optionDisabled={ruleOption =>
-                ruleOptionDisabled(
-                  ruleOption,
-                  (nc as ConditionsData).not
-                    ? [(nc as ConditionsData).not as PermissionCondition]
-                    : undefined,
-                )
-              }
-              setRemoveAllClicked={setRemoveAllClicked}
-              nestedConditionRow={nestedConditionRow}
-              nestedConditionCriteria={selectedNestedConditionCriteria}
-              nestedConditionIndex={nestedConditionIndex}
-              updateRules={updateRules}
-            />
-          )}
+          {selectedNestedConditionCriteria === criterias.not &&
+            ((nc as ConditionsData).not as PermissionCondition)
+              .resourceType && (
+              <ConditionsFormRowFields
+                oldCondition={
+                  (nc as ConditionsData).not ??
+                  getDefaultRule(selPluginResourceType)
+                }
+                onRuleChange={onRuleChange}
+                conditionRow={conditionRow}
+                criteria={criteria}
+                conditionRulesData={conditionRulesData}
+                setErrors={setErrors}
+                optionDisabled={ruleOption =>
+                  ruleOptionDisabled(
+                    ruleOption,
+                    (nc as ConditionsData).not
+                      ? [(nc as ConditionsData).not as PermissionCondition]
+                      : undefined,
+                  )
+                }
+                setRemoveAllClicked={setRemoveAllClicked}
+                nestedConditionRow={nestedConditionRow}
+                nestedConditionCriteria={selectedNestedConditionCriteria}
+                nestedConditionIndex={nestedConditionIndex}
+                updateRules={updateRules}
+              />
+            )}
           {selectedNestedConditionCriteria !== criterias.not && (
             <Button
               className={classes.addRuleButton}

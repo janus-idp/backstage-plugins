@@ -178,18 +178,25 @@ export const ConditionsForm = ({
         const nestedConditionCriteria = Object.keys(
           firstLevelNestedCondition,
         )[0];
-        return (
+        if (
           Array.isArray(
             firstLevelNestedCondition[
               nestedConditionCriteria as keyof Condition
             ],
-          ) &&
-          (
+          )
+        ) {
+          return (
             firstLevelNestedCondition[
               nestedConditionCriteria as keyof Condition
             ] as Condition[]
-          ).some((con: Condition) => !('rule' in con))
-        );
+          ).some((con: Condition) => !('rule' in con));
+        }
+
+        return !Object.keys(
+          firstLevelNestedCondition[
+            nestedConditionCriteria as keyof Condition
+          ] as Condition[],
+        ).includes('rule');
       });
   };
 
