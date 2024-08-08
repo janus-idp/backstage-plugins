@@ -105,6 +105,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /v2/workflows/{workflowId}/inputSchema:
+    get:
+      operationId: getWorkflowInputSchemaById
+      description: Get a workflow input schema by ID
+      parameters:
+        - name: workflowId
+          in: path
+          description: ID of the workflow to fetch
+          required: true
+          schema:
+            type: string
+        - name: instanceId
+          in: query
+          description: ID of instance
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Error fetching workflow input schema by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/instances:
     post:
       operationId: getInstances
