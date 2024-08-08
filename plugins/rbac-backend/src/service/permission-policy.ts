@@ -298,10 +298,12 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     }
 
     if (!conditionalPoliciesFile) {
-      await conditionalFile.cleanUpPolicies();
+      // clean up conditional policies corresponding to roles from csv file
+      await conditionalFile.cleanUpConditionalPolicies();
     }
     if (!policiesFile) {
-      await csvFile.cleanUpPolicies();
+      // remove roles and policies from csv file
+      await csvFile.cleanUpRolesAndPolicies();
     }
 
     return new RBACPermissionPolicy(

@@ -244,7 +244,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     });
   }
 
-  async cleanUpPolicies(): Promise<void> {
+  async cleanUpConditionalPolicies(): Promise<void> {
     const csvFileRoles =
       await this.roleMetadataStorage.filterRoleMetadata('csv-file');
     const existedFileConds = (

@@ -52,6 +52,4 @@ export abstract class AbstractFileWatcher<T> {
    * @returns The file parsed into a type <T>.
    */
   abstract parse(): T;
-
-  abstract cleanUpPolicies(): Promise<void>;
 }

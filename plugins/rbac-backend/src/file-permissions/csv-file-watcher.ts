@@ -475,7 +475,7 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
     this.csvFilePolicies.removedGroupPolicies = [];
   }
 
-  async cleanUpPolicies(): Promise<void> {
+  async cleanUpRolesAndPolicies(): Promise<void> {
     const roleMetadatas =
       await this.roleMetadataStorage.filterRoleMetadata('csv-file');
     const fileRoles = roleMetadatas.map(meta => meta.roleEntityRef);
