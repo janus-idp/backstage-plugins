@@ -5816,13 +5816,6 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@janus-idp/backstage-plugin-argocd-common@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@janus-idp/backstage-plugin-argocd-common/-/backstage-plugin-argocd-common-1.0.0.tgz#3baa7a251cb857b4d2db600a18a5ffce08c69528"
-  integrity sha512-fXr0FOVLj6rpXhgj3rsphpejAvC0dxIbJe/CIxbvxL5oB83OTUVdtdwovcT5dZ++Qh/CRM816XXQJcNJYDToRw==
-  dependencies:
-    "@backstage/plugin-permission-common" "^0.8.0"
-
 "@jest/console@^29.7.0":
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-29.7.0.tgz#cd4822dbdb84529265c5a2bdb529a3c9cc950ffc"
@@ -25613,7 +25606,7 @@ monaco-editor-webpack-plugin@7.1.0:
   dependencies:
     loader-utils "^2.0.2"
 
-monaco-editor@0.50.0:
+monaco-editor@0.50.0, monaco-editor@^0.50.0:
   version "0.50.0"
   resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.50.0.tgz#44e62b124c8aed224e1d310bbbe6ffd6d5122413"
   integrity sha512-8CclLCmrRRh+sul7C08BmPBP3P8wVWfBHomsTcndxg5NRCEPfu/mc2AGU8k37ajjDVXcXFc12ORAMUkmk+lkFA==
@@ -25622,11 +25615,6 @@ monaco-editor@^0.39.0:
   version "0.39.0"
   resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.39.0.tgz#3cf8e3718d6aac347d374516a6837d1c13d967d2"
   integrity sha512-zhbZ2Nx93tLR8aJmL2zI1mhJpsl87HMebNBM6R8z4pLfs8pj604pIVIVwyF1TivcfNtIPpMXL+nb3DsBmE/x6Q==
-
-monaco-editor@^0.49.0:
-  version "0.49.0"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.49.0.tgz#4e80e9859feb2c421def3cef194d12d822606472"
-  integrity sha512-2I8/T3X/hLxB2oPHgqcNYUVdA/ZEFShT7IAujifIPMfKkNbLOqY8XCoyHCXrsdjb36dW9MwoTwBCFpXKMwNwaQ==
 
 monaco-languageserver-types@^0.3.0:
   version "0.3.3"
