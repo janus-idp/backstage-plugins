@@ -24,7 +24,7 @@ import {
   getJobsForCronJob,
   getPodsDataForResource,
 } from './pod-resource-utils';
-import { WORKLOAD_TYPES } from './topology-utils';
+import { VM_TYPES, WORKLOAD_TYPES } from './topology-utils';
 
 export const byCreationTime = (left: any, right: any): number => {
   const leftCreationTime = new Date(
@@ -53,7 +53,7 @@ export const createOverviewItemForType = (
   type: string,
   resource: K8sWorkloadResource,
 ): OverviewItem | undefined => {
-  if (!WORKLOAD_TYPES.includes(type)) {
+  if (!WORKLOAD_TYPES.includes(type) && !VM_TYPES.includes(type)) {
     return undefined;
   }
   switch (type) {

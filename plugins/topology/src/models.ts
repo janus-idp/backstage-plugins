@@ -71,7 +71,11 @@ export const CheClusterGVK: GroupVersionKind = {
   apiGroup: 'org.eclipse.che',
   kind: 'CheCluster',
 };
-
+export const VirtualMachineGVK: GroupVersionKind = {
+  apiVersion: 'v1',
+  apiGroup: 'kubevirt.io',
+  kind: 'VirtualMachine',
+};
 export enum ModelsPlural {
   deployments = 'deployments',
   pods = 'pods',
@@ -86,6 +90,7 @@ export enum ModelsPlural {
   pipelines = 'pipelines',
   pipelineruns = 'pipelineruns',
   checlusters = 'checlusters',
+  virtualmachines = 'virtualmachines',
 }
 
 export const resourceGVKs: { [key: string]: GroupVersionKind } = {
@@ -103,6 +108,7 @@ export const resourceGVKs: { [key: string]: GroupVersionKind } = {
   [PipelineModelsPlural.pipelines]: PipelineGVK,
   [PipelineModelsPlural.taskruns]: TaskRunGVK,
   [ModelsPlural.checlusters]: CheClusterGVK,
+  [ModelsPlural.virtualmachines]: VirtualMachineGVK,
 };
 
 export const DeploymentModel: Model = {
@@ -173,6 +179,14 @@ export const CheClusterModel: Model = {
   plural: 'checlusters',
 };
 
+export const VirtualMachineModel: Model = {
+  ...VirtualMachineGVK,
+  abbr: 'VM',
+  labelPlural: 'VirtualMachines',
+  color: '#2b9af3',
+  plural: 'virtualmachines',
+};
+
 export const resourceModels = {
   [DeploymentModel.kind]: DeploymentModel,
   [PodModel.kind]: PodModel,
@@ -187,4 +201,5 @@ export const resourceModels = {
   [PipelineRunModel.kind]: PipelineRunModel,
   [TaskRunModel.kind]: TaskRunModel,
   [CheClusterModel.kind]: CheClusterModel,
+  [VirtualMachineModel.kind]: VirtualMachineModel,
 };
