@@ -1,0 +1,51 @@
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: janus-idp-audit-log
+  title: Audit Log plugin
+  description: Backend for the audit-log
+  annotations:
+    backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main/plugins/audit-log-node
+    backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/audit-log-node/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/audit-log-node/catalog-info.yaml
+    github.com/project-slug: janus-idp/backstage-plugins
+    #github.com/team-slug: janus-idp/maintainers
+    sonarqube.org/project-key: janus-idp_backstage-plugins
+  links:
+    - url: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/audit-log-node
+      title: GitHub Source
+      icon: source
+      type: source
+spec:
+  type: backstage-plugin
+  lifecycle: production
+  owner: rhdh-team
+  system: rhdh
+  subcomponentOf: janus-idp-backstage-plugins
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: janus-idp-audit-log-node
+  title: '@janus-idp/backstage-plugin-audit-log-node'
+  description: Node.js library for the audit-log plugin
+  annotations:
+    backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main/plugins/audit-log-node
+    backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/audit-log-node/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/audit-log-node/catalog-info.yaml
+    github.com/project-slug: janus-idp/backstage-plugins
+    #github.com/team-slug: janus-idp/maintainers
+    sonarqube.org/project-key: janus-idp_backstage-plugins
+  links:
+    - url: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/audit-log-node
+      title: GitHub Source
+      icon: source
+      type: source
+spec:
+  type: backstage-node-library
+  lifecycle: production
+  owner: rhdh-team
+  system: rhdh
+  subcomponentOf: janus-idp-audit-log
