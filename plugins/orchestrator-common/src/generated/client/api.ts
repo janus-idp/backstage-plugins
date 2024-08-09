@@ -85,7 +85,7 @@ export interface ExecuteWorkflowResponseDTO {
      * @type {string}
      * @memberof ExecuteWorkflowResponseDTO
      */
-    'id'?: string;
+    'id': string;
 }
 /**
  * 

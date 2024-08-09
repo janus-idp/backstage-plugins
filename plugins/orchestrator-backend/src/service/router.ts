@@ -398,44 +398,6 @@ function setupInternalRoutes(
     },
   );
 
-  // v1
-  router.get('/workflows/:workflowId/source', async (req, res) => {
-    const {
-      params: { workflowId },
-    } = req;
-    const endpointName = 'WorkflowsWorkflowIdSource';
-    const endpoint = `/v1/workflows/${workflowId}/source`;
-
-    auditLogger.auditLog({
-      eventName: endpointName,
-      stage: 'start',
-      status: 'succeeded',
-      level: 'debug',
-      request: req,
-      message: `Received request to '${endpoint}' endpoint`,
-    });
-
-    const decision = await authorize(
-      req,
-      orchestratorWorkflowReadPermission,
-      permissions,
-      httpAuth,
-    );
-    if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint, req);
-    }
-
-    try {
-      const result = await routerApi.v1.getWorkflowSourceById(workflowId);
-      res.status(200).contentType('text/plain').send(result);
-    } catch (error) {
-      res
-        .status(500)
-        .contentType('text/plain')
-        .send((error as Error)?.message || INTERNAL_SERVER_ERROR_MESSAGE);
-    }
-  });
-
   // v2
   routerApi.openApiBackend.register(
     'getWorkflowSourceById',
@@ -476,49 +438,6 @@ function setupInternalRoutes(
       }
     },
   );
-
-  // v1
-  router.post('/workflows/:workflowId/execute', async (req, res) => {
-    const {
-      params: { workflowId },
-    } = req;
-    const endpointName = 'WorkflowsWorkflowIdExecute';
-    const endpoint = `/v1/workflows/${workflowId}/execute`;
-
-    auditLogger.auditLog({
-      eventName: endpointName,
-      stage: 'start',
-      status: 'succeeded',
-      level: 'debug',
-      request: req,
-      message: `Received request to '${endpoint}' endpoint`,
-    });
-
-    const decision = await authorize(
-      req,
-      orchestratorWorkflowExecutePermission,
-      permissions,
-      httpAuth,
-    );
-    if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint, req);
-    }
-
-    const businessKey = routerApi.v1.extractQueryParam(
-      req,
-      QUERY_PARAM_BUSINESS_KEY,
-    );
-
-    await routerApi.v1
-      .executeWorkflow(req.body, workflowId, businessKey)
-      .then(result => res.status(200).json(result))
-      .catch((error: { message: string }) => {
-        auditLogRequestError(error, endpointName, endpoint, req);
-        res
-          .status(500)
-          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
-      });
-  });
 
   // v2
   routerApi.openApiBackend.register(
@@ -877,45 +796,6 @@ function setupInternalRoutes(
         });
     },
   );
-
-  // v1
-  router.delete('/instances/:instanceId/abort', async (req, res) => {
-    const {
-      params: { instanceId },
-    } = req;
-    const endpointName = 'InstancesInstanceIdAbort';
-    const endpoint = `/v1/instances/${instanceId}/abort`;
-
-    auditLogger.auditLog({
-      eventName: endpointName,
-      stage: 'start',
-      status: 'succeeded',
-      level: 'debug',
-      request: req,
-      message: `Received request to '${endpoint}' endpoint`,
-    });
-
-    const decision = await authorize(
-      req,
-      orchestratorWorkflowInstanceAbortPermission,
-      permissions,
-      httpAuth,
-    );
-    if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint, req);
-    }
-
-    try {
-      await routerApi.v1.abortWorkflow(instanceId);
-      res.status(200).send();
-    } catch (error) {
-      auditLogRequestError(error, endpointName, endpoint, req);
-      res
-        .status(500)
-        .contentType('plain/text')
-        .send((error as Error)?.message || INTERNAL_SERVER_ERROR_MESSAGE);
-    }
-  });
 
   // v2
   routerApi.openApiBackend.register(
