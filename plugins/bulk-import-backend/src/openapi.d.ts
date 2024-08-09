@@ -130,6 +130,10 @@ declare namespace Components {
              * organization URL
              */
             url?: string;
+            /**
+             * total number of repositories in this Organization
+             */
+            totalRepoCount?: number;
             errors?: string[];
         }
         /**

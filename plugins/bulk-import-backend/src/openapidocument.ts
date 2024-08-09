@@ -551,6 +551,10 @@ const OPENAPI = `
             "type": "string",
             "description": "organization URL"
           },
+          "totalRepoCount": {
+            "type": "number",
+            "description": "total number of repositories in this Organization"
+          },
           "errors": {
             "type": "array",
             "items": {
@@ -791,18 +795,21 @@ const OPENAPI = `
               "id": "unique-org-id-1",
               "name": "pet-org",
               "url": "https://github.com/pet-org",
-              "description": "A great Pet Org"
+              "description": "A great Pet Org",
+              "totalRepoCount": 10
             },
             {
               "id": "unique-org-id-2",
               "name": "org-zero",
-              "url": "https://ghe.example.com/org-zero"
+              "url": "https://ghe.example.com/org-zero",
+              "totalRepoCount": 0
             },
             {
               "id": "unique-id-2",
               "name": "org-one",
               "url": "https://ghe.example.com/org-one",
-              "description": "Org One description"
+              "description": "Org One description",
+              "totalRepoCount": 1234
             }
           ]
         }
