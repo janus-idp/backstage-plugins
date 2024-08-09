@@ -6,11 +6,7 @@ import {
   WorkflowExecutionResponse,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { retryAsyncFunction } from '../Helper';
 import { OrchestratorService } from '../OrchestratorService';
-
-const FETCH_INSTANCE_MAX_ATTEMPTS = 10;
-const FETCH_INSTANCE_RETRY_DELAY_MS = 1000;
 
 export class V1 {
   constructor(private readonly orchestratorService: OrchestratorService) {}
@@ -41,54 +37,6 @@ export class V1 {
     }
 
     return source;
-  }
-
-  public async executeWorkflow(
-    inputData: ProcessInstanceVariables,
-    definitionId: string,
-    businessKey: string | undefined,
-  ): Promise<WorkflowExecutionResponse> {
-    const definition = await this.orchestratorService.fetchWorkflowInfo({
-      definitionId,
-      cacheHandler: 'throw',
-    });
-    if (!definition) {
-      throw new Error(`Couldn't fetch workflow definition for ${definitionId}`);
-    }
-    if (!definition.serviceUrl) {
-      throw new Error(`ServiceURL is not defined for workflow ${definitionId}`);
-    }
-    const executionResponse = await this.orchestratorService.executeWorkflow({
-      definitionId: definitionId,
-      inputData,
-      serviceUrl: definition.serviceUrl,
-      businessKey,
-      cacheHandler: 'throw',
-    });
-
-    if (!executionResponse) {
-      throw new Error(`Couldn't execute workflow ${definitionId}`);
-    }
-
-    // Making sure the instance data is available before returning
-    await retryAsyncFunction({
-      asyncFn: () =>
-        this.orchestratorService.fetchInstance({
-          instanceId: executionResponse.id,
-          cacheHandler: 'throw',
-        }),
-      maxAttempts: FETCH_INSTANCE_MAX_ATTEMPTS,
-      delayMs: FETCH_INSTANCE_RETRY_DELAY_MS,
-    });
-
-    return executionResponse;
-  }
-
-  public async abortWorkflow(instanceId: string): Promise<void> {
-    await this.orchestratorService.abortWorkflowInstance({
-      instanceId,
-      cacheHandler: 'throw',
-    });
   }
 
   public async retriggerInstanceInError(

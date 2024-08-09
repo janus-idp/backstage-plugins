@@ -79,7 +79,9 @@ const RecommendedLabel = styled(Chip)({
 
 const getNextWorkflows = (
   details: WorkflowRunDetail,
-  executeWorkflowLink: RouteFunc<PathParams<'/workflows/:workflowId/execute'>>,
+  executeWorkflowLink: RouteFunc<
+    PathParams<'/v2/workflows/:workflowId/execute'>
+  >,
 ) => {
   const nextWorkflows: {
     title: string;

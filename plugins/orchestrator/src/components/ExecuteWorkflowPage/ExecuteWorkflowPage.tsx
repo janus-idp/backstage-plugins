@@ -79,7 +79,7 @@ export const ExecuteWorkflowPage = () => {
           parameters,
           businessKey: assessmentInstanceId,
         });
-        navigate(instanceLink({ instanceId: response.id }));
+        navigate(instanceLink({ instanceId: response.data.id }));
       } catch (err) {
         setUpdateError(getErrorObject(err));
       } finally {
@@ -111,7 +111,7 @@ export const ExecuteWorkflowPage = () => {
             instanceId,
             inputData: parameters,
           });
-          navigate(instanceLink({ instanceId: response.id }));
+          navigate(instanceLink({ instanceId: response.data.id }));
         } catch (err) {
           setUpdateError(getErrorObject(err));
         } finally {
