@@ -83,6 +83,15 @@ export const PermissionPoliciesFormRow = ({
     </div>
   );
 
+  const getTotalRules = (): string => {
+    let accessMessage = 'Configure access';
+
+    if (totalRules > 0) {
+      accessMessage += ` (${totalRules} ${totalRules > 1 ? 'rules' : 'rule'})`;
+    }
+    return accessMessage;
+  };
+
   return (
     <div>
       <div style={{ display: 'flex', flexFlow: 'column', gap: '15px' }}>
@@ -180,11 +189,7 @@ export const PermissionPoliciesFormRow = ({
                   disabled={!!conditionRulesError}
                 >
                   <ChecklistRtlIcon fontSize="small" />
-                  {totalRules > 0
-                    ? `Configure access (${totalRules} ${
-                        totalRules > 1 ? `rules` : 'rule'
-                      })`
-                    : 'Configure access'}
+                  {getTotalRules()}
                   &nbsp;
                   <Tooltip title={tooltipTitle()} placement="top">
                     <HelpOutlineIcon fontSize="inherit" />

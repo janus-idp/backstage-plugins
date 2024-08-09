@@ -111,6 +111,26 @@ export const mockConditions: RoleConditionalPolicyDecision<PermissionAction>[] =
               },
             ],
           },
+          {
+            not: {
+              allOf: [
+                {
+                  rule: 'IS_ENTITY_OWNER',
+                  resourceType: 'catalog-entity',
+                  params: {
+                    claims: ['user:default/xyz'],
+                  },
+                },
+                {
+                  rule: 'IS_ENTITY_KIND',
+                  resourceType: 'catalog-entity',
+                  params: {
+                    kinds: ['User'],
+                  },
+                },
+              ],
+            },
+          },
         ],
       },
       roleEntityRef: 'role:default/rbac_admin',
