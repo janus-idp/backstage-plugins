@@ -5,6 +5,7 @@ import {
   createComponentExtension,
   createPlugin,
   discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 import {
@@ -25,9 +26,14 @@ export const acrPlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         configApi: configApiRef,
+        identityApi: identityApiRef,
       },
-      factory: ({ discoveryApi, configApi }) =>
-        new AzureContainerRegistryApiClient({ discoveryApi, configApi }),
+      factory: ({ discoveryApi, configApi, identityApi }) =>
+        new AzureContainerRegistryApiClient({
+          discoveryApi,
+          configApi,
+          identityApi,
+        }),
     }),
   ],
 });
