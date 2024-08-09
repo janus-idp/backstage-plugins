@@ -2,6 +2,7 @@ import {
   ConfigApi,
   createApiRef,
   DiscoveryApi,
+  IdentityApi,
 } from '@backstage/core-plugin-api';
 
 import { TagsResponse } from '../types';
@@ -20,6 +21,7 @@ export const AzureContainerRegistryApiRef =
 export type Options = {
   discoveryApi: DiscoveryApi;
   configApi: ConfigApi;
+  identityApi: IdentityApi;
 };
 
 export class AzureContainerRegistryApiClient
@@ -28,10 +30,12 @@ export class AzureContainerRegistryApiClient
   // @ts-ignore
   private readonly discoveryApi: DiscoveryApi;
   private readonly configApi: ConfigApi;
+  private readonly identityApi: IdentityApi;
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
     this.configApi = options.configApi;
+    this.identityApi = options.identityApi;
   }
 
   private async getBaseUrl() {
@@ -41,8 +45,12 @@ export class AzureContainerRegistryApiClient
   }
 
   private async fetcher(url: string) {
+    const { token: idToken } = await this.identityApi.getCredentials();
     const response = await fetch(url, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
+      },
       method: 'GET',
     });
     if (!response.ok) {
