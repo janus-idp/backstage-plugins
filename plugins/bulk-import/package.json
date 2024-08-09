@@ -13,9 +13,9 @@
     "role": "frontend-plugin",
     "supported-versions": "1.28.4",
     "pluginId": "bulk-import",
-    "pluginPackage": "@janus-idp/backstage-plugin-bulk-import",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-bulk-import",
+      "@janus-idp/backstage-plugin-bulk-import-backend",
       "@janus-idp/backstage-plugin-bulk-import-common"
     ]
   },
@@ -39,7 +39,9 @@
     "@backstage/theme": "^0.5.6",
     "@backstage/catalog-model": "^1.5.0",
     "@backstage/plugin-catalog-react": "^1.12.2",
+    "@backstage/plugin-permission-react": "^0.4.24",
     "@backstage/plugin-catalog-import": "^0.12.1",
+    "@janus-idp/backstage-plugin-bulk-import-common": "0.2.0",
     "@material-ui/core": "^4.9.13",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@material-ui/icons": "^4.11.3",
@@ -48,7 +50,8 @@
     "@janus-idp/shared-react": "2.10.0",
     "formik": "^2.4.5",
     "lodash": "^4.17.21",
-    "react-use": "^17.2.4"
+    "react-use": "^17.2.4",
+    "yaml": "^2.0.0"
   },
   "peerDependencies": {
     "react": "16.13.1 || ^17.0.0 || ^18.0.0",

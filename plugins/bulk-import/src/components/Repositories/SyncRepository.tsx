@@ -1,18 +1,38 @@
 import React from 'react';
 
+import { useApi } from '@backstage/core-plugin-api';
+
 import { IconButton, Tooltip } from '@material-ui/core';
 import SyncIcon from '@mui/icons-material/Sync';
+import { useFormikContext } from 'formik';
 
-import { AddRepositoriesData } from '../../types';
+import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
+import {
+  AddRepositoriesFormValues,
+  AddRepositoryData,
+} from '../../types/types';
 
 type SyncRepositoryProps = {
-  data: AddRepositoriesData;
+  data: AddRepositoryData;
 };
 
 const SyncRepository = ({ data }: SyncRepositoryProps) => {
-  const handleClick = () => {
-    // TODO: Add refresh logic
-    return data;
+  const bulkImportApi = useApi(bulkImportApiRef);
+  const { setFieldValue } = useFormikContext<AddRepositoriesFormValues>();
+
+  const handleClick = async () => {
+    const value = await bulkImportApi.checkImportStatus(
+      data.repoUrl || '',
+      data?.defaultBranch || 'main',
+    );
+    setFieldValue(
+      `repositories.[${data.repoName}].catalogInfoYaml.status`,
+      value.status,
+    );
+    setFieldValue(
+      `repositories.[${data.repoName}].catalogInfoYaml.lastUpdated`,
+      value.lastUpdate,
+    );
   };
 
   return (

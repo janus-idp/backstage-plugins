@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { useFormikContext } from 'formik';
 
-import { AddRepositoriesFormValues, ApprovalTool } from '../../types';
+import { AddRepositoriesFormValues, ApprovalTool } from '../../types/types';
 
 const useStyles = makeStyles(theme => ({
   createButton: {
@@ -40,32 +40,36 @@ const useStyles = makeStyles(theme => ({
 
 export const AddRepositoriesFormFooter = () => {
   const styles = useStyles();
-  const { values, handleSubmit } =
+  const { values, handleSubmit, isSubmitting } =
     useFormikContext<AddRepositoriesFormValues>();
   const submitTitle =
     (values.approvalTool === ApprovalTool.Git
       ? 'Create pull request'
       : 'Create ServiceNow ticket') +
-    (((values.repositories && Object.keys(values.repositories)?.length) || 0) >
-    1
-      ? 's'
-      : '');
+    ((Object.keys(values.repositories || [])?.length || 0) > 1 ? 's' : '');
+
+  const disableCreate =
+    !values.repositories || Object.values(values.repositories).length === 0;
+
+  const toolTipTitle = () => {
+    if (isSubmitting) {
+      return 'Creating import jobs';
+    }
+    if (disableCreate) {
+      return 'Please wait until the catalog-info.yaml files are generated';
+    }
+    return '';
+  };
 
   return (
     <div className={styles.footer}>
-      <Tooltip
-        classes={{ tooltip: styles.tooltip }}
-        title="Please wait until the catalog-info.yaml files are generated"
-      >
+      <Tooltip classes={{ tooltip: styles.tooltip }} title={toolTipTitle()}>
         <span>
           <Button
             variant="contained"
             onClick={handleSubmit as any}
             className={styles.createButton}
-            disabled={
-              !values.repositories ||
-              Object.keys(values.repositories).length === 0
-            }
+            disabled={disableCreate || isSubmitting}
           >
             {submitTitle}
           </Button>
