@@ -27,7 +27,9 @@ jest.mock('@backstage/core-plugin-api', () => ({
 }));
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
-  useEntity: () => mockEntity,
+  useEntity: () => ({
+    entity: mockEntity,
+  }),
 }));
 
 jest.mock('@backstage/core-components', () => ({

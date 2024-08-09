@@ -12,7 +12,7 @@ import { useArgocdConfig } from '../../hooks/useArgocdConfig';
 import { useArgocdViewPermission } from '../../hooks/useArgocdViewPermission';
 import { Application, Revision } from '../../types';
 import {
-  getAppSelector,
+  getArgoCdAppConfig,
   getInstanceName,
   getUniqueRevisions,
 } from '../../utils/utils';
@@ -46,10 +46,16 @@ const DeploymentLifecycle = () => {
 
   const { instances, intervalMs } = useArgocdConfig();
   const instanceName = getInstanceName(entity) || instances?.[0]?.name;
+  const { appSelector, appName, projectName, appNamespace } =
+    getArgoCdAppConfig({ entity });
+
   const { apps, loading, error } = useApplications({
     instanceName,
     intervalMs,
-    appSelector: encodeURIComponent(getAppSelector(entity)),
+    appSelector,
+    appName,
+    appNamespace,
+    projectName,
   });
 
   const hasArgocdViewAccess = useArgocdViewPermission();

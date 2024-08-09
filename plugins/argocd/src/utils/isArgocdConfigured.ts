@@ -4,5 +4,4 @@ import { ArgoCdLabels } from './utils';
 
 export const isArgocdConfigured = (entity: Entity) =>
   Boolean(entity?.metadata.annotations?.[ArgoCdLabels.appSelector]) ||
-  Boolean(entity?.metadata.annotations?.[ArgoCdLabels.instanceName]) ||
-  Boolean(entity?.metadata.annotations?.[ArgoCdLabels.projectName]);
+  Boolean(entity?.metadata.annotations?.[ArgoCdLabels.appName]);

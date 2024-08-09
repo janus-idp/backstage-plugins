@@ -23,7 +23,7 @@ import GitLabIcon from '@patternfly/react-icons/dist/esm/icons/gitlab-icon';
 import moment from 'moment';
 
 import { Application, Revision } from '../../types';
-import { getCommitUrl } from '../../utils/utils';
+import { getCommitUrl, isAppHelmChartType } from '../../utils/utils';
 import AppNamespace from '../AppStatus/AppNamespace';
 import StatusHeading from '../AppStatus/StatusHeading';
 import DeploymentLifecycledHeader from './DeploymentLifecycleHeader';
@@ -124,11 +124,9 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
               {app?.spec?.destination?.server}{' '}
               {app?.spec?.destination?.server ===
               'https://kubernetes.default.svc' ? (
-                <>
-                  <Tooltip title="This is the local cluster where Argo CD is installed.">
-                    <span>(in-cluster) </span>
-                  </Tooltip>
-                </>
+                <Tooltip title="This is the local cluster where Argo CD is installed.">
+                  <span>(in-cluster) </span>
+                </Tooltip>
               ) : (
                 ''
               )}
@@ -139,7 +137,7 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
 
             <AppNamespace app={app} />
           </Grid>
-          {!app?.spec?.source?.chart && (
+          {!isAppHelmChartType(app) && (
             <Grid item xs={12}>
               <Typography color="textPrimary">Commit</Typography>
               {latestRevision ? (
@@ -159,11 +157,13 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
                       const repoUrl = app?.spec?.source?.repoURL ?? '';
                       if (repoUrl) {
                         window.open(
-                          getCommitUrl(
-                            repoUrl,
-                            latestRevision?.revision,
-                            entity?.metadata?.annotations ?? {},
-                          ),
+                          isAppHelmChartType(app)
+                            ? repoUrl
+                            : getCommitUrl(
+                                repoUrl,
+                                latestRevision?.revision,
+                                entity?.metadata?.annotations ?? {},
+                              ),
                           '_blank',
                         );
                       }
@@ -215,11 +215,15 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
                     <br />
                     {revisionsMap[latestRevision?.revision]?.message}{' '}
                     <Link
-                      href={getCommitUrl(
-                        app?.spec?.source?.repoURL ?? '',
-                        latestRevision?.revision,
-                        entity?.metadata?.annotations ?? {},
-                      )}
+                      href={
+                        isAppHelmChartType(app)
+                          ? app?.spec?.source?.repoURL
+                          : getCommitUrl(
+                              app?.spec?.source?.repoURL ?? '',
+                              latestRevision?.revision,
+                              entity?.metadata?.annotations ?? {},
+                            )
+                      }
                       target="_blank"
                       rel="noopener"
                     >

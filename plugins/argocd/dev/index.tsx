@@ -14,6 +14,7 @@ import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-them
 import {
   ArgoCDApi,
   argoCDApiRef,
+  GetApplicationOptions,
   listAppsOptions,
   RevisionDetailsListOptions,
   RevisionDetailsOptions,
@@ -23,6 +24,7 @@ import {
   ArgocdDeploymentSummary,
   argocdPlugin,
 } from '../src/plugin';
+import { Application } from '../src/types';
 import {
   mockApplication,
   mockArgocdConfig,
@@ -61,6 +63,9 @@ export class MockArgoCDApiClient implements ArgoCDApi {
     _options: RevisionDetailsListOptions,
   ): Promise<any> {
     return mockRevisions;
+  }
+  async getApplication(_options: GetApplicationOptions): Promise<Application> {
+    return mockApplication;
   }
 }
 
