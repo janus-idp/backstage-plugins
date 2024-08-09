@@ -35,7 +35,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
   private conditionsDiff: ConditionalPoliciesDiff;
 
   constructor(
-    filePath: string,
+    filePath: string | undefined,
     allowReload: boolean,
     logger: LoggerService,
     private readonly conditionalStorage: ConditionalStorage,
@@ -54,6 +54,10 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
   }
 
   async initialize(): Promise<void> {
+    if (!this.filePath) {
+      this.logger.info('conditional policies file feature was disabled');
+      return;
+    }
     const fileExists = fs.existsSync(this.filePath);
     if (!fileExists) {
       const err = new Error(`File '${this.filePath}' was not found`);
@@ -64,13 +68,13 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       );
       return;
     }
+
+    this.roleEventEmitter.on('roleAdded', this.onChange.bind(this));
     await this.onChange();
 
     if (this.allowReload) {
       this.watchFile();
     }
-
-    this.roleEventEmitter.on('roleAdded', this.onChange.bind(this));
   }
 
   async onChange(): Promise<void> {
@@ -164,12 +168,12 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     return data;
   }
 
-  async handleFileChanges(): Promise<void> {
+  private async handleFileChanges(): Promise<void> {
     await this.removeConditions();
     await this.addConditions();
   }
 
-  async addConditions(): Promise<void> {
+  private async addConditions(): Promise<void> {
     try {
       for (const condition of this.conditionsDiff.addedConditions) {
         const conditionToCreate = await processConditionMapping(
@@ -198,7 +202,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     this.conditionsDiff.addedConditions = [];
   }
 
-  async removeConditions(): Promise<void> {
+  private async removeConditions(): Promise<void> {
     try {
       for (const condition of this.conditionsDiff.removedConditions) {
         const conditionToDelete = (
@@ -230,7 +234,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     this.conditionsDiff.removedConditions = [];
   }
 
-  async handleError(
+  private async handleError(
     message: string,
     error: unknown,
     event: string,
