@@ -3,7 +3,7 @@ import React from 'react';
 import { BaseNode } from '@patternfly/react-topology';
 
 import TopologySideBar from '../components/Topology/TopologySideBar/TopologySideBar';
-import { TYPE_WORKLOAD } from '../const';
+import { TYPE_VM, TYPE_WORKLOAD } from '../const';
 
 export const useSideBar = (): [
   React.ReactNode,
@@ -30,15 +30,17 @@ export const useSideBar = (): [
     );
   }, [params]);
 
-  const sideBar = selectedNode && selectedNode.getType() === TYPE_WORKLOAD && (
-    <TopologySideBar
-      onClose={() => {
-        setSideBarOpen(false);
-        removeSelectedIdParam();
-      }}
-      node={selectedNode}
-    />
-  );
+  const sideBar = selectedNode &&
+    (selectedNode.getType() === TYPE_WORKLOAD ||
+      selectedNode.getType() === TYPE_VM) && (
+      <TopologySideBar
+        onClose={() => {
+          setSideBarOpen(false);
+          removeSelectedIdParam();
+        }}
+        node={selectedNode}
+      />
+    );
 
   return [
     sideBar,

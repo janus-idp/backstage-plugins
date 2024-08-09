@@ -16,6 +16,8 @@ export const GROUP_PADDING = [
 
 export const MAXSHOWRESCOUNT = 3;
 
+export const RESOURCE_NAME_TRUNCATE_LENGTH = 13;
+
 export const TYPE_WORKLOAD = 'workload';
 export const TYPE_VM = 'virtualmachine';
 export const TYPE_APPLICATION_GROUP = 'part-of';

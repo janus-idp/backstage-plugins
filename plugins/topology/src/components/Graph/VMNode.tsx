@@ -7,6 +7,7 @@ import {
   WithSelectionProps,
 } from '@patternfly/react-topology';
 
+import { RESOURCE_NAME_TRUNCATE_LENGTH } from '../../const';
 import BaseNode from './BaseNode';
 
 const VM_STATUS_GAP = 7;
@@ -62,7 +63,13 @@ const VmNode = ({
   const classes = useStyles();
   return (
     <g>
-      <BaseNode kind={kind} element={element} onSelect={onNodeSelect} {...rest}>
+      <BaseNode
+        kind={kind}
+        element={element}
+        truncateLength={RESOURCE_NAME_TRUNCATE_LENGTH}
+        onSelect={onNodeSelect}
+        {...rest}
+      >
         <rect
           className={classes.kubevirtbg}
           x={VM_STATUS_GAP + VM_STATUS_WIDTH}

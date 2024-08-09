@@ -13,7 +13,7 @@ import {
   VisualizationSurface,
 } from '@patternfly/react-topology';
 
-import { TYPE_WORKLOAD } from '../../const';
+import { TYPE_VM, TYPE_WORKLOAD } from '../../const';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 import { useSideBar } from '../../hooks/useSideBar';
 import { useWorkloadsWatcher } from '../../hooks/useWorkloadWatcher';
@@ -26,6 +26,8 @@ import TopologyToolbar from './TopologyToolbar';
 import './TopologyToolbar.css';
 
 import { usePermission } from '@backstage/plugin-permission-react';
+
+import { makeStyles } from '@material-ui/core';
 
 import { topologyViewPermission } from '@janus-idp/backstage-plugin-topology-common';
 
@@ -85,7 +87,12 @@ const TopologyViewWorkloadComponent = ({
         ? (controller.getElementById(selectedId) as BaseNode)
         : null;
       setSelectedNode(selectedNode);
-      if (selectedNode && selectedNode.getType() === TYPE_WORKLOAD)
+
+      if (
+        selectedNode &&
+        (selectedNode.getType() === TYPE_WORKLOAD ||
+          selectedNode.getType() === TYPE_VM)
+      )
         setSideBarOpen(true);
       else {
         setSideBarOpen(false);
@@ -97,11 +104,20 @@ const TopologyViewWorkloadComponent = ({
     const id = ids[0] ? ids[0] : '';
     const selNode = controller.getElementById(id) as BaseNode;
     setSelectedNode(selNode);
-    if (!id || selNode.getType() !== TYPE_WORKLOAD) {
+    if (
+      !id ||
+      (selNode.getType() !== TYPE_WORKLOAD && selNode.getType() !== TYPE_VM)
+    ) {
       removeSelectedIdParam();
     }
   });
-
+  // Rewriting CSS in JS
+  const useStyles = makeStyles(theme => ({
+    bsTopologyWrapper: {
+      height: '100%',
+    },
+  }));
+  const classes = useStyles();
   if (!loaded)
     return (
       <div data-testid="topology-progress">
@@ -131,7 +147,8 @@ const TopologyViewWorkloadComponent = ({
       {allErrors && allErrors.length > 0 && (
         <TopologyErrorPanel allErrors={allErrors} />
       )}
-      <InfoCard className="bs-topology-wrapper" divider={false}>
+      <InfoCard className={classes.bsTopologyWrapper} divider={false}>
+        {/* <InfoCard className="bs-topology-wrapper" divider={false}> */}
         {clusters.length < 1 ? (
           <TopologyEmptyState />
         ) : (

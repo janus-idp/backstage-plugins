@@ -125,7 +125,7 @@ The following permission must be granted to the [`ClusterRole`](https://backstag
       - apiGroups:
           - kubevirt.io
         resources:
-          - 'virtualmachines'
+          - virtualmachines
         verbs:
           - get
           - list
