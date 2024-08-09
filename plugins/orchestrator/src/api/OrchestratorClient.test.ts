@@ -11,10 +11,10 @@ import axios, {
 import {
   AssessedProcessInstanceDTO,
   DefaultApi,
+  ExecuteWorkflowResponseDTO,
   PaginationInfoDTO,
   ProcessInstanceListResultDTO,
   QUERY_PARAM_INCLUDE_ASSESSMENT,
-  WorkflowExecutionResponse,
   WorkflowFormatDTO,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
@@ -65,132 +65,109 @@ describe('OrchestratorClient', () => {
   });
 
   describe('executeWorkflow', () => {
-    it('should execute workflow with empty parameters', async () => {
-      // Given
-      const workflowId = 'workflow123';
-      const executionId = 'execId001';
-      const parameters: JsonObject = {};
-      const args = {
-        workflowId: workflowId,
-        parameters: {} as JsonObject,
+    const workflowId = 'workflow123';
+
+    const setupTest = (
+      executionId: string,
+      parameters: JsonObject,
+      businessKey?: string,
+    ) => {
+      const mockExecResponse: ExecuteWorkflowResponseDTO = { id: executionId };
+      const mockResponse: AxiosResponse<ExecuteWorkflowResponseDTO> = {
+        data: mockExecResponse,
+        status: 200,
+        statusText: 'OK',
+        headers: {} as RawAxiosResponseHeaders,
+        config: {} as InternalAxiosRequestConfig,
       };
 
-      // Mock fetch to simulate a successful response
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: jest.fn().mockResolvedValue({
-          id: executionId,
-        }),
-      });
+      const executeWorkflowSpy = jest.spyOn(
+        DefaultApi.prototype,
+        'executeWorkflow',
+      );
+      axios.request = jest.fn().mockResolvedValueOnce(mockResponse);
 
-      // When
-      const result: WorkflowExecutionResponse =
-        await orchestratorClient.executeWorkflow(args);
+      const args = { workflowId, parameters, businessKey };
 
-      // Then
-      expect(fetch).toHaveBeenCalledWith(
-        `${baseUrl}/workflows/${workflowId}/execute`,
-        {
+      return { mockExecResponse, executeWorkflowSpy, args };
+    };
+
+    const getExpectations = (
+      result: any,
+      mockExecResponse: ExecuteWorkflowResponseDTO,
+      executeWorkflowSpy: jest.SpyInstance,
+      parameters: JsonObject,
+    ) => {
+      return () => {
+        expect(result).toBeDefined();
+        expect(result.data).toEqual(mockExecResponse);
+        expect(axios.request).toHaveBeenCalledTimes(1);
+        expect(axios.request).toHaveBeenCalledWith({
+          ...getAxiosTestRequest(`/v2/workflows/${workflowId}/execute`),
+          data: JSON.stringify({ inputData: parameters }),
           method: 'POST',
-          body: JSON.stringify(parameters),
           headers: {
             'Content-Type': 'application/json',
             ...defaultAuthHeaders,
           },
-        },
+        });
+        expect(executeWorkflowSpy).toHaveBeenCalledTimes(1);
+        expect(executeWorkflowSpy).toHaveBeenCalledWith(
+          workflowId,
+          { inputData: parameters },
+          getDefaultTestRequestConfig(),
+        );
+      };
+    };
+
+    it('should execute workflow with empty parameters', async () => {
+      // Given
+      const { mockExecResponse, executeWorkflowSpy, args } = setupTest(
+        'execId001',
+        {},
       );
 
-      expect(result).toBeDefined();
-      expect(result.id).toBeDefined();
-      expect(result.id).toEqual(executionId);
+      // When
+      const result = await orchestratorClient.executeWorkflow(args);
+
+      // Then
+      expect(
+        getExpectations(result, mockExecResponse, executeWorkflowSpy, {}),
+      ).not.toThrow();
     });
     it('should execute workflow with business key', async () => {
       // Given
-      const workflowId = 'workflow123';
-      const businessKey = 'business123';
-      const executionId = 'execId001';
-      const parameters: JsonObject = {};
-      const args = {
-        workflowId: workflowId,
-        parameters: {} as JsonObject,
-        businessKey: businessKey,
-      };
-
-      // Mock fetch to simulate a successful response
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: jest.fn().mockResolvedValue({
-          id: executionId,
-        }),
-      });
-
-      // When
-      const client = new OrchestratorClient(orchestratorClientOptions);
-      const result: WorkflowExecutionResponse =
-        await client.executeWorkflow(args);
-
-      // Then
-      expect(fetch).toHaveBeenCalledWith(
-        `${baseUrl}/workflows/${workflowId}/execute?businessKey=${businessKey}`,
-        {
-          method: 'POST',
-          body: JSON.stringify(parameters),
-          headers: {
-            'Content-Type': 'application/json',
-            ...defaultAuthHeaders,
-          },
-        },
+      const { mockExecResponse, executeWorkflowSpy, args } = setupTest(
+        'execId001',
+        {},
+        'business123',
       );
 
-      expect(result).toBeDefined();
-      expect(result.id).toBeDefined();
-      expect(result.id).toEqual(executionId);
+      const result = await orchestratorClient.executeWorkflow(args);
+
+      expect(
+        getExpectations(result, mockExecResponse, executeWorkflowSpy, {}),
+      ).not.toThrow();
     });
     it('should execute workflow with parameters and business key', async () => {
       // Given
-      const workflowId = 'workflow123';
-      const businessKey = 'business123';
-      const executionId = 'execId001';
-      const parameters: JsonObject = {
-        param1: 'one',
-        param2: 2,
-        param3: true,
-      };
-      const args = {
-        workflowId: workflowId,
-        parameters: parameters,
-        businessKey: businessKey,
-      };
-
-      // Mock fetch to simulate a successful response
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: jest.fn().mockResolvedValue({
-          id: executionId,
-        }),
-      });
-
-      // When
-      const client = new OrchestratorClient(orchestratorClientOptions);
-      const result: WorkflowExecutionResponse =
-        await client.executeWorkflow(args);
-
-      // Then
-      expect(fetch).toHaveBeenCalledWith(
-        `${baseUrl}/workflows/${workflowId}/execute?businessKey=${businessKey}`,
-        {
-          method: 'POST',
-          body: JSON.stringify(parameters),
-          headers: {
-            'Content-Type': 'application/json',
-            ...defaultAuthHeaders,
-          },
-        },
+      const parameters = { param1: 'one', param2: 2, param3: true };
+      const { mockExecResponse, executeWorkflowSpy, args } = setupTest(
+        'execId001',
+        parameters,
+        'business123',
       );
 
-      expect(result).toBeDefined();
-      expect(result.id).toBeDefined();
-      expect(result.id).toEqual(executionId);
+      const result = await orchestratorClient.executeWorkflow(args);
+
+      expect(
+        getExpectations(
+          result,
+          mockExecResponse,
+          executeWorkflowSpy,
+          parameters,
+        ),
+      ).not.toThrow();
     });
   });
   describe('abortWorkflow', () => {
@@ -342,8 +319,8 @@ describe('OrchestratorClient', () => {
 
       const mockResponse: AxiosResponse<WorkflowOverviewListResultDTO> = {
         data: mockWorkflowOverviews,
-        status: 200, // Set status code (optional)
-        statusText: 'OK', // Set status text (optional)
+        status: 200,
+        statusText: 'OK',
         headers: {} as RawAxiosResponseHeaders,
         config: {} as InternalAxiosRequestConfig,
       };
@@ -355,7 +332,7 @@ describe('OrchestratorClient', () => {
       );
 
       // Mock axios request to simulate a successful response
-      axios.request = jest.fn().mockResolvedValueOnce(mockResponse);
+      jest.spyOn(axios, 'request').mockResolvedValueOnce(mockResponse);
 
       // When
       const result =
@@ -411,8 +388,8 @@ describe('OrchestratorClient', () => {
 
       const mockResponse: AxiosResponse<ProcessInstanceListResultDTO> = {
         data: mockInstances,
-        status: 200, // Set status code (optional)
-        statusText: 'OK', // Set status text (optional)
+        status: 200,
+        statusText: 'OK',
         headers: {} as RawAxiosResponseHeaders,
         config: {} as InternalAxiosRequestConfig,
       };
@@ -421,7 +398,7 @@ describe('OrchestratorClient', () => {
       const getInstancesSpy = jest.spyOn(DefaultApi.prototype, 'getInstances');
 
       // Mock axios request to simulate a successful response
-      axios.request = jest.fn().mockResolvedValueOnce(mockResponse);
+      jest.spyOn(axios, 'request').mockResolvedValueOnce(mockResponse);
 
       // When
       const result = await orchestratorClient.listInstances({ paginationInfo });
@@ -474,13 +451,13 @@ describe('OrchestratorClient', () => {
 
       const mockResponse: AxiosResponse<AssessedProcessInstanceDTO> = {
         data: mockInstance,
-        status: 200, // Set status code (optional)
-        statusText: 'OK', // Set status text (optional)
+        status: 200,
+        statusText: 'OK',
         headers: {} as RawAxiosResponseHeaders,
         config: {} as InternalAxiosRequestConfig,
       };
       // Mock axios request to simulate a successful response
-      axios.request = jest.fn().mockResolvedValueOnce(mockResponse);
+      jest.spyOn(axios, 'request').mockResolvedValueOnce(mockResponse);
 
       // Spy DefaultApi
       const getInstanceSpy = jest.spyOn(
@@ -587,8 +564,8 @@ describe('OrchestratorClient', () => {
 
       const mockResponse: AxiosResponse<WorkflowOverviewDTO> = {
         data: mockOverview,
-        status: 200, // Set status code (optional)
-        statusText: 'OK', // Set status text (optional)
+        status: 200,
+        statusText: 'OK',
         headers: {} as RawAxiosResponseHeaders,
         config: {} as InternalAxiosRequestConfig,
       };
@@ -600,7 +577,7 @@ describe('OrchestratorClient', () => {
       );
 
       // Mock axios request to simulate a successful response
-      axios.request = jest.fn().mockResolvedValueOnce(mockResponse);
+      jest.spyOn(axios, 'request').mockResolvedValueOnce(mockResponse);
 
       // When
       const result = await orchestratorClient.getWorkflowOverview(workflowId);
@@ -641,13 +618,27 @@ describe('OrchestratorClient', () => {
       // Given
       const instanceId = 'instance123';
       const inputData = { key: 'value' };
-      const mockResponse = { id: 'newInstanceId', status: 'running' };
 
-      // Mock fetch to simulate a successful response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValue(mockResponse),
-      });
+      const mockExecResponse: ExecuteWorkflowResponseDTO = {
+        id: 'newInstanceId',
+      };
+
+      const mockResponse: AxiosResponse<ExecuteWorkflowResponseDTO> = {
+        data: mockExecResponse,
+        status: 200,
+        statusText: 'OK',
+        headers: {} as RawAxiosResponseHeaders,
+        config: {} as InternalAxiosRequestConfig,
+      };
+
+      // Spy DefaultApi
+      const executeWorkflowSpy = jest.spyOn(
+        DefaultApi.prototype,
+        'executeWorkflow',
+      );
+
+      // Mock axios request to simulate a successful response
+      axios.request = jest.fn().mockResolvedValueOnce(mockResponse);
 
       // When
       const result = await orchestratorClient.retriggerInstanceInError({
@@ -656,13 +647,24 @@ describe('OrchestratorClient', () => {
       });
 
       // Then
-      const expectedUrlToFetch = `${baseUrl}/instances/${instanceId}/retrigger`;
-      expect(fetch).toHaveBeenCalledWith(expectedUrlToFetch, {
+      expect(result).toBeDefined();
+      expect(result.data).toEqual(mockExecResponse);
+      expect(axios.request).toHaveBeenCalledTimes(1);
+      expect(axios.request).toHaveBeenCalledWith({
+        ...getAxiosTestRequest(`/v2/workflows/${instanceId}/execute`),
+        data: JSON.stringify({ inputData: inputData }),
         method: 'POST',
-        body: JSON.stringify(inputData),
-        headers: { 'Content-Type': 'application/json', ...defaultAuthHeaders },
+        headers: {
+          'Content-Type': 'application/json',
+          ...defaultAuthHeaders,
+        },
       });
-      expect(result).toEqual(mockResponse);
+      expect(executeWorkflowSpy).toHaveBeenCalledTimes(1);
+      expect(executeWorkflowSpy).toHaveBeenCalledWith(
+        instanceId,
+        { inputData: inputData },
+        getDefaultTestRequestConfig(),
+      );
     });
 
     it('should throw a ResponseError when retriggering instance fails', async () => {
@@ -670,12 +672,15 @@ describe('OrchestratorClient', () => {
       const instanceId = 'instance123';
       const inputData = { key: 'value' };
 
-      // Mock fetch to simulate a failed response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error',
-      });
+      axios.request = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('Simulated error'));
+
+      // Spy DefaultApi
+      const executeWorkflowSpy = jest.spyOn(
+        DefaultApi.prototype,
+        'executeWorkflow',
+      );
 
       // When
       const promise = orchestratorClient.retriggerInstanceInError({
@@ -685,6 +690,12 @@ describe('OrchestratorClient', () => {
 
       // Then
       await expect(promise).rejects.toThrow();
+      expect(executeWorkflowSpy).toHaveBeenCalledTimes(1);
+      expect(executeWorkflowSpy).toHaveBeenCalledWith(
+        instanceId,
+        { inputData: inputData },
+        getDefaultTestRequestConfig(),
+      );
     });
   });
 
