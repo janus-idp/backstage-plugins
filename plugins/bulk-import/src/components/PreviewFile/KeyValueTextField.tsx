@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { FormHelperText, TextField } from '@material-ui/core';
 
-import { PullRequestPreview, PullRequestPreviewData } from '../../types';
+import { PullRequestPreview, PullRequestPreviewData } from '../../types/types';
 
 interface KeyValueTextFieldProps {
   repoName: string;

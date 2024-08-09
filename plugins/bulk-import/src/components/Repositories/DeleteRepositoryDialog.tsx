@@ -1,27 +1,25 @@
 import React from 'react';
 
-import {
-  Box,
-  Button,
-  createStyles,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  makeStyles,
-  Theme,
-  Typography,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import CloseIcon from '@mui/icons-material/Close';
 import WarningIcon from '@mui/icons-material/Warning';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 
-import { AddRepositoriesData } from '../../types';
+import { AddRepositoryData } from '../../types/types';
 
 type DeleteRepositoryDialogProps = {
   open: boolean;
+  error: string;
   closeDialog: () => void;
-  repository: AddRepositoriesData;
+  repository: AddRepositoryData;
   removeRepository: () => void;
 };
 
@@ -30,9 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
     dialogContainer: {
       height: '70%',
     },
-    dialogContent: {
-      padding: '8px 0',
-    },
+
     titleContainer: {
       display: 'flex',
       alignItems: 'center',
@@ -71,11 +67,11 @@ const DeleteRepositoryDialog = ({
   closeDialog,
   repository,
   removeRepository,
+  error,
 }: DeleteRepositoryDialogProps) => {
   const classes = useStyles();
   const handleClickRemove = () => {
     removeRepository();
-    closeDialog();
   };
   return (
     <Dialog
@@ -104,13 +100,18 @@ const DeleteRepositoryDialog = ({
             <CloseIcon />
           </IconButton>
         </Box>
-        <DialogContent className={classes.dialogContent}>
-          <Typography variant="body1">
-            Removing a repository erases all associated information from the
-            Catalog page.
-          </Typography>
-        </DialogContent>
       </DialogTitle>
+      <DialogContent>
+        <Typography variant="body1">
+          Removing a repository erases all associated information from the
+          Catalog page.
+        </Typography>
+      </DialogContent>
+      {error && (
+        <Box maxWidth="650px" marginLeft="20px">
+          <Alert severity="error">{error}</Alert>
+        </Box>
+      )}
       <DialogActions style={{ justifyContent: 'left', padding: '20px' }}>
         <Button
           variant="contained"
