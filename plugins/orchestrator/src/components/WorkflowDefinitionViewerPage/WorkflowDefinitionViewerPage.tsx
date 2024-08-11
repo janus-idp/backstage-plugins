@@ -9,9 +9,8 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import Skeleton from '@mui/material/Skeleton';
+import { Button, Grid } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
 import { orchestratorApiRef } from '../../api';
 import {

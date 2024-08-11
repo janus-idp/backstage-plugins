@@ -1,7 +1,6 @@
 import React from 'react';
 
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
+import { Button, CircularProgress } from '@material-ui/core';
 
 const SubmitButton = ({
   submitting,

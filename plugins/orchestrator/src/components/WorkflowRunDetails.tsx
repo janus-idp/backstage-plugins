@@ -4,9 +4,7 @@ import { Link } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { AboutField } from '@backstage/plugin-catalog';
 
-import Grid from '@mui/material/Grid';
-import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
+import { Grid, makeStyles, Typography } from '@material-ui/core';
 
 import {
   capitalize,
@@ -24,19 +22,22 @@ type WorkflowDetailsCardProps = {
   details: WorkflowRunDetail;
 };
 
-const RootGrid = styled(Grid)({
-  overflowY: 'auto',
-  height: '15rem',
+const useStyles = makeStyles({
+  root: {
+    overflowY: 'auto',
+    height: '15rem',
+  },
 });
 
 export const WorkflowRunDetails: React.FC<WorkflowDetailsCardProps> = ({
   assessedBy,
   details,
 }) => {
+  const styles = useStyles();
   const workflowInstanceLink = useRouteRef(workflowInstanceRouteRef);
 
   return (
-    <RootGrid container alignContent="flex-start">
+    <Grid container className={styles.root} alignContent="flex-start">
       <Grid item md={4} key="Category">
         <AboutField label="Category">
           <Typography variant="subtitle2" component="div">
@@ -103,7 +104,7 @@ export const WorkflowRunDetails: React.FC<WorkflowDetailsCardProps> = ({
           </Typography>
         </AboutField>
       </Grid>
-    </RootGrid>
+    </Grid>
   );
 };
 WorkflowRunDetails.displayName = 'WorkflowDetails';

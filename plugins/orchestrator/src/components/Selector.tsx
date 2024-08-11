@@ -2,26 +2,25 @@ import React from 'react';
 
 import { Select, SelectedItems } from '@backstage/core-components';
 
-import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
+import { makeStyles, Typography } from '@material-ui/core';
 
-const RootDiv = styled('div')({
-  display: 'flex',
-  alignItems: 'baseline',
-  '& label + div': {
-    marginTop: '0px',
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    alignItems: 'baseline',
+    '& label + div': {
+      marginTop: '0px',
+    },
   },
-});
-
-const SelectDiv = styled('div')({
-  width: '10rem',
-});
-
-const StyledLabel = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.primary,
-  fontSize: theme.typography.fontSize,
-  paddingRight: '0.5rem',
-  fontWeight: 'bold',
+  select: {
+    width: '10rem',
+  },
+  label: {
+    color: theme.palette.text.primary,
+    fontSize: theme.typography.fontSize,
+    paddingRight: '0.5rem',
+    fontWeight: 'bold',
+  },
 }));
 
 const ALL_ITEMS = '___all___';
@@ -36,6 +35,8 @@ export const Selector = ({
   includeAll = true,
   ...otherProps
 }: SelectorProps) => {
+  const styles = useStyles();
+
   const selectItems = React.useMemo(
     () =>
       includeAll
@@ -50,9 +51,9 @@ export const Selector = ({
   );
 
   return (
-    <RootDiv>
-      <StyledLabel>{otherProps.label}</StyledLabel>
-      <SelectDiv>
+    <div className={styles.root}>
+      <Typography className={styles.label}>{otherProps.label}</Typography>
+      <div className={styles.select}>
         <Select
           onChange={handleChange}
           items={selectItems}
@@ -60,8 +61,8 @@ export const Selector = ({
           margin="dense"
           label={otherProps.label}
         />
-      </SelectDiv>
-    </RootDiv>
+      </div>
+    </div>
   );
 };
 Selector.displayName = 'Selector';

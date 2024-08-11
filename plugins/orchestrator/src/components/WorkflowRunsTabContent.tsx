@@ -9,7 +9,7 @@ import {
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
-import Grid from '@mui/material/Grid';
+import { Grid } from '@material-ui/core';
 
 import {
   capitalize,

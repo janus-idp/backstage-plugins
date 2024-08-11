@@ -1,4 +1,4 @@
-import { useTheme } from '@mui/material/styles';
+import { makeStyles } from '@material-ui/core';
 
 import {
   ProcessInstanceState,
@@ -8,14 +8,30 @@ import {
 export const useWorkflowInstanceStateColors = (
   value?: ProcessInstanceStateValues,
 ) => {
-  const theme = useTheme();
-  const colors = {
-    [ProcessInstanceState.Active]: theme.palette.primary.main,
-    [ProcessInstanceState.Completed]: theme.palette.success.main,
-    [ProcessInstanceState.Suspended]: theme.palette.warning.main,
-    [ProcessInstanceState.Aborted]: theme.palette.error.main,
-    [ProcessInstanceState.Error]: theme.palette.error.main,
-    [ProcessInstanceState.Pending]: theme.palette.grey[500],
-  };
-  return value ? colors[value] : undefined;
+  const useStyles = makeStyles(
+    theme =>
+      ({
+        [ProcessInstanceState.Active]: {
+          color: theme.palette.primary.main,
+        },
+        [ProcessInstanceState.Completed]: {
+          color: theme.palette.success.main,
+        },
+        [ProcessInstanceState.Suspended]: {
+          color: theme.palette.warning.main,
+        },
+        [ProcessInstanceState.Aborted]: {
+          color: theme.palette.error.main,
+        },
+        [ProcessInstanceState.Error]: {
+          color: theme.palette.error.main,
+        },
+        [ProcessInstanceState.Pending]: {
+          color: theme.palette.grey[500],
+        },
+      }) as const,
+  );
+
+  const styles = useStyles();
+  return value ? styles[value] : undefined;
 };

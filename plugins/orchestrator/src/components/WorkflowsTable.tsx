@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { Link, TableColumn, TableProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
-import Pageview from '@mui/icons-material/Pageview';
-import PlayArrow from '@mui/icons-material/PlayArrow';
+import Pageview from '@material-ui/icons/Pageview';
+import PlayArrow from '@material-ui/icons/PlayArrow';
 
 import {
   capitalize,
@@ -62,13 +62,13 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   const actions = useMemo(() => {
     const actionItems: TableProps<FormattedWorkflowOverview>['actions'] = [
       {
-        icon: () => <PlayArrow />,
+        icon: PlayArrow,
         tooltip: 'Execute',
         onClick: (_, rowData) =>
           handleExecute(rowData as FormattedWorkflowOverview),
       },
       {
-        icon: () => <Pageview />,
+        icon: Pageview,
         tooltip: 'View',
         onClick: (_, rowData) =>
           handleView(rowData as FormattedWorkflowOverview),
