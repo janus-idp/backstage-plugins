@@ -12,8 +12,7 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
+import { Button, Grid } from '@material-ui/core';
 
 import {
   AssessedProcessInstance,

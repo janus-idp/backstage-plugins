@@ -3,8 +3,8 @@ import React from 'react';
 import { Content, InfoCard } from '@backstage/core-components';
 import { wrapInTestApp } from '@backstage/test-utils';
 
-import Grid from '@mui/material/Grid';
-import { styled } from '@mui/material/styles';
+import { makeStyles } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid/Grid';
 import { Meta, StoryObj } from '@storybook/react';
 
 import { fakeCompletedInstance } from '../__fixtures__/fakeProcessInstance';
@@ -13,9 +13,11 @@ import { veryLongString } from '../__fixtures__/veryLongString';
 import { orchestratorRootRouteRef } from '../routes';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
 
-const TopRowCard = styled(InfoCard)({
-  height: '20rem',
-});
+const useStyles = makeStyles(_ => ({
+  topRowCard: {
+    height: '20rem',
+  },
+}));
 
 const meta = {
   title: 'Orchestrator/WorkflowDetails',
@@ -32,14 +34,22 @@ const meta = {
         <Content noPadding>
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              <TopRowCard title="Details" divider={false}>
+              <InfoCard
+                title="Details"
+                divider={false}
+                className={useStyles().topRowCard}
+              >
                 <Story />
-              </TopRowCard>
+              </InfoCard>
             </Grid>
             <Grid item xs={6}>
-              <TopRowCard title="Another card" divider={false}>
+              <InfoCard
+                title="Another card"
+                divider={false}
+                className={useStyles().topRowCard}
+              >
                 <p>Nothing fancy here...</p>
-              </TopRowCard>
+              </InfoCard>
             </Grid>
           </Grid>
         </Content>,

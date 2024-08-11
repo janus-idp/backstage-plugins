@@ -3,22 +3,26 @@ import React from 'react';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import { JsonObject } from '@backstage/types';
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import Step from '@mui/material/Step';
-import StepContent from '@mui/material/StepContent';
-import StepLabel from '@mui/material/StepLabel';
-import Stepper from '@mui/material/Stepper';
-import Typography from '@mui/material/Typography';
-import { FormProps } from '@rjsf/core';
-import Form from '@rjsf/mui';
+import {
+  Box,
+  Button,
+  Paper,
+  Step,
+  StepContent,
+  StepLabel,
+  Stepper,
+  Typography,
+} from '@material-ui/core';
+import { FormProps, withTheme } from '@rjsf/core';
+import { Theme as MuiTheme } from '@rjsf/material-ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 
 import { WorkflowInputSchemaStep } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import SubmitButton from '../SubmitButton';
+
+const Form = withTheme(MuiTheme);
 
 const getCombinedData = (
   steps: WorkflowInputSchemaStep[],
