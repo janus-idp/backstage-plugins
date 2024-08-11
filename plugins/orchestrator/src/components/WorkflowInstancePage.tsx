@@ -110,18 +110,13 @@ export const WorkflowInstancePage = ({
         !curValue.instance.state),
   );
 
-  const canAbort = React.useMemo(
-    () =>
-      value?.instance.state === 'ACTIVE' || value?.instance.state === 'ERROR',
-    [value],
-  );
+  const isErrorState = value?.instance.state === 'ERROR';
 
-  const canRerun = React.useMemo(
-    () =>
-      value?.instance.state === 'COMPLETED' ||
-      value?.instance.state === 'ABORTED',
-    [value],
-  );
+  const canAbort = value?.instance.state === 'ACTIVE' || isErrorState;
+
+  const canRerun =
+    value?.instance.state === 'COMPLETED' ||
+    value?.instance.state === 'ABORTED';
 
   const toggleAbortConfirmationDialog = () => {
     setIsAbortConfirmationDialogOpen(!isAbortConfirmationDialogOpen);
@@ -197,39 +192,35 @@ export const WorkflowInstancePage = ({
               }
             />
             <Grid container item justifyContent="flex-end" spacing={1}>
-              {!canRerun && (
-                <>
-                  <Grid item>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disabled={!canAbort}
-                      onClick={canAbort ? handleRerun : undefined}
-                    >
-                      Retrigger
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      disabled={!canAbort}
-                      onClick={
-                        canAbort ? toggleAbortConfirmationDialog : undefined
-                      }
-                    >
-                      Abort
-                    </Button>
-                  </Grid>
-                </>
-              )}
-              {!canAbort && (
+              {isErrorState && (
                 <Grid item>
                   <Button
                     variant="contained"
                     color="primary"
-                    disabled={!canRerun}
-                    onClick={canRerun ? handleRerun : undefined}
+                    onClick={handleRerun}
+                  >
+                    Retrigger
+                  </Button>
+                </Grid>
+              )}
+              {canAbort && (
+                <Grid item>
+                  <Button
+                    variant="contained"
+                    color={isErrorState ? 'secondary' : 'primary'}
+                    onClick={toggleAbortConfirmationDialog}
+                  >
+                    Abort
+                  </Button>
+                </Grid>
+              )}
+
+              {canRerun && (
+                <Grid item>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleRerun}
                   >
                     Rerun
                   </Button>
