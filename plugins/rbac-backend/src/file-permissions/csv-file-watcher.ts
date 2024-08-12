@@ -92,7 +92,6 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
    */
   async initialize(): Promise<void> {
     if (!this.filePath) {
-      this.logger.info('csv policies file feature was disabled');
       return;
     }
     let content: string[][] = [];

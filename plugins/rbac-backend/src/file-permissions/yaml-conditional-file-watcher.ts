@@ -55,7 +55,6 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
 
   async initialize(): Promise<void> {
     if (!this.filePath) {
-      this.logger.info('conditional policies file feature was disabled');
       return;
     }
     const fileExists = fs.existsSync(this.filePath);
