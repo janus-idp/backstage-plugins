@@ -16,9 +16,10 @@ import Button from '@mui/material/Button';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import {
-  calculateConditionIndex,
   extractNestedConditions,
   getDefaultRule,
+  getNestedConditionSimpleRulesCount,
+  getSimpleRulesCount,
   isNestedConditionRule,
   isSimpleRule,
   makeConditionsFormRowStyles,
@@ -363,124 +364,128 @@ export const ConditionsFormRow = ({
     nestedConditionIndex: number,
   ) => {
     const selectedNestedConditionCriteria = Object.keys(nc)[0];
-    const simpleRulesCount = calculateConditionIndex(
-      conditionRow,
-      nestedConditionIndex,
-      criteria,
-    );
+    const simpleRulesCount = getSimpleRulesCount(conditionRow, criteria);
     const nestedConditionsCount = nestedConditionRow.length;
+    const nestedConditionSimpleRulesCount = getNestedConditionSimpleRulesCount(
+      nc,
+      selectedNestedConditionCriteria,
+    );
     return (
-      <Box
-        mt={2}
-        className={classes.nestedConditionRow}
-        key={`nestedCondition-${nestedConditionIndex}`}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <ToggleButtonGroup
-            exclusive
-            value={selectedNestedConditionCriteria}
-            onChange={(_event, newNestedCriteria) =>
-              handleNestedConditionCriteriaChange(
-                newNestedCriteria,
-                nestedConditionIndex,
-              )
-            }
-            className={classes.nestedConditioncriteriaButtonGroup}
-          >
-            {nestedConditionButtons.map(({ val, label }) => (
-              <CriteriaToggleButton
-                key={`nested-criteria-${val}`}
-                val={val}
-                label={label}
-                selectedCriteria={selectedNestedConditionCriteria}
-                theme={theme}
-              />
-            ))}
-          </ToggleButtonGroup>
-          {criteria !== criterias.not && (
-            <IconButton
-              title="Remove nested condition"
-              className={classes.removeNestedRuleButton}
-              disabled={simpleRulesCount === 0 && nestedConditionsCount === 1} // 0 simple rules and this is the only 1 nested condition
-              onClick={() => handleRemoveNestedCondition(nestedConditionIndex)}
-            >
-              <RemoveIcon data-testid="remove-nested-condition" />
-            </IconButton>
-          )}
-        </div>
-        <Box>
-          {selectedNestedConditionCriteria !== criterias.not &&
-            (
-              nc[
-                selectedNestedConditionCriteria as keyof Condition
-              ] as PermissionCondition[]
-            ).map((c, ncrIndex) => (
-              <ComplexConditionRow
-                key={`nested-condition-${nestedConditionIndex}-${ncrIndex}`}
-                conditionRow={conditionRow}
-                nestedConditionRow={nestedConditionRow}
-                criteria={criteria}
-                onRuleChange={onRuleChange}
-                updateRules={updateRules}
-                setErrors={setErrors}
-                setRemoveAllClicked={setRemoveAllClicked}
-                conditionRulesData={conditionRulesData}
-                notConditionType={notConditionType}
-                classes={classes}
-                currentCondition={c}
-                ruleIndex={ncrIndex}
-                isNestedCondition
-                nestedConditionIndex={nestedConditionIndex}
-                activeNestedCriteria={
-                  selectedNestedConditionCriteria as 'allOf' | 'anyOf'
-                }
-              />
-            ))}
-          {selectedNestedConditionCriteria === criterias.not &&
-            ((nc as ConditionsData).not as PermissionCondition)
-              .resourceType && (
-              <ConditionsFormRowFields
-                oldCondition={
-                  (nc as ConditionsData).not ??
-                  getDefaultRule(selPluginResourceType)
-                }
-                onRuleChange={onRuleChange}
-                conditionRow={conditionRow}
-                criteria={criteria}
-                conditionRulesData={conditionRulesData}
-                setErrors={setErrors}
-                optionDisabled={ruleOption =>
-                  ruleOptionDisabled(
-                    ruleOption,
-                    (nc as ConditionsData).not
-                      ? [(nc as ConditionsData).not as PermissionCondition]
-                      : undefined,
-                  )
-                }
-                setRemoveAllClicked={setRemoveAllClicked}
-                nestedConditionRow={nestedConditionRow}
-                nestedConditionCriteria={selectedNestedConditionCriteria}
-                nestedConditionIndex={nestedConditionIndex}
-                updateRules={updateRules}
-              />
-            )}
-          {selectedNestedConditionCriteria !== criterias.not && (
-            <Button
-              className={classes.addRuleButton}
-              size="small"
-              onClick={() =>
-                handleAddRuleInNestedCondition(
-                  selectedNestedConditionCriteria,
+      nestedConditionSimpleRulesCount > 0 && (
+        <Box
+          mt={2}
+          className={classes.nestedConditionRow}
+          key={`nestedCondition-${nestedConditionIndex}`}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <ToggleButtonGroup
+              exclusive
+              value={selectedNestedConditionCriteria}
+              onChange={(_event, newNestedCriteria) =>
+                handleNestedConditionCriteriaChange(
+                  newNestedCriteria,
                   nestedConditionIndex,
                 )
               }
+              className={classes.nestedConditioncriteriaButtonGroup}
             >
-              <AddIcon fontSize="small" />
-              Add rule
-            </Button>
-          )}
+              {nestedConditionButtons.map(({ val, label }) => (
+                <CriteriaToggleButton
+                  key={`nested-criteria-${val}`}
+                  val={val}
+                  label={label}
+                  selectedCriteria={selectedNestedConditionCriteria}
+                  theme={theme}
+                />
+              ))}
+            </ToggleButtonGroup>
+            {criteria !== criterias.not && (
+              <IconButton
+                title="Remove nested condition"
+                className={classes.removeNestedRuleButton}
+                disabled={simpleRulesCount === 0 && nestedConditionsCount === 1} // 0 simple rules and this is the only 1 nested condition
+                onClick={() =>
+                  handleRemoveNestedCondition(nestedConditionIndex)
+                }
+              >
+                <RemoveIcon data-testid="remove-nested-condition" />
+              </IconButton>
+            )}
+          </div>
+          <Box>
+            {selectedNestedConditionCriteria !== criterias.not &&
+              (
+                nc[
+                  selectedNestedConditionCriteria as keyof Condition
+                ] as PermissionCondition[]
+              ).map((c, ncrIndex) => (
+                <ComplexConditionRow
+                  key={`nested-condition-${nestedConditionIndex}-${ncrIndex}`}
+                  conditionRow={conditionRow}
+                  nestedConditionRow={nestedConditionRow}
+                  criteria={criteria}
+                  onRuleChange={onRuleChange}
+                  updateRules={updateRules}
+                  setErrors={setErrors}
+                  setRemoveAllClicked={setRemoveAllClicked}
+                  conditionRulesData={conditionRulesData}
+                  notConditionType={notConditionType}
+                  classes={classes}
+                  currentCondition={c}
+                  ruleIndex={ncrIndex}
+                  isNestedCondition
+                  nestedConditionIndex={nestedConditionIndex}
+                  activeNestedCriteria={
+                    selectedNestedConditionCriteria as 'allOf' | 'anyOf'
+                  }
+                />
+              ))}
+            {selectedNestedConditionCriteria === criterias.not &&
+              ((nc as ConditionsData).not as PermissionCondition)
+                .resourceType && (
+                <ConditionsFormRowFields
+                  oldCondition={
+                    (nc as ConditionsData).not ??
+                    getDefaultRule(selPluginResourceType)
+                  }
+                  onRuleChange={onRuleChange}
+                  conditionRow={conditionRow}
+                  criteria={criteria}
+                  conditionRulesData={conditionRulesData}
+                  setErrors={setErrors}
+                  optionDisabled={ruleOption =>
+                    ruleOptionDisabled(
+                      ruleOption,
+                      (nc as ConditionsData).not
+                        ? [(nc as ConditionsData).not as PermissionCondition]
+                        : undefined,
+                    )
+                  }
+                  setRemoveAllClicked={setRemoveAllClicked}
+                  nestedConditionRow={nestedConditionRow}
+                  nestedConditionCriteria={selectedNestedConditionCriteria}
+                  nestedConditionIndex={nestedConditionIndex}
+                  updateRules={updateRules}
+                />
+              )}
+            {selectedNestedConditionCriteria !== criterias.not && (
+              <Button
+                className={classes.addRuleButton}
+                size="small"
+                onClick={() =>
+                  handleAddRuleInNestedCondition(
+                    selectedNestedConditionCriteria,
+                    nestedConditionIndex,
+                  )
+                }
+              >
+                <AddIcon fontSize="small" />
+                Add rule
+              </Button>
+            )}
+          </Box>
         </Box>
-      </Box>
+      )
     );
   };
 

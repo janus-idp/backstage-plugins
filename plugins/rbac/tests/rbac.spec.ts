@@ -314,7 +314,7 @@ test.describe('RBAC plugin', () => {
     await navigateToRole('rbac_admin');
 
     await page.getByText('Configure access (9 rules)', { exact: true }).click();
-    await expect(page.getByText('AllOf')).toHaveCount(3, { timeout: 20000 });
+    await expect(page.getByText('AllOf')).toHaveCount(2, { timeout: 20000 });
     await page.getByText('Add nested condition').click();
     await page.getByText('Not', { exact: true }).last().click();
     await page.getByPlaceholder('Select a rule').last().click();
@@ -339,7 +339,7 @@ test.describe('RBAC plugin', () => {
       page.getByText('Configure access (9 rules)', { exact: true }),
     ).toHaveCount(1);
     await page.getByText('Configure access (9 rules)', { exact: true }).click();
-    await expect(page.getByText('AllOf')).toHaveCount(3, { timeout: 20000 });
+    await expect(page.getByText('AllOf')).toHaveCount(2, { timeout: 20000 });
     await page.getByTestId('remove-nested-condition').last().click();
     await page.getByTestId('save-conditions').click();
 
