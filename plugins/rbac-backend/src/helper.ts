@@ -36,11 +36,37 @@ export function policyToString(policy: string[]): string {
   return `[${policy.join(', ')}]`;
 }
 
+export function groupPolicyToString(policy: string[]): string {
+  return `g, ${policy.join(', ')}`;
+}
+
+export function permissionPolicyToString(policy: string[]): string {
+  return `p, ${policy.join(', ')}`;
+}
+
 export function policiesToString(policies: string[][]): string {
   const policiesString = policies
     .map(policy => policyToString(policy))
     .join(',');
   return `[${policiesString}]`;
+}
+
+export function groupPoliciesToString(policies: string[][]): string {
+  const policiesString = policies
+    .map(policy => groupPolicyToString(policy))
+    .join('\n');
+  return `
+    ${policiesString}
+  `;
+}
+
+export function permissionPoliciesToString(policies: string[][]): string {
+  const policiesString = policies
+    .map(policy => permissionPolicyToString(policy))
+    .join('\n');
+  return `
+    ${policiesString}
+  `;
 }
 
 export function metadataStringToPolicy(policy: string): string[] {

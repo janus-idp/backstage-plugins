@@ -8,6 +8,8 @@ import {
   PluginIdProvider,
   PluginIdProviderExtensionPoint,
   pluginIdProviderExtensionPoint,
+  RBACProvider,
+  rbacProviderExtensionPoint,
 } from '@janus-idp/backstage-plugin-rbac-node';
 
 /**
@@ -31,6 +33,16 @@ export const rbacPlugin = createBackendPlugin({
       pluginIdProviderExtensionPoint,
       pluginIdProviderExtensionPointImpl,
     );
+
+    const rbacProviders = new Array<RBACProvider>();
+
+    env.registerExtensionPoint(rbacProviderExtensionPoint, {
+      addRBACProvider(
+        ...providers: Array<RBACProvider | Array<RBACProvider>>
+      ): void {
+        rbacProviders.push(...providers.flat());
+      },
+    });
 
     env.registerInit({
       deps: {
@@ -77,6 +89,7 @@ export const rbacPlugin = createBackendPlugin({
                   ),
                 ),
             },
+            rbacProviders,
           ),
         );
       },
