@@ -1,6 +1,6 @@
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 
-import { PluginIdProvider } from './types';
+import { PluginIdProvider, RBACProvider } from './types';
 
 /**
  * An extension point the exposes the ability to configure additional PluginIDProviders.
@@ -19,4 +19,15 @@ export const pluginIdProviderExtensionPoint =
  */
 export type PluginIdProviderExtensionPoint = {
   addPluginIdProvider(pluginIdProvider: PluginIdProvider): void;
+};
+
+export const rbacProviderExtensionPoint =
+  createExtensionPoint<RBACProviderExtensionPoint>({
+    id: 'permission.rbac.rbacProvider',
+  });
+
+export type RBACProviderExtensionPoint = {
+  addRBACProvider(
+    ...providers: Array<RBACProvider | Array<RBACProvider>>
+  ): void;
 };
