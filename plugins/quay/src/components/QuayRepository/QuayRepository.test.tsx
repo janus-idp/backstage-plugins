@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
+import { usePermission } from '@backstage/plugin-permission-react';
+
 import { render } from '@testing-library/react';
 
 import { useTags } from '../../hooks';
@@ -26,9 +28,31 @@ jest.mock('../../hooks/', () => ({
   useTags: jest.fn().mockReturnValue({}),
 }));
 
+jest.mock('@backstage/plugin-permission-react', () => ({
+  usePermission: jest.fn(),
+}));
+
+const mockUsePermission = usePermission as jest.MockedFunction<
+  typeof usePermission
+>;
+
 describe('QuayRepository', () => {
+  beforeEach(() => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+  });
+
   afterAll(() => {
     jest.resetAllMocks();
+  });
+
+  it('should render permission alert when user does not have view permission', () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: false });
+    const { queryByTestId } = render(<QuayRepository />);
+
+    expect(queryByTestId('no-permission-alert')).toBeInTheDocument();
+
+    expect(queryByTestId('quay-repo-progress')).toBeNull();
+    expect(queryByTestId('quay-repo-table')).toBeNull();
   });
 
   it('should show loading if loading is true', () => {
