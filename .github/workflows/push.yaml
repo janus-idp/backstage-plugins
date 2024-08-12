@@ -38,11 +38,6 @@ jobs:
           app-id: ${{ vars.JANUS_IDP_GITHUB_APP_ID }}
           private-key: ${{ secrets.JANUS_IDP_GITHUB_APP_PRIVATE_KEY }}
 
-      - name: Regen yarn.lock
-        uses: ./.github/actions/yarn-lock
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-
       - name: Build all packages
         uses: ./.github/actions/build
 
