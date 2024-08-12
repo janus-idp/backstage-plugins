@@ -1,5 +1,9 @@
 ### Dependencies
 
+* **@janus-idp/backstage-plugin-quay-common:** upgraded to 1.0.2
+
+### Dependencies
+
 * **@janus-idp/backstage-plugin-quay-common:** upgraded to 1.0.0
 
 ## @janus-idp/backstage-plugin-quay [1.10.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.10.1...@janus-idp/backstage-plugin-quay@1.10.2) (2024-08-02)
