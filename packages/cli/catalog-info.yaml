@@ -1,10 +1,27 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage-cli
-  title: '@backstage/cli'
-  description: CLI for developing Backstage plugins and apps
+  name: janus-idp-cli
+  title: '@janus-idp/cli'
+  description: This package provides a CLI for developing Backstage plugins and apps.
+  annotations:
+    backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main/packages/cli
+    backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/packages/cli/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/packages/cli/catalog-info.yaml
+    github.com/project-slug: janus-idp/backstage-plugins
+    #github.com/team-slug: janus-idp/maintainers
+    sonarqube.org/project-key: janus-idp_backstage-plugins
+  tags:
+    - kubernetes
+    - openshift
+  links:
+    - url: https://github.com/janus-idp/backstage-plugins/tree/main/packages/cli
+      title: GitHub Source
+      icon: source
+      type: source
 spec:
-  lifecycle: experimental
   type: backstage-cli
-  owner: maintainers
+  lifecycle: experimental
+  owner: rhdh-team
+  system: rhdh
+  subcomponentOf: janus-idp-backstage-plugins
