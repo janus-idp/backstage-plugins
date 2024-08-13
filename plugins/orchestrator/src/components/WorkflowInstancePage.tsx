@@ -13,9 +13,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { usePermission } from '@backstage/plugin-permission-react';
 
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import Tooltip from '@mui/material/Tooltip';
+import { Button, Grid, Tooltip } from '@material-ui/core';
 
 import {
   AssessedProcessInstanceDTO,

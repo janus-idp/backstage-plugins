@@ -8659,17 +8659,6 @@
     nanoid "^3.3.7"
     prop-types "^15.8.1"
 
-"@rjsf/core@^5.18.4":
-  version "5.18.4"
-  resolved "https://registry.yarnpkg.com/@rjsf/core/-/core-5.18.4.tgz#a0e5a77a54dd07bcd40dd287db7002b8973421f4"
-  integrity sha512-OUPC+l44X1geYT9sSsmQC2pakvFWCQB+5Iy/ITfLMJq3MIjJn0gakCwYHXMMBGUAKM1SSMIyKWyCazt3kY9fhg==
-  dependencies:
-    lodash "^4.17.21"
-    lodash-es "^4.17.21"
-    markdown-to-jsx "^7.4.1"
-    nanoid "^3.3.7"
-    prop-types "^15.8.1"
-
 "@rjsf/material-ui@5.18.5":
   version "5.18.5"
   resolved "https://registry.yarnpkg.com/@rjsf/material-ui/-/material-ui-5.18.5.tgz#bbb68519217a67b80679429fb97dd3e57c56e823"
@@ -8679,11 +8668,6 @@
   version "5.18.3"
   resolved "https://registry.yarnpkg.com/@rjsf/mui/-/mui-5.18.3.tgz#25569fe9951795487813357f74ac3aeceb85aad6"
   integrity sha512-zcudsSECpm3hSTEjWsRLnrT5IMzG4Q3/muBaYtdlapzTaK0Mb3ktEPyXN+iZ6NjxZQTwH7aYn1vo/msbend4ww==
-
-"@rjsf/mui@^5.18.4":
-  version "5.18.4"
-  resolved "https://registry.yarnpkg.com/@rjsf/mui/-/mui-5.18.4.tgz#d81fa5aa189bab593866e4d4c30f9c3eddfe49c0"
-  integrity sha512-SDKBcp/LOCdb8Rn4f4mBiEV8M+FCFQWK8KB4ymyzqjB5/2sVf5rw9u7o84SSXmdnQKt4SAztQf3Sd8tLhEzvPg==
 
 "@rjsf/utils@5.18.5":
   version "5.18.5"
@@ -8707,17 +8691,6 @@
     lodash-es "^4.17.21"
     react-is "^18.2.0"
 
-"@rjsf/utils@^5.18.4":
-  version "5.18.4"
-  resolved "https://registry.yarnpkg.com/@rjsf/utils/-/utils-5.18.4.tgz#098c767f6bfbbf660f201d864bf8bba247453dfd"
-  integrity sha512-svLMk5aW6q3JQRYVTJradFc9tLeQ1vX5/k6fPwxf+08eweqPbINq7aokLBSStUNr8FfYgThTl8IfehLoVP2dvw==
-  dependencies:
-    json-schema-merge-allof "^0.8.1"
-    jsonpointer "^5.0.1"
-    lodash "^4.17.21"
-    lodash-es "^4.17.21"
-    react-is "^18.2.0"
-
 "@rjsf/validator-ajv8@5.18.5":
   version "5.18.5"
   resolved "https://registry.yarnpkg.com/@rjsf/validator-ajv8/-/validator-ajv8-5.18.5.tgz#0f02f39462b3cdc15641df9dd63263600556b374"
@@ -8732,16 +8705,6 @@
   version "5.18.3"
   resolved "https://registry.yarnpkg.com/@rjsf/validator-ajv8/-/validator-ajv8-5.18.3.tgz#0e162f199c92869b7078cd5196fd9e971d3bff40"
   integrity sha512-geEVuNuYulHVUBnnkLCS7QZRvAuD1clOjuUbwNjFzSpnYHVO0+mvvi4uHTia/eSvRyDy4vdkxu320uPe4TsgeQ==
-  dependencies:
-    ajv "^8.12.0"
-    ajv-formats "^2.1.1"
-    lodash "^4.17.21"
-    lodash-es "^4.17.21"
-
-"@rjsf/validator-ajv8@^5.18.4":
-  version "5.18.4"
-  resolved "https://registry.yarnpkg.com/@rjsf/validator-ajv8/-/validator-ajv8-5.18.4.tgz#ffdf91f0641affc0b40b3259d07528cc5b147753"
-  integrity sha512-D0bUtruWbUmXG8z3VBbCky0Cx65rmcdG/QypB9ri5YTSNTQIxuq28StBpZUZn84CO/oMOtociGy4afW1aj5C0g==
   dependencies:
     ajv "^8.12.0"
     ajv-formats "^2.1.1"
