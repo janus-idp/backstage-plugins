@@ -27,8 +27,6 @@ import './TopologyToolbar.css';
 
 import { usePermission } from '@backstage/plugin-permission-react';
 
-import { makeStyles } from '@material-ui/core';
-
 import { topologyViewPermission } from '@janus-idp/backstage-plugin-topology-common';
 
 type TopologyViewWorkloadComponentProps = {
@@ -111,13 +109,7 @@ const TopologyViewWorkloadComponent = ({
       removeSelectedIdParam();
     }
   });
-  // Rewriting CSS in JS
-  const useStyles = makeStyles(theme => ({
-    bsTopologyWrapper: {
-      height: '100%',
-    },
-  }));
-  const classes = useStyles();
+
   if (!loaded)
     return (
       <div data-testid="topology-progress">
@@ -147,8 +139,8 @@ const TopologyViewWorkloadComponent = ({
       {allErrors && allErrors.length > 0 && (
         <TopologyErrorPanel allErrors={allErrors} />
       )}
-      <InfoCard className={classes.bsTopologyWrapper} divider={false}>
-        {/* <InfoCard className="bs-topology-wrapper" divider={false}> */}
+
+      <InfoCard className="bs-topology-wrapper" divider={false}>
         {clusters.length < 1 ? (
           <TopologyEmptyState />
         ) : (

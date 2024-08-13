@@ -19,12 +19,13 @@ import {
   K8sResponseData,
   K8sWorkloadResource,
 } from '../types/types';
+import { VM_TYPES } from '../types/vms';
 import { LabelSelector } from './label-selector';
 import {
   getJobsForCronJob,
   getPodsDataForResource,
 } from './pod-resource-utils';
-import { VM_TYPES, WORKLOAD_TYPES } from './topology-utils';
+import { WORKLOAD_TYPES } from './topology-utils';
 
 export const byCreationTime = (left: any, right: any): number => {
   const leftCreationTime = new Date(

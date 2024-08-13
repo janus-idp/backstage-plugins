@@ -8,6 +8,7 @@ import {
   TaskRunModel,
 } from './pipeline-models';
 import { GroupVersionKind, Model } from './types/types';
+import { VirtualMachineGVK, VirtualMachineModel } from './vm-models';
 
 export const ReplicaSetGVK: GroupVersionKind = {
   apiVersion: 'v1',
@@ -70,11 +71,6 @@ export const CheClusterGVK: GroupVersionKind = {
   apiVersion: 'v2',
   apiGroup: 'org.eclipse.che',
   kind: 'CheCluster',
-};
-export const VirtualMachineGVK: GroupVersionKind = {
-  apiVersion: 'v1',
-  apiGroup: 'kubevirt.io',
-  kind: 'VirtualMachine',
 };
 export enum ModelsPlural {
   deployments = 'deployments',
@@ -177,14 +173,6 @@ export const CheClusterModel: Model = {
   abbr: 'CC',
   labelPlural: 'CheClusters',
   plural: 'checlusters',
-};
-
-export const VirtualMachineModel: Model = {
-  ...VirtualMachineGVK,
-  abbr: 'VM',
-  labelPlural: 'VirtualMachines',
-  color: '#2b9af3',
-  plural: 'virtualmachines',
 };
 
 export const resourceModels = {
