@@ -49,7 +49,7 @@ export class PolicyBuilder {
       userInfo: UserInfoService;
     },
     pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
-    rbacProviders: Array<RBACProvider>,
+    rbacProviders?: Array<RBACProvider>,
   ): Promise<Router> {
     const isPluginEnabled = env.config.getOptionalBoolean('permission.enabled');
     if (isPluginEnabled) {
@@ -111,12 +111,15 @@ export class PolicyBuilder {
       httpAuthService: httpAuth,
     });
 
-    await connectRBACProviders(
-      rbacProviders,
-      enforcerDelegate,
-      roleMetadataStorage,
-      env.logger,
-    );
+    if (rbacProviders) {
+      await connectRBACProviders(
+        rbacProviders,
+        enforcerDelegate,
+        roleMetadataStorage,
+        env.logger,
+        defAuditLog,
+      );
+    }
 
     const pluginIdsConfig = env.config.getOptionalStringArray(
       'permission.rbac.pluginsWithPermission',

@@ -1,12 +1,26 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 
-import { newEnforcer, newModelFromString, StringAdapter } from 'casbin';
+import {
+  Enforcer,
+  newEnforcer,
+  newModelFromString,
+  StringAdapter,
+} from 'casbin';
 
+import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
   RBACProvider,
   RBACProviderConnection,
 } from '@janus-idp/backstage-plugin-rbac-node';
 
+import {
+  HANDLE_RBAC_DATA_STAGE,
+  PermissionAuditInfo,
+  PermissionEvents,
+  RBAC_BACKEND,
+  RoleAuditInfo,
+  RoleEvents,
+} from '../audit-log/audit-logger';
 import { RoleMetadataStorage } from '../database/role-metadata';
 import {
   groupPoliciesToString,
@@ -27,22 +41,20 @@ class Connection implements RBACProviderConnection {
     private readonly enforcer: EnforcerDelegate,
     private readonly roleMetadataStorage: RoleMetadataStorage,
     private readonly logger: LoggerService,
+    private readonly auditLogger: AuditLogger,
   ) {}
 
   async applyRoles(roles: string[][]): Promise<void> {
-    const providerRoles: string[][] = [];
-
     const stringPolicy = groupPoliciesToString(roles);
+
+    const providerRoles: string[][] = [];
 
     const tempEnforcer = await newEnforcer(
       newModelFromString(MODEL),
       new StringAdapter(stringPolicy),
     );
 
-    const currentRoles = await this.roleMetadataStorage.filterRoleMetadata(
-      this.id,
-    );
-    const providerRoleMetadata = currentRoles.map(meta => meta.roleEntityRef);
+    const providerRoleMetadata = await this.getProviderRoleMetadata();
 
     // Get the roles for this provider coming from rbac plugin
     for (const providerRole of providerRoleMetadata) {
@@ -51,6 +63,87 @@ class Connection implements RBACProviderConnection {
       );
     }
 
+    // Remove role
+    // role exists in rbac but does not exist in provider
+    await this.removeRoles(providerRoles, tempEnforcer);
+
+    // Add the role
+    // role exists in provider but does not exist in rbac
+    await this.addRoles(roles);
+  }
+
+  async applyPermissions(permissions: string[][]): Promise<void> {
+    const stringPolicy = permissionPoliciesToString(permissions);
+
+    const providerPermissions: string[][] = [];
+
+    const tempEnforcer = await newEnforcer(
+      newModelFromString(MODEL),
+      new StringAdapter(stringPolicy),
+    );
+
+    const providerRoleMetadata = await this.getProviderRoleMetadata();
+
+    // Get the roles for this provider coming from rbac plugin
+    for (const providerRole of providerRoleMetadata) {
+      providerPermissions.push(
+        ...(await this.enforcer.getFilteredPolicy(0, providerRole)),
+      );
+    }
+
+    await this.removePermissions(providerPermissions, tempEnforcer);
+
+    await this.addPermissions(permissions);
+  }
+
+  private async addRoles(roles: string[][]): Promise<void> {
+    for (const role of roles) {
+      if (!(await this.enforcer.hasGroupingPolicy(...role))) {
+        const err = await validateGroupingPolicy(
+          role,
+          this.roleMetadataStorage,
+          this.id,
+        );
+
+        if (err) {
+          this.logger.warn(err.message);
+          continue; // Skip adding this role as there was an error
+        }
+
+        let roleMeta = await this.roleMetadataStorage.findRoleMetadata(role[1]);
+
+        const eventName = roleMeta
+          ? RoleEvents.UPDATE_ROLE
+          : RoleEvents.CREATE_ROLE;
+        const message = roleMeta ? 'Updated role' : 'Created role';
+
+        // role does not exist in rbac, create the metadata for it
+        if (!roleMeta) {
+          roleMeta = {
+            modifiedBy: this.id,
+            source: this.id,
+            roleEntityRef: role[1],
+          };
+        }
+
+        await this.enforcer.addGroupingPolicy(role, roleMeta);
+
+        await this.auditLogger.auditLog<RoleAuditInfo>({
+          actorId: RBAC_BACKEND,
+          message,
+          eventName,
+          metadata: { ...roleMeta, members: [role[0]] },
+          stage: HANDLE_RBAC_DATA_STAGE,
+          status: 'succeeded',
+        });
+      }
+    }
+  }
+
+  private async removeRoles(
+    providerRoles: string[][],
+    tempEnforcer: Enforcer,
+  ): Promise<void> {
     // Remove role
     // role exists in rbac but does not exist in provider
     for (const role of providerRoles) {
@@ -68,79 +161,46 @@ class Connection implements RBACProviderConnection {
           throw new Error('role does not exist');
         }
 
+        const eventName =
+          roleMeta && currentRole.length === 1
+            ? RoleEvents.DELETE_ROLE
+            : RoleEvents.UPDATE_ROLE;
+        const message =
+          roleMeta && currentRole.length === 1
+            ? 'Deleted role'
+            : 'Updated role: deleted members';
+
         // Only one role exists in rbac remove role metadata as well
         if (roleMeta && currentRole.length === 1) {
           await this.enforcer.removeGroupingPolicy(role, roleMeta);
+
+          await this.auditLogger.auditLog<RoleAuditInfo>({
+            actorId: RBAC_BACKEND,
+            message,
+            eventName,
+            metadata: { ...roleMeta, members: [role[0]] },
+            stage: HANDLE_RBAC_DATA_STAGE,
+            status: 'succeeded',
+          });
+
           continue; // Move on to the next role
         }
 
         await this.enforcer.removeGroupingPolicy(role, roleMeta, true);
-      }
-    }
 
-    // Add the role
-    // role exists in provider but does not exist in rbac
-    for (const role of roles) {
-      if (!(await this.enforcer.hasGroupingPolicy(...role))) {
-        const err = await validateGroupingPolicy(
-          role,
-          this.roleMetadataStorage,
-          this.id,
-        );
-
-        if (err) {
-          this.logger.warn(err.message);
-          continue; // Skip adding this role as there was an error
-        }
-
-        const roleMeta = await this.roleMetadataStorage.findRoleMetadata(
-          role[1],
-        );
-
-        // role does not exist in rbac, create the metadata for it
-        if (!roleMeta) {
-          const roleMetadata = {
-            modifiedBy: this.id,
-            source: this.id,
-            roleEntityRef: role[1],
-          };
-          await this.enforcer.addGroupingPolicy(role, roleMetadata); // <- TODO more knex trax issues
-          continue; // Move on to the next role
-        }
-
-        await this.enforcer.addGroupingPolicy(role, roleMeta);
+        await this.auditLogger.auditLog<RoleAuditInfo>({
+          actorId: RBAC_BACKEND,
+          message,
+          eventName,
+          metadata: { ...roleMeta, members: [role[0]] },
+          stage: HANDLE_RBAC_DATA_STAGE,
+          status: 'succeeded',
+        });
       }
     }
   }
 
-  async applyPermissions(permissions: string[][]): Promise<void> {
-    const stringPolicy = permissionPoliciesToString(permissions);
-
-    const providerPermissions: string[][] = [];
-
-    const tempEnforcer = await newEnforcer(
-      newModelFromString(MODEL),
-      new StringAdapter(stringPolicy),
-    );
-
-    const currentRoles = await this.roleMetadataStorage.filterRoleMetadata(
-      this.id,
-    );
-    const providerRoleMetadata = currentRoles.map(meta => meta.roleEntityRef);
-
-    // Get the roles for this provider coming from rbac plugin
-    for (const providerRole of providerRoleMetadata) {
-      providerPermissions.push(
-        ...(await this.enforcer.getFilteredPolicy(0, providerRole)),
-      );
-    }
-
-    for (const permission of providerPermissions) {
-      if (!(await tempEnforcer.hasPolicy(...permission))) {
-        this.enforcer.removePolicy(permission);
-      }
-    }
-
+  private async addPermissions(permissions: string[][]): Promise<void> {
     for (const permission of permissions) {
       if (!(await this.enforcer.hasPolicy(...permission))) {
         const transformedPolicy = transformArrayToPolicy(permission);
@@ -163,8 +223,51 @@ class Connection implements RBACProviderConnection {
         }
 
         await this.enforcer.addPolicy(permission);
+
+        await this.auditLogger.auditLog<PermissionAuditInfo>({
+          actorId: RBAC_BACKEND,
+          message: `Created policy`,
+          eventName: PermissionEvents.CREATE_POLICY,
+          metadata: { policies: [permission], source: this.id },
+          stage: HANDLE_RBAC_DATA_STAGE,
+          status: 'succeeded',
+        });
       }
     }
+  }
+
+  private async removePermissions(
+    providerPermissions: string[][],
+    tempEnforcer: Enforcer,
+  ): Promise<void> {
+    const removedPermissions: string[][] = [];
+    for (const permission of providerPermissions) {
+      if (!(await tempEnforcer.hasPolicy(...permission))) {
+        this.enforcer.removePolicy(permission);
+        removedPermissions.push(permission);
+      }
+
+      if (removedPermissions.length > 0) {
+        await this.auditLogger.auditLog<PermissionAuditInfo>({
+          actorId: RBAC_BACKEND,
+          message: `Deleted policies`,
+          eventName: PermissionEvents.DELETE_POLICY,
+          metadata: {
+            policies: removedPermissions,
+            source: this.id,
+          },
+          stage: HANDLE_RBAC_DATA_STAGE,
+          status: 'succeeded',
+        });
+      }
+    }
+  }
+
+  private async getProviderRoleMetadata(): Promise<string[]> {
+    const currentRoles = await this.roleMetadataStorage.filterRoleMetadata(
+      this.id,
+    );
+    return currentRoles.map(meta => meta.roleEntityRef);
   }
 
   async refresh(): Promise<void> {
@@ -177,6 +280,7 @@ export async function connectRBACProviders(
   enforcer: EnforcerDelegate,
   roleMetadataStorage: RoleMetadataStorage,
   logger: LoggerService,
+  auditLogger: AuditLogger,
 ) {
   await Promise.all(
     providers.map(async provider => {
@@ -185,6 +289,7 @@ export async function connectRBACProviders(
         enforcer,
         roleMetadataStorage,
         logger,
+        auditLogger,
       );
       return provider.connect(connection);
     }),

@@ -1,6 +1,6 @@
 g, user:default/test-provider, role:default/test-provider
-g, user:default/test-provider-three, role:default/test-provider-two
+g, user:default/test-provider-two, role:default/test-provider-two
 
 
-p, role:default/test-role, catalog-entity, delete, allow
-p, role:default/group-1g, catalog.entity.create, create, allow
+p, role:default/test-provider, catalog-entity, delete, allow
+p, role:default/test-provider-two, catalog.entity.create, create, allow
