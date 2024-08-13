@@ -15,7 +15,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 
-import Grid from '@mui/material/Grid';
+import { Grid } from '@material-ui/core';
 
 import {
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
