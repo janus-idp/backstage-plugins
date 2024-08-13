@@ -175,19 +175,22 @@ export const makeConditionsFormRowFieldsStyles = makeStyles<Theme, StyleProps>(
   }),
 );
 
-export const calculateConditionIndex = (
+export const getSimpleRulesCount = (
   conditionRow: ConditionsData,
-  nestedConditionIndex: number,
   criteria: string,
 ): number => {
-  const simpleRulesCount =
-    criteria === criterias.not
-      ? 0
-      : (
-          (conditionRow[criteria as keyof Condition] as Condition[]) || []
-        ).filter((e: Condition) => 'rule' in e).length;
-
-  return simpleRulesCount + nestedConditionIndex;
+  if (criteria === criterias.not) {
+    return (conditionRow[criteria as keyof Condition] as PermissionCondition)
+      .resourceType
+      ? 1
+      : 0;
+  }
+  if (criteria === criterias.condition) {
+    return 1;
+  }
+  return (conditionRow[criteria as keyof Condition] as Condition[]).filter(
+    (e: Condition) => 'rule' in e,
+  ).length;
 };
 
 export const initializeErrors = (
@@ -291,6 +294,21 @@ export const isNestedConditionRule = (r: Condition): boolean => {
     criterias.anyOf in (r as ConditionsData) ||
     criterias.not in (r as ConditionsData)
   );
+};
+
+export const getNestedConditionSimpleRulesCount = (
+  nc: Condition,
+  c: string,
+): number => {
+  if (c === criterias.not) {
+    return (nc[c as keyof Condition] as PermissionCondition).resourceType
+      ? 1
+      : 0;
+  }
+
+  return (nc[c as keyof Condition] as Condition[]).filter(
+    r => 'resourceType' in r,
+  ).length;
 };
 
 export const getRowStyle = (c: Condition, isNestedCondition: boolean) =>
