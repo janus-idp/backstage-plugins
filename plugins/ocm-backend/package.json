@@ -42,7 +42,9 @@
     "prepack": "backstage-cli package prepack",
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "build:api-docs": "./scripts/openapi-doc.sh",
+    "build:api-server": "yarn backstage-repo-tools package schema openapi generate --server"
   },
   "configSchema": "config.d.ts",
   "dependencies": {
