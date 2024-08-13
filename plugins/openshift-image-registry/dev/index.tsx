@@ -3,7 +3,7 @@ import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { TestApiProvider } from '@backstage/test-utils';
 
-import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import {
   openshiftImageRegistryApiRef,
@@ -83,7 +83,7 @@ class MockOpenshiftImageRegistryApi implements OpenshiftImageRegistryApiV1 {
 
 createDevApp()
   .registerPlugin(openshiftImageRegistryPlugin)
-  .addThemes(createDevAppThemes())
+  .addThemes(getAllThemes())
   .addPage({
     element: (
       <TestApiProvider
