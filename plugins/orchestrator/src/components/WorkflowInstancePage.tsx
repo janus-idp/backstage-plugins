@@ -19,6 +19,7 @@ import {
   AssessedProcessInstanceDTO,
   orchestratorWorkflowExecutePermission,
   orchestratorWorkflowInstanceAbortPermission,
+  ProcessInstanceStatusDTO,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_STATE,
@@ -121,18 +122,15 @@ export const WorkflowInstancePage = ({
         !curValue.instance.status),
   );
 
-  const canAbort = React.useMemo(
-    () =>
-      value?.instance.status === 'Active' || value?.instance.status === 'Error',
-    [value],
-  );
+  const isErrorState =
+    value?.instance.status === ProcessInstanceStatusDTO.Error;
 
-  const canRerun = React.useMemo(
-    () =>
-      value?.instance.status === 'Completed' ||
-      value?.instance.status === 'Aborted',
-    [value],
-  );
+  const canAbort =
+    value?.instance.status === ProcessInstanceStatusDTO.Active || isErrorState;
+
+  const canRerun =
+    value?.instance.status === ProcessInstanceStatusDTO.Completed ||
+    value?.instance.status === ProcessInstanceStatusDTO.Aborted;
 
   const toggleAbortConfirmationDialog = () => {
     setIsAbortConfirmationDialogOpen(!isAbortConfirmationDialogOpen);
@@ -208,43 +206,7 @@ export const WorkflowInstancePage = ({
               }
             />
             <Grid container item justifyContent="flex-end" spacing={1}>
-              {!canRerun && (
-                <>
-                  <Grid item>
-                    <Tooltip
-                      title="user not authorized to execute workflow"
-                      disableHoverListener={permittedToExecute.allowed}
-                    >
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={!permittedToExecute.allowed || !canRerun}
-                        onClick={canRerun ? handleRerun : undefined}
-                      >
-                        Retrigger
-                      </Button>
-                    </Tooltip>
-                  </Grid>
-                  <Grid item>
-                    <Tooltip
-                      title="user not authorized to abort workflow"
-                      disableHoverListener={permittedToAbort.allowed}
-                    >
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        disabled={!permittedToAbort.allowed || !canAbort}
-                        onClick={
-                          canAbort ? toggleAbortConfirmationDialog : undefined
-                        }
-                      >
-                        Abort
-                      </Button>
-                    </Tooltip>
-                  </Grid>
-                </>
-              )}
-              {!canAbort && (
+              {isErrorState && (
                 <Grid item>
                   <Tooltip
                     title="user not authorized to execute workflow"
@@ -253,8 +215,42 @@ export const WorkflowInstancePage = ({
                     <Button
                       variant="contained"
                       color="primary"
-                      disabled={!permittedToExecute.allowed || !canRerun}
-                      onClick={canRerun ? handleRerun : undefined}
+                      disabled={!permittedToExecute.allowed}
+                      onClick={handleRerun}
+                    >
+                      Retrigger
+                    </Button>
+                  </Tooltip>
+                </Grid>
+              )}
+              {canAbort && (
+                <Grid item>
+                  <Tooltip
+                    title="user not authorized to abort workflow"
+                    disableHoverListener={permittedToAbort.allowed}
+                  >
+                    <Button
+                      variant="contained"
+                      color={isErrorState ? 'secondary' : 'primary'}
+                      disabled={!permittedToAbort.allowed}
+                      onClick={toggleAbortConfirmationDialog}
+                    >
+                      Abort
+                    </Button>
+                  </Tooltip>
+                </Grid>
+              )}
+              {canRerun && (
+                <Grid item>
+                  <Tooltip
+                    title="user not authorized to execute workflow"
+                    disableHoverListener={permittedToExecute.allowed}
+                  >
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disabled={!permittedToExecute.allowed}
+                      onClick={handleRerun}
                     >
                       Rerun
                     </Button>
