@@ -2,7 +2,7 @@
   "extends": ["//"],
   "pipeline": {
     "tsc": {
-      "outputs": ["../../dist-types/plugins/rbac/**"],
+      "outputs": ["../../dist-types/plugins/rbac-backend-module-test/**"],
       "dependsOn": ["^tsc"]
     }
   }
