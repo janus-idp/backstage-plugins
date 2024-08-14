@@ -4,12 +4,11 @@ import {
   PermissionAttributes,
 } from '@backstage/plugin-permission-common';
 
-export type Source =
-  | string
-  | 'rest' // created via REST API
-  | 'csv-file' // created via policies-csv-file with defined path in the application configuration
-  | 'configuration' // created from application configuration
-  | 'legacy'; // preexisting policies
+// 'rest' created via REST API
+// 'csv-file' created via policies-csv-file with defined path in the application configuration
+// 'configuration' created from application configuration
+// 'legacy'; preexisting policies
+export type Source = string;
 
 export type PermissionPolicyMetadata = {
   source: Source;

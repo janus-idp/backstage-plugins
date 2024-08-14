@@ -158,17 +158,15 @@ export class Connection implements RBACProviderConnection {
           continue;
         }
 
-        const eventName =
-          roleMeta && currentRole.length === 1
-            ? RoleEvents.DELETE_ROLE
-            : RoleEvents.UPDATE_ROLE;
-        const message =
-          roleMeta && currentRole.length === 1
-            ? 'Deleted role'
-            : 'Updated role: deleted members';
+        const singleRole = roleMeta && currentRole.length === 1;
+
+        let eventName: string;
+        let message: string;
 
         // Only one role exists in rbac remove role metadata as well
-        if (roleMeta && currentRole.length === 1) {
+        if (singleRole) {
+          eventName = RoleEvents.DELETE_ROLE;
+          message = 'Deleted role';
           await this.enforcer.removeGroupingPolicy(role, roleMeta);
 
           await this.auditLogger.auditLog<RoleAuditInfo>({
@@ -179,10 +177,11 @@ export class Connection implements RBACProviderConnection {
             stage: HANDLE_RBAC_DATA_STAGE,
             status: 'succeeded',
           });
-
           continue; // Move on to the next role
         }
 
+        eventName = RoleEvents.UPDATE_ROLE;
+        message = 'Updated role: deleted members';
         await this.enforcer.removeGroupingPolicy(role, roleMeta, true);
 
         await this.auditLogger.auditLog<RoleAuditInfo>({

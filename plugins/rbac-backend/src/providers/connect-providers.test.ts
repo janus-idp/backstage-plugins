@@ -314,7 +314,7 @@ describe('Connection', () => {
 
       await provider.applyRoles(roles);
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        `Failed to validate group policy ${roleToAdd}. Cause: Entity reference \"role:default/\" was not on the form [<kind>:][<namespace>/]<name>`,
+        `Failed to validate group policy ${roleToAdd}. Cause: Entity reference "role:default/" was not on the form [<kind>:][<namespace>/]<name>`,
       );
     });
 
@@ -343,7 +343,7 @@ describe('Connection', () => {
 
       await provider.applyRoles(roles);
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        `Failed to validate group policy ${failingRoleToAdd}. Cause: Entity reference \"role:default/\" was not on the form [<kind>:][<namespace>/]<name>`,
+        `Failed to validate group policy ${failingRoleToAdd}. Cause: Entity reference "role:default/" was not on the form [<kind>:][<namespace>/]<name>`,
       );
       expect(enfAddGroupingPolicySpy).toHaveBeenCalledWith(
         ...roleToAdd,
