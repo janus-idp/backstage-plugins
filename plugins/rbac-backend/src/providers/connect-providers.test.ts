@@ -115,6 +115,7 @@ const dbManagerMock = Knex.knex({ client: MockClient });
 const providerMock: RBACProvider = {
   getProviderName: jest.fn().mockImplementation(),
   connect: jest.fn().mockImplementation(),
+  refresh: jest.fn().mockImplementation(),
 };
 
 const roleToBeRemoved = ['user:default/old', 'role:default/old-provider-role'];

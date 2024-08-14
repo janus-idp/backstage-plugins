@@ -172,6 +172,7 @@ export class PolicyBuilder {
       pluginPermMetaData,
       roleMetadataStorage,
       defAuditLog,
+      rbacProviders,
     );
     return server.serve();
   }

@@ -266,10 +266,6 @@ export class Connection implements RBACProviderConnection {
     );
     return currentRoles.map(meta => meta.roleEntityRef);
   }
-
-  async refresh(): Promise<void> {
-    console.log('refresh for manually refreshing');
-  }
 }
 
 export async function connectRBACProviders(

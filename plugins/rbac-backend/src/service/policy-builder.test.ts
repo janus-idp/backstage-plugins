@@ -96,6 +96,7 @@ const userInfoServiceMock: UserInfoService = mockServices.userInfo();
 const providerMock: RBACProvider = {
   getProviderName: jest.fn().mockImplementation(),
   connect: jest.fn().mockImplementation(),
+  refresh: jest.fn().mockImplementation(),
 };
 
 describe('PolicyBuilder', () => {

@@ -61,6 +61,15 @@ export class TestProvider implements RBACProvider {
     this.scheduleFn();
   }
 
+  async refresh(): Promise<void> {
+    try {
+      await this.run();
+    } catch (error: any) {
+      this.logger.error(`Error occurred, here is the error ${error}`);
+      console.log(error);
+    }
+  }
+
   private createScheduleFN(taskRunner: TaskRunner): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:run`;
