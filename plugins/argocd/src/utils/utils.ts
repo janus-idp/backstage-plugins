@@ -6,10 +6,18 @@ export const enum ArgoCdLabels {
   appSelector = 'argocd/app-selector',
   instanceName = 'argocd/instance-name',
   projectName = 'argocd/project-name',
+  appName = 'argocd/app-name',
+  appNamespace = 'argocd/app-namespace',
 }
 
 export const getAppSelector = (entity: Entity): string => {
   return entity?.metadata?.annotations?.[ArgoCdLabels.appSelector] ?? '';
+};
+export const getAppName = (entity: Entity): string => {
+  return entity?.metadata?.annotations?.[ArgoCdLabels.appName] ?? '';
+};
+export const getAppNamespace = (entity: Entity): string => {
+  return entity?.metadata?.annotations?.[ArgoCdLabels.appNamespace] ?? '';
 };
 
 export const getInstanceName = (entity: Entity): string => {
@@ -18,6 +26,23 @@ export const getInstanceName = (entity: Entity): string => {
 
 export const getProjectName = (entity: Entity): string | undefined => {
   return entity?.metadata?.annotations?.[ArgoCdLabels.projectName];
+};
+
+export const getArgoCdAppConfig = ({ entity }: { entity: Entity }) => {
+  const appName = getAppName(entity);
+  const appSelector = encodeURIComponent(getAppSelector(entity));
+  const appNamespace = getAppNamespace(entity);
+  const projectName = getProjectName(entity);
+  const url = '/argocd/api';
+
+  if (!(appName || appSelector)) {
+    throw new Error('Argo CD annotation is missing in the catalog');
+  } else if (appName && appSelector) {
+    throw new Error(
+      `Cannot provide both ${ArgoCdLabels.appName} and ${ArgoCdLabels.appSelector} annotations`,
+    );
+  }
+  return { url, appName, appSelector, appNamespace, projectName };
 };
 
 type ProviderType = 'github' | 'gitlab' | 'unknown';
@@ -32,6 +57,9 @@ export enum KnownProviders {
   gitlab = 'gitlab.com',
   github = 'github.com',
 }
+
+export const isAppHelmChartType = (application: Application) =>
+  !!application?.spec?.source?.chart;
 
 export const getGitProvider = (annotations: {
   [key: string]: string;
@@ -90,11 +118,7 @@ export const getAppOperationState = (app: Application): OperationState => {
   if (app.operation) {
     return {
       phase: OperationPhases.Running,
-      message:
-        (app.status &&
-          app.status.operationState &&
-          app.status.operationState.message) ||
-        'waiting to start',
+      message: app?.status?.operationState?.message || 'waiting to start',
       startedAt: new Date().toISOString(),
       operation: {
         sync: {},
@@ -121,7 +145,10 @@ export const getUniqueRevisions = (apps: Application[]): string[] =>
 
         if (history.length > 0) {
           history.forEach(h => {
-            if (!revisions.includes(h.revision as string)) {
+            if (
+              !revisions.includes(h.revision as string) &&
+              !isAppHelmChartType(app)
+            ) {
               revisions.push(h.revision);
             }
           });

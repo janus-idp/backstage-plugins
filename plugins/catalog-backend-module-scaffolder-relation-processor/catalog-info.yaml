@@ -1,0 +1,55 @@
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: janus-idp-catalog-scaffolder-relation-processor
+  title: Catalog relation scaffolder processor
+  description: Catalog Backend Module for Scaffolder Relation Catalog Processor
+  annotations:
+    backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main/plugins/catalog-backend-module-scaffolder-relation-processor
+    backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/catalog-backend-module-scaffolder-relation-processor/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/catalog-backend-module-scaffolder-relation-processor/catalog-info.yaml
+    github.com/project-slug: janus-idp/backstage-plugins
+    #github.com/team-slug: janus-idp/maintainers
+    sonarqube.org/project-key: janus-idp_backstage-plugins
+  tags:
+    - scaffolder
+  links:
+    - url: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/catalog-backend-module-scaffolder-relation-processor
+      title: GitHub Source
+      icon: source
+      type: source
+spec:
+  type: backstage-plugin
+  lifecycle: production
+  owner: rhdh-team
+  system: rhdh
+  subcomponentOf: janus-idp-backstage-plugins
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: janus-idp-catalog-backend-module-scaffolder-relation-processor
+  title: '@janus-idp/backstage-plugin-catalog-backend-module-scaffolder-relation-processor'
+  description: Catalog Backend Module for Scaffolder Relation Catalog Processor
+  annotations:
+    backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main/plugins/catalog-backend-module-scaffolder-relation-processor
+    backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/catalog-backend-module-scaffolder-relation-processor/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/catalog-backend-module-scaffolder-relation-processor/catalog-info.yaml
+    github.com/project-slug: janus-idp/backstage-plugins
+    #github.com/team-slug: janus-idp/maintainers
+    sonarqube.org/project-key: janus-idp_backstage-plugins
+  tags:
+    - scaffolder
+  links:
+    - url: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/catalog-backend-module-scaffolder-relation-processor
+      title: GitHub Source
+      icon: source
+      type: source
+spec:
+  type: backstage-backend-plugin-module
+  lifecycle: production
+  owner: rhdh-team
+  system: rhdh
+  subcomponentOf: janus-idp-catalog-scaffolder-relation-processor

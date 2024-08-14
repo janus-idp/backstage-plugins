@@ -10,10 +10,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { usePermission } from '@backstage/plugin-permission-react';
 
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import Skeleton from '@mui/material/Skeleton';
-import Tooltip from '@mui/material/Tooltip';
+import { Button, Grid, Tooltip } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
 import { orchestratorWorkflowExecutePermission } from '@janus-idp/backstage-plugin-orchestrator-common';
 
