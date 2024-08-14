@@ -36,12 +36,8 @@ export function policyToString(policy: string[]): string {
   return `[${policy.join(', ')}]`;
 }
 
-export function groupPolicyToString(policy: string[]): string {
-  return `g, ${policy.join(', ')}`;
-}
-
-export function permissionPolicyToString(policy: string[]): string {
-  return `p, ${policy.join(', ')}`;
+export function typedPolicyToString(policy: string[], type: string): string {
+  return `${type}, ${policy.join(', ')}`;
 }
 
 export function policiesToString(policies: string[][]): string {
@@ -51,18 +47,14 @@ export function policiesToString(policies: string[][]): string {
   return `[${policiesString}]`;
 }
 
-export function groupPoliciesToString(policies: string[][]): string {
+export function typedPoliciesToString(
+  policies: string[][],
+  type: string,
+): string {
   const policiesString = policies
-    .map(policy => groupPolicyToString(policy))
-    .join('\n');
-  return `
-    ${policiesString}
-  `;
-}
-
-export function permissionPoliciesToString(policies: string[][]): string {
-  const policiesString = policies
-    .map(policy => permissionPolicyToString(policy))
+    .map(policy => {
+      return policy.length !== 0 ? typedPolicyToString(policy, type) : '';
+    })
     .join('\n');
   return `
     ${policiesString}

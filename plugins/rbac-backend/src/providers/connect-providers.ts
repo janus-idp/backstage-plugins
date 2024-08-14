@@ -22,11 +22,7 @@ import {
   RoleEvents,
 } from '../audit-log/audit-logger';
 import { RoleMetadataStorage } from '../database/role-metadata';
-import {
-  groupPoliciesToString,
-  permissionPoliciesToString,
-  transformArrayToPolicy,
-} from '../helper';
+import { transformArrayToPolicy, typedPoliciesToString } from '../helper';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
 import {
@@ -35,7 +31,7 @@ import {
   validateSource,
 } from '../validation/policies-validation';
 
-class Connection implements RBACProviderConnection {
+export class Connection implements RBACProviderConnection {
   constructor(
     private readonly id: string,
     private readonly enforcer: EnforcerDelegate,
@@ -45,7 +41,7 @@ class Connection implements RBACProviderConnection {
   ) {}
 
   async applyRoles(roles: string[][]): Promise<void> {
-    const stringPolicy = groupPoliciesToString(roles);
+    const stringPolicy = typedPoliciesToString(roles, 'g');
 
     const providerRoles: string[][] = [];
 
@@ -73,7 +69,7 @@ class Connection implements RBACProviderConnection {
   }
 
   async applyPermissions(permissions: string[][]): Promise<void> {
-    const stringPolicy = permissionPoliciesToString(permissions);
+    const stringPolicy = typedPoliciesToString(permissions, 'p');
 
     const providerPermissions: string[][] = [];
 
