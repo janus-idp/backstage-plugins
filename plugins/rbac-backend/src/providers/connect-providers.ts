@@ -154,7 +154,8 @@ export class Connection implements RBACProviderConnection {
         );
 
         if (!roleMeta) {
-          throw new Error('role does not exist');
+          this.logger.warn('role does not exist');
+          continue;
         }
 
         const eventName =
