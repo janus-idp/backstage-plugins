@@ -66,6 +66,7 @@
     "@kie-tools/serverless-workflow-language-service": "^0.32.0",
     "@kie-tools/serverless-workflow-service-catalog": "^0.32.0",
     "@monaco-editor/react": "^4.6.0",
+    "axios": "1.6.8",
     "moment": "^2.29.4",
     "monaco-editor": "^0.49.0",
     "react-json-view": "^1.21.3",
@@ -73,15 +74,14 @@
     "react-use": "^17.4.0",
     "swr": "^2.0.0",
     "uuid": "^9.0.1",
-    "vscode-languageserver-types": "^3.16.0",
-    "axios": "1.6.8"
+    "vscode-languageserver-types": "^3.16.0"
   },
   "devDependencies": {
     "@backstage/cli": "0.26.11",
     "@backstage/dev-utils": "1.0.36",
     "@backstage/test-utils": "1.5.9",
     "@janus-idp/cli": "1.13.0",
-    "@redhat-developer/red-hat-developer-hub-theme": "0.0.54",
+    "@redhat-developer/red-hat-developer-hub-theme": "0.2.0",
     "@storybook/preview-api": "7.6.20",
     "@storybook/react": "7.6.20",
     "@testing-library/react": "14.3.1"
