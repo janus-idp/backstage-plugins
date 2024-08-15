@@ -1,9 +1,9 @@
-import { LoggerService } from '@backstage/backend-plugin-api';
 import {
-  PluginTaskScheduler,
-  readTaskScheduleDefinitionFromConfig,
-  TaskRunner,
-} from '@backstage/backend-tasks';
+  LoggerService,
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
 import { parse } from 'csv-parse/sync';
@@ -24,32 +24,35 @@ export class TestProvider implements RBACProvider {
     config: Config,
     options: {
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): TestProvider {
     const providerConfig = readProviderConfig(config);
-    let taskRunner;
+    let schedulerServiceTaskRunner;
 
     if (options.scheduler && providerConfig.schedule) {
-      taskRunner = options.scheduler.createScheduledTaskRunner(
+      schedulerServiceTaskRunner = options.scheduler.createScheduledTaskRunner(
         providerConfig.schedule,
       );
     } else if (options.schedule) {
-      taskRunner = options.schedule;
+      schedulerServiceTaskRunner = options.schedule;
     } else {
       throw new Error('Neither schedule nor scheduler is provided.');
     }
 
-    return new TestProvider(taskRunner, options.logger);
+    return new TestProvider(schedulerServiceTaskRunner, options.logger);
   }
 
-  private constructor(taskRunner: TaskRunner, logger: LoggerService) {
+  private constructor(
+    schedulerServiceTaskRunner: SchedulerServiceTaskRunner,
+    logger: LoggerService,
+  ) {
     this.logger = logger.child({
       target: this.getProviderName(),
     });
 
-    this.scheduleFn = this.createScheduleFN(taskRunner);
+    this.scheduleFn = this.createScheduleFN(schedulerServiceTaskRunner);
   }
 
   getProviderName(): string {
@@ -70,24 +73,25 @@ export class TestProvider implements RBACProvider {
     }
   }
 
-  private createScheduleFN(taskRunner: TaskRunner): () => Promise<void> {
+  private createScheduleFN(
+    schedulerServiceTaskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:run`;
-      return taskRunner.run({
+      return schedulerServiceTaskRunner.run({
         id: taskId,
         fn: async () => {
           try {
             await this.run();
           } catch (error: any) {
             this.logger.error(`Error occurred, here is the error ${error}`);
-            console.log(error);
           }
         },
       });
     };
   }
 
-  async run(): Promise<void> {
+  private async run(): Promise<void> {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -123,7 +127,9 @@ function readProviderConfig(config: Config) {
   const baseUrl = rbacConfig.getString('baseUrl');
   const accessToken = rbacConfig.getString('accessToken');
   const schedule = rbacConfig.has('schedule')
-    ? readTaskScheduleDefinitionFromConfig(rbacConfig.getConfig('schedule'))
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        rbacConfig.getConfig('schedule'),
+      )
     : undefined;
 
   return {
