@@ -6,7 +6,7 @@ import { Box, Grid, useTheme } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { Editor } from '@monaco-editor/react';
 
-import SubmitButton from '../SubmitButton';
+import { SubmitButton } from '@janus-idp/backstage-plugin-orchestrator-form-react';
 
 const DEFAULT_VALUE = JSON.stringify({ myKey: 'myValue' }, null, 4);
 
