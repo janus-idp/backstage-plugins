@@ -59,6 +59,10 @@ export const ClusterContextProvider = (props: any) => {
     [cluster, isError, loading, error],
   );
 
+  if (!providerId) {
+    return <>{props.children}</>;
+  }
+
   return (
     <ClusterContext.Provider value={value}>
       {props.children}
