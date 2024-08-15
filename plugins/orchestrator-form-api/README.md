@@ -1,4 +1,4 @@
-# @janus-idp/backstage-plugin-orchestrator-form-api-react
+# @janus-idp/backstage-plugin-orchestrator-form-api
 
 ### Overview
 
