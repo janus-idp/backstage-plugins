@@ -1,3 +1,3 @@
 import { ModelsPlural } from '../models';
 
-export const VM_TYPES: string[] = [ModelsPlural.virtualmachines];
+export const VM_TYPE: string = ModelsPlural.virtualmachines;
