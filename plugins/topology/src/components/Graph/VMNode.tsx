@@ -34,7 +34,7 @@ const VmNode = ({
 }: VmNodeProps) => {
   const { width, height } = element.getBounds();
   const vmData = element.getData().data;
-  const { kind, osImage, vmStatusBundle } = vmData;
+  const { kind, osImage } = vmData;
   const iconRadius = Math.min(width, height) * 0.25;
 
   const onNodeSelect = (e: React.MouseEvent) => {
@@ -55,11 +55,11 @@ const VmNode = ({
     <VirtualMachineIcon {...imageProps} />
   );
 
-  const useStyles = makeStyles(theme => ({
+  const useStyles = makeStyles({
     kubevirtbg: {
       fill: 'var(--pf-v5-global--BackgroundColor--light-100)',
     },
-  }));
+  });
   const classes = useStyles();
   return (
     <g>
