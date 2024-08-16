@@ -1,0 +1,27 @@
+dynamicPlugins:
+  frontend:
+    internal.backstage-plugin-lightspeed:
+      appIcons:
+        - name: LightspeedIcon
+          module: LightspeedPlugin
+          importName: LightspeedIcon
+      dynamicRoutes:
+        - path: /lightspeed
+          importName: LightspeedPage
+          module: LightspeedPlugin
+          menuItem:
+            icon: LightspeedIcon
+            text: Lightspeed
+
+proxy:
+  ### Example for how to add a proxy endpoint for the frontend.
+  ### A typical reason to do this is to handle HTTPS and CORS for internal services.
+  endpoints:
+    '/lightspeed/api':
+        target: 'https://vllm-vllm.apps.rosa.redhat-ai-dev.m6no.p3.openshiftapps.com/v1'
+        headers:
+            content-type: 'application/json'
+            Authorization: 'Bearer <token>'
+        secure: false
+        changeOrigin: true
+        credentials: 'dangerously-allow-unauthenticated'
