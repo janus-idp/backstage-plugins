@@ -109,7 +109,7 @@ export function isValidPluginModule(pluginModule: any): boolean {
 function isBackendFeature(value: unknown): boolean {
   return (
     !!value &&
-    typeof value === 'object' &&
+    (typeof value === 'object' || typeof value === 'function') &&
     (value as any).$$type === '@backstage/BackendFeature'
   );
 }
