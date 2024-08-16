@@ -54,7 +54,7 @@ export const customResourceRoute = {
   },
 };
 export const mockKubernetesResponse = {
-  virtualMachine: [
+  virtualMachines: [
     {
       apiVersion: 'kubevirt.io/v1',
       kind: 'VirtualMachine',
@@ -3224,7 +3224,7 @@ export const mockK8sResourcesData = {
       data: mockKubernetesResponse.routes,
     },
     virtualmachines: {
-      data: mockKubernetesResponse.virtualMachine,
+      data: mockKubernetesResponse.virtualMachines,
     },
   },
 };
