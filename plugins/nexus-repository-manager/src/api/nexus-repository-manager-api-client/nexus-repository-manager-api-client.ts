@@ -112,7 +112,9 @@ export class NexusRepositoryManagerApiClient
 
   private async proxiedDownloadUrl(asset: AssetXO) {
     const proxyUrl = await this.getBaseUrl();
-    return `${proxyUrl}/repository/${asset.repository}/${asset.path}`;
+    // remove leading forward slash for newer versions of Nexus API
+    const assetPath = asset.path?.replaceAll(/^\//g, '')
+    return `${proxyUrl}/repository/${asset.repository}/${assetPath}`;
   }
 
   private async searchServiceFetcher(url: string, query: SearchServiceQuery) {
