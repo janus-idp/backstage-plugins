@@ -9,6 +9,7 @@ import {
   ProcessInstanceListResultDTO,
   ProcessInstanceState,
   WorkflowDTO,
+  WorkflowInfo,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
   WorkflowRunStatusDTO,
@@ -167,6 +168,17 @@ export class V2 {
       ProcessInstanceState.Suspended,
       ProcessInstanceState.Pending,
     ].map(status => mapToWorkflowRunStatusDTO(status));
+  }
+
+  public async getWorkflowInputSchemaById(
+    workflowId: string,
+    serviceUrl: string,
+  ): Promise<WorkflowInfo | undefined> {
+    return this.orchestratorService.fetchWorkflowInfoOnService({
+      definitionId: workflowId,
+      serviceUrl: serviceUrl,
+      cacheHandler: 'throw',
+    });
   }
 
   public extractQueryParam(
