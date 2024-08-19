@@ -333,11 +333,7 @@ export const getConditionalPermissionsData = (
 };
 
 export const getKindNamespaceName = (roleRef: string) => {
-  const refs: string[] = roleRef.split(':');
-  const kind = refs[0];
-  const namespace = refs[1].split('/')[0];
-  const name = refs[1].split('/')[1];
-  return { kind, namespace, name };
+  return parseEntityRef(roleRef);
 };
 
 export const getSelectedMember = (
