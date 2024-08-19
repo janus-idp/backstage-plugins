@@ -7,7 +7,7 @@ To start a development setup in isolation with a faster setup and hot reloads, c
 1. Run the `ocm-backend` plugin in the `plugins/ocm-backend` directory by executing the following command:
 
    ```console
-   yarn start
+   LEGACY_BACKEND_START=true yarn start
    ```
 
 2. Run the `ocm` frontend plugin in the `plugins/ocm` directory using the following command:
