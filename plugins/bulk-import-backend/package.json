@@ -10,7 +10,7 @@
   "backstage": {
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "bulk-import-backend",
+    "pluginId": "bulk-import",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-bulk-import-backend"
     ]

@@ -28,7 +28,7 @@ const OPENAPI = `
           "default": "7007"
         },
         "basePath": {
-          "default": "api/bulk-import-backend"
+          "default": "api/bulk-import"
         }
       }
     }

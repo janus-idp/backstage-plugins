@@ -1,6 +1,6 @@
 # OrganizationApi
 
-All URIs are relative to *http://localhost:7007/api/bulk-import-backend*
+All URIs are relative to *http://localhost:7007/api/bulk-import*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
