@@ -54,7 +54,7 @@ export const createOverviewItemForType = (
   type: string,
   resource: K8sWorkloadResource,
 ): OverviewItem | undefined => {
-  if (!WORKLOAD_TYPES.includes(type) && VM_TYPE !== type) {
+  if (![...WORKLOAD_TYPES, VM_TYPE].includes(type)) {
     return undefined;
   }
   switch (type) {
