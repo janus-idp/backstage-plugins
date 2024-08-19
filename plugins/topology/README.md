@@ -131,7 +131,7 @@ The following permission must be granted to the [`ClusterRole`](https://backstag
           - list
   ```
 
-- The following code must be added to the `kubernets.customResources` property in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the VirtualMachines list in the side panel and to view the latest VirtualMachines status in the Topology node decorator:
+- The following code must be added to the `kubernetes.customResources` property in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the VirtualMachine nodes on the topology plugin:
 
   ```yaml
     kubernetes:
