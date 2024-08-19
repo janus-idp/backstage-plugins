@@ -14,7 +14,7 @@ This will start an interactive setup to create a new plugin. The following are w
 
 ```bash
 ? What do you want to create? backend-module - A new backend module
-? Enter the ID of the plugin [required] rbac
+? Enter the ID of the plugin [required] permission
 ? Enter the ID of the module [required] test
 ? Enter an owner to add to CODEOWNERS [optional]
 ```

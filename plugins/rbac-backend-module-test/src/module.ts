@@ -13,7 +13,7 @@ import { TestProvider } from './provider/TestProvider';
  * @alpha
  */
 export const rbacModuleTest = createBackendModule({
-  pluginId: 'rbac',
+  pluginId: 'permission',
   moduleId: 'test',
   register(reg) {
     reg.registerInit({
