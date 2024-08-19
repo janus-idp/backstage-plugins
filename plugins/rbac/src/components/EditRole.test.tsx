@@ -7,10 +7,13 @@ import '@testing-library/jest-dom';
 
 import EditRole from './EditRole';
 
-jest.mock('../utils/rbac-utils', () => ({
-  getKindNamespaceName: jest
-    .fn()
-    .mockReturnValue({ name: 'roleName', namespace: 'default', kind: 'Role' }),
+jest.mock('@backstage/catalog-model', () => ({
+  ...jest.requireActual('@backstage/catalog-model'),
+  parseEntityRef: jest.fn().mockReturnValue({
+    name: 'roleName',
+    namespace: 'default',
+    kind: 'Role',
+  }),
 }));
 
 describe('EditRole', () => {

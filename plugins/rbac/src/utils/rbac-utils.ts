@@ -332,10 +332,6 @@ export const getConditionalPermissionsData = (
   }, []);
 };
 
-export const getKindNamespaceName = (roleRef: string) => {
-  return parseEntityRef(roleRef);
-};
-
 export const getSelectedMember = (
   memberResource: MemberEntity | undefined,
   ref: string,
@@ -353,7 +349,7 @@ export const getSelectedMember = (
       members: getMembersCount(memberResource),
     };
   } else if (ref) {
-    const { kind, namespace, name } = getKindNamespaceName(ref);
+    const { kind, namespace, name } = parseEntityRef(ref);
     return {
       id: `${kind}-${namespace}-${name}`,
       ref,

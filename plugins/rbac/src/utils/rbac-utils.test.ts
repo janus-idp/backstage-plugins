@@ -16,7 +16,6 @@ import {
   getConditionalPermissionsData,
   getConditionsData,
   getConditionUpperCriteria,
-  getKindNamespaceName,
   getMembers,
   getMembersFromGroup,
   getPermissions,
@@ -183,19 +182,6 @@ describe('rbac utils', () => {
     expect(
       getPluginInfo(mockPermissionPolicies, 'scaffolder-template').isResourced,
     ).toBe(true);
-  });
-
-  it('should return kind, namespace and name from the reference', () => {
-    expect(getKindNamespaceName('role:default/xyz')).toEqual({
-      kind: 'role',
-      namespace: 'default',
-      name: 'xyz',
-    });
-    expect(getKindNamespaceName('role:abc/test')).toEqual({
-      kind: 'role',
-      namespace: 'abc',
-      name: 'test',
-    });
   });
 
   it('should return the permissions data', () => {

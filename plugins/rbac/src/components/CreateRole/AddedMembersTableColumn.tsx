@@ -1,12 +1,12 @@
 import React from 'react';
 
+import { parseEntityRef } from '@backstage/catalog-model';
 import { Link, TableColumn } from '@backstage/core-components';
 
 import { IconButton } from '@material-ui/core';
 import Delete from '@mui/icons-material/Delete';
 import { FormikErrors } from 'formik';
 
-import { getKindNamespaceName } from '../../utils/rbac-utils';
 import { RoleFormValues, SelectedMember } from './types';
 
 export const reviewStepMemebersTableColumns = () => [
@@ -53,7 +53,7 @@ export const selectedMembersColumns = (
       field: 'label',
       type: 'string',
       render: props => {
-        const { kind, namespace, name } = getKindNamespaceName(props.ref);
+        const { kind, namespace, name } = parseEntityRef(props.ref);
         return (
           <Link to={`/catalog/${namespace}/${kind}/${name}`} target="blank">
             {props.label}
