@@ -388,7 +388,7 @@ async function performDryRunChecks(
     dryRunStatuses?: CreateImportDryRunStatus[];
     errors?: string[];
   }> => {
-    const empty = await githubApiService.isRepoEmpty(logger, {
+    const empty = await githubApiService.isRepoEmpty({
       repoUrl: req.repository.url,
     });
     if (empty) {
@@ -454,8 +454,10 @@ async function performDryRunChecks(
     }
   });
 
+  dryRunStatuses.sort((a, b) => a.localeCompare(b));
+
   return {
-    dryRunStatuses: dryRunStatuses.sort(),
+    dryRunStatuses,
     errors,
   };
 }

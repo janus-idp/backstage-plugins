@@ -830,141 +830,6 @@ describe('createRouter', () => {
       expect(response.status).toEqual(400);
     });
 
-    describe('dry run', () => {
-      it('return dry-run results in errors array for each item in request body', async () => {
-        mockedPermissionQuery.mockImplementation(allowAll);
-        mockCatalogClient.queryEntities = jest.fn().mockImplementation(
-          async (req: {
-            filter: {
-              'metadata.name': string;
-            };
-          }) => {
-            const n = req.filter['metadata.name'];
-            switch (n) {
-              case 'my-entity-b':
-                return {
-                  totalItems: 1,
-                  items: [
-                    {
-                      apiVersion: 'backstage.io/v1alpha1',
-                      kind: 'Component',
-                      component: {
-                        name: 'my-entity-b',
-                      },
-                    },
-                  ],
-                };
-              default:
-                return { items: [] };
-            }
-          },
-        );
-        jest
-          .spyOn(
-            GithubApiService.prototype,
-            'doesCatalogInfoAlreadyExistInRepo',
-          )
-          .mockImplementation(
-            async (
-              _logger: Logger,
-              input: {
-                repoUrl: string;
-              },
-            ) => {
-              return (
-                input.repoUrl === 'https://github.com/my-org-ent-2/my-repo-b'
-              );
-            },
-          );
-        jest
-          .spyOn(GithubApiService.prototype, 'isRepoEmpty')
-          .mockImplementation(
-            async (
-              _logger: Logger,
-              input: {
-                repoUrl: string;
-              },
-            ) => {
-              return (
-                input.repoUrl === 'https://github.com/my-org-ent-2/my-repo-c'
-              );
-            },
-          );
-        jest
-          .spyOn(GithubApiService.prototype, 'doesCodeOwnersAlreadyExistInRepo')
-          .mockImplementation(
-            async (
-              _logger: Logger,
-              input: {
-                repoUrl: string;
-              },
-            ) => {
-              return (
-                input.repoUrl !== 'https://github.com/my-org-ent-2/my-repo-c'
-              );
-            },
-          );
-        const response = await request(app)
-          .post('/imports')
-          .query({ dryRun: true })
-          .send([
-            {
-              // catalogEntityName not specified => catalog entity checks will be skipped
-              repository: {
-                url: 'https://github.com/my-org-ent-1/my-repo-a',
-                defaultBranch: 'dev',
-              },
-            },
-            {
-              catalogEntityName: 'my-entity-b',
-              repository: {
-                url: 'https://github.com/my-org-ent-2/my-repo-b',
-                defaultBranch: 'main',
-              },
-            },
-            {
-              catalogEntityName: 'my-entity-c',
-              repository: {
-                url: 'https://github.com/my-org-ent-2/my-repo-c',
-                defaultBranch: 'trunk',
-              },
-            },
-          ]);
-        expect(response.status).toEqual(202);
-        expect(response.body).toEqual([
-          {
-            errors: [],
-            repository: {
-              url: 'https://github.com/my-org-ent-1/my-repo-a',
-              name: 'my-repo-a',
-              organization: 'my-org-ent-1',
-            },
-          },
-          {
-            errors: [
-              'CATALOG_ENTITY_CONFLICT',
-              'CATALOG_INFO_FILE_EXISTS_IN_REPO',
-            ],
-            catalogEntityName: 'my-entity-b',
-            repository: {
-              url: 'https://github.com/my-org-ent-2/my-repo-b',
-              name: 'my-repo-b',
-              organization: 'my-org-ent-2',
-            },
-          },
-          {
-            errors: ['CODEOWNERS_FILE_NOT_FOUND_IN_REPO', 'REPO_EMPTY'],
-            catalogEntityName: 'my-entity-c',
-            repository: {
-              url: 'https://github.com/my-org-ent-2/my-repo-c',
-              name: 'my-repo-c',
-              organization: 'my-org-ent-2',
-            },
-          },
-        ]);
-      });
-    });
-
     it('returns 202 with appropriate import statuses', async () => {
       mockedPermissionQuery.mockImplementation(allowAll);
       mockCatalogClient.addLocation = jest
@@ -1090,6 +955,123 @@ spec:
             url: 'https://github.com/my-org-ent-1/java-quarkus-starter',
           },
           status: 'ADDED',
+        },
+      ]);
+    });
+  });
+
+  describe('POST /imports with dryRun=true', () => {
+    it('return dry-run results in errors array for each item in request body', async () => {
+      mockedPermissionQuery.mockImplementation(allowAll);
+      mockCatalogClient.queryEntities = jest.fn().mockImplementation(
+        async (req: {
+          filter: {
+            'metadata.name': string;
+          };
+        }) => {
+          if (req.filter['metadata.name'] === 'my-entity-b') {
+            return {
+              totalItems: 1,
+              items: [
+                {
+                  apiVersion: 'backstage.io/v1alpha1',
+                  kind: 'Component',
+                  component: {
+                    name: 'my-entity-b',
+                  },
+                },
+              ],
+            };
+          }
+          return { items: [] };
+        },
+      );
+
+      jest
+        .spyOn(GithubApiService.prototype, 'doesCatalogInfoAlreadyExistInRepo')
+        .mockImplementation(
+          async (
+            _logger: Logger,
+            input: {
+              repoUrl: string;
+            },
+          ) => input.repoUrl === 'https://github.com/my-org-ent-2/my-repo-b',
+        );
+
+      jest
+        .spyOn(GithubApiService.prototype, 'isRepoEmpty')
+        .mockImplementation(
+          async (input: { repoUrl: string }) =>
+            input.repoUrl === 'https://github.com/my-org-ent-2/my-repo-c',
+        );
+
+      jest
+        .spyOn(GithubApiService.prototype, 'doesCodeOwnersAlreadyExistInRepo')
+        .mockImplementation(
+          async (
+            _logger: Logger,
+            input: {
+              repoUrl: string;
+            },
+          ) => input.repoUrl !== 'https://github.com/my-org-ent-2/my-repo-c',
+        );
+
+      const response = await request(app)
+        .post('/imports')
+        .query({ dryRun: true })
+        .send([
+          {
+            // catalogEntityName not specified => catalog entity checks will be skipped
+            repository: {
+              url: 'https://github.com/my-org-ent-1/my-repo-a',
+              defaultBranch: 'dev',
+            },
+          },
+          {
+            catalogEntityName: 'my-entity-b',
+            repository: {
+              url: 'https://github.com/my-org-ent-2/my-repo-b',
+              defaultBranch: 'main',
+            },
+          },
+          {
+            catalogEntityName: 'my-entity-c',
+            repository: {
+              url: 'https://github.com/my-org-ent-2/my-repo-c',
+              defaultBranch: 'trunk',
+            },
+          },
+        ]);
+      expect(response.status).toEqual(202);
+      expect(response.body).toEqual([
+        {
+          errors: [],
+          repository: {
+            url: 'https://github.com/my-org-ent-1/my-repo-a',
+            name: 'my-repo-a',
+            organization: 'my-org-ent-1',
+          },
+        },
+        {
+          errors: [
+            'CATALOG_ENTITY_CONFLICT',
+            'CATALOG_INFO_FILE_EXISTS_IN_REPO',
+          ],
+          catalogEntityName: 'my-entity-b',
+          repository: {
+            url: 'https://github.com/my-org-ent-2/my-repo-b',
+            name: 'my-repo-b',
+            organization: 'my-org-ent-2',
+          },
+        },
+        {
+          errors: ['CODEOWNERS_FILE_NOT_FOUND_IN_REPO', 'REPO_EMPTY'],
+          catalogEntityName: 'my-entity-c',
+          repository: {
+            url: 'https://github.com/my-org-ent-2/my-repo-c',
+            name: 'my-repo-c',
+            organization: 'my-org-ent-2',
+          },
         },
       ]);
     });
