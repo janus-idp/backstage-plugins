@@ -1084,7 +1084,7 @@ export class GithubApiService {
         return false;
       }
       logger.debug(
-        `Unable to determine if catalog-info already exists in repo ${repo}: ${error}`,
+        `Unable to determine if a file named ${fileName} already exists in repo ${repo}: ${error}`,
       );
       return undefined;
     }
@@ -1097,10 +1097,36 @@ export class GithubApiService {
       defaultBranch?: string;
     },
   ) {
+    return this.hasFileInRepo(logger, {
+      ...input,
+      fileName: getCatalogFilename(this.config),
+    });
+  }
+
+  async doesCodeOwnersAlreadyExistInRepo(
+    logger: Logger,
+    input: {
+      repoUrl: string;
+      defaultBranch?: string;
+    },
+  ) {
+    return this.hasFileInRepo(logger, {
+      ...input,
+      fileName: '.github/CODEOWNERS',
+    });
+  }
+
+  async hasFileInRepo(
+    logger: Logger,
+    input: {
+      repoUrl: string;
+      defaultBranch?: string;
+      fileName: string;
+    },
+  ) {
     const { ghConfig, credentials, gitUrl } =
       await this.extractConfigAndCreds(input);
 
-    const fileName = getCatalogFilename(this.config);
     for (const credential of credentials) {
       if ('error' in credential) {
         if (credential.error?.name !== 'NotFoundError') {
@@ -1124,7 +1150,7 @@ export class GithubApiService {
         octo,
         gitUrl.owner,
         gitUrl.name,
-        fileName,
+        input.fileName,
         input.defaultBranch,
       );
       if (exists === undefined) {
@@ -1133,7 +1159,7 @@ export class GithubApiService {
       return exists;
     }
     throw new Error(
-      `Could not determine if ${input.repoUrl} already had a catalog-info file`,
+      `Could not determine if repo at ${input.repoUrl} already has a file named ${input.fileName} in its default branch (${input.defaultBranch})`,
     );
   }
 

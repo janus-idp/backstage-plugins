@@ -890,6 +890,20 @@ describe('createRouter', () => {
               );
             },
           );
+        jest
+          .spyOn(GithubApiService.prototype, 'doesCodeOwnersAlreadyExistInRepo')
+          .mockImplementation(
+            async (
+              _logger: Logger,
+              input: {
+                repoUrl: string;
+              },
+            ) => {
+              return (
+                input.repoUrl !== 'https://github.com/my-org-ent-2/my-repo-c'
+              );
+            },
+          );
         const response = await request(app)
           .post('/imports')
           .query({ dryRun: true })
@@ -939,7 +953,7 @@ describe('createRouter', () => {
             },
           },
           {
-            errors: ['REPO_EMPTY'],
+            errors: ['CODEOWNERS_FILE_NOT_FOUND_IN_REPO', 'REPO_EMPTY'],
             catalogEntityName: 'my-entity-c',
             repository: {
               url: 'https://github.com/my-org-ent-2/my-repo-c',

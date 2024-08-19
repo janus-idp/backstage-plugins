@@ -39,6 +39,7 @@ import { findAllRepositories } from './repositories';
 type CreateImportDryRunStatus =
   | 'CATALOG_ENTITY_CONFLICT'
   | 'CATALOG_INFO_FILE_EXISTS_IN_REPO'
+  | 'CODEOWNERS_FILE_NOT_FOUND_IN_REPO'
   | 'REPO_EMPTY';
 
 export async function findAllImports(
@@ -417,12 +418,32 @@ async function performDryRunChecks(
     return {};
   };
 
+  const checkCodeOwnersFileInRepo = async (): Promise<{
+    dryRunStatuses?: CreateImportDryRunStatus[];
+    errors?: string[];
+  }> => {
+    const exists = await githubApiService.doesCodeOwnersAlreadyExistInRepo(
+      logger,
+      {
+        repoUrl: req.repository.url,
+        defaultBranch: req.repository.defaultBranch,
+      },
+    );
+    if (!exists) {
+      return {
+        dryRunStatuses: ['CODEOWNERS_FILE_NOT_FOUND_IN_REPO'],
+      };
+    }
+    return {};
+  };
+
   const dryRunStatuses: CreateImportDryRunStatus[] = [];
   const errors: string[] = [];
   const allChecks = await Promise.all([
     checkCatalog(),
     checkEmptyRepo(),
     checkCatalogInfoPresenceInRepo(),
+    checkCodeOwnersFileInRepo(),
   ]);
   allChecks.flat().forEach(res => {
     if (res.dryRunStatuses) {
