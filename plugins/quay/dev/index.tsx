@@ -3,9 +3,10 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { TestApiProvider } from '@backstage/test-utils';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { MockPermissionApi, TestApiProvider } from '@backstage/test-utils';
 
-import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { quayApiRef, QuayApiV1 } from '../src/api';
 import { QuayPage, quayPlugin } from '../src/plugin';
@@ -48,13 +49,19 @@ export class MockQuayApiClient implements QuayApiV1 {
     return securityDetails;
   }
 }
+const mockPermissionApi = new MockPermissionApi();
 
 createDevApp()
   .registerPlugin(quayPlugin)
-  .addThemes(createDevAppThemes())
+  .addThemes(getAllThemes())
   .addPage({
     element: (
-      <TestApiProvider apis={[[quayApiRef, new MockQuayApiClient()]]}>
+      <TestApiProvider
+        apis={[
+          [quayApiRef, new MockQuayApiClient()],
+          [permissionApiRef, mockPermissionApi],
+        ]}
+      >
         <EntityProvider entity={mockEntity}>
           <QuayPage />
         </EntityProvider>

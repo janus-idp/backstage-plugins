@@ -21,19 +21,6 @@ jobs:
           args: '[HEAD^1]'
           node-version: ${{ matrix.node-version }}
 
-      - name: Fail PR check if workspace dirty
-        shell: bash
-        run: |
-          changed_files="$(git diff --name-only . || true)"
-          if [[ $changed_files ]]; then
-            echo "After 'yarn install', workspace is dirty! The following files have changed:"
-            echo
-            git diff --name-only . || true
-            echo
-            echo "You can regenerate the yarn.lock with https://github.com/janus-idp/backstage-plugins/actions/workflows/yarn-lock.yaml"
-            exit 42
-          fi
-
       - name: Build all packages
         uses: ./.github/actions/build
         with:

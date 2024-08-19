@@ -10,7 +10,7 @@ import {
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { MockPermissionApi, TestApiProvider } from '@backstage/test-utils';
 
-import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { mockKubernetesPlrResponse } from '../src/__fixtures__/1-pipelinesData';
 import {
@@ -186,7 +186,7 @@ const mockKubernetesAuthProviderApiRef = {
 };
 
 createDevApp()
-  .addThemes(createDevAppThemes())
+  .addThemes(getAllThemes())
   .addPage({
     element: (
       <TestApiProvider

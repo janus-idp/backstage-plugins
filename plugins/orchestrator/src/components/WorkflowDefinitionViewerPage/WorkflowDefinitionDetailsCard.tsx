@@ -3,9 +3,8 @@ import React from 'react';
 import { InfoCard } from '@backstage/core-components';
 import { AboutField } from '@backstage/plugin-catalog';
 
-import Grid from '@mui/material/Grid';
-import Skeleton from '@mui/material/Skeleton';
-import { styled } from '@mui/material/styles';
+import { Grid, makeStyles } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
 import {
   ProcessInstanceStatusDTO,
@@ -16,9 +15,11 @@ import { VALUE_UNAVAILABLE } from '../../constants';
 import WorkflowOverviewFormatter from '../../dataFormatters/WorkflowOverviewFormatter';
 import { WorkflowInstanceStatusIndicator } from '../WorkflowInstanceStatusIndicator';
 
-const DetailsInfoCard = styled(InfoCard)({
-  overflowY: 'auto',
-  height: '15rem',
+const useStyles = makeStyles({
+  details: {
+    overflowY: 'auto',
+    height: '15rem',
+  },
 });
 
 const WorkflowDefinitionDetailsCard = ({
@@ -28,6 +29,8 @@ const WorkflowDefinitionDetailsCard = ({
   loading: boolean;
   workflowOverview?: WorkflowOverviewDTO;
 }) => {
+  const classes = useStyles();
+
   const formattedWorkflowOverview = React.useMemo(
     () =>
       workflowOverview
@@ -70,7 +73,7 @@ const WorkflowDefinitionDetailsCard = ({
   );
 
   return (
-    <DetailsInfoCard title="Details">
+    <InfoCard title="Details" className={classes.details}>
       <Grid container spacing={3} alignContent="flex-start">
         <Grid container item md={4} spacing={3} alignContent="flex-start">
           {details?.map(({ label, value, children }) => (
@@ -95,7 +98,7 @@ const WorkflowDefinitionDetailsCard = ({
           </AboutField>
         </Grid>
       </Grid>
-    </DetailsInfoCard>
+    </InfoCard>
   );
 };
 

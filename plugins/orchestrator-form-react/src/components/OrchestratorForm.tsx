@@ -1,24 +1,31 @@
 import React from 'react';
 
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
+import { useApiHolder } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import Step from '@mui/material/Step';
-import StepContent from '@mui/material/StepContent';
-import StepLabel from '@mui/material/StepLabel';
-import Stepper from '@mui/material/Stepper';
-import Typography from '@mui/material/Typography';
-import { FormProps } from '@rjsf/core';
-import Form from '@rjsf/mui';
+import {
+  Box,
+  Button,
+  Paper,
+  Step,
+  StepContent,
+  StepLabel,
+  Stepper,
+  Typography,
+} from '@material-ui/core';
+import { FormProps, withTheme } from '@rjsf/core';
+import { Theme as MuiTheme } from '@rjsf/material-ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 
 import { WorkflowInputSchemaStep } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { orchestratorFormApiRef } from '@janus-idp/backstage-plugin-orchestrator-form-api';
 
-import SubmitButton from '../SubmitButton';
+import { defaultFormExtensionsApi } from '../DefaultFormApi';
+import SubmitButton from './SubmitButton';
+
+const Form = withTheme(MuiTheme);
 
 const getCombinedData = (
   steps: WorkflowInputSchemaStep[],
@@ -90,6 +97,9 @@ const FormWrapper = ({
 }: Pick<FormProps<JsonObject>, 'onSubmit' | 'children'> & {
   step: WorkflowInputSchemaStep;
 }) => {
+  const formApi =
+    useApiHolder().get(orchestratorFormApiRef) || defaultFormExtensionsApi;
+  const withFormExtensions = formApi.getFormDecorator();
   const firstKey = Object.keys(step.schema.properties ?? {})[0];
   const uiSchema = React.useMemo(() => {
     const res: UiSchema<any, RJSFSchema, any> = firstKey
@@ -101,22 +111,27 @@ const FormWrapper = ({
     return res;
   }, [firstKey, step.readonlyKeys]);
 
-  return (
-    <Form
-      validator={validator}
-      showErrorList={false}
-      noHtml5Validate
-      formData={step.data}
-      schema={{ ...step.schema, title: '' }} // title is in step
-      onSubmit={onSubmit}
-      uiSchema={uiSchema}
-    >
-      {children}
-    </Form>
-  );
+  const schema = { ...step.schema, title: '' }; // the title is in the step
+
+  const FormComponent = (props: Partial<FormProps>) => {
+    return (
+      <Form
+        validator={props.validator || validator}
+        schema={props.schema || schema}
+        uiSchema={props.uiSchema || uiSchema}
+        noHtml5Validate={props.noHtml5Validate || true}
+        onSubmit={props.onSubmit || onSubmit}
+        {...props}
+      >
+        {children}
+      </Form>
+    );
+  };
+  const NewComponent = withFormExtensions(FormComponent);
+  return <NewComponent />;
 };
 
-const StepperForm = ({
+const OrchestratorForm = ({
   isComposedSchema,
   steps: inputSteps,
   handleExecute,
@@ -190,4 +205,4 @@ const StepperForm = ({
   );
 };
 
-export default StepperForm;
+export default OrchestratorForm;

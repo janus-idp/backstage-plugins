@@ -6,7 +6,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { KubernetesApi } from '@backstage/plugin-kubernetes-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
-import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { mockKubernetesResponse } from '../src/__fixtures__/1-deployments';
 import { TopologyPage, topologyPlugin } from '../src/plugin';
@@ -123,7 +123,7 @@ const mockKubernetesAuthProviderApiRef = {
 };
 
 createDevApp()
-  .addThemes(createDevAppThemes())
+  .addThemes(getAllThemes())
   .addPage({
     element: (
       <TestApiProvider

@@ -15,7 +15,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 
-import Grid from '@mui/material/Grid';
+import { Grid } from '@material-ui/core';
 
 import {
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
@@ -23,6 +23,7 @@ import {
   QUERY_PARAM_INSTANCE_STATE,
   WorkflowInputSchemaResponse,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { OrchestratorForm } from '@janus-idp/backstage-plugin-orchestrator-form-react';
 
 import { orchestratorApiRef } from '../../api';
 import {
@@ -32,7 +33,6 @@ import {
 import { getErrorObject } from '../../utils/ErrorUtils';
 import { BaseOrchestratorPage } from '../BaseOrchestratorPage';
 import JsonTextAreaForm from './JsonTextAreaForm';
-import StepperForm from './StepperForm';
 
 export const ExecuteWorkflowPage = () => {
   const orchestratorApi = useApi(orchestratorApiRef);
@@ -162,7 +162,7 @@ export const ExecuteWorkflowPage = () => {
         <Grid item>
           <InfoCard title="Run workflow">
             {schemaResponse.schemaSteps.length > 0 ? (
-              <StepperForm
+              <OrchestratorForm
                 steps={schemaResponse.schemaSteps}
                 isComposedSchema={schemaResponse.isComposedSchema}
                 handleExecute={isErrorState ? handleRetrigger : handleExecute}
