@@ -1,3 +1,9 @@
+# ❗DEPRECATED❗
+
+This package has been deprecated.
+
+Please use the **[@backstage-community/plugin-redhat-argocd-common](https://www.npmjs.com/package/@backstage-community/plugin-redhat-argocd-common)** package instead.
+
 # argocd-common
 
 Welcome to the argocd-common plugin!
