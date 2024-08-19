@@ -3,6 +3,7 @@ import {
   readSchedulerServiceTaskScheduleDefinitionFromConfig,
   SchedulerService,
   SchedulerServiceTaskRunner,
+  SchedulerServiceTaskScheduleDefinition,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
@@ -14,6 +15,12 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-node';
 
 import fs from 'fs';
+
+export type TestProviderConfig = {
+  baseUrl: string;
+  accessToken: string;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
+};
 
 export class TestProvider implements RBACProvider {
   private readonly scheduleFn: () => Promise<void>;
@@ -69,7 +76,6 @@ export class TestProvider implements RBACProvider {
       await this.run();
     } catch (error: any) {
       this.logger.error(`Error occurred, here is the error ${error}`);
-      console.log(error);
     }
   }
 
@@ -116,11 +122,12 @@ export class TestProvider implements RBACProvider {
   }
 }
 
-function readProviderConfig(config: Config) {
+function readProviderConfig(config: Config): TestProviderConfig {
   const rbacConfig = config.getOptionalConfig('permission.rbac.providers.test');
   if (!rbacConfig) {
     return {
-      undefined,
+      baseUrl: '',
+      accessToken: '',
     };
   }
 

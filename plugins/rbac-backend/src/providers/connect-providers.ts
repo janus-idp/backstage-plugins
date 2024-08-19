@@ -43,25 +43,25 @@ export class Connection implements RBACProviderConnection {
   async applyRoles(roles: string[][]): Promise<void> {
     const stringPolicy = typedPoliciesToString(roles, 'g');
 
-    const providerRoles: string[][] = [];
+    const providerRolesforRemoval: string[][] = [];
 
     const tempEnforcer = await newEnforcer(
       newModelFromString(MODEL),
       new StringAdapter(stringPolicy),
     );
 
-    const providerRoleMetadata = await this.getProviderRoleMetadata();
+    const providerRoles = await this.getProviderRoles();
 
     // Get the roles for this provider coming from rbac plugin
-    for (const providerRole of providerRoleMetadata) {
-      providerRoles.push(
+    for (const providerRole of providerRoles) {
+      providerRolesforRemoval.push(
         ...(await this.enforcer.getFilteredGroupingPolicy(1, providerRole)),
       );
     }
 
     // Remove role
     // role exists in rbac but does not exist in provider
-    await this.removeRoles(providerRoles, tempEnforcer);
+    await this.removeRoles(providerRolesforRemoval, tempEnforcer);
 
     // Add the role
     // role exists in provider but does not exist in rbac
@@ -78,10 +78,10 @@ export class Connection implements RBACProviderConnection {
       new StringAdapter(stringPolicy),
     );
 
-    const providerRoleMetadata = await this.getProviderRoleMetadata();
+    const providerRoles = await this.getProviderRoles();
 
     // Get the roles for this provider coming from rbac plugin
-    for (const providerRole of providerRoleMetadata) {
+    for (const providerRole of providerRoles) {
       providerPermissions.push(
         ...(await this.enforcer.getFilteredPolicy(0, providerRole)),
       );
@@ -259,7 +259,7 @@ export class Connection implements RBACProviderConnection {
     }
   }
 
-  private async getProviderRoleMetadata(): Promise<string[]> {
+  private async getProviderRoles(): Promise<string[]> {
     const currentRoles = await this.roleMetadataStorage.filterRoleMetadata(
       this.id,
     );
@@ -276,14 +276,20 @@ export async function connectRBACProviders(
 ) {
   await Promise.all(
     providers.map(async provider => {
-      const connection = new Connection(
-        provider.getProviderName(),
-        enforcer,
-        roleMetadataStorage,
-        logger,
-        auditLogger,
-      );
-      return provider.connect(connection);
+      try {
+        const connection = new Connection(
+          provider.getProviderName(),
+          enforcer,
+          roleMetadataStorage,
+          logger,
+          auditLogger,
+        );
+        return provider.connect(connection);
+      } catch (error) {
+        throw new Error(
+          `Unable to connect provider ${provider.getProviderName()}, ${error}`,
+        );
+      }
     }),
   );
 }

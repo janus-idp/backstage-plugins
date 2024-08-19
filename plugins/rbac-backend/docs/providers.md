@@ -206,7 +206,6 @@ export class TestProvider implements RBACProvider {
       await this.run();
     } catch (error: any) {
       this.logger.error(`Error occurred, here is the error ${error}`);
-      console.log(error);
     }
   }
 }
@@ -248,7 +247,7 @@ import { TestProvider } from './TestProvider';
  * @alpha
  */
 export const rbacModuleTest = createBackendModule({
-  pluginId: 'rbac',
+  pluginId: 'permission',
   moduleId: 'test',
   register(reg) {
     reg.registerInit({
