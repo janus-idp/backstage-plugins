@@ -60,6 +60,7 @@ describe('OrchestratorClient', () => {
     orchestratorClientOptions = {
       discoveryApi: mockDiscoveryApi,
       identityApi: mockIdentityApi,
+      axiosInstance: axios,
     };
     orchestratorClient = new OrchestratorClient(orchestratorClientOptions);
   });
@@ -387,6 +388,7 @@ describe('OrchestratorClient', () => {
       axios.request = jest
         .fn()
         .mockRejectedValueOnce(new Error('Simulated error'));
+
       // When
       const promise = orchestratorClient.listWorkflowOverviews();
 
