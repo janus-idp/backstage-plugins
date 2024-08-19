@@ -148,6 +148,15 @@ export function validateEntityReference(
     );
   }
 
+  if (
+    entityRefCompound.name.includes('/') ||
+    entityRefCompound.namespace.includes('/')
+  ) {
+    return new Error(
+      `The name and namespace in the entity reference '${entityRef}' must not contain '/'`,
+    );
+  }
+
   return undefined;
 }
 

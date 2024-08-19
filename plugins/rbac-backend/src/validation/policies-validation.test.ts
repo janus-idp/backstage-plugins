@@ -203,6 +203,10 @@ describe('rest data validation', () => {
           ref: 'admin:default/test',
           expectedError: `Unsupported kind admin. List supported values ["user", "group", "role"]`,
         },
+        {
+          ref: 'user:default/doe/developer',
+          expectedError: `The name and namespace in the entity reference 'user:default/doe/developer' must not contain '/'`,
+        },
       ];
       for (const entityRef of invalidOrUnsupportedEntityRefs) {
         const err = validateEntityReference(entityRef.ref);
@@ -215,7 +219,6 @@ describe('rest data validation', () => {
       const invalidOrUnsupportedEntityRefs = [
         'user:default/guest',
         'user:default/John Doe',
-        'user:default/John Doe/developer',
         'role:default/team-a',
       ];
       for (const entityRef of invalidOrUnsupportedEntityRefs) {
