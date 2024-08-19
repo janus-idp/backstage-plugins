@@ -63,7 +63,7 @@
     "yn": "^5.0.0",
     "@severlessworkflow/sdk-typescript": "^3.0.3",
     "js-yaml": "^4.1.0",
-    "axios": "^1.6.8"
+    "axios": "^1.7.4"
   },
   "devDependencies": {},
   "peerDependencies": {

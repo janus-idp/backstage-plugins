@@ -30,7 +30,7 @@
   "scripts": {},
   "dependencies": {
     "@types/express": "*",
-    "axios": "^1.6.4",
+    "axios": "^1.7.4",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^3.1.0",
