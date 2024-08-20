@@ -121,7 +121,9 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     if (Array.isArray(locations)) {
       return new Map(
         locations
-          .filter(location => location.data.type === 'url')
+          .filter(
+            location => location.data?.target && location.data?.type === 'url',
+          )
           .map(location => [location.data.id, location.data.target]),
       );
     }

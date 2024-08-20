@@ -57,28 +57,30 @@ export async function findAllRepositories(
 }
 
 export async function findRepositoriesByOrganization(
-  logger: Logger,
-  config: Config,
-  githubApiService: GithubApiService,
-  catalogInfoGenerator: CatalogInfoGenerator,
+  deps: {
+    logger: Logger;
+    config: Config;
+    githubApiService: GithubApiService;
+    catalogInfoGenerator: CatalogInfoGenerator;
+  },
   orgName: string,
   checkStatus: boolean = false,
   pageNumber: number = DefaultPageNumber,
   pageSize: number = DefaultPageSize,
 ): Promise<HandlerResponse<Components.Schemas.RepositoryList>> {
-  logger.debug(
+  deps.logger.debug(
     `Getting all repositories for org "${orgName}" - (page,size)=(${pageNumber},${pageSize})..`,
   );
-  return githubApiService
+  return deps.githubApiService
     .getOrgRepositoriesFromIntegrations(orgName, pageNumber, pageSize)
     .then(response =>
       formatResponse(
         response,
-        catalogInfoGenerator,
+        deps.catalogInfoGenerator,
         checkStatus,
-        logger,
-        config,
-        githubApiService,
+        deps.logger,
+        deps.config,
+        deps.githubApiService,
       ),
     );
 }

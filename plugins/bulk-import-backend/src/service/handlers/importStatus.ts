@@ -24,31 +24,6 @@ import { CatalogInfoGenerator, getTokenForPlugin } from '../../helpers';
 import { Components } from '../../openapi';
 import { GithubApiService } from '../githubApiService';
 
-export async function getImportStatus(
-  logger: Logger,
-  config: Config,
-  githubApiService: GithubApiService,
-  auth: AuthService,
-  catalogApi: CatalogApi,
-  catalogInfoGenerator: CatalogInfoGenerator,
-  repoUrl: string,
-  defaultBranch?: string,
-): Promise<{
-  status: Components.Schemas.ImportStatus;
-  lastUpdate?: string;
-} | null> {
-  return getImportStatusWithCheckerFn(
-    logger,
-    config,
-    githubApiService,
-    catalogInfoGenerator,
-    repoUrl,
-    async (catalogUrl: string) =>
-      await verifyLocationExistence(auth, catalogApi, catalogUrl),
-    defaultBranch,
-  );
-}
-
 export async function getImportStatusFromLocations(
   logger: Logger,
   config: Config,

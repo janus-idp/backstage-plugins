@@ -165,10 +165,12 @@ export async function createRouter(
       q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
       q.checkImportStatus = stringToBoolean(q.checkImportStatus);
       const response = await findRepositoriesByOrganization(
-        logger,
-        config,
-        githubApiService,
-        catalogInfoGenerator,
+        {
+          logger,
+          config,
+          githubApiService,
+          catalogInfoGenerator,
+        },
         c.request.params.organizationName?.toString(),
         q.checkImportStatus,
         q.pagePerIntegration,

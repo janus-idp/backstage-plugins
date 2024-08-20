@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
-export * from './auth';
-export * from './catalogInfoGenerator';
-export * from './GithubAppManager';
-export * from './pagination';
+/**
+ * Returns a paginated chunk of the specified array
+ * @param array the array to paginate
+ * @param page the page number
+ * @param size the maximum number of elements in each page
+ */
+export function paginateArray<T>(
+  array: T[],
+  page: number,
+  size: number,
+): { result: T[]; totalCount: number } {
+  const startIndex = (page - 1) * size;
+  const endIndex = startIndex + size;
+
+  return {
+    result: array.slice(startIndex, endIndex),
+    totalCount: array.length,
+  };
+}
