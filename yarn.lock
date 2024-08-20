@@ -5827,6 +5827,13 @@
     express "^4.19.2"
     lodash "^4.17.21"
 
+"@janus-idp/backstage-plugin-rbac-node@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-rbac-node/-/backstage-plugin-rbac-node-1.4.0.tgz#8d5e745b55094498754adb92f464636cf0c53262"
+  integrity sha512-S/THiYXxFFFB4u/NNsaF5MR2tMzwxxe9OaEYrZDCYsI/LVRlsiN+jKA3txZ2itDWd4Zy04GsHt3RW2bCrFZFJQ==
+  dependencies:
+    "@backstage/backend-plugin-api" "^0.7.0"
+
 "@janus-idp/cli@1.13.0":
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/@janus-idp/cli/-/cli-1.13.0.tgz#acdd10ad3239f3c8951caebd3d4611b6982036f6"
