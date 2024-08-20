@@ -10,7 +10,9 @@ import { Stream } from 'openai/streaming';
 export type LightspeedAPI = {
   createChatCompletions: (
     prompt: string,
+    selectedModel: string,
   ) => Promise<Stream<OpenAI.Chat.Completions.ChatCompletionChunk>>;
+  getAllModels: () => Promise<OpenAI.Models.Model[]>;
 };
 
 export const lightspeedApiRef = createApiRef<LightspeedAPI>({
@@ -45,7 +47,7 @@ export class LightspeedProxyClient implements LightspeedAPI {
     return idToken;
   }
 
-  async createChatCompletions(prompt: string) {
+  async createChatCompletions(prompt: string, selectedModel: string) {
     const idToken = await this.getUserAuthorization();
     return await this.openAIApi.chat.completions.create(
       {
@@ -57,7 +59,7 @@ export class LightspeedProxyClient implements LightspeedAPI {
           },
           { role: 'user', content: prompt },
         ],
-        model: 'llama3',
+        model: selectedModel,
         stream: true,
       },
       {
@@ -66,5 +68,15 @@ export class LightspeedProxyClient implements LightspeedAPI {
         },
       },
     );
+  }
+
+  async getAllModels() {
+    const idToken = await this.getUserAuthorization();
+    const response = await this.openAIApi.models.list({
+      headers: {
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
+      },
+    });
+    return response?.data ? response.data : [];
   }
 }
