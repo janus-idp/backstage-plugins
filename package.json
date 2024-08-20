@@ -7,6 +7,7 @@
   },
   "scripts": {
     "preinstall": "npx only-allow yarn",
+    "dev": "turbo run start --filter=...app --filter=...backend",
     "start:backend": "turbo run start --filter=...backend",
     "start:backstage": "turbo run start --filter=...app --filter=...backend",
     "start:plugins": "turbo run start --filter=@janus-idp/*",

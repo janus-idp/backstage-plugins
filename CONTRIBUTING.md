@@ -455,7 +455,7 @@ Backstage's support for standalone plugin development is minimal (especially for
        packages/app/package.json \
        packages/app/src/components/catalog/EntityPage.tsx
    ```
-4. Run `yarn start:backstage`
+4. Run `yarn dev`
 
 ### Standalone standalone plugin development
 
