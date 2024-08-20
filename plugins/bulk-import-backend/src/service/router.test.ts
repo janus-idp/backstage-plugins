@@ -1055,7 +1055,7 @@ spec:
             input: {
               repoUrl: string;
             },
-          ) => input.repoUrl !== 'https://github.com/my-org-ent-2/my-repo-c',
+          ) => input.repoUrl !== 'https://github.com/my-org-ent-2/my-repo-d',
         );
 
       const response = await request(app)
@@ -1083,6 +1083,14 @@ spec:
               defaultBranch: 'trunk',
             },
           },
+          {
+            catalogEntityName: 'my-entity-d',
+            codeOwnersFileAsEntityOwner: true,
+            repository: {
+              url: 'https://github.com/my-org-ent-2/my-repo-d',
+              defaultBranch: 'devBranch',
+            },
+          },
         ]);
       expect(response.status).toEqual(202);
       expect(response.body).toEqual([
@@ -1107,11 +1115,20 @@ spec:
           },
         },
         {
-          errors: ['CODEOWNERS_FILE_NOT_FOUND_IN_REPO', 'REPO_EMPTY'],
+          errors: ['REPO_EMPTY'],
           catalogEntityName: 'my-entity-c',
           repository: {
             url: 'https://github.com/my-org-ent-2/my-repo-c',
             name: 'my-repo-c',
+            organization: 'my-org-ent-2',
+          },
+        },
+        {
+          errors: ['CODEOWNERS_FILE_NOT_FOUND_IN_REPO'],
+          catalogEntityName: 'my-entity-d',
+          repository: {
+            url: 'https://github.com/my-org-ent-2/my-repo-d',
+            name: 'my-repo-d',
             organization: 'my-org-ent-2',
           },
         },

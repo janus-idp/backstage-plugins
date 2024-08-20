@@ -362,21 +362,16 @@ async function performDryRunChecks(
   githubApiService: GithubApiService,
   req: Components.Schemas.ImportRequest,
 ): Promise<{ dryRunStatuses: CreateImportDryRunStatus[]; errors: string[] }> {
-  const checkCatalog = async (): Promise<{
+  const checkCatalog = async (
+    catalogEntityName: string,
+  ): Promise<{
     dryRunStatuses?: CreateImportDryRunStatus[];
     errors?: string[];
   }> => {
-    if (!req.catalogEntityName || req.catalogEntityName.trim().length === 0) {
-      return {
-        errors: [
-          `WARNING: skipped checking against catalog. Missing 'catalogEntityName' field in request body for ${req.repository.url} for dry-run check`,
-        ],
-      };
-    }
     const hasEntity = await hasEntityInCatalog(
       auth,
       catalogApi,
-      req.catalogEntityName,
+      catalogEntityName,
     );
     if (hasEntity) {
       return { dryRunStatuses: ['CATALOG_ENTITY_CONFLICT'] };
@@ -439,12 +434,14 @@ async function performDryRunChecks(
 
   const dryRunStatuses: CreateImportDryRunStatus[] = [];
   const errors: string[] = [];
-  const allChecks = await Promise.all([
-    checkCatalog(),
-    checkEmptyRepo(),
-    checkCatalogInfoPresenceInRepo(),
-    checkCodeOwnersFileInRepo(),
-  ]);
+  const allChecksFn = [checkEmptyRepo(), checkCatalogInfoPresenceInRepo()];
+  if (req.catalogEntityName?.trim()) {
+    allChecksFn.push(checkCatalog(req.catalogEntityName));
+  }
+  if (req.codeOwnersFileAsEntityOwner) {
+    allChecksFn.push(checkCodeOwnersFileInRepo());
+  }
+  const allChecks = await Promise.all(allChecksFn);
   allChecks.flat().forEach(res => {
     if (res.dryRunStatuses) {
       dryRunStatuses.push(...res.dryRunStatuses);
