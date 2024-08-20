@@ -109,6 +109,16 @@ function isValidEffectValue(effect: string): boolean {
   );
 }
 
+function isValidEntityName(name: string): boolean {
+  const validNamePattern = /^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*$/;
+  return validNamePattern.test(name) && name.length <= 63;
+}
+
+function isValidEntityNamespace(namespace: string): boolean {
+  const validNamespacePattern = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+  return validNamespacePattern.test(namespace) && namespace.length <= 63;
+}
+
 // We supports only full form entity reference: [<kind>:][<namespace>/]<name>
 export function validateEntityReference(
   entityRef?: string,
@@ -148,12 +158,15 @@ export function validateEntityReference(
     );
   }
 
-  if (
-    entityRefCompound.name.includes('/') ||
-    entityRefCompound.namespace.includes('/')
-  ) {
+  if (!isValidEntityName(entityRefCompound.name)) {
     return new Error(
-      `The name and namespace in the entity reference '${entityRef}' must not contain '/'`,
+      `The name '${entityRefCompound.name}' in the entity reference must be a string that is sequences of [a-zA-Z0-9] separated by any of [-_.], at most 63 characters in total`,
+    );
+  }
+
+  if (!isValidEntityNamespace(entityRefCompound.namespace)) {
+    return new Error(
+      `The namespace '${entityRefCompound.namespace}' in the entity reference must be a string that is sequences of [a-z0-9] separated by [-], at most 63 characters in total`,
     );
   }
 
