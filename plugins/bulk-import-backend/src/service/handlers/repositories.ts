@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
+
 import gitUrlParse from 'git-url-parse';
 import { Logger } from 'winston';
 
@@ -30,6 +32,7 @@ import { getImportStatusFromLocations } from './importStatus';
 
 export async function findAllRepositories(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
   checkStatus: boolean = false,
@@ -47,6 +50,7 @@ export async function findAllRepositories(
         catalogInfoGenerator,
         checkStatus,
         logger,
+        config,
         githubApiService,
       ),
     );
@@ -54,6 +58,7 @@ export async function findAllRepositories(
 
 export async function findRepositoriesByOrganization(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
   orgName: string,
@@ -72,6 +77,7 @@ export async function findRepositoriesByOrganization(
         catalogInfoGenerator,
         checkStatus,
         logger,
+        config,
         githubApiService,
       ),
     );
@@ -82,6 +88,7 @@ async function formatResponse(
   catalogInfoGenerator: CatalogInfoGenerator,
   checkStatus: boolean,
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
 ) {
   const errorList: string[] = [];
@@ -115,6 +122,7 @@ async function formatResponse(
         importStatus = checkStatus
           ? await getImportStatusFromLocations(
               logger,
+              config,
               githubApiService,
               catalogInfoGenerator,
               repo.html_url,

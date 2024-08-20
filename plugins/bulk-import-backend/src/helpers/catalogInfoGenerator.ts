@@ -92,8 +92,12 @@ ${jsYaml.dump(generatedEntity.entity)}`,
       .join('\n');
   }
 
-  getCatalogUrl(repoUrl: string, defaultBranch: string = 'main'): string {
-    return `${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`;
+  getCatalogUrl(
+    config: Config,
+    repoUrl: string,
+    defaultBranch: string = 'main',
+  ): string {
+    return `${repoUrl}/blob/${defaultBranch}/${getCatalogFilename(config)}`;
   }
 
   async listCatalogUrlLocations(): Promise<string[]> {

@@ -249,6 +249,7 @@ export async function createImportJobs(
 
     // Check if repo is already imported
     const repoCatalogUrl = catalogInfoGenerator.getCatalogUrl(
+      config,
       req.repository.url,
       req.repository.defaultBranch,
     );
@@ -464,6 +465,7 @@ async function performDryRunChecks(
 
 export async function findImportStatusByRepo(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
   repoUrl: string,
@@ -493,6 +495,7 @@ export async function findImportStatusByRepo(
       const catalogLocations =
         await catalogInfoGenerator.listCatalogUrlLocations();
       const catalogUrl = catalogInfoGenerator.getCatalogUrl(
+        config,
         repoUrl,
         defaultBranch,
       );
@@ -549,6 +552,7 @@ export async function findImportStatusByRepo(
 
 export async function deleteImportByRepo(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
   repoUrl: string,
@@ -571,7 +575,11 @@ export async function deleteImportByRepo(
   // Remove Location from catalog
   const catalogLocations =
     await catalogInfoGenerator.listCatalogUrlLocationsById();
-  const catalogUrl = catalogInfoGenerator.getCatalogUrl(repoUrl, defaultBranch);
+  const catalogUrl = catalogInfoGenerator.getCatalogUrl(
+    config,
+    repoUrl,
+    defaultBranch,
+  );
   let locationId: string | undefined;
   for (const [id, loc] of catalogLocations) {
     if (loc === catalogUrl) {

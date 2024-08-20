@@ -16,6 +16,7 @@
 
 import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
+import { Config } from '@backstage/config';
 
 import { Logger } from 'winston';
 
@@ -25,6 +26,7 @@ import { GithubApiService } from '../githubApiService';
 
 export async function getImportStatus(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   auth: AuthService,
   catalogApi: CatalogApi,
@@ -37,6 +39,7 @@ export async function getImportStatus(
 } | null> {
   return getImportStatusWithCheckerFn(
     logger,
+    config,
     githubApiService,
     catalogInfoGenerator,
     repoUrl,
@@ -48,6 +51,7 @@ export async function getImportStatus(
 
 export async function getImportStatusFromLocations(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
   repoUrl: string,
@@ -59,6 +63,7 @@ export async function getImportStatusFromLocations(
 } | null> {
   return getImportStatusWithCheckerFn(
     logger,
+    config,
     githubApiService,
     catalogInfoGenerator,
     repoUrl,
@@ -76,6 +81,7 @@ export async function getImportStatusFromLocations(
 
 async function getImportStatusWithCheckerFn(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
   repoUrl: string,
@@ -91,7 +97,7 @@ async function getImportStatusWithCheckerFn(
   });
   if (!openImportPr.prUrl) {
     const existsInCatalog = await catalogExistenceCheckFn(
-      catalogInfoGenerator.getCatalogUrl(repoUrl, defaultBranch),
+      catalogInfoGenerator.getCatalogUrl(config, repoUrl, defaultBranch),
     );
     const existsInRepo =
       await githubApiService.doesCatalogInfoAlreadyExistInRepo(logger, {
