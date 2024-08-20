@@ -1,6 +1,6 @@
 # Topology plugin for Backstage
 
-The Topology plugin enables you to visualize the workloads such as Deployment, Job, Daemonset, Statefulset, CronJob, and Pods powering any service on the Kubernetes cluster.
+The Topology plugin enables you to visualize the workloads such as Deployment, Job, Daemonset, Statefulset, CronJob, Pods and Virtual Machines powering any service on the Kubernetes cluster.
 
 ## For administrators
 
@@ -108,6 +108,38 @@ The following permission must be granted to the [`ClusterRole`](https://backstag
         - group: 'tekton.dev'
           apiVersion: 'v1'
           plural: 'taskruns'
+  ```
+
+##### To view the Virtual Machines
+
+- Ensure that read access is granted to the VirtualMachines resource in the [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control). You can use the following code to do so:
+
+  ```yaml
+    ...
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: backstage-read-only
+    rules:
+      ...
+      - apiGroups:
+          - kubevirt.io
+        resources:
+          - virtualmachines
+        verbs:
+          - get
+          - list
+  ```
+
+- The following code must be added to the `kubernetes.customResources` property in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the VirtualMachine nodes on the topology plugin:
+
+  ```yaml
+    kubernetes:
+      ...
+      customResources:
+        - group: 'kubevirt.io'
+          apiVersion: 'v1'
+          plural: 'virtualmachines'
   ```
 
 ##### To enable the Source Code Editor

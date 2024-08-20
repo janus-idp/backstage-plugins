@@ -19,6 +19,7 @@ import {
   K8sResponseData,
   K8sWorkloadResource,
 } from '../types/types';
+import { VM_TYPE } from '../types/vms';
 import { LabelSelector } from './label-selector';
 import {
   getJobsForCronJob,
@@ -53,7 +54,7 @@ export const createOverviewItemForType = (
   type: string,
   resource: K8sWorkloadResource,
 ): OverviewItem | undefined => {
-  if (!WORKLOAD_TYPES.includes(type)) {
+  if (![...WORKLOAD_TYPES, VM_TYPE].includes(type)) {
     return undefined;
   }
   switch (type) {

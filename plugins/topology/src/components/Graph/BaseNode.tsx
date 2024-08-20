@@ -41,6 +41,7 @@ type BaseNodeProps = {
   nodeStatus?: NodeStatus;
   showStatusBackground?: boolean;
   alertVariant?: NodeStatus;
+  truncateLength?: number;
 } & Partial<WithSelectionProps> &
   Partial<WithDragNodeProps>;
 

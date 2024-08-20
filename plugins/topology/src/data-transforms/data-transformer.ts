@@ -1,9 +1,10 @@
 import { V1Service } from '@kubernetes/client-node';
-import { Model, NodeModel } from '@patternfly/react-topology';
+import { Model, NodeModel, NodeShape } from '@patternfly/react-topology';
 
-import { TYPE_APPLICATION_GROUP, TYPE_WORKLOAD } from '../const';
+import { TYPE_APPLICATION_GROUP, TYPE_VM, TYPE_WORKLOAD } from '../const';
 import { CronJobModel } from '../models';
 import { K8sResponseData, K8sWorkloadResource } from '../types/types';
+import { VM_TYPE } from '../types/vms';
 import { getPipelinesDataForResource } from '../utils/pipeline-utils';
 import { getPodsDataForResource } from '../utils/pod-resource-utils';
 import {
@@ -27,6 +28,7 @@ import {
   mergeGroup,
   WorkloadModelProps,
 } from '../utils/transform-utils';
+import { VirtualMachineModel } from '../vm-models';
 
 export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
   const baseDataModel: Model = {
@@ -34,7 +36,7 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
     edges: [],
   };
 
-  WORKLOAD_TYPES.forEach((key: string) => {
+  [VM_TYPE, ...WORKLOAD_TYPES].forEach((key: string) => {
     if (resources?.[key]?.data?.length) {
       const typedDataModel: Model = {
         nodes: [],
@@ -47,7 +49,9 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
           const data = createTopologyNodeData(
             resource,
             item,
-            TYPE_WORKLOAD,
+            resource.kind === VirtualMachineModel.kind
+              ? TYPE_VM
+              : TYPE_WORKLOAD,
             'icon-default',
             getUrlForResource(resources, resource),
             {
@@ -66,16 +70,31 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
                     jobsData: getJobsDataForResource(resources, resource),
                   }
                 : {}),
-              pipelinesData: getPipelinesDataForResource(resources, resource),
-              cheCluster: getCheCluster(resources),
+
+              ...(resource.kind !== VirtualMachineModel.kind
+                ? {
+                    pipelinesData: getPipelinesDataForResource(
+                      resources,
+                      resource,
+                    ),
+                    cheCluster: getCheCluster(resources),
+                  }
+                : {}),
             },
           );
           typedDataModel.nodes?.push(
             getTopologyNodeItem(
               resource,
-              TYPE_WORKLOAD,
+              resource.kind === VirtualMachineModel.kind
+                ? TYPE_VM
+                : TYPE_WORKLOAD,
               data,
               WorkloadModelProps,
+              undefined,
+              undefined,
+              resource.kind === VirtualMachineModel.kind
+                ? NodeShape.rect
+                : undefined,
             ),
           );
           mergeGroup(
