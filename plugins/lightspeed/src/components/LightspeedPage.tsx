@@ -41,28 +41,46 @@ export const LightspeedPage = () => {
   const lightspeedApi = useApi(lightspeedApiRef);
 
   const [, setChunkIndex] = React.useState(0);
-  const [prompts, setPrompts] = React.useState<string[]>([]);
-  const [completions, setCompletions] = React.useState<{
-    [key: string]: string;
+  const [convoIndex, setConvoIndex] = React.useState<number[]>([0]);
+  const [messages, setMessages] = React.useState<{
+    [key: string]: { user: string; assistant: string };
   }>({});
+
+  const convoCounter = convoIndex.length - 1;
+
+  const context_template = Object.values(messages)
+    .map(convo => `USER: ${convo.user}\nASSISTANT: ${convo.assistant}`)
+    .join('\n\n');
 
   const handleInputPrompt = React.useCallback(
     async (prompt: string) => {
-      setPrompts(p => [...p, prompt]);
       setChunkIndex(0);
+      setMessages(m => {
+        m[convoCounter] = {
+          user: prompt,
+          assistant: '',
+        };
+        return m;
+      });
 
-      const result = await lightspeedApi.createChatCompletions(prompt);
+      const latestQuestion = `Respond to the users current message\n\nCONTEXT: ${context_template}\n\nCURRENT QUESTION: ${prompt}`;
 
+      const result = await lightspeedApi.createChatCompletions(
+        `${latestQuestion}`,
+      );
       for await (const chunk of result) {
         setChunkIndex(index => index + 1);
-        setCompletions(c => {
-          c[prompt] =
-            `${c[prompt] || ''}${chunk.choices[0]?.delta?.content || ''}`;
-          return c;
+        setMessages(m => {
+          m[convoCounter] = {
+            ...m[convoCounter],
+            assistant: `${m[`${convoCounter}`]?.assistant || ''}${chunk.choices[0]?.delta?.content || ''}`,
+          };
+          return m;
         });
       }
+      setConvoIndex(conIndex => [...conIndex, convoCounter + 1]);
     },
-    [lightspeedApi],
+    [context_template, convoCounter, lightspeedApi],
   );
 
   return (
@@ -77,11 +95,13 @@ export const LightspeedPage = () => {
       <Content className={classes.container}>
         <Paper className={classes.paper} elevation={2}>
           <Paper id="style-1" className={classes.messagesBody}>
-            {prompts.map(prompt => (
+            {convoIndex.map(id => (
               <>
-                {prompt && <UserMessage message={prompt} />}
-                {completions[prompt] && (
-                  <SystemMessage message={completions[prompt]} />
+                {messages[id]?.user && (
+                  <UserMessage message={messages[id].user} />
+                )}
+                {messages[id]?.assistant && (
+                  <SystemMessage message={messages[id].assistant} />
                 )}
               </>
             ))}

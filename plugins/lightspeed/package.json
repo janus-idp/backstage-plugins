@@ -40,7 +40,9 @@
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@mui/icons-material": "^5.15.18",
+    "@patternfly/react-core": "6.0.0-alpha.101",
     "openai": "^4.52.6",
+    "react-markdown": "^9.0.1",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
