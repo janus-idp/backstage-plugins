@@ -19,12 +19,16 @@ import { newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
 
 import { DefaultAuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
-import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
+import {
+  PluginIdProvider,
+  RBACProvider,
+} from '@janus-idp/backstage-plugin-rbac-node';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { DataBaseConditionalStorage } from '../database/conditional-storage';
 import { migrate } from '../database/migration';
 import { DataBaseRoleMetadataStorage } from '../database/role-metadata';
+import { connectRBACProviders } from '../providers/connect-providers';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
@@ -45,6 +49,7 @@ export class PolicyBuilder {
       userInfo: UserInfoService;
     },
     pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
+    rbacProviders?: Array<RBACProvider>,
   ): Promise<Router> {
     const isPluginEnabled = env.config.getOptionalBoolean('permission.enabled');
     if (isPluginEnabled) {
@@ -106,6 +111,16 @@ export class PolicyBuilder {
       httpAuthService: httpAuth,
     });
 
+    if (rbacProviders) {
+      await connectRBACProviders(
+        rbacProviders,
+        enforcerDelegate,
+        roleMetadataStorage,
+        env.logger,
+        defAuditLog,
+      );
+    }
+
     const pluginIdsConfig = env.config.getOptionalStringArray(
       'permission.rbac.pluginsWithPermission',
     );
@@ -157,6 +172,7 @@ export class PolicyBuilder {
       pluginPermMetaData,
       roleMetadataStorage,
       defAuditLog,
+      rbacProviders,
     );
     return server.serve();
   }
