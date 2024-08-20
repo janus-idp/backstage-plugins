@@ -2,11 +2,7 @@ import { Navigate, Route } from 'react-router-dom';
 
 import { createApp } from '@backstage/app-defaults';
 import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
-import {
-  AlertDisplay,
-  OAuthRequestDialog,
-  SignInPage,
-} from '@backstage/core-components';
+import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
@@ -35,6 +31,7 @@ import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import { getThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { apis } from './apis';
+import { SignInPage } from './components/auth/SignInPage';
 import { entityPage } from './components/catalog/EntityPage';
 import { Root } from './components/Root';
 import { searchPage } from './components/search/SearchPage';
@@ -59,7 +56,7 @@ const app = createApp({
     });
   },
   components: {
-    SignInPage: props => <SignInPage {...props} auto providers={['guest']} />,
+    SignInPage,
   },
   themes: getThemes(),
 });
