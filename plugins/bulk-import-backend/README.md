@@ -81,65 +81,74 @@ export default async function createPlugin(
    backend.start();
    ```
 
-[//]: # '#### Permission Framework Support'
-[//]: #
-[//]: # "TODO: Update this section of the documentation as it doesn't work. Not sure how to setup the permission framework on vanilla backstage, but confirmed to work with the RBAC plugin."
-[//]: #
-[//]: # 'The bulk import backend plugin has support for the permission framework. A basic example permission policy is shown below to disallow access to the bulk import API for all users except those in the `backstage-admins` group. Please note that the This policy should be added to the `packages/backend/src/plugins/permissions.ts` file:'
-[//]: #
-[//]: # '```ts title="packages/backend/src/plugins/permissions.ts"'
-[//]: # "import { createBackendModule } from '@backstage/backend-plugin-api';"
-[//]: # "import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';"
-[//]: # 'import {'
-[//]: # '  AuthorizeResult,'
-[//]: # '  isPermission,'
-[//]: # '  PolicyDecision,'
-[//]: # "} from '@backstage/plugin-permission-common';"
-[//]: # 'import {'
-[//]: # '  PermissionPolicy,'
-[//]: # '  PolicyQuery,'
-[//]: # "} from '@backstage/plugin-permission-node';"
-[//]: # "import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';"
-[//]: #
-[//]: # "import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';"
-[//]: #
-[//]: # 'class BulkImportPermissionPolicy implements PermissionPolicy {'
-[//]: # '  async handle('
-[//]: # '     request: PolicyQuery,'
-[//]: # '     user?: BackstageIdentityResponse,'
-[//]: # '   ): Promise<PolicyDecision> {'
-[//]: # '     if (isPermission(request.permission, bulkImportPermission)) {'
-[//]: # '       if ('
-[//]: # '         user?.identity.ownershipEntityRefs.includes('
-[//]: # "           'group:default/backstage-admins',"
-[//]: # '         )'
-[//]: # '       ) {'
-[//]: # '         return { result: AuthorizeResult.ALLOW };'
-[//]: # '       }'
-[//]: # '     }'
-[//]: # '     return { result: AuthorizeResult.DENY };'
-[//]: # '   }'
-[//]: # ' }'
-[//]: #
-[//]: # ' export const BulkImportPermissionBackendModule = createBackendModule({'
-[//]: # "  pluginId: 'permission',"
-[//]: # "   moduleId: 'custom-policy',"
-[//]: # '   register(reg) {'
-[//]: # '     reg.registerInit({'
-[//]: # '       deps: { policy: policyExtensionPoint },'
-[//]: # '       async init({ policy }) {'
-[//]: # '         policy.setPolicy(new BulkImportPermissionPolicy());'
-[//]: # '       },'
-[//]: # '     });'
-[//]: # '   },'
-[//]: # ' });'
-[//]: # '```'
+#### Permission Framework Support
+
+The Bulk Import Backend plugin has support for the permission framework. A basic example permission policy is shown below to disallow access to the bulk import API for all users except those in the `backstage-admins` group.
+
+1. Create a backend module for the permission policy, under a `packages/backend/src/plugins/permissions.ts` file:
+
+```ts title="packages/backend/src/plugins/permissions.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import {
+  AuthorizeResult,
+  isPermission,
+  PolicyDecision,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+} from '@backstage/plugin-permission-node';
+import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
+
+import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
+
+class BulkImportPermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: BackstageIdentityResponse,
+  ): Promise<PolicyDecision> {
+    if (isPermission(request.permission, bulkImportPermission)) {
+      if (
+        user?.identity.ownershipEntityRefs.includes(
+          'group:default/backstage-admins',
+        )
+      ) {
+        return { result: AuthorizeResult.ALLOW };
+      }
+    }
+    return { result: AuthorizeResult.DENY };
+  }
+}
+
+export const BulkImportPermissionBackendModule = createBackendModule({
+  pluginId: 'permission',
+  moduleId: 'custom-policy',
+  register(reg) {
+    reg.registerInit({
+      deps: { policy: policyExtensionPoint },
+      async init({ policy }) {
+        policy.setPolicy(new BulkImportPermissionPolicy());
+      },
+    });
+  },
+});
+```
+
+2. Import `@backstage/plugin-permission-backend/alpha` and add your permission module to the `packages/backend/src/index.ts` file:
+
+```ts title="packages/backend/src/index.ts"
+import { BulkImportPermissionBackendModule } from './plugins/permissions';
+
+backend.add(BulkImportPermissionBackendModule);
+backend.add(import('@backstage/plugin-permission-backend/alpha'));
+```
 
 ## For Users
 
 ### Usage
 
-The bulk import backend plugin provides a REST API to bulk import catalog entities into the catalog. The API is available at the `/api/bulk-import-backend` endpoint.
+The bulk import backend plugin provides a REST API to bulk import catalog entities into the catalog. The API is available at the `/api/bulk-import` endpoint.
 
 As a prerequisite, you need to add at least one GitHub Integration (using either a GitHub token or a GitHub App or both) in your app-config YAML file (or a local `app-config.local.yaml` file).
 See https://backstage.io/docs/integrations/github/locations/#configuration and https://backstage.io/docs/integrations/github/github-apps/#including-in-integrations-config for more details.

@@ -29,7 +29,7 @@ import { createRouter } from './service/router';
  * @alpha
  */
 export const bulkImportPlugin = createBackendPlugin({
-  pluginId: 'bulk-import-backend',
+  pluginId: 'bulk-import',
   register(env) {
     env.registerInit({
       deps: {
