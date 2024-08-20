@@ -1,5 +1,9 @@
 ### Dependencies
 
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.9.0
+
+### Dependencies
+
 * **@janus-idp/cli:** upgraded to 1.13.1
 
 ## @janus-idp/backstage-plugin-rbac [1.27.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.27.0...@janus-idp/backstage-plugin-rbac@1.27.1) (2024-08-06)
