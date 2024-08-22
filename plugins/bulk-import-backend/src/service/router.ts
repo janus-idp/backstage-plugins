@@ -135,6 +135,7 @@ export async function createRouter(
       q.checkImportStatus = stringToBoolean(q.checkImportStatus);
       const response = await findAllRepositories(
         logger,
+        config,
         githubApiService,
         catalogInfoGenerator,
         q.checkImportStatus,
@@ -164,9 +165,12 @@ export async function createRouter(
       q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
       q.checkImportStatus = stringToBoolean(q.checkImportStatus);
       const response = await findRepositoriesByOrganization(
-        logger,
-        githubApiService,
-        catalogInfoGenerator,
+        {
+          logger,
+          config,
+          githubApiService,
+          catalogInfoGenerator,
+        },
         c.request.params.organizationName?.toString(),
         q.checkImportStatus,
         q.pagePerIntegration,
@@ -195,6 +199,7 @@ export async function createRouter(
       q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
       const response = await findAllImports(
         logger,
+        config,
         githubApiService,
         catalogInfoGenerator,
         q.pagePerIntegration,
@@ -242,6 +247,7 @@ export async function createRouter(
       }
       const response = await findImportStatusByRepo(
         logger,
+        config,
         githubApiService,
         catalogInfoGenerator,
         q.repo,
@@ -263,6 +269,7 @@ export async function createRouter(
       }
       const response = await deleteImportByRepo(
         logger,
+        config,
         githubApiService,
         catalogInfoGenerator,
         q.repo,

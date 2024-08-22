@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
+
 import gitUrlParse from 'git-url-parse';
 import { Logger } from 'winston';
 
@@ -30,6 +32,7 @@ import { getImportStatusFromLocations } from './importStatus';
 
 export async function findAllRepositories(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
   checkStatus: boolean = false,
@@ -47,32 +50,37 @@ export async function findAllRepositories(
         catalogInfoGenerator,
         checkStatus,
         logger,
+        config,
         githubApiService,
       ),
     );
 }
 
 export async function findRepositoriesByOrganization(
-  logger: Logger,
-  githubApiService: GithubApiService,
-  catalogInfoGenerator: CatalogInfoGenerator,
+  deps: {
+    logger: Logger;
+    config: Config;
+    githubApiService: GithubApiService;
+    catalogInfoGenerator: CatalogInfoGenerator;
+  },
   orgName: string,
   checkStatus: boolean = false,
   pageNumber: number = DefaultPageNumber,
   pageSize: number = DefaultPageSize,
 ): Promise<HandlerResponse<Components.Schemas.RepositoryList>> {
-  logger.debug(
+  deps.logger.debug(
     `Getting all repositories for org "${orgName}" - (page,size)=(${pageNumber},${pageSize})..`,
   );
-  return githubApiService
+  return deps.githubApiService
     .getOrgRepositoriesFromIntegrations(orgName, pageNumber, pageSize)
     .then(response =>
       formatResponse(
         response,
-        catalogInfoGenerator,
+        deps.catalogInfoGenerator,
         checkStatus,
-        logger,
-        githubApiService,
+        deps.logger,
+        deps.config,
+        deps.githubApiService,
       ),
     );
 }
@@ -82,6 +90,7 @@ async function formatResponse(
   catalogInfoGenerator: CatalogInfoGenerator,
   checkStatus: boolean,
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
 ) {
   const errorList: string[] = [];
@@ -115,6 +124,7 @@ async function formatResponse(
         importStatus = checkStatus
           ? await getImportStatusFromLocations(
               logger,
+              config,
               githubApiService,
               catalogInfoGenerator,
               repo.html_url,

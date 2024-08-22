@@ -23,6 +23,7 @@ import {
   BackstageCredentials,
   BackstagePrincipalTypes,
 } from '@backstage/backend-plugin-api';
+import { ConfigReader, type Config } from '@backstage/config';
 
 import fetch from 'node-fetch';
 
@@ -36,6 +37,7 @@ const mockBaseUrl = 'http://127.0.0.1:65535';
 const mockExternalBaseUrl = 'https://127.0.0.127';
 
 describe('catalogInfoGenerator', () => {
+  let config: Config;
   let catalogInfoGenerator: CatalogInfoGenerator;
   let mockDiscovery: PluginEndpointDiscovery;
   let mockAuth: AuthService;
@@ -80,21 +82,41 @@ describe('catalogInfoGenerator', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+
+    config = new ConfigReader({
+      catalog: {
+        import: {
+          entityFilename: 'my-catalog-info.yaml',
+        },
+      },
+    });
   });
 
   it('should return a catalog url if no main branch is set', () => {
     const repoUrl = 'https://ghe.example.com/my-org/my-repo';
-    expect(catalogInfoGenerator.getCatalogUrl(repoUrl)).toBe(
-      `${repoUrl}/blob/main/catalog-info.yaml`,
+    expect(catalogInfoGenerator.getCatalogUrl(config, repoUrl)).toBe(
+      `${repoUrl}/blob/main/my-catalog-info.yaml`,
     );
   });
 
   it('should return appropriate catalog url for both repo and default branch', () => {
     const repoUrl = 'https://ghe.example.com/my-org/my-repo';
     const defaultBranch = 'dev';
-    expect(catalogInfoGenerator.getCatalogUrl(repoUrl, defaultBranch)).toBe(
-      `${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`,
-    );
+    expect(
+      catalogInfoGenerator.getCatalogUrl(config, repoUrl, defaultBranch),
+    ).toBe(`${repoUrl}/blob/${defaultBranch}/my-catalog-info.yaml`);
+  });
+
+  it('should return appropriate catalog url for both repo and default branch with default catalog-info YAML', () => {
+    const repoUrl = 'https://ghe.example.com/my-org/my-repo';
+    const defaultBranch = 'dev';
+    expect(
+      catalogInfoGenerator.getCatalogUrl(
+        new ConfigReader({}),
+        repoUrl,
+        defaultBranch,
+      ),
+    ).toBe(`${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`);
   });
 
   it('should fail to return a default catalog-info yaml string if a wrong repo URL is set', async () => {

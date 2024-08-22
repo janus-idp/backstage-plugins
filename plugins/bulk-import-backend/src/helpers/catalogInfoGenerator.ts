@@ -92,8 +92,12 @@ ${jsYaml.dump(generatedEntity.entity)}`,
       .join('\n');
   }
 
-  getCatalogUrl(repoUrl: string, defaultBranch: string = 'main'): string {
-    return `${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`;
+  getCatalogUrl(
+    config: Config,
+    repoUrl: string,
+    defaultBranch: string = 'main',
+  ): string {
+    return `${repoUrl}/blob/${defaultBranch}/${getCatalogFilename(config)}`;
   }
 
   async listCatalogUrlLocations(): Promise<string[]> {
@@ -117,7 +121,9 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     if (Array.isArray(locations)) {
       return new Map(
         locations
-          .filter(location => location.data.type === 'url')
+          .filter(
+            location => location.data?.target && location.data?.type === 'url',
+          )
           .map(location => [location.data.id, location.data.target]),
       );
     }
