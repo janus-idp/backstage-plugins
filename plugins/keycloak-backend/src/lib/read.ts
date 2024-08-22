@@ -207,13 +207,11 @@ export const readKeycloakRealm = async (
           briefRepresentation: false,
         });
       }
-      if (g.parentId) {
-        const groupParent = await client.groups.findOne({
-          id: g.parentId!,
-          realm: config.realm,
-        });
-        g.parentId = groupParent?.name;
-      }
+      const groupParent = await client.groups.findOne({
+        id: g.parentId!,
+        realm: config.realm,
+      });
+      g.parentId = groupParent?.name;
       return g;
     }),
   );
