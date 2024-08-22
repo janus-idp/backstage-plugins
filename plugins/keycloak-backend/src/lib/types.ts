@@ -20,7 +20,7 @@ import GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupR
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 
 export interface GroupRepresentationWithParent extends GroupRepresentation {
-  parent?: string;
+  parentId?: string;
   members?: string[];
 }
 

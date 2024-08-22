@@ -2,14 +2,14 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 
-import { groupMembers, groups, users } from './data';
+import { groupMembers, groups, subgroups, topLevelGroups, users } from './data';
 
 export const BASIC_VALID_CONFIG = {
   catalog: {
     providers: {
       keycloakOrg: {
         default: {
-          baseUrl: 'http://localhost:8080/auth',
+          baseUrl: 'http://localhost:8080',
         },
       },
     },
@@ -51,8 +51,23 @@ export class KeycloakAdminClientMock {
   };
 
   groups = {
-    find: jest.fn().mockResolvedValue(groups),
+    find: jest.fn().mockResolvedValue(topLevelGroups),
+    findOne: jest.fn().mockResolvedValue({
+      id: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
+      name: 'biggroup',
+      path: '/biggroup',
+      subGroupCount: 1,
+      subGroups: [],
+      access: {
+        view: true,
+        viewMembers: true,
+        manageMembers: false,
+        manage: false,
+        manageMembership: false,
+      },
+    }),
     count: jest.fn().mockResolvedValue(groups.length),
+    listSubGroups: jest.fn().mockResolvedValue(subgroups),
     listMembers: jest
       .fn()
       .mockResolvedValueOnce(groupMembers[0].map(username => ({ username })))

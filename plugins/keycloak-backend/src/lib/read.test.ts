@@ -1,7 +1,8 @@
-import KcAdminClient from '@keycloak/keycloak-admin-client';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 
 import {
-  groups as groupsFixture,
+  kGroups as groupsFixture,
+  topLevelGroups,
   users as usersFixture,
 } from '../../__fixtures__/data';
 import { KeycloakAdminClientMock } from '../../__fixtures__/helpers';
@@ -10,8 +11,8 @@ import {
   getEntities,
   parseGroup,
   parseUser,
+  processGroupsRecursively,
   readKeycloakRealm,
-  traverseGroups,
 } from './read';
 import { GroupTransformer, UserTransformer } from './types';
 
@@ -23,11 +24,11 @@ const config: KeycloakProviderConfig = {
 
 describe('readKeycloakRealm', () => {
   it('should return the correct number of users and groups', async () => {
-    const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
+    const client =
+      new KeycloakAdminClientMock() as unknown as KeycloakAdminClient;
     const { users, groups } = await readKeycloakRealm(client, config);
-
     expect(users).toHaveLength(3);
-    expect(groups).toHaveLength(4);
+    expect(groups).toHaveLength(3);
   });
 
   it('should propagate transformer changes to entities', async () => {
@@ -40,25 +41,24 @@ describe('readKeycloakRealm', () => {
       return e;
     };
 
-    const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
+    const client =
+      new KeycloakAdminClientMock() as unknown as KeycloakAdminClient;
     const { users, groups } = await readKeycloakRealm(client, config, {
       userTransformer,
       groupTransformer,
     });
-
     expect(groups[0].metadata.name).toBe('biggroup_foo');
     expect(groups[0].spec.children).toEqual(['subgroup_foo']);
     expect(groups[0].spec.members).toEqual(['jamesdoe_bar']);
     expect(groups[1].spec.parent).toBe('biggroup_foo');
     expect(users[0].metadata.name).toBe('jamesdoe_bar');
-    expect(users[0].spec.memberOf).toEqual(['biggroup_foo', 'testgroup_foo']);
+    expect(users[0].spec.memberOf).toEqual(['biggroup_foo']);
   });
 });
 
 describe('parseGroup', () => {
   it('should parse a group', async () => {
     const entity = await parseGroup(groupsFixture[0], 'test');
-
     expect(entity).toEqual({
       apiVersion: 'backstage.io/v1beta1',
       kind: 'Group',
@@ -140,9 +140,10 @@ describe('parseUser', () => {
   });
 });
 
-describe('getEntities', () => {
+describe('getEntitiesUser', () => {
   it('should fetch all users', async () => {
-    const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
+    const client =
+      new KeycloakAdminClientMock() as unknown as KeycloakAdminClient;
 
     const users = await getEntities(client.users, {
       id: '',
@@ -154,7 +155,8 @@ describe('getEntities', () => {
   });
 
   it('should fetch all users with pagination', async () => {
-    const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
+    const client =
+      new KeycloakAdminClientMock() as unknown as KeycloakAdminClient;
 
     await getEntities(
       client.users,
@@ -170,10 +172,15 @@ describe('getEntities', () => {
   });
 });
 
-describe('traverseGroups', () => {
-  it('should traverse groups', async () => {
-    const groups = [...traverseGroups(groupsFixture[0])];
+describe('processGroupsRecursively', () => {
+  it('should correctly get sub groups', async () => {
+    const client =
+      new KeycloakAdminClientMock() as unknown as KeycloakAdminClient;
+    const groups = await processGroupsRecursively(
+      topLevelGroups,
+      client.groups,
+    );
 
-    expect(groups).toHaveLength(2);
+    expect(groups).toHaveLength(3);
   });
 });

@@ -1,5 +1,8 @@
 import { ConfigReader } from '@backstage/config';
 
+// @ts-ignore
+import inclusion from 'inclusion';
+
 import {
   assertLogMustNotInclude,
   authMock,
@@ -12,13 +15,7 @@ import {
 } from '../../__fixtures__/helpers';
 import { KeycloakOrgEntityProvider } from './KeycloakOrgEntityProvider';
 
-jest.mock('@keycloak/keycloak-admin-client', () => {
-  const actual = jest.requireActual('@keycloak/keycloak-admin-client');
-  return {
-    ...actual,
-    default: KeycloakAdminClientMock,
-  };
-});
+jest.mock('inclusion', () => jest.fn());
 
 describe('KeycloakOrgEntityProvider', () => {
   const logger = createLogger();
@@ -31,11 +28,22 @@ describe('KeycloakOrgEntityProvider', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    jest.mock('inclusion', () => jest.fn());
+    (inclusion as jest.Mock).mockImplementation(() => {
+      return { default: KeycloakAdminClientMock }; // Return your mock here
+    });
     manualTaskRunner.clear();
   });
 
   afterEach(() => {
     assertLogMustNotInclude(['myclientsecret', 'mypassword']); // NOSONAR
+  });
+
+  it('should mock inclusion', async () => {
+    const KeyCloakAdminClient = await inclusion(
+      '@keycloak/keycloak-admin-client',
+    );
+    expect(KeyCloakAdminClient).toEqual({ default: KeycloakAdminClientMock });
   });
 
   it('should return an empty array if no providers are configured', () => {
@@ -124,7 +132,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               clientId: 'myclientid',
             },
           },
@@ -148,7 +156,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               clientId: 'myclientid',
               clientSecret: 'myclientsecret',
             },
@@ -187,7 +195,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               username: 'myusername',
             },
           },
@@ -211,7 +219,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               username: 'myusername',
               password: 'mypassword', // NOSONAR
             },
@@ -262,7 +270,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               username: 'myusername',
               password: 'mypassword', // NOSONAR
             },
@@ -324,7 +332,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               username: 'myusername',
               password: 'mypassword', // NOSONAR
             },
