@@ -60,7 +60,7 @@ export const parseGroup = async (
       },
       // children, parent and members are updated again after all group and user transformers applied.
       children: keycloakGroup.subGroups?.map(g => g.name!) ?? [],
-      parent: keycloakGroup.parentId,
+      parent: keycloakGroup.parent,
       members: keycloakGroup.members,
     },
   };
@@ -166,7 +166,7 @@ export function* traverseGroups(
 ): IterableIterator<GroupRepresentationWithParent> {
   yield group;
   for (const g of group.subGroups ?? []) {
-    (g as GroupRepresentationWithParent).parentId = group.name!;
+    (g as GroupRepresentationWithParent).parent = group.name!;
     yield* traverseGroups(g);
   }
 }
@@ -197,23 +197,22 @@ export const readKeycloakRealm = async (
   )) as GroupRepresentationWithParent[];
 
   const serverInfo = await client.serverInfo.find();
-  console.log('serverInfo');
-  console.log(serverInfo);
   const serverVersion = parseInt(
     serverInfo.systemInfo?.version?.slice(0, 2) || '',
+    10,
   );
 
-  const isVersion24 = serverVersion === 24;
+  const isVersion23orHigher = serverVersion >= 23;
 
   let rawKGroups: GroupRepresentationWithParent[] = [];
 
-  if (isVersion24) {
+  if (isVersion23orHigher) {
     rawKGroups = await processGroupsRecursively(
       topLevelKGroups,
       client.groups as Groups,
     );
   } else {
-    rawKGroups = rawKGroups.reduce(
+    rawKGroups = topLevelKGroups.reduce(
       (acc, g) => acc.concat(...traverseGroups(g)),
       [] as GroupRepresentationWithParent[],
     );
@@ -228,7 +227,7 @@ export const readKeycloakRealm = async (
         })
       )?.map(m => m.username!);
 
-      if (isVersion24) {
+      if (isVersion23orHigher) {
         if (g.subGroupCount! > 0) {
           g.subGroups = await client.groups.listSubGroups({
             parentId: g.id!,
@@ -242,7 +241,7 @@ export const readKeycloakRealm = async (
             id: g.parentId,
             realm: config.realm,
           });
-          g.parentId = groupParent?.name;
+          g.parent = groupParent?.name;
         }
       }
 

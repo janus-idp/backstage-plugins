@@ -21,6 +21,7 @@ import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRep
 
 export interface GroupRepresentationWithParent extends GroupRepresentation {
   parentId?: string;
+  parent?: string;
   members?: string[];
 }
 
