@@ -2,7 +2,12 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 
-import { groupMembers, groups, subgroups, topLevelGroups, users } from './data';
+import {
+  groupMembers,
+  topLevelGroups23orHigher,
+  topLevelGroupsLowerThan23,
+  users,
+} from './data';
 
 export const BASIC_VALID_CONFIG = {
   catalog: {
@@ -40,7 +45,39 @@ export const assertLogMustNotInclude = (secrets: string[]) => {
 
 export const authMock = jest.fn();
 
-export class KeycloakAdminClientMock {
+export class KeycloakAdminClientMockServerv18 {
+  public constructor() {
+    return;
+  }
+
+  serverInfo = {
+    find: jest.fn().mockResolvedValue({
+      systemInfo: {
+        version: '18.0.6.redhat-00001',
+      },
+    }),
+  };
+
+  users = {
+    find: jest.fn().mockResolvedValue(users),
+    count: jest.fn().mockResolvedValue(users.length),
+  };
+
+  groups = {
+    find: jest.fn().mockResolvedValue(topLevelGroupsLowerThan23),
+    count: jest.fn().mockResolvedValue(3),
+    listMembers: jest
+      .fn()
+      .mockResolvedValueOnce(groupMembers[0].map(username => ({ username })))
+      .mockResolvedValueOnce(groupMembers[1].map(username => ({ username })))
+      .mockResolvedValueOnce(groupMembers[2].map(username => ({ username })))
+      .mockResolvedValueOnce(groupMembers[3].map(username => ({ username }))),
+  };
+
+  auth = authMock;
+}
+
+export class KeycloakAdminClientMockServerv24 {
   public constructor() {
     return;
   }
@@ -59,7 +96,7 @@ export class KeycloakAdminClientMock {
   };
 
   groups = {
-    find: jest.fn().mockResolvedValue(topLevelGroups),
+    find: jest.fn().mockResolvedValue(topLevelGroups23orHigher),
     findOne: jest.fn().mockResolvedValue({
       id: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
       name: 'biggroup',
@@ -74,8 +111,24 @@ export class KeycloakAdminClientMock {
         manageMembership: false,
       },
     }),
-    count: jest.fn().mockResolvedValue(groups.length),
-    listSubGroups: jest.fn().mockResolvedValue(subgroups),
+    count: jest.fn().mockResolvedValue(3),
+    listSubGroups: jest.fn().mockResolvedValue([
+      {
+        id: 'eefa5b46-0509-41d8-b8b3-7ddae9c83632',
+        name: 'subgroup',
+        path: '/biggroup/subgroup',
+        parentId: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
+        subGroupCount: 0,
+        subGroups: [],
+        access: {
+          view: true,
+          viewMembers: true,
+          manageMembers: false,
+          manage: false,
+          manageMembership: false,
+        },
+      },
+    ]),
     listMembers: jest
       .fn()
       .mockResolvedValueOnce(groupMembers[0].map(username => ({ username })))

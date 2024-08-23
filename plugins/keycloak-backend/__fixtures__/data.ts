@@ -1,24 +1,9 @@
-export const groups = [
+export const topLevelGroups23orHigher = [
   {
     id: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
     name: 'biggroup',
     path: '/biggroup',
     subGroupCount: 1,
-    subGroups: [],
-    access: {
-      view: true,
-      viewMembers: true,
-      manageMembers: false,
-      manage: false,
-      manageMembership: false,
-    },
-  },
-  {
-    id: 'eefa5b46-0509-41d8-b8b3-7ddae9c83632',
-    name: 'subgroup',
-    path: '/biggroup/subgroup',
-    parentId: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
-    subGroupCount: 0,
     subGroups: [],
     access: {
       view: true,
@@ -44,34 +29,25 @@ export const groups = [
   },
 ];
 
-export const topLevelGroups = [
+export const topLevelGroupsLowerThan23 = [
   {
     id: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
     name: 'biggroup',
     path: '/biggroup',
-    subGroupCount: 1,
-    subGroups: [],
-    access: {
-      view: true,
-      viewMembers: true,
-      manageMembers: false,
-      manage: false,
-      manageMembership: false,
-    },
+    subGroups: [
+      {
+        id: 'eefa5b46-0509-41d8-b8b3-7ddae9c83632',
+        name: 'subgroup',
+        path: '/biggroup/subgroup',
+        subGroups: [],
+      },
+    ],
   },
   {
     id: '557501bd-8188-41c0-a2d5-43ff3d5b0258',
     name: 'emptygroup',
     path: '/emptygroup',
-    subGroupCount: 0,
     subGroups: [],
-    access: {
-      view: true,
-      viewMembers: true,
-      manageMembers: false,
-      manage: false,
-      manageMembership: false,
-    },
   },
 ];
 
@@ -146,25 +122,7 @@ export const groupMembers = [
   ['jamesdoe', 'joedoe', 'johndoe'],
 ];
 
-export const subgroups = [
-  {
-    id: 'eefa5b46-0509-41d8-b8b3-7ddae9c83632',
-    name: 'subgroup',
-    path: '/biggroup/subgroup',
-    parentId: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
-    subGroupCount: 0,
-    subGroups: [],
-    access: {
-      view: true,
-      viewMembers: true,
-      manageMembers: false,
-      manage: false,
-      manageMembership: false,
-    },
-  },
-];
-
-export const kGroups = [
+export const kGroups23orHigher = [
   {
     id: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
     name: 'biggroup',
@@ -228,6 +186,40 @@ export const kGroups = [
       manage: false,
       manageMembership: false,
     },
+    members: [],
+  },
+];
+
+export const kGroupsLowerThan23 = [
+  {
+    id: '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
+    name: 'biggroup',
+    path: '/biggroup',
+    subGroups: [
+      {
+        id: 'eefa5b46-0509-41d8-b8b3-7ddae9c83632',
+        name: 'subgroup',
+        path: '/biggroup/subgroup',
+        subGroups: [],
+        parent: 'big-group',
+        members: [],
+      },
+    ],
+    members: ['jamesdoe'],
+  },
+  {
+    id: 'eefa5b46-0509-41d8-b8b3-7ddae9c83632',
+    name: 'subgroup',
+    path: '/biggroup/subgroup',
+    subGroups: [],
+    parent: 'biggroup',
+    members: [],
+  },
+  {
+    id: '557501bd-8188-41c0-a2d5-43ff3d5b0258',
+    name: 'emptygroup',
+    path: '/emptygroup',
+    subGroups: [],
     members: [],
   },
 ];
