@@ -45,6 +45,14 @@ export class KeycloakAdminClientMock {
     return;
   }
 
+  serverInfo = {
+    find: jest.fn().mockResolvedValue({
+      systemInfo: {
+        version: '24.0.6.redhat-00001',
+      },
+    }),
+  };
+
   users = {
     find: jest.fn().mockResolvedValue(users),
     count: jest.fn().mockResolvedValue(users.length),

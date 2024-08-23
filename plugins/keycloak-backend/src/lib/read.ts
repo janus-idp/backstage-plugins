@@ -17,6 +17,7 @@
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import type GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
 import type UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { Groups } from '@keycloak/keycloak-admin-client/lib/resources/groups';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
@@ -160,6 +161,16 @@ export async function processGroupsRecursively(
   return allGroups;
 }
 
+export function* traverseGroups(
+  group: GroupRepresentation,
+): IterableIterator<GroupRepresentationWithParent> {
+  yield group;
+  for (const g of group.subGroups ?? []) {
+    (g as GroupRepresentationWithParent).parentId = group.name!;
+    yield* traverseGroups(g);
+  }
+}
+
 export const readKeycloakRealm = async (
   client: KeycloakAdminClient,
   config: KeycloakProviderConfig,
@@ -185,11 +196,28 @@ export const readKeycloakRealm = async (
     options?.groupQuerySize,
   )) as GroupRepresentationWithParent[];
 
-  const rawKGroups = await processGroupsRecursively(
-    topLevelKGroups,
-    client.groups as Groups,
+  const serverInfo = await client.serverInfo.find();
+  console.log('serverInfo');
+  console.log(serverInfo);
+  const serverVersion = parseInt(
+    serverInfo.systemInfo?.version?.slice(0, 2) || '',
   );
 
+  const isVersion24 = serverVersion === 24;
+
+  let rawKGroups: GroupRepresentationWithParent[] = [];
+
+  if (isVersion24) {
+    rawKGroups = await processGroupsRecursively(
+      topLevelKGroups,
+      client.groups as Groups,
+    );
+  } else {
+    rawKGroups = rawKGroups.reduce(
+      (acc, g) => acc.concat(...traverseGroups(g)),
+      [] as GroupRepresentationWithParent[],
+    );
+  }
   const kGroups = await Promise.all(
     rawKGroups.map(async g => {
       g.members = (
@@ -199,21 +227,25 @@ export const readKeycloakRealm = async (
           realm: config.realm,
         })
       )?.map(m => m.username!);
-      if (g.subGroupCount! > 0) {
-        g.subGroups = await client.groups.listSubGroups({
-          parentId: g.id!,
-          first: 0,
-          max: g.subGroupCount,
-          briefRepresentation: false,
-        });
+
+      if (isVersion24) {
+        if (g.subGroupCount! > 0) {
+          g.subGroups = await client.groups.listSubGroups({
+            parentId: g.id!,
+            first: 0,
+            max: g.subGroupCount,
+            briefRepresentation: false,
+          });
+        }
+        if (g.parentId) {
+          const groupParent = await client.groups.findOne({
+            id: g.parentId,
+            realm: config.realm,
+          });
+          g.parentId = groupParent?.name;
+        }
       }
-      if (g.parentId) {
-        const groupParent = await client.groups.findOne({
-          id: g.parentId,
-          realm: config.realm,
-        });
-        g.parentId = groupParent?.name;
-      }
+
       return g;
     }),
   );
