@@ -36,3 +36,5 @@ export const TOPOLOGY_FILTERS = [
     disabled: false,
   },
 ];
+
+export const LABEL_USED_TEMPLATE_NAME = 'vm.kubevirt.io/template';

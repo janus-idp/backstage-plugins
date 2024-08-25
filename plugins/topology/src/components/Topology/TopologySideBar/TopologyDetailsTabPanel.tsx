@@ -17,11 +17,14 @@ import {
   PodModel,
   StatefulSetModel,
 } from '../../../models';
+import { K8sWorkloadResource } from '../../../types/types';
+import { VirtualMachineModel } from '../../../vm-models';
 import PodSet from '../../Pods/PodSet';
 import TopologyCronJobDetails from './TopologyCronJobDetails';
 import TopologyDaemonSetDetails from './TopologyDaemonSetDetails';
 import TopologyDeploymentDetails from './TopologyDeploymentDetails';
 import TopologyJobDetails from './TopologyJobDetails';
+import TopologyVirtualMachineDetails from './TopologyVirtualMachineDetails';
 import TopologyWorkloadDetails from './TopologyWorkloadDetails';
 
 import './TopologyDetailsTabPanel.css';
@@ -37,9 +40,12 @@ const TopologyDetailsTabPanel = ({ node }: TopologyDetailsTabPanelProps) => {
   const donutStatus = data.data?.podsData;
   const cx = width / 2;
   const cy = height / 2;
-
   const getWorkloadDetails = () => {
     switch (resourceKind) {
+      case VirtualMachineModel.kind:
+        return (
+          <TopologyVirtualMachineDetails vm={resource as K8sWorkloadResource} />
+        );
       case DeploymentModel.kind:
         return (
           <TopologyDeploymentDetails resource={resource as V1Deployment} />
@@ -59,7 +65,7 @@ const TopologyDetailsTabPanel = ({ node }: TopologyDetailsTabPanelProps) => {
 
   return (
     <div className="topology-details-tab" data-testid="details-tab">
-      {donutStatus && (
+      {donutStatus && resourceKind !== VirtualMachineModel.kind && (
         <Split className="topology-side-bar-pod-ring">
           <SplitItem>
             <PodSet
