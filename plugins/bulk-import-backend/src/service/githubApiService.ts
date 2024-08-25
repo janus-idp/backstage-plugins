@@ -707,6 +707,8 @@ export class GithubApiService {
   ): Promise<{
     prNum?: number;
     prUrl?: string;
+    prTitle?: string;
+    prBody?: string;
     lastUpdate?: string;
   }> {
     const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
@@ -755,6 +757,8 @@ export class GithubApiService {
   ): Promise<{
     prNum?: number;
     prUrl?: string;
+    prTitle?: string;
+    prBody?: string;
     lastUpdate?: string;
   }> {
     try {
@@ -768,6 +772,8 @@ export class GithubApiService {
           return {
             prNum: pull.number,
             prUrl: pull.html_url,
+            prTitle: pull.title,
+            prBody: pull.body ?? undefined,
             lastUpdate: pull.updated_at,
           };
         }

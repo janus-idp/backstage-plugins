@@ -500,6 +500,8 @@ export async function findImportStatusByRepo(
       pullRequest: {
         number: openImportPr.prNum,
         url: openImportPr.prUrl,
+        title: openImportPr.prTitle,
+        body: openImportPr.prBody,
       },
     };
     result.lastUpdate = openImportPr.lastUpdate;

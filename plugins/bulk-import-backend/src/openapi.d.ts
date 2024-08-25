@@ -53,6 +53,18 @@ declare namespace Components {
                      * Pull Request number
                      */
                     number?: number;
+                    /**
+                     * title of the Pull Request
+                     */
+                    title?: string;
+                    /**
+                     * body of the Pull Request
+                     */
+                    body?: string;
+                    /**
+                     * content of the catalog-info.yaml as fetched from the Pull Request.
+                     */
+                    catalogInfoContent?: string;
                 };
             };
         }
