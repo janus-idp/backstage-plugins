@@ -28,6 +28,8 @@ The `DefaultAuditLogger.createAuditLogDetails` will generate the `actorId` of th
 
 It is recommended that you prefix the `eventName` value with the name of the component you are audit logging. This will help with searchability in the central log collector.
 
+For example, "ScaffolderTaskRead", "CatalogEntityFetch", etc.
+
 ---
 
 **IMPORTANT**
