@@ -1,8 +1,11 @@
+import { V1Pod } from '@kubernetes/client-node';
 import * as _ from 'lodash';
 import { flatMap, get, uniq } from 'lodash';
 
-import { K8sWorkloadResource } from '../types/types';
+import { K8sResponseData, K8sWorkloadResource } from '../types/types';
 import { DeviceType, K8sResourceKind, VMIPhase } from '../types/vms';
+
+// import {TEMPLATE_OS_LABEL,TEMPLATE_OS_NAME_ANNOTATION} from '../const'
 
 // Find VMI
 export const findVMI = (
@@ -27,10 +30,10 @@ export const findVMI = (
 // Find Pods from VMI
 export const findPodFromVMI = (
   vmi?: K8sWorkloadResource | null,
-  pods?: Array<K8sWorkloadResource> | null,
-) => {
+  pods?: Array<V1Pod> | null,
+): Array<V1Pod> => {
   if (!pods || !vmi) {
-    return null;
+    return [];
   }
   const vmUID = vmi?.metadata?.uid;
   return pods.filter(p => {
@@ -43,6 +46,18 @@ export const findPodFromVMI = (
       )
     );
   });
+};
+
+// getPods
+export const getPodsForVM = (
+  vm: K8sWorkloadResource,
+  resources: K8sResponseData,
+) => {
+  const allPods = resources?.pods?.data;
+  const allVMIs = resources?.virtualmachineinstances?.data;
+  const vmi = findVMI(vm, allVMIs);
+  const pods = findPodFromVMI(vmi, allPods);
+  return pods;
 };
 
 // Labeled Device
@@ -149,3 +164,14 @@ const getStatusPhase = <T = string>(entity: K8sResourceKind): T =>
 
 export const isVMIReady = (vmi: any) =>
   getStatusPhase(vmi) === VMIPhase.Running;
+
+// OS
+
+// export const getOperatingSystem = (vmi: K8sWorkloadResource): string =>''
+
+//   findKeySuffixValue(getLabels(vmLike), TEMPLATE_OS_LABEL);
+// export const getOperatingSystemName = (vmi: K8sWorkloadResource) =>
+//   getValueByPrefix(
+//     getAnnotations(vmLike),
+//     `${TEMPLATE_OS_NAME_ANNOTATION}/${getOperatingSystem(vmLike)}`,
+//   );

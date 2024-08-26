@@ -21,6 +21,7 @@ import {
   K8sResponseData,
   K8sWorkloadResource,
 } from '../types/types';
+import { getPodsForVM } from './vm-utils';
 
 // List of container status waiting reason values that we should call out as errors in project status rows.
 const CONTAINER_WAITING_STATE_ERROR_REASONS = [
@@ -328,6 +329,20 @@ export const getPodsForCronJob = (
   };
 };
 
+export const getPodsForVirtualMachine = (
+  vm: K8sWorkloadResource,
+  resources: K8sResponseData,
+): PodRCData => {
+  const pods = getPodsForVM(vm, resources);
+  return {
+    obj: vm,
+    current: undefined,
+    previous: undefined,
+    isRollingOut: undefined,
+    pods: pods,
+  };
+};
+
 export const getPodsForDaemonSet = (
   daemonSet: V1DaemonSet,
   resources: K8sResponseData,
@@ -358,6 +373,8 @@ export const getPodsDataForResource = (
       return getPodsForDaemonSet(resource as V1DaemonSet, resources);
     case 'CronJob':
       return getPodsForCronJob(resource as V1CronJob, resources);
+    case 'VirtualMachine':
+      return getPodsForVirtualMachine(resource, resources);
     case 'Pod':
       return {
         obj: resource,
