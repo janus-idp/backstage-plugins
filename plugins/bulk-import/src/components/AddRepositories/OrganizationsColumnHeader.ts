@@ -1,6 +1,6 @@
 import { TableColumn } from '@backstage/core-components';
 
-export const OrganizationColumnHeader: TableColumn[] = [
+export const OrganizationsColumnHeader: TableColumn[] = [
   {
     id: 'name',
     title: 'Name',
@@ -15,6 +15,6 @@ export const OrganizationColumnHeader: TableColumn[] = [
   {
     id: 'catalogInfoYaml',
     title: 'catalog-info.yaml',
-    field: 'catalogInfoYaml',
+    field: 'catalogInfoYaml.status',
   },
 ];

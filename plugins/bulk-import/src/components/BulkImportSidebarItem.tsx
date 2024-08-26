@@ -4,7 +4,7 @@ import { SidebarItem } from '@backstage/core-components';
 
 import { getImageForIconClass } from '../utils/icons';
 
-export const icon = () => {
+export const BulkImportIcon = () => {
   return (
     <img
       src={getImageForIconClass('icon-bulk-import-white')}
@@ -14,10 +14,12 @@ export const icon = () => {
   );
 };
 
-export const BulkImportIcon = () => {
-  // permission logic
-
+export const BulkImportSidebarItem = () => {
   return (
-    <SidebarItem text="Bulk import" to="bulk-import/repositories" icon={icon} />
+    <SidebarItem
+      text="Bulk import"
+      to="bulk-import/repositories"
+      icon={BulkImportIcon}
+    />
   );
 };

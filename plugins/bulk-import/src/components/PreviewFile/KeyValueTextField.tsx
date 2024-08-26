@@ -13,7 +13,7 @@ interface KeyValueTextFieldProps {
     event: React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => void;
   formErrors: PullRequestPreviewData;
-  setFormErrors: (value: React.SetStateAction<PullRequestPreviewData>) => void;
+  setFormErrors: (pullRequest: PullRequestPreviewData) => void;
 }
 
 const validateKeyValuePairs = (value: string): string | null => {

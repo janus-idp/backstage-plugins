@@ -2,13 +2,19 @@ import React from 'react';
 
 import { Link, TableColumn } from '@backstage/core-components';
 
-import { AddRepositoriesData } from '../../types';
-import { urlHelper } from '../../utils/repository-utils';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+
+import { AddRepositoryData } from '../../types';
+import {
+  descendingComparator,
+  getImportStatus,
+  urlHelper,
+} from '../../utils/repository-utils';
 import DeleteRepository from './DeleteRepository';
 import EditCatalogInfo from './EditCatalogInfo';
 import SyncRepository from './SyncRepository';
 
-export const columns: TableColumn<AddRepositoriesData>[] = [
+export const columns: TableColumn<AddRepositoryData>[] = [
   {
     title: 'Name',
     field: 'repoName',
@@ -19,20 +25,26 @@ export const columns: TableColumn<AddRepositoriesData>[] = [
     field: 'repoUrl',
     type: 'string',
     align: 'left',
-    render: (props: AddRepositoriesData) => {
+    render: (props: AddRepositoryData) => {
       return (
-        <Link to={props.repoUrl || ''}>{urlHelper(props.repoUrl || '')}</Link>
+        <Link to={props.repoUrl || ''}>
+          {urlHelper(props.repoUrl || '')}
+          <OpenInNewIcon style={{ verticalAlign: 'sub', paddingTop: '7px' }} />
+        </Link>
       );
     },
   },
   {
     title: 'Organization',
-    field: 'organization',
+    field: 'organizationUrl',
     type: 'string',
     align: 'left',
-    render: (props: AddRepositoriesData) => {
+    render: (props: AddRepositoryData) => {
       return (
-        <Link to={props.organizationUrl || ''}>{props.organizationUrl}</Link>
+        <Link to={props.organizationUrl || ''}>
+          {props.organizationUrl}
+          <OpenInNewIcon style={{ verticalAlign: 'sub', paddingTop: '7px' }} />
+        </Link>
       );
     },
   },
@@ -41,19 +53,24 @@ export const columns: TableColumn<AddRepositoriesData>[] = [
     field: 'catalogInfoYaml.status',
     type: 'string',
     align: 'left',
+    customSort: (a: AddRepositoryData, b: AddRepositoryData) =>
+      descendingComparator(a, b, 'catalogInfoYaml.status'),
+    render: (data: AddRepositoryData) =>
+      getImportStatus(data.catalogInfoYaml?.status as string),
   },
   {
     title: 'Last updated',
-    field: 'lastUpdated',
+    field: 'catalogInfoYaml.lastUpdated',
     type: 'string',
     align: 'left',
   },
   {
     title: 'Actions',
     field: 'actions',
+    sorting: false,
     type: 'string',
     align: 'left',
-    render: (data: AddRepositoriesData) => (
+    render: (data: AddRepositoryData) => (
       <>
         <EditCatalogInfo data={data} />
         <DeleteRepository data={data} />

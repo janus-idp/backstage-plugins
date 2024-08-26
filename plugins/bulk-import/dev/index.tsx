@@ -6,25 +6,118 @@ import { TestApiProvider } from '@backstage/test-utils';
 
 import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
-import { icon } from '../src/components/BulkImportIcon';
+import {
+  BulkImportAPI,
+  bulkImportApiRef,
+} from '../src/api/BulkImportBackendClient';
+import { BulkImportIcon } from '../src/components/BulkImportSidebarItem';
+import {
+  mockGetImportJobs,
+  mockGetOrganizations,
+  mockGetRepositories,
+} from '../src/mocks/mockData';
 import { mockEntities } from '../src/mocks/mockEntities';
 import { BulkImportPage, bulkImportPlugin } from '../src/plugin';
+import {
+  APITypes,
+  ImportJobResponse,
+  ImportJobStatus,
+  OrgAndRepoResponse,
+  RepositoryStatus,
+} from '../src/types';
 
 const mockCatalogApi = {
   getEntities: async () => ({ items: mockEntities }),
 };
+
+class MockBulkImportApi implements BulkImportAPI {
+  async dataFetcher(
+    _page: number,
+    _size: number,
+    options: APITypes,
+  ): Promise<OrgAndRepoResponse> {
+    if (options.orgName) {
+      return {
+        ...mockGetRepositories,
+        repositories: mockGetRepositories.repositories?.filter(r =>
+          r.id?.includes(options.orgName as string),
+        ),
+        totalCount: mockGetRepositories.repositories?.filter(r =>
+          r.id?.includes(options.orgName as string),
+        ).length,
+      };
+    }
+
+    if (options.fetchRepositories) {
+      return mockGetRepositories;
+    }
+    if (options.fetchOrganizations) {
+      return mockGetOrganizations;
+    }
+    return mockGetRepositories;
+  }
+
+  async getImportJobs(
+    _page: number,
+    _size: number,
+  ): Promise<ImportJobStatus[]> {
+    return mockGetImportJobs;
+  }
+
+  async createImportJobs(
+    _importRepositories: any[],
+    _dryRun?: boolean,
+  ): Promise<ImportJobResponse[]> {
+    return [
+      {
+        errors: [],
+        status: RepositoryStatus.WAIT_PR_APPROVAL,
+        catalogEntityName: '',
+        repository: {
+          id: 'REPO',
+          url: 'das',
+          organization: 'dasa',
+          defaultBranch: 'main',
+          name: 'jhk',
+        },
+      },
+    ] as ImportJobResponse[];
+  }
+
+  async deleteImportAction(
+    _repo: string,
+    _defaultBranch: string,
+  ): Promise<ImportJobStatus | Response> {
+    return {} as Response;
+  }
+  async getImportAction(
+    repo: string,
+    _defaultBranch: string,
+  ): Promise<ImportJobStatus | Response> {
+    return mockGetImportJobs.find(
+      i => i.repository.url === repo,
+    ) as ImportJobStatus;
+  }
+}
+
+const mockBulkImportApi = new MockBulkImportApi();
 
 createDevApp()
   .registerPlugin(bulkImportPlugin)
   .addThemes(getAllThemes())
   .addPage({
     element: (
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [bulkImportApiRef, mockBulkImportApi],
+        ]}
+      >
         <BulkImportPage />
       </TestApiProvider>
     ),
     title: 'Bulk import',
     path: '/bulk-import/repositories',
-    icon,
+    icon: BulkImportIcon,
   })
   .render();
