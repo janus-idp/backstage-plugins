@@ -705,6 +705,18 @@ const OPENAPI = `
                   "number": {
                     "type": "number",
                     "description": "Pull Request number"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "title of the Pull Request"
+                  },
+                  "body": {
+                    "type": "string",
+                    "description": "body of the Pull Request"
+                  },
+                  "catalogInfoContent": {
+                    "type": "string",
+                    "description": "content of the catalog-info.yaml as fetched from the Pull Request."
                   }
                 }
               }

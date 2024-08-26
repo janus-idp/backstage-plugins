@@ -252,6 +252,7 @@ export async function createRouter(
         catalogInfoGenerator,
         q.repo,
         q.defaultBranch,
+        true,
       );
       return res.status(response.statusCode).json(response.responseBody);
     },

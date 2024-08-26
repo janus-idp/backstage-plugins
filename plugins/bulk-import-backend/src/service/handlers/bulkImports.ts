@@ -80,6 +80,7 @@ export async function findAllImports(
         catalogInfoGenerator,
         repoUrl,
         defaultBranch,
+        false,
       ),
     );
   }
@@ -441,6 +442,7 @@ export async function findImportStatusByRepo(
   catalogInfoGenerator: CatalogInfoGenerator,
   repoUrl: string,
   defaultBranch?: string,
+  includeCatalogInfoContent?: boolean,
 ): Promise<HandlerResponse<Components.Schemas.Import>> {
   logger.debug(`Getting bulk import job status for ${repoUrl}..`);
 
@@ -461,6 +463,7 @@ export async function findImportStatusByRepo(
     // Check to see if there are any PR
     const openImportPr = await githubApiService.findImportOpenPr(logger, {
       repoUrl: repoUrl,
+      includeCatalogInfoContent,
     });
     if (!openImportPr.prUrl) {
       const catalogLocations =
@@ -500,6 +503,9 @@ export async function findImportStatusByRepo(
       pullRequest: {
         number: openImportPr.prNum,
         url: openImportPr.prUrl,
+        title: openImportPr.prTitle,
+        body: openImportPr.prBody,
+        catalogInfoContent: openImportPr.prCatalogInfoContent,
       },
     };
     result.lastUpdate = openImportPr.lastUpdate;
