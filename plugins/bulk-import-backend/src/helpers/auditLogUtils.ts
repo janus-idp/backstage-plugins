@@ -17,18 +17,17 @@
 import { NotAllowedError } from '@backstage/errors';
 
 import express from 'express';
-import { Context } from 'openapi-backend';
 
 import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 
 export async function auditLogRequestSuccess(
-  ctx: Context,
   auditLogger: AuditLogger,
+  openApiOperationId: string | undefined,
   req: express.Request,
   responseStatus: number,
 ) {
   auditLogger.auditLog({
-    eventName: `${ctx.operation.operationId}EndpointHit`,
+    eventName: `${openApiOperationId}EndpointHit`,
     stage: 'completion',
     status: 'succeeded',
     level: 'info',
@@ -36,18 +35,18 @@ export async function auditLogRequestSuccess(
     response: {
       status: responseStatus,
     },
-    message: `'${ctx.request.method} ${ctx.request.path}' endpoint hit by ${await auditLogger.getActorId(req)}`,
+    message: `'${req.method} ${req.path}' endpoint hit by ${await auditLogger.getActorId(req)}`,
   });
 }
 
 export async function auditLogRequestError(
-  ctx: Context,
   auditLogger: AuditLogger,
+  openApiOperationId: string | undefined,
   req: express.Request,
   error: any,
 ) {
   auditLogger.auditLog({
-    eventName: `${ctx.operation.operationId}EndpointHit`,
+    eventName: `${openApiOperationId}EndpointHit`,
     stage: 'completion',
     status: 'failed',
     level: 'error',
@@ -64,18 +63,18 @@ export async function auditLogRequestError(
       },
     },
     errors: [error],
-    message: `Error while requesting the '${ctx.request.method} ${ctx.request.path}' endpoint (request from ${await auditLogger.getActorId(req)})`,
+    message: `Error while requesting the '${req.method} ${req.path}' endpoint (request from ${await auditLogger.getActorId(req)})`,
   });
 }
 
 export async function auditLogAuthError(
-  ctx: Context,
   auditLogger: AuditLogger,
+  openApiOperationId: string | undefined,
   req: express.Request,
   error: NotAllowedError,
 ) {
   auditLogger.auditLog({
-    eventName: `${ctx.operation.operationId}EndpointHit`,
+    eventName: `${openApiOperationId}EndpointHit`,
     stage: 'authorization',
     status: 'failed',
     level: 'error',
@@ -92,6 +91,6 @@ export async function auditLogAuthError(
       },
     },
     errors: [error],
-    message: `${await auditLogger.getActorId(req)} not authorize to request the '${ctx.request.method} ${ctx.request.path}' endpoint`,
+    message: `${await auditLogger.getActorId(req)} not authorize to request the '${req.method} ${req.path}' endpoint`,
   });
 }

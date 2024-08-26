@@ -56,7 +56,7 @@ export async function permissionCheck(
 
   if (decision.result === AuthorizeResult.DENY) {
     const err = new NotAllowedError('Unauthorized');
-    auditLogAuthError(ctx, auditLogger, req, err);
+    auditLogAuthError(auditLogger, ctx.operation.operationId, req, err);
     throw err;
   }
 }
