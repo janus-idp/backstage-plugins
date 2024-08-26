@@ -24,6 +24,10 @@ The `DefaultAuditLogger.createAuditLogDetails` will generate the `actorId` of th
 - The actor id generated from the `express.Request` object provided in the arguments
 - `null` if neither of the above fields were provided in the arguments
 
+#### Event Naming Convention
+
+It is recommended that you prefix the `eventName` value with the name of the component you are audit logging. This will help with searchability in the central log collector.
+
 ---
 
 **IMPORTANT**
