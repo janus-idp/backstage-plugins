@@ -1,11 +1,10 @@
 import React from 'react';
 
+import { parseEntityRef } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';
 
 import { IconButton, Tooltip } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
-
-import { getKindNamespaceName } from '../utils/rbac-utils';
 
 type EditRoleProps = {
   roleName: string;
@@ -22,7 +21,7 @@ const EditRole = ({
   dataTestId,
   to,
 }: EditRoleProps) => {
-  const { name, namespace, kind } = getKindNamespaceName(roleName);
+  const { name, namespace, kind } = parseEntityRef(roleName);
   return (
     <Tooltip title={tooltip || ''}>
       <span data-testid={dataTestId}>

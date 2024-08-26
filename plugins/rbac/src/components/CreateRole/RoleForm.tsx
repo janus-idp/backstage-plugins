@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { parseEntityRef } from '@backstage/catalog-model';
 import { SimpleStepper, SimpleStepperStep } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -27,11 +28,7 @@ import {
   getUpdatedConditionalPolicies,
   validationSchema,
 } from '../../utils/create-role-utils';
-import {
-  getKindNamespaceName,
-  isSamePermissionPolicy,
-  onlyInLeft,
-} from '../../utils/rbac-utils';
+import { isSamePermissionPolicy, onlyInLeft } from '../../utils/rbac-utils';
 import {
   createConditions,
   createPermissions,
@@ -77,7 +74,7 @@ export const RoleForm = ({
       ? { state: { toastMessage: `Role ${action} successfully` } }
       : { state: { toastMessage: '' } };
     if (step && roleName) {
-      const { kind, namespace, name } = getKindNamespaceName(roleName);
+      const { kind, namespace, name } = parseEntityRef(roleName);
       navigate(`../roles/${kind}/${namespace}/${name}`, stateProp);
     } else {
       navigate('..', stateProp);

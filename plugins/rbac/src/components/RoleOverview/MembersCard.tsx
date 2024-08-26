@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { parseEntityRef } from '@backstage/catalog-model';
 import { Table, WarningPanel } from '@backstage/core-components';
 import { usePermission } from '@backstage/plugin-permission-react';
 
@@ -10,7 +11,7 @@ import { policyEntityUpdatePermission } from '@janus-idp/backstage-plugin-rbac-c
 
 import { MembersInfo } from '../../hooks/useMembers';
 import { MembersData } from '../../types';
-import { getKindNamespaceName, getMembers } from '../../utils/rbac-utils';
+import { getMembers } from '../../utils/rbac-utils';
 import EditRole from '../EditRole';
 import { columns } from './MembersListColumns';
 
@@ -29,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 
 const getRefreshIcon = () => <CachedIcon />;
 const getEditIcon = (isAllowed: boolean, roleName: string) => {
-  const { kind, name, namespace } = getKindNamespaceName(roleName);
+  const { kind, name, namespace } = parseEntityRef(roleName);
 
   return (
     <EditRole
