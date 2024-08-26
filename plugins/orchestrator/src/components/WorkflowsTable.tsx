@@ -121,7 +121,7 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
           ),
       },
       { title: 'Avg. duration', field: 'avgDuration' },
-      { title: 'Description', field: 'description' },
+      { title: 'Description', field: 'description', minWidth: '25vw' },
     ],
     [definitionLink],
   );
