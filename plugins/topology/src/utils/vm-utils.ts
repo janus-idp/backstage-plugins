@@ -2,16 +2,42 @@ import { V1Pod } from '@kubernetes/client-node';
 import * as _ from 'lodash';
 import { flatMap, get, uniq } from 'lodash';
 
+import {
+  TEMPLATE_OS_LABEL,
+  TEMPLATE_OS_NAME_ANNOTATION,
+  TEMPLATE_WORKLOAD_LABEL,
+} from '../const';
+import { V1Disk, V1GPU, V1HostDevice } from '../types/api';
 import { K8sResponseData, K8sWorkloadResource } from '../types/types';
-import { DeviceType, K8sResourceKind, VMIPhase } from '../types/vms';
+import {
+  BootableDeviceType,
+  DeviceType,
+  K8sResourceKind,
+  V1NetworkInterface,
+  VMIKind,
+  VMIPhase,
+  VMKind,
+} from '../types/vm';
+import {
+  findKeySuffixValue,
+  getAnnotations,
+  getLabels,
+  getValueByPrefix,
+} from './selector';
 
 // import {TEMPLATE_OS_LABEL,TEMPLATE_OS_NAME_ANNOTATION} from '../const'
 
+// Type check
+export const isVMIKind = (item: any): item is VMIKind => {
+  return item.spec !== undefined && item.status !== undefined;
+};
+
+export const isV1Pod = (resource: K8sWorkloadResource): resource is V1Pod => {
+  return (resource as V1Pod).spec !== undefined;
+};
+
 // Find VMI
-export const findVMI = (
-  vm?: K8sWorkloadResource,
-  vmis?: Array<K8sWorkloadResource>,
-) => {
+export const findVMI = (vm?: VMKind, vmis?: Array<VMIKind>): VMIKind | null => {
   if (!vm || !vmis) return null;
   const vmUID = vm?.metadata?.uid;
   const vmi = vmis.filter(v => {
@@ -29,7 +55,7 @@ export const findVMI = (
 
 // Find Pods from VMI
 export const findPodFromVMI = (
-  vmi?: K8sWorkloadResource | null,
+  vmi?: VMIKind | null,
   pods?: Array<V1Pod> | null,
 ): Array<V1Pod> => {
   if (!pods || !vmi) {
@@ -49,12 +75,9 @@ export const findPodFromVMI = (
 };
 
 // getPods
-export const getPodsForVM = (
-  vm: K8sWorkloadResource,
-  resources: K8sResponseData,
-) => {
-  const allPods = resources?.pods?.data;
-  const allVMIs = resources?.virtualmachineinstances?.data;
+export const getPodsForVM = (vm: VMKind, resources: K8sResponseData) => {
+  const allPods = resources?.pods?.data?.filter(isV1Pod);
+  const allVMIs = resources?.virtualmachineinstances?.data?.filter(isVMIKind);
   const vmi = findVMI(vm, allVMIs);
   const pods = findPodFromVMI(vmi, allPods);
   return pods;
@@ -63,46 +86,50 @@ export const getPodsForVM = (
 // Labeled Device
 
 const transformDevices = (
-  disks: Array<Object> = [],
-  nics: Array<Object> = [],
-) => {
+  disks: V1Disk[] = [],
+  nics: V1NetworkInterface[] = [],
+): BootableDeviceType[] => {
   const transformedDisks = disks.map(disk => ({
     type: DeviceType.DISK,
-    typeLabel: Object.keys(disk)?.[1].toUpperCase(), // Need to update
+    typeLabel: Object.keys(disk)
+      .filter(key => typeof (disk as any)?.[key] === 'object')?.[0]
+      ?.toUpperCase(),
     value: disk,
   }));
   const transformedNics = nics.map(nic => ({
     type: DeviceType.NIC,
-    typeLabel: 'NIC', // Need to update
+    typeLabel: Object.keys(nic)
+      .filter(key => typeof (nic as any)?.[key] === 'object')?.[0]
+      ?.toUpperCase(),
     value: nic,
   }));
 
   return [...transformedDisks, ...transformedNics];
 };
-const getInterfaces = (vm: K8sWorkloadResource) =>
+const getInterfaces = (vm: VMKind): V1NetworkInterface[] =>
   _.get(vm, 'spec.template.spec.domain.devices.interfaces') === null
     ? []
-    : vm?.spec?.template?.spec.domain.devices.interfaces;
+    : vm?.spec?.template?.spec?.domain?.devices?.interfaces;
 
-const getDisks = (vm: K8sWorkloadResource) =>
+const getDisks = (vm: VMKind): V1Disk[] =>
   _.get(vm, 'spec.template.spec.domain.devices.disks') === null
     ? []
     : vm?.spec?.template?.spec?.domain?.devices?.disks;
-const getNetworkInterfaces = (vm: K8sWorkloadResource) => getInterfaces(vm);
+const getNetworkInterfaces = (vm: VMKind) => getInterfaces(vm);
 
-export const getLabeledDevices = (vm: K8sWorkloadResource) =>
+export const getLabeledDevices = (vm: VMKind) =>
   transformDevices(getDisks(vm), getNetworkInterfaces(vm));
 
 // Boot Order
 
-export const deviceKey = (device: Object) => {
+export const deviceKey = (device: BootableDeviceType) => {
   return `${device?.type}-${device?.value?.name}`;
 };
 
-export const deviceLabel = (device: Object) => {
+export const deviceLabel = (device: BootableDeviceType) => {
   const name = device?.value?.name;
 
-  if (name.match(/^\$\{[A-Z_]+\}$/)) {
+  if (name?.match(/^\$\{[A-Z_]+\}$/)) {
     return `${name} (${device?.typeLabel}), template parameter`;
   }
 
@@ -111,7 +138,7 @@ export const deviceLabel = (device: Object) => {
 
 // IP Address
 
-export const getVmiIpAddresses = (vmi: K8sWorkloadResource | null) => {
+export const getVmiIpAddresses = (vmi: VMIKind | null) => {
   if (!vmi) return [];
   return uniq(
     flatMap(
@@ -128,7 +155,7 @@ export const getVmiIpAddresses = (vmi: K8sWorkloadResource | null) => {
           Array.isArray(i.ipAddresses) &&
           i.ipAddresses.length > 0
         ) {
-          arr.push(...i.ipAddresses.map(ip => ip.trim()));
+          arr.push(...i.ipAddresses.map((ip: string) => ip.trim()));
         }
         return arr;
       },
@@ -137,41 +164,48 @@ export const getVmiIpAddresses = (vmi: K8sWorkloadResource | null) => {
 };
 
 // Description
-export const getDescription = (resource: K8sWorkloadResource) =>
-  resource?.metadata?.annotations?.description;
+export const getDescription = (resource: K8sWorkloadResource): string =>
+  resource?.metadata?.annotations?.description || '';
 
 // Template Name
 
-export const getLabel = (value: any, label: string, defaultValue?: string) =>
+export const getLabel = (
+  value: any,
+  label: string,
+  defaultValue?: string,
+): string =>
   _.has(value, 'metadata.labels') ? value.metadata.labels[label] : defaultValue;
 
 // Node
-export const getVMINodeName = (vmi: any) =>
+export const getVMINodeName = (vmi: VMIKind | null) =>
   vmi && vmi.status && vmi.status.nodeName;
 
 export const getNodeName = (pod: any) =>
   pod && pod.spec ? pod.spec.nodeName : undefined;
 
 // Hardware GPU , Host Devices
-export const getGPUDevices = (vm: K8sWorkloadResource) =>
+export const getGPUDevices = (vm: VMKind): V1GPU[] =>
   vm?.spec?.template?.spec?.domain?.devices?.gpus || [];
-export const getHostDevices = (vm: K8sWorkloadResource) =>
+export const getHostDevices = (vm: VMKind): V1HostDevice[] =>
   vm?.spec?.template?.spec?.domain?.devices?.hostDevices || [];
 
 // SSH Keys
 const getStatusPhase = <T = string>(entity: K8sResourceKind): T =>
   entity?.status?.phase;
 
-export const isVMIReady = (vmi: any) =>
+export const isVMIReady = (vmi: VMIKind) =>
   getStatusPhase(vmi) === VMIPhase.Running;
 
-// OS
+// Operating System
 
-// export const getOperatingSystem = (vmi: K8sWorkloadResource): string =>''
+export const getOperatingSystem = (vmLike: VMKind): string =>
+  findKeySuffixValue(getLabels(vmLike), TEMPLATE_OS_LABEL);
+export const getOperatingSystemName = (vm: VMKind) =>
+  getValueByPrefix(
+    getAnnotations(vm),
+    `${TEMPLATE_OS_NAME_ANNOTATION}/${getOperatingSystem(vm)}`,
+  );
 
-//   findKeySuffixValue(getLabels(vmLike), TEMPLATE_OS_LABEL);
-// export const getOperatingSystemName = (vmi: K8sWorkloadResource) =>
-//   getValueByPrefix(
-//     getAnnotations(vmLike),
-//     `${TEMPLATE_OS_NAME_ANNOTATION}/${getOperatingSystem(vmLike)}`,
-//   );
+// Workload Profile
+export const getWorkloadProfile = (vm: VMKind) =>
+  findKeySuffixValue(getLabels(vm), TEMPLATE_WORKLOAD_LABEL);

@@ -19,7 +19,7 @@ import {
   K8sResponseData,
   K8sWorkloadResource,
 } from '../types/types';
-import { VM_TYPE } from '../types/vms';
+import { VM_TYPE } from '../types/vm';
 import { LabelSelector } from './label-selector';
 import {
   getJobsForCronJob,

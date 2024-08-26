@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { ExpandableSection, Text, TextVariants } from '@patternfly/react-core';
 
-import { BootableDeviceType } from '../../../types/vms';
+import { BootableDeviceType } from '../../../types/vm';
 import { deviceKey, deviceLabel } from '../../../utils/vm-utils';
 
 export const BootOrderEmptySummary: React.FC<BootOrderEmptySummaryProps> = ({

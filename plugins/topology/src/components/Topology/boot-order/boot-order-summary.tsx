@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import { BootableDeviceType } from '../../../types/vms';
+import { BootableDeviceType } from '../../../types/vm';
 import { deviceKey, deviceLabel } from '../../../utils/vm-utils';
 import { BootOrderEmptySummary } from './boot-order-empty-summary';
 

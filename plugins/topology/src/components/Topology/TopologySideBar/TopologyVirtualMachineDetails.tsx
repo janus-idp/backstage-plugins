@@ -3,7 +3,7 @@ import React from 'react';
 import { ResourceIcon } from '../../../common/components/ResourceName';
 import { LABEL_USED_TEMPLATE_NAME } from '../../../const';
 import { K8sResourcesContext } from '../../../hooks/K8sResourcesContext';
-import { K8sWorkloadResource } from '../../../types/types';
+import { VMKind } from '../../../types/vm';
 import {
   findPodFromVMI,
   findVMI,
@@ -13,8 +13,13 @@ import {
   getLabel,
   getLabeledDevices,
   getNodeName,
+  getOperatingSystem,
+  getOperatingSystemName,
   getVmiIpAddresses,
   getVMINodeName,
+  getWorkloadProfile,
+  isV1Pod,
+  isVMIKind,
   // isVMIReady,
 } from '../../../utils/vm-utils';
 import { BootOrderSummary } from '../boot-order/boot-order-summary';
@@ -22,15 +27,18 @@ import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
 import TopologyWorkloadDetails from './TopologyWorkloadDetails';
 
 type TopologyVirtualMachineDetailsProps = {
-  vm: K8sWorkloadResource; // Need to chnage
+  vm: VMKind;
 };
 
 const TopologyVirtualMachineDetails = ({
   vm,
 }: TopologyVirtualMachineDetailsProps) => {
   const resources = React.useContext(K8sResourcesContext);
-  const allPods = resources?.watchResourcesData?.pods?.data;
-  const allVMIs = resources?.watchResourcesData?.virtualmachineinstances?.data;
+  const allPods = resources?.watchResourcesData?.pods?.data?.filter(isV1Pod);
+  const allVMIs =
+    resources?.watchResourcesData?.virtualmachineinstances?.data?.filter(
+      isVMIKind,
+    );
   const vmi = findVMI(vm, allVMIs);
   const pods = findPodFromVMI(vmi, allPods);
   const devices = getLabeledDevices(vm) || [];
@@ -38,6 +46,8 @@ const TopologyVirtualMachineDetails = ({
   const description = getDescription(vm);
   const templateName = getLabel(vm, LABEL_USED_TEMPLATE_NAME);
   const nodeName = getVMINodeName(vmi) || getNodeName(pods);
+  const os = getOperatingSystemName(vm) || getOperatingSystem(vm);
+  const workloadProfile = getWorkloadProfile(vm);
   // const vmiReady = isVMIReady(vmi);
   // const [sshService] = useSSHService2(vmi);
 
@@ -60,8 +70,11 @@ const TopologyVirtualMachineDetails = ({
         >
           {description}
         </TopologySideBarDetailsItem>
-        <TopologySideBarDetailsItem label="Operating System">
-          Need to add it
+        <TopologySideBarDetailsItem
+          label="Operating System"
+          emptyText="Not available"
+        >
+          {os}
         </TopologySideBarDetailsItem>
         <TopologySideBarDetailsItem label="Template">
           <ResourceIcon kind="Template" />
@@ -76,23 +89,26 @@ const TopologyVirtualMachineDetails = ({
         <TopologySideBarDetailsItem label="IP address">
           {ipAddrs}
         </TopologySideBarDetailsItem>
-        <TopologySideBarDetailsItem label="Hostname">
+        {/* <TopologySideBarDetailsItem label="Hostname">
           {vm.spec?.strategy?.type}
         </TopologySideBarDetailsItem>
         <TopologySideBarDetailsItem label="Time zone">
           {vm.spec?.strategy?.type}
-        </TopologySideBarDetailsItem>
+        </TopologySideBarDetailsItem> */}
         <TopologySideBarDetailsItem label="Node" emptyText="Not available">
           {nodeName}
         </TopologySideBarDetailsItem>
-        <TopologySideBarDetailsItem label="Workload profile">
-          {vm.spec?.strategy?.type}
+        <TopologySideBarDetailsItem
+          label="Workload profile"
+          emptyText="Not available"
+        >
+          {workloadProfile}
         </TopologySideBarDetailsItem>
-        <TopologySideBarDetailsItem label="User credentials">
+        {/* <TopologySideBarDetailsItem label="User credentials">
           {vm.spec?.strategy?.type}
         </TopologySideBarDetailsItem>
         <TopologySideBarDetailsItem label="SSH access">
-          {/* <span data-test="details-item-ssh-access-port">
+          <span data-test="details-item-ssh-access-port">
           {vmiReady ?
             sshServicesRunning ?  `Port: ${sshServicePort}`
              : 'SSH service disabled'
@@ -100,8 +116,8 @@ const TopologyVirtualMachineDetails = ({
           :
             'Virtual machine not running')
           }
-        </span> */}
-        </TopologySideBarDetailsItem>
+        </span>
+        </TopologySideBarDetailsItem> */}
         <TopologySideBarDetailsItem label="Hardware devices">
           <div>GPU devices : {getGPUDevices(vm).length}</div>
           <div>Host devices : {getHostDevices(vm).length}</div>

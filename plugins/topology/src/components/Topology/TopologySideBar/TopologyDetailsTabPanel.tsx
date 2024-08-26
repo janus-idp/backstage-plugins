@@ -17,7 +17,7 @@ import {
   PodModel,
   StatefulSetModel,
 } from '../../../models';
-import { K8sWorkloadResource } from '../../../types/types';
+import { VMKind } from '../../../types/vm';
 import { VirtualMachineModel } from '../../../vm-models';
 import PodSet from '../../Pods/PodSet';
 import TopologyCronJobDetails from './TopologyCronJobDetails';
@@ -43,9 +43,7 @@ const TopologyDetailsTabPanel = ({ node }: TopologyDetailsTabPanelProps) => {
   const getWorkloadDetails = () => {
     switch (resourceKind) {
       case VirtualMachineModel.kind:
-        return (
-          <TopologyVirtualMachineDetails vm={resource as K8sWorkloadResource} />
-        );
+        return <TopologyVirtualMachineDetails vm={resource as VMKind} />;
       case DeploymentModel.kind:
         return (
           <TopologyDeploymentDetails resource={resource as V1Deployment} />
