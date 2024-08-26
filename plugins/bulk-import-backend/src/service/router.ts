@@ -123,8 +123,7 @@ export async function createRouter(
 
   api.register(
     'findAllOrganizations',
-    async (c: Context, req: express.Request, res: express.Response) => {
-      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
+    async (c: Context, _req: express.Request, res: express.Response) => {
       const q: Paths.FindAllOrganizations.QueryParameters = {
         ...c.request.query,
       };
@@ -149,8 +148,7 @@ export async function createRouter(
 
   api.register(
     'findAllRepositories',
-    async (c: Context, req: express.Request, res: express.Response) => {
-      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
+    async (c: Context, _req: express.Request, res: express.Response) => {
       const q: Paths.FindAllRepositories.QueryParameters = {
         ...c.request.query,
       };
@@ -180,8 +178,7 @@ export async function createRouter(
 
   api.register(
     'findRepositoriesByOrganization',
-    async (c: Context, req: express.Request, res: express.Response) => {
-      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
+    async (c: Context, _req: express.Request, res: express.Response) => {
       const q: Paths.FindRepositoriesByOrganization.QueryParameters = {
         ...c.request.query,
       };
@@ -214,8 +211,7 @@ export async function createRouter(
 
   api.register(
     'findAllImports',
-    async (c: Context, req: express.Request, res: express.Response) => {
-      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
+    async (c: Context, _req: express.Request, res: express.Response) => {
       const q: Paths.FindAllImports.QueryParameters = {
         ...c.request.query,
       };
@@ -238,10 +234,9 @@ export async function createRouter(
     'createImportJobs',
     async (
       c: Context<Paths.CreateImportJobs.RequestBody>,
-      req: express.Request,
+      _req: express.Request,
       res: express.Response,
     ) => {
-      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
       const q: Paths.CreateImportJobs.QueryParameters = {
         ...c.request.query,
       };
@@ -264,8 +259,7 @@ export async function createRouter(
 
   api.register(
     'findImportStatusByRepo',
-    async (c: Context, req: express.Request, res: express.Response) => {
-      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
+    async (c: Context, _req: express.Request, res: express.Response) => {
       const q: Paths.FindImportStatusByRepo.QueryParameters = {
         ...c.request.query,
       };
@@ -287,8 +281,7 @@ export async function createRouter(
 
   api.register(
     'deleteImportByRepo',
-    async (c: Context, req: express.Request, res: express.Response) => {
-      await permissionCheck(c, auditLogger, permissions, httpAuth, req);
+    async (c: Context, _req: express.Request, res: express.Response) => {
       const q: Paths.DeleteImportByRepo.QueryParameters = {
         ...c.request.query,
       };
@@ -314,6 +307,19 @@ export async function createRouter(
     permissions: [bulkImportPermission],
   });
   router.use(permissionIntegrationRouter);
+
+  router.use(async (req, _res, next) => {
+    if (req.path !== '/ping') {
+      await permissionCheck(
+        auditLogger,
+        api.matchOperation(req as Request)?.operationId,
+        permissions,
+        httpAuth,
+        req,
+      );
+    }
+    next();
+  });
 
   router.use(async (req, res, next) => {
     if (!next) {

@@ -23,7 +23,6 @@ import { NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import express from 'express';
-import { Context } from 'openapi-backend';
 
 import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
@@ -34,8 +33,8 @@ import { auditLogAuthError } from './auditLogUtils';
  * This will resolve to { result: AuthorizeResult.ALLOW } if the permission framework is disabled
  */
 export async function permissionCheck(
-  ctx: Context,
   auditLogger: AuditLogger,
+  openApiOperationId: string | undefined,
   permissions: PermissionsService,
   httpAuth: HttpAuthService,
   req: express.Request,
@@ -56,7 +55,7 @@ export async function permissionCheck(
 
   if (decision.result === AuthorizeResult.DENY) {
     const err = new NotAllowedError('Unauthorized');
-    auditLogAuthError(auditLogger, ctx.operation.operationId, req, err);
+    auditLogAuthError(auditLogger, openApiOperationId, req, err);
     throw err;
   }
 }
