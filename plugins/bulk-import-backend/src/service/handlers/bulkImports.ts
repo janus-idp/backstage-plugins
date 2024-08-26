@@ -453,6 +453,8 @@ export async function findImportStatusByRepo(
       url: repoUrl,
       name: gitUrl.name,
       organization: gitUrl.organization,
+      id: `${gitUrl.organization}/${gitUrl.name}`,
+      defaultBranch,
     },
     approvalTool: 'GIT',
     status: null,

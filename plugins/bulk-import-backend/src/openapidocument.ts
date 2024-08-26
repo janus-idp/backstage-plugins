@@ -675,21 +675,7 @@ const OPENAPI = `
             "$ref": "#/components/schemas/ApprovalTool"
           },
           "repository": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "repository name"
-              },
-              "url": {
-                "type": "string",
-                "description": "repository URL"
-              },
-              "organization": {
-                "type": "string",
-                "description": "organization which the repository is part of"
-              }
-            }
+            "$ref": "#/components/schemas/Repository"
           },
           "github": {
             "type": "object",
