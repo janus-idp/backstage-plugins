@@ -1,12 +1,14 @@
 import React from 'react';
 
-import { Table, WarningPanel } from '@backstage/core-components';
+import { Progress, Table, WarningPanel } from '@backstage/core-components';
 
 import { makeStyles } from '@material-ui/core';
 
+import { useCheckIfLicensePluginEnabled } from '../../hooks/useCheckIfLicensePluginEnabled';
 import { useLocationToast } from '../../hooks/useLocationToast';
 import { useRoles } from '../../hooks/useRoles';
 import { RolesData } from '../../types';
+import DownloadCSVLink from '../DownloadUserStatistics';
 import { SnackbarAlert } from '../SnackbarAlert';
 import { useToast } from '../ToastContext';
 import { useDeleteDialog } from './DeleteDialogContext';
@@ -68,6 +70,11 @@ export const RolesList = () => {
 
   const errorWarning = getErrorWarning();
 
+  const isLicensePluginEnabled = useCheckIfLicensePluginEnabled();
+  if (isLicensePluginEnabled.loading) {
+    return <Progress />;
+  }
+
   return (
     <>
       <SnackbarAlert toastMessage={toastMessage} onAlertClose={onAlertClose} />
@@ -101,6 +108,7 @@ export const RolesList = () => {
           </div>
         }
       />
+      {isLicensePluginEnabled.isEnabled && <DownloadCSVLink />}
       {openDialog && (
         <DeleteRoleDialog
           open={openDialog}
