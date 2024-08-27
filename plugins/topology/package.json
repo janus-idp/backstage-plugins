@@ -18,7 +18,9 @@
       "@janus-idp/backstage-plugin-topology-common"
     ]
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./**/*.css"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
