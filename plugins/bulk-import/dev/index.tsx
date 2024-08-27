@@ -1,8 +1,14 @@
 import React from 'react';
 
+import { configApiRef } from '@backstage/core-plugin-api';
 import { createDevApp } from '@backstage/dev-utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { TestApiProvider } from '@backstage/test-utils';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import {
+  MockConfigApi,
+  MockPermissionApi,
+  TestApiProvider,
+} from '@backstage/test-utils';
 
 import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
@@ -101,6 +107,13 @@ class MockBulkImportApi implements BulkImportAPI {
 }
 
 const mockBulkImportApi = new MockBulkImportApi();
+const mockPermissionApi = new MockPermissionApi();
+
+const mockConfigApi = new MockConfigApi({
+  permission: {
+    enabled: true,
+  },
+});
 
 createDevApp()
   .registerPlugin(bulkImportPlugin)
@@ -109,8 +122,10 @@ createDevApp()
     element: (
       <TestApiProvider
         apis={[
+          [permissionApiRef, mockPermissionApi],
           [catalogApiRef, mockCatalogApi],
           [bulkImportApiRef, mockBulkImportApi],
+          [configApiRef, mockConfigApi],
         ]}
       >
         <BulkImportPage />

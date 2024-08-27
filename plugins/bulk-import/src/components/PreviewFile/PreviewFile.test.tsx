@@ -33,10 +33,10 @@ jest.mock('formik', () => ({
   ...jest.requireActual('formik'),
   useFormikContext: jest.fn(),
 }));
-const seState = jest.fn();
+const setState = jest.fn();
 
 beforeEach(() => {
-  (useState as jest.Mock).mockImplementation(initial => [initial, seState]);
+  (useState as jest.Mock).mockImplementation(initial => [initial, setState]);
 });
 
 describe('Preview File', () => {
@@ -61,7 +61,7 @@ describe('Preview File', () => {
     expect(queryByTestId('preview-file')).toBeInTheDocument();
     const previewButton = getByText(/Preview File/i);
     fireEvent.click(previewButton);
-    expect(seState).toHaveBeenCalledWith(true);
+    expect(setState).toHaveBeenCalledWith(true);
   });
 
   it('should render pull requests preview for the selected repositories in the organization view', async () => {
@@ -92,7 +92,7 @@ describe('Preview File', () => {
     expect(queryByTestId('preview-files')).toBeInTheDocument();
     const previewButton = getByText(/Preview files/i);
     fireEvent.click(previewButton);
-    expect(seState).toHaveBeenCalledWith(true);
+    expect(setState).toHaveBeenCalledWith(true);
   });
 
   it('should show the status of the catalog-info', async () => {
@@ -136,6 +136,6 @@ describe('Preview File', () => {
     expect(queryByTestId('failed')).toBeInTheDocument();
     const editButton = getByText(/Edit/i);
     fireEvent.click(editButton);
-    expect(seState).toHaveBeenCalledWith(true);
+    expect(setState).toHaveBeenCalledWith(true);
   });
 });

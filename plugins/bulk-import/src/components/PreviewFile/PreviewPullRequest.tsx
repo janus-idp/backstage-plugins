@@ -49,14 +49,16 @@ const componentNameRegex =
   /^([a-zA-Z0-9]+[-_.])*[a-zA-Z0-9]+$|^[a-zA-Z0-9]{1,63}$/;
 
 export const PreviewPullRequest = ({
-  repoName,
+  repoId,
+  repoUrl,
   pullRequest,
   setPullRequest,
   formErrors,
   setFormErrors,
   others,
 }: {
-  repoName: string;
+  repoId: string;
+  repoUrl: string;
   pullRequest: PullRequestPreviewData;
   formErrors: PullRequestPreviewData;
   others?: {
@@ -71,9 +73,7 @@ export const PreviewPullRequest = ({
   const approvalTool =
     values.approvalTool === 'git' ? 'Pull request' : 'ServiceNow ticket';
 
-  const [entityOwner, setEntityOwner] = React.useState<string | null>(
-    pullRequest[repoName]?.entityOwner ?? '',
-  );
+  const [entityOwner, setEntityOwner] = React.useState<string>();
   const { loading: entitiesLoading, value: entities } = useAsync(async () => {
     const allEntities = await catalogApi.getEntities({
       filter: {
@@ -88,28 +88,37 @@ export const PreviewPullRequest = ({
   React.useEffect(() => {
     const newFormErrors = {
       ...formErrors,
-      [repoName]: {
-        ...formErrors?.[repoName],
+      [repoId]: {
+        ...formErrors?.[repoId],
         entityOwner: 'Entity owner is missing',
       },
     };
 
     if (
-      (entityOwner === null || !pullRequest[repoName]?.entityOwner) &&
-      !pullRequest[repoName]?.useCodeOwnersFile
+      !pullRequest[repoId]?.entityOwner &&
+      !pullRequest[repoId]?.useCodeOwnersFile
     ) {
       if (JSON.stringify(formErrors) !== JSON.stringify(newFormErrors)) {
         setFormErrors(newFormErrors);
       }
+    } else {
+      setEntityOwner(pullRequest[repoId]?.entityOwner);
     }
-  }, [entityOwner, pullRequest, setFormErrors, formErrors, repoName]);
+  }, [
+    entityOwner,
+    pullRequest,
+    setFormErrors,
+    setEntityOwner,
+    formErrors,
+    repoId,
+  ]);
 
   const updatePullRequestKeyValuePairFields = (
     field: string,
     value: string,
     yamlKey: string,
   ) => {
-    const yamlUpdate: Entity = { ...pullRequest[repoName]?.yaml };
+    const yamlUpdate: Entity = { ...pullRequest[repoId]?.yaml };
 
     if (value.length === 0) {
       if (yamlKey.includes('.')) {
@@ -132,8 +141,8 @@ export const PreviewPullRequest = ({
 
     setPullRequest({
       ...pullRequest,
-      [repoName]: {
-        ...pullRequest[repoName],
+      [repoId]: {
+        ...pullRequest[repoId],
         [field]: value,
         yaml: yamlUpdate,
       },
@@ -147,15 +156,15 @@ export const PreviewPullRequest = ({
   ) => {
     setPullRequest({
       ...pullRequest,
-      [repoName]: {
-        ...pullRequest[repoName],
+      [repoId]: {
+        ...pullRequest[repoId],
         [field]: value,
         ...(field === 'componentName'
           ? {
               yaml: {
-                ...pullRequest[repoName]?.yaml,
+                ...pullRequest[repoId]?.yaml,
                 metadata: {
-                  ...pullRequest[repoName]?.yaml.metadata,
+                  ...pullRequest[repoId]?.yaml.metadata,
                   name: value,
                 },
               },
@@ -167,22 +176,22 @@ export const PreviewPullRequest = ({
     if (!value) {
       setFormErrors({
         ...formErrors,
-        [repoName]: {
-          ...formErrors?.[repoName],
+        [repoId]: {
+          ...formErrors?.[repoId],
           [field]: errorMessage,
         },
       });
     } else if (field === 'componentName' && !componentNameRegex.exec(value)) {
       setFormErrors({
         ...formErrors,
-        [repoName]: {
-          ...formErrors?.[repoName],
+        [repoId]: {
+          ...formErrors?.[repoId],
           [field]: `"${value}" is not valid; expected a string that is sequences of [a-zA-Z0-9] separated by any of [-_.], at most 63 characters in total. To learn more about catalog file format, visit: https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md`,
         },
       });
     } else {
       const err = { ...formErrors };
-      delete err[repoName]?.[field as keyof PullRequestPreview];
+      delete err[repoId]?.[field as keyof PullRequestPreview];
       setFormErrors(err);
     }
   };
@@ -225,13 +234,13 @@ export const PreviewPullRequest = ({
       case 'entityOwner':
         setPullRequest({
           ...pullRequest,
-          [repoName]: {
-            ...pullRequest[repoName],
+          [repoId]: {
+            ...pullRequest[repoId],
             entityOwner: inputValue,
             yaml: {
-              ...pullRequest[repoName]?.yaml,
+              ...pullRequest[repoId]?.yaml,
               spec: {
-                ...pullRequest[repoName]?.yaml.spec,
+                ...pullRequest[repoId]?.yaml.spec,
                 ...(inputValue ? { owner: inputValue } : {}),
               },
             },
@@ -273,33 +282,33 @@ export const PreviewPullRequest = ({
       label: 'Annotations',
       name: 'prAnnotations',
       value:
-        pullRequest?.[repoName]?.prAnnotations ??
+        pullRequest?.[repoId]?.prAnnotations ??
         convertKeyValuePairsToString(
-          pullRequest?.[repoName]?.yaml?.metadata?.annotations,
+          pullRequest?.[repoId]?.yaml?.metadata?.annotations,
         ),
     },
     {
       label: 'Labels',
       name: 'prLabels',
       value:
-        pullRequest?.[repoName]?.prLabels ??
+        pullRequest?.[repoId]?.prLabels ??
         convertKeyValuePairsToString(
-          pullRequest?.[repoName]?.yaml?.metadata?.labels,
+          pullRequest?.[repoId]?.yaml?.metadata?.labels,
         ),
     },
     {
       label: 'Spec',
       name: 'prSpec',
       value:
-        pullRequest?.[repoName]?.prSpec ??
+        pullRequest?.[repoId]?.prSpec ??
         convertKeyValuePairsToString(
-          pullRequest?.[repoName]?.yaml?.spec as Record<string, string>,
+          pullRequest?.[repoId]?.yaml?.spec as Record<string, string>,
         ),
     },
   ];
 
-  const error = status?.errors?.[repoName];
-  const info = status?.infos?.[repoName];
+  const error = status?.errors?.[repoId];
+  const info = status?.infos?.[repoId];
   if (info && !error) {
     // prioritize error over info
     return (
@@ -334,10 +343,10 @@ export const PreviewPullRequest = ({
         variant="outlined"
         margin="normal"
         fullWidth
-        name={`repositories.${pullRequest[repoName]?.componentName}.prTitle`}
-        value={pullRequest?.[repoName]?.prTitle}
+        name={`repositories.${pullRequest[repoId]?.componentName}.prTitle`}
+        value={pullRequest?.[repoId]?.prTitle}
         onChange={handleChange}
-        error={!!formErrors?.[repoName]?.prTitle}
+        error={!!formErrors?.[repoId]?.prTitle}
         required
       />
 
@@ -348,9 +357,9 @@ export const PreviewPullRequest = ({
         variant="outlined"
         fullWidth
         onChange={handleChange}
-        name={`repositories.${pullRequest[repoName]?.componentName}.prDescription`}
-        value={pullRequest?.[repoName]?.prDescription}
-        error={!!formErrors?.[repoName]?.prDescription}
+        name={`repositories.${pullRequest[repoId]?.componentName}.prDescription`}
+        value={pullRequest?.[repoId]?.prDescription}
+        error={!!formErrors?.[repoId]?.prDescription}
         multiline
         required
       />
@@ -365,12 +374,12 @@ export const PreviewPullRequest = ({
         margin="normal"
         variant="outlined"
         onChange={handleChange}
-        value={pullRequest?.[repoName]?.componentName}
-        name={`repositories.${pullRequest[repoName]?.componentName}.componentName`}
-        error={!!formErrors?.[repoName]?.componentName}
+        value={pullRequest?.[repoId]?.componentName}
+        name={`repositories.${pullRequest[repoId]?.componentName}.componentName`}
+        error={!!formErrors?.[repoId]?.componentName}
         helperText={
-          formErrors?.[repoName]?.componentName
-            ? formErrors?.[repoName]?.componentName
+          formErrors?.[repoId]?.componentName
+            ? formErrors?.[repoId]?.componentName
             : ''
         }
         fullWidth
@@ -379,14 +388,14 @@ export const PreviewPullRequest = ({
       <br />
       <br />
 
-      {!pullRequest?.[repoName]?.useCodeOwnersFile && (
+      {!pullRequest?.[repoId]?.useCodeOwnersFile && (
         <Autocomplete
           options={entities || []}
           value={entityOwner || ''}
           loading={entitiesLoading}
           loadingText="Loading groups and users"
           onChange={(_event: React.ChangeEvent<{}>, value: string | null) => {
-            setEntityOwner(value);
+            setEntityOwner(value || '');
             handleChange({
               target: { name: 'entityOwner', value },
             } as any);
@@ -396,17 +405,17 @@ export const PreviewPullRequest = ({
             handleChange({
               target: { name: 'entityOwner', value: newSearch },
             } as any);
-            if (!newSearch && !pullRequest?.[repoName]?.useCodeOwnersFile) {
+            if (!newSearch && !pullRequest?.[repoId]?.useCodeOwnersFile) {
               setFormErrors({
                 ...formErrors,
-                [repoName]: {
-                  ...formErrors?.[repoName],
+                [repoId]: {
+                  ...formErrors?.[repoId],
                   entityOwner: 'Entity Owner is required',
                 },
               });
             } else {
               const err = { ...formErrors };
-              delete err[repoName]?.entityOwner;
+              delete err[repoId]?.entityOwner;
               setFormErrors(err);
             }
           }}
@@ -414,12 +423,12 @@ export const PreviewPullRequest = ({
             <TextField
               {...params}
               variant="outlined"
-              error={!!formErrors?.[repoName]?.entityOwner}
+              error={!!formErrors?.[repoId]?.entityOwner}
               label="Entity owner"
               placeholder="groups and users"
               helperText={
-                formErrors?.[repoName]?.entityOwner &&
-                !pullRequest?.[repoName]?.useCodeOwnersFile
+                formErrors?.[repoId]?.entityOwner &&
+                !pullRequest?.[repoId]?.useCodeOwnersFile
                   ? 'Entity owner is required'
                   : 'Select an owner from the list or enter a reference to a Group or a User'
               }
@@ -443,23 +452,23 @@ export const PreviewPullRequest = ({
       <FormControlLabel
         control={
           <Checkbox
-            checked={pullRequest?.[repoName]?.useCodeOwnersFile}
+            checked={pullRequest?.[repoId]?.useCodeOwnersFile}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               const pr = {
                 ...pullRequest,
-                [repoName]: {
-                  ...pullRequest[repoName],
+                [repoId]: {
+                  ...pullRequest[repoId],
                   useCodeOwnersFile: event.target.checked,
                 },
               };
 
-              delete pr[repoName]?.entityOwner;
-              delete pr[repoName]?.yaml?.spec?.owner;
+              delete pr[repoId]?.entityOwner;
+              delete pr[repoId]?.yaml?.spec?.owner;
 
               setPullRequest(pr);
               if (event.target.checked) {
                 const err = { ...formErrors };
-                delete err[repoName]?.entityOwner;
+                delete err[repoId]?.entityOwner;
                 setFormErrors(err);
               }
             }}
@@ -479,12 +488,12 @@ export const PreviewPullRequest = ({
         <KeyValueTextField
           key={field.name}
           label={field.label}
-          name={`repositories.${pullRequest[repoName]?.componentName}.${field.name}`}
+          name={`repositories.${pullRequest[repoId]?.componentName}.${field.name}`}
           value={field.value ?? ''}
           onChange={handleChange}
           setFormErrors={setFormErrors}
           formErrors={formErrors}
-          repoName={repoName}
+          repoId={repoId}
         />
       ))}
       <Box marginTop={2}>
@@ -494,8 +503,8 @@ export const PreviewPullRequest = ({
       </Box>
 
       <PreviewPullRequestComponent
-        title={pullRequest?.[repoName]?.prTitle ?? ''}
-        description={pullRequest?.[repoName]?.prDescription ?? ''}
+        title={pullRequest?.[repoId]?.prTitle ?? ''}
+        description={pullRequest?.[repoId]?.prDescription ?? ''}
         classes={{
           card: contentClasses.previewCard,
           cardContent: contentClasses.previewCardContent,
@@ -507,8 +516,8 @@ export const PreviewPullRequest = ({
       </Box>
 
       <PreviewCatalogInfoComponent
-        entities={[pullRequest?.[repoName]?.yaml]}
-        repositoryUrl={values.repositories[repoName]?.repoUrl as string}
+        entities={[pullRequest?.[repoId]?.yaml]}
+        repositoryUrl={repoUrl}
         classes={{
           card: contentClasses.previewCard,
           cardContent: contentClasses.previewCardContent,

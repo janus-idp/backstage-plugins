@@ -10,11 +10,8 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
 import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
-import { AddRepositoryData } from '../../types';
-import {
-  shouldExcludeRepositories,
-  urlHelper,
-} from '../../utils/repository-utils';
+import { AddRepositoryData, RepositoryStatus } from '../../types';
+import { urlHelper } from '../../utils/repository-utils';
 import { CatalogInfoStatus } from './CatalogInfoStatus';
 
 export const RepositoryTableRow = ({
@@ -39,7 +36,7 @@ export const RepositoryTableRow = ({
       data.repoUrl || '',
       data?.defaultBranch || 'main',
     );
-    return result.status;
+    return result;
   });
 
   return (
@@ -55,13 +52,9 @@ export const RepositoryTableRow = ({
           disableRipple
           color="primary"
           checked={
-            shouldExcludeRepositories((value as string) || '')
-              ? true
-              : isItemSelected
+            value?.status === RepositoryStatus.ADDED ? true : isItemSelected
           }
-          disabled={
-            loading || shouldExcludeRepositories((value as string) || '')
-          }
+          disabled={loading || value?.status === RepositoryStatus.ADDED}
           onClick={event => handleClick(event, data)}
           style={{ padding: '0 12px' }}
         />
@@ -93,7 +86,7 @@ export const RepositoryTableRow = ({
       <TableCell align="left" sx={tableCellStyle}>
         <CatalogInfoStatus
           data={data}
-          importStatus={value as string}
+          importStatus={value?.status as string}
           isLoading={loading}
           isItemSelected={isItemSelected}
           isDrawer={isDrawer}

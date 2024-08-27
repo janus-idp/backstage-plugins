@@ -6,12 +6,13 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 import { AddRepositoryData } from '../../types';
 import {
+  calculateLastUpdated,
   descendingComparator,
   getImportStatus,
   urlHelper,
 } from '../../utils/repository-utils';
+import CatalogInfoAction from './CatalogInfoAction';
 import DeleteRepository from './DeleteRepository';
-import EditCatalogInfo from './EditCatalogInfo';
 import SyncRepository from './SyncRepository';
 
 export const columns: TableColumn<AddRepositoryData>[] = [
@@ -42,7 +43,7 @@ export const columns: TableColumn<AddRepositoryData>[] = [
     render: (props: AddRepositoryData) => {
       return (
         <Link to={props.organizationUrl || ''}>
-          {props.organizationUrl}
+          {urlHelper(props.organizationUrl || '')}
           <OpenInNewIcon style={{ verticalAlign: 'sub', paddingTop: '7px' }} />
         </Link>
       );
@@ -56,13 +57,15 @@ export const columns: TableColumn<AddRepositoryData>[] = [
     customSort: (a: AddRepositoryData, b: AddRepositoryData) =>
       descendingComparator(a, b, 'catalogInfoYaml.status'),
     render: (data: AddRepositoryData) =>
-      getImportStatus(data.catalogInfoYaml?.status as string),
+      getImportStatus(data.catalogInfoYaml?.status as string, true),
   },
   {
     title: 'Last updated',
     field: 'catalogInfoYaml.lastUpdated',
-    type: 'string',
+    type: 'datetime',
     align: 'left',
+    render: (data: AddRepositoryData) =>
+      calculateLastUpdated(data.catalogInfoYaml?.lastUpdated || ''),
   },
   {
     title: 'Actions',
@@ -72,7 +75,7 @@ export const columns: TableColumn<AddRepositoryData>[] = [
     align: 'left',
     render: (data: AddRepositoryData) => (
       <>
-        <EditCatalogInfo data={data} />
+        <CatalogInfoAction data={data} />
         <DeleteRepository data={data} />
         <SyncRepository data={data} />
       </>

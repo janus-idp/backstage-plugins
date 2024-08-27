@@ -147,6 +147,10 @@ export const mockGetImportJobs: ImportJobStatus[] = [
       pullRequest: {
         number: 90,
         url: 'https://github.com/org/dessert/cupcake/pull/90',
+        body: 'PR body',
+        catalogInfoContent:
+          'apiVersion: backstage.io/v1alpha1\nkind: Component\nmetadata:\n  name: che1\n  annotations:\n    github.com/project-slug: debsmita1/che\nspec:\n  type: other\n  lifecycle: unknown\n  owner: user:default/debsmita1\n',
+        title: 'PR title',
       },
     },
     lastUpdate: '2024-07-17T13:46:37Z',
@@ -164,6 +168,10 @@ export const mockGetImportJobs: ImportJobStatus[] = [
     approvalTool: ApprovalTool.Git,
     github: {
       pullRequest: {
+        body: 'PR body',
+        catalogInfoContent:
+          'apiVersion: backstage.io/v1alpha1\nkind: Component\nmetadata:\n  name: che1\n  annotations:\n    github.com/project-slug: debsmita1/che\nspec:\n  type: other\n  lifecycle: unknown\n  owner: user:default/debsmita1\n',
+        title: 'PR title',
         number: 91,
         url: 'https://github.com/org/dessert/donut/pull/91',
       },
@@ -185,6 +193,10 @@ export const mockGetImportJobs: ImportJobStatus[] = [
       pullRequest: {
         number: 94,
         url: 'https://github.com/org/food/food-app/pull/94',
+        body: 'PR body',
+        catalogInfoContent:
+          'apiVersion: backstage.io/v1alpha1\nkind: Component\nmetadata:\n  name: che1\n  annotations:\n    github.com/project-slug: debsmita1/che\nspec:\n  type: other\n  lifecycle: unknown\n  owner: user:default/debsmita1\n',
+        title: 'PR title',
       },
     },
     lastUpdate: '2024-07-21T13:46:37Z',
@@ -204,6 +216,10 @@ export const mockGetImportJobs: ImportJobStatus[] = [
       pullRequest: {
         number: 95,
         url: 'https://github.com/org/pet-store-boston/pet-app/pull/95',
+        body: 'PR body',
+        catalogInfoContent:
+          'apiVersion: backstage.io/v1alpha1\nkind: Component\nmetadata:\n  name: che1\n  annotations:\n    github.com/project-slug: debsmita1/che\nspec:\n  type: other\n  lifecycle: unknown\n  owner: user:default/debsmita1\n',
+        title: 'PR title',
       },
     },
     lastUpdate: '2024-07-22T13:46:37Z',
