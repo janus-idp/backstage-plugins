@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import { NotAllowedError } from '@backstage/errors';
+import { NotAllowedError, NotFoundError } from '@backstage/errors';
 
 import express from 'express';
 
 import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+
+const EVENT_PREFIX = 'BulkImport';
+const UNKNOWN_ENDPOINT_EVENT = `${EVENT_PREFIX}UnknownEndpoint`;
 
 export async function auditLogRequestSuccess(
   auditLogger: AuditLogger,
@@ -26,8 +29,12 @@ export async function auditLogRequestSuccess(
   req: express.Request,
   responseStatus: number,
 ) {
+  if (!openApiOperationId) {
+    auditLogUnknownEndpoint(auditLogger, req);
+    return;
+  }
   auditLogger.auditLog({
-    eventName: `${openApiOperationId}EndpointHit`,
+    eventName: operationIdToEventName(openApiOperationId),
     stage: 'completion',
     status: 'succeeded',
     level: 'info',
@@ -45,8 +52,12 @@ export async function auditLogRequestError(
   req: express.Request,
   error: any,
 ) {
+  if (!openApiOperationId) {
+    auditLogUnknownEndpoint(auditLogger, req);
+    return;
+  }
   auditLogger.auditLog({
-    eventName: `${openApiOperationId}EndpointHit`,
+    eventName: operationIdToEventName(openApiOperationId),
     stage: 'completion',
     status: 'failed',
     level: 'error',
@@ -67,17 +78,48 @@ export async function auditLogRequestError(
   });
 }
 
+export async function auditLogUnknownEndpoint(
+  auditLogger: AuditLogger,
+  req: express.Request,
+) {
+  const error = new NotFoundError(`'${req.method} ${req.path}' not found`);
+  auditLogger.auditLog({
+    eventName: UNKNOWN_ENDPOINT_EVENT,
+    stage: 'initiation',
+    status: 'failed',
+    level: 'info',
+    request: req,
+    response: {
+      status: 404,
+      body: {
+        errors: [
+          {
+            name: error.name,
+            message: error.message,
+          },
+        ],
+      },
+    },
+    errors: [error],
+    message: `${await auditLogger.getActorId(req)} requested the unknown '${req.method} ${req.path}' endpoint`,
+  });
+}
+
 export async function auditLogAuthError(
   auditLogger: AuditLogger,
   openApiOperationId: string | undefined,
   req: express.Request,
   error: NotAllowedError,
 ) {
+  if (!openApiOperationId) {
+    auditLogUnknownEndpoint(auditLogger, req);
+    return;
+  }
   auditLogger.auditLog({
-    eventName: `${openApiOperationId}EndpointHit`,
+    eventName: operationIdToEventName(openApiOperationId),
     stage: 'authorization',
     status: 'failed',
-    level: 'error',
+    level: 'warn',
     request: req,
     response: {
       status: 403,
@@ -91,6 +133,13 @@ export async function auditLogAuthError(
       },
     },
     errors: [error],
-    message: `${await auditLogger.getActorId(req)} not authorize to request the '${req.method} ${req.path}' endpoint`,
+    message: `${await auditLogger.getActorId(req)} not authorized to request the '${req.method} ${req.path}' endpoint`,
   });
+}
+
+function operationIdToEventName(openApiOperationId: string): string {
+  if (openApiOperationId.length === 0) {
+    return EVENT_PREFIX;
+  }
+  return `${EVENT_PREFIX}${openApiOperationId.charAt(0).toUpperCase()}${openApiOperationId.slice(1)}`;
 }
