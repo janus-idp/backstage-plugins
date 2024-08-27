@@ -4,7 +4,7 @@
 
 ## Documentation for API Endpoints
 
-All URIs are relative to _http://localhost_
+All URIs are relative to _http://localhost:7007/api/ocm_
 
 | Class        | Method                                                                                  | HTTP request                               | Description                          |
 | ------------ | --------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------ |

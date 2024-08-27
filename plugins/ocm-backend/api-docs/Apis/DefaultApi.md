@@ -1,6 +1,6 @@
 # DefaultApi
 
-All URIs are relative to _http://localhost_
+All URIs are relative to _http://localhost:7007/api/ocm_
 
 | Method                                                                             | HTTP request                               | Description                          |
 | ---------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------ |

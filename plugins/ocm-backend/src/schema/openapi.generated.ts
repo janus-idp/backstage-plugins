@@ -13,6 +13,26 @@ export const spec = {
     description:
       'The Open Cluster Management (OCM) plugin integrates your Backstage instance with OCM.',
   },
+  servers: [
+    {
+      url: '{protocol}://{host}:{port}/{basePath}',
+      variables: {
+        protocol: {
+          enum: ['http', 'https'],
+          default: 'http',
+        },
+        host: {
+          default: 'localhost',
+        },
+        port: {
+          default: '7007',
+        },
+        basePath: {
+          default: 'api/ocm',
+        },
+      },
+    },
+  ],
   paths: {
     '/status/{providerId}/{clusterName}': {
       get: {
