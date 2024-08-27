@@ -1,25 +1,26 @@
-import {
-  PluginCacheManager,
-  PluginDatabaseManager,
-  PluginEndpointDiscovery,
-  TokenManager,
-  UrlReader,
-} from '@backstage/backend-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
-import { Config } from '@backstage/config';
-import { IdentityApi } from '@backstage/plugin-auth-node';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { PluginCacheManager } from '@backstage/backend-common';
+import type {
+  DatabaseService,
+  DiscoveryService,
+  LoggerService,
+  SchedulerService,
+  TokenManagerService,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
+import type { IdentityApi } from '@backstage/plugin-auth-node';
+import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import type { PluginCacheManager } from '@backstage/backend-defaults';
 
 export type PluginEnvironment = {
   logger: LoggerService;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   cache: PluginCacheManager;
   config: Config;
-  reader: UrlReader;
-  discovery: PluginEndpointDiscovery;
-  tokenManager: TokenManager;
-  scheduler: PluginTaskScheduler;
+  reader: UrlReaderService;
+  discovery: DiscoveryService;
+  tokenManager: TokenManagerService;
+  scheduler: SchedulerService;
   permissions: PermissionEvaluator;
   identity: IdentityApi;
 };

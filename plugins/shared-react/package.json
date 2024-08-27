@@ -30,10 +30,10 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/catalog-model": "1.5.0",
+    "@backstage/catalog-model": "^1.6.0",
     "@backstage/core-plugin-api": "^1.9.3",
-    "@backstage/plugin-kubernetes-common": "0.8.0",
-    "@backstage/plugin-kubernetes-react": "0.4.0",
+    "@backstage/plugin-kubernetes-common": "^0.8.2",
+    "@backstage/plugin-kubernetes-react": "^0.4.2",
     "@kubernetes/client-node": "^0.20.0",
     "classnames": "^2.3.2",
     "date-fns": "^2.30.0",
@@ -46,10 +46,10 @@
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.26.11",
-    "@backstage/core-app-api": "1.14.1",
-    "@backstage/dev-utils": "1.0.36",
-    "@backstage/test-utils": "1.5.9",
+    "@backstage/cli": "0.27.0",
+    "@backstage/core-app-api": "1.14.2",
+    "@backstage/dev-utils": "1.0.37",
+    "@backstage/test-utils": "1.5.10",
     "@testing-library/jest-dom": "6.4.8",
     "@testing-library/react": "14.3.1",
     "@testing-library/user-event": "14.5.2",

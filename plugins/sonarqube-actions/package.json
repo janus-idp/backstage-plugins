@@ -42,15 +42,15 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/backend-dynamic-feature-service": "^0.2.15",
-    "@backstage/backend-plugin-api": "^0.7.0",
-    "@backstage/plugin-scaffolder-node": "^0.4.8",
+    "@backstage/backend-dynamic-feature-service": "^0.3.0",
+    "@backstage/backend-plugin-api": "^0.8.0",
+    "@backstage/plugin-scaffolder-node": "^0.4.9",
     "yaml": "^2.3.3"
   },
   "devDependencies": {
-    "@backstage/backend-common": "0.23.3",
-    "@backstage/cli": "0.26.11",
-    "@backstage/plugin-scaffolder-node-test-utils": "0.1.9",
+    "@backstage/backend-common": "0.24.0",
+    "@backstage/cli": "0.27.0",
+    "@backstage/plugin-scaffolder-node-test-utils": "0.1.10",
     "@janus-idp/cli": "1.13.1"
   },
   "files": [
