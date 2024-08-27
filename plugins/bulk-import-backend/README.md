@@ -144,6 +144,64 @@ backend.add(BulkImportPermissionBackendModule);
 backend.add(import('@backstage/plugin-permission-backend/alpha'));
 ```
 
+### Audit Logging
+
+Audit logging is backed by the [`backstage-plugin-audit-log-node`](https://www.npmjs.com/package/@janus-idp/backstage-plugin-audit-log-node) package. The Bulk Import Backend plugin adds the following events to the backend audit logs:
+
+- **BulkImportUnknownEndpoint**: tracks requests to unknown endpoints.
+
+- **BulkImportPing**: tracks `GET` requests to the `/ping` endpoint, which allows to make sure the bulk import backend is up and running.
+
+- **BulkImportFindAllOrganizations**: tracks `GET` requests to the `/organizations` endpoint, which returns the list of organizations accessible from all configured GitHub Integrations.
+
+- **BulkImportFindRepositoriesByOrganization**: tracks `GET` requests to the `/organizations/:orgName/repositories` endpoint, which returns the list of repositories for the specified organization (accessible from any of the configured GitHub Integrations).
+
+- **BulkImportFindAllRepositories**: tracks `GET` requests to the `/repositories` endpoint, which returns the list of repositories accessible from all configured GitHub Integrations.
+
+- **BulkImportFindAllImports**: tracks `GET` requests to the `/imports` endpoint, which returns the list of existing import jobs along with their statuses.
+
+- **BulkImportCreateImportJobs**: tracks `POST` requests to the `/imports` endpoint, which allows to submit requests to bulk-import one or many repositories into the Backstage Catalog, by eventually creating import Pull Requests in the target repositories.
+
+- **BulkImportFindImportStatusByRepo**: tracks `GET` requests to the `/import/by-repo` endpoint, which fetches details about the import job for the specified repository.
+
+- **BulkImportDeleteImportByRepo**: tracks `DELETE` requests to the `/import/by-repo` endpoint, which deletes any existing import job for the specified repository, by closing any open import Pull Request that could have been created.
+
+Example:
+
+```json
+{
+  "actor": {
+    "actorId": "user:default/myuser",
+    "hostname": "localhost",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+  },
+  "eventName": "BulkImportFindAllOrganizations",
+  "isAuditLog": true,
+  "level": "info",
+  "message": "'get /organizations' endpoint hit by user:default/myuser",
+  "meta": {},
+  "plugin": "bulk-import",
+  "request": {
+    "body": {},
+    "method": "GET",
+    "params": {},
+    "query": {
+      "pagePerIntegration": "1",
+      "sizePerIntegration": "5"
+    },
+    "url": "/api/bulk-import/organizations?pagePerIntegration=1&sizePerIntegration=5"
+  },
+  "response": {
+    "status": 200
+  },
+  "service": "backstage",
+  "stage": "completion",
+  "status": "succeeded",
+  "timestamp": "2024-08-26 16:41:02"
+}
+```
+
 ## For Users
 
 ### Usage
