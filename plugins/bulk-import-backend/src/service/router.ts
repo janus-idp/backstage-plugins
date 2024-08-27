@@ -32,8 +32,16 @@ import Router from 'express-promise-router';
 import { Context, OpenAPIBackend, Request } from 'openapi-backend';
 import { Logger } from 'winston';
 
+import {
+  AuditLogger,
+  DefaultAuditLogger,
+} from '@janus-idp/backstage-plugin-audit-log-node';
 import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
 
+import {
+  auditLogRequestError,
+  auditLogRequestSuccess,
+} from '../helpers/auditLogUtils';
 import { permissionCheck } from '../helpers/auth';
 import { CatalogInfoGenerator } from '../helpers/catalogInfoGenerator';
 import { Components, Paths } from '../openapi.d';
@@ -70,6 +78,12 @@ export async function createRouter(
 
   const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
+  const auditLogger: AuditLogger = new DefaultAuditLogger({
+    logger: logger,
+    authService: auth,
+    httpAuthService: httpAuth,
+  });
+
   const githubApiService = new GithubApiService(logger, config);
   const catalogInfoGenerator = new CatalogInfoGenerator(
     logger,
@@ -80,26 +94,36 @@ export async function createRouter(
   // create openapi requests handler
   const api = new OpenAPIBackend({
     ajvOpts: {
+      verbose: true,
       formats: fullFormats, // open issue: https://github.com/openapistack/openapi-backend/issues/280
     },
     validate: true,
     definition: openApiDocument,
+    handlers: {
+      validationFail: async (c, _req: express.Request, res: express.Response) =>
+        res.status(400).json({ err: c.validation.errors }),
+      notFound: async (_c, req: express.Request, res: express.Response) =>
+        res.status(404).json({ err: `'${req.method} ${req.path}' not found` }),
+      notImplemented: async (_c, req: express.Request, res: express.Response) =>
+        res
+          .status(500)
+          .json({ err: `'${req.method} ${req.path}' not implemented` }),
+    },
   });
 
   await api.init();
 
   api.register(
     'ping',
-    (_c: Context, _req: express.Request, res: express.Response) =>
-      ping(logger).then(result =>
-        res.status(result.statusCode).json(result.responseBody),
-      ),
+    async (_c: Context, _req: express.Request, res: express.Response) => {
+      const result = await ping(logger);
+      return res.status(result.statusCode).json(result.responseBody);
+    },
   );
 
   api.register(
     'findAllOrganizations',
-    async (c: Context, req: express.Request, res: express.Response) => {
-      await permissionCheck(permissions, await httpAuth.credentials(req));
+    async (c: Context, _req: express.Request, res: express.Response) => {
       const q: Paths.FindAllOrganizations.QueryParameters = {
         ...c.request.query,
       };
@@ -124,8 +148,7 @@ export async function createRouter(
 
   api.register(
     'findAllRepositories',
-    async (c: Context, req: express.Request, res: express.Response) => {
-      await permissionCheck(permissions, await httpAuth.credentials(req));
+    async (c: Context, _req: express.Request, res: express.Response) => {
       const q: Paths.FindAllRepositories.QueryParameters = {
         ...c.request.query,
       };
@@ -155,8 +178,7 @@ export async function createRouter(
 
   api.register(
     'findRepositoriesByOrganization',
-    async (c: Context, req: express.Request, res: express.Response) => {
-      await permissionCheck(permissions, await httpAuth.credentials(req));
+    async (c: Context, _req: express.Request, res: express.Response) => {
       const q: Paths.FindRepositoriesByOrganization.QueryParameters = {
         ...c.request.query,
       };
@@ -189,9 +211,8 @@ export async function createRouter(
 
   api.register(
     'findAllImports',
-    async (c: Context, req: express.Request, res: express.Response) => {
-      await permissionCheck(permissions, await httpAuth.credentials(req));
-      const q: Paths.FindAllRepositories.QueryParameters = {
+    async (c: Context, _req: express.Request, res: express.Response) => {
+      const q: Paths.FindAllImports.QueryParameters = {
         ...c.request.query,
       };
       // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
@@ -213,11 +234,12 @@ export async function createRouter(
     'createImportJobs',
     async (
       c: Context<Paths.CreateImportJobs.RequestBody>,
-      req: express.Request,
+      _req: express.Request,
       res: express.Response,
     ) => {
-      await permissionCheck(permissions, await httpAuth.credentials(req));
-      const q: Paths.CreateImportJobs.QueryParameters = { ...c.request.query };
+      const q: Paths.CreateImportJobs.QueryParameters = {
+        ...c.request.query,
+      };
       q.dryRun = stringToBoolean(q.dryRun);
       const response = await createImportJobs(
         logger,
@@ -237,12 +259,11 @@ export async function createRouter(
 
   api.register(
     'findImportStatusByRepo',
-    async (c: Context, req: express.Request, res: express.Response) => {
-      await permissionCheck(permissions, await httpAuth.credentials(req));
+    async (c: Context, _req: express.Request, res: express.Response) => {
       const q: Paths.FindImportStatusByRepo.QueryParameters = {
         ...c.request.query,
       };
-      if (!q.repo || q.repo.trim().length === 0) {
+      if (!q.repo?.trim()) {
         throw new Error('missing or blank parameter');
       }
       const response = await findImportStatusByRepo(
@@ -260,12 +281,11 @@ export async function createRouter(
 
   api.register(
     'deleteImportByRepo',
-    async (c: Context, req: express.Request, res: express.Response) => {
-      await permissionCheck(permissions, await httpAuth.credentials(req));
+    async (c: Context, _req: express.Request, res: express.Response) => {
       const q: Paths.DeleteImportByRepo.QueryParameters = {
         ...c.request.query,
       };
-      if (!q.repo || q.repo.trim().length === 0) {
+      if (!q.repo?.trim()) {
         throw new Error('missing or blank "repo" parameter');
       }
       const response = await deleteImportByRepo(
@@ -288,17 +308,41 @@ export async function createRouter(
   });
   router.use(permissionIntegrationRouter);
 
-  router.use((req, res, next) => {
+  router.use(async (req, _res, next) => {
+    if (req.path !== '/ping') {
+      await permissionCheck(
+        auditLogger,
+        api.matchOperation(req as Request)?.operationId,
+        permissions,
+        httpAuth,
+        req,
+      );
+    }
+    next();
+  });
+
+  router.use(async (req, res, next) => {
     if (!next) {
       throw new Error('next is undefined');
     }
-    const validation = api.validateRequest(req as Request);
-    if (!validation.valid) {
-      res.status(500).json({ status: 500, err: validation.errors });
-      return;
+    const reqCast = req as Request;
+    const operationId = api.matchOperation(reqCast)?.operationId;
+    try {
+      const response = (await api.handleRequest(
+        reqCast,
+        req,
+        res,
+      )) as express.Response;
+      auditLogRequestSuccess(
+        auditLogger,
+        operationId,
+        req,
+        response.statusCode,
+      );
+    } catch (err: any) {
+      auditLogRequestError(auditLogger, operationId, req, err);
+      next(err);
     }
-
-    api.handleRequest(req as Request, req, res).catch(next);
   });
 
   router.use(errorHandler());
