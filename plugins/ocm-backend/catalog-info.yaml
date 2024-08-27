@@ -26,3 +26,36 @@ spec:
   owner: rhdh-team
   system: rhdh
   subcomponentOf: janus-idp-ocm
+  providesApis:
+    - janus-idp-ocm-backend-api
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: janus-idp-ocm-backend-api
+  title: '@janus-idp/backstage-plugin-ocm-backend'
+  description: Open Cluster Management backend plugin OpenAPI specs for Backstage
+  annotations:
+    backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main/plugins/ocm-backend
+    backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/ocm-backend/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/ocm-backend/catalog-info.yaml
+    github.com/project-slug: janus-idp/backstage-plugins
+    #github.com/team-slug: janus-idp/maintainers
+    sonarqube.org/project-key: janus-idp_backstage-plugins
+  tags:
+    - kubernetes
+    - openshift
+  links:
+    - url: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/ocm-backend
+      title: GitHub Source
+      icon: source
+      type: source
+spec:
+  type: openapi
+  lifecycle: production
+  owner: rhdh-team
+  system: rhdh
+  subcomponentOf: janus-idp-ocm
+  definition:
+    $text: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/ocm-backend/src/schema/openapi.yaml
