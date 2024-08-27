@@ -78,7 +78,9 @@ const TopologyVirtualMachineDetails = ({
           {templateName}
         </TopologySideBarDetailsItem>
         <TopologySideBarDetailsItem label="Pod">
-          {pods?.map(pod => <label>{pod?.metadata?.name}</label>)}
+          {pods?.map(pod => (
+            <label key={pod?.metadata?.uid}>{pod?.metadata?.name}</label>
+          ))}
         </TopologySideBarDetailsItem>
         <TopologySideBarDetailsItem label="Boot order">
           <BootOrderSummary devices={devices} />

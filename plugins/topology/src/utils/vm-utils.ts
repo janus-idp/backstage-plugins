@@ -44,8 +44,7 @@ export const findVMI = (vm?: VMKind, vmis?: Array<VMIKind>): VMIKind | null => {
     const vmiOwnerReferences = v?.metadata?.ownerReferences;
     return (
       v?.metadata?.namespace === vm?.metadata?.namespace &&
-      vmiOwnerReferences &&
-      vmiOwnerReferences.some(
+      vmiOwnerReferences?.some(
         vmiOwnerReference => vmiOwnerReference.uid === vmUID,
       )
     );
@@ -66,8 +65,7 @@ export const findPodFromVMI = (
     const podOwnerReferences = p?.metadata?.ownerReferences;
     return (
       p?.metadata?.namespace === vmi?.metadata?.namespace &&
-      podOwnerReferences &&
-      podOwnerReferences.some(
+      podOwnerReferences?.some(
         podOwnerReference => podOwnerReference.uid === vmUID,
       )
     );
@@ -127,9 +125,11 @@ export const deviceKey = (device: BootableDeviceType) => {
 };
 
 export const deviceLabel = (device: BootableDeviceType) => {
-  const name = device?.value?.name;
+  const name = device?.value?.name || '';
+  const regex = /^\$\{[A-Z_]+\}$/;
+  const match = regex.exec(name);
 
-  if (name?.match(/^\$\{[A-Z_]+\}$/)) {
+  if (match) {
     return `${name} (${device?.typeLabel}), template parameter`;
   }
 
@@ -177,11 +177,10 @@ export const getLabel = (
   _.has(value, 'metadata.labels') ? value.metadata.labels[label] : defaultValue;
 
 // Node
-export const getVMINodeName = (vmi: VMIKind | null) =>
-  vmi && vmi.status && vmi.status.nodeName;
+export const getVMINodeName = (vmi: VMIKind | null) => vmi?.status?.nodeName;
 
 export const getNodeName = (pod: any) =>
-  pod && pod.spec ? pod.spec.nodeName : undefined;
+  pod?.spec ? pod.spec.nodeName : undefined;
 
 // Hardware GPU , Host Devices
 export const getGPUDevices = (vm: VMKind): V1GPU[] =>
@@ -202,8 +201,8 @@ export const getOperatingSystem = (vmLike: VMKind): string =>
   findKeySuffixValue(getLabels(vmLike), TEMPLATE_OS_LABEL);
 export const getOperatingSystemName = (vm: VMKind) =>
   getValueByPrefix(
-    getAnnotations(vm),
     `${TEMPLATE_OS_NAME_ANNOTATION}/${getOperatingSystem(vm)}`,
+    getAnnotations(vm),
   );
 
 // Workload Profile

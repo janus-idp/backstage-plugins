@@ -17,8 +17,8 @@ export const findKeySuffixValue = (obj: StringHashMap, keyPrefix: string) =>
   getSuffixValue(getPrefixedKey(obj, keyPrefix) || '');
 
 export const getValueByPrefix = (
-  obj: { [key: string]: string } = {},
   keyPrefix: string,
+  obj: { [key: string]: string } = {},
 ): string => {
   const objectKey = Object.keys(obj).find(key => key.startsWith(keyPrefix));
   return objectKey ? obj[objectKey] : '';

@@ -52,5 +52,5 @@ export class K8sIoApiCoreV1ResourceRequirements {
     return K8sIoApiCoreV1ResourceRequirements.attributeTypeMap;
   }
 
-  public constructor() {}
+  // public constructor() {}
 }
