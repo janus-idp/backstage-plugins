@@ -33,6 +33,10 @@ paths:
           description: Hub not found
         403:
           description: Unauthorized
+      security:
+        - {}
+        - JWT: []
+
   /status:
     get:
       summary: Get the status of all clusters
@@ -48,6 +52,10 @@ paths:
                   $ref: '#/components/schemas/ClusterOverview'
         403:
           description: Unauthorized
+      security:
+        - {}
+        - JWT: []
+
 components:
   schemas:
     ClusterStatus:
@@ -165,3 +173,10 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/ClusterNodesStatus'
+
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Backstage Permissions Framework JWT

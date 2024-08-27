@@ -57,6 +57,12 @@ export const spec = {
             description: 'Hub not found',
           },
         },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
       },
     },
     '/status': {
@@ -81,6 +87,12 @@ export const spec = {
             description: 'Unauthorized',
           },
         },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
       },
     },
   },
@@ -256,6 +268,14 @@ export const spec = {
             },
           },
         ],
+      },
+    },
+    securitySchemes: {
+      JWT: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Backstage Permissions Framework JWT',
       },
     },
   },

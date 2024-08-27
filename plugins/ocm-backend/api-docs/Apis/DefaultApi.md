@@ -27,7 +27,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-No authorization required
+[JWT](../README.md#JWT)
 
 ### HTTP request headers
 
@@ -57,7 +57,7 @@ Get the status of a specific cluster
 
 ### Authorization
 
-No authorization required
+[JWT](../README.md#JWT)
 
 ### HTTP request headers
 

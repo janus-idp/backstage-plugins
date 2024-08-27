@@ -29,4 +29,8 @@ All URIs are relative to _http://localhost_
 
 ## Documentation for Authorization
 
-All endpoints do not require authorization.
+<a name="JWT"></a>
+
+### JWT
+
+- **Type**: HTTP Bearer Token authentication (JWT)
