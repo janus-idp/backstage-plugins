@@ -5,6 +5,8 @@ import { ExpandableSection, Text, TextVariants } from '@patternfly/react-core';
 import { BootableDeviceType } from '../../../types/vm';
 import { deviceKey, deviceLabel } from '../../../utils/vm-utils';
 
+import './boot-order.css';
+
 export const BootOrderEmptySummary: React.FC<BootOrderEmptySummaryProps> = ({
   devices,
 }) => {
@@ -38,7 +40,7 @@ export const BootOrderEmptySummary: React.FC<BootOrderEmptySummaryProps> = ({
           isExpanded={isExpanded}
           className="kubevirt-boot-order-summary__expandable"
         >
-          <ol>
+          <ol className="kubevirt-boot-order-summary__ol">
             {options.map(option => (
               <li key={deviceKey(option)}>{deviceLabel(option)}</li>
             ))}

@@ -46,7 +46,6 @@ export const TopologyComponent = () => {
     ModelsPlural.checlusters,
     ModelsPlural.virtualmachines,
     ModelsPlural.virtualmachineinstances,
-    // ModelsPlural.replicationcontrollers,
   ];
 
   const k8sResourcesContextData = useK8sObjectsResponse(watchedResources);

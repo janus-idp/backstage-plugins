@@ -19,7 +19,7 @@ import {
   K8sResponseData,
   K8sWorkloadResource,
 } from '../types/types';
-import { VM_TYPE } from '../types/vm';
+import { VM_TYPE, VMIKind } from '../types/vm';
 import { LabelSelector } from './label-selector';
 import {
   getJobsForCronJob,
@@ -93,6 +93,8 @@ const getPodTemplate = (
       return (resource as V1CronJob).spec?.jobTemplate?.spec?.template;
     case 'DaemonSet':
       return (resource as V1DaemonSet).spec?.template;
+    case 'VirtualMachine':
+      return (resource as VMIKind)?.spec?.template;
     default:
       return undefined;
   }

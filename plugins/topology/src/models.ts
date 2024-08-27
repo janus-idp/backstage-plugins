@@ -9,7 +9,6 @@ import {
 } from './pipeline-models';
 import { GroupVersionKind, Model } from './types/types';
 import {
-  // ReplicationControllerGVK,
   VirtualMachineGVK,
   VirtualMachineInstanceGVK,
   VirtualMachineInstanceModel,
@@ -120,7 +119,6 @@ export const resourceGVKs: { [key: string]: GroupVersionKind } = {
   [ModelsPlural.checlusters]: CheClusterGVK,
   [ModelsPlural.virtualmachines]: VirtualMachineGVK,
   [ModelsPlural.virtualmachineinstances]: VirtualMachineInstanceGVK,
-  // [ModelsPlural.replicationcontrollers]: ReplicationControllerGVK,
 };
 
 export const DeploymentModel: Model = {

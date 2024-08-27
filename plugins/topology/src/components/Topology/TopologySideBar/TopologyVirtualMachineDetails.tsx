@@ -20,7 +20,6 @@ import {
   getWorkloadProfile,
   isV1Pod,
   isVMIKind,
-  // isVMIReady,
 } from '../../../utils/vm-utils';
 import { BootOrderSummary } from '../boot-order/boot-order-summary';
 import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
@@ -48,8 +47,6 @@ const TopologyVirtualMachineDetails = ({
   const nodeName = getVMINodeName(vmi) || getNodeName(pods);
   const os = getOperatingSystemName(vm) || getOperatingSystem(vm);
   const workloadProfile = getWorkloadProfile(vm);
-  // const vmiReady = isVMIReady(vmi);
-  // const [sshService] = useSSHService2(vmi);
 
   return (
     <>
@@ -62,7 +59,7 @@ const TopologyVirtualMachineDetails = ({
       </div>
       <div
         className="topology-workload-details"
-        data-testid="deployment-details"
+        data-testid="virtualmachine-details"
       >
         <TopologySideBarDetailsItem
           label="Description"
@@ -119,8 +116,8 @@ const TopologyVirtualMachineDetails = ({
         </span>
         </TopologySideBarDetailsItem> */}
         <TopologySideBarDetailsItem label="Hardware devices">
-          <div>GPU devices : {getGPUDevices(vm).length}</div>
-          <div>Host devices : {getHostDevices(vm).length}</div>
+          <div>GPU devices: {getGPUDevices(vm).length}</div>
+          <div>Host devices: {getHostDevices(vm).length}</div>
         </TopologySideBarDetailsItem>
       </div>
     </>
