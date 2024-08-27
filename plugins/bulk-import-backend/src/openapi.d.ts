@@ -26,20 +26,7 @@ declare namespace Components {
             lastUpdate?: string; // date-time
             errors?: string[];
             approvalTool?: ApprovalTool;
-            repository?: {
-                /**
-                 * repository name
-                 */
-                name?: string;
-                /**
-                 * repository URL
-                 */
-                url?: string;
-                /**
-                 * organization which the repository is part of
-                 */
-                organization?: string;
-            };
+            repository?: /* Repository */ Repository;
             /**
              * GitHub details. Applicable if approvalTool is git.
              */

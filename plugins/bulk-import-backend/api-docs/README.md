@@ -29,7 +29,6 @@ All URIs are relative to *http://localhost:7007/api/bulk-import*
  - [ImportStatus](./Models/ImportStatus.md)
  - [Import_github](./Models/Import_github.md)
  - [Import_github_pullRequest](./Models/Import_github_pullRequest.md)
- - [Import_repository](./Models/Import_repository.md)
  - [Organization](./Models/Organization.md)
  - [OrganizationList](./Models/OrganizationList.md)
  - [Repository](./Models/Repository.md)
