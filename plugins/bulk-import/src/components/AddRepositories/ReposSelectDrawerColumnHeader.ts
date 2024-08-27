@@ -14,6 +14,6 @@ export const ReposSelectDrawerColumnHeader: TableColumn[] = [
   {
     id: 'catalogInfoYaml',
     title: '',
-    field: 'catalogInfoYaml',
+    field: 'catalogInfoYaml.status',
   },
 ];

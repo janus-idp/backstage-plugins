@@ -703,10 +703,14 @@ export class GithubApiService {
     logger: Logger,
     input: {
       repoUrl: string;
+      includeCatalogInfoContent?: boolean;
     },
   ): Promise<{
     prNum?: number;
     prUrl?: string;
+    prTitle?: string;
+    prBody?: string;
+    prCatalogInfoContent?: string;
     lastUpdate?: string;
   }> {
     const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
@@ -738,6 +742,7 @@ export class GithubApiService {
           owner,
           repo,
           branchName,
+          input.includeCatalogInfoContent,
         );
       } catch (error) {
         logger.warn(`Error fetching pull requests: ${error}`);
@@ -752,9 +757,13 @@ export class GithubApiService {
     owner: string,
     repo: string,
     branchName: string,
+    withCatalogInfoContent: boolean = false,
   ): Promise<{
     prNum?: number;
     prUrl?: string;
+    prTitle?: string;
+    prBody?: string;
+    prCatalogInfoContent?: string;
     lastUpdate?: string;
   }> {
     try {
@@ -768,6 +777,18 @@ export class GithubApiService {
           return {
             prNum: pull.number,
             prUrl: pull.html_url,
+            prTitle: pull.title,
+            prBody: pull.body ?? undefined,
+            prCatalogInfoContent: withCatalogInfoContent
+              ? await this.getCatalogInfoContentFromPR(
+                  logger,
+                  octo,
+                  owner,
+                  repo,
+                  pull.number,
+                  pull.head.sha,
+                )
+              : undefined,
             lastUpdate: pull.updated_at,
           };
         }
@@ -776,6 +797,39 @@ export class GithubApiService {
       logger.warn(`Error fetching pull requests: ${error}`);
     }
     return {};
+  }
+
+  private async getCatalogInfoContentFromPR(
+    logger: Logger,
+    octo: Octokit,
+    owner: string,
+    repo: string,
+    prNumber: number,
+    prHeadSha: string,
+  ): Promise<string | undefined> {
+    try {
+      const filePath = getCatalogFilename(this.config);
+      const fileContentResponse = await octo.rest.repos.getContent({
+        owner,
+        repo,
+        path: filePath,
+        ref: prHeadSha,
+      });
+      if (!fileContentResponse.data) {
+        return undefined;
+      }
+      if (!('content' in fileContentResponse.data)) {
+        return undefined;
+      }
+      return Buffer.from(fileContentResponse.data.content, 'base64').toString(
+        'utf-8',
+      );
+    } catch (error: any) {
+      logger.warn(
+        `Error fetching catalog-info content from PR ${prNumber}: ${error}`,
+      );
+      return undefined;
+    }
   }
 
   private async createOrUpdateFileInBranch(

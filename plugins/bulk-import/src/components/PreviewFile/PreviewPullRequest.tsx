@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useAsync } from 'react-use';
 
 import { Entity, EntityMeta } from '@backstage/catalog-model';
+import { WarningPanel } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   PreviewCatalogInfoComponent,
@@ -30,6 +31,7 @@ import {
 } from '../../types';
 import {
   convertKeyValuePairsToString,
+  getCustomisedErrorMessage,
   getYamlKeyValuePairs,
 } from '../../utils/repository-utils';
 import KeyValueTextField from './KeyValueTextField';
@@ -43,21 +45,28 @@ const useDrawerContentStyles = makeStyles(theme => ({
   },
 }));
 
+const componentNameRegex =
+  /^([a-zA-Z0-9]+[-_.])*[a-zA-Z0-9]+$|^[a-zA-Z0-9]{1,63}$/;
+
 export const PreviewPullRequest = ({
   repoName,
   pullRequest,
   setPullRequest,
   formErrors,
   setFormErrors,
+  others,
 }: {
   repoName: string;
   pullRequest: PullRequestPreviewData;
   formErrors: PullRequestPreviewData;
-  setPullRequest: React.Dispatch<React.SetStateAction<PullRequestPreviewData>>;
-  setFormErrors: React.Dispatch<React.SetStateAction<PullRequestPreviewData>>;
+  others?: {
+    addPaddingTop?: boolean;
+  };
+  setPullRequest: (pullRequest: PullRequestPreviewData) => void;
+  setFormErrors: (pullRequest: PullRequestPreviewData) => void;
 }) => {
   const contentClasses = useDrawerContentStyles();
-  const { values } = useFormikContext<AddRepositoriesFormValues>();
+  const { values, status } = useFormikContext<AddRepositoriesFormValues>();
   const catalogApi = useApi(catalogApiRef);
   const approvalTool =
     values.approvalTool === 'git' ? 'Pull request' : 'ServiceNow ticket';
@@ -85,7 +94,10 @@ export const PreviewPullRequest = ({
       },
     };
 
-    if (entityOwner === null || !pullRequest[repoName]?.entityOwner) {
+    if (
+      (entityOwner === null || !pullRequest[repoName]?.entityOwner) &&
+      !pullRequest[repoName]?.useCodeOwnersFile
+    ) {
       if (JSON.stringify(formErrors) !== JSON.stringify(newFormErrors)) {
         setFormErrors(newFormErrors);
       }
@@ -138,6 +150,17 @@ export const PreviewPullRequest = ({
       [repoName]: {
         ...pullRequest[repoName],
         [field]: value,
+        ...(field === 'componentName'
+          ? {
+              yaml: {
+                ...pullRequest[repoName]?.yaml,
+                metadata: {
+                  ...pullRequest[repoName]?.yaml.metadata,
+                  name: value,
+                },
+              },
+            }
+          : {}),
       },
     });
 
@@ -147,6 +170,14 @@ export const PreviewPullRequest = ({
         [repoName]: {
           ...formErrors?.[repoName],
           [field]: errorMessage,
+        },
+      });
+    } else if (field === 'componentName' && !componentNameRegex.exec(value)) {
+      setFormErrors({
+        ...formErrors,
+        [repoName]: {
+          ...formErrors?.[repoName],
+          [field]: `"${value}" is not valid; expected a string that is sequences of [a-zA-Z0-9] separated by any of [-_.], at most 63 characters in total. To learn more about catalog file format, visit: https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md`,
         },
       });
     } else {
@@ -169,6 +200,7 @@ export const PreviewPullRequest = ({
           'prAnnotations',
           'prLabels',
           'prSpec',
+          'entityOwner',
         ].includes(s),
       );
 
@@ -190,26 +222,29 @@ export const PreviewPullRequest = ({
           `${approvalTool} description is missing`,
         );
         break;
-      case 'componentName':
+      case 'entityOwner':
         setPullRequest({
           ...pullRequest,
           [repoName]: {
             ...pullRequest[repoName],
-            componentName: inputValue,
+            entityOwner: inputValue,
             yaml: {
               ...pullRequest[repoName]?.yaml,
-              metadata: {
-                ...pullRequest[repoName]?.yaml.metadata,
-                name: inputValue,
+              spec: {
+                ...pullRequest[repoName]?.yaml.spec,
+                ...(inputValue ? { owner: inputValue } : {}),
               },
             },
           },
         });
+        break;
+      case 'componentName':
         updateFieldAndErrors(
           'componentName',
           inputValue,
           'Component name is missing',
         );
+
         break;
       case 'prAnnotations':
         updatePullRequestKeyValuePairFields(
@@ -263,8 +298,32 @@ export const PreviewPullRequest = ({
     },
   ];
 
+  const error = status?.errors?.[repoName];
+  const info = status?.infos?.[repoName];
+  if (info && !error) {
+    // prioritize error over info
+    return (
+      <Box marginTop={others?.addPaddingTop ? 2 : 0}>
+        <WarningPanel
+          severity="info"
+          title="Important message for your repository"
+          message={getCustomisedErrorMessage(info.error.message)}
+        />
+      </Box>
+    );
+  }
+
   return (
     <>
+      {error && (
+        <Box marginTop={others?.addPaddingTop ? 2 : 0}>
+          <WarningPanel
+            severity="error"
+            title="Failed to create PR"
+            message={getCustomisedErrorMessage(error.error.message)}
+          />
+        </Box>
+      )}
       <Box marginTop={2}>
         <Typography variant="h6">{`${approvalTool} details`}</Typography>
       </Box>
@@ -275,7 +334,7 @@ export const PreviewPullRequest = ({
         variant="outlined"
         margin="normal"
         fullWidth
-        name={`repositories.${pullRequest[repoName].componentName}.prTitle`}
+        name={`repositories.${pullRequest[repoName]?.componentName}.prTitle`}
         value={pullRequest?.[repoName]?.prTitle}
         onChange={handleChange}
         error={!!formErrors?.[repoName]?.prTitle}
@@ -289,7 +348,7 @@ export const PreviewPullRequest = ({
         variant="outlined"
         fullWidth
         onChange={handleChange}
-        name={`repositories.${pullRequest[repoName].componentName}.prDescription`}
+        name={`repositories.${pullRequest[repoName]?.componentName}.prDescription`}
         value={pullRequest?.[repoName]?.prDescription}
         error={!!formErrors?.[repoName]?.prDescription}
         multiline
@@ -307,93 +366,102 @@ export const PreviewPullRequest = ({
         variant="outlined"
         onChange={handleChange}
         value={pullRequest?.[repoName]?.componentName}
-        name={`repositories.${pullRequest[repoName].componentName}.componentName`}
+        name={`repositories.${pullRequest[repoName]?.componentName}.componentName`}
         error={!!formErrors?.[repoName]?.componentName}
+        helperText={
+          formErrors?.[repoName]?.componentName
+            ? formErrors?.[repoName]?.componentName
+            : ''
+        }
         fullWidth
         required
       />
       <br />
       <br />
 
-      <Autocomplete
-        options={entities || []}
-        value={entityOwner ?? ''}
-        loading={entitiesLoading}
-        loadingText="Loading groups and users"
-        disableClearable
-        onChange={(_event: React.ChangeEvent<{}>, value: string | null) => {
-          setEntityOwner(value);
-          setPullRequest({
-            ...pullRequest,
-            [repoName]: {
-              ...pullRequest[repoName],
-              entityOwner: value ?? '',
-            },
-          });
-        }}
-        onInputChange={(_e, newSearch: string) => {
-          setEntityOwner(newSearch || '');
-          setPullRequest({
-            ...pullRequest,
-            [repoName]: {
-              ...pullRequest[repoName],
-              entityOwner: newSearch || '',
-            },
-          });
-          if (!newSearch) {
-            setFormErrors({
-              ...formErrors,
-              [repoName]: {
-                ...formErrors?.[repoName],
-                entityOwner: 'Entity Owner is required',
-              },
-            });
-          } else {
-            const err = { ...formErrors };
-            delete err[repoName]?.entityOwner;
-            setFormErrors(err);
-          }
-        }}
-        renderInput={params => (
-          <TextField
-            {...params}
-            variant="outlined"
-            error={!!formErrors?.[repoName]?.entityOwner}
-            label="Entity owner"
-            placeholder="groups and users"
-            helperText={
-              formErrors?.[repoName]?.entityOwner
-                ? 'Entity owner is required'
-                : 'Select an owner from the list or enter a reference to a Group or a User'
+      {!pullRequest?.[repoName]?.useCodeOwnersFile && (
+        <Autocomplete
+          options={entities || []}
+          value={entityOwner || ''}
+          loading={entitiesLoading}
+          loadingText="Loading groups and users"
+          onChange={(_event: React.ChangeEvent<{}>, value: string | null) => {
+            setEntityOwner(value);
+            handleChange({
+              target: { name: 'entityOwner', value },
+            } as any);
+          }}
+          onInputChange={(_e, newSearch: string) => {
+            setEntityOwner(newSearch || '');
+            handleChange({
+              target: { name: 'entityOwner', value: newSearch },
+            } as any);
+            if (!newSearch && !pullRequest?.[repoName]?.useCodeOwnersFile) {
+              setFormErrors({
+                ...formErrors,
+                [repoName]: {
+                  ...formErrors?.[repoName],
+                  entityOwner: 'Entity Owner is required',
+                },
+              });
+            } else {
+              const err = { ...formErrors };
+              delete err[repoName]?.entityOwner;
+              setFormErrors(err);
             }
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: (
-                <React.Fragment>
-                  {entitiesLoading ? (
-                    <CircularProgress color="inherit" size="1em" />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </React.Fragment>
-              ),
-            }}
-            required
-          />
-        )}
-      />
+          }}
+          renderInput={params => (
+            <TextField
+              {...params}
+              variant="outlined"
+              error={!!formErrors?.[repoName]?.entityOwner}
+              label="Entity owner"
+              placeholder="groups and users"
+              helperText={
+                formErrors?.[repoName]?.entityOwner &&
+                !pullRequest?.[repoName]?.useCodeOwnersFile
+                  ? 'Entity owner is required'
+                  : 'Select an owner from the list or enter a reference to a Group or a User'
+              }
+              InputProps={{
+                ...params.InputProps,
+                endAdornment: (
+                  <>
+                    {entitiesLoading ? (
+                      <CircularProgress color="inherit" size="1em" />
+                    ) : null}
+                    {params.InputProps.endAdornment}
+                  </>
+                ),
+              }}
+              required
+            />
+          )}
+        />
+      )}
 
       <FormControlLabel
         control={
           <Checkbox
             checked={pullRequest?.[repoName]?.useCodeOwnersFile}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setPullRequest({
+              const pr = {
                 ...pullRequest,
                 [repoName]: {
                   ...pullRequest[repoName],
                   useCodeOwnersFile: event.target.checked,
                 },
-              });
+              };
+
+              delete pr[repoName]?.entityOwner;
+              delete pr[repoName]?.yaml?.spec?.owner;
+
+              setPullRequest(pr);
+              if (event.target.checked) {
+                const err = { ...formErrors };
+                delete err[repoName]?.entityOwner;
+                setFormErrors(err);
+              }
             }}
           />
         }
@@ -411,7 +479,7 @@ export const PreviewPullRequest = ({
         <KeyValueTextField
           key={field.name}
           label={field.label}
-          name={`repositories.${pullRequest[repoName].componentName}.${field.name}`}
+          name={`repositories.${pullRequest[repoName]?.componentName}.${field.name}`}
           value={field.value ?? ''}
           onChange={handleChange}
           setFormErrors={setFormErrors}

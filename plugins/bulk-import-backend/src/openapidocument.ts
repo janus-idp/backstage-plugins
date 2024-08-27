@@ -675,21 +675,7 @@ const OPENAPI = `
             "$ref": "#/components/schemas/ApprovalTool"
           },
           "repository": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "repository name"
-              },
-              "url": {
-                "type": "string",
-                "description": "repository URL"
-              },
-              "organization": {
-                "type": "string",
-                "description": "organization which the repository is part of"
-              }
-            }
+            "$ref": "#/components/schemas/Repository"
           },
           "github": {
             "type": "object",
@@ -705,6 +691,18 @@ const OPENAPI = `
                   "number": {
                     "type": "number",
                     "description": "Pull Request number"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "title of the Pull Request"
+                  },
+                  "body": {
+                    "type": "string",
+                    "description": "body of the Pull Request"
+                  },
+                  "catalogInfoContent": {
+                    "type": "string",
+                    "description": "content of the catalog-info.yaml as fetched from the Pull Request."
                   }
                 }
               }
@@ -725,6 +723,10 @@ const OPENAPI = `
           "catalogEntityName": {
             "type": "string",
             "description": "Expected Entity name in the catalog. Relevant only if the 'dryRun' query parameter is set to 'true'."
+          },
+          "codeOwnersFileAsEntityOwner": {
+            "type": "boolean",
+            "description": "Whether the CODEOWNERS file will be used as entity owner. Only relevant for dry-run requests. If set to 'false', the corresponding dry-run check will be skipped."
           },
           "repository": {
             "type": "object",

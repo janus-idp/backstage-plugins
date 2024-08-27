@@ -4,7 +4,10 @@ import { BrowserRouter } from 'react-router-dom';
 import { fireEvent, render } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 
-import { getDataForRepositories } from '../../mocks/mockData';
+import {
+  mockGetOrganizations,
+  mockGetRepositories,
+} from '../../mocks/mockData';
 import { RepositorySelection } from '../../types';
 import { PreviewFile } from './PreviewFile';
 
@@ -41,13 +44,15 @@ describe('Preview File', () => {
     (useFormikContext as jest.Mock).mockReturnValue({
       errors: {},
       values: {
-        repositories: getDataForRepositories('user:default/guest')[0],
+        repositories: {
+          'org/dessert/Cupcake': mockGetRepositories.repositories[0],
+        },
       },
     });
     const { queryByTestId, getByText } = render(
       <BrowserRouter>
         <PreviewFile
-          data={getDataForRepositories('user:default/guest')[0]}
+          data={mockGetRepositories.repositories[0]}
           repositoryType={RepositorySelection.Repository}
         />
       </BrowserRouter>,
@@ -63,29 +68,74 @@ describe('Preview File', () => {
     (useFormikContext as jest.Mock).mockReturnValue({
       errors: {},
       values: {
-        repositories: getDataForRepositories('user:default/guest').slice(0, 3),
-        selectedRepositories: getDataForRepositories(
-          'user:default/guest',
-        ).slice(0, 2),
+        repositories: {
+          'org/dessert/Cupcake': mockGetRepositories.repositories[0],
+          'org/dessert/Donut': mockGetRepositories.repositories[1],
+        },
       },
     });
     const { queryByTestId, getByText } = render(
       <BrowserRouter>
         <PreviewFile
           data={{
-            id: 1,
-            selectedRepositories: getDataForRepositories(
-              'user:default/guest',
-            ).slice(0, 2),
+            ...mockGetOrganizations.organizations[0],
+            selectedRepositories: {
+              'org/dessert/cupcake': mockGetRepositories.repositories[0],
+              'org/dessert/donut': mockGetRepositories.repositories[1],
+            },
           }}
           repositoryType={RepositorySelection.Organization}
         />
       </BrowserRouter>,
     );
-    expect(getByText(/Preview Files/i)).toBeInTheDocument();
+    expect(getByText(/Preview files/i)).toBeInTheDocument();
     expect(queryByTestId('preview-files')).toBeInTheDocument();
-    const previewButton = getByText(/Preview Files/i);
+    const previewButton = getByText(/Preview files/i);
     fireEvent.click(previewButton);
+    expect(seState).toHaveBeenCalledWith(true);
+  });
+
+  it('should show the status of the catalog-info', async () => {
+    (useFormikContext as jest.Mock).mockReturnValue({
+      errors: {},
+      values: {
+        repositories: {
+          'org/dessert/cupcake': mockGetRepositories.repositories[0],
+          'org/dessert/donut': mockGetRepositories.repositories[1],
+        },
+      },
+      status: {
+        errors: {
+          'org/dessert/cupcake': {
+            catalogEntityName: 'cupcake',
+            error: {
+              message:
+                'Git Repository is empty. - https://docs.github.com/rest/git/refs#get-a-reference',
+              status: 'PR_ERROR',
+            },
+            repository: mockGetRepositories?.repositories?.[0],
+          },
+        },
+      },
+    });
+    const { queryByTestId, getByText } = render(
+      <BrowserRouter>
+        <PreviewFile
+          data={{
+            ...mockGetOrganizations.organizations[0],
+            selectedRepositories: {
+              'org/dessert/cupcake': mockGetRepositories.repositories[0],
+              'org/dessert/donut': mockGetRepositories.repositories[1],
+            },
+          }}
+          repositoryType={RepositorySelection.Organization}
+        />
+      </BrowserRouter>,
+    );
+    expect(getByText(/Failed to create PR/i)).toBeInTheDocument();
+    expect(queryByTestId('failed')).toBeInTheDocument();
+    const editButton = getByText(/Edit/i);
+    fireEvent.click(editButton);
     expect(seState).toHaveBeenCalledWith(true);
   });
 });

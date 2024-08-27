@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
 
 import {
-  AddRepositoriesData,
+  AddedRepositories,
   AddRepositoriesFormValues,
   RepositorySelection,
 } from '../../types';
@@ -23,8 +23,8 @@ export const AddRepositoriesTableToolbar = ({
   title: string;
   setSearchString: (str: string) => void;
   onPageChange?: (page: number) => void;
-  activeOrganization?: AddRepositoriesData;
-  selectedReposFromDrawer?: number[];
+  activeOrganization?: string;
+  selectedReposFromDrawer?: AddedRepositories;
 }) => {
   const { setFieldValue, values } =
     useFormikContext<AddRepositoriesFormValues>();
@@ -51,16 +51,16 @@ export const AddRepositoriesTableToolbar = ({
 
   React.useEffect(() => {
     if (activeOrganization && selectedReposFromDrawer) {
-      const thisSelectedReposCount = activeOrganization.repositories?.filter(
-        repo => selectedReposFromDrawer.includes(repo.id) && repo.id > -1,
-      ).length;
+      const thisSelectedReposCount = Object.values(
+        selectedReposFromDrawer,
+      )?.filter(repo => repo.orgName === activeOrganization).length;
       setSelectedReposNumber(thisSelectedReposCount || 0);
     } else {
       setSelectedReposNumber(
-        values.repositories ? Object.keys(values.repositories).length : 0,
+        values.repositories ? Object.values(values.repositories).length : 0,
       );
     }
-  }, [selectedReposFromDrawer, values, activeOrganization]);
+  }, [selectedReposFromDrawer, values.repositories, activeOrganization]);
 
   return (
     <Toolbar
@@ -97,7 +97,11 @@ export const AddRepositoriesTableToolbar = ({
           </ToggleButton>
         </ToggleButtonGroup>
       )}
-      <RepositoriesSearchBar value={search} onChange={handleSearch} />
+      <RepositoriesSearchBar
+        value={search}
+        onChange={handleSearch}
+        activeOrganization={!!activeOrganization}
+      />
     </Toolbar>
   );
 };

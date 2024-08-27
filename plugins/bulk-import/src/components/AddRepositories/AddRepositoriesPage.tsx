@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Content, Header, Page } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 import { useTheme } from '@material-ui/core';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -8,22 +10,87 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
-import { Formik } from 'formik';
+import { Formik, FormikHelpers } from 'formik';
+import { get } from 'lodash';
 
+import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
 import {
   AddRepositoriesFormValues,
   ApprovalTool,
+  ImportJobResponse,
   RepositorySelection,
 } from '../../types';
+import {
+  getJobErrors,
+  prepareDataForSubmission,
+} from '../../utils/repository-utils';
 import { AddRepositoriesForm } from './AddRepositoriesForm';
 import { Illustrations } from './Illustrations';
 
 export const AddRepositoriesPage = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
+  const [generalSubmitError, setGeneralSubmitError] = React.useState<{
+    message: string;
+    title: string;
+  } | null>(null);
   const initialValues: AddRepositoriesFormValues = {
     repositoryType: RepositorySelection.Repository,
     repositories: {},
+    excludedRepositories: {},
     approvalTool: ApprovalTool.Git,
+  };
+
+  const bulkImportApi = useApi(bulkImportApiRef);
+
+  const handleSubmit = async (
+    values: AddRepositoriesFormValues,
+    formikHelpers: FormikHelpers<AddRepositoriesFormValues>,
+  ) => {
+    formikHelpers.setSubmitting(true);
+    formikHelpers.setStatus(null);
+    const importRepositories = prepareDataForSubmission(
+      values.repositories,
+      values.approvalTool,
+    );
+    try {
+      formikHelpers.setSubmitting(true);
+      const dryrunResponse: ImportJobResponse[] =
+        await bulkImportApi.createImportJobs(importRepositories, true);
+      const dryRunErrors = getJobErrors(dryrunResponse);
+      if (Object.keys(dryRunErrors?.errors || {}).length > 0) {
+        formikHelpers.setStatus(dryRunErrors);
+        formikHelpers.setSubmitting(false);
+      } else {
+        formikHelpers.setStatus(dryRunErrors); // to show info messages
+        const createJobResponse: ImportJobResponse[] | Response =
+          await bulkImportApi.createImportJobs(importRepositories);
+        formikHelpers.setSubmitting(true);
+        if (!Array.isArray(createJobResponse)) {
+          setGeneralSubmitError({
+            message:
+              get(createJobResponse, 'error.message') ||
+              'Failed to create pull request',
+            title: get(createJobResponse, 'error.name') || 'Error occured',
+          });
+          formikHelpers.setSubmitting(false);
+        } else {
+          const createJobErrors = getJobErrors(createJobResponse);
+          if (Object.keys(createJobErrors?.errors || {}).length > 0) {
+            formikHelpers.setStatus(createJobErrors);
+            formikHelpers.setSubmitting(false);
+          } else {
+            navigate(`../bulk-import/repositories`);
+          }
+        }
+      }
+    } catch (error: any) {
+      setGeneralSubmitError({
+        message: error?.message || 'Error occured',
+        title: error?.name,
+      });
+      formikHelpers.setSubmitting(false);
+    }
   };
 
   return (
@@ -37,7 +104,7 @@ export const AddRepositoriesPage = () => {
               id="add-repository-summary"
             >
               <Typography variant="h5">
-                Add repositories to Red Hat Developer Hub in 5 steps
+                Add repositories to Red Hat Developer Hub in 4 steps
               </Typography>
             </AccordionSummary>
             <AccordionDetails
@@ -48,14 +115,14 @@ export const AddRepositoriesPage = () => {
                 overflow: 'auto',
               }}
             >
-              <Illustrations
+              {/* <Illustrations
                 iconClassname={
                   theme.palette.type === 'dark'
                     ? 'icon-approval-tool-white'
                     : 'icon-approval-tool-black'
                 }
                 iconText="Choose approval tool (git/ServiceNow) for PR/ticket creation"
-              />
+              /> */}
               <Illustrations
                 iconClassname={
                   theme.palette.type === 'dark'
@@ -94,9 +161,9 @@ export const AddRepositoriesPage = () => {
         <Formik
           initialValues={initialValues}
           enableReinitialize
-          onSubmit={async (_values: AddRepositoriesFormValues) => {}}
+          onSubmit={handleSubmit}
         >
-          <AddRepositoriesForm />
+          <AddRepositoriesForm error={generalSubmitError} />
         </Formik>
       </Content>
     </Page>

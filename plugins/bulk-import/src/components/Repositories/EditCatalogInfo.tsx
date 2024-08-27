@@ -6,18 +6,14 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useFormikContext } from 'formik';
 
 import {
-  AddRepositoriesData,
   AddRepositoriesFormValues,
+  AddRepositoryData,
   PullRequestPreviewData,
 } from '../../types';
 import { PreviewFileSidebar } from '../PreviewFile/PreviewFile';
 
-type EditCatalogInfoProps = {
-  data: AddRepositoriesData;
-};
-
-const EditCatalogInfo = ({ data }: EditCatalogInfoProps) => {
-  const hasPermission = true;
+const EditCatalogInfo = ({ data }: { data: AddRepositoryData }) => {
+  const hasPermission = false;
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { setFieldValue } = useFormikContext<AddRepositoriesFormValues>();
   const [formErrors, setFormErrors] = React.useState<PullRequestPreviewData>();
@@ -45,7 +41,11 @@ const EditCatalogInfo = ({ data }: EditCatalogInfoProps) => {
             : 'View catalog-info.yaml file'
         }
       >
-        <span data-testid="edit-catalog-info">
+        <span
+          data-testid={
+            hasPermission ? 'edit-catalog-info' : 'view-catalog-info'
+          }
+        >
           {hasPermission ? (
             <IconButton
               color="inherit"
@@ -57,7 +57,7 @@ const EditCatalogInfo = ({ data }: EditCatalogInfoProps) => {
           ) : (
             <IconButton
               target="_blank"
-              href={data.repoUrl || ''}
+              href={data.catalogInfoYaml?.pullRequest || ''}
               color="inherit"
               aria-label="Update"
             >

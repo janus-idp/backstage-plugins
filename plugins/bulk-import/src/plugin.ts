@@ -1,9 +1,16 @@
 import {
+  configApiRef,
+  createApiFactory,
   createComponentExtension,
   createPlugin,
   createRoutableExtension,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
+import {
+  bulkImportApiRef,
+  BulkImportBackendClient,
+} from './api/BulkImportBackendClient';
 import { addRepositoriesRouteRef, rootRouteRef } from './routes';
 
 export const bulkImportPlugin = createPlugin({
@@ -12,6 +19,17 @@ export const bulkImportPlugin = createPlugin({
     root: rootRouteRef,
     addRepositories: addRepositoriesRouteRef,
   },
+  apis: [
+    createApiFactory({
+      api: bulkImportApiRef,
+      deps: {
+        configApi: configApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ configApi, identityApi }) =>
+        new BulkImportBackendClient({ configApi, identityApi }),
+    }),
+  ],
 });
 
 export const BulkImportPage = bulkImportPlugin.provide(
@@ -22,11 +40,11 @@ export const BulkImportPage = bulkImportPlugin.provide(
   }),
 );
 
-export const BulkImportIcon = bulkImportPlugin.provide(
+export const BulkImportSidebarItem = bulkImportPlugin.provide(
   createComponentExtension({
-    name: 'BulkImportIcon',
+    name: 'BulkImportSidebarItem',
     component: {
-      lazy: () => import('./components').then(m => m.BulkImportIcon),
+      lazy: () => import('./components').then(m => m.BulkImportSidebarItem),
     },
   }),
 );

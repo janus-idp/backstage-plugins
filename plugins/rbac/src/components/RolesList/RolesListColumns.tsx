@@ -1,11 +1,12 @@
 import React from 'react';
 
+import { parseEntityRef } from '@backstage/catalog-model';
 import { Link, TableColumn } from '@backstage/core-components';
 
 import { Tooltip, Typography } from '@material-ui/core';
 
 import { RolesData } from '../../types';
-import { getKindNamespaceName, getMembers } from '../../utils/rbac-utils';
+import { getMembers } from '../../utils/rbac-utils';
 import EditRole from '../EditRole';
 import DeleteRole from './DeleteRole';
 
@@ -15,7 +16,7 @@ export const columns: TableColumn<RolesData>[] = [
     field: 'name',
     type: 'string',
     render: (props: RolesData) => {
-      const { kind, namespace, name } = getKindNamespaceName(props.name);
+      const { kind, namespace, name } = parseEntityRef(props.name);
       return (
         <Link to={`roles/${kind}/${namespace}/${name}`}>{props.name}</Link>
       );
