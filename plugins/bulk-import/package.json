@@ -72,9 +72,9 @@
     "msw": "1.3.3"
   },
   "scalprum": {
-    "name": "janus-idp.backstage-plugin-rbac",
+    "name": "janus-idp.backstage-plugin-bulk-import",
     "exposedModules": {
-      "RbacPlugin": "./src/index.ts"
+      "BulkImportPlugin": "./src/index.ts"
     }
   },
   "files": [
