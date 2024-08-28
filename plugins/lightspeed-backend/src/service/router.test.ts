@@ -6,42 +6,27 @@ import { APIError } from 'openai';
 import request from 'supertest';
 
 import { createRouter } from './router';
+import { AIMessage} from "@langchain/core/messages";
 
-const mockCompletionsStream = jest.fn().mockImplementation(async function* () {
-  const messages = [
-    { content: 'Capital', idSuffix: '1' },
-    { content: ' is', idSuffix: '2' },
-    { content: ' Berlin', idSuffix: '3', finish_reason: 'stop' },
-  ];
+const mockAIMessage = new AIMessage('Mockup AI Message')
+const mockInvokeReturnValue = jest.fn().mockResolvedValue(mockAIMessage)
 
-  for (const message of messages) {
-    yield {
-      id: `chatcmpl-863${message.idSuffix}`,
-      object: 'chat.completion.chunk',
-      model: 'test-model',
-      system_fingerprint: 'fp_test_model',
-      created: `172224834${message.idSuffix}`,
-      choices: [
-        {
-          index: 0,
-          delta: { role: 'assistant', content: message.content },
-          finish_reason: message.finish_reason,
-        },
-      ],
-    };
-  }
+jest.mock('@langchain/core/prompts', () => {
+  // Import the actual module to ensure other exports are available
+  const actualModule = jest.requireActual('@langchain/core/prompts');
+  
+  return {
+    ...actualModule,
+    ChatPromptTemplate: {
+      fromMessages: jest.fn().mockImplementation(() => ({
+        pipe: jest.fn().mockReturnValue({
+          invoke: mockInvokeReturnValue,
+        }),
+      })),
+    },
+  };
 });
 
-jest.mock('openai', () => ({
-  ...jest.requireActual('openai'),
-  OpenAI: jest.fn().mockImplementation(() => ({
-    chat: {
-      completions: {
-        create: mockCompletionsStream,
-      },
-    },
-  })),
-}));
 
 (global.fetch as jest.Mock) = jest.fn();
 
@@ -52,10 +37,6 @@ describe('createRouter', () => {
     const router = await createRouter({
       logger: getVoidLogger(),
       config: new ConfigReader({
-        lightspeed: {
-          baseURL: 'http://localhost:11434/v1/',
-          apiKey: 'test-key',
-        },
       }),
     });
     app = express().use(router);
@@ -74,98 +55,67 @@ describe('createRouter', () => {
     });
   });
 
-  describe('POST /completions', () => {
+  const mockConversationId = "user1+1q2w3e4r-qwer1234"
+  const mockServerURL = "http://localhost:7007/api/proxy/lightspeed/api"
+  const mockModel = 'test-model'
+
+  describe('POST /v1/query', () => {
     it('streams completions', async () => {
       const response = await request(app)
-        .post('/chat/completions')
+        .post('/v1/query')
         .send({
-          model: 'test-model',
-          messages: [{ role: 'user', content: 'Hello' }],
+          model: mockModel,
+          conversation_id: mockConversationId,
+          query: 'Hello',
+          serverURL: mockServerURL
         });
-      const expectedData = [
-        {
-          created: '1722248341',
-          message: { content: 'Capital', role: 'assistant' },
-        },
-        {
-          created: '1722248342',
-          message: { content: ' is', role: 'assistant' },
-        },
-        {
-          created: '1722248343',
-          message: { content: ' Berlin', role: 'assistant' },
-        },
-      ];
-      const expectedText = expectedData
-        .map(obj => JSON.stringify(obj))
-        .join('');
+      const expectedData = 'Mockup AI Message';
       expect(response.statusCode).toEqual(200);
-      expect(response.text).toContain(expectedText);
+      expect(response.text).toContain(expectedData);
     });
 
-    it('returns 400 if messages are missing', async () => {
-      const response = await request(app).post('/chat/completions').send({
-        model: 'test-model',
+    it('returns 400 if coversatio_id is missing', async () => {
+      const response = await request(app).post('/v1/query').send({
+        model: mockModel,
       });
       expect(response.statusCode).toEqual(400);
-      expect(response.body.error).toBe('Messages must be an array');
-      expect(mockCompletionsStream).not.toHaveBeenCalled();
+      expect(response.body.error).toBe('conversation_id is required and must be a non-empty string');
+      expect(mockInvokeReturnValue).not.toHaveBeenCalled();
     });
 
-    it('returns 400 if messages are not an array', async () => {
-      const response = await request(app).post('/chat/completions').send({
-        model: 'test-model',
-        messages: {},
+    it('returns 400 if serverURL is missing', async () => {
+      const response = await request(app).post('/v1/query').send({
+        model: mockModel,
+        conversation_id: mockConversationId,
       });
       expect(response.statusCode).toEqual(400);
-      expect(response.body.error).toBe('Messages must be an array');
-      expect(mockCompletionsStream).not.toHaveBeenCalled();
+      expect(response.body.error).toBe('serverURL is required and must be a non-empty string');
+      expect(mockInvokeReturnValue).not.toHaveBeenCalled();
     });
 
-    it('returns 400 if a message does not have a role', async () => {
-      const response = await request(app)
-        .post('/chat/completions')
-        .send({
-          model: 'test-model',
-          messages: [{ content: 'Hello' }],
-        });
+    it('returns 400 if model is missing', async () => {
+      const response = await request(app).post('/v1/query').send({
+        conversation_id: mockConversationId,
+        serverURL: mockServerURL
+      });
       expect(response.statusCode).toEqual(400);
-      expect(response.body.error).toBe(
-        'Each message must have a role which is a non-empty string',
-      );
-      expect(mockCompletionsStream).not.toHaveBeenCalled();
+      expect(response.body.error).toBe('model is required and must be a non-empty string');
+      expect(mockInvokeReturnValue).not.toHaveBeenCalled();
     });
 
-    it('returns 400 if a message does not have content', async () => {
-      const response = await request(app)
-        .post('/chat/completions')
-        .send({
-          model: 'test-model',
-          messages: [{ role: 'user' }],
-        });
+    it('returns 400 if query is missing', async () => {
+      const response = await request(app).post('/v1/query').send({
+        model: mockModel,
+        conversation_id: mockConversationId,
+        serverURL: mockServerURL
+      });
       expect(response.statusCode).toEqual(400);
-      expect(response.body.error).toBe(
-        'Each message must have content which is a non-empty string',
-      );
-      expect(mockCompletionsStream).not.toHaveBeenCalled();
+      expect(response.body.error).toBe('query is required and must be a non-empty string');
+      expect(mockInvokeReturnValue).not.toHaveBeenCalled();
     });
-
-    it('returns 400 if model is empty', async () => {
-      const response = await request(app)
-        .post('/chat/completions')
-        .send({
-          model: '',
-          messages: [{ role: 'user', content: 'Hello' }],
-        });
-      expect(response.statusCode).toEqual(400);
-      expect(response.body.error).toBe(
-        'Model is required and must be a non-empty string',
-      );
-      expect(mockCompletionsStream).not.toHaveBeenCalled();
-    });
-
+   
     it('returns openai error', async () => {
-      mockCompletionsStream.mockImplementationOnce(async () => {
+      mockInvokeReturnValue.mockImplementationOnce(async () => {
         throw APIError.generate(
           400,
           { error: 'invalid model' },
@@ -173,26 +123,26 @@ describe('createRouter', () => {
           {},
         );
       });
-      const response = await request(app)
-        .post('/chat/completions')
-        .send({
-          model: 'nonexistent-model',
-          messages: [{ role: 'user', content: 'Hello' }],
-        });
+      const response = await request(app).post('/v1/query').send({
+        model: 'nonexistent-model',
+        conversation_id: mockConversationId,
+        serverURL: mockServerURL,
+        query: "Hello",
+      });
       expect(response.statusCode).toEqual(400);
       expect(response.body.error).toBe('400 "invalid model"');
     });
 
     it('returns 500 if unexpected error', async () => {
-      mockCompletionsStream.mockImplementationOnce(async () => {
+      mockInvokeReturnValue.mockImplementationOnce(async () => {
         throw new Error();
       });
-      const response = await request(app)
-        .post('/chat/completions')
-        .send({
-          model: 'nonexistent-model',
-          messages: [{ role: 'user', content: 'Hello' }],
-        });
+      const response = await request(app).post('/v1/query').send({
+        model: 'nonexistent-model',
+        conversation_id: mockConversationId,
+        serverURL: mockServerURL,
+        query: "Hello",
+      });
       expect(response.statusCode).toEqual(500);
     });
   });

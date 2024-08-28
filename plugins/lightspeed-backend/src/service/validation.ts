@@ -5,30 +5,34 @@ export const validateCompletionsRequest = (
   res: Response,
   next: NextFunction,
 ) => {
-  const { model, messages } = req.body;
+  const { conversation_id, model, query, serverURL } = req.body;
 
+  if (typeof conversation_id !== 'string' || conversation_id.trim() === '') {
+    return res
+      .status(400)
+      .json({ error: 'conversation_id is required and must be a non-empty string' });
+  }
+
+  // TODO: Need to extract out the user_id from conversation_id, and verify with the login user entity
+
+  if (typeof serverURL !== 'string' || serverURL.trim() === '') {
+    return res
+      .status(400)
+      .json({ error: 'serverURL is required and must be a non-empty string' });
+  }
+  
   if (typeof model !== 'string' || model.trim() === '') {
     return res
       .status(400)
-      .json({ error: 'Model is required and must be a non-empty string' });
+      .json({ error: 'model is required and must be a non-empty string' });
   }
 
-  if (!Array.isArray(messages)) {
-    return res.status(400).json({ error: 'Messages must be an array' });
+  if (typeof query !== 'string' || query.trim() === '') {
+    return res
+      .status(400)
+      .json({ error: 'query is required and must be a non-empty string' });
   }
 
-  for (const message of messages) {
-    if (typeof message.role !== 'string' || message.role.trim() === '') {
-      return res.status(400).json({
-        error: 'Each message must have a role which is a non-empty string',
-      });
-    }
-    if (typeof message.content !== 'string' || message.content.trim() === '') {
-      return res.status(400).json({
-        error: 'Each message must have content which is a non-empty string',
-      });
-    }
-  }
 
   return next();
 };

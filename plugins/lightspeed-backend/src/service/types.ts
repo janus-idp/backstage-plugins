@@ -1,24 +1,26 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
-import { ChatCompletionMessageParam } from 'openai/resources';
-
 export type RouterOptions = {
   logger: LoggerService;
   config: Config;
 };
 
 /**
- * Define the type for the request body of the /completions endpoint.
+ * Define the type for the request body of the /v1/query endpoint.
  */
-export interface CompletionsRequestBody {
-  /**
-   * AI model identifier.
-   */
+export interface QueryRequestBody {
+  // AI model identifier
   model: string;
 
-  /**
-   * Array of previous messages.
-   */
-  messages: Array<ChatCompletionMessageParam>;
+  // Query message
+  query: string;
+
+  // LLM server URL, expected to be the proxy endpoint
+  // for example: http://localhost:7007/api/proxy/lightspeed/api
+  serverURL: string;
+
+  // A combination of user_id & session_id in the format of <user_id>+<session_id>
+  conversation_id: string
+
 }

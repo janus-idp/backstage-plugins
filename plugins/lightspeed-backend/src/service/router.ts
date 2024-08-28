@@ -4,10 +4,15 @@ import { Config } from '@backstage/config';
 
 import express from 'express';
 import Router from 'express-promise-router';
-import { APIError, OpenAI } from 'openai';
+import { APIError } from 'openai';
 
-import { CompletionsRequestBody } from './types';
+import { QueryRequestBody } from './types';
 import { validateCompletionsRequest } from './validation';
+
+
+import { ChatOpenAI } from "@langchain/openai";
+import { HumanMessage} from "@langchain/core/messages";
+import {ChatPromptTemplate, MessagesPlaceholder} from "@langchain/core/prompts";
 
 export interface RouterOptions {
   logger: LoggerService;
@@ -17,7 +22,7 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, config } = options;
+  const { logger } = options;
 
   const router = Router();
   router.use(express.json());
@@ -28,41 +33,52 @@ export async function createRouter(
   });
 
   router.post(
-    '/chat/completions',
+    '/v1/query',
     validateCompletionsRequest,
     async (request, response) => {
-      const { model, messages }: CompletionsRequestBody = request.body;
-      const baseURL = config.getString('lightspeed.baseURL');
-      const apiKey = config.getString('lightspeed.apiKey');
-
-      const openai = new OpenAI({
-        baseURL: baseURL,
-        apiKey: apiKey,
-      });
-
+      const { model, query, serverURL }: QueryRequestBody = request.body;
       try {
-        const stream = await openai.chat.completions.create({
-          messages: messages,
-          model: model,
-          stream: true,
-        });
+          const openAIApi = new ChatOpenAI({
+            apiKey:"sk-no-key-required", // authorization token is used
+            model: model,
+            streaming: false,
+            temperature: 0 , 
+            configuration: { 
+                // bearer token should already applied in proxy header
+                // baseOptions: {
+                //   headers: {
+                //     ...(token && { Authorization: `Bearer ${token}` }),
+                //   },
+                // },
+                baseURL: serverURL
+              }
+          });
 
-        for await (const chunk of stream) {
-          const created = chunk.created.toString();
-          const content = chunk.choices[0]?.delta?.content || '';
-          const role = chunk.choices[0]?.delta?.role || '';
-          response.write(
-            JSON.stringify({ created, message: { content, role } }),
-          );
-        }
+          const chain = ChatPromptTemplate.fromMessages([
+            [
+              "system",
+              "You are a helpful assistant that can answer question in Red Hat Developer Hub.",
+            ],
+            new MessagesPlaceholder("messages"),
+          ]).pipe(openAIApi);
+      
+          // const chain = prompt.pipe(openAIApi);
 
-        response.end();
+          const res = await chain.invoke({
+            messages: [
+              new HumanMessage(
+                query
+              ),
+            ],
+          });
+          response.write(res.content)
+          response.end();
       } catch (error) {
         if (error instanceof APIError) {
           const status = error.status || 500;
           response.status(status).json({ error: error.message });
         } else {
-          logger.error(`Error fetching completions from ${baseURL}: ${error}`);
+          logger.error(`Error fetching completions from ${serverURL}: ${error}`);
           response.status(500).end();
         }
       }
