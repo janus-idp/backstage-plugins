@@ -1,4 +1,4 @@
-import { getVoidLogger } from '@backstage/backend-common';
+import { mockServices } from '@backstage/backend-test-utils';
 
 import { CustomObjectsApi, KubeConfig } from '@kubernetes/client-node';
 import { setupServer } from 'msw/node';
@@ -20,7 +20,7 @@ afterEach(() => server.restoreHandlers());
 afterAll(() => server.close());
 
 const FIXTURES_DIR = `${__dirname}/../../__fixtures__`;
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('hubApiClient', () => {
   it('should use the default config if there is no service account token configured', () => {

@@ -1,4 +1,4 @@
-import { ClusterDetails } from '@janus-idp/backstage-plugin-ocm-common';
+import type { ClusterDetails } from '@janus-idp/backstage-plugin-ocm-common';
 
 import { ManagedCluster, ManagedClusterInfo } from '../types';
 import {
@@ -262,7 +262,7 @@ describe('parseUpdateInfo', () => {
               mciOriginal.status!.distributionInfo.ocp.availableUpdates!.pop()!,
             ],
             versionAvailableUpdates: [
-              mciOriginal.status!.distributionInfo.ocp.versionAvailableUpdates!.pop()!,
+              mciOriginal.status!.distributionInfo.ocp.versionAvailableUpdates.pop()!,
             ],
           },
         },

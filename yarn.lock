@@ -2492,7 +2492,7 @@
   resolved "https://registry.yarnpkg.com/@backstage/backend-dev-utils/-/backend-dev-utils-0.1.4.tgz#65d204939c49b5df6a2148e8ad4dc718ccd1df07"
   integrity sha512-5YgAPz4CRtnqdaUlYCHwGmXvpkGQ1jaUMoDtiQ81WDxQrf+0iYZCwS4ftVyQmB0Ga6BaGOUf6GG/OuFA56Y5mA==
 
-"@backstage/backend-dynamic-feature-service@^0.2.15":
+"@backstage/backend-dynamic-feature-service@0.2.15", "@backstage/backend-dynamic-feature-service@^0.2.15":
   version "0.2.15"
   resolved "https://registry.yarnpkg.com/@backstage/backend-dynamic-feature-service/-/backend-dynamic-feature-service-0.2.15.tgz#02630afb4006d1192e55a52cdccc8fe2042e10cb"
   integrity sha512-qkfLtV/Fi40M/+ORWNUaduO2PLnE23W3niJqgYC3NAlFllyxHbh/04xItAx5zeE0qoYxg7JG66jeXNsjRWxLeA==
@@ -13733,9 +13733,9 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@18.3.3", "@types/react@>=16", "@types/react@^16.13.1 || ^17.0.0", "@types/react@^16.13.1 || ^17.0.0 || ^18.0.0", "@types/react@^18":
-  version "18.3.3"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.3.3.tgz#9679020895318b0915d7a3ab004d92d33375c45f"
-  integrity sha512-hti/R0pS0q1/xx+TsI73XIqk26eBsISZ2R0wUijXIngRK9R/e7Xw/cXVxQK7R5JjW+SV4zGcn5hXjudkN/pLIw==
+  version "18.3.4"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.3.4.tgz#dfdd534a1d081307144c00e325c06e00312c93a3"
+  integrity sha512-J7W30FTdfCxDDjmfRM+/JqLHBIyl7xUIp9kwK637FGmY7+mkSFSe6L4jpZzhj5QMfLssSDP4/i75AKkrdC7/Jw==
   dependencies:
     "@types/prop-types" "*"
     csstype "^3.0.2"

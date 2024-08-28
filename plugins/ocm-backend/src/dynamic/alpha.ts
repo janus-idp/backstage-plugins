@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { BackendDynamicPluginInstaller } from '@backstage/backend-dynamic-feature-service';
+import type { BackendDynamicPluginInstaller } from '@backstage/backend-dynamic-feature-service';
 
 import { catalogModuleOCMEntityProvider } from '../providers';
 import { ocmPlugin } from '../service/router';
 
 export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
   kind: 'new',
-  install: () => [catalogModuleOCMEntityProvider(), ocmPlugin()],
+  install: () => [catalogModuleOCMEntityProvider, ocmPlugin],
 };

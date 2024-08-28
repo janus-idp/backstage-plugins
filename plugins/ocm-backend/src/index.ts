@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export * from './service/router';
 export * from './providers';
-export * from './dynamic/index';
+export * from './service/router';
