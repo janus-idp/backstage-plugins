@@ -21,7 +21,7 @@ Follow the RBAC backend plugin [README](https://github.com/janus-idp/backstage-p
 
 **NOTE**
 
-- For non-admin users, to enable create role button on Administration -> RBAC roles list page, the role associated with your user should have the following permission policies associated with it. Add the following in your permission policies configuration file:
+- For non-admin users, to enable create/edit role button on Administration -> RBAC roles list page, the role associated with your user should have the following permission policies associated with it. Add the following in your permission policies configuration file:
 
 ```CSV
 p, role:default/team_a, catalog-entity, read, allow
@@ -30,7 +30,9 @@ p, role:default/team_a, policy-entity, create, allow
 g, user:default/<login-id/user-name>, role:default/team_a
 ```
 
-> Note: Even after applying above permissions if the create button is still disabled then please contact your administrator as you might be conditionally restricted to access the create button.
+> Note: Make sure required users/groups are available in catalog as a role cannot be created without users/groups.
+
+> Note: Even after ingesting users/groups in catalog and applying above permissions if the create/edit button is still disabled then please contact your administrator as you might be conditionally restricted from accessing the create/edit button.
 
 - To fetch the permissions from other plugins like `Kubernetes` and `Jenkins` in the Role Form as mentioned [here](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/rbac-backend/docs/permissions.md), add the following configuration in your `app-config.yaml`:
 
