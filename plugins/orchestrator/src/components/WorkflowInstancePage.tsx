@@ -169,6 +169,13 @@ export const WorkflowInstancePage = ({
     navigate(urlToNavigate);
   }, [value, navigate, executeWorkflowLink]);
 
+  let retriggerTooltip =
+    'Resume the workflow from the error stage, continuing with the same instance.';
+  if (!permittedToExecute.allowed) {
+    retriggerTooltip = 'The user is not authorized to execute workflow';
+  }
+  const isRetriggerDisabled = !permittedToExecute.allowed;
+
   return (
     <BaseOrchestratorPage
       title={value?.instance.processId ?? value?.instance.id ?? instanceId}
@@ -208,17 +215,14 @@ export const WorkflowInstancePage = ({
             <Grid container item justifyContent="flex-end" spacing={1}>
               {isErrorState && (
                 <Grid item>
-                  <Tooltip
-                    title="user not authorized to execute workflow"
-                    disableHoverListener={permittedToExecute.allowed}
-                  >
+                  <Tooltip title={retriggerTooltip}>
                     <Button
                       variant="contained"
                       color="primary"
-                      disabled={!permittedToExecute.allowed}
+                      disabled={isRetriggerDisabled}
                       onClick={handleRerun}
                     >
-                      Retrigger
+                      Retry from error
                     </Button>
                   </Tooltip>
                 </Grid>
