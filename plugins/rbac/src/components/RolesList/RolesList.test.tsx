@@ -6,6 +6,7 @@ import {
 } from '@backstage/plugin-permission-react';
 import { renderInTestApp } from '@backstage/test-utils';
 
+import { useCheckIfLicensePluginEnabled } from '../../hooks/useCheckIfLicensePluginEnabled';
 import { useRoles } from '../../hooks/useRoles';
 import { RolesData } from '../../types';
 import { RolesList } from './RolesList';
@@ -17,6 +18,10 @@ jest.mock('@backstage/plugin-permission-react', () => ({
 
 jest.mock('../../hooks/useRoles', () => ({
   useRoles: jest.fn(),
+}));
+
+jest.mock('../../hooks/useCheckIfLicensePluginEnabled', () => ({
+  useCheckIfLicensePluginEnabled: jest.fn(),
 }));
 
 const useRolesMockData: RolesData[] = [
@@ -53,6 +58,10 @@ const mockUsePermission = usePermission as jest.MockedFunction<
 >;
 
 const mockUseRoles = useRoles as jest.MockedFunction<typeof useRoles>;
+const mockUseCheckIfLicensePluginEnabled =
+  useCheckIfLicensePluginEnabled as jest.MockedFunction<
+    typeof useCheckIfLicensePluginEnabled
+  >;
 
 const RequirePermissionMock = RequirePermission as jest.MockedFunction<
   typeof RequirePermission
@@ -73,6 +82,14 @@ describe('RolesList', () => {
       retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
       createRoleLoading: false,
+    });
+    mockUseCheckIfLicensePluginEnabled.mockReturnValue({
+      loading: false,
+      isEnabled: false,
+      licenseCheckError: {
+        message: '',
+        name: '',
+      },
     });
     const { queryByText } = await renderInTestApp(<RolesList />);
     expect(queryByText('All roles (2)')).not.toBeNull();
