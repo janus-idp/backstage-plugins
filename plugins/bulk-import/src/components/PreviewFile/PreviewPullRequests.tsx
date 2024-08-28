@@ -85,7 +85,8 @@ export const PreviewPullRequests = ({
   if (Object.values(repositories || []).length === 1) {
     return (
       <PreviewPullRequest
-        repoName={Object.values(repositories)[0].id || ''}
+        repoId={Object.values(repositories)[0].id || ''}
+        repoUrl={Object.values(repositories)[0].repoUrl || ''}
         pullRequest={pullRequest}
         setPullRequest={setPullRequest}
         formErrors={formErrors}
@@ -119,7 +120,8 @@ export const PreviewPullRequests = ({
         return (
           <CustomTabPanel value={value} index={index} key={repo.id}>
             <PreviewPullRequest
-              repoName={repo.id || ''}
+              repoId={repo.id || ''}
+              repoUrl={repo.repoUrl || ''}
               pullRequest={pullRequest}
               setPullRequest={setPullRequest}
               formErrors={formErrors}

@@ -5,7 +5,7 @@ import { FormHelperText, TextField } from '@material-ui/core';
 import { PullRequestPreview, PullRequestPreviewData } from '../../types';
 
 interface KeyValueTextFieldProps {
-  repoName: string;
+  repoId: string;
   label: string;
   name: string;
   value: string;
@@ -30,7 +30,7 @@ const validateKeyValuePairs = (value: string): string | null => {
 };
 
 const KeyValueTextField: React.FC<KeyValueTextFieldProps> = ({
-  repoName,
+  repoId,
   label,
   name,
   value,
@@ -43,8 +43,8 @@ const KeyValueTextField: React.FC<KeyValueTextFieldProps> = ({
 
   const removeError = () => {
     const err = { ...formErrors };
-    if (err[repoName]) {
-      delete err[repoName][fieldName as keyof PullRequestPreview];
+    if (err[repoId]) {
+      delete err[repoId][fieldName as keyof PullRequestPreview];
     }
     setFormErrors(err);
   };
@@ -54,8 +54,8 @@ const KeyValueTextField: React.FC<KeyValueTextFieldProps> = ({
   ): PullRequestPreviewData => {
     return {
       ...formErrors,
-      [repoName]: {
-        ...formErrors[repoName],
+      [repoId]: {
+        ...formErrors[repoId],
         [fieldName]: validationError,
       },
     };

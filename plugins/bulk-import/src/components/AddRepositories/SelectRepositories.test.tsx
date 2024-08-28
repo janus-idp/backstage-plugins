@@ -44,13 +44,6 @@ describe('Select Repositories', () => {
   });
 
   it('should allow users to edit repositories if repositories are selected', () => {
-    const mockAsyncData = {
-      loading: false,
-      value: {
-        totalCount: 5,
-      },
-    };
-    (useAsync as jest.Mock).mockReturnValue(mockAsyncData);
     const { getByText, getByTestId } = render(
       <BrowserRouter>
         <SelectRepositories

@@ -1,9 +1,12 @@
 import React from 'react';
 
 import { Header, Page, TabbedLayout } from '@backstage/core-components';
+import { RequirePermission } from '@backstage/plugin-permission-react';
 
 import FormControl from '@mui/material/FormControl';
 import { Formik } from 'formik';
+
+import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
 
 import {
   AddRepositoriesFormValues,
@@ -22,23 +25,28 @@ export const BulkImportPage = () => {
   };
 
   return (
-    <Page themeId="tool">
-      <Header title="Bulk import" />
-      <DeleteDialogContextProvider>
-        <TabbedLayout>
-          <TabbedLayout.Route path="/" title="Repositories">
-            <Formik
-              initialValues={initialValues}
-              enableReinitialize
-              onSubmit={async (_values: AddRepositoriesFormValues) => {}}
-            >
-              <FormControl fullWidth>
-                <RepositoriesList />
-              </FormControl>
-            </Formik>
-          </TabbedLayout.Route>
-        </TabbedLayout>
-      </DeleteDialogContextProvider>
-    </Page>
+    <RequirePermission
+      permission={bulkImportPermission}
+      resourceRef={bulkImportPermission.resourceType}
+    >
+      <Page themeId="tool">
+        <Header title="Bulk import" />
+        <DeleteDialogContextProvider>
+          <TabbedLayout>
+            <TabbedLayout.Route path="/" title="Repositories">
+              <Formik
+                initialValues={initialValues}
+                enableReinitialize
+                onSubmit={async (_values: AddRepositoriesFormValues) => {}}
+              >
+                <FormControl fullWidth>
+                  <RepositoriesList />
+                </FormControl>
+              </Formik>
+            </TabbedLayout.Route>
+          </TabbedLayout>
+        </DeleteDialogContextProvider>
+      </Page>
+    </RequirePermission>
   );
 };

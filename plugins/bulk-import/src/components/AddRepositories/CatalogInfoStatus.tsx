@@ -4,11 +4,14 @@ import { StatusRunning } from '@backstage/core-components';
 
 import { useFormikContext } from 'formik';
 
-import { AddRepositoriesFormValues, AddRepositoryData } from '../../types';
+import {
+  AddRepositoriesFormValues,
+  AddRepositoryData,
+  RepositoryStatus,
+} from '../../types';
 import {
   areAllRowsSelected,
   getImportStatus,
-  shouldExcludeRepositories,
 } from '../../utils/repository-utils';
 import { PreviewFile } from '../PreviewFile/PreviewFile';
 
@@ -31,7 +34,7 @@ export const CatalogInfoStatus = ({
     useFormikContext<AddRepositoriesFormValues>();
 
   React.useEffect(() => {
-    if (shouldExcludeRepositories(importStatus || '')) {
+    if (importStatus === RepositoryStatus.ADDED) {
       setFieldValue(`excludedRepositories.${data.id}`, {
         repoId: data.id,
         orgName: data.orgName,
@@ -71,16 +74,13 @@ export const CatalogInfoStatus = ({
   }
 
   if (
-    values?.repositories?.[data.id]?.catalogInfoYaml?.status ||
-    importStatus
+    (!isDrawer && importStatus) ||
+    (isDrawer &&
+      importStatus &&
+      importStatus !== RepositoryStatus.WAIT_PR_APPROVAL)
   ) {
     return (
-      <span style={{ color: '#6A6E73' }}>
-        {getImportStatus(
-          (values?.repositories?.[data.id]?.catalogInfoYaml?.status ||
-            importStatus) as string,
-        )}
-      </span>
+      <span style={{ color: '#6A6E73' }}>{getImportStatus(importStatus)}</span>
     );
   }
 

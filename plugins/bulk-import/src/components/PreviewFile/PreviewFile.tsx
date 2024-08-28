@@ -9,6 +9,7 @@ import FailIcon from '@mui/icons-material/ErrorOutline';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -19,7 +20,6 @@ import {
   AddRepositoriesFormValues,
   AddRepositoryData,
   ErrorType,
-  PullRequestPreview,
   PullRequestPreviewData,
   RepositorySelection,
   RepositoryStatus,
@@ -83,46 +83,47 @@ export const PreviewFileSidebar = ({
   formErrors,
   setFormErrors,
   handleSave,
+  isSubmitting,
 }: {
   open: boolean;
   data: AddRepositoryData;
   repositoryType: RepositoryType;
   onClose: () => void;
-  formErrors: any;
-  setFormErrors: React.Dispatch<React.SetStateAction<any>>;
+  formErrors: PullRequestPreviewData;
+  isSubmitting?: boolean;
+  setFormErrors: (formErr: PullRequestPreviewData) => void;
   handleSave: (pullRequest: PullRequestPreviewData, _event: any) => void;
 }) => {
   const classes = useDrawerStyles();
   const [pullRequest, setPullRequest] = React.useState<PullRequestPreviewData>(
     {},
   );
-  const { values } = useFormikContext<AddRepositoriesFormValues>();
+  const [isInitialized, setIsInitialized] = React.useState(false);
+
   const contentClasses = useDrawerContentStyles();
   const initializePullRequest = React.useCallback(() => {
     const newPullRequestData: PullRequestPreviewData = {};
 
     if (Object.keys(data?.selectedRepositories || [])?.length > 0) {
       Object.values(data?.selectedRepositories || []).forEach(repo => {
-        if (values.repositories?.[repo.id]?.catalogInfoYaml?.prTemplate) {
-          newPullRequestData[repo.id] = values.repositories[repo.id]
-            .catalogInfoYaml?.prTemplate as PullRequestPreview;
+        if (repo.catalogInfoYaml?.prTemplate) {
+          newPullRequestData[repo.id] = repo.catalogInfoYaml.prTemplate;
         }
       });
-    } else if (
-      data?.id &&
-      values.repositories?.[data.id]?.catalogInfoYaml?.prTemplate
-    ) {
-      newPullRequestData[data.id] = values.repositories[data.id].catalogInfoYaml
-        ?.prTemplate as PullRequestPreview;
+    } else if (data.catalogInfoYaml?.prTemplate) {
+      newPullRequestData[data.id] = data.catalogInfoYaml?.prTemplate;
     }
 
     setPullRequest(newPullRequestData);
-  }, [data, values]);
+    setIsInitialized(true);
+  }, [data]);
 
   React.useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    initializePullRequest();
-  }, [data, initializePullRequest]);
+    if (!isInitialized) {
+      initializePullRequest();
+    }
+  }, [isInitialized, initializePullRequest]);
 
   const handleCancel = (_event: any) => {
     initializePullRequest();
@@ -134,7 +135,7 @@ export const PreviewFileSidebar = ({
       anchor="right"
       open={open}
       onClose={onClose}
-      data-testid="preview-file-sidebar"
+      data-testid="preview-pullrequest-sidebar"
       classes={{
         paper: classes.paper,
       }}
@@ -180,10 +181,11 @@ export const PreviewFileSidebar = ({
         <Box className={contentClasses.body}>
           {repositoryType === RepositorySelection.Repository && (
             <PreviewPullRequest
-              repoName={data.id ?? ''}
+              repoId={data.id}
+              repoUrl={data.repoUrl || ''}
               pullRequest={pullRequest}
               setPullRequest={setPullRequest}
-              formErrors={formErrors as PullRequestPreviewData}
+              formErrors={formErrors}
               setFormErrors={setFormErrors}
             />
           )}
@@ -193,7 +195,7 @@ export const PreviewFileSidebar = ({
                 Object.values(data?.selectedRepositories || []) || []
               }
               pullRequest={pullRequest}
-              formErrors={formErrors as PullRequestPreviewData}
+              formErrors={formErrors}
               setFormErrors={setFormErrors}
               setPullRequest={setPullRequest}
             />
@@ -206,11 +208,15 @@ export const PreviewFileSidebar = ({
           onClick={e => handleSave(pullRequest, e)}
           className={contentClasses.createButton}
           disabled={
-            !!formErrors &&
-            Object.values(formErrors).length > 0 &&
-            Object.values(formErrors).every(
-              fe => !!fe && Object.values(fe).length > 0,
-            )
+            isSubmitting ||
+            (!!formErrors &&
+              Object.values(formErrors).length > 0 &&
+              Object.values(formErrors).every(
+                fe => !!fe && Object.values(fe).length > 0,
+              ))
+          }
+          startIcon={
+            isSubmitting && <CircularProgress size="20px" color="inherit" />
           }
         >
           Save
@@ -307,7 +313,7 @@ export const PreviewFile = ({
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         data={data}
-        formErrors={formErrors}
+        formErrors={formErrors as PullRequestPreviewData}
         setFormErrors={setFormErrors}
         repositoryType={repositoryType}
         handleSave={handleSave}

@@ -75,7 +75,7 @@ export const useAddedRepositories = (
     () => {
       retry();
     },
-    loading ? null : pollInterval || 20000,
+    loading ? null : pollInterval || 60000,
   );
 
   return {

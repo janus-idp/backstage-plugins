@@ -1,6 +1,11 @@
+import * as React from 'react';
+
+import { StatusOK, StatusPending } from '@backstage/core-components';
+
 import { get } from 'lodash';
 import * as yaml from 'yaml';
 
+import GitAltIcon from '../components/GitAltIcon';
 import {
   AddedRepositories,
   AddRepositoryData,
@@ -189,15 +194,37 @@ export const getNewOrgsData = (
   return newOrgsData || [];
 };
 
-export const getImportStatus = (status: string): string => {
+export const getImportStatus = (status: string, showIcon?: boolean) => {
   if (!status) {
     return '';
   }
   switch (status) {
     case 'WAIT_PR_APPROVAL':
-      return 'Waiting for PR Approval';
+      return showIcon ? (
+        <span style={{ display: 'flex' }}>
+          <StatusPending />
+          <GitAltIcon
+            style={{
+              height: '1.4em',
+              width: '2em',
+              marginBottom: 'auto',
+              marginRight: '4px',
+            }}
+          />
+          Waiting for Approval
+        </span>
+      ) : (
+        'Waiting for Approval'
+      );
     case 'ADDED':
-      return 'Finished and Ingested';
+      return showIcon ? (
+        <span style={{ display: 'flex', alignItems: 'baseline' }}>
+          <StatusOK />
+          Added
+        </span>
+      ) : (
+        'Added'
+      );
     default:
       return '';
   }
@@ -246,10 +273,6 @@ export const evaluateRowForOrg = (
     return orgRowData;
   });
 };
-
-export const shouldExcludeRepositories = (status: string) =>
-  status === RepositoryStatus.ADDED ||
-  status === RepositoryStatus.WAIT_PR_APPROVAL;
 
 export const areAllRowsSelected = (
   repositoryType: RepositorySelection,
@@ -424,4 +447,33 @@ export const getCustomisedErrorMessage = (
     }
   });
   return message;
+};
+
+export const calculateLastUpdated = (dateString: string) => {
+  if (!dateString) {
+    return '';
+  }
+
+  const givenDate = new Date(dateString);
+  const currentDate = new Date();
+
+  // Calculate the difference in milliseconds
+  const diffInMilliseconds: number =
+    currentDate.getTime() - givenDate.getTime();
+
+  const diffInSeconds = Math.floor(diffInMilliseconds / 1000);
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+
+  if (diffInDays > 0) {
+    return `${diffInDays} ${diffInDays > 1 ? 'days' : 'day'} ago`;
+  }
+  if (diffInHours > 0) {
+    return `${diffInHours} ${diffInHours > 1 ? 'hours' : 'hour'} ago`;
+  }
+  if (diffInMinutes > 0) {
+    return `${diffInMinutes} ${diffInMinutes > 1 ? 'minutes' : 'minute'} ago`;
+  }
+  return `${diffInSeconds} ${diffInSeconds > 1 ? 'seconds' : 'second'} ago`;
 };

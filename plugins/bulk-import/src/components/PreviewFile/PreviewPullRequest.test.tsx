@@ -54,7 +54,7 @@ describe('Preview Pull Request', () => {
       errors: {},
       values: {
         repositories: {
-          'org/dessert/Cupcake': mockGetRepositories.repositories[0],
+          'org/dessert/cupcake': mockGetRepositories.repositories[0],
         },
         approvalTool: ApprovalTool.Git,
       },
@@ -77,10 +77,11 @@ describe('Preview Pull Request', () => {
         ]}
       >
         <PreviewPullRequest
-          repoName="org/dessert/Cupcake"
+          repoId="org/dessert/cupcake"
+          repoUrl="https://github.com/org/dessert/cupcake"
           pullRequest={{
-            'org/dessert/Cupcake': getPRTemplate(
-              'org/dessert/Cupcake',
+            'org/dessert/cupcake': getPRTemplate(
+              'org/dessert/cupcake',
               'org/dessert',
               'user:default/guest',
             ),
@@ -104,7 +105,7 @@ describe('Preview Pull Request', () => {
       errors: {},
       values: {
         repositories: {
-          'org/dessert/Cupcake': mockGetRepositories.repositories[0],
+          'org/dessert/cupcake': mockGetRepositories.repositories[0],
         },
         approvalTool: ApprovalTool.ServiceNow,
       },
@@ -127,10 +128,11 @@ describe('Preview Pull Request', () => {
         ]}
       >
         <PreviewPullRequest
-          repoName="Cupcake"
+          repoId="org/dessert/cupcake"
+          repoUrl="https://github.com/org/dessert/cupcake"
           pullRequest={{
-            Cupcake: getPRTemplate(
-              'org/dessert/Cupcake',
+            cupcake: getPRTemplate(
+              'org/dessert/cupcake',
               'org/dessert',
               'user:default/guest',
             ),
@@ -144,7 +146,7 @@ describe('Preview Pull Request', () => {
     expect(getByText(/ServiceNow ticket details/i)).toBeInTheDocument();
     expect(getByText(/Preview ServiceNow ticket/i)).toBeInTheDocument();
     expect(getByText(/Preview entities/i)).toBeInTheDocument();
-    expect(getByPlaceholderText(/Component Name/)).toHaveValue('Cupcake');
+    expect(getByPlaceholderText(/Component Name/)).toHaveValue('cupcake');
   });
 
   it('should show field error if PR title/component name field is empty', async () => {
@@ -152,7 +154,7 @@ describe('Preview Pull Request', () => {
       errors: {},
       values: {
         repositories: {
-          'org/dessert/Cupcake': mockGetRepositories.repositories[0],
+          'org/dessert/cupcake': mockGetRepositories.repositories[0],
         },
         approvalTool: ApprovalTool.Git,
       },
@@ -177,10 +179,11 @@ describe('Preview Pull Request', () => {
         ]}
       >
         <PreviewPullRequest
-          repoName="org/dessert/Cupcake"
+          repoId="org/dessert/cupcake"
+          repoUrl="https://github.com/org/dessert/cupcake"
           pullRequest={{
-            'org/dessert/Cupcake': getPRTemplate(
-              'org/dessert/Cupcake',
+            'org/dessert/cupcake': getPRTemplate(
+              'org/dessert/cupcake',
               'org/dessert',
               'user:default/guest',
             ),
@@ -196,7 +199,7 @@ describe('Preview Pull Request', () => {
     );
     fireEvent.change(prTitle, { target: { value: '' } });
     expect(setFormErrors).toHaveBeenCalledWith({
-      'org/dessert/Cupcake': {
+      'org/dessert/cupcake': {
         prTitle: 'Pull request title is missing',
       },
     });
@@ -204,7 +207,7 @@ describe('Preview Pull Request', () => {
     const componentName = getByPlaceholderText(/Component Name/);
     fireEvent.change(componentName, { target: { value: '' } });
     expect(setFormErrors).toHaveBeenCalledWith({
-      'org/dessert/Cupcake': {
+      'org/dessert/cupcake': {
         componentName: 'Component name is missing',
       },
     });
@@ -252,7 +255,8 @@ describe('Preview Pull Request', () => {
         ]}
       >
         <PreviewPullRequest
-          repoName="org/dessert/cupcake"
+          repoId="org/dessert/cupcake"
+          repoUrl="https://github.com/org/dessert/cupcake"
           pullRequest={{
             'org/dessert/cupcake': getPRTemplate(
               'org/dessert/cupcake',
@@ -316,7 +320,8 @@ describe('Preview Pull Request', () => {
         ]}
       >
         <PreviewPullRequest
-          repoName="org/dessert/cupcake"
+          repoId="org/dessert/cupcake"
+          repoUrl="https://github.com/org/dessert/cupcake"
           pullRequest={{
             'org/dessert/cupcake': getPRTemplate(
               'org/dessert/cupcake',

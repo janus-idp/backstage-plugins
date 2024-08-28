@@ -24,6 +24,9 @@ export type ImportJobStatus = {
     pullRequest: {
       number: number;
       url: string;
+      title: string;
+      body: string;
+      catalogInfoContent: string;
     };
   };
   status: string;
