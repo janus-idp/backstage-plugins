@@ -7,6 +7,10 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
+import {
+  LicensedUsersAPIClient,
+  licensedUsersApiRef,
+} from './api/LicensedUsersClient';
 import { rbacApiRef, RBACBackendClient } from './api/RBACBackendClient';
 import { createRoleRouteRef, roleRouteRef, rootRouteRef } from './routes';
 
@@ -26,6 +30,15 @@ export const rbacPlugin = createPlugin({
       },
       factory: ({ configApi, identityApi }) =>
         new RBACBackendClient({ configApi, identityApi }),
+    }),
+    createApiFactory({
+      api: licensedUsersApiRef,
+      deps: {
+        configApi: configApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ configApi, identityApi }) =>
+        new LicensedUsersAPIClient({ configApi, identityApi }),
     }),
   ],
 });
