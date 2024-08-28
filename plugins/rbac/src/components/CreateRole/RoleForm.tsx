@@ -69,12 +69,18 @@ export const RoleForm = ({
   const navigate = useNavigate();
   const rbacApi = useApi(rbacApiRef);
 
-  const navigateTo = (action?: string) => {
-    const stateProp = action
-      ? { state: { toastMessage: `Role ${action} successfully` } }
-      : { state: { toastMessage: '' } };
-    if (step && roleName) {
-      const { kind, namespace, name } = parseEntityRef(roleName);
+  const navigateTo = (rName?: string, action?: string) => {
+    const currentRoleName = rName || roleName;
+    const stateProp =
+      currentRoleName && action
+        ? {
+            state: {
+              toastMessage: `Role ${currentRoleName} ${action} successfully`,
+            },
+          }
+        : undefined;
+    if (step && currentRoleName) {
+      const { kind, namespace, name } = parseEntityRef(currentRoleName);
       navigate(`../roles/${kind}/${namespace}/${name}`, stateProp);
     } else {
       navigate('..', stateProp);
@@ -88,6 +94,7 @@ export const RoleForm = ({
   ) => {
     try {
       const newData = getRoleData(values);
+      const newName = newData.name;
       const newPermissionsData = getPermissionPoliciesData(values);
       const newConditions = getNewConditionalPolicies(values);
       const deleteConditions = getRemovedConditionalPoliciesIds(
@@ -125,7 +132,7 @@ export const RoleForm = ({
         await modifyConditions(updateConditions, rbacApi);
         await createConditions(newConditions, rbacApi);
 
-        navigateTo(`${name} updated`);
+        navigateTo(newName, 'updated');
       }
     } catch (e) {
       formikHelpers.setStatus({ submitError: e });
@@ -161,7 +168,7 @@ export const RoleForm = ({
         'Role created successfully but unable to add conditions to the role.',
       );
 
-      navigateTo(`${newData.name} created`);
+      navigateTo(newData.name, 'created');
     } catch (e) {
       formikHelpers.setStatus({ submitError: e });
     }
