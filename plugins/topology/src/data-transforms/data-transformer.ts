@@ -4,7 +4,7 @@ import { Model, NodeModel, NodeShape } from '@patternfly/react-topology';
 import { TYPE_APPLICATION_GROUP, TYPE_VM, TYPE_WORKLOAD } from '../const';
 import { CronJobModel } from '../models';
 import { K8sResponseData, K8sWorkloadResource } from '../types/types';
-import { VM_TYPE } from '../types/vms';
+import { VM_TYPE } from '../types/vm';
 import { getPipelinesDataForResource } from '../utils/pipeline-utils';
 import { getPodsDataForResource } from '../utils/pod-resource-utils';
 import {

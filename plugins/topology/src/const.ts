@@ -36,3 +36,8 @@ export const TOPOLOGY_FILTERS = [
     disabled: false,
   },
 ];
+
+export const LABEL_USED_TEMPLATE_NAME = 'vm.kubevirt.io/template';
+export const TEMPLATE_OS_LABEL = 'os.template.kubevirt.io';
+export const TEMPLATE_OS_NAME_ANNOTATION = 'name.os.template.kubevirt.io';
+export const TEMPLATE_WORKLOAD_LABEL = 'workload.template.kubevirt.io';

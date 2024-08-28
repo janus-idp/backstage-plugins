@@ -112,6 +112,7 @@ The following permission must be granted to the [`ClusterRole`](https://backstag
 
 ##### To view the Virtual Machines
 
+- OpenShift Virtualization Operator is [installed and configured](https://docs.openshift.com/container-platform/4.8/virt/install/installing-virt-web.html#virt-installing-virt-operator_installing-virt-web) on a Kubernetes cluster.
 - Ensure that read access is granted to the VirtualMachines resource in the [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control). You can use the following code to do so:
 
   ```yaml
@@ -140,6 +141,9 @@ The following permission must be granted to the [`ClusterRole`](https://backstag
         - group: 'kubevirt.io'
           apiVersion: 'v1'
           plural: 'virtualmachines'
+        - group: 'kubevirt.io'
+          apiVersion: 'v1'
+          plural: 'virtualmachineinstances'
   ```
 
 ##### To enable the Source Code Editor
