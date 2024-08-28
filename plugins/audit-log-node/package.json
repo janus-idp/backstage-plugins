@@ -30,8 +30,8 @@
     "tsc": "tsc"
   },
   "devDependencies": {
-    "@backstage/backend-common": "0.24.0",
-    "@backstage/backend-test-utils": "0.5.0",
+    "@backstage/backend-common": "0.24.1",
+    "@backstage/backend-test-utils": "0.5.1",
     "@backstage/cli": "0.27.0",
     "jest-express": "1.12.0"
   },
@@ -52,7 +52,7 @@
   "homepage": "https://red.ht/rhdh",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "dependencies": {
-    "@backstage/backend-plugin-api": "^0.8.0",
+    "@backstage/backend-plugin-api": "^0.8.1",
     "@backstage/errors": "^1.2.4",
     "@backstage/types": "^1.1.1",
     "express": "^4.19.2",

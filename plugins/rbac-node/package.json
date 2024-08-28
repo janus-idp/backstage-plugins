@@ -37,7 +37,7 @@
     "dist"
   ],
   "dependencies": {
-    "@backstage/backend-plugin-api": "^0.8.0"
+    "@backstage/backend-plugin-api": "^0.8.1"
   },
   "repository": {
     "type": "git",
