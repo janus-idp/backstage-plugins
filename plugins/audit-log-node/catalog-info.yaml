@@ -10,7 +10,7 @@ metadata:
     backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/audit-log-node/catalog-info.yaml
     backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/audit-log-node/catalog-info.yaml
     github.com/project-slug: janus-idp/backstage-plugins
-    #github.com/team-slug: janus-idp/maintainers
+    github.com/team-slug: janus-idp/maintainers-plugins
     sonarqube.org/project-key: janus-idp_backstage-plugins
   links:
     - url: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/audit-log-node
@@ -36,7 +36,7 @@ metadata:
     backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/audit-log-node/catalog-info.yaml
     backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/audit-log-node/catalog-info.yaml
     github.com/project-slug: janus-idp/backstage-plugins
-    #github.com/team-slug: janus-idp/maintainers
+    github.com/team-slug: janus-idp/maintainers-plugins
     sonarqube.org/project-key: janus-idp_backstage-plugins
   links:
     - url: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/audit-log-node
