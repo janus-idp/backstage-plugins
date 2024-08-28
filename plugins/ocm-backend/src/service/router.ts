@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import {
-  createLegacyAuthAdapters,
-  errorHandler,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import {
   coreServices,
   createBackendPlugin,
+  DiscoveryService,
   HttpAuthService,
   LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import type { Config } from '@backstage/config';
 import { NotAllowedError } from '@backstage/errors';
 import {
   AuthorizeResult,
@@ -34,8 +31,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
-import express from 'express';
-import Router from 'express-promise-router';
+import express, { Router } from 'express';
 import { Request } from 'express-serve-static-core';
 
 import {
@@ -68,9 +64,9 @@ import { ManagedClusterInfo } from '../types';
 export interface RouterOptions {
   logger: LoggerService;
   config: Config;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   permissions: PermissionsService;
-  httpAuth?: HttpAuthService;
+  httpAuth: HttpAuthService;
 }
 
 const buildRouter = (
@@ -173,7 +169,7 @@ const buildRouter = (
             status: parseClusterStatus(mc),
             platform: getClaim(mc, 'platform.open-cluster-management.io'),
             openshiftVersion:
-              mc.metadata!.labels?.openshiftVersion ||
+              mc.metadata!.labels?.openshiftVersion ??
               getClaim(mc, 'version.openshift.io'),
             nodes: parseNodeStatus(mci),
             ...parseUpdateInfo(mci),
@@ -185,18 +181,16 @@ const buildRouter = (
     return response.send(allClusters.flat());
   });
 
-  router.use(errorHandler({ logClientErrors: true }));
+  const middleware = MiddlewareFactory.create({ logger, config });
+
+  router.use(middleware.error());
   return router;
 };
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
-  const { config } = options;
-  const { permissions } = options;
-
-  const { httpAuth } = createLegacyAuthAdapters(options);
+  const { logger, config, permissions, httpAuth } = options;
 
   return buildRouter(config, logger, httpAuth, permissions);
 }

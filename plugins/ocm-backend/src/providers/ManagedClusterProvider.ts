@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+import type { LoggerService, SchedulerService, SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   ResourceEntity,
 } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
-import {
+import type { Config } from '@backstage/config';
+import type {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
@@ -62,7 +61,7 @@ export class ManagedClusterProvider implements EntityProvider {
     id: string,
     options: { logger: LoggerService },
     owner: string,
-    taskRunner: TaskRunner,
+    taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.client = client;
     this.hubResourceName = hubResourceName;
@@ -76,8 +75,8 @@ export class ManagedClusterProvider implements EntityProvider {
     config: Config,
     options: {
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ) {
     return readOcmConfigs(config).map(provider => {
@@ -112,7 +111,7 @@ export class ManagedClusterProvider implements EntityProvider {
     await this.scheduleFn();
   }
 
-  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
+  private createScheduleFn(taskRunner: SchedulerServiceTaskRunner): () => Promise<void> {
     return async () => {
       return taskRunner.run({
         id: `run_ocm_refresh_${this.getProviderName()}`,
