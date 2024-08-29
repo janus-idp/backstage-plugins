@@ -295,12 +295,12 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
     if (!conditionalPoliciesFile) {
       // clean up conditional policies corresponding to roles from csv file
-      logger.info('csv policies file feature was disabled');
+      logger.info('conditional policies file feature was disabled');
       await conditionalFile.cleanUpConditionalPolicies();
     }
     if (!policiesFile) {
       // remove roles and policies from csv file
-      logger.info('conditional policies file feature was disabled');
+      logger.info('csv policies file feature was disabled');
       await csvFile.cleanUpRolesAndPolicies();
     }
 
