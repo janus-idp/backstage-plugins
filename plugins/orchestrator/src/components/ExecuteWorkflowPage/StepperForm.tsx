@@ -6,6 +6,7 @@ import { JsonObject } from '@backstage/types';
 import {
   Box,
   Button,
+  makeStyles,
   Paper,
   Step,
   StepContent,
@@ -23,6 +24,24 @@ import { WorkflowInputSchemaStep } from '@janus-idp/backstage-plugin-orchestrato
 import SubmitButton from '../SubmitButton';
 
 const Form = withTheme(MuiTheme);
+
+const useStyles = makeStyles(_theme => ({
+  // Hotfix: this should be fixed in the theme
+  step: {
+    '& form': {
+      '& .field-array > div > div': {
+        outline: 'inherit !important',
+        padding: 'inherit !important',
+        backgroundColor: 'inherit !important',
+
+        '& div > div > div > div': {
+          // unfortunately there are no better CSS selectors
+          backgroundColor: 'inherit !important',
+        },
+      },
+    },
+  },
+}));
 
 const getCombinedData = (
   steps: WorkflowInputSchemaStep[],
@@ -133,6 +152,7 @@ const StepperForm = ({
   isExecuting: boolean;
   onReset: () => void;
 }) => {
+  const styles = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
   const handleBack = () => setActiveStep(activeStep - 1);
 
@@ -141,7 +161,7 @@ const StepperForm = ({
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps?.map((step, index) => (
-          <Step key={step.key}>
+          <Step key={step.key} className={styles.step}>
             <StepLabel
               aria-label={`Step ${index + 1} ${step.title}`}
               aria-disabled="false"
