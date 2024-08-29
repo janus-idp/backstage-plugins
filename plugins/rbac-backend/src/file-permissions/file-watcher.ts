@@ -9,7 +9,6 @@ import fs from 'fs';
  */
 export abstract class AbstractFileWatcher<T> {
   constructor(
-    protected readonly filePath: string | undefined,
     protected readonly allowReload: boolean,
     protected readonly logger: LoggerService,
   ) {}
@@ -17,22 +16,19 @@ export abstract class AbstractFileWatcher<T> {
   /**
    * Initializes the file watcher and starts watching the specified file.
    */
-  abstract initialize(): Promise<void>;
+  abstract initialize(filePath: string): Promise<void>;
 
   /**
    * watchFile initializes the file watcher and sets it to begin watching for changes.
    */
-  watchFile(): void {
-    if (!this.filePath) {
-      throw new Error('File path is not specified');
-    }
-    const watcher = chokidar.watch(this.filePath);
+  watchFile(filePath: string): void {
+    const watcher = chokidar.watch(filePath);
     watcher.on('change', async path => {
       this.logger.info(`file ${path} has changed`);
-      await this.onChange();
+      await this.onChange(filePath);
     });
     watcher.on('error', error => {
-      this.logger.error(`error watching file ${this.filePath}: ${error}`);
+      this.logger.error(`error watching file ${filePath}: ${error}`);
     });
   }
 
@@ -40,22 +36,19 @@ export abstract class AbstractFileWatcher<T> {
    * Handles the change event when the watched file is modified.
    * @returns A promise that resolves when the change event is handled.
    */
-  abstract onChange(): Promise<void>;
+  abstract onChange(filePath: string): Promise<void>;
 
   /**
    * getCurrentContents reads the current contents of the CSV file.
    * @returns The current contents of the file.
    */
-  getCurrentContents(): string {
-    if (!this.filePath) {
-      throw new Error('File path is not specified');
-    }
-    return fs.readFileSync(this.filePath, 'utf-8');
+  getCurrentContents(filePath: string): string {
+    return fs.readFileSync(filePath, 'utf-8');
   }
 
   /**
    * parse is used to parse the current contents of the file.
    * @returns The file parsed into a type <T>.
    */
-  abstract parse(): T;
+  abstract parse(filePath: string): T;
 }

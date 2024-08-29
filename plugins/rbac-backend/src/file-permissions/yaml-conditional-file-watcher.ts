@@ -35,7 +35,6 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
   private conditionsDiff: ConditionalPoliciesDiff;
 
   constructor(
-    filePath: string | undefined,
     allowReload: boolean,
     logger: LoggerService,
     private readonly conditionalStorage: ConditionalStorage,
@@ -45,7 +44,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     private readonly roleMetadataStorage: RoleMetadataStorage,
     private readonly roleEventEmitter: RoleEventEmitter<RoleEvents>,
   ) {
-    super(filePath, allowReload, logger);
+    super(allowReload, logger);
 
     this.conditionsDiff = {
       addedConditions: [],
@@ -53,13 +52,10 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     };
   }
 
-  async initialize(): Promise<void> {
-    if (!this.filePath) {
-      return;
-    }
-    const fileExists = fs.existsSync(this.filePath);
+  async initialize(filePath: string): Promise<void> {
+    const fileExists = fs.existsSync(filePath);
     if (!fileExists) {
-      const err = new Error(`File '${this.filePath}' was not found`);
+      const err = new Error(`File '${filePath}' was not found`);
       this.handleError(
         err.message,
         err,
@@ -68,17 +64,17 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       return;
     }
 
-    this.roleEventEmitter.on('roleAdded', this.onChange.bind(this));
-    await this.onChange();
+    this.roleEventEmitter.on('roleAdded', this.onChange.bind(this, filePath));
+    await this.onChange(filePath);
 
     if (this.allowReload) {
-      this.watchFile();
+      this.watchFile(filePath);
     }
   }
 
-  async onChange(): Promise<void> {
+  async onChange(filePath: string): Promise<void> {
     try {
-      const newConds = this.parse().filter(c => c);
+      const newConds = this.parse(filePath).filter(c => c);
 
       const addedConds: RoleConditionalPolicyDecision<PermissionAction>[] = [];
       const removedConds: RoleConditionalPolicyDecision<PermissionAction>[] =
@@ -143,7 +139,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       await this.handleFileChanges();
     } catch (error) {
       await this.handleError(
-        `Error handling changes from conditional policies file ${this.filePath}`,
+        `Error handling changes from conditional policies file ${filePath}`,
         error,
         ConditionEvents.CHANGE_CONDITIONAL_POLICIES_FILE_ERROR,
       );
@@ -154,8 +150,8 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
    * Reads the current contents of the file and parses it.
    * @returns parsed data.
    */
-  parse(): RoleConditionalPolicyDecision<PermissionAction>[] {
-    const fileContents = this.getCurrentContents();
+  parse(filePath: string): RoleConditionalPolicyDecision<PermissionAction>[] {
+    const fileContents = this.getCurrentContents(filePath);
     const data = yaml.loadAll(
       fileContents,
     ) as RoleConditionalPolicyDecision<PermissionAction>[];
