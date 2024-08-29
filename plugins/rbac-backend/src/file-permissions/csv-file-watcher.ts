@@ -485,10 +485,14 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
     const fileRoles = roleMetadatas.map(meta => meta.roleEntityRef);
 
     if (fileRoles.length > 0) {
-      this.csvFilePolicies.removedGroupPolicies =
-        await this.enforcer.getFilteredGroupingPolicy(1, ...fileRoles);
-      this.csvFilePolicies.removedPolicies =
-        await this.enforcer.getFilteredPolicy(0, ...fileRoles);
+      for (const fileRole of fileRoles) {
+        this.csvFilePolicies.removedGroupPolicies.push(
+          ...(await this.enforcer.getFilteredGroupingPolicy(1, fileRole)),
+        );
+        this.csvFilePolicies.removedPolicies.push(
+          ...(await this.enforcer.getFilteredPolicy(0, fileRole)),
+        );
+      }
     }
     await this.removePermissionPolicies();
     await this.removeRoles();
