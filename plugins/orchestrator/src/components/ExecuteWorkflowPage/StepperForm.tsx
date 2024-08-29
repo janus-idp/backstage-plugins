@@ -81,7 +81,7 @@ const ReviewStep = ({
     );
   }, [steps, isComposedSchema]);
   return (
-    <Content>
+    <Content noPadding>
       <Paper square elevation={0}>
         <Typography variant="h6">Review and run</Typography>
         <StructuredMetadataTable dense metadata={displayData} />
