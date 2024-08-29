@@ -12,7 +12,7 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid, Tooltip } from '@material-ui/core';
 
 import {
   AssessedProcessInstance,
@@ -155,6 +155,11 @@ export const WorkflowInstancePage = ({
     navigate(urlToNavigate);
   }, [value, navigate, executeWorkflowLink]);
 
+  // Extracted to simplify backport
+  const retriggerTooltip =
+    'Resume the workflow from the error stage, continuing with the same instance.';
+  const isRetriggerDisabled = true;
+
   return (
     <BaseOrchestratorPage
       title={value?.instance.processId ?? value?.instance.id ?? instanceId}
@@ -194,13 +199,16 @@ export const WorkflowInstancePage = ({
             <Grid container item justifyContent="flex-end" spacing={1}>
               {isErrorState && (
                 <Grid item>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleRerun}
-                  >
-                    Retrigger
-                  </Button>
+                  <Tooltip title={retriggerTooltip}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disabled={isRetriggerDisabled}
+                      onClick={handleRerun}
+                    >
+                      Retry from error
+                    </Button>
+                  </Tooltip>
                 </Grid>
               )}
               {canAbort && (
