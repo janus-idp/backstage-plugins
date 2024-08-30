@@ -263,3 +263,7 @@ permission:
 ```
 
 The maxDepth must be greater than 0 to ensure that the graphs are built correctly. Also the graph will be built with a hierarchy of 1 + maxDepth.
+
+### Optional RBAC provider module support
+
+We also include the ability to create and load in RBAC backend plugin modules that can be used to make connections to third part access management tools. For more information, consult the [RBAC Providers documentation](./docs/providers.md).

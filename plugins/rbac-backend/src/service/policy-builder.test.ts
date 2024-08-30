@@ -7,7 +7,10 @@ import { Adapter, Enforcer } from 'casbin';
 import { Router } from 'express';
 import TypeORMAdapter from 'typeorm-adapter';
 
-import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
+import {
+  PluginIdProvider,
+  RBACProvider,
+} from '@janus-idp/backstage-plugin-rbac-node';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { RBACPermissionPolicy } from './permission-policy';
@@ -90,6 +93,12 @@ jest.mock('./permission-policy', () => {
 
 const userInfoServiceMock: UserInfoService = mockServices.userInfo();
 
+const providerMock: RBACProvider = {
+  getProviderName: jest.fn().mockImplementation(),
+  connect: jest.fn().mockImplementation(),
+  refresh: jest.fn().mockImplementation(),
+};
+
 describe('PolicyBuilder', () => {
   const mockedAuthorize = jest.fn().mockImplementation(async () => [
     {
@@ -164,6 +173,43 @@ describe('PolicyBuilder', () => {
     expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
     expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
     expect(RBACPermissionPolicy.build).toHaveBeenCalled();
+
+    expect(PoliciesServer).toHaveBeenCalled();
+    expect(mockPoliciesServer.serve).toHaveBeenCalled();
+    expect(router).toBeTruthy();
+    expect(router).toBe(mockRouter);
+    expect(logger.info).toHaveBeenCalledWith('RBAC backend plugin was enabled');
+  });
+
+  it('should build policy server with rbac providers', async () => {
+    const router = await PolicyBuilder.build(
+      {
+        config: new ConfigReader({
+          backend: {
+            database: {
+              client: 'better-sqlite3',
+              connection: ':memory:',
+            },
+          },
+          permission: {
+            enabled: true,
+            rbac: {},
+          },
+        }),
+        logger,
+        discovery: mockDiscovery,
+        identity: mockIdentityClient,
+        permissions: mockPermissionEvaluator,
+        userInfo: userInfoServiceMock,
+      },
+      backendPluginIDsProviderMock,
+      [providerMock],
+    );
+    expect(CasbinDBAdapterFactory).toHaveBeenCalled();
+    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
+    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
+    expect(RBACPermissionPolicy.build).toHaveBeenCalled();
+    expect(providerMock.connect).toHaveBeenCalled();
 
     expect(PoliciesServer).toHaveBeenCalled();
     expect(mockPoliciesServer.serve).toHaveBeenCalled();

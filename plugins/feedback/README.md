@@ -1,3 +1,9 @@
+# ❗DEPRECATED❗
+
+This package has been deprecated.
+
+Please use the **[@backstage-community/backstage-plugin-feedback](https://github.com/backstage/community-plugins/tree/main/workspaces/feedback/plugins/feedback)** package instead.
+
 # Feedback Plugin
 
 ## Introduction

@@ -15,14 +15,14 @@ const selectedMembers: SelectedMember[] = [
     label: 'User 1',
     etag: 'etag-1',
     type: 'User',
-    ref: 'role/:user/:testns1/:testuser1',
+    ref: 'user:default/user-1',
   },
   {
     id: 'test-2',
     label: 'Group 1',
     etag: 'etag-2',
     type: 'Group',
-    ref: 'role/:group/testns1/testgroup1',
+    ref: 'group:default/test-2',
   },
 ];
 

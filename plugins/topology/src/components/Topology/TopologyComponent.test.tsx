@@ -5,6 +5,11 @@ import { render } from '@testing-library/react';
 
 import { TopologyComponent } from './TopologyComponent';
 
+jest.mock('@material-ui/core', () => ({
+  ...jest.requireActual('@material-ui/core'),
+  makeStyles: jest.fn().mockReturnValue(() => ({})),
+}));
+
 jest.mock('../../hooks/useK8sObjectsResponse', () => ({
   useK8sObjectsResponse: () => ({
     watchResourcesData: {

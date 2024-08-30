@@ -14,7 +14,51 @@
  * limitations under the License.
  */
 
-import { AuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
+import { NotAllowedError } from '@backstage/errors';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+
+import express from 'express';
+
+import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
+
+import { auditLogAuthError } from './auditLogUtils';
+
+/**
+ * This will resolve to { result: AuthorizeResult.ALLOW } if the permission framework is disabled
+ */
+export async function permissionCheck(
+  auditLogger: AuditLogger,
+  openApiOperationId: string | undefined,
+  permissions: PermissionsService,
+  httpAuth: HttpAuthService,
+  req: express.Request,
+) {
+  const decision = (
+    await permissions.authorize(
+      [
+        {
+          permission: bulkImportPermission,
+          resourceRef: bulkImportPermission.resourceType,
+        },
+      ],
+      {
+        credentials: await httpAuth.credentials(req),
+      },
+    )
+  )[0];
+
+  if (decision.result === AuthorizeResult.DENY) {
+    const err = new NotAllowedError('Unauthorized');
+    auditLogAuthError(auditLogger, openApiOperationId, req, err);
+    throw err;
+  }
+}
 
 export async function getTokenForPlugin(
   auth: AuthService,

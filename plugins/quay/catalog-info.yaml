@@ -10,7 +10,7 @@ metadata:
     backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/quay/catalog-info.yaml
     backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/quay/catalog-info.yaml
     github.com/project-slug: janus-idp/backstage-plugins
-    #github.com/team-slug: janus-idp/maintainers
+    github.com/team-slug: janus-idp/rhtap
     sonarqube.org/project-key: janus-idp_backstage-plugins
   tags:
     - quay
@@ -22,7 +22,7 @@ metadata:
 spec:
   type: backstage-plugin
   lifecycle: production
-  owner: rhdh-team
+  owner: rhtap-team
   system: rhdh
   subcomponentOf: janus-idp-backstage-plugins
 ---
@@ -38,7 +38,7 @@ metadata:
     backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/quay/catalog-info.yaml
     backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/quay/catalog-info.yaml
     github.com/project-slug: janus-idp/backstage-plugins
-    #github.com/team-slug: janus-idp/maintainers
+    github.com/team-slug: janus-idp/rhtap
     sonarqube.org/project-key: janus-idp_backstage-plugins
   tags:
     - quay
@@ -50,6 +50,6 @@ metadata:
 spec:
   type: backstage-frontend-plugin
   lifecycle: production
-  owner: rhdh-team
+  owner: rhtap-team
   system: rhdh
   subcomponentOf: janus-idp-quay

@@ -24,11 +24,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type LightspeedInputProps = {
   onSubmit: (prompt: string) => void;
+  disabled: boolean;
 };
 
-export const LightspeedInput: React.FC<LightspeedInputProps> = ({
+export const LightspeedInput = ({
   onSubmit,
-}) => {
+  disabled,
+}: LightspeedInputProps) => {
   const classes = useStyles();
 
   const [prompt, setPrompt] = React.useState('');
@@ -69,6 +71,7 @@ export const LightspeedInput: React.FC<LightspeedInputProps> = ({
         color="primary"
         className={classes.button}
         onSubmit={handleSubmit}
+        disabled={disabled}
       >
         <SendIcon />
       </Button>

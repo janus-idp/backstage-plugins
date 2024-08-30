@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-keycloak-backend-dynamic",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "A Backend backend plugin for Keycloak",
   "main": "./dist/index.cjs.js",
   "types": "src/index.ts",
@@ -53,7 +53,9 @@
     "support:production",
     "lifecycle:active",
     "backstage",
-    "plugin"
+    "plugin",
+    "works-with:rhsso:^7.6",
+    "works-with:keycloak:~18"
   ],
   "homepage": "https://red.ht/rhdh",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",

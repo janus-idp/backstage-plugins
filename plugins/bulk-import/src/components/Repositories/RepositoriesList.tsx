@@ -1,18 +1,13 @@
-import React, { useEffect } from 'react';
-import { useAsync } from 'react-use';
+import React from 'react';
 
-import { ErrorPage, Progress, Table } from '@backstage/core-components';
-import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import { ErrorPage, Table } from '@backstage/core-components';
 
 import { makeStyles } from '@material-ui/core';
-import { useFormikContext } from 'formik';
 
-import { getDataForRepositories } from '../../mocks/mockData';
-import {
-  AddRepositoriesData,
-  AddRepositoriesFormValues,
-  RepositoryStatus,
-} from '../../types';
+import { useAddedRepositories } from '../../hooks/useAddedRepositories';
+import { AddRepositoryData } from '../../types';
+import { useDeleteDialog } from '../DeleteDialogContext';
+import DeleteRepositoryDialog from './DeleteRepositoryDialog';
 import { columns } from './RepositoriesListColumns';
 import { RepositoriesListToolbar } from './RepositoriesListToolbar';
 
@@ -25,66 +20,70 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const RepositoriesList = () => {
+  const { openDialog, setOpenDialog, deleteComponent } = useDeleteDialog();
+  const [pageNumber, setPageNumber] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [isMounted, setIsMounted] = React.useState(false);
   const classes = useStyles();
-  const [addedRepositories, setAddedRepositories] = React.useState<number>(0);
-  const identityApi = useApi(identityApiRef);
+
   const {
-    loading,
-    error,
-    value: user,
-  } = useAsync(async () => {
-    const identityRef = await identityApi.getBackstageIdentity();
-    return identityRef.userEntityRef;
-  });
+    data: importJobs,
+    error: errJobs,
+    loading: loadingJobs,
+    retry,
+  } = useAddedRepositories(pageNumber + 1, rowsPerPage);
 
-  const { values, setFieldValue } =
-    useFormikContext<AddRepositoriesFormValues>();
-  const addedRepositoriesCount = Object.keys(values.repositories).length;
-
-  useEffect(() => {
-    if (user) {
-      const fetchedData = getDataForRepositories(user || '').filter(
-        (data: AddRepositoriesData) =>
-          data.catalogInfoYaml?.status === RepositoryStatus.Exists,
-      );
-      const repositories: { [key: string]: AddRepositoriesData } = {};
-      fetchedData.forEach(repo => {
-        repositories[repo.repoName || ''] = repo;
-      });
-      setFieldValue('repositories', repositories);
-    }
-  }, [user, setFieldValue]);
-
-  useEffect(() => {
-    setAddedRepositories(addedRepositoriesCount);
-  }, [addedRepositoriesCount]);
-
-  const onSearchResultsChange = (searchResults: AddRepositoriesData[]) => {
-    setAddedRepositories(searchResults.length);
+  const closeDialog = () => {
+    setOpenDialog(false);
+    retry();
   };
 
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <ErrorPage status={error.name} statusMessage={error.message} />;
+  React.useEffect(() => {
+    if (!isMounted && !loadingJobs) {
+      setIsMounted(true);
+    }
+  }, [loadingJobs, isMounted]);
+
+  if (Object.keys(errJobs || {}).length > 0) {
+    return <ErrorPage status={errJobs.name} statusMessage={errJobs.message} />;
   }
 
   return (
     <>
       <RepositoriesListToolbar />
       <Table
-        title={`Added repositories (${addedRepositories ?? Object.keys(values.repositories).length})`}
+        onPageChange={(page: number, pageSize: number) => {
+          setPageNumber(page);
+          setRowsPerPage(pageSize);
+        }}
+        onRowsPerPageChange={(pageSize: number) => {
+          setRowsPerPage(pageSize);
+        }}
+        title={
+          (loadingJobs && !isMounted) || !importJobs
+            ? 'Added repositories'
+            : `Added repositories (${importJobs.length})`
+        }
         options={{ padding: 'default', search: true, paging: true }}
-        data={Object.values(values.repositories)}
-        isLoading={false}
-        renderSummaryRow={summary => onSearchResultsChange(summary.data)}
+        data={importJobs ?? []}
+        isLoading={loadingJobs && !isMounted}
         columns={columns}
         emptyContent={
-          <div data-testid="repositories-table-empty" className={classes.empty}>
+          <div
+            data-testid="added-repositories-table-empty"
+            className={classes.empty}
+          >
             No records found
           </div>
         }
       />
+      {openDialog && (
+        <DeleteRepositoryDialog
+          open={openDialog}
+          closeDialog={closeDialog}
+          repository={deleteComponent as AddRepositoryData}
+        />
+      )}
     </>
   );
 };

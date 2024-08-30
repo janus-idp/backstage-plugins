@@ -1,3 +1,9 @@
+# ❗DEPRECATED❗
+
+This package has been deprecated.
+
+Please use the **[@backstage-community/plugin-3scale-backend](https://www.npmjs.com/package/@backstage-community/plugin-3scale-backend)** package instead.
+
 # 3scale Backstage provider
 
 The 3scale Backstage provider plugin synchronizes the 3scale content into the [Backstage](https://backstage.io/) catalog.

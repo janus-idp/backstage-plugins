@@ -1,3 +1,3 @@
 export { BulkImportPage } from './BulkImportPage';
-export { BulkImportIcon } from './BulkImportIcon';
+export { BulkImportSidebarItem } from './BulkImportSidebarItem';
 export { Router } from './Router';

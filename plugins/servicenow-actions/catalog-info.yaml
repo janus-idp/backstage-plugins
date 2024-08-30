@@ -10,7 +10,7 @@ metadata:
     backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/servicenow-actions/catalog-info.yaml
     backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/servicenow-actions/catalog-info.yaml
     github.com/project-slug: janus-idp/backstage-plugins
-    #github.com/team-slug: janus-idp/maintainers
+    github.com/team-slug: janus-idp/maintainers-plugins
     sonarqube.org/project-key: janus-idp_backstage-plugins
   tags:
     - scaffolder
@@ -39,7 +39,7 @@ metadata:
     backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/servicenow-actions/catalog-info.yaml
     backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/servicenow-actions/catalog-info.yaml
     github.com/project-slug: janus-idp/backstage-plugins
-    #github.com/team-slug: janus-idp/maintainers
+    github.com/team-slug: janus-idp/maintainers-plugins
     sonarqube.org/project-key: janus-idp_backstage-plugins
   tags:
     - scaffolder

@@ -1,5 +1,21 @@
 ### Dependencies
 
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.9.0
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.15.1
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.15.0
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.13.1
+
+### Dependencies
+
 * **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.14.0
 
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.17.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.17.2...@janus-idp/backstage-plugin-orchestrator-backend@1.17.3) (2024-08-06)

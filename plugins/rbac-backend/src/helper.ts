@@ -36,11 +36,29 @@ export function policyToString(policy: string[]): string {
   return `[${policy.join(', ')}]`;
 }
 
+export function typedPolicyToString(policy: string[], type: string): string {
+  return `${type}, ${policy.join(', ')}`;
+}
+
 export function policiesToString(policies: string[][]): string {
   const policiesString = policies
     .map(policy => policyToString(policy))
     .join(',');
   return `[${policiesString}]`;
+}
+
+export function typedPoliciesToString(
+  policies: string[][],
+  type: string,
+): string {
+  const policiesString = policies
+    .map(policy => {
+      return policy.length !== 0 ? typedPolicyToString(policy, type) : '';
+    })
+    .join('\n');
+  return `
+    ${policiesString}
+  `;
 }
 
 export function metadataStringToPolicy(policy: string): string[] {

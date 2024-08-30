@@ -42,6 +42,8 @@ import {
 } from '../types';
 import { DefaultPageNumber, DefaultPageSize } from './handlers/handlers';
 
+const GITHUB_DEFAULT_API_ENDPOINT = 'https://api.github.com';
+
 export class GithubApiService {
   private readonly logger: Logger;
   private readonly integrations: ScmIntegrations;
@@ -96,39 +98,52 @@ export class GithubApiService {
   }
 
   private async addGithubAppOrgs(
+    octokit: Octokit,
+    credentialAccountLogin: string | undefined,
     ghConfig: GithubIntegrationConfig,
     orgs: Map<string, GithubOrganization>,
-    errors: GithubFetchError[],
+    errors: Map<number, GithubFetchError>,
   ): Promise<{ totalCount?: number }> {
-    let totalCount: number | undefined;
+    let totalCount = 0;
     try {
       const resp =
         await this.githubCredentialsProvider.getAllAppInstallations(ghConfig);
-      resp
-        ?.filter(
-          installation =>
+      for (const installation of resp ?? []) {
+        if (
+          !(
             installation.account &&
-            installation.target_type?.toLowerCase() === 'organization',
-        )
-        ?.forEach(installation => {
-          const acc = installation.account!;
-          const ghOrg: GithubOrganization = {
-            id: acc.id,
-            description: acc.description ?? undefined,
-            name: acc.login,
-            url: acc.url,
-            html_url: acc.html_url,
-            repos_url: acc.repos_url,
-            events_url: acc.events_url,
-          };
-          orgs.set(ghOrg.name, ghOrg);
-        });
-      totalCount = resp?.length;
+            installation.target_type?.toLowerCase() === 'organization'
+          )
+        ) {
+          continue;
+        }
+        const acc = installation.account!;
+        if (credentialAccountLogin !== acc.login) {
+          continue;
+        }
+        const orgData = await octokit.request(
+          acc.url.replace('/users/', '/orgs/'),
+        );
+        const ghOrg: GithubOrganization = {
+          id: acc.id,
+          description: acc.description ?? undefined,
+          name: acc.login,
+          url: acc.url,
+          html_url: acc.html_url,
+          repos_url: acc.repos_url,
+          events_url: acc.events_url,
+          public_repos: orgData?.data?.public_repos,
+          total_private_repos: orgData?.data?.total_private_repos,
+          owned_private_repos: orgData?.data?.owned_private_repos,
+        };
+        orgs.set(ghOrg.name, ghOrg);
+        totalCount++;
+      }
     } catch (err: any) {
       this.logger.error(
         `Fetching organizations with access token for github app, failed with ${err}`,
       );
-      errors.push(err.message);
+      errors.set(-1, err.message);
     }
     return { totalCount };
   }
@@ -154,7 +169,8 @@ export class GithubApiService {
         sort: 'full_name',
         direction: 'asc',
       });
-      resp?.data?.forEach(org => {
+      for (const org of resp?.data ?? []) {
+        const orgData = await octokit.request(org.url);
         const ghOrg: GithubOrganization = {
           id: org.id,
           name: org.login,
@@ -166,16 +182,19 @@ export class GithubApiService {
           members_url: org.members_url,
           public_members_url: org.public_members_url,
           avatar_url: org.avatar_url,
+          public_repos: orgData?.data?.public_repos,
+          total_private_repos: orgData?.data?.total_private_repos,
+          owned_private_repos: orgData?.data?.owned_private_repos,
         };
-        orgs.set(org.url, ghOrg);
-      });
+        orgs.set(org.login, ghOrg);
+      }
 
       totalCount = await this.computeTotalCountFromGitHubToken(
         async (lastPageNumber: number) =>
           octokit.orgs
             .listForAuthenticatedUser({
               page: lastPageNumber,
-              per_page: 1,
+              per_page: 100,
             })
             .then(lastPageResp => lastPageResp.data.length),
         'orgs.listForAuthenticatedUser',
@@ -183,16 +202,12 @@ export class GithubApiService {
         resp?.headers?.link,
       );
     } catch (err) {
-      this.logger.error(
-        `Fetching repositories with token from token failed with ${err}`,
-      );
-      const credentialError = this.createCredentialError(
+      this.handleError(
+        'Fetching orgs with token from token',
         credential,
-        err as Error,
+        errors,
+        err,
       );
-      if (credentialError) {
-        errors.set(-1, credentialError);
-      }
     }
     return { totalCount };
   }
@@ -217,15 +232,14 @@ export class GithubApiService {
       });
       const repos = resp?.data?.repositories ?? resp?.data;
       repos?.forEach(repo => {
-        const githubRepo: GithubRepository = {
+        repositories.set(repo.full_name, {
           name: repo.name,
           full_name: repo.full_name,
           url: repo.url,
           html_url: repo.html_url,
           default_branch: repo.default_branch,
           updated_at: repo.updated_at,
-        };
-        repositories.set(githubRepo.full_name, githubRepo);
+        });
       });
       totalCount = resp?.data?.total_count;
     } catch (err) {
@@ -269,15 +283,14 @@ export class GithubApiService {
         direction: 'asc',
       });
       resp?.data?.forEach(repo => {
-        const githubRepo: GithubRepository = {
+        repositories.set(repo.full_name, {
           name: repo.name,
           full_name: repo.full_name,
           url: repo.url,
           html_url: repo.html_url,
           default_branch: repo.default_branch,
           updated_at: repo.updated_at,
-        };
-        repositories.set(githubRepo.full_name, githubRepo);
+        });
       });
 
       totalCount = await this.computeTotalCountFromGitHubToken(
@@ -285,7 +298,7 @@ export class GithubApiService {
           octokit.repos
             .listForAuthenticatedUser({
               page: lastPageNumber,
-              per_page: 1,
+              per_page: 100,
             })
             .then(lastPageResp => lastPageResp.data.length),
         'repos.listForAuthenticatedUser',
@@ -293,18 +306,30 @@ export class GithubApiService {
         resp?.headers?.link,
       );
     } catch (err) {
-      this.logger.error(
-        `Fetching repositories with token from token failed with ${err}`,
-      );
-      const credentialError = this.createCredentialError(
+      this.handleError(
+        'Fetching repositories with token from token',
         credential,
-        err as Error,
+        errors,
+        err,
       );
-      if (credentialError) {
-        errors.set(-1, credentialError);
-      }
     }
     return { totalCount };
+  }
+
+  private handleError(
+    desc: string,
+    credential: ExtendedGithubCredentials,
+    errors: Map<number, GithubFetchError>,
+    err: any,
+  ) {
+    this.logger.error(`${desc} failed with ${err}`);
+    const credentialError = this.createCredentialError(
+      credential,
+      err as Error,
+    );
+    if (credentialError) {
+      errors.set(-1, credentialError);
+    }
   }
 
   private async addGithubTokenOrgRepositories(
@@ -348,7 +373,7 @@ export class GithubApiService {
             .listForOrg({
               org,
               page: lastPageNumber,
-              per_page: 1,
+              per_page: 100,
             })
             .then(lastPageResp => lastPageResp.data.length),
         'repos.listForOrg',
@@ -356,16 +381,12 @@ export class GithubApiService {
         resp?.headers?.link,
       );
     } catch (err) {
-      this.logger.error(
-        `Fetching repositories with token from token failed with ${err}`,
-      );
-      const credentialError = this.createCredentialError(
+      this.handleError(
+        'Fetching org repositories with token from token',
         credential,
-        err as Error,
+        errors,
+        err,
       );
-      if (credentialError) {
-        errors.set(-1, credentialError);
-      }
     }
     return { totalCount };
   }
@@ -428,24 +449,13 @@ export class GithubApiService {
     const errors = new Map<number, GithubFetchError>();
     let repository: GithubRepository | undefined = undefined;
     for (const credential of credentials) {
-      if ('error' in credential) {
-        if (credential.error?.name !== 'NotFoundError') {
-          this.logger.error(
-            `Obtaining the Access Token Github App with appId: ${credential.appId} failed with ${credential.error}`,
-          );
-          const credentialError = this.createCredentialError(credential);
-          if (credentialError) {
-            errors.set(credential.appId, credentialError);
-          }
-        }
+      const octokit = this.buildOcto(
+        { credential, errors, owner: gitUrl.owner },
+        ghConfig.apiBaseUrl,
+      );
+      if (!octokit) {
         continue;
       }
-
-      const octokit = new Octokit({
-        baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
-        auth: credential.token,
-      });
-
       const resp = await octokit.rest.repos.get({
         owner: gitUrl.owner,
         repo: gitUrl.name,
@@ -486,30 +496,25 @@ export class GithubApiService {
       this.logger.debug(
         `Got ${credentials.length} credential(s) for ${ghConfig.host}`,
       );
-      let hasGithubApp = false;
       for (const credential of credentials) {
-        if ('error' in credential) {
-          if (credential.error?.name !== 'NotFoundError') {
-            this.logger.error(
-              `Obtaining the Access Token Github App with appId: ${credential.appId} failed with ${credential.error}`,
-            );
-            const credentialError = this.createCredentialError(credential);
-            if (credentialError) {
-              errors.set(credential.appId, credentialError);
-            }
-          }
+        const octokit = this.buildOcto(
+          { credential, errors },
+          ghConfig.apiBaseUrl,
+        );
+        if (!octokit) {
           continue;
         }
-
-        const octokit = new Octokit({
-          baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
-          auth: credential.token,
-        });
-
+        let resp: { totalCount?: number } = {};
         if (isGithubAppCredential(credential)) {
-          hasGithubApp = true;
+          resp = await this.addGithubAppOrgs(
+            octokit,
+            credential.accountLogin,
+            ghConfig,
+            orgs,
+            errors,
+          );
         } else {
-          const resp = await this.addGithubTokenOrgs(
+          resp = await this.addGithubTokenOrgs(
             octokit,
             credential,
             orgs,
@@ -517,27 +522,15 @@ export class GithubApiService {
             pageNumber,
             pageSize,
           );
-          this.logger.debug(
-            `Got ${resp.totalCount} org(s) for ${ghConfig.host}`,
-          );
-          if (resp.totalCount) {
-            totalCount += resp.totalCount;
-          }
-        }
-      }
-      if (hasGithubApp) {
-        const errs: GithubFetchError[] = [];
-        const resp = await this.addGithubAppOrgs(ghConfig, orgs, errs);
-        if (errs) {
-          for (let i = 0; i < errs.length; i++) {
-            errors.set(i, errs[i]);
-          }
         }
         this.logger.debug(`Got ${resp.totalCount} org(s) for ${ghConfig.host}`);
         if (resp.totalCount) {
           totalCount += resp.totalCount;
         }
       }
+    }
+    if (totalCount < pageSize) {
+      totalCount = orgs.size;
     }
     return {
       organizations: Array.from(orgs.values()),
@@ -562,24 +555,13 @@ export class GithubApiService {
         `Got ${credentials.length} credential(s) for ${ghConfig.host}`,
       );
       for (const credential of credentials) {
-        if ('error' in credential) {
-          if (credential.error?.name !== 'NotFoundError') {
-            this.logger.error(
-              `Obtaining the Access Token Github App with appId: ${credential.appId} failed with ${credential.error}`,
-            );
-            const credentialError = this.createCredentialError(credential);
-            if (credentialError) {
-              errors.set(credential.appId, credentialError);
-            }
-          }
+        const octokit = this.buildOcto(
+          { credential, errors },
+          ghConfig.apiBaseUrl,
+        );
+        if (!octokit) {
           continue;
         }
-
-        const octokit = new Octokit({
-          baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
-          auth: credential.token,
-        });
-
         let resp: { totalCount?: number };
         if (isGithubAppCredential(credential)) {
           if (credential.accountLogin !== orgName) {
@@ -605,7 +587,7 @@ export class GithubApiService {
           );
         }
         this.logger.debug(
-          `Got ${resp.totalCount} repo(s) for ${ghConfig.host}`,
+          `Got ${resp.totalCount} org repo(s) for ${ghConfig.host}`,
         );
         if (resp.totalCount) {
           totalCount += resp.totalCount;
@@ -640,24 +622,13 @@ export class GithubApiService {
         `Got ${credentials.length} credential(s) for ${ghConfig.host}`,
       );
       for (const credential of credentials) {
-        if ('error' in credential) {
-          if (credential.error?.name !== 'NotFoundError') {
-            this.logger.error(
-              `Obtaining the Access Token Github App with appId: ${credential.appId} failed with ${credential.error}`,
-            );
-            const credentialError = this.createCredentialError(credential);
-            if (credentialError) {
-              errors.set(credential.appId, credentialError);
-            }
-          }
+        const octokit = this.buildOcto(
+          { credential, errors },
+          ghConfig.apiBaseUrl,
+        );
+        if (!octokit) {
           continue;
         }
-
-        const octokit = new Octokit({
-          baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
-          auth: credential.token,
-        });
-
         let resp: { totalCount?: number };
         if (isGithubAppCredential(credential)) {
           resp = await this.addGithubAppRepositories(
@@ -732,10 +703,14 @@ export class GithubApiService {
     logger: Logger,
     input: {
       repoUrl: string;
+      includeCatalogInfoContent?: boolean;
     },
   ): Promise<{
     prNum?: number;
     prUrl?: string;
+    prTitle?: string;
+    prBody?: string;
+    prCatalogInfoContent?: string;
     lastUpdate?: string;
   }> {
     const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
@@ -756,31 +731,10 @@ export class GithubApiService {
 
     const branchName = getBranchName(this.config);
     for (const credential of credentials) {
-      if ('error' in credential) {
-        if (credential.error?.name !== 'NotFoundError') {
-          this.logger.error(
-            `Obtaining the Access Token Github App with appId: ${credential.appId} failed with ${credential.error}`,
-          );
-          const credentialError = this.createCredentialError(credential);
-          if (credentialError) {
-            logger.debug(`${credential.appId}: ${credentialError}`);
-          }
-        }
+      const octo = this.buildOcto({ credential, owner }, ghConfig.apiBaseUrl);
+      if (!octo) {
         continue;
       }
-
-      if (
-        isGithubAppCredential(credential) &&
-        credential.accountLogin !== owner
-      ) {
-        continue;
-      }
-
-      const octo = new Octokit({
-        baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
-        auth: credential.token,
-      });
-
       try {
         return await this.findOpenPRForBranch(
           logger,
@@ -788,6 +742,7 @@ export class GithubApiService {
           owner,
           repo,
           branchName,
+          input.includeCatalogInfoContent,
         );
       } catch (error) {
         logger.warn(`Error fetching pull requests: ${error}`);
@@ -802,9 +757,13 @@ export class GithubApiService {
     owner: string,
     repo: string,
     branchName: string,
+    withCatalogInfoContent: boolean = false,
   ): Promise<{
     prNum?: number;
     prUrl?: string;
+    prTitle?: string;
+    prBody?: string;
+    prCatalogInfoContent?: string;
     lastUpdate?: string;
   }> {
     try {
@@ -818,6 +777,18 @@ export class GithubApiService {
           return {
             prNum: pull.number,
             prUrl: pull.html_url,
+            prTitle: pull.title,
+            prBody: pull.body ?? undefined,
+            prCatalogInfoContent: withCatalogInfoContent
+              ? await this.getCatalogInfoContentFromPR(
+                  logger,
+                  octo,
+                  owner,
+                  repo,
+                  pull.number,
+                  pull.head.sha,
+                )
+              : undefined,
             lastUpdate: pull.updated_at,
           };
         }
@@ -826,6 +797,39 @@ export class GithubApiService {
       logger.warn(`Error fetching pull requests: ${error}`);
     }
     return {};
+  }
+
+  private async getCatalogInfoContentFromPR(
+    logger: Logger,
+    octo: Octokit,
+    owner: string,
+    repo: string,
+    prNumber: number,
+    prHeadSha: string,
+  ): Promise<string | undefined> {
+    try {
+      const filePath = getCatalogFilename(this.config);
+      const fileContentResponse = await octo.rest.repos.getContent({
+        owner,
+        repo,
+        path: filePath,
+        ref: prHeadSha,
+      });
+      if (!fileContentResponse.data) {
+        return undefined;
+      }
+      if (!('content' in fileContentResponse.data)) {
+        return undefined;
+      }
+      return Buffer.from(fileContentResponse.data.content, 'base64').toString(
+        'utf-8',
+      );
+    } catch (error: any) {
+      logger.warn(
+        `Error fetching catalog-info content from PR ${prNumber}: ${error}`,
+      );
+      return undefined;
+    }
   }
 
   private async createOrUpdateFileInBranch(
@@ -912,30 +916,10 @@ export class GithubApiService {
     const fileName = getCatalogFilename(this.config);
     const errors: any[] = [];
     for (const credential of credentials) {
-      if ('error' in credential) {
-        if (credential.error?.name !== 'NotFoundError') {
-          this.logger.error(
-            `Obtaining the Access Token Github App with appId: ${credential.appId} failed with ${credential.error}`,
-          );
-          const credentialError = this.createCredentialError(credential);
-          if (credentialError) {
-            logger.debug(`${credential.appId}: ${credentialError}`);
-          }
-        }
+      const octo = this.buildOcto({ credential, owner }, ghConfig.apiBaseUrl);
+      if (!octo) {
         continue;
       }
-
-      if (
-        isGithubAppCredential(credential) &&
-        credential.accountLogin !== owner
-      ) {
-        continue;
-      }
-
-      const octo = new Octokit({
-        baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
-        auth: credential.token,
-      });
       try {
         // Check if there is already a catalogInfo in the default branch
         const catalogInfoFileExists = await this.fileExistsInDefaultBranch(
@@ -1073,7 +1057,7 @@ export class GithubApiService {
         return false;
       }
       logger.debug(
-        `Unable to determine if catalog-info already exists in repo ${repo}: ${error}`,
+        `Unable to determine if a file named ${fileName} already exists in repo ${repo}: ${error}`,
       );
       return undefined;
     }
@@ -1086,6 +1070,66 @@ export class GithubApiService {
       defaultBranch?: string;
     },
   ) {
+    return this.hasFileInRepo(logger, {
+      ...input,
+      fileName: getCatalogFilename(this.config),
+    });
+  }
+
+  async doesCodeOwnersAlreadyExistInRepo(
+    logger: Logger,
+    input: {
+      repoUrl: string;
+      defaultBranch?: string;
+    },
+  ) {
+    return this.hasFileInRepo(logger, {
+      ...input,
+      fileName: '.github/CODEOWNERS',
+    });
+  }
+
+  async hasFileInRepo(
+    logger: Logger,
+    input: {
+      repoUrl: string;
+      defaultBranch?: string;
+      fileName: string;
+    },
+  ) {
+    const { ghConfig, credentials, gitUrl } =
+      await this.extractConfigAndCreds(input);
+
+    for (const credential of credentials) {
+      const octo = this.buildOcto(
+        { credential, owner: gitUrl.owner },
+        ghConfig.apiBaseUrl,
+      );
+      if (!octo) {
+        continue;
+      }
+      const exists = await this.fileExistsInDefaultBranch(
+        logger,
+        octo,
+        gitUrl.owner,
+        gitUrl.name,
+        input.fileName,
+        input.defaultBranch,
+      );
+      if (exists === undefined) {
+        continue;
+      }
+      return exists;
+    }
+    throw new Error(
+      `Could not determine if repo at ${input.repoUrl} already has a file named ${input.fileName} in its default branch (${input.defaultBranch})`,
+    );
+  }
+
+  private async extractConfigAndCreds(input: {
+    repoUrl: string;
+    defaultBranch?: string;
+  }) {
     const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
     if (!ghConfig) {
       throw new Error(`Could not find GH integration from ${input.repoUrl}`);
@@ -1099,42 +1143,7 @@ export class GithubApiService {
     }
 
     const gitUrl = gitUrlParse(input.repoUrl);
-
-    const fileName = getCatalogFilename(this.config);
-    for (const credential of credentials) {
-      if ('error' in credential) {
-        if (credential.error?.name !== 'NotFoundError') {
-          this.logger.error(
-            `Obtaining the Access Token Github App with appId: ${credential.appId} failed with ${credential.error}`,
-          );
-          const credentialError = this.createCredentialError(credential);
-          if (credentialError) {
-            logger.debug(`${credential.appId}: ${credentialError}`);
-          }
-        }
-        continue;
-      }
-      const octo = new Octokit({
-        baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
-        auth: credential.token,
-      });
-
-      const exists = await this.fileExistsInDefaultBranch(
-        logger,
-        octo,
-        gitUrl.owner,
-        gitUrl.name,
-        fileName,
-        input.defaultBranch,
-      );
-      if (exists === undefined) {
-        continue;
-      }
-      return exists;
-    }
-    throw new Error(
-      `Could not determine if ${input.repoUrl} already had a catalog-info file`,
-    );
+    return { ghConfig, credentials, gitUrl };
   }
 
   async closePR(
@@ -1162,28 +1171,10 @@ export class GithubApiService {
 
     const branchName = getBranchName(this.config);
     for (const credential of credentials) {
-      if ('error' in credential) {
-        if (credential.error?.name !== 'NotFoundError') {
-          this.logger.error(
-            `Obtaining the Access Token Github App with appId: ${credential.appId} failed with ${credential.error}`,
-          );
-          const credentialError = this.createCredentialError(credential);
-          if (credentialError) {
-            logger.debug(`${credential.appId}: ${credentialError}`);
-          }
-        }
+      const octo = this.buildOcto({ credential, owner }, ghConfig.apiBaseUrl);
+      if (!octo) {
         continue;
       }
-      if (
-        isGithubAppCredential(credential) &&
-        credential.accountLogin !== owner
-      ) {
-        continue;
-      }
-      const octo = new Octokit({
-        baseUrl: ghConfig.apiBaseUrl ?? 'https://api.github.com',
-        auth: credential.token,
-      });
       try {
         const existingPrForBranch = await this.findOpenPRForBranch(
           logger,
@@ -1208,6 +1199,42 @@ export class GithubApiService {
     }
   }
 
+  private buildOcto(
+    input: {
+      credential: ExtendedGithubCredentials;
+      owner?: string;
+      errors?: Map<number, GithubFetchError>;
+    },
+    apiBaseUrl: string = GITHUB_DEFAULT_API_ENDPOINT,
+  ): Octokit | undefined {
+    if ('error' in input.credential) {
+      if (input.credential.error?.name !== 'NotFoundError') {
+        this.logger.error(
+          `Obtaining the Access Token Github App with appId: ${input.credential.appId} failed with ${input.credential.error}`,
+        );
+        const credentialError = this.createCredentialError(input.credential);
+        if (credentialError) {
+          this.logger.debug(`${input.credential.appId}: ${credentialError}`);
+          if (input.errors) {
+            input.errors.set(input.credential.appId, credentialError);
+          }
+        }
+      }
+      return undefined;
+    }
+    if (
+      isGithubAppCredential(input.credential) &&
+      input.owner &&
+      input.credential.accountLogin !== input.owner
+    ) {
+      return undefined;
+    }
+    return new Octokit({
+      baseUrl: apiBaseUrl,
+      auth: input.credential.token,
+    });
+  }
+
   private async closePRWithComment(
     octo: Octokit,
     owner: string,
@@ -1227,5 +1254,30 @@ export class GithubApiService {
       pull_number: prNum,
       state: 'closed',
     });
+  }
+
+  async isRepoEmpty(input: { repoUrl: string }) {
+    const { ghConfig, credentials, gitUrl } =
+      await this.extractConfigAndCreds(input);
+    const owner = gitUrl.organization;
+    const repo = gitUrl.name;
+
+    for (const credential of credentials) {
+      const octo = this.buildOcto({ credential, owner }, ghConfig.apiBaseUrl);
+      if (!octo) {
+        continue;
+      }
+      const resp = await octo.rest.repos.listContributors({
+        owner,
+        repo,
+        page: 1,
+        per_page: 1,
+      });
+      const status = resp.status as 200 | 204;
+      if (status === 204) {
+        return true;
+      }
+    }
+    return false;
   }
 }

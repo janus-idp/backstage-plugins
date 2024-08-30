@@ -23,6 +23,7 @@ import {
   RoleConditionalPolicyDecision,
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
+import { RBACProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import {
   RoleMetadataDao,
@@ -155,6 +156,12 @@ const expectedConditions: RoleConditionalPolicyDecision<PermissionAction>[] = [
     },
   },
 ];
+
+const providerMock: RBACProvider = {
+  getProviderName: jest.fn().mockImplementation(() => `testProvider`),
+  connect: jest.fn().mockImplementation(),
+  refresh: jest.fn().mockImplementation(),
+};
 
 const modifiedBy = 'user:default/some-admin';
 
@@ -3462,6 +3469,102 @@ describe('REST policies api', () => {
         },
       });
       expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('POST /refresh/:id', () => {
+    let appWithProvider: express.Express;
+
+    beforeEach(async () => {
+      mockedAuthorize.mockImplementation(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
+
+      const options: RouterOptions = {
+        config: config,
+        logger,
+        discovery: mockDiscovery,
+        identity: mockIdentityClient,
+        policy: await RBACPermissionPolicy.build(
+          logger,
+          auditLoggerMock,
+          config,
+          conditionalStorage,
+          mockEnforcer as EnforcerDelegate,
+          roleMetadataStorageMock,
+          knex,
+          pluginPermissionMetadataCollectorMock as PluginPermissionMetadataCollector,
+          mockAuth,
+        ),
+      };
+
+      server = new PoliciesServer(
+        mockPermissionEvaluator,
+        options,
+        mockEnforcer as EnforcerDelegate,
+        config,
+        mockHttpAuth,
+        mockAuth,
+        conditionalStorage,
+        pluginPermissionMetadataCollectorMock as PluginPermissionMetadataCollector,
+        roleMetadataStorageMock,
+        auditLoggerMock,
+        [providerMock],
+      );
+      const router = await server.serve();
+      appWithProvider = express().use(router);
+      appWithProvider.use(errorHandler());
+    });
+
+    it('should return a status of Unauthorized', async () => {
+      mockedAuthorize.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+      const result = await request(app).post('/refresh/test').send();
+
+      expect(mockedAuthorize).toHaveBeenCalledWith(
+        [
+          {
+            permission: policyEntityCreatePermission,
+            resourceRef: 'policy-entity',
+          },
+        ],
+        {
+          credentials: credentials,
+        },
+      );
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
+    });
+
+    it('should return a 200 for successful refresh set', async () => {
+      const result = await request(appWithProvider)
+        .post('/refresh/testProvider')
+        .send();
+      expect(result.statusCode).toBe(200);
+    });
+
+    it('should return a 404 when there are no rbac providers', async () => {
+      const result = await request(app).post('/refresh/test').send();
+      expect(result.statusCode).toBe(404);
+      expect(result.body.error).toEqual({
+        message: 'No RBAC providers were found',
+        name: 'NotFoundError',
+      });
+    });
+
+    it('should return a 404 when the rbac provider does not exist', async () => {
+      const result = await request(appWithProvider)
+        .post('/refresh/test')
+        .send();
+      expect(result.statusCode).toBe(404);
+      expect(result.body.error).toEqual({
+        message: 'The RBAC provider test was not found',
+        name: 'NotFoundError',
+      });
     });
   });
 

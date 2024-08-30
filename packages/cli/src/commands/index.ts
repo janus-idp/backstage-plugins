@@ -172,37 +172,6 @@ export function registerScriptCommand(program: Command) {
 }
 
 export function registerCommands(program: Command) {
-  program
-    .command('new')
-    .storeOptionsAsProperties(false)
-    .description(
-      'Open up an interactive guide to creating new things in your app',
-    )
-    .option(
-      '--select <name>',
-      'Select the thing you want to be creating upfront',
-    )
-    .option(
-      '--option <name>=<value>',
-      'Pre-fill options for the creation process',
-      (opt, arr: string[]) => [...arr, opt],
-      [],
-    )
-    .option(
-      '--npm-registry <URL>',
-      'The package registry to use for new packages',
-    )
-    .option(
-      '--baseVersion <version>',
-      'The version to use for any new packages (default: 0.1.0)',
-    )
-    .option('--no-private', 'Do not mark new packages as private')
-    .option(
-      '--do-not-edit-packages',
-      'Do not edit packages/app and packages/backend',
-    )
-    .action(lazy(() => import('./new/new').then(m => m.default)));
-
   registerScriptCommand(program);
 }
 

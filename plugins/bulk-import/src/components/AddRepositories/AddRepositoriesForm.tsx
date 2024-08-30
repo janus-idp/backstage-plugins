@@ -1,16 +1,18 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core';
-import HelpIcon from '@mui/icons-material/HelpOutline';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import { useFormikContext } from 'formik';
+import { WarningPanel } from '@backstage/core-components';
 
-import { AddRepositoriesFormValues } from '../../types';
+import { makeStyles } from '@material-ui/core';
+import FormControl from '@mui/material/FormControl';
+
+// import HelpIcon from '@mui/icons-material/HelpOutline';
+// import FormControlLabel from '@mui/material/FormControlLabel';
+// import Radio from '@mui/material/Radio';
+// import RadioGroup from '@mui/material/RadioGroup';
+// import Tooltip from '@mui/material/Tooltip';
+// import Typography from '@mui/material/Typography';
+// import { useFormikContext } from 'formik';
+// import { AddRepositoriesFormValues } from '../../types';
 import { AddRepositoriesFormFooter } from './AddRepositoriesFormFooter';
 import { AddRepositoriesTable } from './AddRepositoriesTable';
 
@@ -39,15 +41,28 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const AddRepositoriesForm = () => {
-  const { values, setFieldValue } =
-    useFormikContext<AddRepositoriesFormValues>();
+export const AddRepositoriesForm = ({
+  error,
+}: {
+  error: { message: string; title: string } | null;
+}) => {
   const styles = useStyles();
 
   return (
     <>
       <FormControl fullWidth>
         <div className={styles.body}>
+          {error && (
+            <div style={{ paddingBottom: '10px' }}>
+              <WarningPanel
+                message={error?.message}
+                title={error?.title}
+                severity="error"
+              />
+            </div>
+          )}
+          {/* 
+          // Enable this when ServiceNow approval tool is supported
           <span className={styles.approvalTool}>
             <Typography fontSize="16px" fontWeight="500">
               Approval tool
@@ -64,7 +79,6 @@ export const AddRepositoriesForm = () => {
               id="approval-tool"
               data-testid="approval-tool"
               row
-              aria-labelledby="approval-tool"
               name="approvalTool"
               value={values.approvalTool}
               onChange={(_event, value: string) => {
@@ -76,9 +90,10 @@ export const AddRepositoriesForm = () => {
                 value="servicenow"
                 control={<Radio />}
                 label="ServiceNow"
+                disabled
               />
             </RadioGroup>
-          </span>
+          </span> */}
           <AddRepositoriesTable title="Selected repositories" />
         </div>
         <br />

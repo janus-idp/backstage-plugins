@@ -1,5 +1,9 @@
 ### Dependencies
 
+* **@janus-idp/cli:** upgraded to 1.13.1
+
+### Dependencies
+
 * **@janus-idp/backstage-plugin-quay-common:** upgraded to 1.0.2
 
 ### Dependencies

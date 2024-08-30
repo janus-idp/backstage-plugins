@@ -491,6 +491,107 @@ ifdef::internal-generation[]
 endif::internal-generation[]
 
 
+[.getWorkflowInputSchemaById]
+==== getWorkflowInputSchemaById
+
+`GET /v2/workflows/{workflowId}/inputSchema`
+
+
+
+===== Description
+
+Get a workflow input schema by ID
+
+
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/inputSchema/GET/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+====== Path Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| workflowId
+| ID of the workflow to fetch 
+| X
+| null
+| 
+
+|===
+
+
+
+
+====== Query Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| instanceId
+| ID of instance 
+| -
+| null
+| 
+
+|===
+
+
+===== Return Type
+
+
+<<Object>>
+
+
+===== Content Type
+
+* application/json
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 200
+| Success
+|  <<Object>>
+
+
+| 500
+| Error fetching workflow input schema by id
+|  <<ErrorResponse>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/inputSchema/GET/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/inputSchema/GET/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/workflows/{workflowId}/inputSchema/GET/GET.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/inputSchema/GET/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
 [.getWorkflowOverviewById]
 ==== getWorkflowOverviewById
 

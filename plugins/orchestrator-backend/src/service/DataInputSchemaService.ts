@@ -158,7 +158,7 @@ export class DataInputSchemaService {
     return res;
   }
 
-  private extractWorkflowData(variables?: object): JsonObject | undefined {
+  public extractWorkflowData(variables?: object): JsonObject | undefined {
     return variables && WORKFLOW_DATA_KEY in variables
       ? (variables[WORKFLOW_DATA_KEY] as JsonObject)
       : undefined;

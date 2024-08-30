@@ -1,50 +1,32 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 
-import { IconButton, Tooltip } from '@material-ui/core';
 import Delete from '@mui/icons-material/Delete';
-import { useFormikContext } from 'formik';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
-import { AddRepositoriesData, AddRepositoriesFormValues } from '../../types';
-import DeleteRepositoryDialog from './DeleteRepositoryDialog';
+import { AddRepositoryData } from '../../types';
+import { useDeleteDialog } from '../DeleteDialogContext';
 
-type DeleteRepositoryProps = {
-  data: AddRepositoriesData;
-};
+const DeleteRepository = ({ data }: { data: AddRepositoryData }) => {
+  const { setDeleteComponent, setOpenDialog } = useDeleteDialog();
 
-const DeleteRepository = ({ data }: DeleteRepositoryProps) => {
-  const [open, setOpen] = useState(false);
-  const { values, setFieldValue } =
-    useFormikContext<AddRepositoriesFormValues>();
-  const handleClickRemove = () => {
-    const newRepositories = values.repositories;
-    if (data.repoName) {
-      delete newRepositories[data.repoName];
-      setFieldValue('repositories', newRepositories);
-    }
+  const openDialog = (dialogData: AddRepositoryData) => {
+    setDeleteComponent(dialogData);
+    setOpenDialog(true);
   };
 
   return (
-    <>
-      <Tooltip title="Remove">
-        <span data-testid="delete-repository">
-          <IconButton
-            color="inherit"
-            onClick={() => setOpen(true)}
-            aria-label="Delete"
-          >
-            <Delete />
-          </IconButton>
-        </span>
-      </Tooltip>
-      {open && (
-        <DeleteRepositoryDialog
-          open={open}
-          repository={data}
-          closeDialog={() => setOpen(false)}
-          removeRepository={handleClickRemove}
-        />
-      )}
-    </>
+    <Tooltip title="Remove">
+      <span data-testid="delete-repository">
+        <IconButton
+          color="inherit"
+          onClick={() => openDialog(data)}
+          aria-label="Delete"
+        >
+          <Delete />
+        </IconButton>
+      </span>
+    </Tooltip>
   );
 };
 

@@ -24,17 +24,16 @@ import {
 
 import express from 'express';
 import request from 'supertest';
+import { Logger } from 'winston';
 
 import { CatalogInfoGenerator } from '../helpers';
 import { GithubOrganizationResponse, GithubRepositoryResponse } from '../types';
 import { GithubApiService } from './githubApiService';
+import { DefaultPageNumber, DefaultPageSize } from './handlers/handlers';
 import { createRouter } from './router';
 
 const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
   jest.fn();
-const mockedPermissionQuery: jest.MockedFunction<
-  PermissionEvaluator['authorizeConditional']
-> = jest.fn();
 
 const mockUser = {
   type: 'User',
@@ -53,13 +52,18 @@ const mockDiscovery = {
 
 const permissionEvaluator: PermissionEvaluator = {
   authorize: mockedAuthorize,
-  authorizeConditional: mockedPermissionQuery,
+  authorizeConditional: jest.fn(),
 };
 
-const allowAll: PermissionEvaluator['authorize'] &
-  PermissionEvaluator['authorizeConditional'] = async queries => {
+const allowAll: PermissionEvaluator['authorize'] = async queries => {
   return queries.map(() => ({
     result: AuthorizeResult.ALLOW,
+  }));
+};
+
+const denyAll: PermissionEvaluator['authorize'] = async queries => {
+  return queries.map(() => ({
+    result: AuthorizeResult.DENY,
   }));
 };
 
@@ -100,7 +104,15 @@ describe('createRouter', () => {
   });
 
   describe('GET /ping', () => {
-    it('returns ok', async () => {
+    it('returns ok when unauthenticated', async () => {
+      const response = await request(app).get('/ping');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ status: 'ok' });
+    });
+
+    it('returns ok even when denied by permission framework', async () => {
+      mockedAuthorize.mockImplementation(denyAll);
       const response = await request(app).get('/ping');
 
       expect(response.status).toEqual(200);
@@ -109,8 +121,14 @@ describe('createRouter', () => {
   });
 
   describe('GET /organizations', () => {
+    it('returns 403 when denied by permission framework', async () => {
+      mockedAuthorize.mockImplementation(denyAll);
+      const response = await request(app).get('/organizations');
+      expect(response.status).toEqual(403);
+    });
+
     it('returns 200 when organizations are fetched without errors', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getOrganizationsFromIntegrations')
@@ -121,11 +139,25 @@ describe('createRouter', () => {
               name: 'my-org-ent-1',
               url: 'https://api.github.com/users/my-org-ent-1',
               description: 'an awesome org',
+              public_repos: 10,
+              total_private_repos: 25,
             },
             {
               id: 266016847,
               name: 'my-org-ent-2',
               url: 'https://api.github.com/users/my-org-ent-2',
+              total_private_repos: 1234,
+            },
+            {
+              id: 987654321,
+              name: 'my-org-ent-3-undefined-repo-count',
+              url: 'https://api.github.com/users/my-org-ent-3-undefined-repo-count',
+            },
+            {
+              id: 123,
+              name: 'my-org-ent-4-only-internal-repos',
+              url: 'https://api.github.com/users/my-org-ent-4-only-internal-repos',
+              owned_private_repos: 7,
             },
           ],
           errors: [],
@@ -135,18 +167,35 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         errors: [],
+        pagePerIntegration: DefaultPageNumber,
+        sizePerIntegration: DefaultPageSize,
         organizations: [
           {
             id: '166016847',
             name: 'my-org-ent-1',
             url: 'https://api.github.com/users/my-org-ent-1',
             description: 'an awesome org',
+            totalRepoCount: 35,
             errors: [],
           },
           {
             id: '266016847',
             name: 'my-org-ent-2',
             url: 'https://api.github.com/users/my-org-ent-2',
+            totalRepoCount: 1234,
+            errors: [],
+          },
+          {
+            id: '987654321',
+            name: 'my-org-ent-3-undefined-repo-count',
+            url: 'https://api.github.com/users/my-org-ent-3-undefined-repo-count',
+            errors: [],
+          },
+          {
+            id: '123',
+            name: 'my-org-ent-4-only-internal-repos',
+            url: 'https://api.github.com/users/my-org-ent-4-only-internal-repos',
+            totalRepoCount: 7,
             errors: [],
           },
         ],
@@ -154,7 +203,7 @@ describe('createRouter', () => {
     });
 
     it('returns 200 with the errors in the body when organizations are fetched, but errors have occurred', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       const githubApiServiceResponse: GithubOrganizationResponse = {
         organizations: [
@@ -190,6 +239,8 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         errors: ['Github App with ID 2 failed spectacularly'],
+        pagePerIntegration: DefaultPageNumber,
+        sizePerIntegration: DefaultPageSize,
         organizations: [
           {
             id: '166016847',
@@ -209,7 +260,7 @@ describe('createRouter', () => {
     });
 
     it('returns 500 when one or more errors are returned with no successful organization fetched', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getOrganizationsFromIntegrations')
@@ -237,8 +288,14 @@ describe('createRouter', () => {
   });
 
   describe('GET /repositories', () => {
+    it('returns 403 when denied by permission framework', async () => {
+      mockedAuthorize.mockImplementation(denyAll);
+      const response = await request(app).get('/repositories');
+      expect(response.status).toEqual(403);
+    });
+
     it('returns 200 when repositories are fetched without errors', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getRepositoriesFromIntegrations')
@@ -294,7 +351,7 @@ describe('createRouter', () => {
     });
 
     it('returns 200 with the errors in the body when repositories are fetched, but errors have occurred', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       const githubApiServiceResponse: GithubRepositoryResponse = {
         repositories: [
@@ -361,7 +418,7 @@ describe('createRouter', () => {
     });
 
     it('returns 500 when one or more errors are returned with no successful repository fetches', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getRepositoriesFromIntegrations')
@@ -395,8 +452,16 @@ describe('createRouter', () => {
   });
 
   describe('GET /organizations/{org}/repositories', () => {
+    it('returns 403 when denied by permission framework', async () => {
+      mockedAuthorize.mockImplementation(denyAll);
+      const response = await request(app).get(
+        '/organizations/my-ent-org-1/repositories',
+      );
+      expect(response.status).toEqual(403);
+    });
+
     it('returns 200 when repositories are fetched without errors', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getOrgRepositoriesFromIntegrations')
@@ -525,7 +590,7 @@ describe('createRouter', () => {
     });
 
     it('returns 200 with the errors in the body when repositories are fetched, but errors have occurred', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       const githubApiServiceResponse: GithubRepositoryResponse = {
         repositories: [
@@ -594,7 +659,7 @@ describe('createRouter', () => {
     });
 
     it('returns 500 when one or more errors are returned with no successful repository fetched', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getOrgRepositoriesFromIntegrations')
@@ -630,8 +695,14 @@ describe('createRouter', () => {
   });
 
   describe('GET /imports', () => {
+    it('returns 403 when denied by permission framework', async () => {
+      mockedAuthorize.mockImplementation(denyAll);
+      const response = await request(app).get('/imports');
+      expect(response.status).toEqual(403);
+    });
+
     it('returns 200 with empty list when there is nothing in catalog yet and no open PR for each repo', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
         .spyOn(GithubApiService.prototype, 'getRepositoriesFromIntegrations')
@@ -667,36 +738,15 @@ describe('createRouter', () => {
     });
 
     it('returns 200 with appropriate import status', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
 
       jest
-        .spyOn(GithubApiService.prototype, 'getRepositoriesFromIntegrations')
-        .mockResolvedValue({
-          repositories: [
-            {
-              name: 'A',
-              full_name: 'my-ent-org-1/A',
-              url: 'https://api.github.com/repos/my-ent-org-1/A',
-              html_url: 'https://github.com/my-ent-org-1/A',
-              default_branch: 'dev',
-            },
-            {
-              name: 'B',
-              full_name: 'my-ent-org-1/B',
-              url: 'https://api.github.com/repos/my-ent-org-1/B',
-              html_url: 'https://github.com/my-ent-org-1/B',
-              default_branch: 'main',
-            },
-            {
-              name: 'A',
-              full_name: 'my-ent-org-2/A',
-              url: 'https://api.github.com/repos/my-ent-org-2/A',
-              html_url: 'https://github.com/my-ent-org-2/A',
-              default_branch: 'dev',
-            },
-          ],
-          errors: [],
-        });
+        .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
+        .mockResolvedValue([
+          'https://github.com/my-ent-org-1/A/blob/dev/catalog-info.yaml',
+          'https://github.com/my-ent-org-1/B/blob/main/catalog-info.yaml',
+          'https://github.com/my-ent-org-2/A/blob/dev/catalog-info.yaml',
+        ]);
       jest
         .spyOn(GithubApiService.prototype, 'findImportOpenPr')
         .mockImplementation((_logger, input) => {
@@ -727,25 +777,19 @@ describe('createRouter', () => {
             input.repoUrl === 'https://github.com/my-ent-org-1/A',
           );
         });
-      jest
-        .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
-        .mockResolvedValue([
-          'https://github.com/my-ent-org-1/A/blob/dev/catalog-info.yaml',
-        ]);
 
       const response = await request(app).get('/imports');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([
         {
           approvalTool: 'GIT',
-          id: 'my-ent-org-1/A',
+          id: 'https://github.com/my-ent-org-1/A',
           repository: {
-            defaultBranch: 'dev',
-            errors: [],
-            id: 'my-ent-org-1/A',
             name: 'A',
             organization: 'my-ent-org-1',
             url: 'https://github.com/my-ent-org-1/A',
+            defaultBranch: 'dev',
+            id: 'my-ent-org-1/A',
           },
           status: 'ADDED',
         },
@@ -754,20 +798,19 @@ describe('createRouter', () => {
           errors: [
             'could not find out if there is an import PR open on this repo',
           ],
-          id: 'my-ent-org-1/B',
+          id: 'https://github.com/my-ent-org-1/B',
           repository: {
-            defaultBranch: 'main',
-            errors: [],
-            id: 'my-ent-org-1/B',
             name: 'B',
             organization: 'my-ent-org-1',
             url: 'https://github.com/my-ent-org-1/B',
+            defaultBranch: 'main',
+            id: 'my-ent-org-1/B',
           },
           status: 'PR_ERROR',
         },
         {
           approvalTool: 'GIT',
-          id: 'my-ent-org-2/A',
+          id: 'https://github.com/my-ent-org-2/A',
           github: {
             pullRequest: {
               number: 987,
@@ -775,12 +818,11 @@ describe('createRouter', () => {
             },
           },
           repository: {
-            defaultBranch: 'dev',
-            errors: [],
-            id: 'my-ent-org-2/A',
             name: 'A',
             organization: 'my-ent-org-2',
             url: 'https://github.com/my-ent-org-2/A',
+            defaultBranch: 'dev',
+            id: 'my-ent-org-2/A',
           },
           status: 'WAIT_PR_APPROVAL',
         },
@@ -789,104 +831,20 @@ describe('createRouter', () => {
   });
 
   describe('POST /imports', () => {
+    it('returns 403 when denied by permission framework', async () => {
+      mockedAuthorize.mockImplementation(denyAll);
+      const response = await request(app).post('/imports').send([]);
+      expect(response.status).toEqual(403);
+    });
+
     it('returns 400 if there is nothing in request body', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
       const response = await request(app).post('/imports').send([]);
       expect(response.status).toEqual(400);
     });
 
-    describe('dry run', () => {
-      it('error if there are missing catalogEntityName in any of the request body items', async () => {
-        mockedPermissionQuery.mockImplementation(allowAll);
-        mockCatalogClient.queryEntities = jest
-          .fn()
-          .mockResolvedValue({ items: [] });
-        const response = await request(app)
-          .post('/imports')
-          .query({ dryRun: true })
-          .send([
-            {
-              repository: {
-                url: 'https://github.com/my-org-ent-1/my-repo-a',
-                defaultBranch: 'dev',
-              },
-            },
-            {
-              catalogEntityName: 'my-entity-b',
-              repository: {
-                url: 'https://github.com/my-org-ent-1/my-repo-b',
-                defaultBranch: 'dev',
-              },
-            },
-          ]);
-        expect(response.status).toEqual(400);
-        expect(response.body.errors as string[]).toContain(
-          "ERROR: 'catalogEntityName' field must be specified in request body for https://github.com/my-org-ent-1/my-repo-a for dry-run operations",
-        );
-      });
-
-      it('return dry-run results in errors array for each item in request body', async () => {
-        mockedPermissionQuery.mockImplementation(allowAll);
-        mockCatalogClient.queryEntities = jest
-          .fn()
-          .mockResolvedValueOnce({ items: [] })
-          .mockResolvedValueOnce({
-            totalItems: 1,
-            items: [
-              {
-                apiVersion: 'backstage.io/v1alpha1',
-                kind: 'Component',
-                component: {
-                  name: 'my-entity-b',
-                },
-              },
-            ],
-          });
-        const response = await request(app)
-          .post('/imports')
-          .query({ dryRun: true })
-          .send([
-            {
-              catalogEntityName: 'my-entity-a',
-              repository: {
-                url: 'https://github.com/my-org-ent-1/my-repo-a',
-                defaultBranch: 'dev',
-              },
-            },
-            {
-              catalogEntityName: 'my-entity-b',
-              repository: {
-                url: 'https://github.com/my-org-ent-2/my-repo-b',
-                defaultBranch: 'main',
-              },
-            },
-          ]);
-        expect(response.status).toEqual(202);
-        expect(response.body).toEqual([
-          {
-            errors: [],
-            catalogEntityName: 'my-entity-a',
-            repository: {
-              url: 'https://github.com/my-org-ent-1/my-repo-a',
-              name: 'my-repo-a',
-              organization: 'my-org-ent-1',
-            },
-          },
-          {
-            errors: ['CONFLICT'],
-            catalogEntityName: 'my-entity-b',
-            repository: {
-              url: 'https://github.com/my-org-ent-2/my-repo-b',
-              name: 'my-repo-b',
-              organization: 'my-org-ent-2',
-            },
-          },
-        ]);
-      });
-    });
-
     it('returns 202 with appropriate import statuses', async () => {
-      mockedPermissionQuery.mockImplementation(allowAll);
+      mockedAuthorize.mockImplementation(allowAll);
       mockCatalogClient.addLocation = jest
         .fn()
         .mockImplementation(
@@ -1010,6 +968,140 @@ spec:
             url: 'https://github.com/my-org-ent-1/java-quarkus-starter',
           },
           status: 'ADDED',
+        },
+      ]);
+    });
+  });
+
+  describe('POST /imports with dryRun=true', () => {
+    it('return dry-run results in errors array for each item in request body', async () => {
+      mockedAuthorize.mockImplementation(allowAll);
+      mockCatalogClient.queryEntities = jest.fn().mockImplementation(
+        async (req: {
+          filter: {
+            'metadata.name': string;
+          };
+        }) => {
+          if (req.filter['metadata.name'] === 'my-entity-b') {
+            return {
+              totalItems: 1,
+              items: [
+                {
+                  apiVersion: 'backstage.io/v1alpha1',
+                  kind: 'Component',
+                  component: {
+                    name: 'my-entity-b',
+                  },
+                },
+              ],
+            };
+          }
+          return { items: [] };
+        },
+      );
+
+      jest
+        .spyOn(GithubApiService.prototype, 'doesCatalogInfoAlreadyExistInRepo')
+        .mockImplementation(
+          async (
+            _logger: Logger,
+            input: {
+              repoUrl: string;
+            },
+          ) => input.repoUrl === 'https://github.com/my-org-ent-2/my-repo-b',
+        );
+
+      jest
+        .spyOn(GithubApiService.prototype, 'isRepoEmpty')
+        .mockImplementation(
+          async (input: { repoUrl: string }) =>
+            input.repoUrl === 'https://github.com/my-org-ent-2/my-repo-c',
+        );
+
+      jest
+        .spyOn(GithubApiService.prototype, 'doesCodeOwnersAlreadyExistInRepo')
+        .mockImplementation(
+          async (
+            _logger: Logger,
+            input: {
+              repoUrl: string;
+            },
+          ) => input.repoUrl !== 'https://github.com/my-org-ent-2/my-repo-d',
+        );
+
+      const response = await request(app)
+        .post('/imports')
+        .query({ dryRun: true })
+        .send([
+          {
+            // catalogEntityName not specified => catalog entity checks will be skipped
+            repository: {
+              url: 'https://github.com/my-org-ent-1/my-repo-a',
+              defaultBranch: 'dev',
+            },
+          },
+          {
+            catalogEntityName: 'my-entity-b',
+            repository: {
+              url: 'https://github.com/my-org-ent-2/my-repo-b',
+              defaultBranch: 'main',
+            },
+          },
+          {
+            catalogEntityName: 'my-entity-c',
+            repository: {
+              url: 'https://github.com/my-org-ent-2/my-repo-c',
+              defaultBranch: 'trunk',
+            },
+          },
+          {
+            catalogEntityName: 'my-entity-d',
+            codeOwnersFileAsEntityOwner: true,
+            repository: {
+              url: 'https://github.com/my-org-ent-2/my-repo-d',
+              defaultBranch: 'devBranch',
+            },
+          },
+        ]);
+      expect(response.status).toEqual(202);
+      expect(response.body).toEqual([
+        {
+          errors: [],
+          repository: {
+            url: 'https://github.com/my-org-ent-1/my-repo-a',
+            name: 'my-repo-a',
+            organization: 'my-org-ent-1',
+          },
+        },
+        {
+          errors: [
+            'CATALOG_ENTITY_CONFLICT',
+            'CATALOG_INFO_FILE_EXISTS_IN_REPO',
+          ],
+          catalogEntityName: 'my-entity-b',
+          repository: {
+            url: 'https://github.com/my-org-ent-2/my-repo-b',
+            name: 'my-repo-b',
+            organization: 'my-org-ent-2',
+          },
+        },
+        {
+          errors: ['REPO_EMPTY'],
+          catalogEntityName: 'my-entity-c',
+          repository: {
+            url: 'https://github.com/my-org-ent-2/my-repo-c',
+            name: 'my-repo-c',
+            organization: 'my-org-ent-2',
+          },
+        },
+        {
+          errors: ['CODEOWNERS_FILE_NOT_FOUND_IN_REPO'],
+          catalogEntityName: 'my-entity-d',
+          repository: {
+            url: 'https://github.com/my-org-ent-2/my-repo-d',
+            name: 'my-repo-d',
+            organization: 'my-org-ent-2',
+          },
         },
       ]);
     });

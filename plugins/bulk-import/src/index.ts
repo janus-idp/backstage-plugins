@@ -1,3 +1,7 @@
-export { bulkImportPlugin, BulkImportPage, BulkImportIcon } from './plugin';
+export {
+  bulkImportPlugin,
+  BulkImportPage,
+  BulkImportSidebarItem,
+} from './plugin';
 
-export { default as LibraryAddOutlinedIcon } from '@mui/icons-material/LibraryAddOutlined';
+export { default as BulkImportIcon } from './components/BulkImportSidebarItem';

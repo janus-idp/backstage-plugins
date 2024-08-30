@@ -1,13 +1,16 @@
 import * as React from 'react';
+import { useAsync } from 'react-use';
 
 import { Link } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
-import { AddRepositoriesData, RepositoryStatus } from '../../types';
+import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
+import { AddRepositoryData, RepositoryStatus } from '../../types';
 import { urlHelper } from '../../utils/repository-utils';
 import { CatalogInfoStatus } from './CatalogInfoStatus';
 
@@ -15,13 +18,11 @@ export const RepositoryTableRow = ({
   handleClick,
   isItemSelected,
   data,
-  selectedRepositoryStatus,
   isDrawer = false,
 }: {
-  handleClick: (_event: React.MouseEvent, id: number) => void;
+  handleClick: (_event: React.MouseEvent, id: AddRepositoryData) => void;
   isItemSelected: boolean;
-  data: AddRepositoriesData;
-  selectedRepositoryStatus: string;
+  data: AddRepositoryData;
   isDrawer?: boolean;
 }) => {
   const tableCellStyle = {
@@ -29,6 +30,15 @@ export const RepositoryTableRow = ({
     fontSize: '0.875rem',
     padding: '15px 16px 15px 6px',
   };
+  const bulkImportApi = useApi(bulkImportApiRef);
+  const { value, loading } = useAsync(async () => {
+    const result = await bulkImportApi.getImportAction(
+      data.repoUrl || '',
+      data?.defaultBranch || 'main',
+    );
+    return result;
+  });
+
   return (
     <TableRow
       hover
@@ -42,12 +52,10 @@ export const RepositoryTableRow = ({
           disableRipple
           color="primary"
           checked={
-            selectedRepositoryStatus === RepositoryStatus.Exists
-              ? true
-              : isItemSelected
+            value?.status === RepositoryStatus.ADDED ? true : isItemSelected
           }
-          disabled={selectedRepositoryStatus === RepositoryStatus.Exists}
-          onClick={event => handleClick(event, data.id)}
+          disabled={loading || value?.status === RepositoryStatus.ADDED}
+          onClick={event => handleClick(event, data)}
           style={{ padding: '0 12px' }}
         />
         {data.repoName}
@@ -78,6 +86,8 @@ export const RepositoryTableRow = ({
       <TableCell align="left" sx={tableCellStyle}>
         <CatalogInfoStatus
           data={data}
+          importStatus={value?.status as string}
+          isLoading={loading}
           isItemSelected={isItemSelected}
           isDrawer={isDrawer}
         />

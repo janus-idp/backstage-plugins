@@ -56,7 +56,7 @@ describe('LightspeedProxyClient', () => {
   describe('createChatCompletions', () => {
     it('should call openAIApi.chat.completions.create with correct parameters', async () => {
       const prompt = 'Test prompt';
-      await lightspeedClient.createChatCompletions(prompt);
+      await lightspeedClient.createChatCompletions(prompt, 'llama3');
 
       expect(mockCreateChatCompletion).toHaveBeenCalledWith(
         {
@@ -83,7 +83,7 @@ describe('LightspeedProxyClient', () => {
       identityApi.getCredentials.mockResolvedValueOnce({ token: undefined });
 
       const prompt = 'Test prompt';
-      await lightspeedClient.createChatCompletions(prompt);
+      await lightspeedClient.createChatCompletions(prompt, 'llama3');
 
       expect(mockCreateChatCompletion).toHaveBeenCalledWith(
         {

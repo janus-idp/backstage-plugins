@@ -1,12 +1,12 @@
 import React from 'react';
 import { useAsyncRetry, useInterval } from 'react-use';
 
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { rbacApiRef } from '../api/RBACBackendClient';
 import { MemberEntity, MembersData } from '../types';
-import { getKindNamespaceName, getMembersFromGroup } from '../utils/rbac-utils';
+import { getMembersFromGroup } from '../utils/rbac-utils';
 
 export type MembersInfo = {
   loading: boolean;
@@ -53,7 +53,7 @@ const getMemberData = (
           : 0,
     };
   }
-  const { kind, namespace, name } = getKindNamespaceName(ref);
+  const { kind, namespace, name } = parseEntityRef(ref);
   return {
     name,
     type: kind === 'user' ? 'User' : ('Group' as 'User' | 'Group'),

@@ -1,3 +1,9 @@
+# ❗DEPRECATED❗
+
+This package has been deprecated.
+
+Please use the **[@backstage-community/plugin-redhat-argocd](https://www.npmjs.com/package/@backstage-community/plugin-redhat-argocd)** package instead.
+
 # Argo CD plugin for Backstage
 
 ## Getting started

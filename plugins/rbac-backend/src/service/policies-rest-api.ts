@@ -40,6 +40,7 @@ import {
   RoleBasedPolicy,
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
+import { RBACProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import {
   ConditionAuditInfo,
@@ -88,6 +89,7 @@ export class PoliciesServer {
     private readonly pluginPermMetaData: PluginPermissionMetadataCollector,
     private readonly roleMetadata: RoleMetadataStorage,
     private readonly aLog: AuditLogger,
+    private readonly rbacProviders?: RBACProvider[],
   ) {}
 
   private async authorize(
@@ -1001,6 +1003,36 @@ export class PoliciesServer {
         response: { status: 200 },
       });
 
+      response.status(200).end();
+    });
+
+    router.post('/refresh/:id', async (request, response) => {
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityCreatePermission,
+      );
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+
+      if (!this.rbacProviders) {
+        throw new NotFoundError(`No RBAC providers were found`);
+      }
+
+      const idProvider = this.rbacProviders.find(provider => {
+        const id = provider.getProviderName();
+        return id === request.params.id;
+      });
+
+      if (!idProvider) {
+        throw new NotFoundError(
+          `The RBAC provider ${request.params.id} was not found`,
+        );
+      }
+
+      await idProvider.refresh();
       response.status(200).end();
     });
 

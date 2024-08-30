@@ -1,14 +1,14 @@
 import React from 'react';
+import { useAsync } from 'react-use';
 
-import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
+import { Content, Header, Page, Select } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-import { Paper } from '@material-ui/core';
+import { LinearProgress, Paper } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 import { lightspeedApiRef } from '../api/LightspeedProxyClient';
-import { LightspeedInput } from './LightspeedInput';
-import { SystemMessage, UserMessage } from './Message';
+import { LightspeedChatBox } from './LightspeedChatBox';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -40,30 +40,19 @@ export const LightspeedPage = () => {
 
   const lightspeedApi = useApi(lightspeedApiRef);
 
-  const [, setChunkIndex] = React.useState(0);
-  const [prompts, setPrompts] = React.useState<string[]>([]);
-  const [completions, setCompletions] = React.useState<{
-    [key: string]: string;
-  }>({});
-
-  const handleInputPrompt = React.useCallback(
-    async (prompt: string) => {
-      setPrompts(p => [...p, prompt]);
-      setChunkIndex(0);
-
-      const result = await lightspeedApi.createChatCompletions(prompt);
-
-      for await (const chunk of result) {
-        setChunkIndex(index => index + 1);
-        setCompletions(c => {
-          c[prompt] =
-            `${c[prompt] || ''}${chunk.choices[0]?.delta?.content || ''}`;
-          return c;
-        });
-      }
-    },
-    [lightspeedApi],
+  const { value: models, loading } = useAsync(
+    async () => await lightspeedApi.getAllModels(),
   );
+  const [selectedModel, setSelectedModel] = React.useState('');
+
+  const modelsItems = React.useMemo(
+    () => (models ? models.map(m => ({ label: m.id, value: m.id })) : []),
+    [models],
+  );
+
+  React.useEffect(() => {
+    if (modelsItems.length > 0) setSelectedModel(modelsItems[0].value);
+  }, [modelsItems]);
 
   return (
     <Page themeId="tool">
@@ -71,22 +60,21 @@ export const LightspeedPage = () => {
         title="Red Hat Developer Hub Lightspeed"
         subtitle="A new way to interact with LLMs inside Developer Hub."
       >
-        <HeaderLabel label="Owner" value="Team X" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
+        {loading && <LinearProgress />}
+        {!loading && models && (
+          <Select
+            onChange={item => setSelectedModel(item as string)}
+            items={modelsItems}
+            selected={selectedModel}
+            disabled={loading}
+            margin="dense"
+            label="Select LLM Model"
+          />
+        )}
       </Header>
       <Content className={classes.container}>
         <Paper className={classes.paper} elevation={2}>
-          <Paper id="style-1" className={classes.messagesBody}>
-            {prompts.map(prompt => (
-              <>
-                {prompt && <UserMessage message={prompt} />}
-                {completions[prompt] && (
-                  <SystemMessage message={completions[prompt]} />
-                )}
-              </>
-            ))}
-          </Paper>
-          <LightspeedInput onSubmit={handleInputPrompt} />
+          <LightspeedChatBox selectedModel={selectedModel} />
         </Paper>
       </Content>
     </Page>

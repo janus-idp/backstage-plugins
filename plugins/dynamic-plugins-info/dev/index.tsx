@@ -4,7 +4,7 @@ import { Content, Header, HeaderTabs, Page } from '@backstage/core-components';
 import { createDevApp } from '@backstage/dev-utils';
 import { TestApiProvider } from '@backstage/test-utils';
 
-import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { listLoadedPluginsResult } from '../src/__fixtures__/listLoadedPluginsResult';
 import { dynamicPluginsInfoApiRef } from '../src/api/types';
@@ -19,7 +19,7 @@ const mockedApi = {
 
 createDevApp()
   .registerPlugin(dynamicPluginsInfoPlugin)
-  .addThemes(createDevAppThemes())
+  .addThemes(getAllThemes())
   .addPage({
     element: (
       <TestApiProvider apis={[[dynamicPluginsInfoApiRef, mockedApi]]}>

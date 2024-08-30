@@ -325,80 +325,6 @@ function setupInternalRoutes(
   );
 
   // v1
-  router.get('/workflows/:workflowId', async (req, res) => {
-    const {
-      params: { workflowId },
-    } = req;
-    const endpointName = 'WorkflowsOverview';
-    const endpoint = '/v1/workflows/overview';
-
-    auditLogger.auditLog({
-      eventName: endpointName,
-      stage: 'start',
-      status: 'succeeded',
-      level: 'debug',
-      request: req,
-      message: `Received request to '${endpoint}' endpoint`,
-    });
-    const decision = await authorize(
-      req,
-      orchestratorWorkflowReadPermission,
-      permissions,
-      httpAuth,
-    );
-    if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint, req);
-    }
-    await routerApi.v1
-      .getWorkflowById(workflowId)
-      .then(result => res.status(200).json(result))
-      .catch(error => {
-        auditLogRequestError(error, endpointName, endpoint, req);
-        res
-          .status(500)
-          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
-      });
-  });
-
-  // v2
-  routerApi.openApiBackend.register(
-    'getWorkflowById',
-    async (c, _req, res, next) => {
-      const workflowId = c.request.params.workflowId as string;
-      const endpointName = 'getWorkflowById';
-      const endpoint = `/v2/workflows/${workflowId}`;
-
-      auditLogger.auditLog({
-        eventName: endpointName,
-        stage: 'start',
-        status: 'succeeded',
-        level: 'debug',
-        request: _req,
-        message: `Received request to '${endpoint}' endpoint`,
-      });
-
-      const decision = await authorize(
-        _req,
-        orchestratorWorkflowReadPermission,
-        permissions,
-        httpAuth,
-      );
-      if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(endpointName, endpoint, _req);
-      }
-      await routerApi.v2
-        .getWorkflowById(workflowId)
-        .then(result => res.json(result))
-        .catch(error => {
-          res
-            .status(500)
-            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
-          next();
-        });
-    },
-  );
-
-  // v1
   router.get('/workflows/:workflowId/source', async (req, res) => {
     const {
       params: { workflowId },
@@ -800,6 +726,145 @@ function setupInternalRoutes(
             .status(500)
             .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
         });
+    },
+  );
+
+  // v2
+  routerApi.openApiBackend.register(
+    'getWorkflowInputSchemaById',
+    async (c, req: express.Request, res: express.Response) => {
+      const workflowId = c.request.params.workflowId as string;
+      const instanceId = c.request.query.instanceId as string;
+      const endpointName = 'getWorkflowInputSchemaById';
+      const endpoint = `/v2/workflows/${workflowId}/inputSchema`;
+
+      auditLogger.auditLog({
+        eventName: endpointName,
+        stage: 'start',
+        status: 'succeeded',
+        level: 'debug',
+        request: req,
+        message: `Received request to '${endpoint}' endpoint`,
+      });
+      const decision = await authorize(
+        req,
+        orchestratorWorkflowInstanceReadPermission,
+        permissions,
+        httpAuth,
+      );
+      if (decision.result === AuthorizeResult.DENY) {
+        manageDenyAuthorization(endpointName, endpoint, req);
+      }
+
+      const workflowDefinition =
+        await services.orchestratorService.fetchWorkflowInfo({
+          definitionId: workflowId,
+          cacheHandler: 'throw',
+        });
+
+      if (!workflowDefinition) {
+        auditLogRequestError(
+          new Error(`Couldn't fetch workflow definition ${workflowId}`),
+          endpointName,
+          endpoint,
+          req,
+        );
+        res
+          .status(500)
+          .send(`Couldn't fetch workflow definition ${workflowId}`);
+        return;
+      }
+
+      const serviceUrl = workflowDefinition.serviceUrl;
+      if (!serviceUrl) {
+        auditLogRequestError(
+          new Error(`Service URL is not defined for workflow ${workflowId}`),
+          endpointName,
+          endpoint,
+          req,
+        );
+        res
+          .status(500)
+          .send(`Service URL is not defined for workflow ${workflowId}`);
+        return;
+      }
+
+      const definition =
+        await services.orchestratorService.fetchWorkflowDefinition({
+          definitionId: workflowId,
+          cacheHandler: 'throw',
+        });
+
+      if (!definition) {
+        auditLogRequestError(
+          new Error(
+            `Couldn't fetch workflow definition of workflow source ${workflowId}`,
+          ),
+          endpointName,
+          endpoint,
+          req,
+        );
+        res
+          .status(500)
+          .send(
+            `Couldn't fetch workflow definition of workflow source ${workflowId}`,
+          );
+        return;
+      }
+
+      if (!definition.dataInputSchema) {
+        res.status(200).json(res);
+        return;
+      }
+
+      const instanceVariables = instanceId
+        ? await services.orchestratorService.fetchInstanceVariables({
+            instanceId,
+            cacheHandler: 'throw',
+          })
+        : undefined;
+
+      const workflowData = instanceVariables
+        ? services.dataInputSchemaService.extractWorkflowData(instanceVariables)
+        : undefined;
+
+      const workflowInfo = await routerApi.v2
+        .getWorkflowInputSchemaById(workflowId, serviceUrl)
+        .catch((error: { message: string }) => {
+          auditLogRequestError(error, endpointName, endpoint, req);
+          res
+            .status(500)
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
+        });
+
+      if (
+        !workflowInfo ||
+        !workflowInfo.inputSchema ||
+        !workflowInfo.inputSchema.properties
+      ) {
+        res.status(200);
+        return;
+      }
+
+      const inputSchemaProps = workflowInfo.inputSchema.properties;
+      let inputData;
+
+      if (workflowData) {
+        inputData = Object.keys(inputSchemaProps)
+          .filter(k => k in workflowData)
+          .reduce((result, k) => {
+            if (!workflowData[k]) {
+              return result;
+            }
+            result[k] = workflowData[k];
+            return result;
+          }, {} as JsonObject);
+      }
+
+      res.status(200).json({
+        inputSchema: workflowInfo.inputSchema,
+        data: inputData,
+      });
     },
   );
 

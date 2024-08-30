@@ -25,6 +25,7 @@ import {
   CatalogInfoGenerator,
   getCatalogFilename,
   getTokenForPlugin,
+  paginateArray,
 } from '../../helpers';
 import { Components, Paths } from '../../openapi.d';
 import { GithubApiService } from '../githubApiService';
@@ -34,96 +35,76 @@ import {
   HandlerResponse,
 } from './handlers';
 import { hasEntityInCatalog, verifyLocationExistence } from './importStatus';
-import { findAllRepositories } from './repositories';
+
+type CreateImportDryRunStatus =
+  | 'CATALOG_ENTITY_CONFLICT'
+  | 'CATALOG_INFO_FILE_EXISTS_IN_REPO'
+  | 'CODEOWNERS_FILE_NOT_FOUND_IN_REPO'
+  | 'REPO_EMPTY';
 
 export async function findAllImports(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
   pageNumber: number = DefaultPageNumber,
   pageSize: number = DefaultPageSize,
 ): Promise<HandlerResponse<Components.Schemas.Import[]>> {
   logger.debug('Getting all bulk import jobs..');
-  const result: Components.Schemas.Import[] = [];
-  const catalogLocations = await catalogInfoGenerator.listCatalogUrlLocations();
-  const repos = await findAllRepositories(
-    logger,
-    githubApiService,
-    catalogInfoGenerator,
-    false,
+  const importStatusPromises: Promise<
+    HandlerResponse<Components.Schemas.Import>
+  >[] = [];
+  const catalogLocations = paginateArray(
+    await catalogInfoGenerator.listCatalogUrlLocations(),
     pageNumber,
     pageSize,
   );
-  for (const repo of repos.responseBody?.repositories ?? []) {
-    if (!repo.url) {
+  const paginatedLocations = catalogLocations.result;
+  for (const loc of paginatedLocations) {
+    // loc has the following format: https://github.com/<org>/<repo>/blob/<default-branch>/catalog-info.yaml
+    const split = loc.split('/blob/');
+    if (split.length < 2) {
       continue;
     }
-    const catalogUrl = catalogInfoGenerator.getCatalogUrl(
-      repo.url,
-      repo.defaultBranch,
-    );
-    const errors: string[] = [];
-    try {
-      // Check to see if there are any PR
-      const openImportPr = await githubApiService.findImportOpenPr(logger, {
-        repoUrl: repo.url,
-      });
-      if (!openImportPr.prUrl) {
-        let exists = false;
-        for (const loc of catalogLocations) {
-          if (loc === catalogUrl) {
-            exists = true;
-            break;
-          }
-        }
-        if (
-          exists &&
-          (await githubApiService.doesCatalogInfoAlreadyExistInRepo(logger, {
-            repoUrl: repo.url,
-            defaultBranch: repo.defaultBranch,
-          }))
-        ) {
-          result.push({
-            id: repo.id,
-            status: 'ADDED',
-            repository: repo,
-            approvalTool: 'GIT',
-            lastUpdate: repo.lastUpdate,
-          });
-        }
-        // No import PR
-        continue;
-      }
-      result.push({
-        id: repo.id,
-        status: 'WAIT_PR_APPROVAL',
-        repository: repo,
-        approvalTool: 'GIT',
-        github: {
-          pullRequest: {
-            number: openImportPr.prNum,
-            url: openImportPr.prUrl,
-          },
-        },
-        lastUpdate: openImportPr.lastUpdate,
-      });
-    } catch (error: any) {
-      errors.push(error.message);
+    const repoUrl = split[0];
 
-      result.push({
-        id: repo.id,
-        status: 'PR_ERROR',
-        errors: errors,
-        repository: repo,
-        approvalTool: 'GIT',
-        lastUpdate: repo.lastUpdate,
-      });
-    }
+    // Split the URL at "/blob" and "/catalog-info.yaml"
+    const parts = split[1].split(`/${getCatalogFilename(config)}`);
+    const defaultBranch = parts.length !== 0 ? parts[0] : undefined;
+
+    importStatusPromises.push(
+      findImportStatusByRepo(
+        logger,
+        config,
+        githubApiService,
+        catalogInfoGenerator,
+        repoUrl,
+        defaultBranch,
+        false,
+      ),
+    );
   }
 
+  const result = await Promise.all(importStatusPromises);
+  const imports = result
+    .filter(res => res.responseBody)
+    .map(res => res.responseBody!);
+  // sorting the output to simplify the tests on the response
+  imports.sort((a, b) => {
+    if (a.id === undefined && b.id === undefined) {
+      return 0;
+    }
+    if (a.id === undefined) {
+      return -1;
+    }
+    if (b.id === undefined) {
+      return 1;
+    }
+    return a.id.localeCompare(b.id);
+  });
   return {
     statusCode: 200,
-    responseBody: result,
+    responseBody: imports,
   };
 }
 
@@ -213,40 +194,37 @@ export async function createImportJobs(
   }
 
   const result: Components.Schemas.Import[] = [];
-  const dryRunErrors: string[] = [];
   for (const req of importRequests) {
     const gitUrl = gitUrlParse(req.repository.url);
 
     if (dryRun) {
-      if (!req.catalogEntityName || req.catalogEntityName.trim().length === 0) {
-        dryRunErrors.push(
-          `ERROR: 'catalogEntityName' field must be specified in request body for ${req.repository.url} for dry-run operations`,
+      const dryRunChecks = await performDryRunChecks(
+        logger,
+        auth,
+        catalogApi,
+        githubApiService,
+        req,
+      );
+      if (dryRunChecks.errors && dryRunChecks.errors.length > 0) {
+        logger.warn(
+          `Errors while performing dry-run checks: ${dryRunChecks.errors}`,
         );
-      } else {
-        const errs: string[] = [];
-        const hasEntity = await hasEntityInCatalog(
-          auth,
-          catalogApi,
-          req.catalogEntityName,
-        );
-        if (hasEntity) {
-          errs.push('CONFLICT');
-        }
-        result.push({
-          errors: errs,
-          catalogEntityName: req.catalogEntityName,
-          repository: {
-            url: req.repository.url,
-            name: gitUrl.name,
-            organization: gitUrl.organization,
-          },
-        });
       }
+      result.push({
+        errors: dryRunChecks.dryRunStatuses,
+        catalogEntityName: req.catalogEntityName,
+        repository: {
+          url: req.repository.url,
+          name: gitUrl.name,
+          organization: gitUrl.organization,
+        },
+      });
       continue;
     }
 
     // Check if repo is already imported
     const repoCatalogUrl = catalogInfoGenerator.getCatalogUrl(
+      config,
       req.repository.url,
       req.repository.defaultBranch,
     );
@@ -347,27 +325,124 @@ export async function createImportJobs(
     }
   }
 
-  if (dryRun && dryRunErrors.length > 0) {
-    return {
-      statusCode: 400,
-      responseBody: {
-        errors: dryRunErrors,
-      },
-    };
-  }
-
   return {
     statusCode: 202,
     responseBody: result,
   };
 }
 
+async function performDryRunChecks(
+  logger: Logger,
+  auth: AuthService,
+  catalogApi: CatalogApi,
+  githubApiService: GithubApiService,
+  req: Components.Schemas.ImportRequest,
+): Promise<{ dryRunStatuses: CreateImportDryRunStatus[]; errors: string[] }> {
+  const checkCatalog = async (
+    catalogEntityName: string,
+  ): Promise<{
+    dryRunStatuses?: CreateImportDryRunStatus[];
+    errors?: string[];
+  }> => {
+    const hasEntity = await hasEntityInCatalog(
+      auth,
+      catalogApi,
+      catalogEntityName,
+    );
+    if (hasEntity) {
+      return { dryRunStatuses: ['CATALOG_ENTITY_CONFLICT'] };
+    }
+    return {};
+  };
+
+  const checkEmptyRepo = async (): Promise<{
+    dryRunStatuses?: CreateImportDryRunStatus[];
+    errors?: string[];
+  }> => {
+    const empty = await githubApiService.isRepoEmpty({
+      repoUrl: req.repository.url,
+    });
+    if (empty) {
+      return {
+        dryRunStatuses: ['REPO_EMPTY'],
+      };
+    }
+    return {};
+  };
+
+  const checkCatalogInfoPresenceInRepo = async (): Promise<{
+    dryRunStatuses?: CreateImportDryRunStatus[];
+    errors?: string[];
+  }> => {
+    const exists = await githubApiService.doesCatalogInfoAlreadyExistInRepo(
+      logger,
+      {
+        repoUrl: req.repository.url,
+        defaultBranch: req.repository.defaultBranch,
+      },
+    );
+    if (exists) {
+      return {
+        dryRunStatuses: ['CATALOG_INFO_FILE_EXISTS_IN_REPO'],
+      };
+    }
+    return {};
+  };
+
+  const checkCodeOwnersFileInRepo = async (): Promise<{
+    dryRunStatuses?: CreateImportDryRunStatus[];
+    errors?: string[];
+  }> => {
+    const exists = await githubApiService.doesCodeOwnersAlreadyExistInRepo(
+      logger,
+      {
+        repoUrl: req.repository.url,
+        defaultBranch: req.repository.defaultBranch,
+      },
+    );
+    if (!exists) {
+      return {
+        dryRunStatuses: ['CODEOWNERS_FILE_NOT_FOUND_IN_REPO'],
+      };
+    }
+    return {};
+  };
+
+  const dryRunStatuses: CreateImportDryRunStatus[] = [];
+  const errors: string[] = [];
+  const allChecksFn = [checkEmptyRepo(), checkCatalogInfoPresenceInRepo()];
+  if (req.catalogEntityName?.trim()) {
+    allChecksFn.push(checkCatalog(req.catalogEntityName));
+  }
+  if (req.codeOwnersFileAsEntityOwner) {
+    allChecksFn.push(checkCodeOwnersFileInRepo());
+  }
+  const allChecks = await Promise.all(allChecksFn);
+  allChecks.flat().forEach(res => {
+    if (res.dryRunStatuses) {
+      dryRunStatuses.push(...res.dryRunStatuses);
+    }
+    if (res.errors) {
+      errors.push(...res.errors);
+    }
+  });
+
+  dryRunStatuses.sort((a, b) => a.localeCompare(b));
+
+  return {
+    dryRunStatuses,
+    errors,
+  };
+}
+
 export async function findImportStatusByRepo(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
   repoUrl: string,
   defaultBranch?: string,
+  includeCatalogInfoContent?: boolean,
 ): Promise<HandlerResponse<Components.Schemas.Import>> {
   logger.debug(`Getting bulk import job status for ${repoUrl}..`);
 
@@ -380,6 +455,8 @@ export async function findImportStatusByRepo(
       url: repoUrl,
       name: gitUrl.name,
       organization: gitUrl.organization,
+      id: `${gitUrl.organization}/${gitUrl.name}`,
+      defaultBranch,
     },
     approvalTool: 'GIT',
     status: null,
@@ -388,11 +465,13 @@ export async function findImportStatusByRepo(
     // Check to see if there are any PR
     const openImportPr = await githubApiService.findImportOpenPr(logger, {
       repoUrl: repoUrl,
+      includeCatalogInfoContent,
     });
     if (!openImportPr.prUrl) {
       const catalogLocations =
         await catalogInfoGenerator.listCatalogUrlLocations();
       const catalogUrl = catalogInfoGenerator.getCatalogUrl(
+        config,
         repoUrl,
         defaultBranch,
       );
@@ -426,6 +505,9 @@ export async function findImportStatusByRepo(
       pullRequest: {
         number: openImportPr.prNum,
         url: openImportPr.prUrl,
+        title: openImportPr.prTitle,
+        body: openImportPr.prBody,
+        catalogInfoContent: openImportPr.prCatalogInfoContent,
       },
     };
     result.lastUpdate = openImportPr.lastUpdate;
@@ -449,6 +531,7 @@ export async function findImportStatusByRepo(
 
 export async function deleteImportByRepo(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
   repoUrl: string,
@@ -471,7 +554,11 @@ export async function deleteImportByRepo(
   // Remove Location from catalog
   const catalogLocations =
     await catalogInfoGenerator.listCatalogUrlLocationsById();
-  const catalogUrl = catalogInfoGenerator.getCatalogUrl(repoUrl, defaultBranch);
+  const catalogUrl = catalogInfoGenerator.getCatalogUrl(
+    config,
+    repoUrl,
+    defaultBranch,
+  );
   let locationId: string | undefined;
   for (const [id, loc] of catalogLocations) {
     if (loc === catalogUrl) {

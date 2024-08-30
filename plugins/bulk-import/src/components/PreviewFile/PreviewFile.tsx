@@ -5,22 +5,30 @@ import { Link } from '@backstage/core-components';
 import { makeStyles } from '@material-ui/core';
 import ReadyIcon from '@mui/icons-material/CheckOutlined';
 import CloseIcon from '@mui/icons-material/Close';
+import FailIcon from '@mui/icons-material/ErrorOutline';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
 
 import {
-  AddRepositoriesData,
   AddRepositoriesFormValues,
-  PullRequestPreview,
+  AddRepositoryData,
+  ErrorType,
   PullRequestPreviewData,
   RepositorySelection,
   RepositoryStatus,
   RepositoryType,
 } from '../../types';
+import {
+  getCustomisedErrorMessage,
+  urlHelper,
+} from '../../utils/repository-utils';
 import { PreviewPullRequest } from './PreviewPullRequest';
 import { PreviewPullRequests } from './PreviewPullRequests';
 
@@ -75,54 +83,47 @@ export const PreviewFileSidebar = ({
   formErrors,
   setFormErrors,
   handleSave,
+  isSubmitting,
 }: {
   open: boolean;
-  data: AddRepositoriesData;
+  data: AddRepositoryData;
   repositoryType: RepositoryType;
   onClose: () => void;
-  formErrors: any;
-  setFormErrors: React.Dispatch<React.SetStateAction<any>>;
+  formErrors: PullRequestPreviewData;
+  isSubmitting?: boolean;
+  setFormErrors: (formErr: PullRequestPreviewData) => void;
   handleSave: (pullRequest: PullRequestPreviewData, _event: any) => void;
 }) => {
   const classes = useDrawerStyles();
   const [pullRequest, setPullRequest] = React.useState<PullRequestPreviewData>(
     {},
   );
-  const { values } = useFormikContext<AddRepositoriesFormValues>();
+  const [isInitialized, setIsInitialized] = React.useState(false);
+
   const contentClasses = useDrawerContentStyles();
   const initializePullRequest = React.useCallback(() => {
     const newPullRequestData: PullRequestPreviewData = {};
 
-    if (
-      data?.repositories?.length &&
-      data?.repositories?.length > 0 &&
-      data?.selectedRepositories?.length &&
-      data.selectedRepositories?.length > 0
-    ) {
-      data.selectedRepositories.forEach(repo => {
-        if (
-          repo.repoName &&
-          values.repositories?.[repo.repoName]?.catalogInfoYaml?.prTemplate
-        ) {
-          newPullRequestData[repo.repoName] = values.repositories[repo.repoName]
-            .catalogInfoYaml?.prTemplate as PullRequestPreview;
+    if (Object.keys(data?.selectedRepositories || [])?.length > 0) {
+      Object.values(data?.selectedRepositories || []).forEach(repo => {
+        if (repo.catalogInfoYaml?.prTemplate) {
+          newPullRequestData[repo.id] = repo.catalogInfoYaml.prTemplate;
         }
       });
-    } else if (
-      data?.repoName &&
-      values.repositories?.[data.repoName]?.catalogInfoYaml?.prTemplate
-    ) {
-      newPullRequestData[data.repoName] = values.repositories[data.repoName]
-        .catalogInfoYaml?.prTemplate as PullRequestPreview;
+    } else if (data.catalogInfoYaml?.prTemplate) {
+      newPullRequestData[data.id] = data.catalogInfoYaml?.prTemplate;
     }
 
     setPullRequest(newPullRequestData);
-  }, [data, values]);
+    setIsInitialized(true);
+  }, [data]);
 
   React.useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    initializePullRequest();
-  }, [data, initializePullRequest]);
+    if (!isInitialized) {
+      initializePullRequest();
+    }
+  }, [isInitialized, initializePullRequest]);
 
   const handleCancel = (_event: any) => {
     initializePullRequest();
@@ -134,7 +135,7 @@ export const PreviewFileSidebar = ({
       anchor="right"
       open={open}
       onClose={onClose}
-      data-testid="preview-file-sidebar"
+      data-testid="preview-pullrequest-sidebar"
       classes={{
         paper: classes.paper,
       }}
@@ -147,12 +148,22 @@ export const PreviewFileSidebar = ({
                 <Typography variant="h5">
                   {`${data.orgName ?? data.organizationUrl}/${data.repoName}`}
                 </Typography>
-                <Link to={data.repoUrl ?? ''}>{data.repoUrl}</Link>
+                <Link to={data.repoUrl ?? ''}>
+                  {urlHelper(data.repoUrl || '')}
+                  <OpenInNewIcon
+                    style={{ verticalAlign: 'sub', paddingTop: '7px' }}
+                  />
+                </Link>
               </>
             ) : (
               <>
                 <Typography variant="h5">{`${data.orgName}`}</Typography>
-                <Link to={data.repoUrl ?? ''}>{data.organizationUrl}</Link>
+                <Link to={data.organizationUrl ?? ''}>
+                  {urlHelper(data.organizationUrl || '')}
+                  <OpenInNewIcon
+                    style={{ verticalAlign: 'sub', paddingTop: '7px' }}
+                  />
+                </Link>
               </>
             )}
           </div>
@@ -168,55 +179,52 @@ export const PreviewFileSidebar = ({
         </Box>
 
         <Box className={contentClasses.body}>
-          {repositoryType === RepositorySelection.Repository &&
-            data.catalogInfoYaml?.prTemplate && (
-              <PreviewPullRequest
-                repoName={data.repoName ?? ''}
-                pullRequest={pullRequest}
-                setPullRequest={setPullRequest}
-                formErrors={formErrors as PullRequestPreviewData}
-                setFormErrors={
-                  setFormErrors as React.Dispatch<
-                    React.SetStateAction<PullRequestPreviewData>
-                  >
-                }
-              />
-            )}
+          {repositoryType === RepositorySelection.Repository && (
+            <PreviewPullRequest
+              repoId={data.id}
+              repoUrl={data.repoUrl || ''}
+              pullRequest={pullRequest}
+              setPullRequest={setPullRequest}
+              formErrors={formErrors}
+              setFormErrors={setFormErrors}
+            />
+          )}
           {repositoryType === RepositorySelection.Organization && (
             <PreviewPullRequests
-              repositories={data.selectedRepositories || []}
-              pullRequest={pullRequest}
-              formErrors={formErrors as PullRequestPreviewData}
-              setFormErrors={
-                setFormErrors as React.Dispatch<
-                  React.SetStateAction<PullRequestPreviewData>
-                >
+              repositories={
+                Object.values(data?.selectedRepositories || []) || []
               }
+              pullRequest={pullRequest}
+              formErrors={formErrors}
+              setFormErrors={setFormErrors}
               setPullRequest={setPullRequest}
             />
           )}
-
-          <div className={contentClasses.footer}>
-            <Button
-              variant="contained"
-              onClick={e => handleSave(pullRequest, e)}
-              className={contentClasses.createButton}
-              disabled={
-                !!formErrors &&
-                Object.values(formErrors).length > 0 &&
-                Object.values(formErrors).every(
-                  fe => !!fe && Object.values(fe).length > 0,
-                )
-              }
-            >
-              Save
-            </Button>
-            <Link to="" variant="button" onClick={handleCancel}>
-              <Button variant="outlined">Cancel</Button>
-            </Link>
-          </div>
         </Box>
       </Box>
+      <div className={contentClasses.footer}>
+        <Button
+          variant="contained"
+          onClick={e => handleSave(pullRequest, e)}
+          className={contentClasses.createButton}
+          disabled={
+            isSubmitting ||
+            (!!formErrors &&
+              Object.values(formErrors).length > 0 &&
+              Object.values(formErrors).every(
+                fe => !!fe && Object.values(fe).length > 0,
+              ))
+          }
+          startIcon={
+            isSubmitting && <CircularProgress size="20px" color="inherit" />
+          }
+        >
+          Save
+        </Button>
+        <Link to="" variant="button" onClick={handleCancel}>
+          <Button variant="outlined">Cancel</Button>
+        </Link>
+      </div>
     </Drawer>
   );
 };
@@ -225,11 +233,12 @@ export const PreviewFile = ({
   data,
   repositoryType,
 }: {
-  data: AddRepositoriesData;
+  data: AddRepositoryData;
   repositoryType: RepositoryType;
 }) => {
   const [sidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
-  const { setFieldValue } = useFormikContext<AddRepositoriesFormValues>();
+  const { setFieldValue, status } =
+    useFormikContext<AddRepositoriesFormValues>();
   const [formErrors, setFormErrors] = React.useState<PullRequestPreviewData>();
   const handleSave = (pullRequest: PullRequestPreviewData, _event: any) => {
     Object.keys(pullRequest).forEach(pr => {
@@ -240,33 +249,71 @@ export const PreviewFile = ({
     });
     setSidebarOpen(false);
   };
+
   return (
     <>
       <span>
-        <ReadyIcon
-          color="success"
-          style={{ verticalAlign: 'sub', paddingTop: '7px' }}
-        />
-        {RepositoryStatus.Ready}{' '}
-        <Link
-          to=""
-          onClick={() => setSidebarOpen(true)}
-          data-testid={
-            data?.selectedRepositories && data.selectedRepositories.length > 1
-              ? 'preview-files'
-              : 'preview-file'
-          }
-        >
-          {data?.selectedRepositories && data.selectedRepositories.length > 1
-            ? 'Preview files'
-            : 'Preview file'}
-        </Link>
+        {Object.keys(status?.errors || {}).length > 0 &&
+        Object.values(status.errors as ErrorType).find(
+          s =>
+            s?.repository?.name === data.repoName ||
+            (repositoryType === RepositorySelection.Organization &&
+              s?.repository?.organization === data.orgName),
+        ) ? (
+          <>
+            <Tooltip
+              title={
+                repositoryType === RepositorySelection.Repository
+                  ? getCustomisedErrorMessage(
+                      Object.values(status.errors as ErrorType).find(
+                        s => s?.repository?.name === data.repoName,
+                      )?.error.message || null,
+                    )
+                  : 'PR creation was unsuccessful for some repositories. Click on `Edit` to see the reason.'
+              }
+            >
+              <FailIcon
+                color="error"
+                style={{ verticalAlign: 'sub', paddingTop: '7px' }}
+              />
+            </Tooltip>
+            <span data-testid="failed"> Failed to create PR </span>
+            <Link
+              to=""
+              onClick={() => setSidebarOpen(true)}
+              data-testid="edit-pull-request"
+            >
+              Edit
+            </Link>
+          </>
+        ) : (
+          <>
+            <ReadyIcon
+              color="success"
+              style={{ verticalAlign: 'sub', paddingTop: '7px' }}
+            />
+            {RepositoryStatus.Ready}{' '}
+            <Link
+              to=""
+              onClick={() => setSidebarOpen(true)}
+              data-testid={
+                Object.keys(data?.selectedRepositories || []).length > 1
+                  ? 'preview-files'
+                  : 'preview-file'
+              }
+            >
+              {Object.keys(data?.selectedRepositories || []).length > 1
+                ? 'Preview files'
+                : 'Preview file'}
+            </Link>
+          </>
+        )}
       </span>
       <PreviewFileSidebar
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         data={data}
-        formErrors={formErrors}
+        formErrors={formErrors as PullRequestPreviewData}
         setFormErrors={setFormErrors}
         repositoryType={repositoryType}
         handleSave={handleSave}

@@ -3,6 +3,7 @@ import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 
 import axios, {
+  AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
   RawAxiosRequestHeaders,
@@ -31,32 +32,39 @@ import { OrchestratorApi } from './api';
 export interface OrchestratorClientOptions {
   discoveryApi: DiscoveryApi;
   identityApi: IdentityApi;
+  axiosInstance?: AxiosInstance;
 }
 export class OrchestratorClient implements OrchestratorApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
+  private axiosInstance?: AxiosInstance;
+
   private baseUrl: string | null = null;
   constructor(options: OrchestratorClientOptions) {
     this.discoveryApi = options.discoveryApi;
     this.identityApi = options.identityApi;
+    this.axiosInstance = options.axiosInstance;
   }
 
   async getDefaultAPI(): Promise<DefaultApi> {
     const baseUrl = await this.getBaseUrl();
     const { token: idToken } = await this.identityApi.getCredentials();
 
-    const axiosInstance = axios.create({
-      baseURL: baseUrl,
-      headers: {
-        ...(idToken && { Authorization: `Bearer ${idToken}` }),
-      },
-      withCredentials: true,
-    });
+    // Fixme: Following makes mocking of global axios complicated in the tests, ideally there should be just one axios instance:
+    this.axiosInstance =
+      this.axiosInstance ||
+      axios.create({
+        baseURL: baseUrl,
+        headers: {
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+        },
+        withCredentials: true,
+      });
     const config = new Configuration({
       basePath: baseUrl,
     });
 
-    return new DefaultApi(config, baseUrl, axiosInstance);
+    return new DefaultApi(config, baseUrl, this.axiosInstance);
   }
   private async getBaseUrl(): Promise<string> {
     if (!this.baseUrl) {
