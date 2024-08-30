@@ -1,5 +1,6 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 import express from 'express';
 import { APIError } from 'openai';
@@ -38,6 +39,14 @@ describe('createRouter', () => {
       logger: getVoidLogger(),
       config: new ConfigReader({
       }),
+      httpAuth: mockServices.httpAuth({
+        pluginId: 'lightspeed',
+        defaultCredentials: mockCredentials.user(),
+      }),
+      userInfo: mockServices.userInfo({
+        userEntityRef: "user1",
+      })
+      
     });
     app = express().use(router);
   });
