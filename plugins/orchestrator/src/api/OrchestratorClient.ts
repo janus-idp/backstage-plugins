@@ -13,11 +13,11 @@ import {
   AssessedProcessInstanceDTO,
   Configuration,
   DefaultApi,
+  ExecuteWorkflowResponseDTO,
   FilterInfo,
   PaginationInfoDTO,
   ProcessInstanceListResultDTO,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
-  QUERY_PARAM_BUSINESS_KEY,
   QUERY_PARAM_INSTANCE_ID,
   WorkflowDefinition,
   WorkflowExecutionResponse,
@@ -78,24 +78,24 @@ export class OrchestratorClient implements OrchestratorApi {
     workflowId: string;
     parameters: JsonObject;
     businessKey?: string;
-  }): Promise<WorkflowExecutionResponse> {
-    const baseUrl = await this.getBaseUrl();
-    const endpoint = `${baseUrl}/workflows/${args.workflowId}/execute`;
-    const urlToFetch = buildUrl(endpoint, {
-      [QUERY_PARAM_BUSINESS_KEY]: args.businessKey,
-    });
-    return await this.fetcher(urlToFetch, {
-      method: 'POST',
-      body: JSON.stringify(args.parameters),
-      headers: { 'Content-Type': 'application/json' },
-    }).then(r => r.json());
+  }): Promise<AxiosResponse<ExecuteWorkflowResponseDTO>> {
+    const defaultApi = await this.getDefaultAPI();
+    const reqConfigOption: AxiosRequestConfig =
+      await this.getDefaultReqConfig();
+    return await defaultApi.executeWorkflow(
+      args.workflowId,
+      { inputData: args.parameters },
+      reqConfigOption,
+    );
   }
 
-  async abortWorkflowInstance(instanceId: string): Promise<void> {
-    const baseUrl = await this.getBaseUrl();
-    return await this.fetcher(`${baseUrl}/instances/${instanceId}/abort`, {
-      method: 'DELETE',
-    }).then(_ => undefined);
+  async abortWorkflowInstance(
+    instanceId: string,
+  ): Promise<AxiosResponse<string>> {
+    const defaultApi = await this.getDefaultAPI();
+    const reqConfigOption: AxiosRequestConfig =
+      await this.getDefaultReqConfig();
+    return await defaultApi.abortWorkflow(instanceId, reqConfigOption);
   }
 
   async getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition> {
