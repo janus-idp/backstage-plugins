@@ -14,6 +14,7 @@ All URIs are relative to *http://localhost*
 | [**getWorkflowSourceById**](DefaultApi.md#getWorkflowSourceById) | **GET** /v2/workflows/{workflowId}/source |  |
 | [**getWorkflowStatuses**](DefaultApi.md#getWorkflowStatuses) | **GET** /v2/workflows/instances/statuses | Get workflow status list |
 | [**getWorkflowsOverview**](DefaultApi.md#getWorkflowsOverview) | **POST** /v2/workflows/overview |  |
+| [**retriggerInstance**](DefaultApi.md#retriggerInstance) | **POST** /v2/instances/{instanceId}/retrigger | Retrigger an instance in error state |
 
 
 <a name="abortWorkflow"></a>
@@ -272,6 +273,32 @@ No authorization required
 ### Return type
 
 [**WorkflowOverviewListResultDTO**](../Models/WorkflowOverviewListResultDTO.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+<a name="retriggerInstance"></a>
+# **retriggerInstance**
+> ExecuteWorkflowResponseDTO retriggerInstance(instanceId, ExecuteWorkflowRequestDTO)
+
+Retrigger an instance in error state
+
+### Parameters
+
+|Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **instanceId** | **String**| The ID of the instance to retrigger. | [default to null] |
+| **ExecuteWorkflowRequestDTO** | [**ExecuteWorkflowRequestDTO**](../Models/ExecuteWorkflowRequestDTO.md)| Request body to retrigger the instance. | |
+
+### Return type
+
+[**ExecuteWorkflowResponseDTO**](../Models/ExecuteWorkflowResponseDTO.md)
 
 ### Authorization
 

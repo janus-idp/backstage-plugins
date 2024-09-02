@@ -17,6 +17,7 @@ All URIs are relative to *http://localhost*
 *DefaultApi* | [**getWorkflowSourceById**](Apis/DefaultApi.md#getworkflowsourcebyid) | **GET** /v2/workflows/{workflowId}/source | Get a workflow source by ID |
 *DefaultApi* | [**getWorkflowStatuses**](Apis/DefaultApi.md#getworkflowstatuses) | **GET** /v2/workflows/instances/statuses | Get workflow status list |
 *DefaultApi* | [**getWorkflowsOverview**](Apis/DefaultApi.md#getworkflowsoverview) | **POST** /v2/workflows/overview | Get a list of workflow overviews |
+*DefaultApi* | [**retriggerInstance**](Apis/DefaultApi.md#retriggerinstance) | **POST** /v2/instances/{instanceId}/retrigger | Retrigger an instance in error state |
 
 
 <a name="documentation-for-models"></a>

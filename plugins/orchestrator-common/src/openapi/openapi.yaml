@@ -265,6 +265,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /v2/instances/{instanceId}/retrigger:
+    post:
+      summary: Retrigger an instance in error state
+      operationId: retriggerInstance
+      parameters:
+        - name: instanceId
+          in: path
+          required: true
+          description: The ID of the instance to retrigger.
+          schema:
+            type: string
+      requestBody:
+        description: Request body to retrigger the instance.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecuteWorkflowRequestDTO'
+      responses:
+        '200':
+          description: Successful execution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecuteWorkflowResponseDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     ErrorResponse:
