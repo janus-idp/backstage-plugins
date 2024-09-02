@@ -39,13 +39,6 @@ export class V1 {
     return source;
   }
 
-  public async abortWorkflow(instanceId: string): Promise<void> {
-    await this.orchestratorService.abortWorkflowInstance({
-      instanceId,
-      cacheHandler: 'throw',
-    });
-  }
-
   public async retriggerInstanceInError(
     instanceId: string,
     inputData: ProcessInstanceVariables,
