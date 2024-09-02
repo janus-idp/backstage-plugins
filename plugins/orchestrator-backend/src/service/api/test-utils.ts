@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import {
+  ExecuteWorkflowRequestDTO,
   ProcessInstance,
   ProcessInstanceState,
   ProcessInstanceStateValues,
@@ -68,6 +69,14 @@ export function generateTestWorkflowInfo(
   return {
     id: id,
     serviceUrl: 'mock/serviceurl',
+  };
+}
+
+export function generateTestExecuteWorkflowRequest(): ExecuteWorkflowRequestDTO {
+  return {
+    inputData: {
+      foo: 'bar',
+    },
   };
 }
 

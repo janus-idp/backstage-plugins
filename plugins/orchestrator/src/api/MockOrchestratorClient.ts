@@ -7,7 +7,6 @@ import {
   ExecuteWorkflowResponseDTO,
   ProcessInstanceListResultDTO,
   WorkflowDefinition,
-  WorkflowExecutionResponse,
   WorkflowInputSchemaResponse,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
@@ -162,7 +161,7 @@ export class MockOrchestratorClient implements OrchestratorApi {
   retriggerInstanceInError(_args: {
     instanceId: string;
     inputData: JsonObject;
-  }): Promise<WorkflowExecutionResponse> {
+  }): Promise<AxiosResponse<ExecuteWorkflowResponseDTO>> {
     if (
       !hasOwnProp(this._mockData, 'retriggerInstanceInErrorResponse') ||
       !isNonNullable(this._mockData.retriggerInstanceInErrorResponse)

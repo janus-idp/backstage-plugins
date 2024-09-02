@@ -195,6 +195,54 @@ export class V2 {
     return `Workflow instance ${instanceId} successfully aborted`;
   }
 
+  public async retriggerInstanceInError(
+    instanceId: string,
+    executeWorkflowRequestDTO: ExecuteWorkflowRequestDTO,
+  ): Promise<ExecuteWorkflowResponseDTO> {
+    const instance = await this.orchestratorService.fetchInstance({
+      instanceId,
+      cacheHandler: 'throw',
+    });
+
+    if (!instance?.serviceUrl) {
+      throw new Error(`Couldn't fetch process instance ${instanceId}`);
+    }
+
+    if (instance.state !== 'ERROR') {
+      throw new Error(
+        `Can't retrigger an instance on ${instance.state} state.`,
+      );
+    }
+
+    const isUpdateInstanceInputDataOk =
+      await this.orchestratorService.updateInstanceInputData({
+        definitionId: instance.processId,
+        serviceUrl: instance.serviceUrl,
+        instanceId,
+        inputData:
+          executeWorkflowRequestDTO?.inputData as ProcessInstanceVariables,
+        cacheHandler: 'throw',
+      });
+
+    if (!isUpdateInstanceInputDataOk) {
+      throw new Error(`Couldn't update instance input data for ${instanceId}`);
+    }
+
+    const isRetriggerInstanceInErrorOk =
+      await this.orchestratorService.retriggerInstanceInError({
+        definitionId: instance.processId,
+        instanceId,
+        serviceUrl: instance.serviceUrl,
+        cacheHandler: 'throw',
+      });
+
+    if (!isRetriggerInstanceInErrorOk) {
+      throw new Error(`Couldn't retrigger instance in error for ${instanceId}`);
+    }
+
+    return { id: instanceId };
+  }
+
   public async getWorkflowStatuses(): Promise<WorkflowRunStatusDTO[]> {
     return [
       ProcessInstanceState.Active,

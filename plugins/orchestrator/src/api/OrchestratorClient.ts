@@ -20,7 +20,6 @@ import {
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_ID,
   WorkflowDefinition,
-  WorkflowExecutionResponse,
   WorkflowInputSchemaResponse,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
@@ -182,14 +181,15 @@ export class OrchestratorClient implements OrchestratorApi {
   async retriggerInstanceInError(args: {
     instanceId: string;
     inputData: JsonObject;
-  }): Promise<WorkflowExecutionResponse> {
-    const baseUrl = await this.getBaseUrl();
-    const urlToFetch = `${baseUrl}/instances/${args.instanceId}/retrigger`;
-    return await this.fetcher(urlToFetch, {
-      method: 'POST',
-      body: JSON.stringify(args.inputData),
-      headers: { 'Content-Type': 'application/json' },
-    }).then(r => r.json());
+  }): Promise<AxiosResponse<ExecuteWorkflowResponseDTO>> {
+    const defaultApi = await this.getDefaultAPI();
+    const reqConfigOption: AxiosRequestConfig =
+      await this.getDefaultReqConfig();
+    return await defaultApi.retriggerInstance(
+      args.instanceId,
+      { inputData: args.inputData },
+      reqConfigOption,
+    );
   }
 
   /** fetcher is convenience fetch wrapper that includes authentication

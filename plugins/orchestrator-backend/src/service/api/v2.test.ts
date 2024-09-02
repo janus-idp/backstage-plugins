@@ -17,6 +17,7 @@ import { mapToWorkflowOverviewDTO } from './mapping/V2Mappings';
 import {
   generateProcessInstance,
   generateProcessInstances,
+  generateTestExecuteWorkflowRequest,
   generateTestExecuteWorkflowResponse,
   generateTestWorkflowInfo,
   generateTestWorkflowOverview,
@@ -52,6 +53,8 @@ const createMockOrchestratorService = (): OrchestratorService => {
   mockOrchestratorService.fetchInstancesTotalCount = jest.fn();
   mockOrchestratorService.executeWorkflow = jest.fn();
   mockOrchestratorService.abortWorkflowInstance = jest.fn();
+  mockOrchestratorService.updateInstanceInputData = jest.fn();
+  mockOrchestratorService.retriggerInstanceInError = jest.fn();
 
   return mockOrchestratorService;
 };
@@ -486,5 +489,134 @@ describe('abortWorkflow', () => {
 
     // Assert
     await expect(promise).rejects.toThrow('Simulated abort workflow error');
+  });
+});
+
+describe('retriggerInstanceInError', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  it('retries an instance in error state successfully', async () => {
+    // Arrange
+    const executeWorkflowRequestDTO = generateTestExecuteWorkflowRequest();
+
+    const processInstance = generateProcessInstance(1);
+    processInstance.state = 'ERROR'; // Can retrigger only in ERROR instance
+
+    const mockFetchInstance = jest
+      .spyOn(mockOrchestratorService, 'fetchInstance')
+      .mockResolvedValue(processInstance);
+    const mockUpdateInstanceInputData = jest
+      .spyOn(mockOrchestratorService, 'updateInstanceInputData')
+      .mockResolvedValue(true);
+    const mockRetriggerInstanceInError = jest
+      .spyOn(mockOrchestratorService, 'retriggerInstanceInError')
+      .mockResolvedValue(true);
+
+    // Act
+    const result = await v2.retriggerInstanceInError(
+      processInstance.id,
+      executeWorkflowRequestDTO,
+    );
+
+    // Assert
+    expect(result).toBeDefined();
+    expect(result.id).toBe(processInstance.id);
+    expect(mockFetchInstance).toHaveBeenCalledWith({
+      instanceId: processInstance.id,
+      cacheHandler: 'throw',
+    });
+    expect(mockUpdateInstanceInputData).toHaveBeenCalledWith({
+      definitionId: processInstance.processId,
+      serviceUrl: processInstance.serviceUrl,
+      instanceId: processInstance.id,
+      inputData: executeWorkflowRequestDTO.inputData,
+      cacheHandler: 'throw',
+    });
+    expect(mockRetriggerInstanceInError).toHaveBeenCalledWith({
+      definitionId: processInstance.processId,
+      instanceId: processInstance.id,
+      serviceUrl: processInstance.serviceUrl,
+      cacheHandler: 'throw',
+    });
+  });
+  it('throws an error when the instance is not found', async () => {
+    // Arrange
+    const instanceId = 'test-instance-id';
+    jest
+      .spyOn(mockOrchestratorService, 'fetchInstance')
+      .mockResolvedValue(undefined);
+
+    // Act & Assert
+    await expect(
+      v2.retriggerInstanceInError(instanceId, { inputData: {} }),
+    ).rejects.toThrow(`Couldn't fetch process instance ${instanceId}`);
+  });
+  it('throws an error when the instance is not in ERROR state', async () => {
+    // Arrange
+    const processInstance = generateProcessInstance(1);
+
+    jest
+      .spyOn(mockOrchestratorService, 'fetchInstance')
+      .mockResolvedValue(processInstance);
+
+    // Act & Assert
+    await expect(
+      v2.retriggerInstanceInError(
+        processInstance.id,
+        generateTestExecuteWorkflowRequest(),
+      ),
+    ).rejects.toThrow(
+      `Can't retrigger an instance on ${processInstance.state} state.`,
+    );
+  });
+  it('throws an error when updating instance input data fails', async () => {
+    // Arrange
+    const processInstance = generateProcessInstance(1);
+    processInstance.state = 'ERROR'; // Can retrigger only in ERROR instance
+
+    const executeWorkflowRequestDTO = generateTestExecuteWorkflowRequest();
+
+    jest
+      .spyOn(mockOrchestratorService, 'fetchInstance')
+      .mockResolvedValue(processInstance);
+    jest
+      .spyOn(mockOrchestratorService, 'updateInstanceInputData')
+      .mockResolvedValue(false);
+
+    // Act & Assert
+    await expect(
+      v2.retriggerInstanceInError(
+        processInstance.id,
+        executeWorkflowRequestDTO,
+      ),
+    ).rejects.toThrow(
+      `Couldn't update instance input data for ${processInstance.id}`,
+    );
+  });
+  it('throws an error when retriggering the instance fails', async () => {
+    // Arrange
+    const executeWorkflowRequestDTO = generateTestExecuteWorkflowRequest();
+    const processInstance = generateProcessInstance(1);
+    processInstance.state = 'ERROR'; // Can retrigger only in ERROR instance
+    jest
+      .spyOn(mockOrchestratorService, 'fetchInstance')
+      .mockResolvedValue(processInstance);
+    jest
+      .spyOn(mockOrchestratorService, 'updateInstanceInputData')
+      .mockResolvedValue(true);
+    jest
+      .spyOn(mockOrchestratorService, 'retriggerInstanceInError')
+      .mockResolvedValue(false);
+
+    // Act & Assert
+    await expect(
+      v2.retriggerInstanceInError(
+        processInstance.id,
+        executeWorkflowRequestDTO,
+      ),
+    ).rejects.toThrow(
+      `Couldn't retrigger instance in error for ${processInstance.id}`,
+    );
   });
 });

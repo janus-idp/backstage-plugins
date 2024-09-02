@@ -10,7 +10,6 @@ import {
   PaginationInfoDTO,
   ProcessInstanceListResultDTO,
   WorkflowDefinition,
-  WorkflowExecutionResponse,
   WorkflowInputSchemaResponse,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
@@ -28,7 +27,7 @@ export interface OrchestratorApi {
   retriggerInstanceInError(args: {
     instanceId: string;
     inputData: JsonObject;
-  }): Promise<WorkflowExecutionResponse>;
+  }): Promise<AxiosResponse<ExecuteWorkflowResponseDTO>>;
 
   getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition>;
 

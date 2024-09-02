@@ -976,6 +976,47 @@ function setupInternalRoutes(
           .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
       });
   });
+
+  // v2
+  routerApi.openApiBackend.register(
+    'retriggerInstance',
+    async (c, req: express.Request, res: express.Response, _next) => {
+      const instanceId = c.request.params.instanceId as string;
+      const endpointName = 'retriggerInstance';
+      const endpoint = `/v2/instances/${instanceId}/retrigger`;
+
+      auditLogger.auditLog({
+        eventName: endpointName,
+        stage: 'start',
+        status: 'succeeded',
+        level: 'debug',
+        request: req,
+        message: `Received request to '${endpoint}' endpoint`,
+      });
+
+      const decision = await authorize(
+        req,
+        orchestratorWorkflowInstanceReadPermission,
+        permissions,
+        httpAuth,
+      );
+      if (decision.result === AuthorizeResult.DENY) {
+        manageDenyAuthorization(endpointName, endpoint, req);
+      }
+
+      const executeWorkflowRequestDTO = req.body;
+
+      await routerApi.v2
+        .retriggerInstanceInError(instanceId, executeWorkflowRequestDTO)
+        .then(result => res.status(200).json(result))
+        .catch((error: { message: string }) => {
+          auditLogRequestError(error, endpointName, endpoint, req);
+          res
+            .status(500)
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
+        });
+    },
+  );
 }
 
 // ======================================================
