@@ -1,10 +1,6 @@
 import express from 'express';
 
-import {
-  ProcessInstanceVariables,
-  WorkflowDefinition,
-  WorkflowExecutionResponse,
-} from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowDefinition } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { OrchestratorService } from '../OrchestratorService';
 
@@ -37,53 +33,6 @@ export class V1 {
     }
 
     return source;
-  }
-
-  public async retriggerInstanceInError(
-    instanceId: string,
-    inputData: ProcessInstanceVariables,
-  ): Promise<WorkflowExecutionResponse> {
-    const instance = await this.orchestratorService.fetchInstance({
-      instanceId,
-      cacheHandler: 'throw',
-    });
-
-    if (!instance?.serviceUrl) {
-      throw new Error(`Couldn't fetch process instance ${instanceId}`);
-    }
-
-    if (instance.state !== 'ERROR') {
-      throw new Error(
-        `Can't retrigger an instance on ${instance.state} state.`,
-      );
-    }
-
-    const isUpdateInstanceInputDataOk =
-      await this.orchestratorService.updateInstanceInputData({
-        definitionId: instance.processId,
-        instanceId,
-        inputData,
-        serviceUrl: instance.serviceUrl,
-        cacheHandler: 'throw',
-      });
-
-    if (!isUpdateInstanceInputDataOk) {
-      throw new Error(`Couldn't update instance input data for ${instanceId}`);
-    }
-
-    const isRetriggerInstanceInErrorOk =
-      await this.orchestratorService.retriggerInstanceInError({
-        definitionId: instance.processId,
-        instanceId,
-        serviceUrl: instance.serviceUrl,
-        cacheHandler: 'throw',
-      });
-
-    if (!isRetriggerInstanceInErrorOk) {
-      throw new Error(`Couldn't retrigger instance in error for ${instanceId}`);
-    }
-
-    return { id: instanceId };
   }
 
   public extractQueryParam(
