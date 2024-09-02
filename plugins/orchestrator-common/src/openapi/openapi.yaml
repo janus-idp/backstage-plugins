@@ -539,6 +539,8 @@ components:
       properties:
         id:
           type: string
+      required:
+        - id
     WorkflowProgressDTO:
       allOf:
         - $ref: '#/components/schemas/NodeInstanceDTO'

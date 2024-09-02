@@ -4,6 +4,7 @@ import { AxiosResponse } from 'axios';
 
 import {
   AssessedProcessInstanceDTO,
+  ExecuteWorkflowResponseDTO,
   ProcessInstanceListResultDTO,
   WorkflowDefinition,
   WorkflowExecutionResponse,
@@ -50,7 +51,7 @@ export class MockOrchestratorClient implements OrchestratorApi {
   executeWorkflow(_args: {
     workflowId: string;
     parameters: JsonObject;
-  }): Promise<WorkflowExecutionResponse> {
+  }): Promise<AxiosResponse<ExecuteWorkflowResponseDTO>> {
     if (
       !hasOwnProp(this._mockData, 'executeWorkflowResponse') ||
       !isNonNullable(this._mockData.executeWorkflowResponse)
