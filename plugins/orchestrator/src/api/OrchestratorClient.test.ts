@@ -176,21 +176,37 @@ describe('OrchestratorClient', () => {
       // Given
       const instanceId = 'instance123';
 
-      // Mock fetch to simulate a successful response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-      });
+      const mockResponse: AxiosResponse<string> = {
+        data: instanceId,
+        status: 200,
+        statusText: 'OK',
+        headers: {} as RawAxiosResponseHeaders,
+        config: {} as InternalAxiosRequestConfig,
+      };
 
+      const abortWorkflowSpy = jest.spyOn(
+        DefaultApi.prototype,
+        'abortWorkflow',
+      );
+      axios.request = jest.fn().mockResolvedValueOnce(mockResponse);
       // When
-      await orchestratorClient.abortWorkflowInstance(instanceId);
+      const result = await orchestratorClient.abortWorkflowInstance(instanceId);
 
-      // Assert
-      expect(fetch).toHaveBeenCalledWith(
-        `${baseUrl}/instances/${instanceId}/abort`,
-        {
-          method: 'DELETE',
-          headers: defaultAuthHeaders,
+      // Then
+      expect(result).toBeDefined();
+      expect(result.data).toEqual(instanceId);
+      expect(axios.request).toHaveBeenCalledTimes(1);
+      expect(axios.request).toHaveBeenCalledWith({
+        ...getAxiosTestRequest(`/v2/instances/${instanceId}/abort`),
+        method: 'DELETE',
+        headers: {
+          ...defaultAuthHeaders,
         },
+      });
+      expect(abortWorkflowSpy).toHaveBeenCalledTimes(1);
+      expect(abortWorkflowSpy).toHaveBeenCalledWith(
+        instanceId,
+        getDefaultTestRequestConfig(),
       );
     });
 
@@ -198,13 +214,10 @@ describe('OrchestratorClient', () => {
       // Given
       const instanceId = 'instance123';
 
-      // Mock fetch to simulate a failed response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error',
-      });
-
+      // Mock fetch to simulate a failure
+      axios.request = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('Simulated error'));
       // When
       const promise = orchestratorClient.abortWorkflowInstance(instanceId);
 

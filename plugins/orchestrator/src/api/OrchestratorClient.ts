@@ -89,11 +89,13 @@ export class OrchestratorClient implements OrchestratorApi {
     );
   }
 
-  async abortWorkflowInstance(instanceId: string): Promise<void> {
-    const baseUrl = await this.getBaseUrl();
-    return await this.fetcher(`${baseUrl}/instances/${instanceId}/abort`, {
-      method: 'DELETE',
-    }).then(_ => undefined);
+  async abortWorkflowInstance(
+    instanceId: string,
+  ): Promise<AxiosResponse<string>> {
+    const defaultApi = await this.getDefaultAPI();
+    const reqConfigOption: AxiosRequestConfig =
+      await this.getDefaultReqConfig();
+    return await defaultApi.abortWorkflow(instanceId, reqConfigOption);
   }
 
   async getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition> {
