@@ -109,6 +109,7 @@ export class OrchestratorClient implements OrchestratorApi {
     const defaultApi = await this.getDefaultAPI();
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
+    reqConfigOption.responseType = 'text';
     return await defaultApi.getWorkflowSourceById(workflowId, reqConfigOption);
   }
 

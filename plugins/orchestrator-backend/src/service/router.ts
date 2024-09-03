@@ -353,12 +353,12 @@ function setupInternalRoutes(
 
       try {
         const result = await routerApi.v2.getWorkflowSourceById(workflowId);
-        res.status(200).contentType('plain/text').send(result);
+        res.status(200).contentType('text/plain').send(result);
       } catch (error) {
         auditLogRequestError(error, endpointName, endpoint, _req);
         res
           .status(500)
-          .contentType('plain/text')
+          .contentType('text/plain')
           .send((error as Error)?.message || INTERNAL_SERVER_ERROR_MESSAGE);
         next();
       }

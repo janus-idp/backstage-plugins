@@ -270,7 +270,8 @@ describe('OrchestratorClient', () => {
       // Given
       const workflowId = 'workflow123';
       const mockWorkflowSource = 'test workflow source';
-
+      const responseConfigOptions = getDefaultTestRequestConfig();
+      responseConfigOptions.responseType = 'text';
       const mockResponse: AxiosResponse<string> = {
         data: mockWorkflowSource,
         status: 200,
@@ -300,11 +301,12 @@ describe('OrchestratorClient', () => {
         headers: {
           ...defaultAuthHeaders,
         },
+        responseType: 'text',
       });
       expect(getSourceSpy).toHaveBeenCalledTimes(1);
       expect(getSourceSpy).toHaveBeenCalledWith(
         workflowId,
-        getDefaultTestRequestConfig(),
+        responseConfigOptions,
       );
     });
 
