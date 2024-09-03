@@ -8,6 +8,7 @@ import {
   ProcessInstance,
   ProcessInstanceListResultDTO,
   ProcessInstanceState,
+  ProcessInstanceVariables,
   WorkflowDTO,
   WorkflowInfo,
   WorkflowOverviewDTO,
@@ -16,6 +17,7 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { Pagination } from '../../types/pagination';
+import { retryAsyncFunction } from '../Helper';
 import { OrchestratorService } from '../OrchestratorService';
 import {
   mapToExecuteWorkflowResponseDTO,
@@ -25,6 +27,9 @@ import {
   mapToWorkflowRunStatusDTO,
 } from './mapping/V2Mappings';
 import { V1 } from './v1';
+
+const FETCH_INSTANCE_MAX_ATTEMPTS = 10;
+const FETCH_INSTANCE_RETRY_DELAY_MS = 1000;
 
 export class V2 {
   constructor(
@@ -141,21 +146,52 @@ export class V2 {
       );
     }
 
-    const executeWorkflowResponse = await this.v1.executeWorkflow(
-      executeWorkflowRequestDTO as unknown as Record<string, unknown>, // Temporary fix: this will be addresses in the next PR
-      workflowId,
+    const definition = await this.orchestratorService.fetchWorkflowInfo({
+      definitionId: workflowId,
+      cacheHandler: 'throw',
+    });
+    if (!definition) {
+      throw new Error(`Couldn't fetch workflow definition for ${workflowId}`);
+    }
+    if (!definition.serviceUrl) {
+      throw new Error(`ServiceURL is not defined for workflow ${workflowId}`);
+    }
+    const executionResponse = await this.orchestratorService.executeWorkflow({
+      definitionId: workflowId,
+      inputData:
+        executeWorkflowRequestDTO?.inputData as ProcessInstanceVariables,
+      serviceUrl: definition.serviceUrl,
       businessKey,
-    );
+      cacheHandler: 'throw',
+    });
 
-    if (!executeWorkflowResponse) {
+    if (!executionResponse) {
+      throw new Error(`Couldn't execute workflow ${workflowId}`);
+    }
+
+    // Making sure the instance data is available before returning
+    await retryAsyncFunction({
+      asyncFn: () =>
+        this.orchestratorService.fetchInstance({
+          instanceId: executionResponse.id,
+          cacheHandler: 'throw',
+        }),
+      maxAttempts: FETCH_INSTANCE_MAX_ATTEMPTS,
+      delayMs: FETCH_INSTANCE_RETRY_DELAY_MS,
+    });
+
+    if (!executionResponse) {
       throw new Error('Error executing workflow with id ${workflowId}');
     }
 
-    return mapToExecuteWorkflowResponseDTO(workflowId, executeWorkflowResponse);
+    return mapToExecuteWorkflowResponseDTO(workflowId, executionResponse);
   }
 
   public async abortWorkflow(instanceId: string): Promise<string> {
-    await this.v1.abortWorkflow(instanceId);
+    await this.orchestratorService.abortWorkflowInstance({
+      instanceId,
+      cacheHandler: 'throw',
+    });
     return `Workflow instance ${instanceId} successfully aborted`;
   }
 

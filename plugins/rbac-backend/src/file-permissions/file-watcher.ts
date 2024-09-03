@@ -9,7 +9,7 @@ import fs from 'fs';
  */
 export abstract class AbstractFileWatcher<T> {
   constructor(
-    protected readonly filePath: string,
+    protected readonly filePath: string | undefined,
     protected readonly allowReload: boolean,
     protected readonly logger: LoggerService,
   ) {}
@@ -23,6 +23,9 @@ export abstract class AbstractFileWatcher<T> {
    * watchFile initializes the file watcher and sets it to begin watching for changes.
    */
   watchFile(): void {
+    if (!this.filePath) {
+      throw new Error('File path is not specified');
+    }
     const watcher = chokidar.watch(this.filePath);
     watcher.on('change', async path => {
       this.logger.info(`file ${path} has changed`);
@@ -44,6 +47,9 @@ export abstract class AbstractFileWatcher<T> {
    * @returns The current contents of the file.
    */
   getCurrentContents(): string {
+    if (!this.filePath) {
+      throw new Error('File path is not specified');
+    }
     return fs.readFileSync(this.filePath, 'utf-8');
   }
 

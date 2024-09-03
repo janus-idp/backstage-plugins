@@ -1,5 +1,15 @@
 ### Dependencies
 
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.16.0
+* **@janus-idp/backstage-plugin-orchestrator-form-react:** upgraded to 1.0.6
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.15.2
+* **@janus-idp/backstage-plugin-orchestrator-form-react:** upgraded to 1.0.5
+
+### Dependencies
+
 * **@janus-idp/backstage-plugin-orchestrator-form-react:** upgraded to 1.0.4
 
 ### Dependencies
