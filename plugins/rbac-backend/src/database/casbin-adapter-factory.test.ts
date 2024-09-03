@@ -198,13 +198,14 @@ describe('CasbinAdapterFactory', () => {
           },
         },
       });
-      const factory = new CasbinDBAdapterFactory(config, mockDatabaseManager);
+      const factory = new CasbinDBAdapterFactory(config, db);
       const adapter = await factory.createAdapter();
       expect(adapter).not.toBeNull();
       expect(newAdapterMock).toHaveBeenCalledWith({
         type: 'postgres',
         host: 'localhost',
         port: 5432,
+        schema: 'public',
         username: 'postgresUser',
         password: process.env.TEST,
         database: 'test-database',
@@ -232,13 +233,14 @@ describe('CasbinAdapterFactory', () => {
           },
         },
       });
-      const factory = new CasbinDBAdapterFactory(config, mockDatabaseManager);
+      const factory = new CasbinDBAdapterFactory(config, db);
       const adapter = await factory.createAdapter();
       expect(adapter).not.toBeNull();
       expect(newAdapterMock).toHaveBeenCalledWith({
         type: 'postgres',
         host: 'localhost',
         port: 5432,
+        schema: 'public',
         username: 'postgresUser',
         password: process.env.TEST,
         database: 'test-database',
