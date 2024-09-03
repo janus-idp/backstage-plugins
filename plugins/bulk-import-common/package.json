@@ -43,6 +43,8 @@
     "directory": "plugins/bulk-import-common"
   },
   "keywords": [
+    "support:tech-preview",
+    "lifecycle:active",
     "backstage",
     "plugin"
   ],
