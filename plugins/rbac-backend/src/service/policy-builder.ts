@@ -1,8 +1,8 @@
 import {
   createLegacyAuthAdapters,
-  DatabaseManager,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { DatabaseManager } from '@backstage/backend-defaults/database';
 import {
   AuthService,
   HttpAuthService,

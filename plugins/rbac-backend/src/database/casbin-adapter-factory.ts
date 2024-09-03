@@ -5,14 +5,11 @@ import { Knex } from 'knex';
 import TypeORMAdapter from 'typeorm-adapter';
 
 import { resolve } from 'path';
-import { TlsOptions } from 'tls';
+import { ConnectionOptions, TlsOptions } from 'tls';
+
+import '@backstage/backend-defaults/database';
 
 const DEFAULT_SQLITE3_STORAGE_FILE_NAME = 'rbac.sqlite';
-
-type DbSSLOptions = {
-  ca?: string;
-  rejectUnauthorized?: boolean;
-};
 
 export class CasbinDBAdapterFactory {
   public constructor(
@@ -31,7 +28,7 @@ export class CasbinDBAdapterFactory {
       const schema =
         (await this.databaseClient.client.searchPath?.[0]) ?? 'public';
 
-      const ssl = this.handleSSL(databaseConfig!);
+      const ssl = this.handlePostgresSSL(databaseConfig!);
 
       adapter = await TypeORMAdapter.newAdapter({
         type: 'postgres',
@@ -68,29 +65,37 @@ export class CasbinDBAdapterFactory {
     return adapter;
   }
 
-  private handleSSL(dbConfig: Config): boolean | TlsOptions | undefined {
-    const connection = dbConfig.getOptional('connection');
+  private handlePostgresSSL(
+    dbConfig: Config,
+  ): boolean | TlsOptions | undefined {
+    const connection = dbConfig.getOptional<Knex.PgConnectionConfig | string>(
+      'connection',
+    );
     if (!connection) {
       return undefined;
     }
 
-    const ssl = (connection as { ssl: Object | boolean | undefined }).ssl;
+    if (typeof connection === 'string' || connection instanceof String) {
+      throw new Error(
+        `rbac backend plugin doesn't support postgres connection in a string format yet`,
+      );
+    }
+
+    const ssl: boolean | ConnectionOptions | undefined = connection.ssl;
 
     if (ssl === undefined) {
       return undefined;
     }
 
-    if (typeof ssl.valueOf() === 'boolean') {
+    if (typeof ssl === 'boolean') {
       return ssl;
     }
 
-    if (typeof ssl.valueOf() === 'object') {
-      const sslOpts = ssl as DbSSLOptions;
-      const tlsOpts = {
-        ca: sslOpts.ca,
-        rejectUnauthorized: sslOpts.rejectUnauthorized,
-      };
+    if (typeof ssl === 'object') {
+      const { ca, rejectUnauthorized } = ssl as ConnectionOptions;
+      const tlsOpts = { ca, rejectUnauthorized };
 
+      // SSL object was defined with some options that we don't support yet.
       if (Object.values(tlsOpts).every(el => el === undefined)) {
         return true;
       }
