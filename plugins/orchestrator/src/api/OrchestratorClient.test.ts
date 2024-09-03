@@ -270,35 +270,54 @@ describe('OrchestratorClient', () => {
       // Given
       const workflowId = 'workflow123';
       const mockWorkflowSource = 'test workflow source';
+      const responseConfigOptions = getDefaultTestRequestConfig();
+      responseConfigOptions.responseType = 'text';
+      const mockResponse: AxiosResponse<string> = {
+        data: mockWorkflowSource,
+        status: 200,
+        statusText: 'OK',
+        headers: {} as RawAxiosResponseHeaders,
+        config: {} as InternalAxiosRequestConfig,
+      };
+      // Mock axios request to simulate a successful response
+      jest.spyOn(axios, 'request').mockResolvedValueOnce(mockResponse);
 
-      // Mock fetch to simulate a successful response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        text: jest.fn().mockResolvedValue(mockWorkflowSource),
-      });
+      // Spy DefaultApi
+      const getSourceSpy = jest.spyOn(
+        DefaultApi.prototype,
+        'getWorkflowSourceById',
+      );
 
       // When
       const result = await orchestratorClient.getWorkflowSource(workflowId);
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(
-        `${baseUrl}/workflows/${workflowId}/source`,
-        { headers: defaultAuthHeaders },
+      expect(result).toBeDefined();
+      expect(result.data).toEqual(mockWorkflowSource);
+      expect(axios.request).toHaveBeenCalledTimes(1);
+      expect(axios.request).toHaveBeenCalledWith({
+        ...getAxiosTestRequest(`/v2/workflows/${workflowId}/source`),
+        method: 'GET',
+        headers: {
+          ...defaultAuthHeaders,
+        },
+        responseType: 'text',
+      });
+      expect(getSourceSpy).toHaveBeenCalledTimes(1);
+      expect(getSourceSpy).toHaveBeenCalledWith(
+        workflowId,
+        responseConfigOptions,
       );
-      expect(result).toEqual(mockWorkflowSource);
     });
 
     it('should throw a ResponseError when fetching the workflow source fails', async () => {
       // Given
       const workflowId = 'workflow123';
 
-      // Mock fetch to simulate a failed response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found',
-      });
-
+      // Mock fetch to simulate a failure
+      axios.request = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('Simulated error'));
       // When
       const promise = orchestratorClient.getWorkflowSource(workflowId);
 
