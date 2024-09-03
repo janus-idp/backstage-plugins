@@ -3,7 +3,6 @@ import { ConfigReader } from '@backstage/config';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 import express from 'express';
-import { APIError } from 'openai';
 import request from 'supertest';
 
 import { createRouter } from './router';
@@ -69,7 +68,7 @@ describe('createRouter', () => {
   const mockModel = 'test-model'
 
   describe('POST /v1/query', () => {
-    it('streams completions', async () => {
+    it('chat completions', async () => {
       const response = await request(app)
         .post('/v1/query')
         .send({
@@ -83,7 +82,7 @@ describe('createRouter', () => {
       expect(response.text).toContain(expectedData);
     });
 
-    it('returns 400 if coversatio_id is missing', async () => {
+    it('returns 400 if conversation_id is missing', async () => {
       const response = await request(app).post('/v1/query').send({
         model: mockModel,
       });
@@ -122,25 +121,7 @@ describe('createRouter', () => {
       expect(response.body.error).toBe('query is required and must be a non-empty string');
       expect(mockInvokeReturnValue).not.toHaveBeenCalled();
     });
-   
-    it('returns openai error', async () => {
-      mockInvokeReturnValue.mockImplementationOnce(async () => {
-        throw APIError.generate(
-          400,
-          { error: 'invalid model' },
-          'Invalid model',
-          {},
-        );
-      });
-      const response = await request(app).post('/v1/query').send({
-        model: 'nonexistent-model',
-        conversation_id: mockConversationId,
-        serverURL: mockServerURL,
-        query: "Hello",
-      });
-      expect(response.statusCode).toEqual(400);
-      expect(response.body.error).toBe('400 "invalid model"');
-    });
+  
 
     it('returns 500 if unexpected error', async () => {
       mockInvokeReturnValue.mockImplementationOnce(async () => {

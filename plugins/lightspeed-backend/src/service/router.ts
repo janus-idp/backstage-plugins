@@ -2,7 +2,6 @@ import { errorHandler } from '@backstage/backend-common';
 
 import express from 'express';
 import Router from 'express-promise-router';
-import { APIError } from 'openai';
 
 import { RouterOptions, QueryRequestBody } from './types';
 import { validateCompletionsRequest } from './validation';
@@ -40,7 +39,7 @@ export async function createRouter(
                 // bearer token should already applied in proxy header
                 // baseOptions: {
                 //   headers: {
-                //     ...(token && { Authorization: `Bearer d51451d216eee94e88579069d92fca4f` }),
+                //     ...(token && { Authorization: `Bearer <token>` }),
                 //   },
                 // },
                 baseURL: serverURL
@@ -71,15 +70,10 @@ export async function createRouter(
           response.json(data)
           response.end();
       } catch (error) {
-        if (error instanceof APIError) {
-          const status = error.status || 500;
-          response.status(status).json({ error: error.message });
-        } else {
           const errormsg = `Error fetching completions from ${serverURL}: ${error}`
           logger.error(errormsg);
           response.status(500).json({ error: errormsg});
         }
-      }
     },
   );
 

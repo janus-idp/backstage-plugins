@@ -3,6 +3,7 @@ import {
   loadBackendConfig,
 } from '@backstage/backend-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 import { Server } from 'http';
 
@@ -23,6 +24,13 @@ export async function startStandaloneServer(
   const router = await createRouter({
     logger,
     config,
+    httpAuth: mockServices.httpAuth({
+      pluginId: 'lightspeed',
+      defaultCredentials: mockCredentials.user(),
+    }),
+    userInfo: mockServices.userInfo({
+      userEntityRef: "user1",
+    })
   });
 
   let service = createServiceBuilder(module)
