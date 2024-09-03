@@ -1,4 +1,8 @@
-import { LoggerService, HttpAuthService, UserInfoService} from '@backstage/backend-plugin-api';
+import {
+  HttpAuthService,
+  LoggerService,
+  UserInfoService,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
 export type RouterOptions = {
@@ -23,6 +27,5 @@ export interface QueryRequestBody {
   serverURL: string;
 
   // A combination of user_id & session_id in the format of <user_id>+<session_id>
-  conversation_id: string
-
+  conversation_id: string;
 }

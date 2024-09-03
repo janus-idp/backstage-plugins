@@ -1,20 +1,20 @@
 import { getVoidLogger } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { ConfigReader } from '@backstage/config';
 
+import { AIMessage } from '@langchain/core/messages';
 import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
-import { AIMessage} from "@langchain/core/messages";
 
-const mockAIMessage = new AIMessage('Mockup AI Message')
-const mockInvokeReturnValue = jest.fn().mockResolvedValue(mockAIMessage)
+const mockAIMessage = new AIMessage('Mockup AI Message');
+const mockInvokeReturnValue = jest.fn().mockResolvedValue(mockAIMessage);
 
 jest.mock('@langchain/core/prompts', () => {
   // Import the actual module to ensure other exports are available
   const actualModule = jest.requireActual('@langchain/core/prompts');
-  
+
   return {
     ...actualModule,
     ChatPromptTemplate: {
@@ -27,7 +27,6 @@ jest.mock('@langchain/core/prompts', () => {
   };
 });
 
-
 (global.fetch as jest.Mock) = jest.fn();
 
 describe('createRouter', () => {
@@ -36,16 +35,14 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
-      config: new ConfigReader({
-      }),
+      config: new ConfigReader({}),
       httpAuth: mockServices.httpAuth({
         pluginId: 'lightspeed',
         defaultCredentials: mockCredentials.user(),
       }),
       userInfo: mockServices.userInfo({
-        userEntityRef: "user1",
-      })
-      
+        userEntityRef: 'user1',
+      }),
     });
     app = express().use(router);
   });
@@ -63,20 +60,18 @@ describe('createRouter', () => {
     });
   });
 
-  const mockConversationId = "user1+1q2w3e4r-qwer1234"
-  const mockServerURL = "http://localhost:7007/api/proxy/lightspeed/api"
-  const mockModel = 'test-model'
+  const mockConversationId = 'user1+1q2w3e4r-qwer1234';
+  const mockServerURL = 'http://localhost:7007/api/proxy/lightspeed/api';
+  const mockModel = 'test-model';
 
   describe('POST /v1/query', () => {
     it('chat completions', async () => {
-      const response = await request(app)
-        .post('/v1/query')
-        .send({
-          model: mockModel,
-          conversation_id: mockConversationId,
-          query: 'Hello',
-          serverURL: mockServerURL
-        });
+      const response = await request(app).post('/v1/query').send({
+        model: mockModel,
+        conversation_id: mockConversationId,
+        query: 'Hello',
+        serverURL: mockServerURL,
+      });
       const expectedData = 'Mockup AI Message';
       expect(response.statusCode).toEqual(200);
       expect(response.text).toContain(expectedData);
@@ -87,7 +82,9 @@ describe('createRouter', () => {
         model: mockModel,
       });
       expect(response.statusCode).toEqual(400);
-      expect(response.body.error).toBe('conversation_id is required and must be a non-empty string');
+      expect(response.body.error).toBe(
+        'conversation_id is required and must be a non-empty string',
+      );
       expect(mockInvokeReturnValue).not.toHaveBeenCalled();
     });
 
@@ -97,17 +94,21 @@ describe('createRouter', () => {
         conversation_id: mockConversationId,
       });
       expect(response.statusCode).toEqual(400);
-      expect(response.body.error).toBe('serverURL is required and must be a non-empty string');
+      expect(response.body.error).toBe(
+        'serverURL is required and must be a non-empty string',
+      );
       expect(mockInvokeReturnValue).not.toHaveBeenCalled();
     });
 
     it('returns 400 if model is missing', async () => {
       const response = await request(app).post('/v1/query').send({
         conversation_id: mockConversationId,
-        serverURL: mockServerURL
+        serverURL: mockServerURL,
       });
       expect(response.statusCode).toEqual(400);
-      expect(response.body.error).toBe('model is required and must be a non-empty string');
+      expect(response.body.error).toBe(
+        'model is required and must be a non-empty string',
+      );
       expect(mockInvokeReturnValue).not.toHaveBeenCalled();
     });
 
@@ -115,13 +116,14 @@ describe('createRouter', () => {
       const response = await request(app).post('/v1/query').send({
         model: mockModel,
         conversation_id: mockConversationId,
-        serverURL: mockServerURL
+        serverURL: mockServerURL,
       });
       expect(response.statusCode).toEqual(400);
-      expect(response.body.error).toBe('query is required and must be a non-empty string');
+      expect(response.body.error).toBe(
+        'query is required and must be a non-empty string',
+      );
       expect(mockInvokeReturnValue).not.toHaveBeenCalled();
     });
-  
 
     it('returns 500 if unexpected error', async () => {
       mockInvokeReturnValue.mockImplementationOnce(async () => {
@@ -131,7 +133,7 @@ describe('createRouter', () => {
         model: 'nonexistent-model',
         conversation_id: mockConversationId,
         serverURL: mockServerURL,
-        query: "Hello",
+        query: 'Hello',
       });
       expect(response.statusCode).toEqual(500);
     });

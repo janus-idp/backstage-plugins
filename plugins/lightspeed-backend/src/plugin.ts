@@ -22,7 +22,9 @@ export const lightspeedPlugin = createBackendPlugin({
         userInfo: coreServices.userInfo,
       },
       async init({ logger, config, http, httpAuth, userInfo }) {
-        http.use(await createRouter({ config: config, logger, httpAuth, userInfo}));
+        http.use(
+          await createRouter({ config: config, logger, httpAuth, userInfo }),
+        );
 
         // allow health endpoint to be unauthenticated accessible
         http.addAuthPolicy({

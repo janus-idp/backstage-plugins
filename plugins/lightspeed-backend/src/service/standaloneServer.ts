@@ -29,8 +29,8 @@ export async function startStandaloneServer(
       defaultCredentials: mockCredentials.user(),
     }),
     userInfo: mockServices.userInfo({
-      userEntityRef: "user1",
-    })
+      userEntityRef: 'user1',
+    }),
   });
 
   let service = createServiceBuilder(module)

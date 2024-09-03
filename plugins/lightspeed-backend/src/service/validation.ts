@@ -10,7 +10,9 @@ export const validateCompletionsRequest = (
   if (typeof conversation_id !== 'string' || conversation_id.trim() === '') {
     return res
       .status(400)
-      .json({ error: 'conversation_id is required and must be a non-empty string' });
+      .json({
+        error: 'conversation_id is required and must be a non-empty string',
+      });
   }
 
   // TODO: Need to extract out the user_id from conversation_id, and verify with the login user entity
@@ -20,7 +22,7 @@ export const validateCompletionsRequest = (
       .status(400)
       .json({ error: 'serverURL is required and must be a non-empty string' });
   }
-  
+
   if (typeof model !== 'string' || model.trim() === '') {
     return res
       .status(400)
@@ -32,7 +34,6 @@ export const validateCompletionsRequest = (
       .status(400)
       .json({ error: 'query is required and must be a non-empty string' });
   }
-
 
   return next();
 };
