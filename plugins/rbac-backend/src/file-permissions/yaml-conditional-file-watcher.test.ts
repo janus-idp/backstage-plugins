@@ -191,13 +191,13 @@ describe('YamlConditionalFileWatcher', () => {
 
     auditLoggerMock.auditLog.mockClear();
     conditionalStorageMock.createCondition = jest.fn().mockImplementation();
-    (conditionalStorageMock.deleteCondition as jest.Mock).mockClear();
+    conditionalStorageMock.deleteCondition = jest.fn().mockImplementation();
     loggerWarnSpy.mockClear();
   });
 
   function createWatcher(filePath?: string): YamlConditinalPoliciesFileWatcher {
     return new YamlConditinalPoliciesFileWatcher(
-      filePath ?? csvFileName,
+      filePath,
       false,
       loggerMock,
       conditionalStorageMock as DataBaseConditionalStorage,
@@ -252,7 +252,7 @@ describe('YamlConditionalFileWatcher', () => {
         throw new Error('unknow error message');
       });
 
-    const watcher = createWatcher();
+    const watcher = createWatcher(csvFileName);
     await watcher.initialize();
 
     expect(conditionalStorageMock.createCondition).toHaveBeenCalled();
@@ -273,7 +273,7 @@ describe('YamlConditionalFileWatcher', () => {
       .fn()
       .mockImplementation(() => csvFileRoles);
 
-    const watcher = createWatcher();
+    const watcher = createWatcher(csvFileName);
     await watcher.initialize();
 
     expect(conditionalStorageMock.createCondition).toHaveBeenCalledWith(
@@ -321,7 +321,7 @@ describe('YamlConditionalFileWatcher', () => {
         },
       ]);
 
-    const watcher = createWatcher();
+    const watcher = createWatcher(csvFileName);
     await watcher.initialize();
 
     expect(conditionalStorageMock.createCondition).not.toHaveBeenCalled();
@@ -346,7 +346,7 @@ describe('YamlConditionalFileWatcher', () => {
       .fn()
       .mockImplementation(() => []);
 
-    const watcher = createWatcher();
+    const watcher = createWatcher(csvFileName);
     await watcher.initialize();
 
     expect(conditionalStorageMock.createCondition).not.toHaveBeenCalled();
@@ -371,7 +371,7 @@ describe('YamlConditionalFileWatcher', () => {
       .fn()
       .mockImplementation(() => []);
 
-    const watcher = createWatcher();
+    const watcher = createWatcher(csvFileName);
     await watcher.initialize();
 
     expect(conditionalStorageMock.createCondition).not.toHaveBeenCalled();
@@ -398,7 +398,7 @@ describe('YamlConditionalFileWatcher', () => {
         throw new Error('unknow error message');
       });
 
-    const watcher = createWatcher();
+    const watcher = createWatcher(csvFileName);
     await watcher.initialize();
 
     expect(conditionalStorageMock.createCondition).not.toHaveBeenCalled();
@@ -410,5 +410,51 @@ describe('YamlConditionalFileWatcher', () => {
       ConditionEvents.DELETE_CONDITION_ERROR,
     );
     expect(auditEvents[0][0].message).toBe(`Failed to delete condition by id`);
+  });
+
+  test('should clean up conditions if conditional file was not specified', async () => {
+    conditionalStorageMock.filterConditions = jest
+      .fn()
+      .mockImplementation(() => [conditionToRemove]);
+    roleMetadataStorageMock.filterRoleMetadata = jest
+      .fn()
+      .mockImplementation(() => csvFileRoles);
+
+    const watcher = createWatcher();
+    await watcher.initialize();
+    await watcher.cleanUpConditionalPolicies();
+
+    expect(conditionalStorageMock.createCondition).not.toHaveBeenCalled();
+
+    const auditEvents: any[] = auditLoggerMock.auditLog.mock.calls;
+    expect(auditEvents.length).toBe(1);
+    expect(auditEvents[0][0].eventName).toBe(ConditionEvents.DELETE_CONDITION);
+    expect(auditEvents[0][0].message).toBe(
+      `Deleted conditional permission policy`,
+    );
+    expect(conditionalStorageMock.deleteCondition).toHaveBeenNthCalledWith(
+      1,
+      2,
+    );
+  });
+
+  test('should not clean up conditions if list contidions is empty', async () => {
+    conditionalStorageMock.filterConditions = jest
+      .fn()
+      .mockImplementation(() => []);
+    roleMetadataStorageMock.filterRoleMetadata = jest
+      .fn()
+      .mockImplementation(() => csvFileRoles);
+
+    const watcher = createWatcher();
+    await watcher.initialize();
+    await watcher.cleanUpConditionalPolicies();
+
+    expect(conditionalStorageMock.createCondition).not.toHaveBeenCalled();
+
+    const auditEvents: any[] = auditLoggerMock.auditLog.mock.calls;
+    expect(auditEvents.length).toBe(0);
+
+    expect(conditionalStorageMock.deleteCondition).not.toHaveBeenCalled();
   });
 });
