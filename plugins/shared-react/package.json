@@ -19,7 +19,9 @@
       "@janus-idp/shared-react"
     ]
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./**/*.css"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
     "tsc": "tsc",
