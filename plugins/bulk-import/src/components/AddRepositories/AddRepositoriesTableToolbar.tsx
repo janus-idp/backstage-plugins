@@ -1,8 +1,7 @@
 import * as React from 'react';
 
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Toolbar from '@mui/material/Toolbar';
+import { makeStyles, Toolbar } from '@material-ui/core';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
 
@@ -12,6 +11,13 @@ import {
   RepositorySelection,
 } from '../../types';
 import { RepositoriesSearchBar } from './AddRepositoriesSearchBar';
+
+const useStyles = makeStyles(() => ({
+  toolbar: {
+    paddingTop: '14px',
+    paddingBottom: '14px',
+  },
+}));
 
 export const AddRepositoriesTableToolbar = ({
   title,
@@ -32,6 +38,7 @@ export const AddRepositoriesTableToolbar = ({
     RepositorySelection.Repository,
   );
   const [search, setSearch] = React.useState<string>('');
+  const classes = useStyles();
   const [selectedReposNumber, setSelectedReposNumber] = React.useState(0);
   const handleToggle = (
     _event: React.MouseEvent<HTMLElement>,
@@ -63,14 +70,7 @@ export const AddRepositoriesTableToolbar = ({
   }, [selectedReposFromDrawer, values.repositories, activeOrganization]);
 
   return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1, lg: 3, md: 3 },
-        pt: '14px',
-        pb: '14px',
-      }}
-    >
+    <Toolbar className={classes.toolbar}>
       <Typography sx={{ flex: '1 1 100%' }} variant="h5" id={title}>
         {`${title} (${selectedReposNumber})`}
       </Typography>

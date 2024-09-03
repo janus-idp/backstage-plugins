@@ -7,9 +7,10 @@ import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 
-import { mockGetRepositories } from '../../mocks/mockData';
+import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
+import { mockGetImportJobs, mockGetRepositories } from '../../mocks/mockData';
 import { mockEntities } from '../../mocks/mockEntities';
-import { ApprovalTool, RepositoryStatus } from '../../types';
+import { ApprovalTool, ImportJobStatus, RepositoryStatus } from '../../types';
 import { getPRTemplate } from '../../utils/repository-utils';
 import { PreviewPullRequests } from './PreviewPullRequests';
 
@@ -38,15 +39,28 @@ jest.mock('react-use', () => ({
   useAsync: jest.fn().mockReturnValue({ loading: false }),
 }));
 
-const seState = jest.fn();
+class MockBulkImportApi {
+  async getImportAction(
+    repo: string,
+    _defaultBranch: string,
+  ): Promise<ImportJobStatus | Response> {
+    return mockGetImportJobs.find(
+      i => i.repository.url === repo,
+    ) as ImportJobStatus;
+  }
+}
+
+const setState = jest.fn();
 
 beforeEach(() => {
-  (useState as jest.Mock).mockImplementation(initial => [initial, seState]);
+  (useState as jest.Mock).mockImplementation(initial => [initial, setState]);
 });
 
 const mockCatalogApi: Partial<CatalogApi> = {
   getEntities: jest.fn().mockReturnValue(mockEntities),
 };
+
+const mockBulkImportApi = new MockBulkImportApi();
 
 describe('Preview Pull Requests', () => {
   it('should render the pull request preview without the tab view when only one repository from the an org is selected', async () => {
@@ -63,6 +77,7 @@ describe('Preview Pull Requests', () => {
     const { getByText, getByPlaceholderText, queryByRole } = render(
       <TestApiProvider
         apis={[
+          [bulkImportApiRef, mockBulkImportApi],
           [
             configApiRef,
             new MockConfigApi({
@@ -79,10 +94,12 @@ describe('Preview Pull Requests', () => {
         <PreviewPullRequests
           repositories={[mockGetRepositories.repositories[0]]}
           pullRequest={{
-            'org/dessert/Cupcake': getPRTemplate(
-              'org/dessert/Cupcake',
+            'org/dessert/cupcake': getPRTemplate(
+              'org/dessert/cupcake',
               'org/dessert',
               'user:default/guest',
+              'https://localhost:3001',
+              'https://github.com/org/dessert/cupcake',
             ),
           }}
           setFormErrors={() => jest.fn()}
@@ -113,6 +130,7 @@ describe('Preview Pull Requests', () => {
     const { getByText, getByPlaceholderText, getByRole } = render(
       <TestApiProvider
         apis={[
+          [bulkImportApiRef, mockBulkImportApi],
           [
             configApiRef,
             new MockConfigApi({
@@ -136,11 +154,15 @@ describe('Preview Pull Requests', () => {
               'org/dessert/cupcake',
               'org/dessert',
               'user:default/guest',
+              'https://localhost:3001',
+              'https://github.com/org/dessert/cupcake',
             ),
             'org/dessert/donut': getPRTemplate(
               'org/dessert/donut',
               'org/dessert',
               'user:default/guest',
+              'https://localhost:3001',
+              'https://github.com/org/dessert/donut',
             ),
           }}
           setFormErrors={() => jest.fn()}
@@ -199,6 +221,7 @@ describe('Preview Pull Requests', () => {
     const { getByTestId } = render(
       <TestApiProvider
         apis={[
+          [bulkImportApiRef, mockBulkImportApi],
           [
             configApiRef,
             new MockConfigApi({
@@ -222,11 +245,15 @@ describe('Preview Pull Requests', () => {
               'org/dessert/cupcake',
               'org/dessert',
               'user:default/guest',
+              'https://localhost:3001',
+              'https://github.com/org/dessert/cupcake',
             ),
             'org/dessert/donut': getPRTemplate(
               'org/dessert/donut',
               'org/dessert',
               'user:default/guest',
+              'https://localhost:3001',
+              'https://github.com/org/dessert/donut',
             ),
           }}
           setFormErrors={() => jest.fn()}

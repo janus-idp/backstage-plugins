@@ -1,12 +1,14 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core';
-import Clear from '@mui/icons-material/Clear';
-import Search from '@mui/icons-material/Search';
-import FormControl from '@mui/material/FormControl';
-import IconButton from '@mui/material/IconButton';
-import Input from '@mui/material/Input';
-import InputAdornment from '@mui/material/InputAdornment';
+import {
+  FormControl,
+  IconButton,
+  Input,
+  InputAdornment,
+  makeStyles,
+} from '@material-ui/core';
+import Clear from '@material-ui/icons/Clear';
+import Search from '@material-ui/icons/Search';
 
 const useStyles = makeStyles({
   formControl: {
@@ -37,7 +39,6 @@ export const RepositoriesSearchBar = ({
         autoComplete="off"
         onChange={event => onChange(event.target.value)}
         value={value}
-        size="medium"
         startAdornment={
           <InputAdornment position="start">
             <Search />

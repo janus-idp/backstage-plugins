@@ -8,12 +8,14 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 
+import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
 import { useRepositories } from '../../hooks';
 import {
+  mockGetImportJobs,
   mockGetOrganizations,
   mockGetRepositories,
 } from '../../mocks/mockData';
-import { RepositorySelection } from '../../types';
+import { ImportJobStatus, RepositorySelection } from '../../types';
 import { AddRepositoriesTable } from './AddRepositoriesTable';
 
 jest.mock('formik', () => ({
@@ -21,23 +23,38 @@ jest.mock('formik', () => ({
   useFormikContext: jest.fn(),
 }));
 
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
+  useApi: jest.fn().mockReturnValue({
+    getImportAction: jest.fn(),
+  }),
+}));
+
 jest.mock('react-use', () => ({
   ...jest.requireActual('react-use'),
   useAsync: jest.fn().mockReturnValue({ loading: false }),
-}));
-
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: jest.fn(),
 }));
 
 jest.mock('../../hooks', () => ({
   useRepositories: jest.fn(),
 }));
 
+class MockBulkImportApi {
+  async getImportAction(
+    repo: string,
+    _defaultBranch: string,
+  ): Promise<ImportJobStatus | Response> {
+    return mockGetImportJobs.find(
+      i => i.repository.url === repo,
+    ) as ImportJobStatus;
+  }
+}
+
 const mockUseRepositories = useRepositories as jest.MockedFunction<
   typeof useRepositories
 >;
+
+const mockBulkImportApi = new MockBulkImportApi();
 
 describe('Add Repositories Table', () => {
   const mockIdentityApi = {
@@ -107,7 +124,12 @@ describe('Add Repositories Table', () => {
       error: undefined,
     });
     const { getByText, getByTestId } = render(
-      <TestApiProvider apis={[[identityApiRef, mockIdentityApi]]}>
+      <TestApiProvider
+        apis={[
+          [identityApiRef, mockIdentityApi],
+          [bulkImportApiRef, mockBulkImportApi],
+        ]}
+      >
         <BrowserRouter>
           <AddRepositoriesTable title="Selected repositories" />
         </BrowserRouter>
@@ -139,7 +161,12 @@ describe('Add Repositories Table', () => {
       error: undefined,
     });
     const { getByText, getByTestId } = render(
-      <TestApiProvider apis={[[identityApiRef, mockIdentityApi]]}>
+      <TestApiProvider
+        apis={[
+          [identityApiRef, mockIdentityApi],
+          [bulkImportApiRef, mockBulkImportApi],
+        ]}
+      >
         <BrowserRouter>
           <AddRepositoriesTable title="Selected repositories" />
         </BrowserRouter>

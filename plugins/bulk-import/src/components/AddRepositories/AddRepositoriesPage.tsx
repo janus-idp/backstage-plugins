@@ -1,17 +1,25 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Content, Header, Page } from '@backstage/core-components';
+import { Content, Header, Page, Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import { usePermission } from '@backstage/plugin-permission-react';
 
-import { useTheme } from '@material-ui/core';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  makeStyles,
+  useTheme,
+} from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import { Formik, FormikHelpers } from 'formik';
 import { get } from 'lodash';
+
+import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
+import { DrawerContextProvider } from '@janus-idp/shared-react';
 
 import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
 import {
@@ -27,8 +35,18 @@ import {
 import { AddRepositoriesForm } from './AddRepositoriesForm';
 import { Illustrations } from './Illustrations';
 
+const useStyles = makeStyles(() => ({
+  accordionDetails: {
+    flexDirection: 'row',
+    display: 'flex',
+    justifyContent: 'space-around',
+    overflow: 'auto',
+  },
+}));
+
 export const AddRepositoriesPage = () => {
   const theme = useTheme();
+  const classes = useStyles();
   const navigate = useNavigate();
   const [generalSubmitError, setGeneralSubmitError] = React.useState<{
     message: string;
@@ -42,6 +60,10 @@ export const AddRepositoriesPage = () => {
   };
 
   const bulkImportApi = useApi(bulkImportApiRef);
+  const bulkImportViewPermissionResult = usePermission({
+    permission: bulkImportPermission,
+    resourceRef: bulkImportPermission.resourceType,
+  });
 
   const handleSubmit = async (
     values: AddRepositoriesFormValues,
@@ -97,25 +119,21 @@ export const AddRepositoriesPage = () => {
     <Page themeId="tool">
       <Header title="Add repositories" type="Bulk import" typeLink=".." />
       <Content noPadding>
-        <div style={{ padding: '24px' }}>
-          <Accordion defaultExpanded>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              id="add-repository-summary"
-            >
-              <Typography variant="h5">
-                Add repositories to Red Hat Developer Hub in 4 steps
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails
-              sx={{
-                flexDirection: 'row',
-                display: 'flex',
-                justifyContent: 'space-around',
-                overflow: 'auto',
-              }}
-            >
-              {/* <Illustrations
+        {bulkImportViewPermissionResult.loading && <Progress />}
+        {bulkImportViewPermissionResult.allowed ? (
+          <>
+            <div style={{ padding: '24px' }}>
+              <Accordion defaultExpanded>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  id="add-repository-summary"
+                >
+                  <Typography variant="h5">
+                    Add repositories to Red Hat Developer Hub in 4 steps
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails className={classes.accordionDetails}>
+                  {/* <Illustrations
                 iconClassname={
                   theme.palette.type === 'dark'
                     ? 'icon-approval-tool-white'
@@ -123,48 +141,60 @@ export const AddRepositoriesPage = () => {
                 }
                 iconText="Choose approval tool (git/ServiceNow) for PR/ticket creation"
               /> */}
-              <Illustrations
-                iconClassname={
-                  theme.palette.type === 'dark'
-                    ? 'icon-choose-repositories-white'
-                    : 'icon-choose-repositories-black'
-                }
-                iconText="Choose repositories you want to add"
-              />
-              <Illustrations
-                iconClassname={
-                  theme.palette.type === 'dark'
-                    ? 'icon-generate-cataloginfo-white'
-                    : 'icon-generate-cataloginfo-black'
-                }
-                iconText="Generate a catalog-info.yaml file for each repository"
-              />
-              <Illustrations
-                iconClassname={
-                  theme.palette.type === 'dark'
-                    ? 'icon-edit-pullrequest-white'
-                    : 'icon-edit-pullrequest-black'
-                }
-                iconText="Edit the pull request details if needed"
-              />
-              <Illustrations
-                iconClassname={
-                  theme.palette.type === 'dark'
-                    ? 'icon-track-status-white'
-                    : 'icon-track-status-black'
-                }
-                iconText="Track the approval status"
-              />
-            </AccordionDetails>
-          </Accordion>
-        </div>
-        <Formik
-          initialValues={initialValues}
-          enableReinitialize
-          onSubmit={handleSubmit}
-        >
-          <AddRepositoriesForm error={generalSubmitError} />
-        </Formik>
+                  <Illustrations
+                    iconClassname={
+                      theme.palette.type === 'dark'
+                        ? 'icon-choose-repositories-white'
+                        : 'icon-choose-repositories-black'
+                    }
+                    iconText="Choose repositories you want to add"
+                  />
+                  <Illustrations
+                    iconClassname={
+                      theme.palette.type === 'dark'
+                        ? 'icon-generate-cataloginfo-white'
+                        : 'icon-generate-cataloginfo-black'
+                    }
+                    iconText="Generate a catalog-info.yaml file for each repository"
+                  />
+                  <Illustrations
+                    iconClassname={
+                      theme.palette.type === 'dark'
+                        ? 'icon-edit-pullrequest-white'
+                        : 'icon-edit-pullrequest-black'
+                    }
+                    iconText="Edit the pull request details if needed"
+                  />
+                  <Illustrations
+                    iconClassname={
+                      theme.palette.type === 'dark'
+                        ? 'icon-track-status-white'
+                        : 'icon-track-status-black'
+                    }
+                    iconText="Track the approval status"
+                  />
+                </AccordionDetails>
+              </Accordion>
+            </div>
+            <DrawerContextProvider>
+              <Formik
+                initialValues={initialValues}
+                enableReinitialize
+                onSubmit={handleSubmit}
+              >
+                <AddRepositoriesForm error={generalSubmitError} />
+              </Formik>
+            </DrawerContextProvider>
+          </>
+        ) : (
+          <div style={{ padding: '24px' }}>
+            <Alert severity="warning" data-testid="no-permission-alert">
+              <AlertTitle>Permission required</AlertTitle>
+              To add repositories, contact your administrator to give you the
+              `bulk.import` permission.
+            </Alert>
+          </div>
+        )}
       </Content>
     </Page>
   );

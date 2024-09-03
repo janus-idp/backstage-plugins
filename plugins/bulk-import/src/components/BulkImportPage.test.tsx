@@ -51,7 +51,11 @@ describe('BulkImport Page', () => {
     mockUsePermission.mockReturnValue({ loading: false, allowed: false });
 
     await renderInTestApp(<BulkImportPage />);
-    expect(screen.getByText('Not Found')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'To view the added repositories, contact your administrator to give you the `bulk.import` permission.',
+      ),
+    ).toBeInTheDocument();
     expect(screen.queryByText('Added repositories')).not.toBeInTheDocument();
   });
 });

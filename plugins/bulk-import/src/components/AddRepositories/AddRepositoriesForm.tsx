@@ -1,10 +1,14 @@
 import React from 'react';
 
-import { WarningPanel } from '@backstage/core-components';
-
 import { makeStyles } from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import FormControl from '@mui/material/FormControl';
+import { useFormikContext } from 'formik';
 
+import { useDrawer } from '@janus-idp/shared-react';
+
+import { AddRepositoriesFormValues, PullRequestPreviewData } from '../../types';
+import { PreviewFileSidebar } from '../PreviewFile/PreviewFileSidebar';
 // import HelpIcon from '@mui/icons-material/HelpOutline';
 // import FormControlLabel from '@mui/material/FormControlLabel';
 // import Radio from '@mui/material/Radio';
@@ -47,6 +51,23 @@ export const AddRepositoriesForm = ({
   error: { message: string; title: string } | null;
 }) => {
   const styles = useStyles();
+  const { openDrawer, setOpenDrawer, drawerData } = useDrawer();
+  const { setFieldValue, values } =
+    useFormikContext<AddRepositoriesFormValues>();
+
+  const closeDrawer = () => {
+    setOpenDrawer(false);
+  };
+
+  const handleSave = (pullRequest: PullRequestPreviewData, _event: any) => {
+    Object.keys(pullRequest).forEach(pr => {
+      setFieldValue(
+        `repositories.${pr}.catalogInfoYaml.prTemplate`,
+        pullRequest[pr],
+      );
+    });
+    setOpenDrawer(false);
+  };
 
   return (
     <>
@@ -54,11 +75,10 @@ export const AddRepositoriesForm = ({
         <div className={styles.body}>
           {error && (
             <div style={{ paddingBottom: '10px' }}>
-              <WarningPanel
-                message={error?.message}
-                title={error?.title}
-                severity="error"
-              />
+              <Alert severity="error">
+                <AlertTitle>{error?.title}</AlertTitle>
+                {error?.message}
+              </Alert>
             </div>
           )}
           {/* 
@@ -99,6 +119,15 @@ export const AddRepositoriesForm = ({
         <br />
       </FormControl>
       <AddRepositoriesFormFooter />
+      {openDrawer && (
+        <PreviewFileSidebar
+          open={openDrawer}
+          onClose={closeDrawer}
+          data={drawerData}
+          repositoryType={values.repositoryType}
+          handleSave={handleSave}
+        />
+      )}
     </>
   );
 };

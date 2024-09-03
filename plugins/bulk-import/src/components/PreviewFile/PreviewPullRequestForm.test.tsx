@@ -1,23 +1,32 @@
 import React, { useState } from 'react';
-import { useAsync } from 'react-use';
 
 import { configApiRef } from '@backstage/core-plugin-api';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
 
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 
 import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
 import { mockGetImportJobs, mockGetRepositories } from '../../mocks/mockData';
 import { mockEntities } from '../../mocks/mockEntities';
-import { ApprovalTool, ImportJobStatus, RepositoryStatus } from '../../types';
+import { ApprovalTool, ImportJobStatus } from '../../types';
 import { getPRTemplate } from '../../utils/repository-utils';
-import { PreviewPullRequest } from './PreviewPullRequest';
+import { PreviewPullRequestForm } from './PreviewPullRequestForm';
 
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
   useState: jest.fn(),
+}));
+
+jest.mock('@material-ui/core', () => ({
+  ...jest.requireActual('@material-ui/core'),
+  makeStyles: () => () => {
+    return {
+      previewCard: 'previewcard',
+      previewCardContent: 'previewcardcontent',
+    };
+  },
 }));
 
 jest.mock('formik', () => ({
@@ -53,33 +62,21 @@ const mockCatalogApi: Partial<CatalogApi> = {
   getEntities: jest.fn().mockReturnValue(mockEntities),
 };
 
-describe('Preview Pull Request', () => {
-  it('should show warning panel with error if PR fails', async () => {
+describe('Preview Pull Request Form', () => {
+  // Enable this test when Service Now approval tool is supported
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip('should render the servicenow ticket preview', async () => {
     (useFormikContext as jest.Mock).mockReturnValue({
       errors: {},
-      status: {
-        errors: {
-          'org/dessert/cupcake': {
-            repository: {
-              name: mockGetRepositories.repositories[0].name,
-              organization: mockGetRepositories.repositories[0].orgName,
-            },
-            catalogEntityName: mockGetRepositories.repositories[0].name,
-            error: {
-              message: [RepositoryStatus.CODEOWNERS_FILE_NOT_FOUND_IN_REPO],
-            },
-          },
-        },
-      },
       values: {
         repositories: {
           'org/dessert/cupcake': mockGetRepositories.repositories[0],
         },
-        approvalTool: ApprovalTool.Git,
+        approvalTool: ApprovalTool.ServiceNow,
       },
     });
 
-    const { getByText } = render(
+    const { getByText, getByPlaceholderText } = render(
       <TestApiProvider
         apis={[
           [
@@ -96,12 +93,13 @@ describe('Preview Pull Request', () => {
           [bulkImportApiRef, mockBulkImportApi],
         ]}
       >
-        <PreviewPullRequest
+        <PreviewPullRequestForm
           repoId="org/dessert/cupcake"
           repoUrl="https://github.com/org/dessert/cupcake"
-          repoBranch="main"
+          entityOwner="user:default/guest"
+          setEntityOwner={jest.fn()}
           pullRequest={{
-            'org/dessert/cupcake': getPRTemplate(
+            cupcake: getPRTemplate(
               'org/dessert/cupcake',
               'org/dessert',
               'user:default/guest',
@@ -115,31 +113,15 @@ describe('Preview Pull Request', () => {
         />
       </TestApiProvider>,
     );
-    expect(getByText(/Failed to create PR/)).toBeInTheDocument();
-    expect(
-      getByText(
-        /CODEOWNERS file is missing from the repository. Add a CODEOWNERS file to create a new PR./,
-      ),
-    ).toBeInTheDocument();
+    expect(getByText(/ServiceNow ticket details/i)).toBeInTheDocument();
+    expect(getByText(/Preview ServiceNow ticket/i)).toBeInTheDocument();
+    expect(getByText(/Preview entities/i)).toBeInTheDocument();
+    expect(getByPlaceholderText(/Component Name/)).toHaveValue('cupcake');
   });
 
-  it('should show info to display important message', async () => {
+  it('should render the pull request preview form', async () => {
     (useFormikContext as jest.Mock).mockReturnValue({
       errors: {},
-      status: {
-        infos: {
-          'org/dessert/cupcake': {
-            repository: {
-              name: mockGetRepositories.repositories[0].name,
-              organization: mockGetRepositories.repositories[0].orgName,
-            },
-            catalogEntityName: mockGetRepositories.repositories[0].name,
-            error: {
-              message: [RepositoryStatus.CATALOG_INFO_FILE_EXISTS_IN_REPO],
-            },
-          },
-        },
-      },
       values: {
         repositories: {
           'org/dessert/cupcake': mockGetRepositories.repositories[0],
@@ -148,7 +130,7 @@ describe('Preview Pull Request', () => {
       },
     });
 
-    const { getByText } = render(
+    const { getByText, getByPlaceholderText } = render(
       <TestApiProvider
         apis={[
           [
@@ -165,10 +147,11 @@ describe('Preview Pull Request', () => {
           [bulkImportApiRef, mockBulkImportApi],
         ]}
       >
-        <PreviewPullRequest
+        <PreviewPullRequestForm
           repoId="org/dessert/cupcake"
           repoUrl="https://github.com/org/dessert/cupcake"
-          repoBranch="main"
+          entityOwner="user:default/guest"
+          setEntityOwner={jest.fn()}
           pullRequest={{
             'org/dessert/cupcake': getPRTemplate(
               'org/dessert/cupcake',
@@ -184,27 +167,15 @@ describe('Preview Pull Request', () => {
         />
       </TestApiProvider>,
     );
-    expect(
-      getByText(
-        /Since catalog-info.yaml already exists in the repository, no new PR will be created. However, the entity will still be registered in the catalog page./,
-      ),
-    ).toBeInTheDocument();
+    expect(getByText(/Pull request details/i)).toBeInTheDocument();
+    expect(getByText(/Preview pull request/i)).toBeInTheDocument();
+    expect(getByText(/Preview entities/i)).toBeInTheDocument();
+    expect(getByPlaceholderText(/groups and users/)).toBeInTheDocument();
   });
 
-  it('should show PR link in the info if the job has a PR waiting for approval', async () => {
-    (useAsync as jest.Mock).mockReturnValue({
-      loading: false,
-      value: {
-        github: {
-          pullRequest: {
-            url: 'https://github.com/org/dessert/cupcake',
-          },
-        },
-      },
-    });
+  it('should show field error if PR title/component name field is empty', async () => {
     (useFormikContext as jest.Mock).mockReturnValue({
       errors: {},
-      status: {},
       values: {
         repositories: {
           'org/dessert/cupcake': mockGetRepositories.repositories[0],
@@ -213,7 +184,9 @@ describe('Preview Pull Request', () => {
       },
     });
 
-    const { getByTestId } = render(
+    const setFormErrors = jest.fn();
+
+    const { getByPlaceholderText } = render(
       <TestApiProvider
         apis={[
           [
@@ -230,10 +203,11 @@ describe('Preview Pull Request', () => {
           [bulkImportApiRef, mockBulkImportApi],
         ]}
       >
-        <PreviewPullRequest
+        <PreviewPullRequestForm
           repoId="org/dessert/cupcake"
           repoUrl="https://github.com/org/dessert/cupcake"
-          repoBranch="main"
+          entityOwner="user:default/guest"
+          setEntityOwner={jest.fn()}
           pullRequest={{
             'org/dessert/cupcake': getPRTemplate(
               'org/dessert/cupcake',
@@ -243,12 +217,28 @@ describe('Preview Pull Request', () => {
               'https://github.com/org/dessert/cupcake',
             ),
           }}
-          setFormErrors={() => jest.fn()}
+          setFormErrors={setFormErrors}
           formErrors={{}}
           setPullRequest={() => jest.fn()}
         />
       </TestApiProvider>,
     );
-    expect(getByTestId('pull-request-info')).toBeInTheDocument();
+    const prTitle = getByPlaceholderText(
+      /Add Backstage catalog entity descriptor files/,
+    );
+    fireEvent.change(prTitle, { target: { value: '' } });
+    expect(setFormErrors).toHaveBeenCalledWith({
+      'org/dessert/cupcake': {
+        prTitle: 'Pull request title is missing',
+      },
+    });
+
+    const componentName = getByPlaceholderText(/Component Name/);
+    fireEvent.change(componentName, { target: { value: '' } });
+    expect(setFormErrors).toHaveBeenCalledWith({
+      'org/dessert/cupcake': {
+        componentName: 'Component name is missing',
+      },
+    });
   });
 });
