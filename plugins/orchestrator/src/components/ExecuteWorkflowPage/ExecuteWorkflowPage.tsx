@@ -18,6 +18,7 @@ import { JsonObject } from '@backstage/types';
 import { Grid } from '@material-ui/core';
 
 import {
+  ProcessInstanceStatusDTO,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_STATE,
@@ -90,7 +91,7 @@ export const ExecuteWorkflowPage = () => {
   );
 
   const isErrorState = React.useMemo(
-    () => instanceState === 'ERROR',
+    () => instanceState === ProcessInstanceStatusDTO.Error,
     [instanceState],
   );
 
@@ -111,7 +112,7 @@ export const ExecuteWorkflowPage = () => {
             instanceId,
             inputData: parameters,
           });
-          navigate(instanceLink({ instanceId: response.id }));
+          navigate(instanceLink({ instanceId: response.data.id }));
         } catch (err) {
           setUpdateError(getErrorObject(err));
         } finally {
