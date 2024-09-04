@@ -45,9 +45,7 @@ jest.mock('@backstage/core-plugin-api', () => ({
 jest.mock('@backstage/core-components', () => ({
   SidebarItem: jest
     .fn()
-    .mockImplementation(() => (
-      <div data-testid="mockSidebarItem">Administration</div>
-    )),
+    .mockImplementation(() => <div data-testid="mockSidebarItem">RBAC</div>),
 }));
 
 const mockedSidebarItem = SidebarItem as jest.MockedFunction<
@@ -60,7 +58,7 @@ const mockUseApi = jest.fn(() => ({
 
 const mockRbacApiRef = jest.fn();
 
-describe('Administration component', () => {
+describe('RBAC component', () => {
   beforeEach(() => {
     mockGetUserAuthorization.mockClear();
     mockUseApi.mockClear();
@@ -71,7 +69,7 @@ describe('Administration component', () => {
   it('renders Administration sidebar item if user is authorized', async () => {
     render(<Administration />);
     expect(mockedSidebarItem).toHaveBeenCalled();
-    expect(screen.queryByText('Administration')).toBeInTheDocument();
+    expect(screen.queryByText('RBAC')).toBeInTheDocument();
     expect(mockGetUserAuthorization).toHaveBeenCalledTimes(1);
   });
 
@@ -84,7 +82,7 @@ describe('Administration component', () => {
     render(<Administration />);
     expect(mockedSidebarItem).not.toHaveBeenCalled();
     expect(mockGetUserAuthorization).toHaveBeenCalledTimes(1);
-    expect(screen.queryByText('Administration')).toBeNull();
+    expect(screen.queryByText('RBAC')).toBeNull();
   });
 
   it('does not render Administration sidebar item if user loading state is true', async () => {
@@ -95,7 +93,7 @@ describe('Administration component', () => {
 
     render(<Administration />);
     expect(mockedSidebarItem).not.toHaveBeenCalled();
-    expect(screen.queryByText('Administration')).toBeNull();
+    expect(screen.queryByText('RBAC')).toBeNull();
   });
 
   it('does not render Administration sidebar item if plugin is disabled in the configuration', async () => {
@@ -108,6 +106,6 @@ describe('Administration component', () => {
     render(<Administration />);
     expect(mockedSidebarItem).not.toHaveBeenCalled();
     expect(mockGetUserAuthorization).toHaveBeenCalledTimes(1);
-    expect(screen.queryByText('Administration')).toBeNull();
+    expect(screen.queryByText('RBAC')).toBeNull();
   });
 });

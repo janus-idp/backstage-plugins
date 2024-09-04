@@ -21,7 +21,7 @@ import { ToastContextProvider } from './ToastContext';
  *
  * @public
  */
-export const Router = ({ useHeader = true }: { useHeader?: boolean }) => {
+export const Router = () => {
   const config = useApi(configApiRef);
   const isRBACPluginEnabled = config.getOptionalBoolean('permission.enabled');
 
@@ -38,7 +38,7 @@ export const Router = ({ useHeader = true }: { useHeader?: boolean }) => {
   return (
     <ToastContextProvider>
       <Routes>
-        <Route path="/" element={<RbacPage useHeader={useHeader} />} />
+        <Route path="/" element={<RbacPage />} />
         <Route path={roleRouteRef.path} element={<RoleOverviewPage />} />
         <Route
           path={createRoleRouteRef.path}
