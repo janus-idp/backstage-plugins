@@ -31,6 +31,13 @@ export const lightspeedPlugin = createBackendPlugin({
           path: '/health',
           allow: 'unauthenticated',
         });
+
+        // temporarily. Will be remove after user authentication has been implemented
+        http.addAuthPolicy({
+          path: '/v1/query',
+          allow: 'unauthenticated',
+        });
+
       },
     });
   },
