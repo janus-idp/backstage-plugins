@@ -8,11 +8,9 @@ export const validateCompletionsRequest = (
   const { conversation_id, model, query, serverURL } = req.body;
 
   if (typeof conversation_id !== 'string' || conversation_id.trim() === '') {
-    return res
-      .status(400)
-      .json({
-        error: 'conversation_id is required and must be a non-empty string',
-      });
+    return res.status(400).json({
+      error: 'conversation_id is required and must be a non-empty string',
+    });
   }
 
   // TODO: Need to extract out the user_id from conversation_id, and verify with the login user entity

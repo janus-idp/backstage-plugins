@@ -17,24 +17,23 @@ yarn add --cwd packages/backend  @janus-idp/backstage-plugin-lightspeed-backend
 1. Create a new file `packages/backend/src/plugins/lightspeed.ts`, and add the following
 
 ```ts title="packages/backend/src/plugins/lightspeed.ts"
-   import { Router } from 'express';
+import { Router } from 'express';
 
-   import { createRouter } from '@janus-idp/backstage-plugin-lightspeed-backend';
+import { createRouter } from '@janus-idp/backstage-plugin-lightspeed-backend';
 
-   import { PluginEnvironment } from '../types';
+import { PluginEnvironment } from '../types';
 
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     return await createRouter({
-       config: env.config,
-       logger: env.logger,
-       discovery: env.discovery,
-       catalogApi: env.catalogApi,
-     });
-   }
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    config: env.config,
+    logger: env.logger,
+    discovery: env.discovery,
+    catalogApi: env.catalogApi,
+  });
+}
 ```
-
 
 1. Next, in your overall backend router (typically `packages/backend/src/index.ts`) add a route for `/lightspeed`:
 
@@ -73,13 +72,13 @@ Add the following proxy configurations into your `app-config.yaml` file:
 proxy:
   endpoints:
     '/lightspeed/api':
-        target: '<LLM server URL>'
-        headers:
-            content-type: 'application/json'
-            Authorization: 'Bearer <api-token>'
-        secure: true
-        changeOrigin: true
-        credentials: 'dangerously-allow-unauthenticated' # No Backstage credentials are required to access this proxy target
+      target: '<LLM server URL>'
+      headers:
+        content-type: 'application/json'
+        Authorization: 'Bearer <api-token>'
+      secure: true
+      changeOrigin: true
+      credentials: 'dangerously-allow-unauthenticated' # No Backstage credentials are required to access this proxy target
 ```
 
 Example local development configuration:
@@ -88,11 +87,11 @@ Example local development configuration:
 proxy:
   endpoints:
     '/lightspeed/api':
-        target: 'https://localhost:443/v1'
-        headers:
-            content-type: 'application/json'
-            Authorization: 'Bearer js92n-ssj28dbdk902' # dummy token
-        secure: true
-        changeOrigin: true
-        credentials: 'dangerously-allow-unauthenticated' # No Backstage credentials are required to access this proxy target
+      target: 'https://localhost:443/v1'
+      headers:
+        content-type: 'application/json'
+        Authorization: 'Bearer js92n-ssj28dbdk902' # dummy token
+      secure: true
+      changeOrigin: true
+      credentials: 'dangerously-allow-unauthenticated' # No Backstage credentials are required to access this proxy target
 ```
