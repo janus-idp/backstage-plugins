@@ -546,10 +546,13 @@ export async function deleteImportByRepo(
   const gitUrl = gitUrlParse(repoUrl);
   if (openImportPr.prUrl) {
     // Close PR
+    const appTitle =
+      config.getOptionalString('app.title') ?? 'Red Hat Developer Hub';
+    const appBaseUrl = config.getString('app.baseUrl');
     await githubApiService.closePR(logger, {
       repoUrl,
       gitUrl,
-      comment: `Closing PR upon request for bulk import deletion`,
+      comment: `Closing PR upon request for bulk import deletion. This request was created from [${appTitle}](${appBaseUrl}).`,
     });
   }
   // Also delete the import branch, so that it is not outdated if we try later to import the repo again
