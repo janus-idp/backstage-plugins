@@ -98,6 +98,8 @@
     "directory": "plugins/bulk-import-backend"
   },
   "keywords": [
+    "support:tech-preview",
+    "lifecycle:active",
     "backstage",
     "plugin"
   ],
