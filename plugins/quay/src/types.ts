@@ -64,7 +64,7 @@ export interface Platform {
 }
 
 export interface SecurityDetailsResponse {
-  status: 'unsupported' | 'unscanned' | 'scanning' | 'scanned';
+  status: 'unsupported' | 'unscanned' | 'scanning' | 'scanned' | 'queued';
   data: Data | null;
 }
 export interface Data {

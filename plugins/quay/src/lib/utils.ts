@@ -1,4 +1,9 @@
-import { Layer, VulnerabilityOrder, VulnerabilitySeverity } from '../types';
+import {
+  Layer,
+  QuayTagData,
+  VulnerabilityOrder,
+  VulnerabilitySeverity,
+} from '../types';
 
 export const SEVERITY_COLORS = new Proxy(
   new Map([
@@ -37,4 +42,88 @@ export const vulnerabilitySummary = (layer: Layer): string => {
     .map(([severity, count]) => `${severity}: ${count}`)
     .join(', ');
   return scanResults.trim() !== '' ? scanResults : 'Passed';
+};
+
+const securityScanOrder = [
+  'High',
+  'Medium',
+  'Low',
+  'Scanning',
+  'Queued',
+  'Unscanned',
+  'Unsupported',
+  'Passed',
+];
+
+export const capitalizeFirstLetter = (s: string): string => {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
+
+export const securityScanComparator = (
+  ar: QuayTagData,
+  br: QuayTagData,
+  order: 'asc' | 'desc' = 'desc',
+) => {
+  const a = vulnerabilitySummary(ar.securityDetails);
+  const b = vulnerabilitySummary(br.securityDetails);
+
+  const parseScan = (scan: string) => {
+    const values: { [key: string]: number } = {
+      High: 0,
+      Medium: 0,
+      Low: 0,
+    };
+    scan.split(', ').forEach((part: string) => {
+      const [key, value] = part.split(': ');
+      if (values[key] !== undefined) {
+        values[key] = parseInt(value, 10);
+      }
+    });
+    return values;
+  };
+
+  const aParts = a.split(', ');
+  const bParts = b.split(', ');
+
+  const multiplier = order === 'asc' ? 1 : -1;
+
+  if (
+    aParts.length >= 1 &&
+    bParts.length >= 1 &&
+    aParts[0] !== 'Passed' &&
+    bParts[0] !== 'Passed'
+  ) {
+    const aParsed = parseScan(a);
+    const bParsed = parseScan(b);
+
+    if (aParsed.High !== bParsed.High) {
+      return (bParsed.High - aParsed.High) * multiplier;
+    }
+    if (aParsed.Medium !== bParsed.Medium) {
+      return (bParsed.Medium - aParsed.Medium) * multiplier;
+    }
+    if (aParsed.Low !== bParsed.Low) {
+      return (bParsed.Low - aParsed.Low) * multiplier;
+    }
+  }
+
+  const finalAValue = capitalizeFirstLetter(
+    ar.securityStatus === 'scanned'
+      ? aParts[0].split(':')[0]
+      : (ar.securityStatus ?? 'scanning'),
+  );
+
+  const finalBValue = capitalizeFirstLetter(
+    br.securityStatus === 'scanned'
+      ? bParts[0].split(':')[0]
+      : (br.securityStatus ?? 'scanning'),
+  );
+
+  if (finalAValue === 'Scanning' || finalBValue === 'Scanning') return 1;
+
+  return (
+    (securityScanOrder.indexOf(finalAValue) -
+      securityScanOrder.indexOf(finalBValue)) *
+    multiplier
+  );
 };

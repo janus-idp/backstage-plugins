@@ -5,7 +5,7 @@ import { Link, Progress, TableColumn } from '@backstage/core-components';
 import { Tooltip } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
-import { vulnerabilitySummary } from '../../lib/utils';
+import { securityScanComparator, vulnerabilitySummary } from '../../lib/utils';
 import type { QuayTagData } from '../../types';
 
 export const columns: TableColumn<QuayTagData>[] = [
@@ -55,7 +55,8 @@ export const columns: TableColumn<QuayTagData>[] = [
       return <Link to={`tag/${tagManifest}`}>{retStr}</Link>;
     },
     id: 'securityScan',
-    sorting: false,
+    customSort: (a: QuayTagData, b: QuayTagData) =>
+      securityScanComparator(a, b),
   },
   {
     title: 'Size',

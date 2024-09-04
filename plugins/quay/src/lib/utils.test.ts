@@ -1,5 +1,16 @@
+import {
+  securityDetails,
+  v1securityDetails,
+  v2securityDetails,
+  v3securityDetails,
+} from '../../dev/__data__/security_vulnerabilities';
+import { tags } from '../../dev/__data__/tags';
 import { Layer, VulnerabilitySeverity } from '../types';
-import { SEVERITY_COLORS, vulnerabilitySummary } from './utils';
+import {
+  securityScanComparator,
+  SEVERITY_COLORS,
+  vulnerabilitySummary,
+} from './utils';
 import { mockLayer } from './utils.data';
 
 describe('SEVERITY_COLORS', () => {
@@ -43,5 +54,112 @@ describe('vulnerabilitySummary', () => {
   test('returns a string with vulnerability counts in the correct order', () => {
     const result = vulnerabilitySummary(mockLayer as Layer);
     expect(result).toMatch('High: 3, Medium: 2, Low: 1');
+  });
+});
+
+describe('compareSecurityScans', () => {
+  const { tags: tagArray } = tags;
+
+  const data = [
+    {
+      ...tagArray[0],
+      securityStatus: 'scanned',
+      securityDetails: mockLayer,
+    },
+    {
+      ...tagArray[0],
+      name: 'stable',
+      securityStatus: 'scanned',
+      securityDetails: securityDetails?.data?.Layer,
+    },
+    {
+      ...tagArray[1],
+      securityStatus: 'scanned',
+      securityDetails: v3securityDetails?.data?.Layer,
+    },
+    {
+      ...tagArray[2],
+      securityStatus: 'queued',
+      securityDetails: v2securityDetails?.data?.Layer,
+    },
+    {
+      ...tagArray[3],
+      securityStatus: 'unsupported',
+      securityDetails: v1securityDetails?.data?.Layer,
+    },
+  ] as any[];
+
+  it('should sort security scan values in the ascending order', () => {
+    const expected = [
+      'latest-linux-arm64', // High: 3, Medium: 2, Low: 1 ; High value
+      'stable', // High: 2, Medium: 2, Low: 1 ; High value
+      'v3', // Medium: 1;  No High, but has Medium and Low
+      'v2', // Queued;
+      'v1', // Unsupported
+    ];
+
+    const names = data
+      .sort((a, b) => securityScanComparator(a, b, 'asc'))
+      .map(tag => tag.name);
+    expect(names).toEqual(expected);
+  });
+  it('should sort security scan values in the descending order', () => {
+    const expected = [
+      'v1', // Unsupported
+      'v2', // Queued;
+      'v3', // Medium: 1;  No High, but has Medium and Low
+      'stable', // High: 2, Medium: 2, Low: 1 ; High value
+      'latest-linux-arm64', // High: 3, Medium: 2, Low: 1 ; High value
+    ];
+
+    const names = data
+      .sort((a, b) => securityScanComparator(a, b, 'desc'))
+      .map(tag => tag.name);
+    expect(names).toEqual(expected);
+  });
+
+  it('should not perform sort on the scanning row', () => {
+    const mockData = [
+      {
+        ...tagArray[0],
+        name: 'v1beta',
+        securityStatus: 'scanning',
+      },
+      ...data,
+    ];
+    const expected = [
+      'v1beta', // Scanning; Show loading indicator in UI.
+      'v1', // Unsupported
+      'v2', // Queued;
+      'v3', // Medium: 1;  No High, but has Medium and Low
+      'stable', // High: 2, Medium: 2, Low: 1 ; High value
+      'latest-linux-arm64', // High: 3, Medium: 2, Low: 1 ; High value
+    ];
+
+    // Scanning row should not change the order
+    const names = mockData
+      .sort((a, b) => securityScanComparator(a, b, 'desc'))
+      .map(tag => tag.name);
+    expect(names).toEqual(expected);
+
+    const mockData1 = [
+      data[0], // v1
+      {
+        ...tagArray[0],
+        name: 'v1beta',
+        securityStatus: 'scanning',
+      },
+      data[1], // v2
+    ];
+    const expectedNames = [
+      'v1', // Unsupported
+      'v1beta', // Scanning; Show loading indicator in UI.
+      'v2', // Queued;
+    ];
+
+    const tagNames = mockData1
+      .sort((a, b) => securityScanComparator(a, b, 'desc'))
+      .map(tag => tag.name);
+    expect(tagNames).toEqual(expectedNames);
   });
 });
