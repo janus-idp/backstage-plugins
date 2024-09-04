@@ -7,7 +7,7 @@ This is the lightspeed backend plugin that enables you to interact with any LLM 
 ### Installing the plugin
 
 ```bash
-yarn add --cwd packages/backend  @janus-idp/plugin-lightspeed-backend
+yarn add --cwd packages/backend  @janus-idp/backstage-plugin-lightspeed-backend
 ```
 
 ### Configuring the Backend
@@ -17,20 +17,26 @@ yarn add --cwd packages/backend  @janus-idp/plugin-lightspeed-backend
 1. Create a new file `packages/backend/src/plugins/lightspeed.ts`, and add the following
 
 ```ts title="packages/backend/src/plugins/lightspeed.ts"
-import { Router } from 'express';
+   import { Router } from 'express';
 
-import { createRouter } from '@janus-idp/plugin-lightspeed-backend';
+   import { createRouter } from '@janus-idp/backstage-plugin-lightspeed-backend';
 
-import { PluginEnvironment } from '../types';
+   import { PluginEnvironment } from '../types';
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({ config: env.config });
-}
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+     return await createRouter({
+       config: env.config,
+       logger: env.logger,
+       discovery: env.discovery,
+       catalogApi: env.catalogApi,
+     });
+   }
 ```
 
-2. Next, in your overall backend router (typically `packages/backend/src/index.ts`) add a route for `/lightspeed`:
+
+1. Next, in your overall backend router (typically `packages/backend/src/index.ts`) add a route for `/lightspeed`:
 
 ```ts title="packages/backend/src/index.ts"
 import lightspeed from './plugins/lightspeed';
@@ -54,25 +60,39 @@ Add the following to your `packages/backend/src/index.ts` file:
 const backend = createBackend();
 
 // Add the following line
-backend.add(import('@janus-idp/backstage-plugin-lightspeed-backend/alpha'));
+backend.add(import('@janus-idp/backstage-plugin-lightspeed-backend'));
 
 backend.start();
 ```
 
 ### Plugin Configurations
 
-Add the following configurations into your `app-config.yaml` file:
+Add the following proxy configurations into your `app-config.yaml` file:
 
 ```yaml
-lightspeed:
-  baseURL: ${LLM_BASE_URL}
-  apiKey: ${LLM_API_KEY}
+proxy:
+  endpoints:
+    '/lightspeed/api':
+        target: '<LLM server URL>'
+        headers:
+            content-type: 'application/json'
+            Authorization: 'Bearer <api-token>'
+        secure: true
+        changeOrigin: true
+        credentials: 'dangerously-allow-unauthenticated' # No Backstage credentials are required to access this proxy target
 ```
 
 Example local development configuration:
 
 ```yaml
-lightspeed:
-  baseURL: http://localhost:11434/v1
-  apiKey: dummy-key
+proxy:
+  endpoints:
+    '/lightspeed/api':
+        target: 'https://localhost:443/v1'
+        headers:
+            content-type: 'application/json'
+            Authorization: 'Bearer js92n-ssj28dbdk902' # dummy token
+        secure: true
+        changeOrigin: true
+        credentials: 'dangerously-allow-unauthenticated' # No Backstage credentials are required to access this proxy target
 ```
