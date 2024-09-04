@@ -17,6 +17,7 @@ import {
   v1securityDetails,
   v2securityDetails,
   v3securityDetails,
+  v4securityDetails,
 } from './__data__/security_vulnerabilities';
 import { tags } from './__data__/tags';
 
@@ -69,6 +70,13 @@ export class MockQuayApiClient implements QuayApiV1 {
       'sha256:99c96c750aa532d92d9cb56cad59159b7cc26b10e39ff4a895c28345d2cd775f'
     ) {
       return v1securityDetails;
+    }
+
+    if (
+      digest ===
+      'sha256:29c96c750aa532d92d9cb56cad59159b7cc26b10e39ff4a895c28345d2cd775d'
+    ) {
+      return v4securityDetails;
     }
 
     return securityDetails;

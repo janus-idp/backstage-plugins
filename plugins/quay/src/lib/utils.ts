@@ -48,11 +48,11 @@ const securityScanOrder = [
   'High',
   'Medium',
   'Low',
+  'Passed',
   'Scanning',
   'Queued',
   'Unscanned',
   'Unsupported',
-  'Passed',
 ];
 
 export const capitalizeFirstLetter = (s: string): string => {

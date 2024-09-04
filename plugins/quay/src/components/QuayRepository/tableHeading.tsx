@@ -52,7 +52,14 @@ export const columns: TableColumn<QuayTagData>[] = [
 
       const tagManifest = rowData.manifest_digest_raw;
       const retStr = vulnerabilitySummary(rowData.securityDetails);
-      return <Link to={`tag/${tagManifest}`}>{retStr}</Link>;
+      return (
+        <Link
+          data-testid={`${rowData.name}-security-scan`}
+          to={`tag/${tagManifest}`}
+        >
+          {retStr}
+        </Link>
+      );
     },
     id: 'securityScan',
     customSort: (a: QuayTagData, b: QuayTagData) =>

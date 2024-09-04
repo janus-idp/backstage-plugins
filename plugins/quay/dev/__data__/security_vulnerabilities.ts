@@ -359,6 +359,16 @@ export const v3securityDetails: SecurityDetailsResponse = {
     ...securityDetails.data,
     Layer: {
       ...(securityDetails?.data?.Layer ?? {}),
+      Features: [],
+    } as Layer,
+  },
+};
+export const v4securityDetails: SecurityDetailsResponse = {
+  ...securityDetails,
+  data: {
+    ...securityDetails.data,
+    Layer: {
+      ...(securityDetails?.data?.Layer ?? {}),
       Features: securityDetails.data?.Layer?.Features?.slice(0, 5) ?? [],
     } as Layer,
   },

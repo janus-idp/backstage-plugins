@@ -11,6 +11,16 @@ export const tags = {
       last_modified: 'Tue, 06 Feb 2024 09:39:24 -0000',
     },
     {
+      name: 'v4',
+      reversion: false,
+      start_ts: 1707212364,
+      manifest_digest:
+        'sha256:29c96c750aa532d92d9cb56cad59159b7cc26b10e39ff4a895c28345d2cd775d',
+      is_manifest_list: false,
+      size: 265862608,
+      last_modified: 'Tue, 06 Feb 2024 09:39:24 -0000',
+    },
+    {
       name: 'v3',
       reversion: false,
       start_ts: 1707212364,

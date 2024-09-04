@@ -79,11 +79,19 @@ describe('compareSecurityScans', () => {
     },
     {
       ...tagArray[2],
+      securityStatus: 'scanned',
+      securityDetails: {
+        ...securityDetails?.data?.Layer,
+        Features: [],
+      },
+    },
+    {
+      ...tagArray[3],
       securityStatus: 'queued',
       securityDetails: v2securityDetails?.data?.Layer,
     },
     {
-      ...tagArray[3],
+      ...tagArray[4],
       securityStatus: 'unsupported',
       securityDetails: v1securityDetails?.data?.Layer,
     },
@@ -93,7 +101,8 @@ describe('compareSecurityScans', () => {
     const expected = [
       'latest-linux-arm64', // High: 3, Medium: 2, Low: 1 ; High value
       'stable', // High: 2, Medium: 2, Low: 1 ; High value
-      'v3', // Medium: 1;  No High, but has Medium and Low
+      'v4', // Medium: 1;  No High, but has Medium and Low
+      'v3', // Passed
       'v2', // Queued;
       'v1', // Unsupported
     ];
@@ -107,6 +116,7 @@ describe('compareSecurityScans', () => {
     const expected = [
       'v1', // Unsupported
       'v2', // Queued;
+      'v4', // Passed
       'v3', // Medium: 1;  No High, but has Medium and Low
       'stable', // High: 2, Medium: 2, Low: 1 ; High value
       'latest-linux-arm64', // High: 3, Medium: 2, Low: 1 ; High value
@@ -131,6 +141,7 @@ describe('compareSecurityScans', () => {
       'v1beta', // Scanning; Show loading indicator in UI.
       'v1', // Unsupported
       'v2', // Queued;
+      'v4', // Passed
       'v3', // Medium: 1;  No High, but has Medium and Low
       'stable', // High: 2, Medium: 2, Low: 1 ; High value
       'latest-linux-arm64', // High: 3, Medium: 2, Low: 1 ; High value
