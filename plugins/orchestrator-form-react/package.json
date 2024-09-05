@@ -28,7 +28,7 @@
     "@backstage/core-components": "^0.14.9",
     "@backstage/core-plugin-api": "^1.9.3",
     "@backstage/types": "^1.1.1",
-    "@janus-idp/backstage-plugin-orchestrator-common": "1.17.0",
+    "@janus-idp/backstage-plugin-orchestrator-common": "1.16.0",
     "@janus-idp/backstage-plugin-orchestrator-form-api": "1.0.1",
     "json-schema": "^0.4.0"
   },

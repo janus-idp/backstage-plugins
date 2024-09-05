@@ -28,7 +28,6 @@
   },
   "scripts": {},
   "dependencies": {
-    "@janus-idp/backstage-plugin-audit-log-node": "^1.4.0",
     "@octokit/auth-app": "^6.0.3",
     "@octokit/core": "^5.1.0",
     "@octokit/rest": "^20.0.2",
@@ -45,6 +44,22 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {},
+  "peerDependencies": {
+    "@janus-idp/backstage-plugin-audit-log-node": "1.4.0",
+    "@backstage/backend-app-api": "^0.8.0",
+    "@backstage/backend-common": "^0.23.3",
+    "@backstage/backend-dynamic-feature-service": "^0.2.15",
+    "@backstage/backend-plugin-api": "^0.7.0",
+    "@backstage/catalog-client": "^1.6.5",
+    "@backstage/catalog-model": "^1.5.0",
+    "@backstage/config": "^1.2.0",
+    "@backstage/errors": "^1.2.4",
+    "@backstage/integration": "^1.13.0",
+    "@backstage/plugin-auth-node": "^0.4.17",
+    "@backstage/plugin-catalog-node": "^1.12.4",
+    "@backstage/plugin-permission-common": "^0.8.0",
+    "@backstage/plugin-permission-node": "^0.8.0"
+  },
   "files": [
     "dist",
     "config.d.ts",
@@ -66,21 +81,6 @@
   "homepage": "https://janus-idp.io/",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "bundleDependencies": true,
-  "peerDependencies": {
-    "@backstage/backend-app-api": "^0.8.0",
-    "@backstage/backend-common": "^0.23.3",
-    "@backstage/backend-dynamic-feature-service": "^0.2.15",
-    "@backstage/backend-plugin-api": "^0.7.0",
-    "@backstage/catalog-client": "^1.6.5",
-    "@backstage/catalog-model": "^1.5.0",
-    "@backstage/config": "^1.2.0",
-    "@backstage/errors": "^1.2.4",
-    "@backstage/integration": "^1.13.0",
-    "@backstage/plugin-auth-node": "^0.4.17",
-    "@backstage/plugin-catalog-node": "^1.12.4",
-    "@backstage/plugin-permission-common": "^0.8.0",
-    "@backstage/plugin-permission-node": "^0.8.0"
-  },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {
       "@smithy/util-utf8": "^2.0.0"
