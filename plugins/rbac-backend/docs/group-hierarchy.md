@@ -171,3 +171,8 @@ Examples:
     type: team
     children: [group-c]
   ```
+
+  ```CSV
+  g, group:default/group-d, role:default/test
+  p, role:default/test, catalog-entity, read, allow
+  ```
