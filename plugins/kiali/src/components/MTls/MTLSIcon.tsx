@@ -2,13 +2,10 @@ import * as React from 'react';
 
 import { Tooltip, TooltipPosition } from '@patternfly/react-core';
 
-const fullIcon = require('../../assets/img/mtls-status-full.svg') as string;
-const hollowIcon =
-  require('../../assets/img/mtls-status-partial.svg') as string;
-const fullIconDark =
-  require('../../assets/img/mtls-status-full-dark.svg') as string;
-const hollowIconDark =
-  require('../../assets/img/mtls-status-partial-dark.svg') as string;
+import fullIconDark from '../../assets/img/mtls-status-full-dark.svg';
+import fullIcon from '../../assets/img/mtls-status-full.svg';
+import hollowIconDark from '../../assets/img/mtls-status-partial-dark.svg';
+import hollowIcon from '../../assets/img/mtls-status-partial.svg';
 
 export { fullIcon, hollowIcon, fullIconDark, hollowIconDark };
 

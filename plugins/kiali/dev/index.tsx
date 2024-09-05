@@ -1,3 +1,5 @@
+/// <reference types="@backstage/cli/asset-types" />
+
 import React from 'react';
 
 import { Content, InfoCard, Page } from '@backstage/core-components';
