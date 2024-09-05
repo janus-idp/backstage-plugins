@@ -65,7 +65,7 @@ describe('RbacPage', () => {
       },
     });
     await renderInTestApp(<RbacPage />);
-    expect(screen.getByText('Administration')).toBeInTheDocument();
+    expect(screen.getByText('RBAC')).toBeInTheDocument();
   });
 
   it('should not render if not authorized', async () => {
@@ -82,6 +82,6 @@ describe('RbacPage', () => {
 
     const { queryByText } = await renderInTestApp(<RbacPage />);
     expect(queryByText('Not Found')).not.toBeInTheDocument();
-    expect(queryByText('Administration')).not.toBeInTheDocument();
+    expect(queryByText('RBAC')).not.toBeInTheDocument();
   });
 });
