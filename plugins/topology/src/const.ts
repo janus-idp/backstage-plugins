@@ -41,3 +41,9 @@ export const LABEL_USED_TEMPLATE_NAME = 'vm.kubevirt.io/template';
 export const TEMPLATE_OS_LABEL = 'os.template.kubevirt.io';
 export const TEMPLATE_OS_NAME_ANNOTATION = 'name.os.template.kubevirt.io';
 export const TEMPLATE_WORKLOAD_LABEL = 'workload.template.kubevirt.io';
+
+export const TARGET_PORT = 22;
+
+export const CLOUDINIT_DISK = 'cloudinitdisk';
+export const CLOUD_INIT_CONFIG_DRIVE = 'cloudInitConfigDrive';
+export const CLOUD_INIT_NO_CLOUD = 'cloudInitNoCloud';

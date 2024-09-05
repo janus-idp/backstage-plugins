@@ -1,8 +1,12 @@
 import React from 'react';
 
+import { ClipboardCopy } from '@patternfly/react-core';
+
 import { ResourceIcon } from '../../../common/components/ResourceName';
-import { LABEL_USED_TEMPLATE_NAME } from '../../../const';
+import { LABEL_USED_TEMPLATE_NAME, TARGET_PORT } from '../../../const';
 import { K8sResourcesContext } from '../../../hooks/K8sResourcesContext';
+import { useGuestAgentInfo } from '../../../hooks/virtual-machine/use-guest-agent-info';
+import useSSHCommand from '../../../hooks/virtual-machine/use-ssh-command';
 import { VMKind } from '../../../types/vm';
 import {
   findPodFromVMI,
@@ -15,11 +19,13 @@ import {
   getNodeName,
   getOperatingSystem,
   getOperatingSystemName,
+  getSSHServices,
   getVmiIpAddresses,
   getVMINodeName,
   getWorkloadProfile,
   isV1Pod,
   isVMIKind,
+  isVMIReady,
 } from '../../../utils/vm-utils';
 import { BootOrderSummary } from '../boot-order/boot-order-summary';
 import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
@@ -47,6 +53,19 @@ const TopologyVirtualMachineDetails = ({
   const nodeName = getVMINodeName(vmi) || getNodeName(pods);
   const os = getOperatingSystemName(vm) || getOperatingSystem(vm);
   const workloadProfile = getWorkloadProfile(vm);
+
+  // if vmi.status.type===AgentConnected then
+  const [guestAgentInfoRaw] = useGuestAgentInfo({ vmi });
+  const hostname = guestAgentInfoRaw?.hostname;
+  const timeZone = guestAgentInfoRaw?.timezone;
+  const allServices = resources?.watchResourcesData?.services?.data;
+  const vmiReady = isVMIReady(vmi);
+  const sshService = getSSHServices(vmi, allServices);
+  const sshServicesRunning = !!sshService;
+  const sshServicePort = sshService?.spec?.ports?.find(
+    port => parseInt(port.targetPort, 10) === TARGET_PORT,
+  )?.nodePort;
+  const { command, user } = useSSHCommand(vmi, allServices);
 
   return (
     <>
@@ -88,12 +107,18 @@ const TopologyVirtualMachineDetails = ({
         <TopologySideBarDetailsItem label="IP address">
           {ipAddrs}
         </TopologySideBarDetailsItem>
-        {/* <TopologySideBarDetailsItem label="Hostname">
-          {vm.spec?.strategy?.type}
+        <TopologySideBarDetailsItem
+          label="Hostname"
+          emptyText="Virtual machine not running"
+        >
+          {hostname}
         </TopologySideBarDetailsItem>
-        <TopologySideBarDetailsItem label="Time zone">
-          {vm.spec?.strategy?.type}
-        </TopologySideBarDetailsItem> */}
+        <TopologySideBarDetailsItem
+          label="Time zone"
+          emptyText="Virtual machine not running"
+        >
+          {timeZone}
+        </TopologySideBarDetailsItem>
         <TopologySideBarDetailsItem label="Node" emptyText="Not available">
           {nodeName}
         </TopologySideBarDetailsItem>
@@ -103,20 +128,38 @@ const TopologyVirtualMachineDetails = ({
         >
           {workloadProfile}
         </TopologySideBarDetailsItem>
-        {/* <TopologySideBarDetailsItem label="User credentials">
-          {vm.spec?.strategy?.type}
+        <TopologySideBarDetailsItem label="User credentials">
+          {vmiReady ? (
+            <>
+              <span data-test="details-item-user-credentials-user-name">
+                {`user' ${user}`}
+              </span>
+              <ClipboardCopy
+                isReadOnly
+                data-test="SSHDetailsPage-command"
+                className="SSHDetailsPage-clipboard-command"
+              >
+                {sshServicesRunning ? command : `ssh ${user}@`}
+              </ClipboardCopy>
+              {!sshServicesRunning && (
+                <span className="kubevirt-menu-actions__secondary-title">
+                  Requires SSH service
+                </span>
+              )}
+            </>
+          ) : (
+            <div className="text-secondary">Virtual machine not running</div>
+          )}
         </TopologySideBarDetailsItem>
         <TopologySideBarDetailsItem label="SSH access">
           <span data-test="details-item-ssh-access-port">
-          {vmiReady ?
-            sshServicesRunning ?  `Port: ${sshServicePort}`
-             : 'SSH service disabled'
-
-          :
-            'Virtual machine not running')
-          }
-        </span>
-        </TopologySideBarDetailsItem> */}
+            {vmiReady
+              ? sshServicesRunning
+                ? `Port: ${sshServicePort}`
+                : 'SSH service disabled'
+              : 'Virtual machine not running'}
+          </span>
+        </TopologySideBarDetailsItem>
         <TopologySideBarDetailsItem label="Hardware devices">
           <div>GPU devices: {getGPUDevices(vm).length}</div>
           <div>Host devices: {getHostDevices(vm).length}</div>

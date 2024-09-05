@@ -3,6 +3,10 @@ import * as _ from 'lodash';
 import { flatMap, get, uniq } from 'lodash';
 
 import {
+  CLOUD_INIT_CONFIG_DRIVE,
+  CLOUD_INIT_NO_CLOUD,
+  CLOUDINIT_DISK,
+  TARGET_PORT,
   TEMPLATE_OS_LABEL,
   TEMPLATE_OS_NAME_ANNOTATION,
   TEMPLATE_WORKLOAD_LABEL,
@@ -208,3 +212,40 @@ export const getOperatingSystemName = (vm: VMKind) =>
 // Workload Profile
 export const getWorkloadProfile = (vm: VMKind) =>
   findKeySuffixValue(getLabels(vm), TEMPLATE_WORKLOAD_LABEL);
+
+const getServicesForVmi = (
+  services: K8sResourceKind[],
+  vmi: VMIKind,
+): K8sResourceKind[] => {
+  const vmLabels = vmi?.metadata?.labels;
+
+  if (!vmLabels) return [];
+
+  return services?.filter(service => {
+    const selectors = service?.spec?.selector || {};
+    return Object?.keys(selectors)?.every(
+      key => vmLabels?.[key] === selectors?.[key],
+    );
+  });
+};
+export const getSSHServices = (vmi: VMIKind, services: K8sResourceKind[]) => {
+  const vmiServices = getServicesForVmi(services, vmi);
+
+  const sshVMIService = vmiServices.find(service =>
+    service?.spec?.ports?.find(
+      port => parseInt(port.targetPort, 10) === TARGET_PORT,
+    ),
+  );
+
+  return sshVMIService;
+};
+export const getCloudInitValues = (vmi: VMIKind, field: string) => {
+  const volume = vmi?.spec?.volumes?.find(
+    ({ name }) => name === CLOUDINIT_DISK,
+  );
+  const selector =
+    (volume?.hasOwnProperty(CLOUD_INIT_CONFIG_DRIVE) &&
+      CLOUD_INIT_CONFIG_DRIVE) ||
+    (volume?.hasOwnProperty(CLOUD_INIT_NO_CLOUD) && CLOUD_INIT_NO_CLOUD);
+  return volume?.[selector]?.[field];
+};
