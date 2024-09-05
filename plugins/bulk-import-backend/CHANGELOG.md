@@ -8,6 +8,10 @@
 
 ### Dependencies
 
+* **@janus-idp/backstage-plugin-bulk-import-common:** upgraded to 1.0.1
+
+### Dependencies
+
 * **@janus-idp/backstage-plugin-audit-log-node:** upgraded to 1.0.0
 * **@janus-idp/backstage-plugin-bulk-import-common:** upgraded to 1.0.0
 
