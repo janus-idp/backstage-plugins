@@ -51,15 +51,52 @@ export async function findAllImports(
   pageSize: number = DefaultPageSize,
 ): Promise<HandlerResponse<Components.Schemas.Import[]>> {
   logger.debug('Getting all bulk import jobs..');
-  const importStatusPromises: Promise<
-    HandlerResponse<Components.Schemas.Import>
-  >[] = [];
+
+  const allLocations = await catalogInfoGenerator.listCatalogUrlLocations();
+  const filteredLocations = new Set<string>();
+  const defaultBranchByRepoUrlCache = new Map<string, string>();
+  for (const loc of allLocations) {
+    // loc has the following format: https://github.com/<org>/<repo>/blob/<default-branch>/catalog-info.yaml
+    // but it can have a more convoluted format like 'https://github.com/janus-idp/backstage-plugins/blob/main/plugins/scaffolder-annotator-action/examples/templates/01-scaffolder-template.yaml'
+    // if registered manually from the 'Register existing component' feature in Backstage.
+    const split = loc.split('/blob/');
+    if (split.length < 2) {
+      continue;
+    }
+    const repoUrl = split[0];
+    // Find out the repository default branch from GH (cannot easily determine that from the location target URL).
+    // It can be 'main' or something more convoluted like 'our/awesome/main'.
+    // Also caching locally because we might have several locations pointing to the same repo
+    let defaultBranch = defaultBranchByRepoUrlCache.get(repoUrl);
+    if (!defaultBranch) {
+      defaultBranch = (
+        await githubApiService.getRepositoryFromIntegrations(repoUrl)
+      ).repository?.default_branch;
+      if (!defaultBranch) {
+        continue;
+      }
+      defaultBranchByRepoUrlCache.set(repoUrl, defaultBranch);
+    }
+    if (
+      loc !== `${repoUrl}/blob/${defaultBranch}/${getCatalogFilename(config)}`
+    ) {
+      // Because users can use the "Register existing component" workflow to register a Location
+      // using any file path in the repo, we consider a repository as an Import Location only
+      // if it is at the root of the repository, because that is what the import PR ultimately does.
+      continue;
+    }
+    filteredLocations.add(loc);
+  }
+
   const catalogLocations = paginateArray(
-    await catalogInfoGenerator.listCatalogUrlLocations(),
+    Array.from(filteredLocations.values()),
     pageNumber,
     pageSize,
   );
   const paginatedLocations = catalogLocations.result;
+  const importStatusPromises: Promise<
+    HandlerResponse<Components.Schemas.Import>
+  >[] = [];
   for (const loc of paginatedLocations) {
     // loc has the following format: https://github.com/<org>/<repo>/blob/<default-branch>/catalog-info.yaml
     const split = loc.split('/blob/');
@@ -68,10 +105,6 @@ export async function findAllImports(
     }
     const repoUrl = split[0];
 
-    // Split the URL at "/blob" and "/catalog-info.yaml"
-    const parts = split[1].split(`/${getCatalogFilename(config)}`);
-    const defaultBranch = parts.length !== 0 ? parts[0] : undefined;
-
     importStatusPromises.push(
       findImportStatusByRepo(
         logger,
@@ -79,7 +112,7 @@ export async function findAllImports(
         githubApiService,
         catalogInfoGenerator,
         repoUrl,
-        defaultBranch,
+        defaultBranchByRepoUrlCache.get(repoUrl),
         false,
       ),
     );
@@ -245,7 +278,7 @@ export async function createImportJobs(
       );
       result.push({
         status: 'ADDED',
-        lastUpdate: ghRepo.repository?.updated_at ?? undefined,
+        lastUpdate: ghRepo?.repository?.updated_at ?? undefined,
         repository: {
           url: req.repository.url,
           name: gitUrl.name,

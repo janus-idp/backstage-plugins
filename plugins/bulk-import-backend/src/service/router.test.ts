@@ -27,7 +27,11 @@ import request from 'supertest';
 import { Logger } from 'winston';
 
 import { CatalogInfoGenerator } from '../helpers';
-import { GithubOrganizationResponse, GithubRepositoryResponse } from '../types';
+import {
+  GithubOrganizationResponse,
+  GithubRepository,
+  GithubRepositoryResponse,
+} from '../types';
 import { GithubApiService } from './githubApiService';
 import { DefaultPageNumber, DefaultPageSize } from './handlers/handlers';
 import { createRouter } from './router';
@@ -745,8 +749,44 @@ describe('createRouter', () => {
         .mockResolvedValue([
           'https://github.com/my-ent-org-1/A/blob/dev/catalog-info.yaml',
           'https://github.com/my-ent-org-1/B/blob/main/catalog-info.yaml',
-          'https://github.com/my-ent-org-2/A/blob/dev/catalog-info.yaml',
+          'https://github.com/my-ent-org-2/A/blob/master/catalog-info.yaml',
+          // purposely duplicated
+          'https://github.com/my-ent-org-2/A/blob/master/catalog-info.yaml',
+          // should be ignored because the default branch is 'master'
+          'https://github.com/my-ent-org-2/A/blob/feature/myAwesomeFeat/catalog-info.yaml',
+          // some unconventional default branch name: blob/some/path/to/default/branch
+          'https://github.com/my-ent-org-3/C/blob/blob/some/path/to/default/branch/catalog-info.yaml',
+          // should be ignored because we expect the catalog-info.yaml to be at the root of the default branch
+          'https://github.com/my-org/my-repo/blob/main/plugins/my-plugin/examples/templates/01-some-template.yaml',
         ]);
+      jest
+        .spyOn(GithubApiService.prototype, 'getRepositoryFromIntegrations')
+        .mockImplementation(repoUrl => {
+          let defaultBranch: string | undefined;
+          switch (repoUrl) {
+            case 'https://github.com/my-ent-org-1/A':
+              defaultBranch = 'dev';
+              break;
+            case 'https://github.com/my-ent-org-1/B':
+              defaultBranch = 'main';
+              break;
+            case 'https://github.com/my-ent-org-2/A':
+              defaultBranch = 'master';
+              break;
+            case 'https://github.com/my-ent-org-3/C':
+              defaultBranch = 'blob/some/path/to/default/branch';
+              break;
+            default:
+              defaultBranch = undefined;
+              break;
+          }
+          return Promise.resolve({
+            repository: {
+              default_branch: defaultBranch,
+              url: repoUrl,
+            } as GithubRepository,
+          });
+        });
       jest
         .spyOn(GithubApiService.prototype, 'findImportOpenPr')
         .mockImplementation((_logger, input) => {
@@ -821,10 +861,22 @@ describe('createRouter', () => {
             name: 'A',
             organization: 'my-ent-org-2',
             url: 'https://github.com/my-ent-org-2/A',
-            defaultBranch: 'dev',
+            defaultBranch: 'master',
             id: 'my-ent-org-2/A',
           },
           status: 'WAIT_PR_APPROVAL',
+        },
+        {
+          approvalTool: 'GIT',
+          id: 'https://github.com/my-ent-org-3/C',
+          repository: {
+            defaultBranch: 'blob/some/path/to/default/branch',
+            id: 'my-ent-org-3/C',
+            name: 'C',
+            organization: 'my-ent-org-3',
+            url: 'https://github.com/my-ent-org-3/C',
+          },
+          status: null,
         },
       ]);
     });
