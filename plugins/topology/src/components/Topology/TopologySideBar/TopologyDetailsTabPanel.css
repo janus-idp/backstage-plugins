@@ -17,3 +17,6 @@
   overflow: visible !important;
   max-width: 130px;
 }
+.ml-2 {
+  margin-left: 0.25rem;
+}
