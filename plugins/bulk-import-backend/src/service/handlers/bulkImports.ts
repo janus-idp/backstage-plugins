@@ -122,18 +122,18 @@ export async function findAllImports(
   const imports = result
     .filter(res => res.responseBody)
     .map(res => res.responseBody!);
-  // sorting the output to simplify the tests on the response
+  // sorting the output to make it deterministic and easy to navigate in the UI
   imports.sort((a, b) => {
-    if (a.id === undefined && b.id === undefined) {
+    if (a.repository?.name === undefined && b.repository?.name === undefined) {
       return 0;
     }
-    if (a.id === undefined) {
+    if (a.repository?.name === undefined) {
       return -1;
     }
-    if (b.id === undefined) {
+    if (b.repository?.name === undefined) {
       return 1;
     }
-    return a.id.localeCompare(b.id);
+    return a.repository.name.localeCompare(b.repository.name);
   });
   return {
     statusCode: 200,

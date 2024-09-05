@@ -149,6 +149,20 @@ async function formatResponse(
     }
   }
 
+  // sorting the output to make it deterministic and easy to navigate in the UI
+  repoList.sort((a, b) => {
+    if (a.name === undefined && b.name === undefined) {
+      return 0;
+    }
+    if (a.name === undefined) {
+      return -1;
+    }
+    if (b.name === undefined) {
+      return 1;
+    }
+    return a.name.localeCompare(b.name);
+  });
+
   return {
     statusCode: 200,
     responseBody: {

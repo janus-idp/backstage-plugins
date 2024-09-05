@@ -747,13 +747,13 @@ describe('createRouter', () => {
       jest
         .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
         .mockResolvedValue([
-          'https://github.com/my-ent-org-1/A/blob/dev/catalog-info.yaml',
+          'https://github.com/my-ent-org-1/A1/blob/dev/catalog-info.yaml',
           'https://github.com/my-ent-org-1/B/blob/main/catalog-info.yaml',
-          'https://github.com/my-ent-org-2/A/blob/master/catalog-info.yaml',
+          'https://github.com/my-ent-org-2/A2/blob/master/catalog-info.yaml',
           // purposely duplicated
-          'https://github.com/my-ent-org-2/A/blob/master/catalog-info.yaml',
+          'https://github.com/my-ent-org-2/A2/blob/master/catalog-info.yaml',
           // should be ignored because the default branch is 'master'
-          'https://github.com/my-ent-org-2/A/blob/feature/myAwesomeFeat/catalog-info.yaml',
+          'https://github.com/my-ent-org-2/A2/blob/feature/myAwesomeFeat/catalog-info.yaml',
           // some unconventional default branch name: blob/some/path/to/default/branch
           'https://github.com/my-ent-org-3/C/blob/blob/some/path/to/default/branch/catalog-info.yaml',
           // should be ignored because we expect the catalog-info.yaml to be at the root of the default branch
@@ -764,13 +764,13 @@ describe('createRouter', () => {
         .mockImplementation(repoUrl => {
           let defaultBranch: string | undefined;
           switch (repoUrl) {
-            case 'https://github.com/my-ent-org-1/A':
+            case 'https://github.com/my-ent-org-1/A1':
               defaultBranch = 'dev';
               break;
             case 'https://github.com/my-ent-org-1/B':
               defaultBranch = 'main';
               break;
-            case 'https://github.com/my-ent-org-2/A':
+            case 'https://github.com/my-ent-org-2/A2':
               defaultBranch = 'master';
               break;
             case 'https://github.com/my-ent-org-3/C':
@@ -801,9 +801,9 @@ describe('createRouter', () => {
                   'could not find out if there is an import PR open on this repo',
                 ),
               );
-            case 'https://github.com/my-ent-org-2/A':
+            case 'https://github.com/my-ent-org-2/A2':
               resp.prNum = 987;
-              resp.prUrl = `https://github.com/my-ent-org-2/A/pull/${resp.prNum}`;
+              resp.prUrl = `https://github.com/my-ent-org-2/A2/pull/${resp.prNum}`;
               break;
             default:
               break;
@@ -814,7 +814,7 @@ describe('createRouter', () => {
         .spyOn(GithubApiService.prototype, 'doesCatalogInfoAlreadyExistInRepo')
         .mockImplementation((_logger, input) => {
           return Promise.resolve(
-            input.repoUrl === 'https://github.com/my-ent-org-1/A',
+            input.repoUrl === 'https://github.com/my-ent-org-1/A1',
           );
         });
 
@@ -823,15 +823,33 @@ describe('createRouter', () => {
       expect(response.body).toEqual([
         {
           approvalTool: 'GIT',
-          id: 'https://github.com/my-ent-org-1/A',
+          id: 'https://github.com/my-ent-org-1/A1',
           repository: {
-            name: 'A',
+            name: 'A1',
             organization: 'my-ent-org-1',
-            url: 'https://github.com/my-ent-org-1/A',
+            url: 'https://github.com/my-ent-org-1/A1',
             defaultBranch: 'dev',
-            id: 'my-ent-org-1/A',
+            id: 'my-ent-org-1/A1',
           },
           status: 'ADDED',
+        },
+        {
+          approvalTool: 'GIT',
+          id: 'https://github.com/my-ent-org-2/A2',
+          github: {
+            pullRequest: {
+              number: 987,
+              url: 'https://github.com/my-ent-org-2/A2/pull/987',
+            },
+          },
+          repository: {
+            name: 'A2',
+            organization: 'my-ent-org-2',
+            url: 'https://github.com/my-ent-org-2/A2',
+            defaultBranch: 'master',
+            id: 'my-ent-org-2/A2',
+          },
+          status: 'WAIT_PR_APPROVAL',
         },
         {
           approvalTool: 'GIT',
@@ -847,24 +865,6 @@ describe('createRouter', () => {
             id: 'my-ent-org-1/B',
           },
           status: 'PR_ERROR',
-        },
-        {
-          approvalTool: 'GIT',
-          id: 'https://github.com/my-ent-org-2/A',
-          github: {
-            pullRequest: {
-              number: 987,
-              url: 'https://github.com/my-ent-org-2/A/pull/987',
-            },
-          },
-          repository: {
-            name: 'A',
-            organization: 'my-ent-org-2',
-            url: 'https://github.com/my-ent-org-2/A',
-            defaultBranch: 'master',
-            id: 'my-ent-org-2/A',
-          },
-          status: 'WAIT_PR_APPROVAL',
         },
         {
           approvalTool: 'GIT',
