@@ -141,7 +141,7 @@ Examples:
   p, role:default/test, catalog-entity, read, allow
   ```
 
-- Sam wll inherit `role:default/test` via `group-a` <- `group-b` <- `group-c` <- `group-d`,
+- Sam will inherit `role:default/test` via `group-a` <- `group-b` <- `group-c` <- `group-d`,
   although `group-a` and `group-c` aren't explicitly defined.
 
   ```yaml
