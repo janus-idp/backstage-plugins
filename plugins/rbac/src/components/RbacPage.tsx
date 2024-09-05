@@ -8,13 +8,13 @@ import { policyEntityReadPermission } from '@janus-idp/backstage-plugin-rbac-com
 import { DeleteDialogContextProvider } from './RolesList/DeleteDialogContext';
 import { RolesList } from './RolesList/RolesList';
 
-export const RbacPage = () => (
+export const RbacPage = ({ useHeader = true }: { useHeader?: boolean }) => (
   <RequirePermission
     permission={policyEntityReadPermission}
     resourceRef={policyEntityReadPermission.resourceType}
   >
     <Page themeId="tool">
-      <Header title="RBAC" />
+      {useHeader && <Header title="RBAC" />}
       <Content>
         <DeleteDialogContextProvider>
           <RolesList />
