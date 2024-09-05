@@ -23,6 +23,9 @@ spec:
   owner: rhdh-team
   system: rhdh
   subcomponentOf: janus-idp-bulk-import
+  providesApis:
+    - janus-idp-bulk-import-backend-api
+
 ---
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api
 apiVersion: backstage.io/v1alpha1
