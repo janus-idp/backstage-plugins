@@ -4,6 +4,10 @@
 
 ### Dependencies
 
+* **@janus-idp/backstage-plugin-bulk-import-common:** upgraded to 1.0.1
+
+### Dependencies
+
 * **@janus-idp/shared-react:** upgraded to 2.10.1
 
 ### Dependencies
