@@ -5815,19 +5815,7 @@
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
-
-"@janus-idp/backstage-plugin-orchestrator-form-react@1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-orchestrator-form-react/-/backstage-plugin-orchestrator-form-react-1.0.6.tgz#663f81c560ad0fd70cdb664f874fe0f5e373fbbd"
-  integrity sha512-XqWOMjsZbn/7DumfisSNiSAdHWdZTV946Uf491Q9A1aHXPvt1d7Lse+S1uhdsA6Pvqq/CY8cSMxWXTFBgajW9A==
-  dependencies:
-    "@backstage/core-components" "^0.14.9"
-    "@backstage/core-plugin-api" "^1.9.3"
-    "@backstage/types" "^1.1.1"
-    "@janus-idp/backstage-plugin-orchestrator-common" "1.16.0"
-    "@janus-idp/backstage-plugin-orchestrator-form-api" "1.0.1"
-    json-schema "^0.4.0"
-
+  
 "@janus-idp/cli@1.13.0":
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/@janus-idp/cli/-/cli-1.13.0.tgz#acdd10ad3239f3c8951caebd3d4611b6982036f6"
