@@ -594,22 +594,33 @@ export async function deleteImportByRepo(
     gitUrl,
   });
   // Remove Location from catalog
-  const catalogLocations =
-    await catalogInfoGenerator.listCatalogUrlLocationsById();
   const catalogUrl = catalogInfoGenerator.getCatalogUrl(
     config,
     repoUrl,
     defaultBranch,
   );
-  let locationId: string | undefined;
-  for (const [id, loc] of catalogLocations) {
-    if (loc === catalogUrl) {
-      locationId = id;
-      break;
+  const findLocationFrom = (list: { id?: string; target: string }[]) => {
+    for (const loc of list) {
+      if (loc.target === catalogUrl) {
+        return loc.id;
+      }
     }
-  }
+    return undefined;
+  };
+
+  let locationId = findLocationFrom(
+    await catalogInfoGenerator.listCatalogUrlLocationsByIdFromLocationsEndpoint(),
+  );
   if (locationId) {
     await catalogInfoGenerator.deleteCatalogLocationById(locationId);
+  } else {
+    // try from location entities, in case it comes from a different source like app-config
+    locationId = findLocationFrom(
+      await catalogInfoGenerator.listCatalogUrlLocationEntitiesById(),
+    );
+    if (locationId) {
+      await catalogInfoGenerator.deleteCatalogLocationEntityById(locationId);
+    }
   }
 
   return {

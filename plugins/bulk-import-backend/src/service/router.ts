@@ -89,6 +89,7 @@ export async function createRouter(
     logger,
     discovery,
     auth,
+    catalogApi,
   );
 
   // create openapi requests handler

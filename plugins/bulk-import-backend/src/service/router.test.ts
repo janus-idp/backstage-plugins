@@ -741,24 +741,93 @@ describe('createRouter', () => {
       expect(response.body).toEqual([]);
     });
 
-    it('returns 200 with appropriate import status', async () => {
+    it('returns 200 with appropriate import status (with data coming from the repos and data coming from the app-config files)', async () => {
       mockedAuthorize.mockImplementation(allowAll);
 
+      // fromLocationsEndpoint simulates a response from the 'GET /locations' endpoint,
+      // returning Locations coming from Bulk Import or 'Register existing component'
+      const fromLocationsEndpoint = [
+        {
+          id: '1',
+          target:
+            'https://github.com/my-ent-org-1/A1/blob/dev/catalog-info.yaml',
+        },
+        {
+          id: '2',
+          target:
+            'https://github.com/my-ent-org-1/B/blob/main/catalog-info.yaml',
+        },
+        {
+          id: '3',
+          target:
+            'https://github.com/my-ent-org-2/A2/blob/master/catalog-info.yaml',
+        },
+        // purposely duplicated
+        {
+          id: '4',
+          target:
+            'https://github.com/my-ent-org-2/A2/blob/master/catalog-info.yaml',
+        },
+        // should be ignored because the default branch is 'master'
+        {
+          id: '5',
+          target:
+            'https://github.com/my-ent-org-2/A2/blob/feature/myAwesomeFeat/catalog-info.yaml',
+        },
+        // some unconventional default branch name: blob/some/path/to/default/branch
+        {
+          id: '6',
+          target:
+            'https://github.com/my-ent-org-3/C/blob/blob/some/path/to/default/branch/catalog-info.yaml',
+        },
+        // should be ignored because we expect the catalog-info.yaml to be at the root of the default branch
+        {
+          id: '7',
+          target:
+            'https://github.com/my-org/my-repo/blob/main/plugins/my-plugin/examples/templates/01-some-template.yaml',
+        },
+      ];
+      // fromLocationEntities simulates a response from the 'GET /entities' endpoint,
+      // returning Locations coming from app-config files as well
+      const fromLocationEntities = [
+        {
+          id: '313c6c44-549b-453d-bdf2-5698e7401fe0',
+          // import status should be ADDED because it contains a catalog-info.yaml in its default branch
+          target:
+            'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/blob/main/catalog-info.yaml',
+        },
+        {
+          id: '313c6c44-549b-453d-bdf2-5698e7401fe0-2',
+          // same repo but with path not to the root of the repo => will be ignored
+          target:
+            'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/blob/main/path/to/some/other/component/catalog-info.yaml',
+        },
+        {
+          id: '71c7eb8f-63ae-4e66-afd3-0220a7dd5bb0',
+          // import status should be WAIT_PR_APPROVAL because it does not contain a catalog-info.yaml in its default branch but has an import PR open
+          target:
+            'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/blob/main/catalog-info.yaml',
+        },
+        {
+          id: 'df730ba7-eb8f-452b-a7bf-5f450bad9ef0',
+          // import status should be null because it does not contain a catalog-info.yaml in its default branch and has no an import PR open
+          target:
+            'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr/blob/main/catalog-info.yaml',
+        },
+        {
+          id: '07cc2398-7c26-45ef-b3d3-caa943d0f732',
+          // Location not considered as Import job
+          target:
+            'https://github.com/my-org-3/another-repo/blob/main/some/path/to/my-component.yaml',
+        },
+      ];
       jest
         .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
-        .mockResolvedValue([
-          'https://github.com/my-ent-org-1/A1/blob/dev/catalog-info.yaml',
-          'https://github.com/my-ent-org-1/B/blob/main/catalog-info.yaml',
-          'https://github.com/my-ent-org-2/A2/blob/master/catalog-info.yaml',
-          // purposely duplicated
-          'https://github.com/my-ent-org-2/A2/blob/master/catalog-info.yaml',
-          // should be ignored because the default branch is 'master'
-          'https://github.com/my-ent-org-2/A2/blob/feature/myAwesomeFeat/catalog-info.yaml',
-          // some unconventional default branch name: blob/some/path/to/default/branch
-          'https://github.com/my-ent-org-3/C/blob/blob/some/path/to/default/branch/catalog-info.yaml',
-          // should be ignored because we expect the catalog-info.yaml to be at the root of the default branch
-          'https://github.com/my-org/my-repo/blob/main/plugins/my-plugin/examples/templates/01-some-template.yaml',
-        ]);
+        .mockResolvedValue(
+          [...fromLocationsEndpoint, ...fromLocationEntities].map(
+            l => l.target,
+          ),
+        );
       jest
         .spyOn(GithubApiService.prototype, 'getRepositoryFromIntegrations')
         .mockImplementation(repoUrl => {
@@ -776,8 +845,12 @@ describe('createRouter', () => {
             case 'https://github.com/my-ent-org-3/C':
               defaultBranch = 'blob/some/path/to/default/branch';
               break;
-            default:
+            case 'https://github.com/my-org/my-repo':
+              // simulate a failure to retrieve the default branch => default value should still be 'main'
               defaultBranch = undefined;
+              break;
+            default:
+              defaultBranch = 'main';
               break;
           }
           return Promise.resolve({
@@ -805,6 +878,10 @@ describe('createRouter', () => {
               resp.prNum = 987;
               resp.prUrl = `https://github.com/my-ent-org-2/A2/pull/${resp.prNum}`;
               break;
+            case 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr':
+              resp.prNum = 100;
+              resp.prUrl = `https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/pull/${resp.prNum}`;
+              break;
             default:
               break;
           }
@@ -814,7 +891,10 @@ describe('createRouter', () => {
         .spyOn(GithubApiService.prototype, 'doesCatalogInfoAlreadyExistInRepo')
         .mockImplementation((_logger, input) => {
           return Promise.resolve(
-            input.repoUrl === 'https://github.com/my-ent-org-1/A1',
+            [
+              'https://github.com/my-ent-org-1/A1',
+              'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
+            ].includes(input.repoUrl),
           );
         });
 
@@ -875,6 +955,48 @@ describe('createRouter', () => {
             name: 'C',
             organization: 'my-ent-org-3',
             url: 'https://github.com/my-ent-org-3/C',
+          },
+          status: null,
+        },
+        {
+          approvalTool: 'GIT',
+          id: 'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
+          repository: {
+            defaultBranch: 'main',
+            id: 'my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
+            name: 'my-repo-with-existing-catalog-info-in-default-branch',
+            organization: 'my-org-1',
+            url: 'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
+          },
+          status: 'ADDED',
+        },
+        {
+          approvalTool: 'GIT',
+          github: {
+            pullRequest: {
+              number: 100,
+              url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/pull/100',
+            },
+          },
+          id: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+          repository: {
+            defaultBranch: 'main',
+            id: 'my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+            name: 'my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+            organization: 'my-org-1',
+            url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+          },
+          status: 'WAIT_PR_APPROVAL',
+        },
+        {
+          approvalTool: 'GIT',
+          id: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
+          repository: {
+            defaultBranch: 'main',
+            id: 'my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
+            name: 'my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
+            organization: 'my-org-1',
+            url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
           },
           status: null,
         },

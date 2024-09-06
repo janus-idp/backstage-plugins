@@ -15,6 +15,8 @@
  */
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
+import { CatalogApi } from '@backstage/catalog-client';
+import { LocationEntity } from '@backstage/catalog-model';
 import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
@@ -28,11 +30,18 @@ export class CatalogInfoGenerator {
   private readonly logger: Logger;
   private readonly discovery: PluginEndpointDiscovery;
   private readonly auth: AuthService;
+  private readonly catalogApi: CatalogApi;
 
-  constructor(logger: Logger, discovery: DiscoveryService, auth: AuthService) {
+  constructor(
+    logger: Logger,
+    discovery: DiscoveryService,
+    auth: AuthService,
+    catalogApi: CatalogApi,
+  ) {
     this.logger = logger;
     this.discovery = discovery;
     this.auth = auth;
+    this.catalogApi = catalogApi;
   }
 
   async generateDefaultCatalogInfoContent(
@@ -101,12 +110,27 @@ ${jsYaml.dump(generatedEntity.entity)}`,
   }
 
   async listCatalogUrlLocations(): Promise<string[]> {
-    return this.listCatalogUrlLocationsById().then(map =>
-      Array.from(map.values()),
-    );
+    const list = await this.listCatalogUrlLocationsById();
+    const result: string[] = [];
+    for (const l of list) {
+      result.push(l.target);
+    }
+    return result;
   }
 
-  async listCatalogUrlLocationsById(): Promise<Map<string, string>> {
+  async listCatalogUrlLocationsById(): Promise<
+    { id?: string; target: string }[]
+  > {
+    const result = await Promise.all([
+      this.listCatalogUrlLocationsByIdFromLocationsEndpoint(),
+      this.listCatalogUrlLocationEntitiesById(),
+    ]);
+    return result.flat();
+  }
+
+  async listCatalogUrlLocationsByIdFromLocationsEndpoint(): Promise<
+    { id?: string; target: string }[]
+  > {
     const url = `${await this.discovery.getBaseUrl('catalog')}/locations`;
     const response = await fetch(url, {
       headers: {
@@ -118,16 +142,45 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     const locations = (await response.json()) as {
       data: { id: string; target: string; type: string };
     }[];
-    if (Array.isArray(locations)) {
-      return new Map(
-        locations
-          .filter(
-            location => location.data?.target && location.data?.type === 'url',
-          )
-          .map(location => [location.data.id, location.data.target]),
-      );
+    if (!Array.isArray(locations)) {
+      return [];
     }
-    return new Map<string, string>();
+    return locations
+      .filter(
+        location => location.data?.target && location.data?.type === 'url',
+      )
+      .map(location => {
+        return {
+          id: location.data?.id,
+          target: location.data.target,
+        };
+      });
+  }
+
+  async listCatalogUrlLocationEntitiesById(): Promise<
+    { id?: string; target: string }[]
+  > {
+    const result = await this.catalogApi.getEntities(
+      {
+        filter: {
+          kind: 'Location',
+        },
+      },
+      {
+        token: await getTokenForPlugin(this.auth, 'catalog'),
+      },
+    );
+    const locations = (result?.items ?? []) as LocationEntity[];
+    return locations
+      .filter(
+        location => location.spec?.target && location.spec?.type === 'url',
+      )
+      .map(location => {
+        return {
+          id: location.metadata.uid,
+          target: location.spec.target!,
+        };
+      });
   }
 
   async deleteCatalogLocationById(locationId: string): Promise<void> {
@@ -138,6 +191,12 @@ ${jsYaml.dump(generatedEntity.entity)}`,
         Authorization: `Bearer ${await getTokenForPlugin(this.auth, 'catalog')}`,
       },
       method: 'DELETE',
+    });
+  }
+
+  async deleteCatalogLocationEntityById(locationUid: string): Promise<void> {
+    await this.catalogApi.removeEntityByUid(locationUid, {
+      token: await getTokenForPlugin(this.auth, 'catalog'),
     });
   }
 }
