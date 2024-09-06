@@ -47,6 +47,7 @@ export async function findAllImports(
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
+  search?: string,
   pageNumber: number = DefaultPageNumber,
   pageSize: number = DefaultPageSize,
 ): Promise<HandlerResponse<Components.Schemas.Import[]>> {
@@ -56,6 +57,7 @@ export async function findAllImports(
 
   const allLocations = await catalogInfoGenerator.listCatalogUrlLocations(
     config,
+    search,
     pageNumber,
     pageSize,
   );

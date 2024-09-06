@@ -34,6 +34,7 @@ import { Logger } from 'winston';
 
 import { CatalogInfoGenerator } from '../helpers';
 import {
+  GithubOrganization,
   GithubOrganizationResponse,
   GithubRepository,
   GithubRepositoryResponse,
@@ -127,6 +128,15 @@ const configuration = new ConfigReader({
     ],
   },
 });
+
+function filterOrganizations(
+  organizations: GithubOrganization[],
+  search?: string,
+) {
+  return search
+    ? organizations.filter(org => org.name.toLowerCase().includes(search))
+    : organizations;
+}
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -274,6 +284,75 @@ describe('createRouter', () => {
             totalRepoCount: 1234,
             errors: [],
           },
+          {
+            id: '987654321',
+            name: 'my-org-ent-3-undefined-repo-count',
+            url: 'https://api.github.com/users/my-org-ent-3-undefined-repo-count',
+            errors: [],
+          },
+          {
+            id: '123',
+            name: 'my-org-ent-4-only-internal-repos',
+            url: 'https://api.github.com/users/my-org-ent-4-only-internal-repos',
+            totalRepoCount: 7,
+            errors: [],
+          },
+        ],
+      });
+    });
+
+    it('filters out organizations when a search query parameter is provided', async () => {
+      mockedAuthorize.mockImplementation(allowAll);
+
+      const orgs = [
+        {
+          id: 166016847,
+          name: 'my-org-ent-1',
+          url: 'https://api.github.com/users/my-org-ent-1',
+          description: 'an awesome org',
+          public_repos: 10,
+          total_private_repos: 25,
+        },
+        {
+          id: 266016847,
+          name: 'my-org-ent-2',
+          url: 'https://api.github.com/users/my-org-ent-2',
+          total_private_repos: 1234,
+        },
+        {
+          id: 987654321,
+          name: 'my-org-ent-3-undefined-repo-count',
+          url: 'https://api.github.com/users/my-org-ent-3-undefined-repo-count',
+        },
+        {
+          id: 123,
+          name: 'my-org-ent-4-only-internal-repos',
+          url: 'https://api.github.com/users/my-org-ent-4-only-internal-repos',
+          owned_private_repos: 7,
+        },
+      ];
+      jest
+        .spyOn(GithubApiService.prototype, 'getOrganizationsFromIntegrations')
+        .mockImplementation(
+          (
+            search?: string,
+            _pageNumber: number = DefaultPageNumber,
+            _pageSize: number = DefaultPageSize,
+          ) => {
+            return Promise.resolve({
+              organizations: filterOrganizations(orgs, search),
+              errors: [],
+            });
+          },
+        );
+
+      const response = await request(app).get('/organizations?search=repo');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        errors: [],
+        pagePerIntegration: DefaultPageNumber,
+        sizePerIntegration: DefaultPageSize,
+        organizations: [
           {
             id: '987654321',
             name: 'my-org-ent-3-undefined-repo-count',
@@ -557,6 +636,7 @@ describe('createRouter', () => {
         .mockImplementation(
           async (
             orgName: string,
+            _search?: string,
             _pageNumber?: number,
             _pageSize?: number,
           ): Promise<GithubRepositoryResponse> => {

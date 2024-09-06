@@ -27,14 +27,16 @@ import {
 export async function findAllOrganizations(
   logger: Logger,
   githubApiService: GithubApiService,
+  search?: string,
   pageNumber: number = DefaultPageNumber,
   pageSize: number = DefaultPageSize,
 ): Promise<HandlerResponse<Components.Schemas.OrganizationList>> {
   logger.debug(
-    `Getting all organizations (page,size)=(${pageNumber},${pageSize})..`,
+    `Getting all organizations (search,page,size)=('${search ?? ''}',${pageNumber},${pageSize})..`,
   );
   const allOrgsAccessible =
     await githubApiService.getOrganizationsFromIntegrations(
+      search,
       pageNumber,
       pageSize,
     );

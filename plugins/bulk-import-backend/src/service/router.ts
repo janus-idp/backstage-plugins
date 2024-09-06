@@ -148,6 +148,7 @@ export async function createRouter(
       const response = await findAllOrganizations(
         logger,
         githubApiService,
+        q.search,
         q.pagePerIntegration,
         q.sizePerIntegration,
       );
@@ -176,9 +177,12 @@ export async function createRouter(
         config,
         githubApiService,
         catalogInfoGenerator,
-        q.checkImportStatus,
-        q.pagePerIntegration,
-        q.sizePerIntegration,
+        {
+          search: q.search,
+          checkStatus: q.checkImportStatus,
+          pageNumber: q.pagePerIntegration,
+          pageSize: q.sizePerIntegration,
+        },
       );
       const repos = response.responseBody?.repositories;
       return res.status(response.statusCode).json({
@@ -209,6 +213,7 @@ export async function createRouter(
           catalogInfoGenerator,
         },
         c.request.params.organizationName?.toString(),
+        q.search,
         q.checkImportStatus,
         q.pagePerIntegration,
         q.sizePerIntegration,
@@ -238,6 +243,7 @@ export async function createRouter(
         config,
         githubApiService,
         catalogInfoGenerator,
+        q.search,
         q.pagePerIntegration,
         q.sizePerIntegration,
       );
