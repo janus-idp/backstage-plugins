@@ -801,7 +801,7 @@ function setupInternalRoutes(
     'getInstances',
     async (_c, req: express.Request, res: express.Response, next) => {
       const endpointName = 'getInstances';
-      const endpoint = `/v2/instances`;
+      const endpoint = `/v2/workflows/instances`;
 
       auditLogger.auditLog({
         eventName: endpointName,
@@ -834,7 +834,7 @@ function setupInternalRoutes(
     async (c, _req: express.Request, res: express.Response, next) => {
       const instanceId = c.request.params.instanceId as string;
       const endpointName = 'getInstanceById';
-      const endpoint = `/v2/instances/${instanceId}`;
+      const endpoint = `/v2/workflows/instances/${instanceId}`;
 
       auditLogger.auditLog({
         eventName: endpointName,
@@ -876,7 +876,7 @@ function setupInternalRoutes(
     'abortWorkflow',
     async (c, _req, res, next) => {
       const instanceId = c.request.params.instanceId as string;
-      const endpointName = 'getInstanceById';
+      const endpointName = 'abortWorkflow';
       const endpoint = `/v2/instances/${instanceId}/abort`;
 
       auditLogger.auditLog({
