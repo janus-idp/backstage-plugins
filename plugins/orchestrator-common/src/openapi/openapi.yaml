@@ -240,7 +240,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /v2/instances/{instanceId}/abort:
+  /v2/workflows/instances/{instanceId}/abort:
     delete:
       summary: Abort a workflow instance
       operationId: abortWorkflow
