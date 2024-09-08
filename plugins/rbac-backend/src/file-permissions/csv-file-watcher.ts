@@ -347,10 +347,11 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
         status: 'succeeded',
       });
     } catch (e) {
+      const modificationInfo = filePath
+        ? ` after modification ${filePath}.`
+        : '.';
       this.logger.warn(
-        `Failed to remove policies ${JSON.stringify(
-          this.csvFilePolicies.removedPolicies,
-        )}${filePath ? `after modification ${filePath}` : ''}. Cause: ${e}`,
+        `Failed to remove policies ${JSON.stringify(this.csvFilePolicies.removedPolicies)}${modificationInfo} Cause: ${e}`,
       );
     }
     this.csvFilePolicies.removedPolicies = [];
@@ -470,8 +471,11 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
           status: 'succeeded',
         });
       } catch (e) {
+        const modificationInfo = filePath
+          ? ` after modification ${filePath}.`
+          : '.';
         this.logger.warn(
-          `Failed to remove group policy ${groupPolicy} ${filePath ? `after modification ${filePath}` : ''}. Cause: ${e}`,
+          `Failed to remove group policy ${groupPolicy}${modificationInfo} Cause: ${e}`,
         );
       }
     }
