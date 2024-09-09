@@ -889,39 +889,54 @@ ul.nav-tabs {
     }
   }
 };
-    defs["FilterInfo"] = {
-  "required" : [ "fieldName", "fieldValue", "operator" ],
+    defs["FieldFilter"] = {
+  "required" : [ "field", "operator", "value" ],
   "properties" : {
-    "fieldName" : {
-      "type" : "string",
-      "description" : "The name of the field to filter on"
+    "field" : {
+      "type" : "string"
     },
     "operator" : {
-      "$ref" : "#/components/schemas/Operator"
+      "type" : "string",
+      "enum" : [ "EQ", "GT", "GTE", "LT", "LTE", "IN", "IS_NULL", "CONTAINS", "CONTAINS_ALL", "CONTAINS_ANY", "LIKE", "BETWEEN", "FROM", "TO" ]
     },
-    "fieldValue" : {
-      "$ref" : "#/components/schemas/FilterValue"
+    "value" : {
+      "$ref" : "#/components/schemas/FieldFilter_value"
     }
   }
 };
-    defs["FilterValue"] = {
-  "title" : "FilterValue",
-  "description" : "The value to filter by, which can be a string, number, boolean, or ProcessInstanceStatusDTO",
+    defs["FieldFilter_value"] = {
   "oneOf" : [ {
     "type" : "string"
   }, {
     "type" : "number"
   }, {
     "type" : "boolean"
+  }, {
+    "items" : {
+      "oneOf" : [ {
+        "type" : "string"
+      }, {
+        "type" : "number"
+      }, {
+        "type" : "boolean"
+      } ]
+    }
   } ]
 };
-    defs["GetInstancesRequestParams"] = {
+    defs["Filter"] = {
+  "oneOf" : [ {
+    "$ref" : "#/components/schemas/LogicalFilter"
+  }, {
+    "$ref" : "#/components/schemas/FieldFilter"
+  } ]
+};
+    defs["GetInstancesRequest"] = {
   "properties" : {
     "paginationInfo" : {
       "$ref" : "#/components/schemas/PaginationInfoDTO"
     },
     "filterInfo" : {
-      "$ref" : "#/components/schemas/FilterInfo"
+      "$ref" : "#/components/schemas/SearchRequest"
     }
   }
 };
@@ -931,7 +946,22 @@ ul.nav-tabs {
       "$ref" : "#/components/schemas/PaginationInfoDTO"
     },
     "filterInfo" : {
-      "$ref" : "#/components/schemas/FilterInfo"
+      "$ref" : "#/components/schemas/SearchRequest"
+    }
+  }
+};
+    defs["LogicalFilter"] = {
+  "required" : [ "filters", "operator" ],
+  "properties" : {
+    "operator" : {
+      "type" : "string",
+      "enum" : [ "AND", "OR", "NOT" ]
+    },
+    "filters" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/Filter"
+      }
     }
   }
 };
@@ -972,11 +1002,6 @@ ul.nav-tabs {
       "description" : "Node ID"
     }
   }
-};
-    defs["Operator"] = {
-  "type" : "string",
-  "description" : "The operator to use for filtering, such as equality or inclusion",
-  "enum" : [ "equal", "in" ]
 };
     defs["PaginationInfoDTO"] = {
   "properties" : {
@@ -1087,6 +1112,16 @@ ul.nav-tabs {
   "type" : "string",
   "description" : "Status of the workflow run",
   "enum" : [ "Active", "Error", "Completed", "Aborted", "Suspended", "Pending" ]
+};
+    defs["SearchRequest"] = {
+  "properties" : {
+    "filters" : {
+      "$ref" : "#/components/schemas/Filter"
+    },
+    "paginationInfo" : {
+      "$ref" : "#/components/schemas/PaginationInfoDTO"
+    }
+  }
 };
     defs["WorkflowCategoryDTO"] = {
   "type" : "string",
@@ -2767,8 +2802,17 @@ Whether to include assessment
     &quot;totalCount&quot; : 5.637376656633329
   },
   &quot;filterInfo&quot; : {
-    &quot;fieldName&quot; : &quot;fieldName&quot;,
-    &quot;fieldValue&quot; : &quot;FilterValue&quot;
+    &quot;paginationInfo&quot; : {
+      &quot;offset&quot; : 5.962133916683182,
+      &quot;pageSize&quot; : 1.4658129805029452,
+      &quot;orderDirection&quot; : &quot;ASC&quot;,
+      &quot;orderBy&quot; : &quot;orderBy&quot;,
+      &quot;totalCount&quot; : 5.637376656633329
+    },
+    &quot;filters&quot; : {
+      &quot;filters&quot; : [ null, null ],
+      &quot;operator&quot; : &quot;AND&quot;
+    }
   }
 }'
 </code></pre>
@@ -2787,10 +2831,10 @@ public class DefaultApiExample {
 
         // Create an instance of the API class
         DefaultApi apiInstance = new DefaultApi();
-        GetInstancesRequestParams getInstancesRequestParams = ; // GetInstancesRequestParams | 
+        GetInstancesRequest getInstancesRequest = ; // GetInstancesRequest | 
 
         try {
-            ProcessInstanceListResultDTO result = apiInstance.getInstances(getInstancesRequestParams);
+            ProcessInstanceListResultDTO result = apiInstance.getInstances(getInstancesRequest);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DefaultApi#getInstances");
@@ -2806,10 +2850,10 @@ public class DefaultApiExample {
 
 final api_instance = DefaultApi();
 
-final GetInstancesRequestParams getInstancesRequestParams = new GetInstancesRequestParams(); // GetInstancesRequestParams | 
+final GetInstancesRequest getInstancesRequest = new GetInstancesRequest(); // GetInstancesRequest | 
 
 try {
-    final result = await api_instance.getInstances(getInstancesRequestParams);
+    final result = await api_instance.getInstances(getInstancesRequest);
     print(result);
 } catch (e) {
     print('Exception when calling DefaultApi->getInstances: $e\n');
@@ -2824,10 +2868,10 @@ try {
 public class DefaultApiExample {
     public static void main(String[] args) {
         DefaultApi apiInstance = new DefaultApi();
-        GetInstancesRequestParams getInstancesRequestParams = ; // GetInstancesRequestParams | 
+        GetInstancesRequest getInstancesRequest = ; // GetInstancesRequest | 
 
         try {
-            ProcessInstanceListResultDTO result = apiInstance.getInstances(getInstancesRequestParams);
+            ProcessInstanceListResultDTO result = apiInstance.getInstances(getInstancesRequest);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DefaultApi#getInstances");
@@ -2845,10 +2889,10 @@ public class DefaultApiExample {
 
 // Create an instance of the API class
 DefaultApi *apiInstance = [[DefaultApi alloc] init];
-GetInstancesRequestParams *getInstancesRequestParams = ; //  (optional)
+GetInstancesRequest *getInstancesRequest = ; //  (optional)
 
 // Get instances
-[apiInstance getInstancesWith:getInstancesRequestParams
+[apiInstance getInstancesWith:getInstancesRequest
               completionHandler: ^(ProcessInstanceListResultDTO output, NSError* error) {
     if (output) {
         NSLog(@"%@", output);
@@ -2866,7 +2910,7 @@ GetInstancesRequestParams *getInstancesRequestParams = ; //  (optional)
 // Create an instance of the API class
 var api = new OrchestratorPlugin.DefaultApi()
 var opts = {
-  'getInstancesRequestParams':  // {GetInstancesRequestParams} 
+  'getInstancesRequest':  // {GetInstancesRequest} 
 };
 
 var callback = function(error, data, response) {
@@ -2899,11 +2943,11 @@ namespace Example
 
             // Create an instance of the API class
             var apiInstance = new DefaultApi();
-            var getInstancesRequestParams = new GetInstancesRequestParams(); // GetInstancesRequestParams |  (optional) 
+            var getInstancesRequest = new GetInstancesRequest(); // GetInstancesRequest |  (optional) 
 
             try {
                 // Get instances
-                ProcessInstanceListResultDTO result = apiInstance.getInstances(getInstancesRequestParams);
+                ProcessInstanceListResultDTO result = apiInstance.getInstances(getInstancesRequest);
                 Debug.WriteLine(result);
             } catch (Exception e) {
                 Debug.Print("Exception when calling DefaultApi.getInstances: " + e.Message );
@@ -2920,10 +2964,10 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 // Create an instance of the API class
 $api_instance = new OpenAPITools\Client\Api\DefaultApi();
-$getInstancesRequestParams = ; // GetInstancesRequestParams | 
+$getInstancesRequest = ; // GetInstancesRequest | 
 
 try {
-    $result = $api_instance->getInstances($getInstancesRequestParams);
+    $result = $api_instance->getInstances($getInstancesRequest);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling DefaultApi->getInstances: ', $e->getMessage(), PHP_EOL;
@@ -2938,10 +2982,10 @@ use WWW::OPenAPIClient::DefaultApi;
 
 # Create an instance of the API class
 my $api_instance = WWW::OPenAPIClient::DefaultApi->new();
-my $getInstancesRequestParams = WWW::OPenAPIClient::Object::GetInstancesRequestParams->new(); # GetInstancesRequestParams | 
+my $getInstancesRequest = WWW::OPenAPIClient::Object::GetInstancesRequest->new(); # GetInstancesRequest | 
 
 eval {
-    my $result = $api_instance->getInstances(getInstancesRequestParams => $getInstancesRequestParams);
+    my $result = $api_instance->getInstances(getInstancesRequest => $getInstancesRequest);
     print Dumper($result);
 };
 if ($@) {
@@ -2958,11 +3002,11 @@ from pprint import pprint
 
 # Create an instance of the API class
 api_instance = openapi_client.DefaultApi()
-getInstancesRequestParams =  # GetInstancesRequestParams |  (optional)
+getInstancesRequest =  # GetInstancesRequest |  (optional)
 
 try:
     # Get instances
-    api_response = api_instance.get_instances(getInstancesRequestParams=getInstancesRequestParams)
+    api_response = api_instance.get_instances(getInstancesRequest=getInstancesRequest)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling DefaultApi->getInstances: %s\n" % e)</code></pre>
@@ -2972,10 +3016,10 @@ except ApiException as e:
                               <pre class="prettyprint"><code class="language-rust">extern crate DefaultApi;
 
 pub fn main() {
-    let getInstancesRequestParams = ; // GetInstancesRequestParams
+    let getInstancesRequest = ; // GetInstancesRequest
 
     let mut context = DefaultApi::Context::default();
-    let result = client.getInstances(getInstancesRequestParams, &context).wait();
+    let result = client.getInstances(getInstancesRequest, &context).wait();
 
     println!("{:?}", result);
 }
@@ -2998,7 +3042,7 @@ pub fn main() {
                                 <th width="150px">Name</th>
                                 <th>Description</th>
                               </tr>
-                                <tr><td style="width:150px;">getInstancesRequestParams </td>
+                                <tr><td style="width:150px;">getInstancesRequest </td>
 <td>
 <p class="marked">Parameters for retrieving instances</p>
 <script>
@@ -3008,7 +3052,7 @@ $(document).ready(function() {
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/GetInstancesRequestParams"
+        "$ref" : "#/components/schemas/GetInstancesRequest"
       }
     }
   },
@@ -3029,12 +3073,12 @@ $(document).ready(function() {
   }
 
   var view = new JSONSchemaView(schema,2,{isBodyParam: true});
-  var result = $('#d2e199_getInstances_getInstancesRequestParams');
+  var result = $('#d2e199_getInstances_getInstancesRequest');
   result.empty();
   result.append(view.render());
 });
 </script>
-<div id="d2e199_getInstances_getInstancesRequestParams"></div>
+<div id="d2e199_getInstances_getInstancesRequest"></div>
 </td>
 </tr>
 
@@ -4084,9 +4128,9 @@ ID of instance
     &quot;orderBy&quot; : &quot;orderBy&quot;,
     &quot;totalCount&quot; : 5.637376656633329
   },
-  &quot;filterInfo&quot; : {
-    &quot;fieldName&quot; : &quot;fieldName&quot;,
-    &quot;fieldValue&quot; : &quot;FilterValue&quot;
+  &quot;filters&quot; : {
+    &quot;filters&quot; : [ null, null ],
+    &quot;operator&quot; : &quot;AND&quot;
   }
 }'
 </code></pre>
@@ -4106,10 +4150,10 @@ public class DefaultApiExample {
         // Create an instance of the API class
         DefaultApi apiInstance = new DefaultApi();
         String workflowId = workflowId_example; // String | ID of the workflow
-        GetInstancesRequestParams getInstancesRequestParams = ; // GetInstancesRequestParams | 
+        SearchRequest searchRequest = ; // SearchRequest | 
 
         try {
-            ProcessInstanceListResultDTO result = apiInstance.getWorkflowInstances(workflowId, getInstancesRequestParams);
+            ProcessInstanceListResultDTO result = apiInstance.getWorkflowInstances(workflowId, searchRequest);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DefaultApi#getWorkflowInstances");
@@ -4126,10 +4170,10 @@ public class DefaultApiExample {
 final api_instance = DefaultApi();
 
 final String workflowId = new String(); // String | ID of the workflow
-final GetInstancesRequestParams getInstancesRequestParams = new GetInstancesRequestParams(); // GetInstancesRequestParams | 
+final SearchRequest searchRequest = new SearchRequest(); // SearchRequest | 
 
 try {
-    final result = await api_instance.getWorkflowInstances(workflowId, getInstancesRequestParams);
+    final result = await api_instance.getWorkflowInstances(workflowId, searchRequest);
     print(result);
 } catch (e) {
     print('Exception when calling DefaultApi->getWorkflowInstances: $e\n');
@@ -4145,10 +4189,10 @@ public class DefaultApiExample {
     public static void main(String[] args) {
         DefaultApi apiInstance = new DefaultApi();
         String workflowId = workflowId_example; // String | ID of the workflow
-        GetInstancesRequestParams getInstancesRequestParams = ; // GetInstancesRequestParams | 
+        SearchRequest searchRequest = ; // SearchRequest | 
 
         try {
-            ProcessInstanceListResultDTO result = apiInstance.getWorkflowInstances(workflowId, getInstancesRequestParams);
+            ProcessInstanceListResultDTO result = apiInstance.getWorkflowInstances(workflowId, searchRequest);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DefaultApi#getWorkflowInstances");
@@ -4167,11 +4211,11 @@ public class DefaultApiExample {
 // Create an instance of the API class
 DefaultApi *apiInstance = [[DefaultApi alloc] init];
 String *workflowId = workflowId_example; // ID of the workflow (default to null)
-GetInstancesRequestParams *getInstancesRequestParams = ; //  (optional)
+SearchRequest *searchRequest = ; //  (optional)
 
 // Get instances for a specific workflow
 [apiInstance getWorkflowInstancesWith:workflowId
-    getInstancesRequestParams:getInstancesRequestParams
+    searchRequest:searchRequest
               completionHandler: ^(ProcessInstanceListResultDTO output, NSError* error) {
     if (output) {
         NSLog(@"%@", output);
@@ -4190,7 +4234,7 @@ GetInstancesRequestParams *getInstancesRequestParams = ; //  (optional)
 var api = new OrchestratorPlugin.DefaultApi()
 var workflowId = workflowId_example; // {String} ID of the workflow
 var opts = {
-  'getInstancesRequestParams':  // {GetInstancesRequestParams} 
+  'searchRequest':  // {SearchRequest} 
 };
 
 var callback = function(error, data, response) {
@@ -4224,11 +4268,11 @@ namespace Example
             // Create an instance of the API class
             var apiInstance = new DefaultApi();
             var workflowId = workflowId_example;  // String | ID of the workflow (default to null)
-            var getInstancesRequestParams = new GetInstancesRequestParams(); // GetInstancesRequestParams |  (optional) 
+            var searchRequest = new SearchRequest(); // SearchRequest |  (optional) 
 
             try {
                 // Get instances for a specific workflow
-                ProcessInstanceListResultDTO result = apiInstance.getWorkflowInstances(workflowId, getInstancesRequestParams);
+                ProcessInstanceListResultDTO result = apiInstance.getWorkflowInstances(workflowId, searchRequest);
                 Debug.WriteLine(result);
             } catch (Exception e) {
                 Debug.Print("Exception when calling DefaultApi.getWorkflowInstances: " + e.Message );
@@ -4246,10 +4290,10 @@ require_once(__DIR__ . '/vendor/autoload.php');
 // Create an instance of the API class
 $api_instance = new OpenAPITools\Client\Api\DefaultApi();
 $workflowId = workflowId_example; // String | ID of the workflow
-$getInstancesRequestParams = ; // GetInstancesRequestParams | 
+$searchRequest = ; // SearchRequest | 
 
 try {
-    $result = $api_instance->getWorkflowInstances($workflowId, $getInstancesRequestParams);
+    $result = $api_instance->getWorkflowInstances($workflowId, $searchRequest);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling DefaultApi->getWorkflowInstances: ', $e->getMessage(), PHP_EOL;
@@ -4265,10 +4309,10 @@ use WWW::OPenAPIClient::DefaultApi;
 # Create an instance of the API class
 my $api_instance = WWW::OPenAPIClient::DefaultApi->new();
 my $workflowId = workflowId_example; # String | ID of the workflow
-my $getInstancesRequestParams = WWW::OPenAPIClient::Object::GetInstancesRequestParams->new(); # GetInstancesRequestParams | 
+my $searchRequest = WWW::OPenAPIClient::Object::SearchRequest->new(); # SearchRequest | 
 
 eval {
-    my $result = $api_instance->getWorkflowInstances(workflowId => $workflowId, getInstancesRequestParams => $getInstancesRequestParams);
+    my $result = $api_instance->getWorkflowInstances(workflowId => $workflowId, searchRequest => $searchRequest);
     print Dumper($result);
 };
 if ($@) {
@@ -4286,11 +4330,11 @@ from pprint import pprint
 # Create an instance of the API class
 api_instance = openapi_client.DefaultApi()
 workflowId = workflowId_example # String | ID of the workflow (default to null)
-getInstancesRequestParams =  # GetInstancesRequestParams |  (optional)
+searchRequest =  # SearchRequest |  (optional)
 
 try:
     # Get instances for a specific workflow
-    api_response = api_instance.get_workflow_instances(workflowId, getInstancesRequestParams=getInstancesRequestParams)
+    api_response = api_instance.get_workflow_instances(workflowId, searchRequest=searchRequest)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling DefaultApi->getWorkflowInstances: %s\n" % e)</code></pre>
@@ -4301,10 +4345,10 @@ except ApiException as e:
 
 pub fn main() {
     let workflowId = workflowId_example; // String
-    let getInstancesRequestParams = ; // GetInstancesRequestParams
+    let searchRequest = ; // SearchRequest
 
     let mut context = DefaultApi::Context::default();
-    let result = client.getWorkflowInstances(workflowId, getInstancesRequestParams, &context).wait();
+    let result = client.getWorkflowInstances(workflowId, searchRequest, &context).wait();
 
     println!("{:?}", result);
 }
@@ -4357,7 +4401,7 @@ ID of the workflow
                                 <th width="150px">Name</th>
                                 <th>Description</th>
                               </tr>
-                                <tr><td style="width:150px;">getInstancesRequestParams </td>
+                                <tr><td style="width:150px;">searchRequest </td>
 <td>
 <p class="marked">Parameters for retrieving workflow instances</p>
 <script>
@@ -4367,7 +4411,7 @@ $(document).ready(function() {
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/GetInstancesRequestParams"
+        "$ref" : "#/components/schemas/SearchRequest"
       }
     }
   },
@@ -4388,12 +4432,12 @@ $(document).ready(function() {
   }
 
   var view = new JSONSchemaView(schema,2,{isBodyParam: true});
-  var result = $('#d2e199_getWorkflowInstances_getInstancesRequestParams');
+  var result = $('#d2e199_getWorkflowInstances_searchRequest');
   result.empty();
   result.append(view.render());
 });
 </script>
-<div id="d2e199_getWorkflowInstances_getInstancesRequestParams"></div>
+<div id="d2e199_getWorkflowInstances_searchRequest"></div>
 </td>
 </tr>
 
@@ -5779,9 +5823,9 @@ pub fn main() {
     &quot;orderBy&quot; : &quot;orderBy&quot;,
     &quot;totalCount&quot; : 5.637376656633329
   },
-  &quot;filterInfo&quot; : {
-    &quot;fieldName&quot; : &quot;fieldName&quot;,
-    &quot;fieldValue&quot; : &quot;FilterValue&quot;
+  &quot;filters&quot; : {
+    &quot;filters&quot; : [ null, null ],
+    &quot;operator&quot; : &quot;AND&quot;
   }
 }'
 </code></pre>
@@ -5800,10 +5844,10 @@ public class DefaultApiExample {
 
         // Create an instance of the API class
         DefaultApi apiInstance = new DefaultApi();
-        GetOverviewsRequestParams getOverviewsRequestParams = ; // GetOverviewsRequestParams | 
+        SearchRequest searchRequest = ; // SearchRequest | 
 
         try {
-            WorkflowOverviewListResultDTO result = apiInstance.getWorkflowsOverview(getOverviewsRequestParams);
+            WorkflowOverviewListResultDTO result = apiInstance.getWorkflowsOverview(searchRequest);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DefaultApi#getWorkflowsOverview");
@@ -5819,10 +5863,10 @@ public class DefaultApiExample {
 
 final api_instance = DefaultApi();
 
-final GetOverviewsRequestParams getOverviewsRequestParams = new GetOverviewsRequestParams(); // GetOverviewsRequestParams | 
+final SearchRequest searchRequest = new SearchRequest(); // SearchRequest | 
 
 try {
-    final result = await api_instance.getWorkflowsOverview(getOverviewsRequestParams);
+    final result = await api_instance.getWorkflowsOverview(searchRequest);
     print(result);
 } catch (e) {
     print('Exception when calling DefaultApi->getWorkflowsOverview: $e\n');
@@ -5837,10 +5881,10 @@ try {
 public class DefaultApiExample {
     public static void main(String[] args) {
         DefaultApi apiInstance = new DefaultApi();
-        GetOverviewsRequestParams getOverviewsRequestParams = ; // GetOverviewsRequestParams | 
+        SearchRequest searchRequest = ; // SearchRequest | 
 
         try {
-            WorkflowOverviewListResultDTO result = apiInstance.getWorkflowsOverview(getOverviewsRequestParams);
+            WorkflowOverviewListResultDTO result = apiInstance.getWorkflowsOverview(searchRequest);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DefaultApi#getWorkflowsOverview");
@@ -5858,9 +5902,9 @@ public class DefaultApiExample {
 
 // Create an instance of the API class
 DefaultApi *apiInstance = [[DefaultApi alloc] init];
-GetOverviewsRequestParams *getOverviewsRequestParams = ; //  (optional)
+SearchRequest *searchRequest = ; //  (optional)
 
-[apiInstance getWorkflowsOverviewWith:getOverviewsRequestParams
+[apiInstance getWorkflowsOverviewWith:searchRequest
               completionHandler: ^(WorkflowOverviewListResultDTO output, NSError* error) {
     if (output) {
         NSLog(@"%@", output);
@@ -5878,7 +5922,7 @@ GetOverviewsRequestParams *getOverviewsRequestParams = ; //  (optional)
 // Create an instance of the API class
 var api = new OrchestratorPlugin.DefaultApi()
 var opts = {
-  'getOverviewsRequestParams':  // {GetOverviewsRequestParams} 
+  'searchRequest':  // {SearchRequest} 
 };
 
 var callback = function(error, data, response) {
@@ -5911,10 +5955,10 @@ namespace Example
 
             // Create an instance of the API class
             var apiInstance = new DefaultApi();
-            var getOverviewsRequestParams = new GetOverviewsRequestParams(); // GetOverviewsRequestParams |  (optional) 
+            var searchRequest = new SearchRequest(); // SearchRequest |  (optional) 
 
             try {
-                WorkflowOverviewListResultDTO result = apiInstance.getWorkflowsOverview(getOverviewsRequestParams);
+                WorkflowOverviewListResultDTO result = apiInstance.getWorkflowsOverview(searchRequest);
                 Debug.WriteLine(result);
             } catch (Exception e) {
                 Debug.Print("Exception when calling DefaultApi.getWorkflowsOverview: " + e.Message );
@@ -5931,10 +5975,10 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 // Create an instance of the API class
 $api_instance = new OpenAPITools\Client\Api\DefaultApi();
-$getOverviewsRequestParams = ; // GetOverviewsRequestParams | 
+$searchRequest = ; // SearchRequest | 
 
 try {
-    $result = $api_instance->getWorkflowsOverview($getOverviewsRequestParams);
+    $result = $api_instance->getWorkflowsOverview($searchRequest);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling DefaultApi->getWorkflowsOverview: ', $e->getMessage(), PHP_EOL;
@@ -5949,10 +5993,10 @@ use WWW::OPenAPIClient::DefaultApi;
 
 # Create an instance of the API class
 my $api_instance = WWW::OPenAPIClient::DefaultApi->new();
-my $getOverviewsRequestParams = WWW::OPenAPIClient::Object::GetOverviewsRequestParams->new(); # GetOverviewsRequestParams | 
+my $searchRequest = WWW::OPenAPIClient::Object::SearchRequest->new(); # SearchRequest | 
 
 eval {
-    my $result = $api_instance->getWorkflowsOverview(getOverviewsRequestParams => $getOverviewsRequestParams);
+    my $result = $api_instance->getWorkflowsOverview(searchRequest => $searchRequest);
     print Dumper($result);
 };
 if ($@) {
@@ -5969,10 +6013,10 @@ from pprint import pprint
 
 # Create an instance of the API class
 api_instance = openapi_client.DefaultApi()
-getOverviewsRequestParams =  # GetOverviewsRequestParams |  (optional)
+searchRequest =  # SearchRequest |  (optional)
 
 try:
-    api_response = api_instance.get_workflows_overview(getOverviewsRequestParams=getOverviewsRequestParams)
+    api_response = api_instance.get_workflows_overview(searchRequest=searchRequest)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling DefaultApi->getWorkflowsOverview: %s\n" % e)</code></pre>
@@ -5982,10 +6026,10 @@ except ApiException as e:
                               <pre class="prettyprint"><code class="language-rust">extern crate DefaultApi;
 
 pub fn main() {
-    let getOverviewsRequestParams = ; // GetOverviewsRequestParams
+    let searchRequest = ; // SearchRequest
 
     let mut context = DefaultApi::Context::default();
-    let result = client.getWorkflowsOverview(getOverviewsRequestParams, &context).wait();
+    let result = client.getWorkflowsOverview(searchRequest, &context).wait();
 
     println!("{:?}", result);
 }
@@ -6008,7 +6052,7 @@ pub fn main() {
                                 <th width="150px">Name</th>
                                 <th>Description</th>
                               </tr>
-                                <tr><td style="width:150px;">getOverviewsRequestParams </td>
+                                <tr><td style="width:150px;">searchRequest </td>
 <td>
 <p class="marked">Pagination and filters</p>
 <script>
@@ -6018,7 +6062,7 @@ $(document).ready(function() {
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/GetOverviewsRequestParams"
+        "$ref" : "#/components/schemas/SearchRequest"
       }
     }
   },
@@ -6039,12 +6083,12 @@ $(document).ready(function() {
   }
 
   var view = new JSONSchemaView(schema,2,{isBodyParam: true});
-  var result = $('#d2e199_getWorkflowsOverview_getOverviewsRequestParams');
+  var result = $('#d2e199_getWorkflowsOverview_searchRequest');
   result.empty();
   result.append(view.render());
 });
 </script>
-<div id="d2e199_getWorkflowsOverview_getOverviewsRequestParams"></div>
+<div id="d2e199_getWorkflowsOverview_searchRequest"></div>
 </td>
 </tr>
 
