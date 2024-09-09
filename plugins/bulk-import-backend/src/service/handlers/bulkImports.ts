@@ -25,7 +25,6 @@ import {
   CatalogInfoGenerator,
   getCatalogFilename,
   getTokenForPlugin,
-  paginateArray,
 } from '../../helpers';
 import { Components, Paths } from '../../openapi.d';
 import { GithubApiService } from '../githubApiService';
@@ -52,70 +51,41 @@ export async function findAllImports(
 ): Promise<HandlerResponse<Components.Schemas.Import[]>> {
   logger.debug('Getting all bulk import jobs..');
 
-  const allLocations = await catalogInfoGenerator.listCatalogUrlLocations();
-  const filteredLocations = new Set<string>();
-  const defaultBranchByRepoUrlCache = new Map<string, string>();
   const catalogFilename = getCatalogFilename(config);
-  for (const loc of allLocations) {
-    // loc has the following format: https://github.com/<org>/<repo>/blob/<default-branch>/catalog-info.yaml
-    // but it can have a more convoluted format like 'https://github.com/janus-idp/backstage-plugins/blob/main/plugins/scaffolder-annotator-action/examples/templates/01-scaffolder-template.yaml'
-    // if registered manually from the 'Register existing component' feature in Backstage.
-    if (!loc.endsWith(catalogFilename)) {
-      logger.debug(
-        `Ignored location ${loc} because it does not point to a file named ${catalogFilename}`,
-      );
-      continue;
-    }
-    const split = loc.split('/blob/');
-    if (split.length < 2) {
-      continue;
-    }
-    const repoUrl = split[0];
-    // Find out the repository default branch from GH (cannot easily determine that from the location target URL).
-    // It can be 'main' or something more convoluted like 'our/awesome/main'.
-    // Also caching locally because we might have several locations pointing to the same repo
-    let defaultBranch = defaultBranchByRepoUrlCache.get(repoUrl);
-    if (!defaultBranch) {
-      try {
-        defaultBranch = (
-          await githubApiService.getRepositoryFromIntegrations(repoUrl)
-        ).repository?.default_branch;
-      } catch (err: any) {
-        logger.debug(
-          `Ignored repo ${repoUrl} due to an error while fetching details from GitHub: ${err}`,
-        );
-        continue;
-      }
-      if (!defaultBranch) {
-        continue;
-      }
-      defaultBranchByRepoUrlCache.set(repoUrl, defaultBranch);
-    }
-    if (loc !== `${repoUrl}/blob/${defaultBranch}/${catalogFilename}`) {
-      // Because users can use the "Register existing component" workflow to register a Location
-      // using any file path in the repo, we consider a repository as an Import Location only
-      // if it is at the root of the repository, because that is what the import PR ultimately does.
-      continue;
-    }
-    filteredLocations.add(loc);
-  }
 
-  const catalogLocations = paginateArray(
-    Array.from(filteredLocations.values()),
+  const allLocations = await catalogInfoGenerator.listCatalogUrlLocations(
     pageNumber,
     pageSize,
   );
-  const paginatedLocations = catalogLocations.result;
+
+  // resolve default branches for each unique repo URL from GH,
+  // because we cannot easily determine that from the location target URL.
+  // It can be 'main' or something more convoluted like 'our/awesome/main'.
+  const defaultBranchByRepoUrl = await resolveReposDefaultBranches(
+    logger,
+    githubApiService,
+    allLocations,
+    catalogFilename,
+  );
+
+  // filter out locations that do not match what we are expecting, i.e.:
+  // an URL to a catalog-info YAML file at the root of the repo
+  const importCandidates = findImportCandidates(
+    allLocations,
+    defaultBranchByRepoUrl,
+    catalogFilename,
+  );
+
+  // now fetch the import statuses in different promises
+  const importLocations = Array.from(importCandidates.values());
   const importStatusPromises: Promise<
     HandlerResponse<Components.Schemas.Import>
   >[] = [];
-  for (const loc of paginatedLocations) {
-    // loc has the following format: https://github.com/<org>/<repo>/blob/<default-branch>/catalog-info.yaml
-    const split = loc.split('/blob/');
-    if (split.length < 2) {
+  for (const loc of importLocations) {
+    const repoUrl = repoUrlFromLocation(loc);
+    if (!repoUrl) {
       continue;
     }
-    const repoUrl = split[0];
 
     importStatusPromises.push(
       findImportStatusByRepo(
@@ -124,7 +94,7 @@ export async function findAllImports(
         githubApiService,
         catalogInfoGenerator,
         repoUrl,
-        defaultBranchByRepoUrlCache.get(repoUrl),
+        defaultBranchByRepoUrl.get(repoUrl),
         false,
       ),
     );
@@ -151,6 +121,93 @@ export async function findAllImports(
     statusCode: 200,
     responseBody: imports,
   };
+}
+
+async function resolveReposDefaultBranches(
+  logger: Logger,
+  githubApiService: GithubApiService,
+  allLocations: string[],
+  catalogFilename: string,
+) {
+  const defaultBranchByRepoUrlPromises: Promise<{
+    repoUrl: string;
+    defaultBranch?: string;
+  }>[] = [];
+  for (const loc of allLocations) {
+    // loc has the following format: https://github.com/<org>/<repo>/blob/<default-branch>/catalog-info.yaml
+    // but it can have a more convoluted format like 'https://github.com/janus-idp/backstage-plugins/blob/main/plugins/scaffolder-annotator-action/examples/templates/01-scaffolder-template.yaml'
+    // if registered manually from the 'Register existing component' feature in Backstage.
+    if (!loc.endsWith(catalogFilename)) {
+      logger.debug(
+        `Ignored location ${loc} because it does not point to a file named ${catalogFilename}`,
+      );
+      continue;
+    }
+    const repoUrl = repoUrlFromLocation(loc);
+    if (!repoUrl) {
+      continue;
+    }
+    defaultBranchByRepoUrlPromises.push(
+      githubApiService
+        .getRepositoryFromIntegrations(repoUrl)
+        .then(resp => {
+          return { repoUrl, defaultBranch: resp?.repository?.default_branch };
+        })
+        .catch((err: any) => {
+          logger.debug(
+            `Ignored repo ${repoUrl} due to an error while fetching details from GitHub: ${err}`,
+          );
+          return {
+            repoUrl,
+            defaultBranch: undefined,
+          };
+        }),
+    );
+  }
+  const defaultBranchesResponses = await Promise.all(
+    defaultBranchByRepoUrlPromises,
+  );
+  return new Map(
+    defaultBranchesResponses
+      .flat()
+      .filter(r => r.defaultBranch)
+      .map(r => [r.repoUrl, r.defaultBranch!]),
+  );
+}
+
+function repoUrlFromLocation(loc: string) {
+  const split = loc.split('/blob/');
+  if (split.length < 2) {
+    return undefined;
+  }
+  return split[0];
+}
+
+function findImportCandidates(
+  allLocations: string[],
+  defaultBranchByRepoUrl: Map<string, string>,
+  catalogFilename: string,
+) {
+  const filteredLocations = new Set<string>();
+  for (const loc of allLocations) {
+    const repoUrl = repoUrlFromLocation(loc);
+    if (!repoUrl) {
+      continue;
+    }
+
+    const defaultBranch = defaultBranchByRepoUrl.get(repoUrl);
+    if (!defaultBranch) {
+      continue;
+    }
+    if (loc !== `${repoUrl}/blob/${defaultBranch}/${catalogFilename}`) {
+      // Because users can use the "Register existing component" workflow to register a Location
+      // using any file path in the repo, we consider a repository as an Import Location only
+      // if it is at the root of the repository, because that is what the import PR ultimately does.
+      continue;
+    }
+    filteredLocations.add(loc);
+  }
+  return filteredLocations;
 }
 
 async function createPR(

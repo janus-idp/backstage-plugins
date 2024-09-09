@@ -24,7 +24,12 @@ import jsYaml from 'js-yaml';
 import fetch from 'node-fetch';
 import { Logger } from 'winston';
 
+import {
+  DefaultPageNumber,
+  DefaultPageSize,
+} from '../service/handlers/handlers';
 import { getTokenForPlugin } from './auth';
+import { paginateArray } from './pagination';
 
 export class CatalogInfoGenerator {
   private readonly logger: Logger;
@@ -109,8 +114,11 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     return `${repoUrl}/blob/${defaultBranch}/${getCatalogFilename(config)}`;
   }
 
-  async listCatalogUrlLocations(): Promise<string[]> {
-    const list = await this.listCatalogUrlLocationsById();
+  async listCatalogUrlLocations(
+    pageNumber: number = DefaultPageNumber,
+    pageSize: number = DefaultPageSize,
+  ): Promise<string[]> {
+    const list = await this.listCatalogUrlLocationsById(pageNumber, pageSize);
     const result: string[] = [];
     for (const l of list) {
       result.push(l.target);
@@ -118,19 +126,24 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     return result;
   }
 
-  async listCatalogUrlLocationsById(): Promise<
-    { id?: string; target: string }[]
-  > {
+  async listCatalogUrlLocationsById(
+    pageNumber: number = DefaultPageNumber,
+    pageSize: number = DefaultPageSize,
+  ): Promise<{ id?: string; target: string }[]> {
     const result = await Promise.all([
-      this.listCatalogUrlLocationsByIdFromLocationsEndpoint(),
-      this.listCatalogUrlLocationEntitiesById(),
+      this.listCatalogUrlLocationsByIdFromLocationsEndpoint(
+        pageNumber,
+        pageSize,
+      ),
+      this.listCatalogUrlLocationEntitiesById(pageNumber, pageSize),
     ]);
     return result.flat();
   }
 
-  async listCatalogUrlLocationsByIdFromLocationsEndpoint(): Promise<
-    { id?: string; target: string }[]
-  > {
+  async listCatalogUrlLocationsByIdFromLocationsEndpoint(
+    pageNumber: number = DefaultPageNumber,
+    pageSize: number = DefaultPageSize,
+  ): Promise<{ id?: string; target: string }[]> {
     const url = `${await this.discovery.getBaseUrl('catalog')}/locations`;
     const response = await fetch(url, {
       headers: {
@@ -145,7 +158,7 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     if (!Array.isArray(locations)) {
       return [];
     }
-    return locations
+    const res = locations
       .filter(
         location => location.data?.target && location.data?.type === 'url',
       )
@@ -155,16 +168,24 @@ ${jsYaml.dump(generatedEntity.entity)}`,
           target: location.data.target,
         };
       });
+    return paginateArray(res, pageNumber, pageSize).result;
   }
 
-  async listCatalogUrlLocationEntitiesById(): Promise<
-    { id?: string; target: string }[]
-  > {
+  async listCatalogUrlLocationEntitiesById(
+    pageNumber: number = DefaultPageNumber,
+    pageSize: number = DefaultPageSize,
+  ): Promise<{ id?: string; target: string }[]> {
+    if (pageNumber < 1) {
+      return [];
+    }
+    const offset = pageNumber - 1;
     const result = await this.catalogApi.getEntities(
       {
         filter: {
           kind: 'Location',
         },
+        limit: pageSize,
+        offset,
       },
       {
         token: await getTokenForPlugin(this.auth, 'catalog'),
