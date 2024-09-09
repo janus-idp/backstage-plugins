@@ -55,10 +55,17 @@ export async function findAllImports(
   const allLocations = await catalogInfoGenerator.listCatalogUrlLocations();
   const filteredLocations = new Set<string>();
   const defaultBranchByRepoUrlCache = new Map<string, string>();
+  const catalogFilename = getCatalogFilename(config);
   for (const loc of allLocations) {
     // loc has the following format: https://github.com/<org>/<repo>/blob/<default-branch>/catalog-info.yaml
     // but it can have a more convoluted format like 'https://github.com/janus-idp/backstage-plugins/blob/main/plugins/scaffolder-annotator-action/examples/templates/01-scaffolder-template.yaml'
     // if registered manually from the 'Register existing component' feature in Backstage.
+    if (!loc.endsWith(catalogFilename)) {
+      logger.debug(
+        `Ignored location ${loc} because it does not point to a file named ${catalogFilename}`,
+      );
+      continue;
+    }
     const split = loc.split('/blob/');
     if (split.length < 2) {
       continue;
@@ -84,9 +91,7 @@ export async function findAllImports(
       }
       defaultBranchByRepoUrlCache.set(repoUrl, defaultBranch);
     }
-    if (
-      loc !== `${repoUrl}/blob/${defaultBranch}/${getCatalogFilename(config)}`
-    ) {
+    if (loc !== `${repoUrl}/blob/${defaultBranch}/${catalogFilename}`) {
       // Because users can use the "Register existing component" workflow to register a Location
       // using any file path in the repo, we consider a repository as an Import Location only
       // if it is at the root of the repository, because that is what the import PR ultimately does.
