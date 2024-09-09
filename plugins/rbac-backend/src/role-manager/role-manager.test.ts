@@ -342,7 +342,7 @@ describe('BackstageRoleManager', () => {
     it('should disable group inheritance when max-depth=0', async () => {
       // max-depth=0
       const config = newConfigReader(0);
-      const roleManager = new BackstageRoleManager(
+      const rm = new BackstageRoleManager(
         catalogApiMock as CatalogApi,
         loggerMock as LoggerService,
         catalogDBClient,
@@ -363,16 +363,13 @@ describe('BackstageRoleManager', () => {
         return { items: [groupMock, groupParentMock] };
       });
 
-      let result = await roleManager.hasLink(
+      let result = await rm.hasLink(
         'user:default/mike',
         'group:default/team-b',
       );
       expect(result).toBeTruthy();
 
-      result = await roleManager.hasLink(
-        'user:default/mike',
-        'group:default/team-a',
-      );
+      result = await rm.hasLink('user:default/mike', 'group:default/team-a');
       expect(result).toBeFalsy();
     });
 
