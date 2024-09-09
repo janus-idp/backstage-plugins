@@ -149,9 +149,6 @@ export class AncestorSearchMemo {
     }
 
     if (this.maxDepth !== undefined && current_depth >= this.maxDepth) {
-      console.log(
-        `==== EXIT! ${current_depth} ${group.metadata.name}. Memo edges ${JSON.stringify(memo.graph.edges())} and nodes: ${JSON.stringify(memo.graph.nodes())}`,
-      );
       return;
     }
     const depth = current_depth + 1;
@@ -179,9 +176,6 @@ export class AncestorSearchMemo {
   ) {
     // We add one to the maxDepth here because the user is considered the starting node
     if (this.maxDepth !== undefined && current_depth >= this.maxDepth + 1) {
-      console.log(
-        `==== EXIT! ${current_depth} ${relation.source_entity_ref}. Memo is ${JSON.stringify(memo.graph.edges())}`,
-      );
       return;
     }
     const depth = current_depth + 1;
