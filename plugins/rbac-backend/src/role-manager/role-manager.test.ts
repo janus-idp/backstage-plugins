@@ -66,7 +66,8 @@ describe('BackstageRoleManager', () => {
 
       expect(errorRoleManager).toBeUndefined();
       expect(expectedError).toMatchObject({
-        message: 'Max Depth for RBAC group hierarchy must be greater than zero',
+        message:
+          'Max Depth for RBAC group hierarchy must be greater than or equal to zero',
       });
     });
   });
@@ -326,6 +327,53 @@ describe('BackstageRoleManager', () => {
         'group:default/team-a',
       );
       expect(result).toBeTruthy();
+    });
+
+    // user:default/mike should inherits from group:default/team-a
+    //
+    //     Hierarchy:
+    //
+    // group:default/team-a
+    //       |
+    // group:default/team-b
+    //       |
+    // user:default/mike
+    //
+    it('should disable group inheritance when max-depth=0', async () => {
+      // max-depth=0
+      const config = newConfigReader(0);
+      const roleManager = new BackstageRoleManager(
+        catalogApiMock as CatalogApi,
+        loggerMock as LoggerService,
+        catalogDBClient,
+        rbacDBClient,
+        config,
+        mockAuthService,
+      );
+      const groupMock = createGroupEntity('team-b', 'team-a', [], ['mike']);
+      const groupParentMock = createGroupEntity('team-a', undefined, [
+        'team-b',
+      ]);
+
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupMock] };
+        }
+        return { items: [groupMock, groupParentMock] };
+      });
+
+      let result = await roleManager.hasLink(
+        'user:default/mike',
+        'group:default/team-b',
+      );
+      expect(result).toBeTruthy();
+
+      result = await roleManager.hasLink(
+        'user:default/mike',
+        'group:default/team-a',
+      );
+      expect(result).toBeFalsy();
     });
 
     // user:default/mike should inherits role:default/team-a from group:default/team-a
