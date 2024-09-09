@@ -37,7 +37,8 @@
   ],
   "files": [
     "config.d.ts",
-    "dist"
+    "dist",
+    "src/generated/docs"
   ],
   "configSchema": "config.d.ts",
   "sideEffects": false,
