@@ -69,9 +69,16 @@ export async function findAllImports(
     // Also caching locally because we might have several locations pointing to the same repo
     let defaultBranch = defaultBranchByRepoUrlCache.get(repoUrl);
     if (!defaultBranch) {
-      defaultBranch = (
-        await githubApiService.getRepositoryFromIntegrations(repoUrl)
-      ).repository?.default_branch;
+      try {
+        defaultBranch = (
+          await githubApiService.getRepositoryFromIntegrations(repoUrl)
+        ).repository?.default_branch;
+      } catch (err: any) {
+        logger.debug(
+          `Ignored repo ${repoUrl} due to an error while fetching details from GitHub: ${err}`,
+        );
+        continue;
+      }
       if (!defaultBranch) {
         continue;
       }
