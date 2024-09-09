@@ -877,7 +877,7 @@ function setupInternalRoutes(
     async (c, _req, res, next) => {
       const instanceId = c.request.params.instanceId as string;
       const endpointName = 'abortWorkflow';
-      const endpoint = `/v2/instances/${instanceId}/abort`;
+      const endpoint = `/v2/workflows/instances/${instanceId}/abort`;
 
       auditLogger.auditLog({
         eventName: endpointName,

@@ -197,7 +197,7 @@ describe('OrchestratorClient', () => {
       expect(result.data).toEqual(instanceId);
       expect(axios.request).toHaveBeenCalledTimes(1);
       expect(axios.request).toHaveBeenCalledWith({
-        ...getAxiosTestRequest(`/v2/instances/${instanceId}/abort`),
+        ...getAxiosTestRequest(`/v2/workflows/instances/${instanceId}/abort`),
         method: 'DELETE',
         headers: {
           ...defaultAuthHeaders,

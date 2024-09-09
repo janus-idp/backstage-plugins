@@ -1327,7 +1327,7 @@ ul.nav-tabs {
                         <p class="marked">Aborts a workflow instance identified by the provided instanceId.</p>
                         <p></p>
                         <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/v2/instances/{instanceId}/abort</span></code></pre>
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/v2/workflows/instances/{instanceId}/abort</span></code></pre>
                         <p>
                           <h3>Usage and SDK Samples</h3>
                         </p>
@@ -1351,7 +1351,7 @@ ul.nav-tabs {
                           <div class="tab-pane active" id="examples-Default-abortWorkflow-0-curl">
                             <pre class="prettyprint"><code class="language-bsh">curl -X DELETE \
  -H "Accept: text/plain,application/json" \
- "http://localhost/v2/instances/{instanceId}/abort"
+ "http://localhost/v2/workflows/instances/{instanceId}/abort"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Default-abortWorkflow-0-java">
