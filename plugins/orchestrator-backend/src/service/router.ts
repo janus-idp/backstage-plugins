@@ -119,6 +119,15 @@ export async function createBackendRouter(
   router.use(permissionsIntegrationRouter);
   router.use('/workflows', express.text());
   router.use('/static', express.static(resolvePackagePath(pkg.name, 'static')));
+  router.use(
+    '/docs',
+    express.static(
+      resolvePackagePath(
+        '@janus-idp/backstage-plugin-orchestrator-common',
+        'src/generated/docs',
+      ),
+    ),
+  );
 
   router.get('/health', (_, response) => {
     logger.info('PONG!');
