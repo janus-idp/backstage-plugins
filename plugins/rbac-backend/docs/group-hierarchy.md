@@ -13,6 +13,8 @@ Examples:
 
 - Sam will inherit `role:default/test` from `team-group` via `subteam-group`.
 
+  ![Group hierarchy diagram with sam as a member of subteam-group that is child of team-group](./images/group-hierarchy-1.svg)
+
   ```yaml
   # catalog-entity.yaml
   apiVersion: backstage.io/v1alpha1
@@ -48,6 +50,8 @@ Examples:
 
 - Sam will have `role:default/test` via `team-group`.
 
+  ![Group hierarchy diagram with sam as a member of team-group](./images/group-hierarchy-2.svg)
+
   ```yaml
   # catalog-entity.yaml
   apiVersion: backstage.io/v1alpha1
@@ -69,6 +73,53 @@ Examples:
   ```CSV
   g, group:default/team-group, role:default/test
   p, role:default/test, catalog-entity, read, allow
+  ```
+
+- Sam will inherit `role:default/role-a` from `group-a` and `role:default/role-c` from `group-c`.
+
+  ![Group hierarchy diagram with sam as a member of group-b and group-c, group-a is parent of group-b](./images/group-hierarchy-3.svg)
+
+  ```yaml
+  # catalog-entity.yaml
+  apiVersion: backstage.io/v1alpha1
+  kind: Group
+  metadata:
+    name: group-a
+  spec:
+    type: team
+    children: [group-b]
+  ---
+  apiVersion: backstage.io/v1alpha1
+  kind: Group
+  metadata:
+    name: group-b
+  spec:
+    type: team
+    children: []
+  ---
+  apiVersion: backstage.io/v1alpha1
+  kind: Group
+  metadata:
+    name: group-c
+  spec:
+    type: team
+    children: []
+  ---
+  apiVersion: backstage.io/v1alpha1
+  kind: User
+  metadata:
+    name: sam
+  spec:
+    memberOf:
+      - group-b
+      - group-c
+  ```
+
+  ```CSV
+  g, group:default/group-a, role:default/role-a
+  g, group:default/group-c, role:default/role-c
+  p, role:default/role-a, catalog-entity, read, allow
+  p, role:default/role-c, catalog-entity, delete, allow
   ```
 
 ## Managing Group Hierarchy Depth
@@ -96,7 +147,9 @@ that group.
 
 Examples:
 
-- Sam will inherit `role:default/test`, although `group-a` isn't explicitly defined.
+- Sam will inherit `role:default/test`, although `team-group` isn't explicitly defined.
+
+  ![Group hierarchy diagram with sam as a member of team-group](./images/group-hierarchy-2.svg)
 
   ```yaml
   # catalog-entity.yaml
@@ -106,16 +159,17 @@ Examples:
     name: sam
   spec:
     memberOf:
-      - group-a
+      - team-group
   ```
 
   ```CSV
-  g, group:default/group-a, role:default/test
+  g, group:default/team-group, role:default/test
   p, role:default/test, catalog-entity, read, allow
   ```
 
-- Sam will inherit `role:default/test` via `group-b` that is a child of `group-a`, although `group-b`
-  isn't explicitly defined.
+- Sam will inherit `role:default/test` via `subteam-group` that is a child of `team-group`, although `subteam-group` isn't explicitly defined.
+
+  ![Group hierarchy diagram with sam as a member of subteam-group that is child of team-group](./images/group-hierarchy-1.svg)
 
   ```yaml
   # catalog-entity.yaml
@@ -125,7 +179,45 @@ Examples:
     name: sam
   spec:
     memberOf:
-      - group-b
+      - subteam-group
+  ---
+  apiVersion: backstage.io/v1alpha1
+  kind: Group
+  metadata:
+    name: team-group
+  spec:
+    type: team
+    children: [subteam-group]
+  ```
+
+  ```CSV
+  g, group:default/team-group, role:default/test
+  p, role:default/test, catalog-entity, read, allow
+  ```
+
+- Sam will inherit `role:default/test` via `group-d` <- `group-c` <- `group-b` <- `group-a`,
+  although `group-d` and `group-b` aren't explicitly defined.
+
+  ![Group hierarchy diagram with sam as a member of group-a with parent group-b with parent group-c with parent group-d](./images/group-hierarchy-4.svg)
+
+  ```yaml
+  # catalog-entity.yaml
+  apiVersion: backstage.io/v1alpha1
+  kind: User
+  metadata:
+    name: sam
+  spec:
+    memberOf:
+      - group-d
+  ---
+  apiVersion: backstage.io/v1alpha1
+  kind: Group
+  metadata:
+    name: group-c
+  spec:
+    type: team
+    children: [group-d]
+    parent: group-b
   ---
   apiVersion: backstage.io/v1alpha1
   kind: Group
@@ -138,41 +230,5 @@ Examples:
 
   ```CSV
   g, group:default/group-a, role:default/test
-  p, role:default/test, catalog-entity, read, allow
-  ```
-
-- Sam will inherit `role:default/test` via `group-a` <- `group-b` <- `group-c` <- `group-d`,
-  although `group-a` and `group-c` aren't explicitly defined.
-
-  ```yaml
-  # catalog-entity.yaml
-  apiVersion: backstage.io/v1alpha1
-  kind: User
-  metadata:
-    name: sam
-  spec:
-    memberOf:
-      - group-a
-  ---
-  apiVersion: backstage.io/v1alpha1
-  kind: Group
-  metadata:
-    name: group-b
-  spec:
-    type: team
-    children: [group-a]
-    parent: group-c
-  ---
-  apiVersion: backstage.io/v1alpha1
-  kind: Group
-  metadata:
-    name: group-d
-  spec:
-    type: team
-    children: [group-c]
-  ```
-
-  ```CSV
-  g, group:default/group-d, role:default/test
   p, role:default/test, catalog-entity, read, allow
   ```
