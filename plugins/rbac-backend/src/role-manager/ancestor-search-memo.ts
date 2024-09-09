@@ -141,17 +141,20 @@ export class AncestorSearchMemo {
     allGroups: Entity[],
     current_depth: number,
   ) {
-    const depth = current_depth + 1;
-    if (this.maxDepth && current_depth >= this.maxDepth) {
-      return;
-    }
-
     const groupName = `group:${group.metadata.namespace?.toLocaleLowerCase(
       'en-US',
     )}/${group.metadata.name.toLocaleLowerCase('en-US')}`;
     if (!memo.hasEntityRef(groupName)) {
       memo.setNode(groupName);
     }
+
+    if (this.maxDepth !== undefined && current_depth >= this.maxDepth) {
+      console.log(
+        `==== EXIT! ${current_depth} ${group.metadata.name}. Memo edges ${JSON.stringify(memo.graph.edges())} and nodes: ${JSON.stringify(memo.graph.nodes())}`,
+      );
+      return;
+    }
+    const depth = current_depth + 1;
 
     const parent = group.spec?.parent as string;
     const parentGroup = allGroups.find(g => g.metadata.name === parent);
@@ -175,7 +178,10 @@ export class AncestorSearchMemo {
     current_depth: number,
   ) {
     // We add one to the maxDepth here because the user is considered the starting node
-    if (this.maxDepth && current_depth >= this.maxDepth + 1) {
+    if (this.maxDepth !== undefined && current_depth >= this.maxDepth + 1) {
+      console.log(
+        `==== EXIT! ${current_depth} ${relation.source_entity_ref}. Memo is ${JSON.stringify(memo.graph.edges())}`,
+      );
       return;
     }
     const depth = current_depth + 1;
