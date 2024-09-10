@@ -62,8 +62,8 @@ const isStoppedFromConsole = (vm: VMKind, vmi: VMIKind) => {
 
 // Deleting
 const isDeleting = (vm: VMKind, vmi: VMIKind): boolean =>
-  (vm && !!getDeletetionTimestamp(vm)) ||
-  (!vm && vmi && !!getDeletetionTimestamp(vmi))
+  (vm && getDeletetionTimestamp(vm)) ||
+  (!vm && vmi && getDeletetionTimestamp(vmi))
     ? true
     : false;
 

@@ -12,6 +12,7 @@ type StatusIconAndTextProps = {
   className?: string;
   icon: React.ReactElement;
   spin?: boolean;
+  displayStatusText?: string;
 };
 
 const DASH = '-';
@@ -22,6 +23,7 @@ export const StatusIconAndText = ({
   spin,
   iconOnly,
   className,
+  displayStatusText,
 }: StatusIconAndTextProps): React.ReactElement => {
   if (!title) {
     return <>{DASH}</>;
@@ -51,7 +53,10 @@ export const StatusIconAndText = ({
           'bs-shared-icon-and-text__icon bs-shared-icon-flex-child',
         ),
       })}
-      <CamelCaseWrap value={title} dataTest="status-text" />
+      <CamelCaseWrap
+        value={displayStatusText ? displayStatusText : title}
+        dataTest="status-text"
+      />
     </span>
   );
 };

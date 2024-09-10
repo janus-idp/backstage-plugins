@@ -46,7 +46,7 @@ export const getVMIConditionsByType = (
   vmi: VMIKind,
   condType: string,
 ): VMIKind['status']['conditions'] => {
-  const conditions = vmi && vmi.status && vmi.status.conditions;
+  const conditions = vmi?.status?.conditions;
   return (conditions || []).filter(cond => cond.type === condType);
 };
 

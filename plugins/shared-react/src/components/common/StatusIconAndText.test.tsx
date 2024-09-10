@@ -29,6 +29,31 @@ describe('StatusIconAndText', () => {
     expect(getByTestId('status-text')).not.toBeNull();
   });
 
+  it('should render with status text', () => {
+    const { getByTestId } = render(
+      <StatusIconAndText
+        icon={<div id="green-check-icon" />}
+        title={ComputedStatus.Succeeded}
+      />,
+    );
+
+    expect(getByTestId('icon-with-title-Succeeded')).not.toBeNull();
+    expect(getByTestId('status-text')).toHaveTextContent('Succeeded');
+  });
+
+  it('should render with displayStatusText text', () => {
+    const { getByTestId } = render(
+      <StatusIconAndText
+        icon={<div id="green-check-icon" />}
+        title={ComputedStatus.Succeeded}
+        displayStatusText="Very Positive"
+      />,
+    );
+
+    expect(getByTestId('icon-with-title-Succeeded')).not.toBeNull();
+    expect(getByTestId('status-text')).toHaveTextContent('Very Positive');
+  });
+
   it('should render DASH when there is not title', () => {
     const { getByText } = render(
       <StatusIconAndText
