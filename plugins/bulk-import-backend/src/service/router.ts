@@ -69,12 +69,22 @@ export interface RouterOptions {
   httpAuth?: HttpAuthService;
   auth?: AuthService;
   catalogApi: CatalogApi;
+  githubApi?: GithubApiService;
+  catalogInfoHelper?: CatalogInfoGenerator;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, permissions, config, discovery, catalogApi } = options;
+  const {
+    logger,
+    permissions,
+    config,
+    discovery,
+    catalogApi,
+    githubApi,
+    catalogInfoHelper,
+  } = options;
 
   const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
@@ -84,13 +94,10 @@ export async function createRouter(
     httpAuthService: httpAuth,
   });
 
-  const githubApiService = new GithubApiService(logger, config);
-  const catalogInfoGenerator = new CatalogInfoGenerator(
-    logger,
-    discovery,
-    auth,
-    catalogApi,
-  );
+  const githubApiService = githubApi ?? new GithubApiService(logger, config);
+  const catalogInfoGenerator =
+    catalogInfoHelper ??
+    new CatalogInfoGenerator(logger, discovery, auth, catalogApi);
 
   // create openapi requests handler
   const api = new OpenAPIBackend({

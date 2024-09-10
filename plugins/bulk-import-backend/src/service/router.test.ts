@@ -15,6 +15,11 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import {
+  AuthService,
+  BackstageCredentials,
+  BackstagePrincipalTypes,
+} from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -79,32 +84,99 @@ const configuration = new ConfigReader({
   app: {
     baseUrl: 'https://my-backstage-app.example.com',
   },
+  catalog: {
+    locations: [
+      {
+        type: 'url',
+        // import status should be ADDED because it contains a catalog-info.yaml in its default branch
+        target:
+          'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/blob/main/catalog-info.yaml',
+      },
+      {
+        type: 'url',
+        // same repo but with path not to the root of the repo => will be ignored
+        target:
+          'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/blob/main/path/to/some/other/component/catalog-info.yaml',
+      },
+      {
+        type: 'url',
+        // import status should be WAIT_PR_APPROVAL because it does not contain a catalog-info.yaml in its default branch but has an import PR open
+        target:
+          'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/blob/main/catalog-info.yaml',
+      },
+      {
+        type: 'url',
+        // import status should be null because it does not contain a catalog-info.yaml in its default branch and has no an import PR open
+        target:
+          'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr/blob/main/catalog-info.yaml',
+      },
+      {
+        type: 'url',
+        // Location not considered as Import job
+        target:
+          'https://github.com/my-org-3/another-repo/blob/main/some/path/to/my-component.yaml',
+      },
+    ],
+  },
 });
 
 describe('createRouter', () => {
   let app: express.Express;
+  let mockAuth: AuthService;
   let mockCatalogClient: CatalogClient;
+  let mockCatalogInfoGenerator: CatalogInfoGenerator;
+  let mockGithubApiService: GithubApiService;
 
   beforeAll(async () => {
+    mockAuth = {
+      isPrincipal<TType extends keyof BackstagePrincipalTypes>(
+        _credentials: BackstageCredentials,
+        _type: TType,
+      ): _credentials is BackstageCredentials<BackstagePrincipalTypes[TType]> {
+        return false;
+      },
+      getPluginRequestToken: () =>
+        Promise.resolve({ token: 'ey123.abc.xyzzz' }),
+      authenticate: jest.fn(),
+      getNoneCredentials: jest.fn(),
+      getOwnServiceCredentials: jest.fn().mockResolvedValue({
+        principal: {
+          subject: 'my-sub',
+        },
+      }),
+      getLimitedUserToken: jest.fn(),
+      listPublicServiceKeys: jest.fn(),
+    };
     mockCatalogClient = {
       getEntitiesByRefs: mockGetEntitiesByRefs,
       validateEntity: mockValidateEntity,
       addLocation: mockAddLocation,
       queryEntities: jest.fn,
     } as unknown as CatalogClient;
+    const voidLogger = getVoidLogger();
+    mockCatalogInfoGenerator = new CatalogInfoGenerator(
+      voidLogger,
+      mockDiscovery,
+      mockAuth,
+      mockCatalogClient,
+    );
+    mockGithubApiService = new GithubApiService(voidLogger, configuration);
     const router = await createRouter({
-      logger: getVoidLogger(),
+      logger: voidLogger,
       config: configuration,
       permissions: permissionEvaluator,
       discovery: mockDiscovery,
       catalogApi: mockCatalogClient,
       identity: mockIdentityClient,
+      catalogInfoHelper: mockCatalogInfoGenerator,
+      githubApi: mockGithubApiService,
     });
     app = express().use(router);
   });
 
   beforeEach(() => {
     jest.resetAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('GET /ping', () => {
@@ -135,7 +207,7 @@ describe('createRouter', () => {
       mockedAuthorize.mockImplementation(allowAll);
 
       jest
-        .spyOn(GithubApiService.prototype, 'getOrganizationsFromIntegrations')
+        .spyOn(mockGithubApiService, 'getOrganizationsFromIntegrations')
         .mockResolvedValue({
           organizations: [
             {
@@ -235,7 +307,7 @@ describe('createRouter', () => {
         ],
       };
       jest
-        .spyOn(GithubApiService.prototype, 'getOrganizationsFromIntegrations')
+        .spyOn(mockGithubApiService, 'getOrganizationsFromIntegrations')
         .mockResolvedValue(githubApiServiceResponse);
 
       const response = await request(app).get('/organizations');
@@ -267,7 +339,7 @@ describe('createRouter', () => {
       mockedAuthorize.mockImplementation(allowAll);
 
       jest
-        .spyOn(GithubApiService.prototype, 'getOrganizationsFromIntegrations')
+        .spyOn(mockGithubApiService, 'getOrganizationsFromIntegrations')
         .mockResolvedValue({
           organizations: [],
           errors: [
@@ -302,7 +374,7 @@ describe('createRouter', () => {
       mockedAuthorize.mockImplementation(allowAll);
 
       jest
-        .spyOn(GithubApiService.prototype, 'getRepositoriesFromIntegrations')
+        .spyOn(mockGithubApiService, 'getRepositoriesFromIntegrations')
         .mockResolvedValue({
           repositories: [
             {
@@ -323,10 +395,10 @@ describe('createRouter', () => {
           errors: [],
         });
       jest
-        .spyOn(GithubApiService.prototype, 'findImportOpenPr')
+        .spyOn(mockGithubApiService, 'findImportOpenPr')
         .mockResolvedValue({});
       jest
-        .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
+        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
         .mockResolvedValue([]);
 
       const response = await request(app).get('/repositories');
@@ -386,13 +458,13 @@ describe('createRouter', () => {
         ],
       };
       jest
-        .spyOn(GithubApiService.prototype, 'getRepositoriesFromIntegrations')
+        .spyOn(mockGithubApiService, 'getRepositoriesFromIntegrations')
         .mockResolvedValue(githubApiServiceResponse);
       jest
-        .spyOn(GithubApiService.prototype, 'findImportOpenPr')
+        .spyOn(mockGithubApiService, 'findImportOpenPr')
         .mockResolvedValue({});
       jest
-        .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
+        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
         .mockResolvedValue([]);
 
       const response = await request(app).get('/repositories');
@@ -425,7 +497,7 @@ describe('createRouter', () => {
       mockedAuthorize.mockImplementation(allowAll);
 
       jest
-        .spyOn(GithubApiService.prototype, 'getRepositoriesFromIntegrations')
+        .spyOn(mockGithubApiService, 'getRepositoriesFromIntegrations')
         .mockResolvedValue({
           repositories: [],
           errors: [
@@ -440,10 +512,10 @@ describe('createRouter', () => {
           ],
         });
       jest
-        .spyOn(GithubApiService.prototype, 'findImportOpenPr')
+        .spyOn(mockGithubApiService, 'findImportOpenPr')
         .mockResolvedValue({});
       jest
-        .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
+        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
         .mockResolvedValue([]);
 
       const response = await request(app).get('/repositories');
@@ -468,7 +540,7 @@ describe('createRouter', () => {
       mockedAuthorize.mockImplementation(allowAll);
 
       jest
-        .spyOn(GithubApiService.prototype, 'getOrgRepositoriesFromIntegrations')
+        .spyOn(mockGithubApiService, 'getOrgRepositoriesFromIntegrations')
         .mockImplementation(
           async (
             orgName: string,
@@ -525,10 +597,10 @@ describe('createRouter', () => {
           },
         );
       jest
-        .spyOn(GithubApiService.prototype, 'findImportOpenPr')
+        .spyOn(mockGithubApiService, 'findImportOpenPr')
         .mockResolvedValue({});
       jest
-        .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
+        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
         .mockResolvedValue([]);
 
       let response = await request(app).get(
@@ -625,13 +697,13 @@ describe('createRouter', () => {
         ],
       };
       jest
-        .spyOn(GithubApiService.prototype, 'getOrgRepositoriesFromIntegrations')
+        .spyOn(mockGithubApiService, 'getOrgRepositoriesFromIntegrations')
         .mockResolvedValue(githubApiServiceResponse);
       jest
-        .spyOn(GithubApiService.prototype, 'findImportOpenPr')
+        .spyOn(mockGithubApiService, 'findImportOpenPr')
         .mockResolvedValue({});
       jest
-        .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
+        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
         .mockResolvedValue([]);
 
       const response = await request(app).get(
@@ -666,7 +738,7 @@ describe('createRouter', () => {
       mockedAuthorize.mockImplementation(allowAll);
 
       jest
-        .spyOn(GithubApiService.prototype, 'getOrgRepositoriesFromIntegrations')
+        .spyOn(mockGithubApiService, 'getOrgRepositoriesFromIntegrations')
         .mockResolvedValue({
           repositories: [],
           errors: [
@@ -681,10 +753,10 @@ describe('createRouter', () => {
           ],
         });
       jest
-        .spyOn(GithubApiService.prototype, 'findImportOpenPr')
+        .spyOn(mockGithubApiService, 'findImportOpenPr')
         .mockResolvedValue({});
       jest
-        .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
+        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
         .mockResolvedValue([]);
 
       const response = await request(app).get(
@@ -709,7 +781,7 @@ describe('createRouter', () => {
       mockedAuthorize.mockImplementation(allowAll);
 
       jest
-        .spyOn(GithubApiService.prototype, 'getRepositoriesFromIntegrations')
+        .spyOn(mockGithubApiService, 'getRepositoriesFromIntegrations')
         .mockResolvedValue({
           repositories: [
             {
@@ -730,10 +802,10 @@ describe('createRouter', () => {
           errors: [],
         });
       jest
-        .spyOn(GithubApiService.prototype, 'findImportOpenPr')
+        .spyOn(mockGithubApiService, 'findImportOpenPr')
         .mockResolvedValue({});
       jest
-        .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
+        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
         .mockResolvedValue([]);
 
       const response = await request(app).get('/imports');
@@ -787,49 +859,15 @@ describe('createRouter', () => {
             'https://github.com/my-org/my-repo/blob/main/plugins/my-plugin/examples/templates/01-some-template.yaml',
         },
       ];
-      // fromLocationEntities simulates a response from the 'GET /entities' endpoint,
-      // returning Locations coming from app-config files as well
-      const fromLocationEntities = [
-        {
-          id: '313c6c44-549b-453d-bdf2-5698e7401fe0',
-          // import status should be ADDED because it contains a catalog-info.yaml in its default branch
-          target:
-            'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/blob/main/catalog-info.yaml',
-        },
-        {
-          id: '313c6c44-549b-453d-bdf2-5698e7401fe0-2',
-          // same repo but with path not to the root of the repo => will be ignored
-          target:
-            'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/blob/main/path/to/some/other/component/catalog-info.yaml',
-        },
-        {
-          id: '71c7eb8f-63ae-4e66-afd3-0220a7dd5bb0',
-          // import status should be WAIT_PR_APPROVAL because it does not contain a catalog-info.yaml in its default branch but has an import PR open
-          target:
-            'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/blob/main/catalog-info.yaml',
-        },
-        {
-          id: 'df730ba7-eb8f-452b-a7bf-5f450bad9ef0',
-          // import status should be null because it does not contain a catalog-info.yaml in its default branch and has no an import PR open
-          target:
-            'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr/blob/main/catalog-info.yaml',
-        },
-        {
-          id: '07cc2398-7c26-45ef-b3d3-caa943d0f732',
-          // Location not considered as Import job
-          target:
-            'https://github.com/my-org-3/another-repo/blob/main/some/path/to/my-component.yaml',
-        },
-      ];
+
       jest
-        .spyOn(CatalogInfoGenerator.prototype, 'listCatalogUrlLocations')
-        .mockResolvedValue(
-          [...fromLocationsEndpoint, ...fromLocationEntities].map(
-            l => l.target,
-          ),
-        );
+        .spyOn(
+          mockCatalogInfoGenerator,
+          'listCatalogUrlLocationsByIdFromLocationsEndpoint',
+        )
+        .mockResolvedValue(fromLocationsEndpoint);
       jest
-        .spyOn(GithubApiService.prototype, 'getRepositoryFromIntegrations')
+        .spyOn(mockGithubApiService, 'getRepositoryFromIntegrations')
         .mockImplementation(repoUrl => {
           let defaultBranch: string | undefined;
           switch (repoUrl) {
@@ -861,7 +899,7 @@ describe('createRouter', () => {
           });
         });
       jest
-        .spyOn(GithubApiService.prototype, 'findImportOpenPr')
+        .spyOn(mockGithubApiService, 'findImportOpenPr')
         .mockImplementation((_logger, input) => {
           const resp: {
             prNum?: number;
@@ -888,7 +926,7 @@ describe('createRouter', () => {
           return Promise.resolve(resp);
         });
       jest
-        .spyOn(GithubApiService.prototype, 'doesCatalogInfoAlreadyExistInRepo')
+        .spyOn(mockGithubApiService, 'doesCatalogInfoAlreadyExistInRepo')
         .mockImplementation((_logger, input) => {
           return Promise.resolve(
             [
@@ -948,18 +986,6 @@ describe('createRouter', () => {
         },
         {
           approvalTool: 'GIT',
-          id: 'https://github.com/my-ent-org-3/C',
-          repository: {
-            defaultBranch: 'blob/some/path/to/default/branch',
-            id: 'my-ent-org-3/C',
-            name: 'C',
-            organization: 'my-ent-org-3',
-            url: 'https://github.com/my-ent-org-3/C',
-          },
-          status: null,
-        },
-        {
-          approvalTool: 'GIT',
           id: 'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
           repository: {
             defaultBranch: 'main',
@@ -987,18 +1013,6 @@ describe('createRouter', () => {
             url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
           },
           status: 'WAIT_PR_APPROVAL',
-        },
-        {
-          approvalTool: 'GIT',
-          id: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
-          repository: {
-            defaultBranch: 'main',
-            id: 'my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
-            name: 'my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
-            organization: 'my-org-1',
-            url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
-          },
-          status: null,
         },
       ]);
     });
@@ -1038,7 +1052,7 @@ describe('createRouter', () => {
         );
 
       jest
-        .spyOn(GithubApiService.prototype, 'doesCatalogInfoAlreadyExistInRepo')
+        .spyOn(mockGithubApiService, 'doesCatalogInfoAlreadyExistInRepo')
         .mockImplementation((_logger, input) => {
           return Promise.resolve(
             input.repoUrl ===
@@ -1047,7 +1061,7 @@ describe('createRouter', () => {
         });
 
       jest
-        .spyOn(GithubApiService.prototype, 'submitPrToRepo')
+        .spyOn(mockGithubApiService, 'submitPrToRepo')
         .mockImplementation((_logger, input) => {
           switch (input.repoUrl) {
             case 'https://github.com/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation':
@@ -1175,7 +1189,7 @@ spec:
       );
 
       jest
-        .spyOn(GithubApiService.prototype, 'doesCatalogInfoAlreadyExistInRepo')
+        .spyOn(mockGithubApiService, 'doesCatalogInfoAlreadyExistInRepo')
         .mockImplementation(
           async (
             _logger: Logger,
@@ -1186,14 +1200,14 @@ spec:
         );
 
       jest
-        .spyOn(GithubApiService.prototype, 'isRepoEmpty')
+        .spyOn(mockGithubApiService, 'isRepoEmpty')
         .mockImplementation(
           async (input: { repoUrl: string }) =>
             input.repoUrl === 'https://github.com/my-org-ent-2/my-repo-c',
         );
 
       jest
-        .spyOn(GithubApiService.prototype, 'doesCodeOwnersAlreadyExistInRepo')
+        .spyOn(mockGithubApiService, 'doesCodeOwnersAlreadyExistInRepo')
         .mockImplementation(
           async (
             _logger: Logger,
