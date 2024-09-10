@@ -1,6 +1,7 @@
+import { V1Pod } from '@kubernetes/client-node';
 import * as _ from 'lodash';
 
-import { K8sResourceKind, VMKind } from '../types/vm';
+import { K8sResourceKind, VMIKind, VMKind } from '../types/vm';
 
 type StringHashMap = {
   [key: string]: string;
@@ -40,3 +41,24 @@ export const getLabels = (
 
   return labels || defaultValue || {};
 };
+
+export const getVMIConditionsByType = (
+  vmi: VMIKind,
+  condType: string,
+): VMIKind['status']['conditions'] => {
+  const conditions = vmi?.status?.conditions;
+  return (conditions || []).filter(cond => cond.type === condType);
+};
+
+export const getDeletetionTimestamp = (vmi: VMIKind | VMKind) =>
+  _.get(vmi, 'metadata.deletionTimestamp');
+
+export const getStatusConditions = (
+  statusResource: K8sResourceKind,
+  defaultValue = [],
+) =>
+  _.get(statusResource, 'status.conditions') === undefined
+    ? defaultValue
+    : statusResource?.status?.conditions;
+
+export const getPodStatusPhase = (pod: V1Pod) => _.get(pod, 'status.phase');
