@@ -43,9 +43,8 @@ const Status = ({
   displayStatusText,
 }: React.PropsWithChildren<StatusProps>): React.ReactElement => {
   const statusProps = {
-    title: status ?? '',
+    title: displayStatusText || status || '',
     iconOnly,
-    displayStatusText,
   };
 
   switch (status) {
