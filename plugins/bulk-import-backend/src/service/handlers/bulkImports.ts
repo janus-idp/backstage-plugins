@@ -25,6 +25,7 @@ import {
   CatalogInfoGenerator,
   getCatalogFilename,
   getTokenForPlugin,
+  paginateArray,
 } from '../../helpers';
 import { Components, Paths } from '../../openapi.d';
 import { GithubApiService } from '../githubApiService';
@@ -54,6 +55,7 @@ export async function findAllImports(
   const catalogFilename = getCatalogFilename(config);
 
   const allLocations = await catalogInfoGenerator.listCatalogUrlLocations(
+    config,
     pageNumber,
     pageSize,
   );
@@ -77,11 +79,10 @@ export async function findAllImports(
   );
 
   // now fetch the import statuses in different promises
-  const importLocations = Array.from(importCandidates.values());
   const importStatusPromises: Promise<
     HandlerResponse<Components.Schemas.Import>
   >[] = [];
-  for (const loc of importLocations) {
+  for (const loc of importCandidates) {
     const repoUrl = repoUrlFromLocation(loc);
     if (!repoUrl) {
       continue;
@@ -102,7 +103,7 @@ export async function findAllImports(
 
   const result = await Promise.all(importStatusPromises);
   const imports = result
-    .filter(res => res.responseBody)
+    .filter(res => res.responseBody?.status)
     .map(res => res.responseBody!);
   // sorting the output to make it deterministic and easy to navigate in the UI
   imports.sort((a, b) => {
@@ -119,7 +120,7 @@ export async function findAllImports(
   });
   return {
     statusCode: 200,
-    responseBody: imports,
+    responseBody: paginateArray(imports, pageNumber, pageSize).result,
   };
 }
 
@@ -188,7 +189,7 @@ function findImportCandidates(
   defaultBranchByRepoUrl: Map<string, string>,
   catalogFilename: string,
 ) {
-  const filteredLocations = new Set<string>();
+  const filteredLocations: string[] = [];
   for (const loc of allLocations) {
     const repoUrl = repoUrlFromLocation(loc);
     if (!repoUrl) {
@@ -205,7 +206,7 @@ function findImportCandidates(
       // if it is at the root of the repository, because that is what the import PR ultimately does.
       continue;
     }
-    filteredLocations.add(loc);
+    filteredLocations.push(loc);
   }
   return filteredLocations;
 }
@@ -571,7 +572,7 @@ export async function findImportStatusByRepo(
     });
     if (!openImportPr.prUrl) {
       const catalogLocations =
-        await catalogInfoGenerator.listCatalogUrlLocations();
+        await catalogInfoGenerator.listCatalogUrlLocations(config);
       const catalogUrl = catalogInfoGenerator.getCatalogUrl(
         config,
         repoUrl,
@@ -677,19 +678,11 @@ export async function deleteImportByRepo(
     return undefined;
   };
 
-  let locationId = findLocationFrom(
+  const locationId = findLocationFrom(
     await catalogInfoGenerator.listCatalogUrlLocationsByIdFromLocationsEndpoint(),
   );
   if (locationId) {
     await catalogInfoGenerator.deleteCatalogLocationById(locationId);
-  } else {
-    // try from location entities, in case it comes from a different source like app-config
-    locationId = findLocationFrom(
-      await catalogInfoGenerator.listCatalogUrlLocationEntitiesById(),
-    );
-    if (locationId) {
-      await catalogInfoGenerator.deleteCatalogLocationEntityById(locationId);
-    }
   }
 
   return {

@@ -16,7 +16,6 @@
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
-import { LocationEntity } from '@backstage/catalog-model';
 import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
@@ -29,7 +28,6 @@ import {
   DefaultPageSize,
 } from '../service/handlers/handlers';
 import { getTokenForPlugin } from './auth';
-import { paginateArray } from './pagination';
 
 export class CatalogInfoGenerator {
   private readonly logger: Logger;
@@ -115,35 +113,37 @@ ${jsYaml.dump(generatedEntity.entity)}`,
   }
 
   async listCatalogUrlLocations(
+    config: Config,
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
   ): Promise<string[]> {
-    const list = await this.listCatalogUrlLocationsById(pageNumber, pageSize);
-    const result: string[] = [];
+    const list = await this.listCatalogUrlLocationsById(
+      config,
+      pageNumber,
+      pageSize,
+    );
+    const result = new Set<string>();
     for (const l of list) {
-      result.push(l.target);
+      result.add(l.target);
     }
-    return result;
+    return Array.from(result.values());
   }
 
   async listCatalogUrlLocationsById(
-    pageNumber: number = DefaultPageNumber,
-    pageSize: number = DefaultPageSize,
+    config: Config,
+    _pageNumber: number = DefaultPageNumber,
+    _pageSize: number = DefaultPageSize,
   ): Promise<{ id?: string; target: string }[]> {
     const result = await Promise.all([
-      this.listCatalogUrlLocationsByIdFromLocationsEndpoint(
-        pageNumber,
-        pageSize,
-      ),
-      this.listCatalogUrlLocationEntitiesById(pageNumber, pageSize),
+      this.listCatalogUrlLocationsFromConfig(config),
+      this.listCatalogUrlLocationsByIdFromLocationsEndpoint(),
     ]);
     return result.flat();
   }
 
-  async listCatalogUrlLocationsByIdFromLocationsEndpoint(
-    pageNumber: number = DefaultPageNumber,
-    pageSize: number = DefaultPageSize,
-  ): Promise<{ id?: string; target: string }[]> {
+  async listCatalogUrlLocationsByIdFromLocationsEndpoint(): Promise<
+    { id?: string; target: string }[]
+  > {
     const url = `${await this.discovery.getBaseUrl('catalog')}/locations`;
     const response = await fetch(url, {
       headers: {
@@ -158,7 +158,7 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     if (!Array.isArray(locations)) {
       return [];
     }
-    const res = locations
+    return locations
       .filter(
         location => location.data?.target && location.data?.type === 'url',
       )
@@ -168,51 +168,43 @@ ${jsYaml.dump(generatedEntity.entity)}`,
           target: location.data.target,
         };
       });
-    return paginateArray(res, pageNumber, pageSize).result;
   }
 
-  async listCatalogUrlLocationEntitiesById(
-    pageNumber: number = DefaultPageNumber,
-    pageSize: number = DefaultPageSize,
-  ): Promise<{ id?: string; target: string }[]> {
-    if (pageNumber < 1) {
-      return [];
-    }
-    const offset = pageNumber - 1;
-    const result = await this.catalogApi.getEntities(
-      {
-        filter: {
-          kind: 'Location',
-        },
-        limit: pageSize,
-        offset,
-      },
-      {
-        token: await getTokenForPlugin(this.auth, 'catalog'),
-      },
-    );
-    const locations = (result?.items ?? []) as LocationEntity[];
-    return locations
+  listCatalogUrlLocationsFromConfig(
+    config: Config,
+  ): { id?: string; target: string }[] {
+    const locationConfigs =
+      config.getOptionalConfigArray('catalog.locations') ?? [];
+    return locationConfigs
       .filter(
-        location => location.spec?.target && location.spec?.type === 'url',
+        location =>
+          location.getOptionalString('target') &&
+          location.getOptionalString('type') === 'url',
       )
       .map(location => {
+        const target = location.getString('target');
         return {
-          id: location.metadata.uid,
-          target: location.spec.target!,
+          id: `app-config-location--${target}`,
+          target,
         };
       });
   }
 
   async deleteCatalogLocationById(locationId: string): Promise<void> {
-    const url = `${await this.discovery.getBaseUrl('catalog')}/locations/${locationId}`;
-    await fetch(url, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${await getTokenForPlugin(this.auth, 'catalog')}`,
-      },
-      method: 'DELETE',
-    });
+    try {
+      const url = `${await this.discovery.getBaseUrl('catalog')}/locations/${locationId}`;
+      await fetch(url, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${await getTokenForPlugin(this.auth, 'catalog')}`,
+        },
+        method: 'DELETE',
+      });
+    } catch (err: any) {
+      this.logger.debug(
+        `Could not delete location ${locationId}, cause: ${err}`,
+      );
+    }
   }
 
   async deleteCatalogLocationEntityById(locationUid: string): Promise<void> {

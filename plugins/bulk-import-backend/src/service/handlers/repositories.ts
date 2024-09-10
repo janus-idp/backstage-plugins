@@ -110,7 +110,9 @@ async function formatResponse(
     };
   }
 
-  const catalogLocations = await catalogInfoGenerator.listCatalogUrlLocations();
+  const catalogLocations = checkStatus
+    ? await catalogInfoGenerator.listCatalogUrlLocations(config)
+    : [];
   const repoList: Components.Schemas.Repository[] = [];
   if (allReposAccessible.repositories) {
     for (const repo of allReposAccessible.repositories) {
