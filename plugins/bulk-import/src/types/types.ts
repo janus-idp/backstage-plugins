@@ -47,7 +47,7 @@ export type AddRepositoryData = {
   catalogInfoYaml?: {
     status?: ImportStatus;
     prTemplate?: PullRequestPreview;
-    pullRequest?: string;
+    pullRequestUrl?: string;
     lastUpdated?: string;
   };
   lastUpdated?: string;

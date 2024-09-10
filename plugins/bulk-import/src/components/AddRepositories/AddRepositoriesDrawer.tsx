@@ -65,7 +65,8 @@ export const AddRepositoriesDrawer = ({
   orgData: AddRepositoryData;
 }) => {
   const classes = useStyles();
-  const { values } = useFormikContext<AddRepositoriesFormValues>();
+  const { values, status, setStatus } =
+    useFormikContext<AddRepositoriesFormValues>();
   const [searchString, setSearchString] = useState<string>('');
   const [selectedRepos, setSelectedRepos] = useState<AddedRepositories>({});
 
@@ -75,6 +76,13 @@ export const AddRepositoriesDrawer = ({
 
   const handleSelectRepoFromDrawer = (selected: AddedRepositories) => {
     onSelect(selected, orgData?.orgName || '');
+    const newStatus = { ...(status?.errors || {}) };
+    Object.keys(newStatus).forEach(s => {
+      if (!Object.keys(selected).find(sel => sel === s)) {
+        delete newStatus[s];
+      }
+    });
+    setStatus({ ...status, errors: newStatus });
     onClose();
   };
 

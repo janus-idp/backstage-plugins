@@ -4,6 +4,7 @@ import {
 } from '../mocks/mockData';
 import { ImportJobResponse, RepositoryStatus } from '../types';
 import {
+  componentNameRegex,
   getJobErrors,
   getNewOrgsData,
   getYamlKeyValuePairs,
@@ -233,5 +234,12 @@ describe('Repository utils', () => {
         },
       },
     });
+  });
+
+  it('should validate component name', () => {
+    expect(componentNameRegex.test('-cat')).toBe(false);
+    expect(componentNameRegex.test('s-cat')).toBe(true);
+    expect(componentNameRegex.test('s-cat12')).toBe(true);
+    expect(componentNameRegex.test('s-cat@')).toBe(false);
   });
 });

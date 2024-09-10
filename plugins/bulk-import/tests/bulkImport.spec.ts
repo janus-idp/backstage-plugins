@@ -23,7 +23,7 @@ test.describe('Bulk import plugin', () => {
     await browser.close();
   });
 
-  test('Repositories tab is shown', async () => {
+  test('Repositories list is shown', async () => {
     await expect(page.getByText('Added repositories (4)')).toBeVisible();
     const columns = [
       'Name',
@@ -102,7 +102,7 @@ test.describe('Bulk import plugin', () => {
     ).toBeVisible({
       timeout: 20000,
     });
-    await page.locator('button[aria-label="Go to next page"]').click();
+    await page.locator('button[aria-label="Next page"]').click();
     await page.click('input[aria-label="select all repositories"]');
     await expect(
       page.getByRole('heading', { name: 'Selected repositories (9)' }),

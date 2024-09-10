@@ -1,26 +1,31 @@
 import React, { createContext, useContext } from 'react';
 
 type DeleteDialogContextType = {
-  deleteRoleName: string;
-  setDeleteRoleName: (name: string) => void;
+  deleteComponent: { [key: string]: any };
+  setDeleteComponent: (component: { [key: string]: any }) => void;
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;
 };
 
 export const DeleteDialogContext = createContext<DeleteDialogContextType>({
-  deleteRoleName: '',
-  setDeleteRoleName: () => {},
+  deleteComponent: {},
+  setDeleteComponent: () => {},
   openDialog: false,
   setOpenDialog: () => {},
 });
 
 export const DeleteDialogContextProvider = (props: any) => {
   const [openDialog, setOpenDialog] = React.useState(false);
-  const [deleteRoleName, setDeleteRoleName] = React.useState('');
+  const [deleteComponent, setDeleteComponent] = React.useState({});
 
   const deleteDialogContextProviderValue = React.useMemo(
-    () => ({ openDialog, setOpenDialog, deleteRoleName, setDeleteRoleName }),
-    [openDialog, setOpenDialog, deleteRoleName, setDeleteRoleName],
+    () => ({
+      openDialog,
+      setOpenDialog,
+      deleteComponent,
+      setDeleteComponent,
+    }),
+    [openDialog, setOpenDialog, deleteComponent, setDeleteComponent],
   );
   return (
     <DeleteDialogContext.Provider value={deleteDialogContextProviderValue}>

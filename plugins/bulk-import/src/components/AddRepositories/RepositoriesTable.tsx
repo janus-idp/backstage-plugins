@@ -1,10 +1,7 @@
 import * as React from 'react';
 
-import { WarningPanel } from '@backstage/core-components';
-
-import Table from '@mui/material/Table';
-import TableContainer from '@mui/material/TableContainer';
-import TablePagination from '@mui/material/TablePagination';
+import { Table, TableContainer, TablePagination } from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import { useFormikContext } from 'formik';
 
 import { useRepositories } from '../../hooks';
@@ -46,16 +43,14 @@ export const RepositoriesTable = ({
   const { setFieldValue, values } =
     useFormikContext<AddRepositoriesFormValues>();
   const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<string>(
-    showOrganizations ? 'repoName' : 'orgName',
-  );
+  const [orderBy, setOrderBy] = React.useState<string>();
   const [selected, setSelected] = React.useState<AddedRepositories>({});
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [tableData, setTableData] = React.useState<AddRepositoryData[]>([]);
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const [activeOrganization, setActiveOrganization] =
     React.useState<AddRepositoryData | null>();
-  const [localPage, setLocalPage] = React.useState(page || 0);
+  const [localPage, setLocalPage] = React.useState(0);
   const [drawerPage, setDrawerPage] = React.useState(0);
 
   const { loading, data, error } = useRepositories({
@@ -75,10 +70,10 @@ export const RepositoriesTable = ({
   React.useEffect(() => {
     if (drawerOrganization) {
       setDrawerPage(0);
-    } else if (setPage) {
-      setPage(localPage);
+    } else {
+      setLocalPage(page || 0);
     }
-  }, [drawerOrganization, localPage, setPage]);
+  }, [drawerOrganization, localPage, page]);
 
   React.useEffect(() => {
     if (drawerOrganization) {
@@ -127,7 +122,7 @@ export const RepositoriesTable = ({
       });
     }
     filteredRows = [...(filteredRows || [])]?.sort(
-      getComparator(order, orderBy),
+      getComparator(order, orderBy as string),
     );
 
     return filteredRows;
@@ -361,50 +356,46 @@ export const RepositoriesTable = ({
 
   return (
     <>
-      <TableContainer sx={{ padding: '0 24px' }}>
-        {error && Object.keys(error).length > 0 ? (
+      <TableContainer style={{ padding: '0 24px' }}>
+        {error && Object.keys(error).length > 0 && (
           <div style={{ paddingBottom: '16px' }}>
-            <WarningPanel
-              message={
-                error?.message ||
+            <Alert severity="error">
+              <AlertTitle>{error?.name}</AlertTitle>
+              {error?.message ||
                 (Array.isArray(error?.errors) && error.errors.length > 1
                   ? error?.errors?.join('\n')
-                  : error.errors)
-              }
-              title={error?.name}
-              severity="error"
-            />
+                  : error.errors)}
+            </Alert>
           </div>
-        ) : (
-          <Table sx={{ minWidth: 750 }} size="small" data-testid={ariaLabel()}>
-            <RepositoriesHeader
-              numSelected={
-                drawerOrganization
-                  ? Object.keys(selectedForActiveDrawer).length
-                  : Object.keys(selected).length
-              }
-              isDataLoading={loading}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={getRowCount() || 0}
-              showOrganizations={drawerOrganization ? false : showOrganizations}
-              isRepoSelectDrawer={!!drawerOrganization}
-            />
-            <RepositoriesTableBody
-              loading={loading}
-              ariaLabel={ariaLabel()}
-              rows={visibleRows}
-              emptyRows={emptyRows}
-              onOrgRowSelected={handleOrgRowSelected}
-              onClick={handleClick}
-              selectedRepos={selected}
-              isDrawer={!!drawerOrganization}
-              showOrganizations={showOrganizations}
-            />
-          </Table>
         )}
+        <Table style={{ minWidth: 750 }} size="small" data-testid={ariaLabel()}>
+          <RepositoriesHeader
+            numSelected={
+              drawerOrganization
+                ? Object.keys(selectedForActiveDrawer).length
+                : Object.keys(selected).length
+            }
+            isDataLoading={loading}
+            order={order}
+            orderBy={orderBy}
+            onSelectAllClick={handleSelectAllClick}
+            onRequestSort={handleRequestSort}
+            rowCount={getRowCount() || 0}
+            showOrganizations={drawerOrganization ? false : showOrganizations}
+            isRepoSelectDrawer={!!drawerOrganization}
+          />
+          <RepositoriesTableBody
+            loading={loading}
+            ariaLabel={ariaLabel()}
+            rows={visibleRows}
+            emptyRows={emptyRows}
+            onOrgRowSelected={handleOrgRowSelected}
+            onClick={handleClick}
+            selectedRepos={selected}
+            isDrawer={!!drawerOrganization}
+            showOrganizations={showOrganizations}
+          />
+        </Table>
       </TableContainer>
       {!isOpen && tableData?.length > 0 && (
         <TablePagination

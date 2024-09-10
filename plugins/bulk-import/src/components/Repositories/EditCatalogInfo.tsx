@@ -20,7 +20,7 @@ import {
   getJobErrors,
   prepareDataForSubmission,
 } from '../../utils/repository-utils';
-import { PreviewFileSidebar } from '../PreviewFile/PreviewFile';
+import { PreviewFileSidebar } from '../PreviewFile/PreviewFileSidebar';
 
 const EditCatalogInfo = ({
   importStatus,
@@ -34,16 +34,15 @@ const EditCatalogInfo = ({
   const bulkImportApi = useApi(bulkImportApiRef);
   const { setSubmitting, setStatus, isSubmitting } =
     useFormikContext<AddRepositoriesFormValues>();
-  const [formErrors, setFormErrors] = React.useState<PullRequestPreviewData>();
 
   const yamlContent = yaml.load(
     importStatus?.github?.pullRequest?.catalogInfoContent,
   ) as Entity;
-  const catalogEntityName = yamlContent.metadata.name;
+  const catalogEntityName = yamlContent.metadata?.name;
   const entityOwner = yamlContent.spec?.owner as string;
 
   const previewData: AddRepositoryData = {
-    id: importStatus?.repository.id,
+    id: importStatus?.repository?.id,
     repoUrl: importStatus?.repository?.url,
     repoName: importStatus?.repository?.name,
     orgName: importStatus?.repository?.organization,
@@ -144,8 +143,6 @@ const EditCatalogInfo = ({
       repositoryType={RepositorySelection.Repository}
       onClose={onClose}
       handleSave={handleSave}
-      formErrors={formErrors as PullRequestPreviewData}
-      setFormErrors={setFormErrors}
     />
   );
 };

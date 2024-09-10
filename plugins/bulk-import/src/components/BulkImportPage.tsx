@@ -1,19 +1,23 @@
 import React from 'react';
 
-import { Header, Page, TabbedLayout } from '@backstage/core-components';
-import { RequirePermission } from '@backstage/plugin-permission-react';
+import { Content, Header, Page, Progress } from '@backstage/core-components';
+import { usePermission } from '@backstage/plugin-permission-react';
 
+import { Alert, AlertTitle } from '@material-ui/lab';
 import FormControl from '@mui/material/FormControl';
 import { Formik } from 'formik';
 
 import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
+import {
+  DeleteDialogContextProvider,
+  DrawerContextProvider,
+} from '@janus-idp/shared-react';
 
 import {
   AddRepositoriesFormValues,
   ApprovalTool,
   RepositorySelection,
 } from '../types';
-import { DeleteDialogContextProvider } from './DeleteDialogContext';
 import { RepositoriesList } from './Repositories/RepositoriesList';
 
 export const BulkImportPage = () => {
@@ -24,29 +28,40 @@ export const BulkImportPage = () => {
     approvalTool: ApprovalTool.Git,
   };
 
+  const bulkImportViewPermissionResult = usePermission({
+    permission: bulkImportPermission,
+    resourceRef: bulkImportPermission.resourceType,
+  });
+
   return (
-    <RequirePermission
-      permission={bulkImportPermission}
-      resourceRef={bulkImportPermission.resourceType}
-    >
-      <Page themeId="tool">
-        <Header title="Bulk import" />
+    <Page themeId="tool">
+      <Header title="Bulk import" />
+      <DrawerContextProvider>
         <DeleteDialogContextProvider>
-          <TabbedLayout>
-            <TabbedLayout.Route path="/" title="Repositories">
-              <Formik
-                initialValues={initialValues}
-                enableReinitialize
-                onSubmit={async (_values: AddRepositoriesFormValues) => {}}
-              >
-                <FormControl fullWidth>
-                  <RepositoriesList />
-                </FormControl>
-              </Formik>
-            </TabbedLayout.Route>
-          </TabbedLayout>
+          <Content noPadding>
+            <div style={{ padding: '24px' }}>
+              {bulkImportViewPermissionResult.loading && <Progress />}
+              {bulkImportViewPermissionResult.allowed ? (
+                <Formik
+                  initialValues={initialValues}
+                  enableReinitialize
+                  onSubmit={async (_values: AddRepositoriesFormValues) => {}}
+                >
+                  <FormControl fullWidth>
+                    <RepositoriesList />
+                  </FormControl>
+                </Formik>
+              ) : (
+                <Alert severity="warning" data-testid="no-permission-alert">
+                  <AlertTitle>Permission required</AlertTitle>
+                  To view the added repositories, contact your administrator to
+                  give you the `bulk.import` permission.
+                </Alert>
+              )}
+            </div>
+          </Content>
         </DeleteDialogContextProvider>
-      </Page>
-    </RequirePermission>
+      </DrawerContextProvider>
+    </Page>
   );
 };

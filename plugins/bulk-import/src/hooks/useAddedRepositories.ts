@@ -1,10 +1,21 @@
 import React from 'react';
 import { useAsync, useAsyncRetry, useInterval } from 'react-use';
 
-import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  identityApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
+
+import { useFormikContext } from 'formik';
 
 import { bulkImportApiRef } from '../api/BulkImportBackendClient';
-import { AddRepositoryData, ImportJobStatus, RepositoryStatus } from '../types';
+import {
+  AddRepositoriesFormValues,
+  AddRepositoryData,
+  ImportJobStatus,
+  RepositoryStatus,
+} from '../types';
 import { getPRTemplate } from '../utils/repository-utils';
 
 export const useAddedRepositories = (
@@ -21,12 +32,19 @@ export const useAddedRepositories = (
     AddRepositoryData[]
   >([]);
   const identityApi = useApi(identityApiRef);
+  const configApi = useApi(configApiRef);
   const { value: user } = useAsync(async () => {
     const identityRef = await identityApi.getBackstageIdentity();
     return identityRef.userEntityRef;
   });
 
+  const { value: baseUrl } = useAsync(async () => {
+    const url = configApi.getString('app.baseUrl');
+    return url;
+  });
+
   const bulkImportApi = useApi(bulkImportApiRef);
+  const { setFieldValue } = useFormikContext<AddRepositoriesFormValues>();
   const {
     value: addedRepositories,
     loading,
@@ -34,6 +52,7 @@ export const useAddedRepositories = (
     retry,
   } = useAsyncRetry(
     async () => await bulkImportApi.getImportJobs(page, rowsPerPage),
+    [page, rowsPerPage],
   );
 
   React.useEffect(() => {
@@ -41,35 +60,44 @@ export const useAddedRepositories = (
       if (!Array.isArray(addedRepositories)) {
         setAddedRepositoriesData([]);
       } else {
-        const repoData: AddRepositoryData[] =
-          addedRepositories?.map((val: ImportJobStatus) => ({
-            id: val.id,
-            repoName: val.repository.name,
-            defaultBranch: val.repository.defaultBranch,
-            orgName: val.repository.organization,
-            repoUrl: val.repository.url,
-            organizationUrl: val?.repository?.url?.substring(
-              0,
-              val.repository.url.indexOf(val?.repository?.name || '') - 1,
-            ),
-            catalogInfoYaml: {
-              status: val.status
-                ? RepositoryStatus[val.status as RepositoryStatus]
-                : RepositoryStatus.NotGenerated,
-              prTemplate: getPRTemplate(
-                val.repository.name || '',
-                val.repository.organization || '',
-                user as string,
-              ),
-              pullRequest: val?.github?.pullRequest?.url || '',
-              lastUpdated: val.lastUpdate,
-            },
-          })) || [];
-        setAddedRepositoriesData(repoData);
+        const repoData: { [id: string]: AddRepositoryData } =
+          addedRepositories?.reduce((acc, val: ImportJobStatus) => {
+            const id = `${val.repository.organization}/${val.repository.name}`;
+            return {
+              ...acc,
+              [id]: {
+                id,
+                repoName: val.repository.name,
+                defaultBranch: val.repository.defaultBranch,
+                orgName: val.repository.organization,
+                repoUrl: val.repository.url,
+                organizationUrl: val?.repository?.url?.substring(
+                  0,
+                  val.repository.url.indexOf(val?.repository?.name || '') - 1,
+                ),
+                catalogInfoYaml: {
+                  status: val.status
+                    ? RepositoryStatus[val.status as RepositoryStatus]
+                    : RepositoryStatus.NotGenerated,
+                  prTemplate: getPRTemplate(
+                    val.repository.name || '',
+                    val.repository.organization || '',
+                    user as string,
+                    baseUrl as string,
+                    val.repository.url || '',
+                  ),
+                  pullRequest: val?.github?.pullRequest?.url || '',
+                  lastUpdated: val.lastUpdate,
+                },
+              },
+            };
+          }, {});
+        setFieldValue(`repositories`, repoData);
+        setAddedRepositoriesData(Object.values(repoData));
       }
     };
     prepareDataForAddedRepositories();
-  }, [addedRepositories, user]);
+  }, [addedRepositories, user, baseUrl, setFieldValue]);
 
   useInterval(
     () => {

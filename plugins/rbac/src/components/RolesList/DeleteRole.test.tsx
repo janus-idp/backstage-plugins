@@ -2,13 +2,14 @@ import React from 'react';
 
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import * as DeleteDialogContext from './DeleteDialogContext';
+import * as DeleteDialogContext from '@janus-idp/shared-react';
+
 import DeleteRole from './DeleteRole';
 
-jest.mock('./DeleteDialogContext', () => ({
+jest.mock('@janus-idp/shared-react', () => ({
   useDeleteDialog: jest.fn().mockReturnValue({
-    deleteRoleName: '',
-    setDeleteRoleName: jest.fn(),
+    deleteComponent: '',
+    setDeleteComponent: jest.fn(),
     openDialog: false,
     setOpenDialog: jest.fn(),
   }),
@@ -46,9 +47,9 @@ describe('DeleteRole', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    const { setDeleteRoleName, setOpenDialog } =
+    const { setDeleteComponent, setOpenDialog } =
       DeleteDialogContext.useDeleteDialog();
-    expect(setDeleteRoleName).toHaveBeenCalledWith('Admin');
+    expect(setDeleteComponent).toHaveBeenCalledWith({ roleName: 'Admin' });
     expect(setOpenDialog).toHaveBeenCalledWith(true);
   });
 

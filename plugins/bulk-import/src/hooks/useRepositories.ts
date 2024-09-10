@@ -1,7 +1,11 @@
 import React from 'react';
 import { useAsync } from 'react-use';
 
-import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  identityApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 
 import { bulkImportApiRef } from '../api/BulkImportBackendClient';
 import { AddRepositoryData, RepositoriesError, Repository } from '../types';
@@ -29,10 +33,16 @@ export const useRepositories = (options: {
     AddRepositoryData[]
   >([]);
   const identityApi = useApi(identityApiRef);
+  const configApi = useApi(configApiRef);
 
   const { value: user } = useAsync(async () => {
     const identityRef = await identityApi.getBackstageIdentity();
     return identityRef.userEntityRef;
+  });
+
+  const { value: baseUrl } = useAsync(async () => {
+    const url = configApi.getString('app.baseUrl');
+    return url;
   });
 
   const bulkImportApi = useApi(bulkImportApiRef);
@@ -79,6 +89,8 @@ export const useRepositories = (options: {
               val.name || '',
               val.organization || '',
               user as string,
+              baseUrl as string,
+              val.url || '',
             ),
           },
         })) || [];
@@ -89,7 +101,7 @@ export const useRepositories = (options: {
         value?.organizations?.map((val: Repository) => ({
           id: val.id,
           orgName: val.name,
-          organizationUrl: val?.url?.replace('api.', ''),
+          organizationUrl: `https://github.com/${val?.name}`,
           totalReposInOrg: val.totalRepoCount,
         })) || [];
       setOrganizationsData(orgData);
@@ -99,7 +111,7 @@ export const useRepositories = (options: {
     } else {
       prepareDataForRepositories();
     }
-  }, [value, user, options?.showOrganizations]);
+  }, [value, user, options?.showOrganizations, baseUrl]);
 
   return {
     loading: dataLoading,

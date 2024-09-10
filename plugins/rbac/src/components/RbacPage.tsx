@@ -4,8 +4,8 @@ import { Content, Header, Page } from '@backstage/core-components';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 
 import { policyEntityReadPermission } from '@janus-idp/backstage-plugin-rbac-common';
+import { DeleteDialogContextProvider } from '@janus-idp/shared-react';
 
-import { DeleteDialogContextProvider } from './RolesList/DeleteDialogContext';
 import { RolesList } from './RolesList/RolesList';
 
 export const RbacPage = ({ useHeader = true }: { useHeader?: boolean }) => (

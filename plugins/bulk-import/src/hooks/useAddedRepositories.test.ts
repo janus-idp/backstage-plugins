@@ -10,6 +10,13 @@ jest.mock('@backstage/core-plugin-api', () => ({
   }),
 }));
 
+jest.mock('formik', () => ({
+  ...jest.requireActual('formik'),
+  useFormikContext: jest.fn().mockReturnValue({
+    setFieldValue: jest.fn(),
+  }),
+}));
+
 describe('useAddedRepositories', () => {
   it('should return import jobs', async () => {
     const { result } = renderHook(() => useAddedRepositories(1, 5));

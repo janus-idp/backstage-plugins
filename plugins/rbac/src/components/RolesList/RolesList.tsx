@@ -4,6 +4,8 @@ import { Progress, Table, WarningPanel } from '@backstage/core-components';
 
 import { makeStyles } from '@material-ui/core';
 
+import { useDeleteDialog } from '@janus-idp/shared-react';
+
 import { useCheckIfLicensePluginEnabled } from '../../hooks/useCheckIfLicensePluginEnabled';
 import { useLocationToast } from '../../hooks/useLocationToast';
 import { useRoles } from '../../hooks/useRoles';
@@ -11,7 +13,6 @@ import { RolesData } from '../../types';
 import DownloadCSVLink from '../DownloadUserStatistics';
 import { SnackbarAlert } from '../SnackbarAlert';
 import { useToast } from '../ToastContext';
-import { useDeleteDialog } from './DeleteDialogContext';
 import DeleteRoleDialog from './DeleteRoleDialog';
 import { columns } from './RolesListColumns';
 import { RolesListToolbar } from './RolesListToolbar';
@@ -26,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 
 export const RolesList = () => {
   const { toastMessage, setToastMessage } = useToast();
-  const { openDialog, setOpenDialog, deleteRoleName } = useDeleteDialog();
+  const { openDialog, setOpenDialog, deleteComponent } = useDeleteDialog();
   useLocationToast(setToastMessage);
   const [roles, setRoles] = React.useState<number | undefined>();
   const classes = useStyles();
@@ -113,12 +114,14 @@ export const RolesList = () => {
         <DeleteRoleDialog
           open={openDialog}
           closeDialog={closeDialog}
-          roleName={deleteRoleName}
+          roleName={deleteComponent.roleName}
           propOptions={{
             memberRefs:
-              data.find(d => d.name === deleteRoleName)?.members || [],
+              data.find(d => d.name === deleteComponent.roleName)?.members ||
+              [],
             permissions:
-              data.find(d => d.name === deleteRoleName)?.permissions || 0,
+              data.find(d => d.name === deleteComponent.roleName)
+                ?.permissions || 0,
           }}
         />
       )}
