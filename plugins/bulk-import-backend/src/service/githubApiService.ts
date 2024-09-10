@@ -1256,6 +1256,49 @@ export class GithubApiService {
     });
   }
 
+  async deleteImportBranch(
+    logger: Logger,
+    input: {
+      repoUrl: string;
+      gitUrl: gitUrlParse.GitUrl;
+    },
+  ) {
+    const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
+    if (!ghConfig) {
+      throw new Error(`Could not find GH integration from ${input.repoUrl}`);
+    }
+
+    const owner = input.gitUrl.organization;
+    const repo = input.gitUrl.name;
+
+    const credentials = await this.githubCredentialsProvider.getAllCredentials({
+      host: ghConfig.host,
+    });
+    if (credentials.length === 0) {
+      throw new Error(`No credentials for GH integration`);
+    }
+
+    const branchName = getBranchName(this.config);
+    for (const credential of credentials) {
+      const octo = this.buildOcto({ credential, owner }, ghConfig.apiBaseUrl);
+      if (!octo) {
+        continue;
+      }
+      try {
+        await octo.git.deleteRef({
+          owner: owner,
+          repo: repo,
+          ref: `heads/${branchName}`,
+        });
+        return;
+      } catch (e: any) {
+        logger.warn(
+          `Couldn't close import PR and/or delete import branch in ${input.repoUrl}: ${e}`,
+        );
+      }
+    }
+  }
+
   async isRepoEmpty(input: { repoUrl: string }) {
     const { ghConfig, credentials, gitUrl } =
       await this.extractConfigAndCreds(input);
