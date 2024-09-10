@@ -1,5 +1,4 @@
 import { V1Pod } from '@kubernetes/client-node';
-import * as _ from 'lodash';
 
 import { K8sResourceKind, VMIKind, VMKind } from '../types/vm';
 import {
@@ -62,10 +61,7 @@ const isStoppedFromConsole = (vm: VMKind, vmi: VMIKind) => {
 
 // Deleting
 const isDeleting = (vm: VMKind, vmi: VMIKind): boolean =>
-  (vm && getDeletetionTimestamp(vm)) ||
-  (!vm && vmi && getDeletetionTimestamp(vmi))
-    ? true
-    : false;
+  !!(getDeletetionTimestamp(vm) || (vmi && getDeletetionTimestamp(vmi)));
 
 // Stopping
 const isVMExpectedRunning = (vm: VMKind, vmi: VMIKind) => {
@@ -141,7 +137,6 @@ const isCDIImportPending = (pod: V1Pod): boolean =>
 
 // V2V_CONVERSION_PENDING(PENDING)
 const isV2VConversionPemding = (podOfVM: V1Pod): boolean => {
-  // const conversionPod = findConversionPod(vm, pods);
   const podPhase = getPodStatusPhase(podOfVM);
   return podPhase === POD_PHASE_PENDING;
 };

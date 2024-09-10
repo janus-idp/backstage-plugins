@@ -54,7 +54,7 @@ export const StatusIconAndText = ({
         ),
       })}
       <CamelCaseWrap
-        value={displayStatusText ? displayStatusText : title}
+        value={displayStatusText || title}
         dataTest="status-text"
       />
     </span>
