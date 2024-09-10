@@ -897,22 +897,8 @@ export class GithubApiService {
     lastUpdate?: string;
     errors?: string[];
   }> {
-    const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
-    if (!ghConfig) {
-      throw new Error(`Could not find GH integration from ${input.repoUrl}`);
-    }
-
-    const owner = input.gitUrl.organization;
-    const repo = input.gitUrl.name;
-
-    const credentials = await this.githubCredentialsProvider.getAllCredentials({
-      host: ghConfig.host,
-    });
-    if (credentials.length === 0) {
-      throw new Error(`No credentials for GH integration`);
-    }
-
-    const branchName = getBranchName(this.config);
+    const { ghConfig, owner, repo, credentials, branchName } =
+      await this.validateAndBuildRepoData(input);
     const fileName = getCatalogFilename(this.config);
     const errors: any[] = [];
     for (const credential of credentials) {
@@ -1054,6 +1040,29 @@ export class GithubApiService {
     };
   }
 
+  private async validateAndBuildRepoData(input: {
+    repoUrl: string;
+    gitUrl: gitUrlParse.GitUrl;
+  }) {
+    const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
+    if (!ghConfig) {
+      throw new Error(`Could not find GH integration from ${input.repoUrl}`);
+    }
+
+    const owner = input.gitUrl.organization;
+    const repo = input.gitUrl.name;
+
+    const credentials = await this.githubCredentialsProvider.getAllCredentials({
+      host: ghConfig.host,
+    });
+    if (credentials.length === 0) {
+      throw new Error(`No credentials for GH integration`);
+    }
+
+    const branchName = getBranchName(this.config);
+    return { ghConfig, owner, repo, credentials, branchName };
+  }
+
   private async fileExistsInDefaultBranch(
     logger: Logger,
     octo: Octokit,
@@ -1172,22 +1181,8 @@ export class GithubApiService {
       comment: string;
     },
   ) {
-    const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
-    if (!ghConfig) {
-      throw new Error(`Could not find GH integration from ${input.repoUrl}`);
-    }
-
-    const owner = input.gitUrl.organization;
-    const repo = input.gitUrl.name;
-
-    const credentials = await this.githubCredentialsProvider.getAllCredentials({
-      host: ghConfig.host,
-    });
-    if (credentials.length === 0) {
-      throw new Error(`No credentials for GH integration`);
-    }
-
-    const branchName = getBranchName(this.config);
+    const { ghConfig, owner, repo, credentials, branchName } =
+      await this.validateAndBuildRepoData(input);
     for (const credential of credentials) {
       const octo = this.buildOcto({ credential, owner }, ghConfig.apiBaseUrl);
       if (!octo) {
@@ -1281,22 +1276,8 @@ export class GithubApiService {
       gitUrl: gitUrlParse.GitUrl;
     },
   ) {
-    const ghConfig = this.integrations.github.byUrl(input.repoUrl)?.config;
-    if (!ghConfig) {
-      throw new Error(`Could not find GH integration from ${input.repoUrl}`);
-    }
-
-    const owner = input.gitUrl.organization;
-    const repo = input.gitUrl.name;
-
-    const credentials = await this.githubCredentialsProvider.getAllCredentials({
-      host: ghConfig.host,
-    });
-    if (credentials.length === 0) {
-      throw new Error(`No credentials for GH integration`);
-    }
-
-    const branchName = getBranchName(this.config);
+    const { ghConfig, owner, repo, credentials, branchName } =
+      await this.validateAndBuildRepoData(input);
     for (const credential of credentials) {
       const octo = this.buildOcto({ credential, owner }, ghConfig.apiBaseUrl);
       if (!octo) {
