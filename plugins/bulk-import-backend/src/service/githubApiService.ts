@@ -979,12 +979,14 @@ export class GithubApiService {
           };
         }
 
+        let branchExists = false;
         try {
           await octo.rest.git.getRef({
             owner,
             repo,
             ref: `heads/${branchName}`,
           });
+          branchExists = true;
         } catch (error: any) {
           if (error.status === 404) {
             await octo.rest.git.createRef({
@@ -995,6 +997,22 @@ export class GithubApiService {
             });
           } else {
             throw error;
+          }
+        }
+
+        if (branchExists) {
+          // update it in case it is outdated compared to the base branch
+          try {
+            await octo.repos.merge({
+              owner: owner,
+              repo: repo,
+              base: branchName,
+              head: repoData.data.default_branch,
+            });
+          } catch (error: any) {
+            logger.debug(
+              `could not merge default branch ${repoData.data.default_branch} into import branch ${branchName}: ${error}`,
+            );
           }
         }
 
