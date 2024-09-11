@@ -39,6 +39,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     borderTopStyle: 'groove',
     border: theme.palette.divider,
+    zIndex: 1,
   },
 }));
 

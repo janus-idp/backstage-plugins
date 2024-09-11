@@ -33,32 +33,39 @@ export const BulkImportPage = () => {
     resourceRef: bulkImportPermission.resourceType,
   });
 
+  const showContent = () => {
+    if (bulkImportViewPermissionResult.loading) {
+      return <Progress />;
+    }
+    if (bulkImportViewPermissionResult.allowed) {
+      return (
+        <Formik
+          initialValues={initialValues}
+          enableReinitialize
+          onSubmit={async (_values: AddRepositoriesFormValues) => {}}
+        >
+          <FormControl fullWidth>
+            <RepositoriesList />
+          </FormControl>
+        </Formik>
+      );
+    }
+    return (
+      <Alert severity="warning" data-testid="no-permission-alert">
+        <AlertTitle>Permission required</AlertTitle>
+        To view the added repositories, contact your administrator to give you
+        the `bulk.import` permission.
+      </Alert>
+    );
+  };
+
   return (
     <Page themeId="tool">
       <Header title="Bulk import" />
       <DrawerContextProvider>
         <DeleteDialogContextProvider>
           <Content noPadding>
-            <div style={{ padding: '24px' }}>
-              {bulkImportViewPermissionResult.loading && <Progress />}
-              {bulkImportViewPermissionResult.allowed ? (
-                <Formik
-                  initialValues={initialValues}
-                  enableReinitialize
-                  onSubmit={async (_values: AddRepositoriesFormValues) => {}}
-                >
-                  <FormControl fullWidth>
-                    <RepositoriesList />
-                  </FormControl>
-                </Formik>
-              ) : (
-                <Alert severity="warning" data-testid="no-permission-alert">
-                  <AlertTitle>Permission required</AlertTitle>
-                  To view the added repositories, contact your administrator to
-                  give you the `bulk.import` permission.
-                </Alert>
-              )}
-            </div>
+            <div style={{ padding: '24px' }}>{showContent()}</div>
           </Content>
         </DeleteDialogContextProvider>
       </DrawerContextProvider>

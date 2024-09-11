@@ -105,6 +105,7 @@ describe('Preview Pull Request Form', () => {
               'user:default/guest',
               'https://localhost:3001',
               'https://github.com/org/dessert/cupcake',
+              'main',
             ),
           }}
           setFormErrors={() => jest.fn()}
@@ -159,6 +160,7 @@ describe('Preview Pull Request Form', () => {
               'user:default/guest',
               'https://localhost:3001',
               'https://github.com/org/dessert/cupcake',
+              'main',
             ),
           }}
           setFormErrors={() => jest.fn()}
@@ -215,6 +217,7 @@ describe('Preview Pull Request Form', () => {
               'user:default/guest',
               'https://localhost:3001',
               'https://github.com/org/dessert/cupcake',
+              'main',
             ),
           }}
           setFormErrors={setFormErrors}

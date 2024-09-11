@@ -1,19 +1,16 @@
 import * as React from 'react';
-import { useAsync } from 'react-use';
 
 import { Link } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
 
 import { Alert, AlertTitle } from '@material-ui/lab';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Box from '@mui/material/Box';
 import { useFormikContext } from 'formik';
 
-import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
 import {
   AddRepositoriesFormValues,
-  ImportJobStatus,
   PullRequestPreviewData,
+  RepositoryStatus,
 } from '../../types';
 import { getCustomisedErrorMessage } from '../../utils/repository-utils';
 import { PreviewPullRequestForm } from './PreviewPullRequestForm';
@@ -21,7 +18,6 @@ import { PreviewPullRequestForm } from './PreviewPullRequestForm';
 export const PreviewPullRequest = ({
   repoId,
   repoUrl,
-  repoBranch,
   pullRequest,
   setPullRequest,
   formErrors,
@@ -40,21 +36,18 @@ export const PreviewPullRequest = ({
   setFormErrors: (pullRequest: PullRequestPreviewData) => void;
 }) => {
   const { status } = useFormikContext<AddRepositoriesFormValues>();
-  const bulkImportApi = useApi(bulkImportApiRef);
-  const { value: repoStatus } = useAsync(async () => {
-    const result = await bulkImportApi.getImportAction(
-      repoUrl || '',
-      repoBranch || 'main',
-    );
-    return result;
-  });
 
   const [entityOwner, setEntityOwner] = React.useState<string>('');
 
   const error = status?.errors?.[repoId];
   const info = status?.infos?.[repoId];
-  if (info && !error) {
-    // prioritize error over info
+  if (
+    info?.error?.message.includes(
+      RepositoryStatus.CATALOG_INFO_FILE_EXISTS_IN_REPO,
+    ) &&
+    !error
+  ) {
+    // hide preview pull request form for this status
     return (
       <Box marginTop={others?.addPaddingTop ? 2 : 0}>
         <Alert severity="info">
@@ -69,24 +62,37 @@ export const PreviewPullRequest = ({
       {error && (
         <Box marginTop={others?.addPaddingTop ? 2 : 0}>
           <Alert severity="error">
-            <AlertTitle>Failed to create PR</AlertTitle>
+            <AlertTitle>
+              {error.error?.title ? error.error?.title : 'Failed to create PR'}
+            </AlertTitle>
             {getCustomisedErrorMessage(error.error.message).message}{' '}
-            <Link
-              to={`https://github.com/${error.repository.organization}/${error.repository.name}`}
-            >
-              View repository
-              <OpenInNewIcon
-                style={{ verticalAlign: 'sub', paddingTop: '7px' }}
-              />
-            </Link>
+            {error?.repository?.organization && error?.repository?.name && (
+              <Link
+                to={`https://github.com/${error.repository.organization}/${error.repository.name}`}
+              >
+                View repository
+                <OpenInNewIcon
+                  style={{ verticalAlign: 'sub', paddingTop: '7px' }}
+                />
+              </Link>
+            )}
           </Alert>
+          {!others?.addPaddingTop && <br />}
         </Box>
       )}
-      {(repoStatus as ImportJobStatus)?.github?.pullRequest?.url && (
+      {info && (
+        <Box marginTop={others?.addPaddingTop ? 2 : 0}>
+          <Alert severity="info" data-testid="other-info">
+            {getCustomisedErrorMessage(info.error.message).message}{' '}
+          </Alert>
+          {!others?.addPaddingTop && <br />}
+        </Box>
+      )}
+      {pullRequest[repoId]?.pullRequestUrl && (
         <Box marginTop={others?.addPaddingTop ? 2 : 0}>
           <Alert severity="info" data-testid="pull-request-info">
             The{' '}
-            <Link to={(repoStatus as ImportJobStatus).github.pullRequest.url}>
+            <Link to={pullRequest[repoId].pullRequestUrl || ''}>
               pull request
             </Link>{' '}
             is pending approval
