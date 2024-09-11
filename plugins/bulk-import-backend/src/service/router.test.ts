@@ -986,6 +986,18 @@ describe('createRouter', () => {
         },
         {
           approvalTool: 'GIT',
+          id: 'https://github.com/my-ent-org-3/C',
+          repository: {
+            defaultBranch: 'blob/some/path/to/default/branch',
+            id: 'my-ent-org-3/C',
+            name: 'C',
+            organization: 'my-ent-org-3',
+            url: 'https://github.com/my-ent-org-3/C',
+          },
+          status: null,
+        },
+        {
+          approvalTool: 'GIT',
           id: 'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
           repository: {
             defaultBranch: 'main',
@@ -1013,6 +1025,18 @@ describe('createRouter', () => {
             url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
           },
           status: 'WAIT_PR_APPROVAL',
+        },
+        {
+          approvalTool: 'GIT',
+          id: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
+          repository: {
+            defaultBranch: 'main',
+            id: 'my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
+            name: 'my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
+            organization: 'my-org-1',
+            url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
+          },
+          status: null,
         },
       ]);
     });

@@ -103,7 +103,7 @@ export async function findAllImports(
 
   const result = await Promise.all(importStatusPromises);
   const imports = result
-    .filter(res => res.responseBody?.status)
+    .filter(res => res.responseBody)
     .map(res => res.responseBody!);
   // sorting the output to make it deterministic and easy to navigate in the UI
   imports.sort((a, b) => {
