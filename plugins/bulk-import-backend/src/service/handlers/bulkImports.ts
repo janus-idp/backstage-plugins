@@ -543,14 +543,20 @@ export async function deleteImportByRepo(
   const openImportPr = await githubApiService.findImportOpenPr(logger, {
     repoUrl: repoUrl,
   });
+  const gitUrl = gitUrlParse(repoUrl);
   if (openImportPr.prUrl) {
     // Close PR
     await githubApiService.closePR(logger, {
       repoUrl,
-      gitUrl: gitUrlParse(repoUrl),
+      gitUrl,
       comment: `Closing PR upon request for bulk import deletion`,
     });
   }
+  // Also delete the import branch, so that it is not outdated if we try later to import the repo again
+  await githubApiService.deleteImportBranch(logger, {
+    repoUrl,
+    gitUrl,
+  });
   // Remove Location from catalog
   const catalogLocations =
     await catalogInfoGenerator.listCatalogUrlLocationsById();
