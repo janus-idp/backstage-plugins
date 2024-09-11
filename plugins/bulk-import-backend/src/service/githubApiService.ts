@@ -45,7 +45,11 @@ import { DefaultPageNumber, DefaultPageSize } from './handlers/handlers';
 
 const GITHUB_DEFAULT_API_ENDPOINT = 'https://api.github.com';
 
-const RESPONSE_CACHE_MAX_ITEMS = 1000;
+// Cache size and TTL, based on the lower values of rate limits imposed by GH,
+// i.e., 5K requests per hour for requests using a personal token.
+// GitHub Apps owned by enterprises have a higher limit of 15K per hour.
+// See https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28
+const RESPONSE_CACHE_MAX_ITEMS = 5000;
 const RESPONSE_CACHE_TTL_MINUTES = 60;
 
 export class GithubApiService {
