@@ -19,7 +19,9 @@
       "@janus-idp/backstage-plugin-lightspeed"
     ]
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./**/*.css"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
@@ -41,6 +43,7 @@
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@mui/icons-material": "^5.15.18",
     "@patternfly/react-core": "6.0.0-alpha.101",
+    "@patternfly/virtual-assistant": "2.0.0-alpha.14",
     "openai": "^4.52.6",
     "react-markdown": "^9.0.1",
     "react-use": "^17.2.4"
