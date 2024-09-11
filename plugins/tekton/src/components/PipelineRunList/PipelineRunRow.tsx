@@ -17,8 +17,8 @@ import { PipelineRunKind } from '@janus-idp/shared-react';
 
 import { TEKTON_SIGNED_ANNOTATION } from '../../consts/tekton-const';
 import { OpenRowStatus, tektonGroupColor } from '../../types/types';
-import { signedBadgeSrc } from '../../utils/image-utils';
 import { pipelineRunDuration } from '../../utils/tekton-utils';
+import SignedBadgeIcon from '../Icons/SignedBadgeIcon';
 import { PipelineRunVisualization } from '../pipeline-topology';
 import PipelineRunRowActions from './PipelineRunRowActions';
 import PipelineRunTaskStatus from './PipelineRunTaskStatus';
@@ -79,7 +79,7 @@ const PipelineRunName = ({ row }: PipelineRunNameProps) => {
                     'signed-indicator',
                   )}
                 >
-                  <img src={signedBadgeSrc} alt="Signed" />
+                  <SignedBadgeIcon />
                 </div>
               </Tooltip>
             ) : null
