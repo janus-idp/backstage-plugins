@@ -19,6 +19,7 @@ import {
   AuthService,
   BackstageCredentials,
   BackstagePrincipalTypes,
+  CacheService,
 } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
@@ -56,6 +57,13 @@ const config = new ConfigReader({
     ],
   },
 });
+
+const mockCache: CacheService = {
+  delete: jest.fn(),
+  get: jest.fn(),
+  set: jest.fn(),
+  withOptions: jest.fn(),
+};
 
 describe('bulkimports.ts tests', () => {
   let logger: Logger;
@@ -97,7 +105,7 @@ describe('bulkimports.ts tests', () => {
       mockAuth,
       mockCatalogClient,
     );
-    mockGithubApiService = new GithubApiService(logger, config);
+    mockGithubApiService = new GithubApiService(logger, config, mockCache);
   });
 
   beforeEach(() => {

@@ -19,6 +19,7 @@ import {
   AuthService,
   BackstageCredentials,
   BackstagePrincipalTypes,
+  CacheService,
 } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
@@ -79,6 +80,13 @@ const denyAll: PermissionEvaluator['authorize'] = async queries => {
 const mockAddLocation = jest.fn();
 const mockValidateEntity = jest.fn();
 const mockGetEntitiesByRefs = jest.fn();
+
+const mockCache: CacheService = {
+  delete: jest.fn(),
+  get: jest.fn(),
+  set: jest.fn(),
+  withOptions: jest.fn(),
+};
 
 const configuration = new ConfigReader({
   app: {
@@ -160,11 +168,16 @@ describe('createRouter', () => {
       mockAuth,
       mockCatalogClient,
     );
-    mockGithubApiService = new GithubApiService(voidLogger, configuration);
+    mockGithubApiService = new GithubApiService(
+      voidLogger,
+      configuration,
+      mockCache,
+    );
     const router = await createRouter({
       logger: voidLogger,
       config: configuration,
       permissions: permissionEvaluator,
+      cache: mockCache,
       discovery: mockDiscovery,
       catalogApi: mockCatalogClient,
       identity: mockIdentityClient,

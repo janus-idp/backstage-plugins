@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { CacheService } from '@backstage/backend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
 
 import { CustomGithubCredentialsProvider } from '../helpers';
@@ -62,6 +63,13 @@ CustomGithubCredentialsProvider.prototype.getAllCredentials =
 
 const logger = getVoidLogger();
 const errorLog = jest.spyOn(logger, 'error');
+
+const mockCache: CacheService = {
+  delete: jest.fn(),
+  get: jest.fn(),
+  set: jest.fn(),
+  withOptions: jest.fn(),
+};
 
 describe('GithubApiService tests', () => {
   let config: Config;
@@ -116,7 +124,7 @@ describe('GithubApiService tests', () => {
         ],
       },
     });
-    githubApiService = new GithubApiService(logger, config);
+    githubApiService = new GithubApiService(logger, config, mockCache);
   });
 
   it('returns an empty repositories and errors array if no installations were found', async () => {
@@ -468,6 +476,7 @@ describe('GithubApiService tests', () => {
     const repos = await new GithubApiService(
       logger,
       new ConfigReader({}),
+      mockCache,
     ).getRepositoriesFromIntegrations();
     expect(repos).toEqual({
       errors: [],

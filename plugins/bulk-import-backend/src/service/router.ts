@@ -19,7 +19,11 @@ import {
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  CacheService,
+  HttpAuthService,
+} from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -64,6 +68,7 @@ export interface RouterOptions {
   logger: Logger;
   permissions: PermissionEvaluator;
   config: Config;
+  cache: CacheService;
   discovery: PluginEndpointDiscovery;
   identity: IdentityApi;
   httpAuth?: HttpAuthService;
@@ -80,6 +85,7 @@ export async function createRouter(
     logger,
     permissions,
     config,
+    cache,
     discovery,
     catalogApi,
     githubApi,
@@ -94,7 +100,8 @@ export async function createRouter(
     httpAuthService: httpAuth,
   });
 
-  const githubApiService = githubApi ?? new GithubApiService(logger, config);
+  const githubApiService =
+    githubApi ?? new GithubApiService(logger, config, cache);
   const catalogInfoGenerator =
     catalogInfoHelper ??
     new CatalogInfoGenerator(logger, discovery, auth, catalogApi);
