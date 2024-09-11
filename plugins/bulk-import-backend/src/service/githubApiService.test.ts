@@ -40,6 +40,11 @@ const octokit = {
       getByUsername: jest.fn(),
     },
   },
+  hook: {
+    before: jest.fn(),
+    after: jest.fn(),
+    error: jest.fn(),
+  },
 };
 
 function createOctokit() {

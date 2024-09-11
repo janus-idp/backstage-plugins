@@ -23,6 +23,7 @@ import {
 
 import { Octokit } from '@octokit/rest';
 import gitUrlParse from 'git-url-parse';
+import { LRUCache } from 'lru-cache';
 import { Logger } from 'winston';
 
 import {
@@ -44,11 +45,16 @@ import { DefaultPageNumber, DefaultPageSize } from './handlers/handlers';
 
 const GITHUB_DEFAULT_API_ENDPOINT = 'https://api.github.com';
 
+const RESPONSE_CACHE_MAX_ITEMS = 1000;
+const RESPONSE_CACHE_TTL_MINUTES = 60;
+
 export class GithubApiService {
   private readonly logger: Logger;
   private readonly integrations: ScmIntegrations;
   private readonly githubCredentialsProvider: CustomGithubCredentialsProvider;
   private readonly config: Config;
+  // In-memory cache for storing ETags (used for efficient caching of unchanged data returned by GitHub)
+  private readonly responseCache: LRUCache<string, any>;
 
   constructor(logger: Logger, config: Config) {
     this.logger = logger;
@@ -56,6 +62,10 @@ export class GithubApiService {
     this.integrations = ScmIntegrations.fromConfig(config);
     this.githubCredentialsProvider =
       CustomGithubCredentialsProvider.fromIntegrations(this.integrations);
+    this.responseCache = new LRUCache({
+      max: RESPONSE_CACHE_MAX_ITEMS,
+      ttl: 1000 * 60 * RESPONSE_CACHE_TTL_MINUTES,
+    });
   }
 
   /**
@@ -95,6 +105,51 @@ export class GithubApiService {
       };
     }
     return undefined;
+  }
+
+  private registerHooks(octokit: Octokit) {
+    const extractCacheKey = (options: any) => {
+      // options.url might contain placeholders => need to replace them with their actual values to not get colliding keys
+      const finalUrl = options.url.replace(/{([^}]+)}/g, (_: any, key: any) => {
+        return options[key] ?? `{${key}}`; // Replace with actual value, or leave unchanged if not found
+      });
+      return `${options.method}--${finalUrl}`;
+    };
+
+    octokit.hook.before('request', async options => {
+      const headers: any = {};
+      // Use ETag from in-memory cache if available
+      const existingEtag = this.responseCache.get(
+        extractCacheKey(options),
+      )?.etag;
+      if (existingEtag) {
+        headers['If-None-Match'] = existingEtag;
+      }
+      options.headers = headers;
+    });
+
+    octokit.hook.after('request', async (response, options) => {
+      this.logger.debug(
+        `[GH API] ${options.method} ${options.url}: ${response.status}`,
+      );
+      // If we get a 200 OK, the resource has changed, so update the in-memory cache
+      this.responseCache.set(extractCacheKey(options), {
+        etag: response.headers.etag,
+        ...response,
+      });
+    });
+
+    octokit.hook.error('request', async (error: any, options) => {
+      this.logger.debug(
+        `[GH API] ${options.method} ${options.url}: ${error.status}`,
+      );
+      if (error.status !== 304) {
+        throw error;
+      }
+      // "304 Not Modified" means that the resource hasn't changed
+      // and we should have a version of it in the cache
+      return this.responseCache.get(extractCacheKey(options));
+    });
   }
 
   private async addGithubAppOrgs(
@@ -1242,10 +1297,12 @@ export class GithubApiService {
     ) {
       return undefined;
     }
-    return new Octokit({
+    const octokit = new Octokit({
       baseUrl: apiBaseUrl,
       auth: input.credential.token,
     });
+    this.registerHooks(octokit);
+    return octokit;
   }
 
   private async closePRWithComment(
