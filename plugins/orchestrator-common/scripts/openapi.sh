@@ -15,6 +15,7 @@ openapi_generate() {
 
     # Docs generation
     npx --yes @openapitools/openapi-generator-cli@v2.13.4 generate -g markdown -i ${OPENAPI_SPEC_FILE} -o ./src/generated/docs/markdown/
+    npx --yes @openapitools/openapi-generator-cli@v2.13.4 generate -g html2 -i ${OPENAPI_SPEC_FILE} -o ./src/generated/docs/html
     
     npx --yes --package=js-yaml-cli@0.6.0 -- yaml2json -f ${OPENAPI_SPEC_FILE}
 

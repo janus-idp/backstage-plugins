@@ -1,13 +1,16 @@
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { ErrorPage, Table } from '@backstage/core-components';
 
 import { makeStyles } from '@material-ui/core';
 
+import { useDeleteDialog, useDrawer } from '@janus-idp/shared-react';
+
 import { useAddedRepositories } from '../../hooks/useAddedRepositories';
 import { AddRepositoryData } from '../../types';
-import { useDeleteDialog } from '../DeleteDialogContext';
 import DeleteRepositoryDialog from './DeleteRepositoryDialog';
+import EditCatalogInfo from './EditCatalogInfo';
 import { columns } from './RepositoriesListColumns';
 import { RepositoriesListToolbar } from './RepositoriesListToolbar';
 
@@ -20,7 +23,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const RepositoriesList = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
   const { openDialog, setOpenDialog, deleteComponent } = useDeleteDialog();
+  const { openDrawer, setOpenDrawer, drawerData } = useDrawer();
   const [pageNumber, setPageNumber] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [isMounted, setIsMounted] = React.useState(false);
@@ -36,6 +43,15 @@ export const RepositoriesList = () => {
   const closeDialog = () => {
     setOpenDialog(false);
     retry();
+  };
+
+  const closeDrawer = () => {
+    searchParams.delete('repository');
+    navigate({
+      pathname: location.pathname,
+      search: `?${searchParams.toString()}`,
+    });
+    setOpenDrawer(false);
   };
 
   React.useEffect(() => {
@@ -77,6 +93,13 @@ export const RepositoriesList = () => {
           </div>
         }
       />
+      {openDrawer && (
+        <EditCatalogInfo
+          open={openDrawer}
+          onClose={closeDrawer}
+          importStatus={drawerData}
+        />
+      )}
       {openDialog && (
         <DeleteRepositoryDialog
           open={openDialog}

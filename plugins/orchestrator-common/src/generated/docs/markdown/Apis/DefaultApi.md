@@ -4,7 +4,7 @@ All URIs are relative to *http://localhost*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
-| [**abortWorkflow**](DefaultApi.md#abortWorkflow) | **DELETE** /v2/instances/{instanceId}/abort | Abort a workflow instance |
+| [**abortWorkflow**](DefaultApi.md#abortWorkflow) | **DELETE** /v2/workflows/instances/{instanceId}/abort | Abort a workflow instance |
 | [**executeWorkflow**](DefaultApi.md#executeWorkflow) | **POST** /v2/workflows/{workflowId}/execute | Execute a workflow |
 | [**getInstanceById**](DefaultApi.md#getInstanceById) | **GET** /v2/workflows/instances/{instanceId} | Get Workflow Instance by ID |
 | [**getInstances**](DefaultApi.md#getInstances) | **POST** /v2/workflows/instances | Get instances |

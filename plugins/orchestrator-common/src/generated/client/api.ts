@@ -751,7 +751,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         abortWorkflow: async (instanceId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'instanceId' is not null or undefined
             assertParamExists('abortWorkflow', 'instanceId', instanceId)
-            const localVarPath = `/v2/instances/{instanceId}/abort`
+            const localVarPath = `/v2/workflows/instances/{instanceId}/abort`
                 .replace(`{${"instanceId"}}`, encodeURIComponent(String(instanceId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);

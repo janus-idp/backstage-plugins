@@ -217,10 +217,10 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
             if (canceled.get()) {
               return;
             }
-            const definition = fromWorkflowSource(source);
+            const definition = fromWorkflowSource(source.data);
             setWorkflowDefinitionPromise({ data: definition });
 
-            const workflowFormat = extractWorkflowFormat(source);
+            const workflowFormat = extractWorkflowFormat(source.data);
 
             if (format && workflowId && format !== workflowFormat) {
               const link = viewWorkflowLink({

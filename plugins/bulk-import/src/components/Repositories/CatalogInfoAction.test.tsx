@@ -59,6 +59,16 @@ describe('CatalogInfoAction', () => {
       setSubmitting: jest.fn(),
       setStatus: jest.fn(),
       isSubmitting: false,
+      values: {
+        repositories: {
+          ['org/dessert/cupcake']: {
+            ...mockGetImportJobs[0],
+            catalogInfoYaml: {
+              status: RepositoryStatus.WAIT_PR_APPROVAL,
+            },
+          },
+        },
+      },
     });
     const { getByTestId } = render(
       <BrowserRouter>
@@ -88,6 +98,16 @@ describe('CatalogInfoAction', () => {
       setSubmitting: jest.fn(),
       setStatus: jest.fn(),
       isSubmitting: false,
+      values: {
+        repositories: {
+          ['org/dessert/cupcake']: {
+            ...mockGetImportJobs[0],
+            catalogInfoYaml: {
+              status: RepositoryStatus.ADDED,
+            },
+          },
+        },
+      },
     });
     const { getByTestId } = render(
       <BrowserRouter>

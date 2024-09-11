@@ -5,7 +5,10 @@ import {
   CheckCircleIcon,
   ExclamationCircleIcon,
   HourglassHalfIcon,
+  InProgressIcon,
   NotStartedIcon,
+  OffIcon,
+  PausedIcon,
   SyncAltIcon,
   UnknownIcon,
 } from '@patternfly/react-icons';
@@ -21,6 +24,7 @@ export type StatusProps = {
   status: string | null;
   height?: number;
   width?: number;
+  displayStatusText?: string;
 };
 
 const DASH = '-';
@@ -36,13 +40,38 @@ const DASH = '-';
 const Status = ({
   status,
   iconOnly,
+  displayStatusText,
 }: React.PropsWithChildren<StatusProps>): React.ReactElement => {
   const statusProps = {
-    title: status ?? '',
+    title: displayStatusText || status || '',
     iconOnly,
   };
 
   switch (status) {
+    case 'Paused':
+      return (
+        <StatusIconAndText
+          {...statusProps}
+          icon={<PausedIcon className="bs-topology-status" />}
+        />
+      );
+
+    case 'Stopped':
+      return (
+        <StatusIconAndText
+          {...statusProps}
+          icon={<OffIcon className="bs-topology-status" />}
+        />
+      );
+
+    case 'Progress':
+      return (
+        <StatusIconAndText
+          {...statusProps}
+          icon={<InProgressIcon className="bs-topology-status" />}
+        />
+      );
+
     case 'Pending':
       return (
         <StatusIconAndText
@@ -75,6 +104,7 @@ const Status = ({
     case 'ErrImagePull':
     case 'Failed':
     case 'ImagePullBackOff':
+    case 'Error':
       return (
         <StatusIconAndText
           {...statusProps}

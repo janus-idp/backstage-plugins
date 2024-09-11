@@ -58,7 +58,7 @@ export const CatalogInfoStatus = ({
     (isSelected ||
       (data?.totalReposInOrg && data.totalReposInOrg > 0 && allSelected))
   ) {
-    return <PreviewFile data={data} repositoryType={values.repositoryType} />;
+    return <PreviewFile data={data} />;
   }
 
   if (!isDrawer && isLoading) {
@@ -73,12 +73,7 @@ export const CatalogInfoStatus = ({
     );
   }
 
-  if (
-    (!isDrawer && importStatus) ||
-    (isDrawer &&
-      importStatus &&
-      importStatus !== RepositoryStatus.WAIT_PR_APPROVAL)
-  ) {
+  if (importStatus) {
     return (
       <span style={{ color: '#6A6E73' }}>{getImportStatus(importStatus)}</span>
     );

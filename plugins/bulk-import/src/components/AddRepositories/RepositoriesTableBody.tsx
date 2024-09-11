@@ -1,10 +1,7 @@
 import * as React from 'react';
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, TableBody, TableCell, TableRow } from '@material-ui/core';
 import CircularProgress from '@mui/material/CircularProgress';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
 
 import { AddedRepositories, AddRepositoryData } from '../../types';
 import { OrganizationTableRow } from './OrganizationTableRow';

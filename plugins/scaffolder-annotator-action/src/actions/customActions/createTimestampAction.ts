@@ -6,6 +6,10 @@ export const createTimestampAction = () => {
     'catalog:timestamping',
     'Creates a new `catalog:timestamping` Scaffolder action to annotate scaffolded entities with creation timestamp.',
     'Annotating catalog-info.yaml with current timestamp',
-    { annotations: { 'backstage.io/createdAt': getCurrentTimestamp() } },
+    () => {
+      return {
+        annotations: { 'backstage.io/createdAt': getCurrentTimestamp() },
+      };
+    },
   );
 };

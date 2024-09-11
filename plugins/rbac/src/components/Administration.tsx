@@ -8,7 +8,7 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 
-import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
+import { default as RbacIcon } from '@mui/icons-material/VpnKeyOutlined';
 
 import { rbacApiRef } from '../api/RBACBackendClient';
 
@@ -24,11 +24,7 @@ export const Administration = () => {
 
   if (!isUserLoading && isRBACPluginEnabled) {
     return result?.status === 'Authorized' ? (
-      <SidebarItem
-        text="Administration"
-        to="rbac"
-        icon={AdminPanelSettingsOutlinedIcon as IconComponent}
-      />
+      <SidebarItem text="RBAC" to="rbac" icon={RbacIcon as IconComponent} />
     ) : null;
   }
   return null;

@@ -119,6 +119,15 @@ export async function createBackendRouter(
   router.use(permissionsIntegrationRouter);
   router.use('/workflows', express.text());
   router.use('/static', express.static(resolvePackagePath(pkg.name, 'static')));
+  router.use(
+    '/docs',
+    express.static(
+      resolvePackagePath(
+        '@janus-idp/backstage-plugin-orchestrator-common',
+        'src/generated/docs/html',
+      ),
+    ),
+  );
 
   router.get('/health', (_, response) => {
     logger.info('PONG!');
@@ -215,7 +224,7 @@ async function initRouterApi(
   });
   await openApiBackend.init();
   const v1 = new V1(orchestratorService);
-  const v2 = new V2(orchestratorService, v1);
+  const v2 = new V2(orchestratorService);
   return { v1, v2, openApiBackend };
 }
 
@@ -324,44 +333,6 @@ function setupInternalRoutes(
     },
   );
 
-  // v1
-  router.get('/workflows/:workflowId/source', async (req, res) => {
-    const {
-      params: { workflowId },
-    } = req;
-    const endpointName = 'WorkflowsWorkflowIdSource';
-    const endpoint = `/v1/workflows/${workflowId}/source`;
-
-    auditLogger.auditLog({
-      eventName: endpointName,
-      stage: 'start',
-      status: 'succeeded',
-      level: 'debug',
-      request: req,
-      message: `Received request to '${endpoint}' endpoint`,
-    });
-
-    const decision = await authorize(
-      req,
-      orchestratorWorkflowReadPermission,
-      permissions,
-      httpAuth,
-    );
-    if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint, req);
-    }
-
-    try {
-      const result = await routerApi.v1.getWorkflowSourceById(workflowId);
-      res.status(200).contentType('text/plain').send(result);
-    } catch (error) {
-      res
-        .status(500)
-        .contentType('text/plain')
-        .send((error as Error)?.message || INTERNAL_SERVER_ERROR_MESSAGE);
-    }
-  });
-
   // v2
   routerApi.openApiBackend.register(
     'getWorkflowSourceById',
@@ -391,12 +362,12 @@ function setupInternalRoutes(
 
       try {
         const result = await routerApi.v2.getWorkflowSourceById(workflowId);
-        res.status(200).contentType('plain/text').send(result);
+        res.status(200).contentType('text/plain').send(result);
       } catch (error) {
         auditLogRequestError(error, endpointName, endpoint, _req);
         res
           .status(500)
-          .contentType('plain/text')
+          .contentType('text/plain')
           .send((error as Error)?.message || INTERNAL_SERVER_ERROR_MESSAGE);
         next();
       }
@@ -830,7 +801,7 @@ function setupInternalRoutes(
     'getInstances',
     async (_c, req: express.Request, res: express.Response, next) => {
       const endpointName = 'getInstances';
-      const endpoint = `/v2/instances`;
+      const endpoint = `/v2/workflows/instances`;
 
       auditLogger.auditLog({
         eventName: endpointName,
@@ -863,7 +834,7 @@ function setupInternalRoutes(
     async (c, _req: express.Request, res: express.Response, next) => {
       const instanceId = c.request.params.instanceId as string;
       const endpointName = 'getInstanceById';
-      const endpoint = `/v2/instances/${instanceId}`;
+      const endpoint = `/v2/workflows/instances/${instanceId}`;
 
       auditLogger.auditLog({
         eventName: endpointName,
@@ -905,8 +876,8 @@ function setupInternalRoutes(
     'abortWorkflow',
     async (c, _req, res, next) => {
       const instanceId = c.request.params.instanceId as string;
-      const endpointName = 'getInstanceById';
-      const endpoint = `/v2/instances/${instanceId}/abort`;
+      const endpointName = 'abortWorkflow';
+      const endpoint = `/v2/workflows/instances/${instanceId}/abort`;
 
       auditLogger.auditLog({
         eventName: endpointName,

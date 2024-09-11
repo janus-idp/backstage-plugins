@@ -3,8 +3,9 @@ import React from 'react';
 import { Link, TableColumn } from '@backstage/core-components';
 
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { useFormikContext } from 'formik';
 
-import { AddRepositoryData } from '../../types';
+import { AddRepositoriesFormValues, AddRepositoryData } from '../../types';
 import {
   calculateLastUpdated,
   descendingComparator,
@@ -14,6 +15,21 @@ import {
 import CatalogInfoAction from './CatalogInfoAction';
 import DeleteRepository from './DeleteRepository';
 import SyncRepository from './SyncRepository';
+
+const ImportStatus = ({ data }: { data: AddRepositoryData }) => {
+  const { values } = useFormikContext<AddRepositoriesFormValues>();
+  return getImportStatus(
+    values.repositories[data.id]?.catalogInfoYaml?.status as string,
+    true,
+  );
+};
+
+const LastUpdated = ({ data }: { data: AddRepositoryData }) => {
+  const { values } = useFormikContext<AddRepositoriesFormValues>();
+  return calculateLastUpdated(
+    values.repositories[data.id]?.catalogInfoYaml?.lastUpdated || '',
+  );
+};
 
 export const columns: TableColumn<AddRepositoryData>[] = [
   {
@@ -56,16 +72,14 @@ export const columns: TableColumn<AddRepositoryData>[] = [
     align: 'left',
     customSort: (a: AddRepositoryData, b: AddRepositoryData) =>
       descendingComparator(a, b, 'catalogInfoYaml.status'),
-    render: (data: AddRepositoryData) =>
-      getImportStatus(data.catalogInfoYaml?.status as string, true),
+    render: (data: AddRepositoryData) => <ImportStatus data={data} />,
   },
   {
     title: 'Last updated',
     field: 'catalogInfoYaml.lastUpdated',
     type: 'datetime',
     align: 'left',
-    render: (data: AddRepositoryData) =>
-      calculateLastUpdated(data.catalogInfoYaml?.lastUpdated || ''),
+    render: (data: AddRepositoryData) => <LastUpdated data={data} />,
   },
   {
     title: 'Actions',

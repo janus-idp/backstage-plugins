@@ -23,7 +23,6 @@ import {
   generateTestWorkflowOverviewList,
   generateWorkflowDefinition,
 } from './test-utils';
-import { V1 } from './v1';
 import { V2 } from './v2';
 
 jest.mock('../Helper.ts', () => ({
@@ -56,7 +55,7 @@ const createMockOrchestratorService = (): OrchestratorService => {
   return mockOrchestratorService;
 };
 const mockOrchestratorService = createMockOrchestratorService();
-const v2 = new V2(mockOrchestratorService, new V1(mockOrchestratorService));
+const v2 = new V2(mockOrchestratorService);
 
 describe('getWorkflowOverview', () => {
   beforeEach(() => {
