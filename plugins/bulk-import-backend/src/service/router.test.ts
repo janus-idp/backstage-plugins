@@ -151,7 +151,7 @@ describe('createRouter', () => {
       getEntitiesByRefs: mockGetEntitiesByRefs,
       validateEntity: mockValidateEntity,
       addLocation: mockAddLocation,
-      queryEntities: jest.fn,
+      queryEntities: jest.fn(),
     } as unknown as CatalogClient;
     const voidLogger = getVoidLogger();
     mockCatalogInfoGenerator = new CatalogInfoGenerator(

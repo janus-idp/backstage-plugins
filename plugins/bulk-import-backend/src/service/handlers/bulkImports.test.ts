@@ -20,6 +20,7 @@ import {
   BackstageCredentials,
   BackstagePrincipalTypes,
 } from '@backstage/backend-plugin-api';
+import { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 
 import { Logger } from 'winston';
@@ -59,6 +60,7 @@ const config = new ConfigReader({
 describe('bulkimports.ts tests', () => {
   let logger: Logger;
   let mockAuth: AuthService;
+  let mockCatalogClient: CatalogClient;
   let mockCatalogInfoGenerator: CatalogInfoGenerator;
   let mockGithubApiService: GithubApiService;
 
@@ -83,10 +85,17 @@ describe('bulkimports.ts tests', () => {
       getLimitedUserToken: jest.fn(),
       listPublicServiceKeys: jest.fn(),
     };
+    mockCatalogClient = {
+      getEntitiesByRefs: jest.fn(),
+      validateEntity: jest.fn(),
+      addLocation: jest.fn(),
+      queryEntities: jest.fn(),
+    } as unknown as CatalogClient;
     mockCatalogInfoGenerator = new CatalogInfoGenerator(
       logger,
       mockDiscovery,
       mockAuth,
+      mockCatalogClient,
     );
     mockGithubApiService = new GithubApiService(logger, config);
   });
@@ -107,15 +116,16 @@ describe('bulkimports.ts tests', () => {
         .spyOn(mockGithubApiService, 'deleteImportBranch')
         .mockResolvedValue();
       jest
-        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocationsById')
-        .mockResolvedValue(
-          new Map([
-            [
-              'location-id-11',
-              `${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`,
-            ],
-          ]),
-        );
+        .spyOn(
+          mockCatalogInfoGenerator,
+          'listCatalogUrlLocationsByIdFromLocationsEndpoint',
+        )
+        .mockResolvedValue([
+          {
+            id: 'location-id-11',
+            target: `${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`,
+          },
+        ]);
       jest
         .spyOn(mockCatalogInfoGenerator, 'deleteCatalogLocationById')
         .mockResolvedValue();
@@ -158,15 +168,16 @@ describe('bulkimports.ts tests', () => {
         .spyOn(mockGithubApiService, 'deleteImportBranch')
         .mockResolvedValue();
       jest
-        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocationsById')
-        .mockResolvedValue(
-          new Map([
-            [
-              'location-id-12',
-              `${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`,
-            ],
-          ]),
-        );
+        .spyOn(
+          mockCatalogInfoGenerator,
+          'listCatalogUrlLocationsByIdFromLocationsEndpoint',
+        )
+        .mockResolvedValue([
+          {
+            id: 'location-id-12',
+            target: `${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`,
+          },
+        ]);
       jest
         .spyOn(mockCatalogInfoGenerator, 'deleteCatalogLocationById')
         .mockResolvedValue();
@@ -184,7 +195,8 @@ describe('bulkimports.ts tests', () => {
         logger,
         expect.objectContaining({
           repoUrl,
-          comment: 'Closing PR upon request for bulk import deletion',
+          comment:
+            'Closing PR upon request for bulk import deletion. This request was created from [Red Hat Developer Hub](https://my-backstage-app.example.com).',
         }),
       );
       expect(mockGithubApiService.deleteImportBranch).toHaveBeenCalledTimes(1);
