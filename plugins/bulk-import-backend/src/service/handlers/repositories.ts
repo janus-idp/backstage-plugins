@@ -35,15 +35,22 @@ export async function findAllRepositories(
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
-  checkStatus: boolean = false,
-  pageNumber: number = DefaultPageNumber,
-  pageSize: number = DefaultPageSize,
+  reqParams?: {
+    search?: string;
+    checkStatus?: boolean;
+    pageNumber?: number;
+    pageSize?: number;
+  },
 ): Promise<HandlerResponse<Components.Schemas.RepositoryList>> {
+  const search = reqParams?.search;
+  const checkStatus = reqParams?.checkStatus ?? false;
+  const pageNumber = reqParams?.pageNumber ?? DefaultPageNumber;
+  const pageSize = reqParams?.pageSize ?? DefaultPageSize;
   logger.debug(
-    `Getting all repositories - (page,size)=(${pageNumber},${pageSize})..`,
+    `Getting all repositories - (search,page,size)=('${search ?? ''}',${pageNumber},${pageSize})..`,
   );
   return githubApiService
-    .getRepositoriesFromIntegrations(pageNumber, pageSize)
+    .getRepositoriesFromIntegrations(search, pageNumber, pageSize)
     .then(response =>
       formatResponse(
         response,
@@ -64,15 +71,16 @@ export async function findRepositoriesByOrganization(
     catalogInfoGenerator: CatalogInfoGenerator;
   },
   orgName: string,
+  search?: string,
   checkStatus: boolean = false,
   pageNumber: number = DefaultPageNumber,
   pageSize: number = DefaultPageSize,
 ): Promise<HandlerResponse<Components.Schemas.RepositoryList>> {
   deps.logger.debug(
-    `Getting all repositories for org "${orgName}" - (page,size)=(${pageNumber},${pageSize})..`,
+    `Getting all repositories for org "${orgName}" - (search,page,size)=(${search},${pageNumber},${pageSize})..`,
   );
   return deps.githubApiService
-    .getOrgRepositoriesFromIntegrations(orgName, pageNumber, pageSize)
+    .getOrgRepositoriesFromIntegrations(orgName, search, pageNumber, pageSize)
     .then(response =>
       formatResponse(
         response,

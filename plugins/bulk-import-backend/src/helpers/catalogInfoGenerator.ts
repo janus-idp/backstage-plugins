@@ -114,11 +114,13 @@ ${jsYaml.dump(generatedEntity.entity)}`,
 
   async listCatalogUrlLocations(
     config: Config,
+    search?: string,
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
   ): Promise<string[]> {
     const list = await this.listCatalogUrlLocationsById(
       config,
+      search,
       pageNumber,
       pageSize,
     );
@@ -131,19 +133,20 @@ ${jsYaml.dump(generatedEntity.entity)}`,
 
   async listCatalogUrlLocationsById(
     config: Config,
+    search?: string,
     _pageNumber: number = DefaultPageNumber,
     _pageSize: number = DefaultPageSize,
   ): Promise<{ id?: string; target: string }[]> {
     const result = await Promise.all([
-      this.listCatalogUrlLocationsFromConfig(config),
-      this.listCatalogUrlLocationsByIdFromLocationsEndpoint(),
+      this.listCatalogUrlLocationsFromConfig(config, search),
+      this.listCatalogUrlLocationsByIdFromLocationsEndpoint(search),
     ]);
     return result.flat();
   }
 
-  async listCatalogUrlLocationsByIdFromLocationsEndpoint(): Promise<
-    { id?: string; target: string }[]
-  > {
+  async listCatalogUrlLocationsByIdFromLocationsEndpoint(
+    search?: string,
+  ): Promise<{ id?: string; target: string }[]> {
     const url = `${await this.discovery.getBaseUrl('catalog')}/locations`;
     const response = await fetch(url, {
       headers: {
@@ -158,7 +161,7 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     if (!Array.isArray(locations)) {
       return [];
     }
-    return locations
+    const res = locations
       .filter(
         location => location.data?.target && location.data?.type === 'url',
       )
@@ -168,14 +171,16 @@ ${jsYaml.dump(generatedEntity.entity)}`,
           target: location.data.target,
         };
       });
+    return this.filterLocations(res, search);
   }
 
   listCatalogUrlLocationsFromConfig(
     config: Config,
+    search?: string,
   ): { id?: string; target: string }[] {
     const locationConfigs =
       config.getOptionalConfigArray('catalog.locations') ?? [];
-    return locationConfigs
+    const res = locationConfigs
       .filter(
         location =>
           location.getOptionalString('target') &&
@@ -188,6 +193,24 @@ ${jsYaml.dump(generatedEntity.entity)}`,
           target,
         };
       });
+    return this.filterLocations(res, search);
+  }
+
+  private filterLocations(
+    res: { id: string | undefined; target: string }[],
+    search: string | undefined,
+  ) {
+    return search
+      ? res.filter(loc => {
+          const split = loc.target.split('/blob/');
+          if (split.length < 2) {
+            return false;
+          }
+          const repoUrl = split[0];
+          const gitUrl = gitUrlParse(repoUrl);
+          return gitUrl.name.toLowerCase().includes(search.toLowerCase());
+        })
+      : res;
   }
 
   async deleteCatalogLocationById(locationId: string): Promise<void> {
