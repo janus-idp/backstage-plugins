@@ -16,6 +16,7 @@ import {
   MessageProps,
 } from '@patternfly/virtual-assistant';
 
+import logo from '../../images/logo.svg';
 import { lightspeedApiRef } from '../api/LightspeedProxyClient';
 import { Conversations } from '../types';
 import {
@@ -120,6 +121,7 @@ export const LightspeedChatBox = ({
         name: `${msg.model}`,
         isLoading: msg.loading,
         timestamp: msg.timestamp,
+        avatar: logo,
       },
     ])
     .flat() as MessageProps[];
