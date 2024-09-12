@@ -212,6 +212,75 @@ ${jsYaml.dump(generatedEntity.entity)}`,
       token: await getTokenForPlugin(this.auth, 'catalog'),
     });
   }
+
+  async findLocationEntitiesByRepoUrl(
+    config: Config,
+    repoUrl: string,
+    defaultBranch?: string,
+  ) {
+    return this.findLocationEntitiesByTargetUrl(
+      this.getCatalogUrl(config, repoUrl, defaultBranch),
+    );
+  }
+
+  async findLocationEntitiesByTargetUrl(targetUrl: string, limit?: number) {
+    return this.catalogApi
+      .queryEntities(
+        {
+          filter: [
+            { kind: 'Location', 'spec.type': 'url', 'spec.target': targetUrl },
+          ],
+          fields: ['metadata.namespace', 'metadata.name', 'metadata.uid'],
+          limit,
+        },
+        {
+          token: await getTokenForPlugin(this.auth, 'catalog'),
+        },
+      )
+      .then(resp => resp.items);
+  }
+
+  async refreshLocationByRepoUrl(
+    config: Config,
+    repoUrl: string,
+    defaultBranch?: string,
+  ) {
+    const promises: Promise<void>[] = [];
+    this.findLocationEntitiesByRepoUrl(config, repoUrl, defaultBranch).then(
+      entities => {
+        const nbEntities = entities.length;
+        if (nbEntities === 0) {
+          this.logger.debug(`No Location Entity found for repo: ${repoUrl}`);
+          return;
+        }
+        this.logger.debug(
+          `Refreshing ${nbEntities} Location(s) for repo: ${repoUrl}`,
+        );
+        entities.forEach(ent =>
+          promises.push(
+            this.refreshEntity(
+              'location',
+              ent.metadata.name,
+              ent.metadata.namespace,
+            ),
+          ),
+        );
+      },
+    );
+    await Promise.all(promises);
+  }
+
+  async refreshEntity(
+    kind: string,
+    name: string,
+    namespace: string = 'default',
+  ) {
+    const entityRef = `${kind}:${namespace}/${name}`;
+    this.logger.debug(`Refreshing entityRef: ${entityRef}`);
+    await this.catalogApi.refreshEntity(entityRef, {
+      token: await getTokenForPlugin(this.auth, 'catalog'),
+    });
+  }
 }
 
 export function getCatalogFilename(config: Config): string {
