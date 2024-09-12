@@ -36,6 +36,7 @@ export const bulkImportPlugin = createBackendPlugin({
         logger: coreServices.logger,
         config: coreServices.rootConfig,
         http: coreServices.httpRouter,
+        cache: coreServices.cache,
         discovery: coreServices.discovery,
         permissions: coreServices.permissions,
         identity: coreServices.identity,
@@ -47,6 +48,7 @@ export const bulkImportPlugin = createBackendPlugin({
         config,
         logger,
         http,
+        cache,
         discovery,
         permissions,
         identity,
@@ -56,6 +58,7 @@ export const bulkImportPlugin = createBackendPlugin({
       }) {
         const router = await createRouter({
           config,
+          cache,
           discovery,
           permissions,
           identity,

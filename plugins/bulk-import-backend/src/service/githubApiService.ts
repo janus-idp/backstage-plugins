@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CacheService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
   GithubCredentials,
@@ -44,18 +45,27 @@ import { DefaultPageNumber, DefaultPageSize } from './handlers/handlers';
 
 const GITHUB_DEFAULT_API_ENDPOINT = 'https://api.github.com';
 
+// Cache TTL per entry added, based on the lower values of rate limits imposed by GH,
+// i.e., 5K requests per hour for requests using a personal token.
+// GitHub Apps owned by enterprises have a higher limit of 15K per hour.
+// See https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28
+const RESPONSE_CACHE_TTL_MILLIS = 60 * 60 * 1000;
+
 export class GithubApiService {
   private readonly logger: Logger;
   private readonly integrations: ScmIntegrations;
   private readonly githubCredentialsProvider: CustomGithubCredentialsProvider;
   private readonly config: Config;
+  // Cache for storing ETags (used for efficient caching of unchanged data returned by GitHub)
+  private readonly cache: CacheService;
 
-  constructor(logger: Logger, config: Config) {
+  constructor(logger: Logger, config: Config, cacheService: CacheService) {
     this.logger = logger;
     this.config = config;
     this.integrations = ScmIntegrations.fromConfig(config);
     this.githubCredentialsProvider =
       CustomGithubCredentialsProvider.fromIntegrations(this.integrations);
+    this.cache = cacheService;
   }
 
   /**
@@ -95,6 +105,59 @@ export class GithubApiService {
       };
     }
     return undefined;
+  }
+
+  private registerHooks(octokit: Octokit) {
+    const extractCacheKey = (options: any) => {
+      // options.url might contain placeholders => need to replace them with their actual values to not get colliding keys
+      const finalUrl = options.url.replace(/{([^}]+)}/g, (_: any, key: any) => {
+        return options[key] ?? `{${key}}`; // Replace with actual value, or leave unchanged if not found
+      });
+      return `${options.method}--${finalUrl}`;
+    };
+
+    octokit.hook.before('request', async options => {
+      const headers: any = {};
+      // Use ETag from in-memory cache if available
+      const cacheKey = extractCacheKey(options);
+      const existingEtag = await this.cache
+        .get(cacheKey)
+        .then(val => (val as any)?.etag);
+      if (existingEtag) {
+        headers['If-None-Match'] = existingEtag;
+      } else {
+        this.logger.debug(`cache miss for key "${cacheKey}"`);
+      }
+      options.headers = headers;
+    });
+
+    octokit.hook.after('request', async (response, options) => {
+      this.logger.debug(
+        `[GH API] ${options.method} ${options.url}: ${response.status}`,
+      );
+      // If we get a 200 OK, the resource has changed, so update the in-memory cache
+      const cacheKey = extractCacheKey(options);
+      await this.cache.set(
+        cacheKey,
+        {
+          etag: response.headers.etag,
+          ...response,
+        },
+        { ttl: RESPONSE_CACHE_TTL_MILLIS },
+      );
+    });
+
+    octokit.hook.error('request', async (error: any, options) => {
+      this.logger.debug(
+        `[GH API] ${options.method} ${options.url}: ${error.status}`,
+      );
+      if (error.status !== 304) {
+        throw error;
+      }
+      // "304 Not Modified" means that the resource hasn't changed
+      // and we should have a version of it in the cache
+      return await this.cache.get(extractCacheKey(options));
+    });
   }
 
   private async addGithubAppOrgs(
@@ -1242,10 +1305,12 @@ export class GithubApiService {
     ) {
       return undefined;
     }
-    return new Octokit({
+    const octokit = new Octokit({
       baseUrl: apiBaseUrl,
       auth: input.credential.token,
     });
+    this.registerHooks(octokit);
+    return octokit;
   }
 
   private async closePRWithComment(

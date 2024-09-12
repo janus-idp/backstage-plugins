@@ -19,7 +19,11 @@ import {
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  CacheService,
+  HttpAuthService,
+} from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -64,17 +68,29 @@ export interface RouterOptions {
   logger: Logger;
   permissions: PermissionEvaluator;
   config: Config;
+  cache: CacheService;
   discovery: PluginEndpointDiscovery;
   identity: IdentityApi;
   httpAuth?: HttpAuthService;
   auth?: AuthService;
   catalogApi: CatalogApi;
+  githubApi?: GithubApiService;
+  catalogInfoHelper?: CatalogInfoGenerator;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, permissions, config, discovery, catalogApi } = options;
+  const {
+    logger,
+    permissions,
+    config,
+    cache,
+    discovery,
+    catalogApi,
+    githubApi,
+    catalogInfoHelper,
+  } = options;
 
   const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
@@ -84,12 +100,11 @@ export async function createRouter(
     httpAuthService: httpAuth,
   });
 
-  const githubApiService = new GithubApiService(logger, config);
-  const catalogInfoGenerator = new CatalogInfoGenerator(
-    logger,
-    discovery,
-    auth,
-  );
+  const githubApiService =
+    githubApi ?? new GithubApiService(logger, config, cache);
+  const catalogInfoGenerator =
+    catalogInfoHelper ??
+    new CatalogInfoGenerator(logger, discovery, auth, catalogApi);
 
   // create openapi requests handler
   const api = new OpenAPIBackend({
