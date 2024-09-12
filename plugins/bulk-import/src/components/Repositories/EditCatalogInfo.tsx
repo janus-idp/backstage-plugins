@@ -35,11 +35,11 @@ const EditCatalogInfo = ({
   const { setSubmitting, setStatus, isSubmitting } =
     useFormikContext<AddRepositoriesFormValues>();
 
-  const yamlContent = yaml.load(
+  const yamlContent = yaml.loadAll(
     importStatus?.github?.pullRequest?.catalogInfoContent,
-  ) as Entity;
-  const catalogEntityName = yamlContent.metadata?.name;
-  const entityOwner = yamlContent.spec?.owner as string;
+  )[0] as Entity;
+  const catalogEntityName = yamlContent?.metadata?.name;
+  const entityOwner = yamlContent?.spec?.owner as string;
 
   const previewData: AddRepositoryData = {
     id: importStatus?.repository?.id,

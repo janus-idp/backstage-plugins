@@ -85,6 +85,7 @@ export const useAddedRepositories = (
                     user as string,
                     baseUrl as string,
                     val.repository.url || '',
+                    val.repository.defaultBranch || 'main',
                   ),
                   pullRequest: val?.github?.pullRequest?.url || '',
                   lastUpdated: val.lastUpdate,

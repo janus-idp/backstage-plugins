@@ -60,7 +60,7 @@ export const PreviewFile = ({ data }: { data: AddRepositoryData }) => {
           <Link
             to={errorMessage.showRepositoryLink ? data.repoUrl || '' : ''}
             onClick={() =>
-              errorMessage.showRepositoryLink ? null : setOpenDrawer(true)
+              errorMessage.showRepositoryLink ? null : openDrawer(data)
             }
             data-testid="edit-pull-request"
           >

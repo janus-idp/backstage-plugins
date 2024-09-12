@@ -100,6 +100,7 @@ describe('Preview Pull Requests', () => {
               'user:default/guest',
               'https://localhost:3001',
               'https://github.com/org/dessert/cupcake',
+              'main',
             ),
           }}
           setFormErrors={() => jest.fn()}
@@ -156,6 +157,7 @@ describe('Preview Pull Requests', () => {
               'user:default/guest',
               'https://localhost:3001',
               'https://github.com/org/dessert/cupcake',
+              'main',
             ),
             'org/dessert/donut': getPRTemplate(
               'org/dessert/donut',
@@ -163,6 +165,7 @@ describe('Preview Pull Requests', () => {
               'user:default/guest',
               'https://localhost:3001',
               'https://github.com/org/dessert/donut',
+              'main',
             ),
           }}
           setFormErrors={() => jest.fn()}
@@ -247,6 +250,7 @@ describe('Preview Pull Requests', () => {
               'user:default/guest',
               'https://localhost:3001',
               'https://github.com/org/dessert/cupcake',
+              'main',
             ),
             'org/dessert/donut': getPRTemplate(
               'org/dessert/donut',
@@ -254,6 +258,7 @@ describe('Preview Pull Requests', () => {
               'user:default/guest',
               'https://localhost:3001',
               'https://github.com/org/dessert/donut',
+              'main',
             ),
           }}
           setFormErrors={() => jest.fn()}

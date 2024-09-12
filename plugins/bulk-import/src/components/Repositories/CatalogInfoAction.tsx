@@ -23,33 +23,39 @@ import {
 
 const CatalogInfoAction = ({ data }: { data: AddRepositoryData }) => {
   const { setDrawerData, setOpenDrawer, drawerData } = useDrawer();
+  const { setStatus } = useFormikContext<AddRepositoriesFormValues>();
   const { values } = useFormikContext<AddRepositoriesFormValues>();
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const bulkImportApi = useApi(bulkImportApiRef);
 
+  const repoUrl = searchParams.get('repository');
+  const defaultBranch = searchParams.get('defaultBranch');
+
   const { allowed } = usePermission({
     permission: bulkImportPermission,
     resourceRef: bulkImportPermission.resourceType,
   });
-  const { value } = useAsync(
-    async () =>
-      await bulkImportApi.getImportAction(
-        data?.repoUrl || '',
-        data?.defaultBranch || 'main',
-      ),
-    [setOpenDrawer],
-  );
+  const { value, loading } = useAsync(async () => {
+    if (repoUrl) {
+      return await bulkImportApi.getImportAction(
+        repoUrl,
+        defaultBranch || 'main',
+      );
+    }
+    return null;
+  }, [repoUrl, defaultBranch]);
 
-  const openDrawer = (status: ImportJobStatus) => {
+  const handleOpenDrawer = (importStatus: ImportJobStatus) => {
     searchParams.set('repository', data.repoUrl || '');
+    searchParams.set('defaultBranch', data.defaultBranch || 'main');
     navigate({
       pathname: location.pathname,
       search: `?${searchParams.toString()}`,
     });
     setOpenDrawer(true);
-    setDrawerData(status);
+    setDrawerData(importStatus);
   };
 
   const hasPermissionToEdit =
@@ -57,16 +63,39 @@ const CatalogInfoAction = ({ data }: { data: AddRepositoryData }) => {
     values.repositories[data.id]?.catalogInfoYaml?.status ===
       RepositoryStatus.WAIT_PR_APPROVAL;
 
+  const removeQueryParams = () => {
+    searchParams.delete('repository');
+    searchParams.delete('defaultBranch');
+    navigate({
+      pathname: location.pathname,
+      search: `?${searchParams.toString()}`,
+    });
+  };
+
   React.useEffect(() => {
-    const shouldOpenPanel = searchParams.get('repository');
-    if (shouldOpenPanel) {
-      setOpenDrawer(true);
-      if (Object.keys(drawerData || {}).length === 0) {
-        setDrawerData(value as ImportJobStatus);
+    if (!loading && repoUrl && defaultBranch) {
+      const shouldOpenPanel =
+        value?.status === RepositoryStatus.WAIT_PR_APPROVAL &&
+        values.repositories[(value as ImportJobStatus)?.repository?.id];
+
+      if ((value as Response)?.statusText) {
+        setOpenDrawer(false);
+        setStatus({
+          title: (value as Response)?.statusText,
+          url: (value as Response)?.url,
+        });
+        removeQueryParams();
+      } else if (shouldOpenPanel) {
+        setOpenDrawer(true);
+        if (Object.keys(drawerData || {}).length === 0) {
+          setDrawerData(value as ImportJobStatus);
+        }
+      } else {
+        removeQueryParams();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  }, [repoUrl, defaultBranch, value?.status, values?.repositories, loading]);
 
   return (
     <Tooltip
@@ -86,7 +115,7 @@ const CatalogInfoAction = ({ data }: { data: AddRepositoryData }) => {
             color="inherit"
             aria-label="Update"
             data-testid="update"
-            onClick={() => openDrawer(value as ImportJobStatus)}
+            onClick={() => handleOpenDrawer(value as ImportJobStatus)}
           >
             <EditIcon />
           </IconButton>
@@ -94,7 +123,8 @@ const CatalogInfoAction = ({ data }: { data: AddRepositoryData }) => {
           <IconButton
             target="_blank"
             href={
-              values?.repositories[data.id]?.catalogInfoYaml?.pullRequestUrl ||
+              values?.repositories[data.id]?.catalogInfoYaml?.prTemplate
+                ?.pullRequestUrl ||
               values?.repositories[data.id]?.repoUrl ||
               ''
             }

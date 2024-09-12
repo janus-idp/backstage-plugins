@@ -91,6 +91,7 @@ export const useRepositories = (options: {
               user as string,
               baseUrl as string,
               val.url || '',
+              val.defaultBranch || 'main',
             ),
           },
         })) || [];

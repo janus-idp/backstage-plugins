@@ -17,6 +17,7 @@ export type PullRequestPreview = {
   prAnnotations?: string;
   prLabels?: string;
   prSpec?: string;
+  pullRequestUrl?: string;
   componentName?: string;
   entityOwner?: string;
   useCodeOwnersFile: boolean;
@@ -47,7 +48,6 @@ export type AddRepositoryData = {
   catalogInfoYaml?: {
     status?: ImportStatus;
     prTemplate?: PullRequestPreview;
-    pullRequestUrl?: string;
     lastUpdated?: string;
   };
   lastUpdated?: string;

@@ -47,6 +47,7 @@ export const RepositoriesList = () => {
 
   const closeDrawer = () => {
     searchParams.delete('repository');
+    searchParams.delete('defaultBranch');
     navigate({
       pathname: location.pathname,
       search: `?${searchParams.toString()}`,
