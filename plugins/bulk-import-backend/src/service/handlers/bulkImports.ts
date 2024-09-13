@@ -348,6 +348,12 @@ export async function createImportJobs(
       const ghRepo = await githubApiService.getRepositoryFromIntegrations(
         req.repository.url,
       );
+      // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
+      await catalogInfoGenerator.refreshLocationByRepoUrl(
+        config,
+        req.repository.url,
+        req.repository.defaultBranch,
+      );
       result.push({
         status: 'ADDED',
         lastUpdate: ghRepo?.repository?.updated_at ?? undefined,
@@ -388,6 +394,13 @@ export async function createImportJobs(
       if (prToRepo.hasChanges === false) {
         logger.debug(
           `No bulk import PR created on ${req.repository.url} since its default branch (${req.repository.defaultBranch}) already contains a catalog-info file`,
+        );
+
+        // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
+        await catalogInfoGenerator.refreshLocationByRepoUrl(
+          config,
+          req.repository.url,
+          req.repository.defaultBranch,
         );
         result.push({
           status: 'ADDED',
@@ -595,6 +608,12 @@ export async function findImportStatusByRepo(
         }))
       ) {
         result.status = 'ADDED';
+        // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
+        await catalogInfoGenerator.refreshLocationByRepoUrl(
+          config,
+          repoUrl,
+          defaultBranch,
+        );
       }
       // No import PR => let's determine last update from the repository
       const ghRepo =

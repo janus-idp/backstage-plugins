@@ -21,7 +21,12 @@ import {
   BackstagePrincipalTypes,
   CacheService,
 } from '@backstage/backend-plugin-api';
-import { CatalogClient } from '@backstage/catalog-client';
+import {
+  CatalogClient,
+  CatalogRequestOptions,
+  QueryEntitiesRequest,
+  QueryEntitiesResponse,
+} from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 import {
   AuthorizeResult,
@@ -170,6 +175,7 @@ describe('createRouter', () => {
       validateEntity: mockValidateEntity,
       addLocation: mockAddLocation,
       queryEntities: jest.fn(),
+      refreshEntity: jest.fn(),
     } as unknown as CatalogClient;
     const voidLogger = getVoidLogger();
     mockCatalogInfoGenerator = new CatalogInfoGenerator(
@@ -1029,6 +1035,30 @@ describe('createRouter', () => {
           );
         });
 
+      mockCatalogClient.queryEntities = jest
+        .fn()
+        .mockImplementation(
+          async (
+            _request?: QueryEntitiesRequest,
+            _options?: CatalogRequestOptions,
+          ): Promise<QueryEntitiesResponse> => {
+            return {
+              items: [
+                {
+                  apiVersion: 'backstage.io/v1alpha1',
+                  kind: 'Location',
+                  metadata: {
+                    name: `generated-from-tests-${Math.floor(Math.random() * 100 + 1)}`,
+                    namespace: 'default',
+                  },
+                },
+              ],
+              totalItems: 0,
+              pageInfo: {},
+            };
+          },
+        );
+
       const response = await request(app).get('/imports');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([
@@ -1132,6 +1162,8 @@ describe('createRouter', () => {
           status: null,
         },
       ]);
+      // Location entity refresh triggered twice (on each 'ADDED' repo)
+      expect(mockCatalogClient.refreshEntity).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -1200,6 +1232,29 @@ describe('createRouter', () => {
               );
           }
         });
+      mockCatalogClient.queryEntities = jest
+        .fn()
+        .mockImplementation(
+          async (
+            _request?: QueryEntitiesRequest,
+            _options?: CatalogRequestOptions,
+          ): Promise<QueryEntitiesResponse> => {
+            return {
+              items: [
+                {
+                  apiVersion: 'backstage.io/v1alpha1',
+                  kind: 'Location',
+                  metadata: {
+                    name: `generated-from-tests-${Math.floor(Math.random() * 100 + 1)}`,
+                    namespace: 'default',
+                  },
+                },
+              ],
+              totalItems: 0,
+              pageInfo: {},
+            };
+          },
+        );
 
       const response = await request(app)
         .post('/imports')
@@ -1275,6 +1330,8 @@ spec:
           status: 'ADDED',
         },
       ]);
+      // Location entity refresh triggered (on each 'ADDED' repo)
+      expect(mockCatalogClient.refreshEntity).toHaveBeenCalledTimes(1);
     });
   });
 
