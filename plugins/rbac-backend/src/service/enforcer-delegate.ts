@@ -434,7 +434,11 @@ export class EnforcerDelegate implements RoleEventEmitter<RoleEvents> {
     const filter = [];
     if (roles.length > 0) {
       roles.forEach(role => {
-        filter.push({ ptype: 'p', v0: role, v1: resourceType, v2: action });
+        // filter.push({ ptype: 'p', v0: role, v1: resourceType, v2: action });
+        // this commented filter is not designed to work with resourceType which is dynamically constructed
+        // using the resouece id. The switch to mathing policies on regexMatch on the object (here is is resourceType under v1 key) means we can't load policies by resourceType because the query to the repository will not find it. e.g query where orchestrator.workflows.abc where the policy has the object orchestrator.workflows will return empty
+        // We can expand the enforce method to conditionally use the former filter in case a policy for a catalog entity resource is used where the object name represents the resouce type
+        filter.push({ ptype: 'p', v0: role, v2: action });
       });
     } else {
       filter.push({ ptype: 'p', v1: resourceType, v2: action });

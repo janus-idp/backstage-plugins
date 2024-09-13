@@ -12,6 +12,7 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import {
   AuthorizeResult,
   BasicPermission,
+  createPermission,
 } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { JsonObject, JsonValue } from '@backstage/types';
@@ -30,10 +31,8 @@ import {
   openApiDocument,
   orchestratorPermissions,
   orchestratorWorkflowExecutePermission,
-  orchestratorWorkflowInstanceAbortPermission,
   orchestratorWorkflowInstanceReadPermission,
   orchestratorWorkflowInstancesReadPermission,
-  orchestratorWorkflowReadPermission,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_BUSINESS_KEY,
   QUERY_PARAM_INCLUDE_ASSESSMENT,
@@ -352,7 +351,10 @@ function setupInternalRoutes(
 
       const decision = await authorize(
         _req,
-        orchestratorWorkflowReadPermission,
+        createPermission({
+          name: `orchestrator.workflows.${workflowId}`,
+          attributes: { action: 'read' },
+        }),
         permissions,
         httpAuth,
       );
@@ -393,7 +395,10 @@ function setupInternalRoutes(
 
       const decision = await authorize(
         req,
-        orchestratorWorkflowExecutePermission,
+        createPermission({
+          name: `orchestrator.workflows.${workflowId}`,
+          attributes: {},
+        }),
         permissions,
         httpAuth,
       );
@@ -439,7 +444,10 @@ function setupInternalRoutes(
 
       const decision = await authorize(
         _req,
-        orchestratorWorkflowReadPermission,
+        createPermission({
+          name: `orchestrator.workflows.${workflowId}`,
+          attributes: { action: 'read' },
+        }),
         permissions,
         httpAuth,
       );
@@ -473,7 +481,10 @@ function setupInternalRoutes(
 
     const decision = await authorize(
       req,
-      orchestratorWorkflowReadPermission,
+      createPermission({
+        name: `orchestrator.workflows.${workflowId}`,
+        attributes: { action: 'read' },
+      }),
       permissions,
       httpAuth,
     );
@@ -676,7 +687,10 @@ function setupInternalRoutes(
       });
       const decision = await authorize(
         req,
-        orchestratorWorkflowInstanceReadPermission,
+        createPermission({
+          name: `orchestrator.workflows.${workflowId}`,
+          attributes: { action: 'read' },
+        }),
         permissions,
         httpAuth,
       );
@@ -890,7 +904,7 @@ function setupInternalRoutes(
 
       const decision = await authorize(
         _req,
-        orchestratorWorkflowInstanceAbortPermission,
+        orchestratorWorkflowExecutePermission,
         permissions,
         httpAuth,
       );

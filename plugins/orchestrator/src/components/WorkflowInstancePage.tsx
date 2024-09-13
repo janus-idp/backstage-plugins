@@ -19,7 +19,6 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
   AssessedProcessInstanceDTO,
   orchestratorWorkflowExecutePermission,
-  orchestratorWorkflowInstanceAbortPermission,
   ProcessInstanceStatusDTO,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_ID,
@@ -106,10 +105,6 @@ export const WorkflowInstancePage = ({
     useState('');
   const permittedToExecute = usePermission({
     permission: orchestratorWorkflowExecutePermission,
-  });
-
-  const permittedToAbort = usePermission({
-    permission: orchestratorWorkflowInstanceAbortPermission,
   });
 
   const fetchInstance = React.useCallback(async () => {

@@ -22,12 +22,7 @@ export const orchestratorWorkflowReadPermission = createPermission({
 });
 
 export const orchestratorWorkflowExecutePermission = createPermission({
-  name: 'orchestrator.workflow.execute',
-  attributes: {},
-});
-
-export const orchestratorWorkflowInstanceAbortPermission = createPermission({
-  name: 'orchestrator.workflowInstance.abort',
+  name: 'orchestrator.workflows',
   attributes: {},
 });
 
@@ -36,5 +31,4 @@ export const orchestratorPermissions = [
   orchestratorWorkflowExecutePermission,
   orchestratorWorkflowInstancesReadPermission,
   orchestratorWorkflowInstanceReadPermission,
-  orchestratorWorkflowInstanceAbortPermission,
 ];
