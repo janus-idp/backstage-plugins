@@ -141,7 +141,9 @@ export function registerScriptCommand(program: Command) {
 
   command
     .command('package-dynamic-plugins')
-    .description('Package up exported dynamic plugins for deployment')
+    .description(
+      'Package up exported dynamic plugins as container image for deployment',
+    )
     .option(
       '--force-export',
       'Regenerate the dist-dynamic folder for each plugin even if it already exists',
@@ -153,6 +155,11 @@ export function registerScriptCommand(program: Command) {
     .requiredOption(
       '-t, --tag <tag>',
       'Tag name to use when building the plugin registry image',
+    )
+    .option(
+      '--container-tool <tool>',
+      'The container tool to use for building the image (podman or docker, podman is the default)',
+      'podman',
     )
     .action(
       lazy(() => import('./package-dynamic-plugins').then(m => m.command)),
