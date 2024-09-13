@@ -12,6 +12,8 @@ Before you dive into utilizing the RBAC plugin for Backstage, there are a few es
 
 ### Setup Permission Framework
 
+**NOTE**: This section is only relevant if you are still on the old backend system.
+
 To effectively utilize the RBAC plugin, you must have the Backstage permission framework in place. If you're using the Red Hat Developer Hub, some of these steps may have already been completed for you. However, for other Backstage application instances, please verify that the following prerequisites are satisfied:
 
 You need to [set up the permission framework in Backstage](https://backstage.io/docs/permissions/getting-started/).Since this plugin provides a dynamic policy that replaces the traditional one, there's no need to create a policy manually. Please note that one of the requirements for permission framework is enabling the [service-to-service authentication](https://backstage.io/docs/auth/service-to-service-auth/#setup). Ensure that you complete these authentication setup steps as well.
@@ -98,10 +100,15 @@ async function main() {
 
 The RBAC plugin supports the integration with the new backend system.
 
-Add the RBAC plugin to the `packages/backend/src/index.ts` file.
+Add the RBAC plugin to the `packages/backend/src/index.ts` file and remove the Permission backend plugin and Allow All Permission policy module.
 
-```ts
-backend.add(import('@janus-idp/backstage-plugin-rbac-backend'));
+```diff
+// permission plugin
+- backend.add(import('@backstage/plugin-permission-backend/alpha'));
+- backend.add(
+-    import('@backstage/plugin-permission-backend-module-allow-all-policy'),
+-  );
++ backend.add(import('@janus-idp/backstage-plugin-rbac-backend'));
 ```
 
 ### Configure policy admins
