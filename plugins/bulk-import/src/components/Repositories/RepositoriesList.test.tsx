@@ -85,7 +85,7 @@ jest.mock('./RepositoriesListColumns', () => ({
 }));
 
 const mockAsyncData = {
-  loading: false,
+  loaded: true,
   data: mockGetImportJobs,
   totalCount: 1,
   error: undefined,

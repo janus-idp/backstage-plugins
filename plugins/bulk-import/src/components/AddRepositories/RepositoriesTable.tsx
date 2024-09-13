@@ -10,7 +10,6 @@ import {
   AddRepositoriesFormValues,
   AddRepositoryData,
   Order,
-  RepositorySelection,
   RepositoryStatus,
 } from '../../types';
 import {
@@ -58,6 +57,7 @@ export const RepositoriesTable = ({
     orgName: drawerOrganization,
     page: (drawerOrganization ? drawerPage : localPage) + 1,
     querySize: rowsPerPage,
+    searchString,
   });
 
   const [orgsData, setOrgsData] = React.useState<{
@@ -83,59 +83,27 @@ export const RepositoriesTable = ({
 
   React.useEffect(() => {
     if (showOrganizations) {
-      setOrgsData(prev => {
-        const orgs = data?.organizations?.reduce(
-          (acc, o) => ({ ...acc, [o.orgName || '']: o }),
-          prev,
-        );
+      setOrgsData(data?.organizations || {});
 
-        setTableData(Object.values({ ...orgs }));
-        return { ...orgs };
-      });
+      setTableData(Object.values(data?.organizations || {}));
     } else {
-      setReposData(prev => {
-        const repos = data?.repositories?.reduce(
-          (acc, r) => ({ ...acc, [r.id]: r }),
-          prev,
-        );
-        setTableData(Object.values({ ...repos }));
-        return { ...repos };
-      });
+      setReposData(data?.repositories || {});
+
+      setTableData(Object.values(data?.repositories || {}));
     }
-  }, [data?.repositories, data?.organizations, showOrganizations, page]);
+  }, [data, showOrganizations]);
 
   const filteredData = React.useMemo(() => {
     let filteredRows = !showOrganizations
       ? evaluateRowForRepo(tableData, values.repositories)
       : evaluateRowForOrg(tableData, values.repositories);
 
-    if (searchString) {
-      const f = searchString.toUpperCase();
-      filteredRows = filteredRows?.filter((addRepoData: AddRepositoryData) => {
-        const n = (
-          values.repositoryType === RepositorySelection.Repository ||
-          drawerOrganization
-            ? addRepoData.repoName
-            : addRepoData.orgName
-        )?.toUpperCase();
-        return n?.includes(f);
-      });
-    }
     filteredRows = [...(filteredRows || [])]?.sort(
       getComparator(order, orderBy as string),
     );
 
     return filteredRows;
-  }, [
-    tableData,
-    searchString,
-    order,
-    orderBy,
-    drawerOrganization,
-    values.repositoryType,
-    values?.repositories,
-    showOrganizations,
-  ]);
+  }, [tableData, order, orderBy, values?.repositories, showOrganizations]);
 
   const handleRequestSort = (
     _event: React.MouseEvent<unknown>,
@@ -159,21 +127,12 @@ export const RepositoriesTable = ({
   const effectivePage = drawerOrganization ? drawerPage : page || 0;
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    effectivePage > 0
-      ? Math.max(0, (1 + effectivePage) * rowsPerPage - tableData.length)
-      : 0;
-
-  const visibleRows = React.useMemo(() => {
-    return filteredData.slice(
-      effectivePage * rowsPerPage,
-      effectivePage * rowsPerPage + rowsPerPage,
-    );
-  }, [filteredData, rowsPerPage, effectivePage]);
+    effectivePage > 0 ? Math.max(0, rowsPerPage - tableData.length) : 0;
 
   const handleClickAllForRepositoriesTable = (drawer?: boolean) => {
     let newSelectedRows: AddedRepositories = { ...selected };
 
-    const rowsEligibleForSelection = visibleRows.filter(
+    const rowsEligibleForSelection = filteredData.filter(
       r => !values.excludedRepositories[r.id],
     );
     const isAllSelected = rowsEligibleForSelection.every(
@@ -356,7 +315,7 @@ export const RepositoriesTable = ({
 
   return (
     <>
-      <TableContainer style={{ padding: '0 24px' }}>
+      <TableContainer style={{ padding: '0 24px', height: '100%' }}>
         {error && Object.keys(error).length > 0 && (
           <div style={{ paddingBottom: '16px' }}>
             <Alert severity="error">
@@ -368,7 +327,11 @@ export const RepositoriesTable = ({
             </Alert>
           </div>
         )}
-        <Table style={{ minWidth: 750 }} size="small" data-testid={ariaLabel()}>
+        <Table
+          style={{ minWidth: 750, height: '70%' }}
+          size="small"
+          data-testid={ariaLabel()}
+        >
           <RepositoriesHeader
             numSelected={
               drawerOrganization
@@ -387,7 +350,7 @@ export const RepositoriesTable = ({
           <RepositoriesTableBody
             loading={loading}
             ariaLabel={ariaLabel()}
-            rows={visibleRows}
+            rows={filteredData}
             emptyRows={emptyRows}
             onOrgRowSelected={handleOrgRowSelected}
             onClick={handleClick}
@@ -399,6 +362,7 @@ export const RepositoriesTable = ({
       </TableContainer>
       {!isOpen && tableData?.length > 0 && (
         <TablePagination
+          style={{ height: '30%' }}
           rowsPerPageOptions={[
             { value: 5, label: '5 rows' },
             { value: 10, label: '10 rows' },

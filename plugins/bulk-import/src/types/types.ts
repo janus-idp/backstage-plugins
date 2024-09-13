@@ -106,7 +106,6 @@ export type CreateImportJobRepository = {
 
 export type APITypes = {
   orgName?: string;
-  fetchRepositories?: boolean;
   fetchOrganizations?: boolean;
 };
 

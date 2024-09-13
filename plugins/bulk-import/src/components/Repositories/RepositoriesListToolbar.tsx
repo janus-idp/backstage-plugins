@@ -31,7 +31,7 @@ export const RepositoriesListToolbar = () => {
   };
   return (
     <div>
-      {status && (
+      {(status?.title || status?.url) && (
         <>
           <Alert severity="error" onClose={() => handleCloseAlert()}>
             <AlertTitle>
