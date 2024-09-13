@@ -3,6 +3,8 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+
 import { createRouter } from './service/router';
 
 /**
@@ -18,13 +20,18 @@ export const lightspeedPlugin = createBackendPlugin({
         logger: coreServices.logger,
         config: coreServices.rootConfig,
         http: coreServices.httpRouter,
-        httpAuth: coreServices.httpAuth,
-        userInfo: coreServices.userInfo,
+
+        // TODO: for user authentication
+        // httpAuth: coreServices.httpAuth,
+        // userInfo: coreServices.userInfo,
+        // discovery: coreServices.discovery,
+        // catalogApi: catalogServiceRef,
       },
-      async init({ logger, config, http, httpAuth, userInfo }) {
+      async init({ logger, config, http}) {
         http.use(
-          await createRouter({ config: config, logger, httpAuth, userInfo }),
+          await createRouter({ config: config, logger}),
         );
+        
 
         // allow health endpoint to be unauthenticated accessible
         http.addAuthPolicy({

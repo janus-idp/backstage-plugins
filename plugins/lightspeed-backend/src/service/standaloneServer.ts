@@ -24,13 +24,16 @@ export async function startStandaloneServer(
   const router = await createRouter({
     logger,
     config,
-    httpAuth: mockServices.httpAuth({
-      pluginId: 'lightspeed',
-      defaultCredentials: mockCredentials.user(),
-    }),
-    userInfo: mockServices.userInfo({
-      userEntityRef: 'user1',
-    }),
+    
+    // TODO: for user authentication
+    // httpAuth: mockServices.httpAuth({
+    //   pluginId: 'lightspeed',
+    //   defaultCredentials: mockCredentials.user(),
+    // }),
+    // userInfo: mockServices.userInfo({
+    //   userEntityRef: 'user1',
+    // }),
+    // catalogApi: {},
   });
 
   let service = createServiceBuilder(module)

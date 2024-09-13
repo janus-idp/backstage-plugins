@@ -36,13 +36,15 @@ describe('createRouter', () => {
     const router = await createRouter({
       logger: getVoidLogger(),
       config: new ConfigReader({}),
-      httpAuth: mockServices.httpAuth({
-        pluginId: 'lightspeed',
-        defaultCredentials: mockCredentials.user(),
-      }),
-      userInfo: mockServices.userInfo({
-        userEntityRef: 'user1',
-      }),
+      
+      // TODO: for user authentication
+      // httpAuth: mockServices.httpAuth({
+      //   pluginId: 'lightspeed',
+      //   defaultCredentials: mockCredentials.user(),
+      // }),
+      // userInfo: mockServices.userInfo({
+      //   userEntityRef: 'user1',
+      // }),
     });
     app = express().use(router);
   });
