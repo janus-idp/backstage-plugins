@@ -36,7 +36,7 @@ describe('createRouter', () => {
     const router = await createRouter({
       logger: getVoidLogger(),
       config: new ConfigReader({}),
-      
+
       // TODO: for user authentication
       // httpAuth: mockServices.httpAuth({
       //   pluginId: 'lightspeed',

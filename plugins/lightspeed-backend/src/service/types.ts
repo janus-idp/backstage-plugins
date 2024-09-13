@@ -1,11 +1,11 @@
 import {
-  HttpAuthService,
+  // DiscoveryService,
+  // HttpAuthService,
+  // UserInfoService,
   LoggerService,
-  UserInfoService,
-  DiscoveryService,
 } from '@backstage/backend-plugin-api';
+// import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { CatalogApi } from '@backstage/catalog-client';
 
 export type RouterOptions = {
   logger: LoggerService;
@@ -14,7 +14,6 @@ export type RouterOptions = {
   // userInfo: UserInfoService;
   // catalogApi: CatalogApi;
 };
-
 
 /**
  * Define the type for the request body of the /v1/query endpoint.

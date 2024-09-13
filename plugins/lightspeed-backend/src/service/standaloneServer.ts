@@ -24,7 +24,7 @@ export async function startStandaloneServer(
   const router = await createRouter({
     logger,
     config,
-    
+
     // TODO: for user authentication
     // httpAuth: mockServices.httpAuth({
     //   pluginId: 'lightspeed',
