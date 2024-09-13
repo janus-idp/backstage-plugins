@@ -38,9 +38,11 @@ export class SonataFlowService {
         );
         return json;
       }
-      const responseStr = JSON.stringify(response);
-      this.logger.error(
-        `Response was NOT okay when fetch(${urlToFetch}). Received response: ${responseStr}`,
+      throw new Error(
+        this.createPrefixFetchErrorMessage(
+          urlToFetch,
+          'fetchWorkflowInfoOnService',
+        ),
       );
     } catch (error) {
       this.logger.error(`Error when fetching workflow info: ${error}`);
@@ -104,15 +106,21 @@ export class SonataFlowService {
         ? `${args.serviceUrl}/${args.definitionId}?businessKey=${args.businessKey}`
         : `${args.serviceUrl}/${args.definitionId}`;
 
-      const result = await fetch(urlToFetch, {
+      const response = await fetch(urlToFetch, {
         method: 'POST',
         body: JSON.stringify(args.inputData),
         headers: { 'content-type': 'application/json' },
       });
 
-      const json = await result.json();
-      this.logger.debug(`Execute workflow result: ${JSON.stringify(json)}`);
-      return json;
+      if (response.ok) {
+        const json = await response.json();
+        this.logger.debug(`Execute workflow result: ${JSON.stringify(json)}`);
+        return json;
+      }
+      const res = await response.json();
+      throw new Error(
+        `${this.createPrefixFetchErrorMessage(urlToFetch, 'executeWorkflow', 'POST')} - Details: ${res?.details}, Stack: ${res?.stack}`,
+      );
     } catch (error) {
       this.logger.error(`Error when executing workflow: ${error}`);
     }
@@ -218,5 +226,13 @@ export class SonataFlowService {
       this.logger.error(`Error when updating instance input data: ${error}`);
     }
     return false;
+  }
+
+  public createPrefixFetchErrorMessage(
+    urlToFetch: string,
+    functionName: string,
+    httpMethod = 'GET',
+  ): string {
+    return `Response status was NOT successful when ${functionName}(${httpMethod}) fetch(${urlToFetch})`;
   }
 }
