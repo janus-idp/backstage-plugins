@@ -47,7 +47,7 @@ async function main() {
   const lightspeedEnv = useHotMemoize(module, () => createEnv('lightspeed'));
   // ...
   // Add the following line under the other lines that add their routers to apiRouter
-  apiRouter.use('/lightspeed', await lightspeed(lightspeedEnv)); 
+  apiRouter.use('/lightspeed', await lightspeed(lightspeedEnv));
   // ...
 }
 ```

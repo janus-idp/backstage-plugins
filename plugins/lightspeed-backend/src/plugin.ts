@@ -37,7 +37,6 @@ export const lightspeedPlugin = createBackendPlugin({
           path: '/v1/query',
           allow: 'unauthenticated',
         });
-
       },
     });
   },
