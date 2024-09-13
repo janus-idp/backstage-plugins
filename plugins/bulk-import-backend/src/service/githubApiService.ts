@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CacheService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
   GithubCredentials,
@@ -29,6 +30,7 @@ import {
   CustomGithubCredentialsProvider,
   getBranchName,
   getCatalogFilename,
+  paginateArray,
 } from '../helpers';
 import {
   ExtendedGithubCredentials,
@@ -44,18 +46,27 @@ import { DefaultPageNumber, DefaultPageSize } from './handlers/handlers';
 
 const GITHUB_DEFAULT_API_ENDPOINT = 'https://api.github.com';
 
+// Cache TTL per entry added, based on the lower values of rate limits imposed by GH,
+// i.e., 5K requests per hour for requests using a personal token.
+// GitHub Apps owned by enterprises have a higher limit of 15K per hour.
+// See https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28
+const RESPONSE_CACHE_TTL_MILLIS = 60 * 60 * 1000;
+
 export class GithubApiService {
   private readonly logger: Logger;
   private readonly integrations: ScmIntegrations;
   private readonly githubCredentialsProvider: CustomGithubCredentialsProvider;
   private readonly config: Config;
+  // Cache for storing ETags (used for efficient caching of unchanged data returned by GitHub)
+  private readonly cache: CacheService;
 
-  constructor(logger: Logger, config: Config) {
+  constructor(logger: Logger, config: Config, cacheService: CacheService) {
     this.logger = logger;
     this.config = config;
     this.integrations = ScmIntegrations.fromConfig(config);
     this.githubCredentialsProvider =
       CustomGithubCredentialsProvider.fromIntegrations(this.integrations);
+    this.cache = cacheService;
   }
 
   /**
@@ -97,46 +108,119 @@ export class GithubApiService {
     return undefined;
   }
 
+  private registerHooks(octokit: Octokit) {
+    const extractCacheKey = (options: any) => {
+      // options.url might contain placeholders => need to replace them with their actual values to not get colliding keys
+      const finalUrl = options.url.replace(/{([^}]+)}/g, (_: any, key: any) => {
+        return options[key] ?? `{${key}}`; // Replace with actual value, or leave unchanged if not found
+      });
+      return `${options.method}--${finalUrl}`;
+    };
+
+    octokit.hook.before('request', async options => {
+      const headers: any = {};
+      // Use ETag from in-memory cache if available
+      const cacheKey = extractCacheKey(options);
+      const existingEtag = await this.cache
+        .get(cacheKey)
+        .then(val => (val as any)?.etag);
+      if (existingEtag) {
+        headers['If-None-Match'] = existingEtag;
+      } else {
+        this.logger.debug(`cache miss for key "${cacheKey}"`);
+      }
+      options.headers = headers;
+    });
+
+    octokit.hook.after('request', async (response, options) => {
+      this.logger.debug(
+        `[GH API] ${options.method} ${options.url}: ${response.status}`,
+      );
+      // If we get a 200 OK, the resource has changed, so update the in-memory cache
+      const cacheKey = extractCacheKey(options);
+      await this.cache.set(
+        cacheKey,
+        {
+          etag: response.headers.etag,
+          ...response,
+        },
+        { ttl: RESPONSE_CACHE_TTL_MILLIS },
+      );
+    });
+
+    octokit.hook.error('request', async (error: any, options) => {
+      this.logger.debug(
+        `[GH API] ${options.method} ${options.url}: ${error.status}`,
+      );
+      if (error.status !== 304) {
+        throw error;
+      }
+      // "304 Not Modified" means that the resource hasn't changed
+      // and we should have a version of it in the cache
+      return await this.cache.get(extractCacheKey(options));
+    });
+  }
+
+  private async getAllAppOrgs(
+    ghConfig: GithubIntegrationConfig,
+    credentialAccountLogin?: string,
+  ) {
+    const result = new Map<string, GithubOrganization>();
+    const resp =
+      await this.githubCredentialsProvider.getAllAppInstallations(ghConfig);
+    for (const installation of resp ?? []) {
+      if (
+        !(
+          installation.account &&
+          installation.target_type?.toLowerCase() === 'organization'
+        )
+      ) {
+        continue;
+      }
+      const acc = installation.account!;
+      if (credentialAccountLogin !== acc.login) {
+        continue;
+      }
+      result.set(acc.url, {
+        id: acc.id,
+        description: acc.description ?? undefined,
+        name: acc.login,
+        url: acc.html_url,
+        html_url: acc.html_url,
+        repos_url: acc.repos_url,
+        events_url: acc.events_url,
+      });
+    }
+    return result;
+  }
+
   private async addGithubAppOrgs(
     octokit: Octokit,
     credentialAccountLogin: string | undefined,
     ghConfig: GithubIntegrationConfig,
+    search: string | undefined,
     orgs: Map<string, GithubOrganization>,
     errors: Map<number, GithubFetchError>,
   ): Promise<{ totalCount?: number }> {
     let totalCount = 0;
     try {
-      const resp =
-        await this.githubCredentialsProvider.getAllAppInstallations(ghConfig);
-      for (const installation of resp ?? []) {
+      const resp = await this.getAllAppOrgs(ghConfig, credentialAccountLogin);
+      for (const [orgUrl, ghOrg] of resp) {
         if (
-          !(
-            installation.account &&
-            installation.target_type?.toLowerCase() === 'organization'
-          )
+          search &&
+          !ghOrg.name.toLowerCase().includes(search.toLowerCase())
         ) {
           continue;
         }
-        const acc = installation.account!;
-        if (credentialAccountLogin !== acc.login) {
-          continue;
-        }
         const orgData = await octokit.request(
-          acc.url.replace('/users/', '/orgs/'),
+          orgUrl.replace('/users/', '/orgs/'),
         );
-        const ghOrg: GithubOrganization = {
-          id: acc.id,
-          description: acc.description ?? undefined,
-          name: acc.login,
-          url: acc.url,
-          html_url: acc.html_url,
-          repos_url: acc.repos_url,
-          events_url: acc.events_url,
+        orgs.set(ghOrg.name, {
+          ...ghOrg,
           public_repos: orgData?.data?.public_repos,
           total_private_repos: orgData?.data?.total_private_repos,
           owned_private_repos: orgData?.data?.owned_private_repos,
-        };
-        orgs.set(ghOrg.name, ghOrg);
+        });
         totalCount++;
       }
     } catch (err: any) {
@@ -151,31 +235,73 @@ export class GithubApiService {
   private async addGithubTokenOrgs(
     octokit: Octokit,
     credential: GithubCredentials,
+    search: string | undefined,
     orgs: Map<string, GithubOrganization>,
     errors: Map<number, GithubFetchError>,
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
   ): Promise<{ totalCount?: number }> {
     let totalCount: number | undefined;
+
     try {
-      /**
-       * The listForAuthenticatedUser endpoint will grab all the repositories the github token has explicit access to.
-       * These would include repositories they own, repositories where they are a collaborator,
-       * and repositories that they can access through an organization membership.
-       */
-      const resp = await octokit.rest.orgs.listForAuthenticatedUser({
-        page: pageNumber,
-        per_page: pageSize,
-        sort: 'full_name',
-        direction: 'asc',
-      });
-      for (const org of resp?.data ?? []) {
+      let matchingOrgs;
+      if (search) {
+        // Initial idea was to leverage octokit.rest.search.users({q: `${search} type:org`}),
+        // but this searches across all of GitHub, not only the orgs accessible by the current creds.
+        // That's why we are searching in everything, hoping the list of organizations to not be that big in size
+        const resp = await octokit.paginate(
+          octokit.rest.orgs.listForAuthenticatedUser,
+          {
+            sort: 'full_name',
+            direction: 'asc',
+          },
+        );
+        const allMatchingOrgs =
+          resp?.filter(org =>
+            org.login.toLowerCase().includes(search.toLowerCase()),
+          ) ?? [];
+        const matchingOrgsPage = paginateArray(
+          allMatchingOrgs,
+          pageNumber,
+          pageSize,
+        );
+        matchingOrgs = matchingOrgsPage.result;
+        totalCount = matchingOrgsPage.totalCount;
+      } else {
+        /**
+         * The listForAuthenticatedUser endpoint will grab all the repositories the github token has explicit access to.
+         * These would include repositories they own, repositories where they are a collaborator,
+         * and repositories that they can access through an organization membership.
+         */
+        const resp = await octokit.rest.orgs.listForAuthenticatedUser({
+          page: pageNumber,
+          per_page: pageSize,
+          sort: 'full_name',
+          direction: 'asc',
+        });
+        matchingOrgs = resp?.data ?? [];
+
+        totalCount = await this.computeTotalCountFromGitHubToken(
+          async (lastPageNumber: number) =>
+            octokit.orgs
+              .listForAuthenticatedUser({
+                page: lastPageNumber,
+                per_page: 100,
+              })
+              .then(lastPageResp => lastPageResp.data.length),
+          'orgs.listForAuthenticatedUser',
+          resp?.data?.length,
+          resp?.headers?.link,
+        );
+      }
+
+      for (const org of matchingOrgs) {
         const orgData = await octokit.request(org.url);
         const ghOrg: GithubOrganization = {
           id: org.id,
           name: org.login,
           description: org.description ?? undefined,
-          url: org.url,
+          url: orgData?.data?.html_url ?? org.url,
           repos_url: org.repos_url,
           hooks_url: org.hooks_url,
           issues_url: org.issues_url,
@@ -188,19 +314,6 @@ export class GithubApiService {
         };
         orgs.set(org.login, ghOrg);
       }
-
-      totalCount = await this.computeTotalCountFromGitHubToken(
-        async (lastPageNumber: number) =>
-          octokit.orgs
-            .listForAuthenticatedUser({
-              page: lastPageNumber,
-              per_page: 100,
-            })
-            .then(lastPageResp => lastPageResp.data.length),
-        'orgs.listForAuthenticatedUser',
-        resp?.data?.length,
-        resp?.headers?.link,
-      );
     } catch (err) {
       this.handleError(
         'Fetching orgs with token from token',
@@ -212,6 +325,34 @@ export class GithubApiService {
     return { totalCount };
   }
 
+  private async searchRepos(
+    octokit: Octokit,
+    ghSearchQuery: string,
+    pageNumber: number = DefaultPageNumber,
+    pageSize: number = DefaultPageSize,
+  ): Promise<{ totalCount?: number; repositories: GithubRepository[] }> {
+    const repoSearchResp = await octokit.rest.search.repos({
+      q: ghSearchQuery,
+      order: 'asc',
+      page: pageNumber,
+      per_page: pageSize,
+    });
+    return {
+      totalCount: repoSearchResp?.data?.total_count,
+      repositories:
+        repoSearchResp?.data?.items?.map(repo => {
+          return {
+            name: repo.name,
+            full_name: repo.full_name,
+            url: repo.url,
+            html_url: repo.html_url,
+            default_branch: repo.default_branch,
+            updated_at: repo.updated_at,
+          };
+        }) ?? [],
+    };
+  }
+
   /**
    * Adds the repositories accessible by the provided github app to the provided repositories Map<string, GithubRepository>
    * If any errors occurs, adds them to the provided errors Map<number, GithubFetchError>
@@ -219,29 +360,58 @@ export class GithubApiService {
   private async addGithubAppRepositories(
     octokit: Octokit,
     credential: GithubAppCredentials,
+    ghConfig: GithubIntegrationConfig,
     repositories: Map<string, GithubRepository>,
     errors: Map<number, GithubFetchError>,
-    pageNumber: number = DefaultPageNumber,
-    pageSize: number = DefaultPageSize,
+    reqParams?: {
+      search?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    },
   ): Promise<{ totalCount?: number }> {
+    const search = reqParams?.search;
+    const pageNumber = reqParams?.pageNumber ?? DefaultPageNumber;
+    const pageSize = reqParams?.pageSize ?? DefaultPageSize;
     let totalCount: number | undefined;
     try {
-      const resp = await octokit.apps.listReposAccessibleToInstallation({
-        page: pageNumber,
-        per_page: pageSize,
-      });
-      const repos = resp?.data?.repositories ?? resp?.data;
-      repos?.forEach(repo => {
-        repositories.set(repo.full_name, {
-          name: repo.name,
-          full_name: repo.full_name,
-          url: repo.url,
-          html_url: repo.html_url,
-          default_branch: repo.default_branch,
-          updated_at: repo.updated_at,
+      if (search) {
+        const allOrgsMap = await this.getAllAppOrgs(
+          ghConfig,
+          credential.accountLogin,
+        );
+        const orgSearch: string[] = [];
+        for (const [_orgUrl, ghOrg] of allOrgsMap) {
+          orgSearch.push(`org:${ghOrg.name}`);
+        }
+        const query = `${search} in:name ${orgSearch.join(' ')}`;
+        const searchResp = await this.searchRepos(
+          octokit,
+          query,
+          pageNumber,
+          pageSize,
+        );
+        totalCount = searchResp.totalCount;
+        searchResp.repositories.forEach(repo =>
+          repositories.set(repo.full_name, repo),
+        );
+      } else {
+        const resp = await octokit.apps.listReposAccessibleToInstallation({
+          page: pageNumber,
+          per_page: pageSize,
         });
-      });
-      totalCount = resp?.data?.total_count;
+        const repos = resp?.data?.repositories ?? resp?.data;
+        repos?.forEach(repo => {
+          repositories.set(repo.full_name, {
+            name: repo.name,
+            full_name: repo.full_name,
+            url: repo.url,
+            html_url: repo.html_url,
+            default_branch: repo.default_branch,
+            updated_at: repo.updated_at,
+          });
+        });
+        totalCount = resp?.data?.total_count;
+      }
     } catch (err) {
       this.logger.error(
         `Fetching repositories with access token for github app ${credential.appId}, failed with ${err}`,
@@ -266,45 +436,82 @@ export class GithubApiService {
     credential: GithubCredentials,
     repositories: Map<string, GithubRepository>,
     errors: Map<number, GithubFetchError>,
-    pageNumber: number = DefaultPageNumber,
-    pageSize: number = DefaultPageSize,
+    reqParams?: {
+      search?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    },
   ): Promise<{ totalCount?: number }> {
+    const search = reqParams?.search;
+    const pageNumber = reqParams?.pageNumber ?? DefaultPageNumber;
+    const pageSize = reqParams?.pageSize ?? DefaultPageSize;
     let totalCount: number | undefined;
     try {
-      /**
-       * The listForAuthenticatedUser endpoint will grab all the repositories the github token has explicit access to.
-       * These would include repositories they own, repositories where they are a collaborator,
-       * and repositories that they can access through an organization membership.
-       */
-      const resp = await octokit.rest.repos.listForAuthenticatedUser({
-        page: pageNumber,
-        per_page: pageSize,
-        sort: 'full_name',
-        direction: 'asc',
-      });
-      resp?.data?.forEach(repo => {
-        repositories.set(repo.full_name, {
-          name: repo.name,
-          full_name: repo.full_name,
-          url: repo.url,
-          html_url: repo.html_url,
-          default_branch: repo.default_branch,
-          updated_at: repo.updated_at,
-        });
-      });
+      if (search) {
+        // Get currently authenticated user
+        const username = (await octokit.rest.users.getAuthenticated())?.data
+          ?.login;
+        let query = `${search} in:name user:${username}`;
 
-      totalCount = await this.computeTotalCountFromGitHubToken(
-        async (lastPageNumber: number) =>
-          octokit.repos
-            .listForAuthenticatedUser({
-              page: lastPageNumber,
-              per_page: 100,
-            })
-            .then(lastPageResp => lastPageResp.data.length),
-        'repos.listForAuthenticatedUser',
-        resp?.data?.length,
-        resp?.headers?.link,
-      );
+        const allOrgsResp = await octokit.paginate(
+          octokit.rest.orgs.listForAuthenticatedUser,
+          {
+            sort: 'full_name',
+            direction: 'asc',
+          },
+        );
+        const orgSearch: string[] = [];
+        allOrgsResp?.forEach(org => orgSearch.push(`org:${org.login}`));
+        if (orgSearch.length > 0) {
+          query += ` ${orgSearch.join(' ')}`;
+        }
+
+        const searchResp = await this.searchRepos(
+          octokit,
+          query,
+          pageNumber,
+          pageSize,
+        );
+        totalCount = searchResp.totalCount;
+        searchResp.repositories.forEach(repo =>
+          repositories.set(repo.full_name, repo),
+        );
+      } else {
+        /**
+         * The listForAuthenticatedUser endpoint will grab all the repositories the github token has explicit access to.
+         * These would include repositories they own, repositories where they are a collaborator,
+         * and repositories that they can access through an organization membership.
+         */
+        const resp = await octokit.rest.repos.listForAuthenticatedUser({
+          page: pageNumber,
+          per_page: pageSize,
+          sort: 'full_name',
+          direction: 'asc',
+        });
+        resp?.data?.forEach(repo => {
+          repositories.set(repo.full_name, {
+            name: repo.name,
+            full_name: repo.full_name,
+            url: repo.url,
+            html_url: repo.html_url,
+            default_branch: repo.default_branch,
+            updated_at: repo.updated_at,
+          });
+        });
+
+        totalCount = await this.computeTotalCountFromGitHubToken(
+          async (lastPageNumber: number) =>
+            octokit.repos
+              .listForAuthenticatedUser({
+                page: lastPageNumber,
+                per_page: 100,
+              })
+              .then(lastPageResp => lastPageResp.data.length),
+          'repos.listForAuthenticatedUser',
+          resp?.data?.length,
+          resp?.headers?.link,
+        );
+      }
     } catch (err) {
       this.handleError(
         'Fetching repositories with token from token',
@@ -338,48 +545,68 @@ export class GithubApiService {
     org: string,
     repositories: Map<string, GithubRepository>,
     errors: Map<number, GithubFetchError>,
-    pageNumber: number = DefaultPageNumber,
-    pageSize: number = DefaultPageSize,
+    reqParams?: {
+      search?: string;
+      pageNumber?: number;
+      pageSize?: number;
+    },
   ): Promise<{ totalCount?: number }> {
+    const search = reqParams?.search;
+    const pageNumber = reqParams?.pageNumber ?? DefaultPageNumber;
+    const pageSize = reqParams?.pageSize ?? DefaultPageSize;
     let totalCount: number | undefined;
     try {
-      /**
-       * The listForAuthenticatedUser endpoint will grab all the repositories the github token has explicit access to.
-       * These would include repositories they own, repositories where they are a collaborator,
-       * and repositories that they can access through an organization membership.
-       */
-      const resp = await octokit.rest.repos.listForOrg({
-        org,
-        page: pageNumber,
-        per_page: pageSize,
-        sort: 'full_name',
-        direction: 'asc',
-      });
-      resp?.data?.forEach(repo => {
-        const githubRepo: GithubRepository = {
-          name: repo.name,
-          full_name: repo.full_name,
-          url: repo.url,
-          html_url: repo.html_url,
-          default_branch: repo.default_branch ?? 'main',
-          updated_at: repo.updated_at,
-        };
-        repositories.set(githubRepo.full_name, githubRepo);
-      });
+      if (search) {
+        const query = `${search} in:name org:${org}`;
+        const searchResp = await this.searchRepos(
+          octokit,
+          query,
+          pageNumber,
+          pageSize,
+        );
+        totalCount = searchResp.totalCount;
+        searchResp.repositories.forEach(repo =>
+          repositories.set(repo.full_name, repo),
+        );
+      } else {
+        /**
+         * The listForAuthenticatedUser endpoint will grab all the repositories the github token has explicit access to.
+         * These would include repositories they own, repositories where they are a collaborator,
+         * and repositories that they can access through an organization membership.
+         */
+        const resp = await octokit.rest.repos.listForOrg({
+          org,
+          page: pageNumber,
+          per_page: pageSize,
+          sort: 'full_name',
+          direction: 'asc',
+        });
+        resp?.data?.forEach(repo => {
+          const githubRepo: GithubRepository = {
+            name: repo.name,
+            full_name: repo.full_name,
+            url: repo.url,
+            html_url: repo.html_url,
+            default_branch: repo.default_branch ?? 'main',
+            updated_at: repo.updated_at,
+          };
+          repositories.set(githubRepo.full_name, githubRepo);
+        });
 
-      totalCount = await this.computeTotalCountFromGitHubToken(
-        async (lastPageNumber: number) =>
-          octokit.repos
-            .listForOrg({
-              org,
-              page: lastPageNumber,
-              per_page: 100,
-            })
-            .then(lastPageResp => lastPageResp.data.length),
-        'repos.listForOrg',
-        resp?.data?.length,
-        resp?.headers?.link,
-      );
+        totalCount = await this.computeTotalCountFromGitHubToken(
+          async (lastPageNumber: number) =>
+            octokit.repos
+              .listForOrg({
+                org,
+                page: lastPageNumber,
+                per_page: 100,
+              })
+              .then(lastPageResp => lastPageResp.data.length),
+          'repos.listForOrg',
+          resp?.data?.length,
+          resp?.headers?.link,
+        );
+      }
     } catch (err) {
       this.handleError(
         'Fetching org repositories with token from token',
@@ -482,6 +709,7 @@ export class GithubApiService {
   }
 
   async getOrganizationsFromIntegrations(
+    search?: string,
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
   ): Promise<GithubOrganizationResponse> {
@@ -510,6 +738,7 @@ export class GithubApiService {
             octokit,
             credential.accountLogin,
             ghConfig,
+            search,
             orgs,
             errors,
           );
@@ -517,6 +746,7 @@ export class GithubApiService {
           resp = await this.addGithubTokenOrgs(
             octokit,
             credential,
+            search,
             orgs,
             errors,
             pageNumber,
@@ -541,6 +771,7 @@ export class GithubApiService {
 
   async getOrgRepositoriesFromIntegrations(
     orgName: string,
+    search?: string,
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
   ): Promise<GithubRepositoryResponse> {
@@ -550,7 +781,11 @@ export class GithubApiService {
     const repositories = new Map<string, GithubRepository>();
     const errors = new Map<number, GithubFetchError>();
     let totalCount = 0;
+    let orgFetched = false;
     for (const [ghConfig, credentials] of credentialsByConfig) {
+      if (orgFetched) {
+        break;
+      }
       this.logger.debug(
         `Got ${credentials.length} credential(s) for ${ghConfig.host}`,
       );
@@ -570,10 +805,14 @@ export class GithubApiService {
           resp = await this.addGithubAppRepositories(
             octokit,
             credential,
+            ghConfig,
             repositories,
             errors,
-            pageNumber,
-            pageSize,
+            {
+              search,
+              pageNumber,
+              pageSize,
+            },
           );
         } else {
           resp = await this.addGithubTokenOrgRepositories(
@@ -582,10 +821,14 @@ export class GithubApiService {
             orgName,
             repositories,
             errors,
-            pageNumber,
-            pageSize,
+            {
+              search,
+              pageNumber,
+              pageSize,
+            },
           );
         }
+        orgFetched = true;
         this.logger.debug(
           `Got ${resp.totalCount} org repo(s) for ${ghConfig.host}`,
         );
@@ -607,6 +850,7 @@ export class GithubApiService {
    *   - a list of errors encountered by each app and/or token (if any exist)
    */
   async getRepositoriesFromIntegrations(
+    search?: string,
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
   ): Promise<GithubRepositoryResponse> {
@@ -634,10 +878,14 @@ export class GithubApiService {
           resp = await this.addGithubAppRepositories(
             octokit,
             credential,
+            ghConfig,
             repositories,
             errors,
-            pageNumber,
-            pageSize,
+            {
+              search,
+              pageNumber,
+              pageSize,
+            },
           );
         } else {
           resp = await this.addGithubTokenRepositories(
@@ -645,8 +893,11 @@ export class GithubApiService {
             credential,
             repositories,
             errors,
-            pageNumber,
-            pageSize,
+            {
+              search,
+              pageNumber,
+              pageSize,
+            },
           );
         }
         this.logger.debug(
@@ -1242,10 +1493,12 @@ export class GithubApiService {
     ) {
       return undefined;
     }
-    return new Octokit({
+    const octokit = new Octokit({
       baseUrl: apiBaseUrl,
       auth: input.credential.token,
     });
+    this.registerHooks(octokit);
+    return octokit;
   }
 
   private async closePRWithComment(

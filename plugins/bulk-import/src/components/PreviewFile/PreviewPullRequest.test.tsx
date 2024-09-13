@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useAsync } from 'react-use';
 
 import { configApiRef } from '@backstage/core-plugin-api';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -8,10 +7,9 @@ import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 
-import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
-import { mockGetImportJobs, mockGetRepositories } from '../../mocks/mockData';
+import { mockGetRepositories } from '../../mocks/mockData';
 import { mockEntities } from '../../mocks/mockEntities';
-import { ApprovalTool, ImportJobStatus, RepositoryStatus } from '../../types';
+import { ApprovalTool, RepositoryStatus } from '../../types';
 import { getPRTemplate } from '../../utils/repository-utils';
 import { PreviewPullRequest } from './PreviewPullRequest';
 
@@ -25,29 +23,11 @@ jest.mock('formik', () => ({
   useFormikContext: jest.fn(),
 }));
 
-jest.mock('react-use', () => ({
-  ...jest.requireActual('react-use'),
-  useAsync: jest.fn().mockReturnValue({ loading: false }),
-}));
-
-class MockBulkImportApi {
-  async getImportAction(
-    repo: string,
-    _defaultBranch: string,
-  ): Promise<ImportJobStatus | Response> {
-    return mockGetImportJobs.find(
-      i => i.repository.url === repo,
-    ) as ImportJobStatus;
-  }
-}
-
 const setState = jest.fn();
 
 beforeEach(() => {
   (useState as jest.Mock).mockImplementation(initial => [initial, setState]);
 });
-
-const mockBulkImportApi = new MockBulkImportApi();
 
 const mockCatalogApi: Partial<CatalogApi> = {
   getEntities: jest.fn().mockReturnValue(mockEntities),
@@ -93,7 +73,6 @@ describe('Preview Pull Request', () => {
             }),
           ],
           [catalogApiRef, mockCatalogApi],
-          [bulkImportApiRef, mockBulkImportApi],
         ]}
       >
         <PreviewPullRequest
@@ -107,6 +86,7 @@ describe('Preview Pull Request', () => {
               'user:default/guest',
               'https://localhost:3001',
               'https://github.com/org/dessert/cupcake',
+              'main',
             ),
           }}
           setFormErrors={() => jest.fn()}
@@ -162,7 +142,6 @@ describe('Preview Pull Request', () => {
             }),
           ],
           [catalogApiRef, mockCatalogApi],
-          [bulkImportApiRef, mockBulkImportApi],
         ]}
       >
         <PreviewPullRequest
@@ -176,6 +155,7 @@ describe('Preview Pull Request', () => {
               'user:default/guest',
               'https://localhost:3001',
               'https://github.com/org/dessert/cupcake',
+              'main',
             ),
           }}
           setFormErrors={() => jest.fn()}
@@ -192,16 +172,6 @@ describe('Preview Pull Request', () => {
   });
 
   it('should show PR link in the info if the job has a PR waiting for approval', async () => {
-    (useAsync as jest.Mock).mockReturnValue({
-      loading: false,
-      value: {
-        github: {
-          pullRequest: {
-            url: 'https://github.com/org/dessert/cupcake',
-          },
-        },
-      },
-    });
     (useFormikContext as jest.Mock).mockReturnValue({
       errors: {},
       status: {},
@@ -227,7 +197,6 @@ describe('Preview Pull Request', () => {
             }),
           ],
           [catalogApiRef, mockCatalogApi],
-          [bulkImportApiRef, mockBulkImportApi],
         ]}
       >
         <PreviewPullRequest
@@ -235,13 +204,17 @@ describe('Preview Pull Request', () => {
           repoUrl="https://github.com/org/dessert/cupcake"
           repoBranch="main"
           pullRequest={{
-            'org/dessert/cupcake': getPRTemplate(
-              'org/dessert/cupcake',
-              'org/dessert',
-              'user:default/guest',
-              'https://localhost:3001',
-              'https://github.com/org/dessert/cupcake',
-            ),
+            'org/dessert/cupcake': {
+              ...getPRTemplate(
+                'org/dessert/cupcake',
+                'org/dessert',
+                'user:default/guest',
+                'https://localhost:3001',
+                'https://github.com/org/dessert/cupcake',
+                'main',
+              ),
+              pullRequestUrl: 'https://github.com/org/dessert/cupcake/pulls/9',
+            },
           }}
           setFormErrors={() => jest.fn()}
           formErrors={{}}
@@ -249,6 +222,68 @@ describe('Preview Pull Request', () => {
         />
       </TestApiProvider>,
     );
+    expect(getByTestId('pull-request-info')).toBeInTheDocument();
+  });
+
+  it('should show an info if entity YAML is invalid', async () => {
+    (useFormikContext as jest.Mock).mockReturnValue({
+      errors: {},
+      status: {
+        infos: {
+          ['org/dessert/cupcake']: {
+            error: { message: ['invalid entity YAML'] },
+          },
+        },
+      },
+      values: {
+        repositories: {
+          'org/dessert/cupcake': mockGetRepositories.repositories[0],
+        },
+        approvalTool: ApprovalTool.Git,
+      },
+    });
+
+    const { getByTestId, getByText } = render(
+      <TestApiProvider
+        apis={[
+          [
+            configApiRef,
+            new MockConfigApi({
+              catalog: {
+                import: {
+                  entityFilename: 'test.yaml',
+                },
+              },
+            }),
+          ],
+          [catalogApiRef, mockCatalogApi],
+        ]}
+      >
+        <PreviewPullRequest
+          repoId="org/dessert/cupcake"
+          repoUrl="https://github.com/org/dessert/cupcake"
+          repoBranch="main"
+          pullRequest={{
+            'org/dessert/cupcake': {
+              ...getPRTemplate(
+                'org/dessert/cupcake',
+                'org/dessert',
+                'user:default/guest',
+                'https://localhost:3001',
+                'https://github.com/org/dessert/cupcake',
+                'main',
+              ),
+              pullRequestUrl: 'https://github.com/org/dessert/cupcake/pulls/9',
+            },
+          }}
+          setFormErrors={() => jest.fn()}
+          formErrors={{}}
+          setPullRequest={() => jest.fn()}
+        />
+      </TestApiProvider>,
+    );
+    expect(getByTestId('other-info')).toBeInTheDocument();
+    expect(getByText('invalid entity YAML')).toBeInTheDocument();
     expect(getByTestId('pull-request-info')).toBeInTheDocument();
   });
 });

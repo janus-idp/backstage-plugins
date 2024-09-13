@@ -20,6 +20,7 @@ import {
   ImportStatus,
   JobErrors,
   Order,
+  PullRequestPreview,
   RepositorySelection,
   RepositoryStatus,
 } from '../types';
@@ -90,9 +91,10 @@ export const getPRTemplate = (
   entityOwner: string,
   baseUrl: string,
   repositoryUrl: string,
-) => {
+  defaultBranch: string,
+): PullRequestPreview => {
   const importJobUrl = repositoryUrl
-    ? `${baseUrl}/bulk-import/repositories?repository=${repositoryUrl}`
+    ? `${baseUrl}/bulk-import/repositories?repository=${repositoryUrl}&defaultBranch=${defaultBranch}`
     : `${baseUrl}/bulk-import/repositories`;
   return {
     componentName,
@@ -453,6 +455,9 @@ export const getCustomisedErrorMessage = (
       );
     }
   });
+  if (!message) {
+    message = status?.join('\n') || '';
+  }
   return { message, showRepositoryLink };
 };
 
@@ -485,20 +490,32 @@ export const calculateLastUpdated = (dateString: string) => {
   return `${diffInSeconds} ${diffInSeconds > 1 ? 'seconds' : 'second'} ago`;
 };
 
-export const evaluatePRTemplate = (repositoryStatus: ImportJobStatus) => {
-  const entity = jsyaml.load(
+export const evaluatePRTemplate = (
+  repositoryStatus: ImportJobStatus,
+): { pullReqPreview: PullRequestPreview; isInvalidEntity: boolean } => {
+  const entity = jsyaml.loadAll(
     repositoryStatus.github.pullRequest.catalogInfoContent,
-  ) as Entity;
+  )[0] as Entity;
+  const isInvalid =
+    !entity?.metadata?.name || !entity?.apiVersion || !entity?.kind;
   return {
-    prTitle: repositoryStatus.github.pullRequest.title,
-    prDescription: repositoryStatus.github.pullRequest.body,
-    prAnnotations: convertKeyValuePairsToString(entity.metadata.annotations),
-    prLabels: convertKeyValuePairsToString(entity.metadata.labels),
-    prSpec: convertKeyValuePairsToString(entity.spec as Record<string, string>),
-    componentName: entity.metadata.name,
-    entityOwner: entity.spec?.owner as string,
-    useCodeOwnersFile: !entity.spec?.owner,
-    yaml: entity,
+    pullReqPreview: {
+      pullRequestUrl: repositoryStatus.github.pullRequest.url,
+      prTitle: repositoryStatus.github.pullRequest.title,
+      prDescription: repositoryStatus.github.pullRequest.body,
+      prAnnotations: convertKeyValuePairsToString(
+        entity?.metadata?.annotations,
+      ),
+      prLabels: convertKeyValuePairsToString(entity?.metadata?.labels),
+      prSpec: convertKeyValuePairsToString(
+        entity?.spec as Record<string, string>,
+      ),
+      componentName: entity?.metadata?.name,
+      entityOwner: entity?.spec?.owner as string,
+      useCodeOwnersFile: !entity?.spec?.owner,
+      yaml: entity,
+    },
+    isInvalidEntity: isInvalid,
   };
 };
 

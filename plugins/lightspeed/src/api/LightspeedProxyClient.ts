@@ -55,7 +55,7 @@ export class LightspeedProxyClient implements LightspeedAPI {
           {
             role: 'system',
             content:
-              'You are a helpful assistant that can answer question in Red Hat Developer Hub.',
+              'You are a helpful assistant bot that can answer question in Red Hat Developer Hub.',
           },
           { role: 'user', content: prompt },
         ],

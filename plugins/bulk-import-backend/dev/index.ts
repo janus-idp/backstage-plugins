@@ -102,6 +102,9 @@ export async function startStandaloneServer(
   const identity = DefaultIdentityClient.create({
     discovery,
   });
+  const cache = CacheManager.fromConfig(config)
+    .forPlugin('bulk-import')
+    .getClient();
 
   const createEnv = makeCreateEnv(config);
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
@@ -117,6 +120,7 @@ export async function startStandaloneServer(
   const router = await createRouter({
     config,
     logger,
+    cache,
     discovery,
     permissions,
     identity,

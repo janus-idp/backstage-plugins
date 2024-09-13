@@ -21,7 +21,7 @@
  * @param size the maximum number of elements in each page
  */
 export function paginateArray<T>(
-  array: T[],
+  array: T[] | undefined,
   page: number,
   size: number,
 ): { result: T[]; totalCount: number } {
@@ -29,7 +29,7 @@ export function paginateArray<T>(
   const endIndex = startIndex + size;
 
   return {
-    result: array.slice(startIndex, endIndex),
-    totalCount: array.length,
+    result: array?.slice(startIndex, endIndex) ?? [],
+    totalCount: array?.length ?? 0,
   };
 }
