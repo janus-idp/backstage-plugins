@@ -196,24 +196,6 @@ export class SonataFlowService {
     return false;
   }
 
-  public async retriggerInstanceInError(args: {
-    definitionId: string;
-    serviceUrl: string;
-    instanceId: string;
-  }): Promise<boolean> {
-    const { definitionId, serviceUrl, instanceId } = args;
-    try {
-      const urlToFetch = `${serviceUrl}/management/processes/${definitionId}/instances/${instanceId}/retrigger`;
-      const response = await fetch(urlToFetch, {
-        method: 'POST',
-      });
-      return response.ok;
-    } catch (error) {
-      this.logger.error(`Error when retriggering workflow in error: ${error}`);
-    }
-    return false;
-  }
-
   public async updateInstanceInputData(args: {
     definitionId: string;
     serviceUrl: string;

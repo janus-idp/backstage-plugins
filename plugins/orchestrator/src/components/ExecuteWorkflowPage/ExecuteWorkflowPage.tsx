@@ -20,7 +20,6 @@ import { Grid } from '@material-ui/core';
 import {
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_ID,
-  QUERY_PARAM_INSTANCE_STATE,
   WorkflowInputSchemaResponse,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -42,9 +41,6 @@ export const ExecuteWorkflowPage = () => {
   const [instanceId] = useQueryParamState<string>(QUERY_PARAM_INSTANCE_ID);
   const [assessmentInstanceId] = useQueryParamState<string>(
     QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
-  );
-  const [instanceState] = useQueryParamState<string>(
-    QUERY_PARAM_INSTANCE_STATE,
   );
   const navigate = useNavigate();
   const instanceLink = useRouteRef(workflowInstanceRouteRef);
@@ -87,39 +83,6 @@ export const ExecuteWorkflowPage = () => {
       }
     },
     [orchestratorApi, workflowId, navigate, instanceLink, assessmentInstanceId],
-  );
-
-  const isErrorState = React.useMemo(
-    () => instanceState === 'ERROR',
-    [instanceState],
-  );
-
-  const handleRetrigger = useCallback(
-    async (getParameters: () => JsonObject) => {
-      setUpdateError(undefined);
-      let parameters: JsonObject = {};
-      try {
-        parameters = getParameters();
-      } catch (err) {
-        setUpdateError(getErrorObject(err));
-        return;
-      }
-      if (instanceId) {
-        try {
-          setIsExecuting(true);
-          const response = await orchestratorApi.retriggerInstanceInError({
-            instanceId,
-            inputData: parameters,
-          });
-          navigate(instanceLink({ instanceId: response.id }));
-        } catch (err) {
-          setUpdateError(getErrorObject(err));
-        } finally {
-          setIsExecuting(false);
-        }
-      }
-    },
-    [orchestratorApi, instanceId, navigate, instanceLink],
   );
 
   const onReset = useCallback(() => {
@@ -165,13 +128,13 @@ export const ExecuteWorkflowPage = () => {
               <StepperForm
                 steps={schemaResponse.schemaSteps}
                 isComposedSchema={schemaResponse.isComposedSchema}
-                handleExecute={isErrorState ? handleRetrigger : handleExecute}
+                handleExecute={handleExecute}
                 isExecuting={isExecuting}
                 onReset={onReset}
               />
             ) : (
               <JsonTextAreaForm
-                handleExecute={isErrorState ? handleRetrigger : handleExecute}
+                handleExecute={handleExecute}
                 isExecuting={isExecuting}
               />
             )}

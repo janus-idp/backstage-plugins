@@ -489,31 +489,6 @@ function setupInternalRoutes(
   );
 
   // v1
-  router.post('/instances/:instanceId/retrigger', async (req, res) => {
-    const desicion = await authorize(
-      req,
-      orchestratorWorkflowExecutePermission,
-      permissions,
-      httpAuth,
-    );
-    if (desicion.result === AuthorizeResult.DENY) {
-      throw new UnauthorizedError();
-    }
-    const {
-      params: { instanceId },
-    } = req;
-
-    await routerApi.v1
-      .retriggerInstanceInError(instanceId, req.body)
-      .then(result => res.status(200).json(result))
-      .catch((error: { message: string }) => {
-        res
-          .status(500)
-          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
-      });
-  });
-
-  // v1
   router.get('/workflows/:workflowId/overview', async (req, res) => {
     const desicion = await authorize(
       req,
