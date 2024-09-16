@@ -2,7 +2,8 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+
+// import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 
 import { createRouter } from './service/router';
 

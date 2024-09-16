@@ -1,5 +1,5 @@
 import { getVoidLogger } from '@backstage/backend-common';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+// import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 
 import { AIMessage } from '@langchain/core/messages';
