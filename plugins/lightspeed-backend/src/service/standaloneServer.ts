@@ -4,8 +4,6 @@ import {
 } from '@backstage/backend-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
-// import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
-
 import { Server } from 'http';
 
 import { createRouter } from './router';
@@ -34,7 +32,6 @@ export async function startStandaloneServer(
     // userInfo: mockServices.userInfo({
     //   userEntityRef: 'user1',
     // }),
-    // catalogApi: {},
   });
 
   let service = createServiceBuilder(module)

@@ -15,7 +15,7 @@ import { validateCompletionsRequest } from './validation';
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
+  const { logger, config } = options;
 
   const router = Router();
   router.use(express.json());
@@ -31,19 +31,24 @@ export async function createRouter(
       const { conversation_id, model, query, serverURL }: QueryRequestBody =
         request.body;
       try {
+        const apiToken = config
+          .getConfigArray('lightspeed.servers')[0]
+          .getOptionalString('token');
+        const url = config
+          .getConfigArray('lightspeed.servers')[0]
+          .getString('url');
         const openAIApi = new ChatOpenAI({
-          apiKey: 'sk-no-key-required', // authorization token is used
+          apiKey: apiToken || 'sk-no-key-required', // set to sk-no-key-required if api token is not provided
           model: model,
           streaming: false,
           temperature: 0,
           configuration: {
-            // bearer token should already applied in proxy header
-            // baseOptions: {
-            //   headers: {
-            //     ...(token && { Authorization: `Bearer <token>` }),
-            //   },
-            // },
-            baseURL: serverURL,
+            baseOptions: {
+              headers: {
+                ...(apiToken && { Authorization: `Bearer ${apiToken}` }),
+              },
+            },
+            baseURL: url,
           },
         });
 
