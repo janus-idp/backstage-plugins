@@ -109,13 +109,15 @@ export class GithubApiService {
   }
 
   private registerHooks(octokit: Octokit) {
-    const extractCacheKey = (options: any) => {
+    const toFinalUrl = (options: any) => {
       // options.url might contain placeholders => need to replace them with their actual values to not get colliding keys
-      const finalUrl = options.url.replace(/{([^}]+)}/g, (_: any, key: any) => {
+      return options.url.replace(/{([^}]+)}/g, (_: any, key: any) => {
         return options[key] ?? `{${key}}`; // Replace with actual value, or leave unchanged if not found
       });
-      return `${options.method}--${finalUrl}`;
     };
+
+    const extractCacheKey = (options: any) =>
+      `${options.method}--${toFinalUrl(options)}`;
 
     octokit.hook.before('request', async options => {
       const headers: any = {};
@@ -134,9 +136,9 @@ export class GithubApiService {
 
     octokit.hook.after('request', async (response, options) => {
       this.logger.debug(
-        `[GH API] ${options.method} ${options.url}: ${response.status}`,
+        `[GH API] ${options.method} ${toFinalUrl(options)}: ${response.status}`,
       );
-      // If we get a 200 OK, the resource has changed, so update the in-memory cache
+      // If we get a successful response, the resource has changed, so update the in-memory cache
       const cacheKey = extractCacheKey(options);
       await this.cache.set(
         cacheKey,
@@ -150,7 +152,7 @@ export class GithubApiService {
 
     octokit.hook.error('request', async (error: any, options) => {
       this.logger.debug(
-        `[GH API] ${options.method} ${options.url}: ${error.status}`,
+        `[GH API] ${options.method} ${toFinalUrl(options)}: ${error.status}`,
       );
       if (error.status !== 304) {
         throw error;
