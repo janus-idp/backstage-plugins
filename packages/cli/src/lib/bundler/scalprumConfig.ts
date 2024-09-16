@@ -69,6 +69,30 @@ export const sharedModules = {
     singleton: true,
     requiredVersion: '*',
   },
+  '@mui/material': {
+    singleton: true,
+    requiredVersion: '*',
+  },
+  '@mui/system': {
+    singleton: true,
+    requiredVersion: '*',
+  },
+  '@mui/private-theming': {
+    singleton: true,
+    requiredVersion: '*',
+  },
+  '@mui/styled-engine': {
+    singleton: true,
+    requiredVersion: '*',
+  },
+  '@emotion/cache': {
+    singleton: true,
+    requiredVersion: '*',
+  },
+  '@emotion/react': {
+    singleton: true,
+    requiredVersion: '*',
+  },
 };
 
 export async function createScalprumConfig(
