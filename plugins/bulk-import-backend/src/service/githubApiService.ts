@@ -109,34 +109,40 @@ export class GithubApiService {
   }
 
   private registerHooks(octokit: Octokit) {
-    const extractCacheKey = (options: any) => {
+    const toFinalUrl = (options: any) => {
       // options.url might contain placeholders => need to replace them with their actual values to not get colliding keys
-      const finalUrl = options.url.replace(/{([^}]+)}/g, (_: any, key: any) => {
+      return options.url.replace(/{([^}]+)}/g, (_: any, key: any) => {
         return options[key] ?? `{${key}}`; // Replace with actual value, or leave unchanged if not found
       });
-      return `${options.method}--${finalUrl}`;
     };
 
+    const extractCacheKey = (options: any) =>
+      `${options.method}--${toFinalUrl(options)}`;
+
     octokit.hook.before('request', async options => {
-      const headers: any = {};
+      if (!options.headers) {
+        options.headers = {
+          accept: 'application/json',
+          'user-agent': 'rhdh/bulk-import',
+        };
+      }
       // Use ETag from in-memory cache if available
       const cacheKey = extractCacheKey(options);
       const existingEtag = await this.cache
         .get(cacheKey)
-        .then(val => (val as any)?.etag);
+        ?.then(val => (val as any)?.etag);
       if (existingEtag) {
-        headers['If-None-Match'] = existingEtag;
+        options.headers['If-None-Match'] = existingEtag;
       } else {
         this.logger.debug(`cache miss for key "${cacheKey}"`);
       }
-      options.headers = headers;
     });
 
     octokit.hook.after('request', async (response, options) => {
       this.logger.debug(
-        `[GH API] ${options.method} ${options.url}: ${response.status}`,
+        `[GH API] ${options.method} ${toFinalUrl(options)}: ${response.status}`,
       );
-      // If we get a 200 OK, the resource has changed, so update the in-memory cache
+      // If we get a successful response, the resource has changed, so update the in-memory cache
       const cacheKey = extractCacheKey(options);
       await this.cache.set(
         cacheKey,
@@ -150,7 +156,7 @@ export class GithubApiService {
 
     octokit.hook.error('request', async (error: any, options) => {
       this.logger.debug(
-        `[GH API] ${options.method} ${options.url}: ${error.status}`,
+        `[GH API] ${options.method} ${toFinalUrl(options)}: ${error.status}`,
       );
       if (error.status !== 304) {
         throw error;
@@ -351,6 +357,69 @@ export class GithubApiService {
           };
         }) ?? [],
     };
+  }
+
+  async filterLocationsAccessibleFromIntegrations(
+    locationUrls: string[],
+  ): Promise<string[]> {
+    const locationGitOwnerMap = new Map<string, string>();
+    for (const locationUrl of locationUrls) {
+      const split = locationUrl.split('/blob/');
+      if (split.length < 2) {
+        continue;
+      }
+      locationGitOwnerMap.set(locationUrl, gitUrlParse(split[0]).owner);
+    }
+
+    const ghConfigs = this.verifyAndGetIntegrations();
+    const credentialsByConfig =
+      await this.getCredentialsFromIntegrations(ghConfigs);
+    const allAccessibleAppOrgs = new Set<string>();
+    const allAccessibleTokenOrgs = new Set<string>();
+    const allAccessibleUsernames = new Set<string>();
+    for (const [ghConfig, credentials] of credentialsByConfig) {
+      for (const credential of credentials) {
+        const octokit = this.buildOcto(
+          { credential, errors: undefined },
+          ghConfig.apiBaseUrl,
+        );
+        if (!octokit) {
+          continue;
+        }
+        if (isGithubAppCredential(credential)) {
+          const appOrgMap = await this.getAllAppOrgs(
+            ghConfig,
+            credential.accountLogin,
+          );
+          for (const [_, ghOrg] of appOrgMap) {
+            allAccessibleAppOrgs.add(ghOrg.name);
+          }
+        } else {
+          // find authenticated GitHub owner...
+          const username = (await octokit.rest.users.getAuthenticated())?.data
+            ?.login;
+          if (username) {
+            allAccessibleUsernames.add(username);
+          }
+          // ... along with orgs accessible from the token auth
+          (await octokit.paginate(octokit.rest.orgs.listForAuthenticatedUser))
+            ?.map(org => org.login)
+            ?.forEach(orgName => allAccessibleTokenOrgs.add(orgName));
+        }
+      }
+    }
+
+    return locationUrls.filter(loc => {
+      if (!locationGitOwnerMap.has(loc)) {
+        return false;
+      }
+      const owner = locationGitOwnerMap.get(loc)!;
+      return (
+        allAccessibleAppOrgs.has(owner) ||
+        allAccessibleTokenOrgs.has(owner) ||
+        allAccessibleUsernames.has(owner)
+      );
+    });
   }
 
   /**

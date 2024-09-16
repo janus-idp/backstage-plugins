@@ -174,6 +174,7 @@ describe('createRouter', () => {
       getEntitiesByRefs: mockGetEntitiesByRefs,
       validateEntity: mockValidateEntity,
       addLocation: mockAddLocation,
+      getEntities: jest.fn(),
       queryEntities: jest.fn(),
       refreshEntity: jest.fn(),
     } as unknown as CatalogClient;
@@ -966,6 +967,15 @@ describe('createRouter', () => {
         )
         .mockResolvedValue(fromLocationsEndpoint);
       jest
+        .spyOn(
+          mockGithubApiService,
+          'filterLocationsAccessibleFromIntegrations',
+        )
+        .mockImplementation((locationUrls: string[]) => {
+          // filter returning the same input
+          return Promise.resolve(locationUrls);
+        });
+      jest
         .spyOn(mockGithubApiService, 'getRepositoryFromIntegrations')
         .mockImplementation(repoUrl => {
           let defaultBranch: string | undefined;
@@ -1053,7 +1063,7 @@ describe('createRouter', () => {
                   },
                 },
               ],
-              totalItems: 0,
+              totalItems: 1,
               pageInfo: {},
             };
           },
@@ -1250,7 +1260,7 @@ describe('createRouter', () => {
                   },
                 },
               ],
-              totalItems: 0,
+              totalItems: 1,
               pageInfo: {},
             };
           },
@@ -1358,7 +1368,7 @@ spec:
               ],
             };
           }
-          return { items: [] };
+          return { totalItems: 0, items: [] };
         },
       );
 

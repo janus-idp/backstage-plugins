@@ -80,11 +80,17 @@ export async function findAllImports(
     catalogFilename,
   );
 
+  // Keep only repos that are accessible from the configured GH integrations
+  const importsReachableFromGHIntegrations =
+    await githubApiService.filterLocationsAccessibleFromIntegrations(
+      importCandidates,
+    );
+
   // now fetch the import statuses in different promises
   const importStatusPromises: Promise<
     HandlerResponse<Components.Schemas.Import>
   >[] = [];
-  for (const loc of importCandidates) {
+  for (const loc of importsReachableFromGHIntegrations) {
     const repoUrl = repoUrlFromLocation(loc);
     if (!repoUrl) {
       continue;
