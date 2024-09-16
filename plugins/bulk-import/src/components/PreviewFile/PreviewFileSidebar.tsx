@@ -77,7 +77,7 @@ export const PreviewFileSidebar = ({
         ...status,
         errors: {
           ...(status?.errors || {}),
-          [data.id]: {
+          [id]: {
             error: {
               title: (result as Response)?.statusText,
               message: [
@@ -124,6 +124,7 @@ export const PreviewFileSidebar = ({
         });
         pullReqPreview = {
           ...prTemp,
+          pullRequestUrl: pullReqPreview.pullRequestUrl || '',
           prDescription: pullReqPreview.prDescription || '',
           prTitle: pullReqPreview.prTitle || '',
         };

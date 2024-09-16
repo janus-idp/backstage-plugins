@@ -117,7 +117,10 @@ describe('Add Repositories Table', () => {
     mockUseRepositories.mockReturnValue({
       loading: false,
       data: {
-        repositories: mockGetRepositories.repositories,
+        repositories: mockGetRepositories.repositories.reduce(
+          (acc, r) => ({ ...acc, [r.id]: r }),
+          {},
+        ),
         totalRepositories: 10,
         totalOrganizations: 0,
       },
@@ -154,7 +157,10 @@ describe('Add Repositories Table', () => {
     mockUseRepositories.mockReturnValue({
       loading: false,
       data: {
-        organizations: mockGetOrganizations.organizations,
+        organizations: mockGetOrganizations.organizations.reduce(
+          (acc, r) => ({ ...acc, [r.id]: r }),
+          {},
+        ),
         totalOrganizations: 3,
         totalRepositories: 0,
       },

@@ -199,6 +199,7 @@ test.describe('Bulk import plugin', () => {
     await page
       .locator('input[aria-label="search-in-organization"]')
       .fill('eclair');
+    await page.waitForTimeout(2000);
     await page.click('input[type="checkbox"]');
     await expect(
       page.getByRole('heading', { name: 'Selected repositories (3)' }),
@@ -224,6 +225,7 @@ test.describe('Bulk import plugin', () => {
     await page.getByPlaceholder('Search').clear();
 
     await page.getByPlaceholder('Search').fill('org/pet-store-boston');
+    await page.waitForTimeout(2000);
     await page.locator('a[data-testid="preview-file"]').click();
     await expect(
       page

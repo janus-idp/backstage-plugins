@@ -19,9 +19,9 @@ jest.mock('formik', () => ({
 
 describe('useAddedRepositories', () => {
   it('should return import jobs', async () => {
-    const { result } = renderHook(() => useAddedRepositories(1, 5));
+    const { result } = renderHook(() => useAddedRepositories(1, 5, ''));
     await waitFor(() => {
-      expect(result.current.loading).toBeFalsy();
+      expect(result.current.loaded).toBeTruthy();
       expect(result.current.data).toHaveLength(4);
     });
   });

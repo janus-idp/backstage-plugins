@@ -34,12 +34,15 @@ export const RepositoryTableRow = ({
   const classes = useStyles();
   const bulkImportApi = useApi(bulkImportApiRef);
   const { value, loading } = useAsync(async () => {
-    const result = await bulkImportApi.getImportAction(
-      data.repoUrl || '',
-      data?.defaultBranch || 'main',
-    );
-    return result;
-  });
+    if (data.repoUrl) {
+      const result = await bulkImportApi.getImportAction(
+        data.repoUrl,
+        data?.defaultBranch || 'main',
+      );
+      return result;
+    }
+    return null;
+  }, [data.repoUrl]);
 
   return (
     <TableRow
