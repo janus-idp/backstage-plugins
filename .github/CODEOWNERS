@@ -38,7 +38,8 @@ yarn.lock                    @janus-idp/maintainers-plugins
 /plugins/analytics-module-matomo            @janus-idp/maintainers-plugins @janus-idp/devex-uxe
 /plugins/kiali                              @janus-idp/maintainers-plugins @janus-idp/kiali
 /plugins/kiali-backend                      @janus-idp/maintainers-plugins @janus-idp/kiali
-/plugins/lightspeed                         @janus-idp/maintainers-plugins @rohitkrai03
+/plugins/lightspeed                         @janus-idp/maintainers-plugins @rohitkrai03 @yangcao77
+/plugins/lightspeed-backend                 @janus-idp/maintainers-plugins @rohitkrai03 @yangcao77
 /plugins/quay                               @janus-idp/rhtap
 /plugins/tekton                             @janus-idp/rhtap
 /plugins/argocd                             @janus-idp/rhtap
