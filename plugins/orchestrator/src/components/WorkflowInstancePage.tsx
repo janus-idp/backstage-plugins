@@ -12,13 +12,18 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 
-import { Button, Grid, Tooltip } from '@material-ui/core';
+import {
+  Button,
+  createStyles,
+  Grid,
+  makeStyles,
+  Theme,
+} from '@material-ui/core';
 
 import {
   AssessedProcessInstance,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_ID,
-  QUERY_PARAM_INSTANCE_STATE,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../api';
@@ -71,11 +76,24 @@ const AbortAlertDialogActions = (props: AbortAlertDialogActionsProps) => (
   </Button>
 );
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    abortButton: {
+      backgroundColor: theme.palette.error.main,
+      color: theme.palette.getContrastText(theme.palette.error.main),
+      '&:hover': {
+        backgroundColor: theme.palette.error.dark,
+      },
+    },
+  }),
+);
+
 export const WorkflowInstancePage = ({
   instanceId,
 }: {
   instanceId?: string;
 }) => {
+  const classes = useStyles();
   const navigate = useNavigate();
   const orchestratorApi = useApi(orchestratorApiRef);
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
@@ -114,9 +132,13 @@ export const WorkflowInstancePage = ({
 
   const canAbort = value?.instance.state === 'ACTIVE' || isErrorState;
 
-  const canRerun =
-    value?.instance.state === 'COMPLETED' ||
-    value?.instance.state === 'ABORTED';
+  const canRerun = React.useMemo(
+    () =>
+      value?.instance.state === 'COMPLETED' ||
+      value?.instance.state === 'ABORTED' ||
+      value?.instance.state === 'ERROR',
+    [value],
+  );
 
   const toggleAbortConfirmationDialog = () => {
     setIsAbortConfirmationDialogOpen(!isAbortConfirmationDialogOpen);
@@ -150,15 +172,9 @@ export const WorkflowInstancePage = ({
     const urlToNavigate = buildUrl(routeUrl, {
       [QUERY_PARAM_INSTANCE_ID]: value.instance.id,
       [QUERY_PARAM_ASSESSMENT_INSTANCE_ID]: value.assessedBy?.id,
-      [QUERY_PARAM_INSTANCE_STATE]: value.instance.state,
     });
     navigate(urlToNavigate);
   }, [value, navigate, executeWorkflowLink]);
-
-  // Extracted to simplify backport
-  const retriggerTooltip =
-    'Resume the workflow from the error stage, continuing with the same instance.';
-  const isRetriggerDisabled = true;
 
   return (
     <BaseOrchestratorPage
@@ -197,43 +213,26 @@ export const WorkflowInstancePage = ({
               }
             />
             <Grid container item justifyContent="flex-end" spacing={1}>
-              {isErrorState && (
-                <Grid item>
-                  <Tooltip title={retriggerTooltip}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disabled={isRetriggerDisabled}
-                      onClick={handleRerun}
-                    >
-                      Retry from error
-                    </Button>
-                  </Tooltip>
-                </Grid>
-              )}
-              {canAbort && (
-                <Grid item>
-                  <Button
-                    variant="contained"
-                    color={isErrorState ? 'secondary' : 'primary'}
-                    onClick={toggleAbortConfirmationDialog}
-                  >
-                    Abort
-                  </Button>
-                </Grid>
-              )}
-
-              {canRerun && (
-                <Grid item>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleRerun}
-                  >
-                    Rerun
-                  </Button>
-                </Grid>
-              )}
+              <Grid item>
+                <Button
+                  variant="contained"
+                  disabled={!canAbort}
+                  onClick={toggleAbortConfirmationDialog}
+                  className={classes.abortButton}
+                >
+                  Abort
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={!canRerun}
+                  onClick={handleRerun}
+                >
+                  Rerun
+                </Button>
+              </Grid>
             </Grid>
           </ContentHeader>
           <WorkflowInstancePageContent assessedInstance={value} />
