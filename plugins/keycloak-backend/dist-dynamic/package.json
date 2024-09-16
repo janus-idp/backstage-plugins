@@ -27,14 +27,10 @@
   },
   "scripts": {},
   "dependencies": {
+    "inclusion": "^1.0.1",
     "lodash": "^4.17.21",
-    "uuid": "^9.0.1",
-    "axios": "^0.26.1",
-    "camelize-ts": "^1.0.8",
-    "keycloak-js": "^17.0.1",
-    "query-string": "^7.0.1",
-    "url-join": "^4.0.0",
-    "url-template": "^2.0.8"
+    "pg-format": "^1.0.4",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {},
   "files": [
@@ -66,12 +62,12 @@
   "bundleDependencies": true,
   "peerDependencies": {
     "@backstage/backend-common": "^0.23.3",
+    "@backstage/backend-dynamic-feature-service": "^0.2.15",
     "@backstage/backend-plugin-api": "^0.7.0",
     "@backstage/backend-tasks": "^0.5.27",
     "@backstage/catalog-model": "^1.5.0",
     "@backstage/config": "^1.2.0",
-    "@backstage/plugin-catalog-node": "^1.12.4",
-    "@backstage/backend-dynamic-feature-service": "^0.2.15"
+    "@backstage/plugin-catalog-node": "^1.12.4"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {
