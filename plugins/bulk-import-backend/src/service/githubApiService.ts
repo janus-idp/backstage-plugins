@@ -359,6 +359,69 @@ export class GithubApiService {
     };
   }
 
+  async filterLocationsAccessibleFromIntegrations(
+    locationUrls: string[],
+  ): Promise<string[]> {
+    const locationGitOwnerMap = new Map<string, string>();
+    for (const locationUrl of locationUrls) {
+      const split = locationUrl.split('/blob/');
+      if (split.length < 2) {
+        continue;
+      }
+      locationGitOwnerMap.set(locationUrl, gitUrlParse(split[0]).owner);
+    }
+
+    const ghConfigs = this.verifyAndGetIntegrations();
+    const credentialsByConfig =
+      await this.getCredentialsFromIntegrations(ghConfigs);
+    const allAccessibleAppOrgs = new Set<string>();
+    const allAccessibleTokenOrgs = new Set<string>();
+    const allAccessibleUsernames = new Set<string>();
+    for (const [ghConfig, credentials] of credentialsByConfig) {
+      for (const credential of credentials) {
+        const octokit = this.buildOcto(
+          { credential, errors: undefined },
+          ghConfig.apiBaseUrl,
+        );
+        if (!octokit) {
+          continue;
+        }
+        if (isGithubAppCredential(credential)) {
+          const appOrgMap = await this.getAllAppOrgs(
+            ghConfig,
+            credential.accountLogin,
+          );
+          for (const [_, ghOrg] of appOrgMap) {
+            allAccessibleAppOrgs.add(ghOrg.name);
+          }
+        } else {
+          // find authenticated GitHub owner...
+          const username = (await octokit.rest.users.getAuthenticated())?.data
+            ?.login;
+          if (username) {
+            allAccessibleUsernames.add(username);
+          }
+          // ... along with orgs accessible from the token auth
+          (await octokit.paginate(octokit.rest.orgs.listForAuthenticatedUser))
+            ?.map(org => org.login)
+            ?.forEach(orgName => allAccessibleTokenOrgs.add(orgName));
+        }
+      }
+    }
+
+    return locationUrls.filter(loc => {
+      if (!locationGitOwnerMap.has(loc)) {
+        return false;
+      }
+      const owner = locationGitOwnerMap.get(loc)!;
+      return (
+        allAccessibleAppOrgs.has(owner) ||
+        allAccessibleTokenOrgs.has(owner) ||
+        allAccessibleUsernames.has(owner)
+      );
+    });
+  }
+
   /**
    * Adds the repositories accessible by the provided github app to the provided repositories Map<string, GithubRepository>
    * If any errors occurs, adds them to the provided errors Map<number, GithubFetchError>
