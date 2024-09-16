@@ -16,6 +16,7 @@
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
+import { LocationEntity } from '@backstage/catalog-model';
 import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
@@ -134,12 +135,13 @@ ${jsYaml.dump(generatedEntity.entity)}`,
   async listCatalogUrlLocationsById(
     config: Config,
     search?: string,
-    _pageNumber: number = DefaultPageNumber,
-    _pageSize: number = DefaultPageSize,
+    pageNumber: number = DefaultPageNumber,
+    pageSize: number = DefaultPageSize,
   ): Promise<{ id?: string; target: string }[]> {
     const result = await Promise.all([
       this.listCatalogUrlLocationsFromConfig(config, search),
       this.listCatalogUrlLocationsByIdFromLocationsEndpoint(search),
+      this.listCatalogUrlLocationEntitiesById(search, pageNumber, pageSize),
     ]);
     return result.flat();
   }
@@ -191,6 +193,39 @@ ${jsYaml.dump(generatedEntity.entity)}`,
         return {
           id: `app-config-location--${target}`,
           target,
+        };
+      });
+    return this.filterLocations(res, search);
+  }
+
+  async listCatalogUrlLocationEntitiesById(
+    search?: string,
+    _pageNumber: number = DefaultPageNumber,
+    _pageSize: number = DefaultPageSize,
+  ): Promise<{ id?: string; target: string }[]> {
+    const result = await this.catalogApi.getEntities(
+      {
+        filter: {
+          kind: 'Location',
+        },
+        // There is no query parameter to find entities with target URLs containing a string.
+        // The existing filter does an exact matching. That's why we are retrieving this hard-coded high number of Locations.
+        limit: 1000,
+        offset: 0,
+      },
+      {
+        token: await getTokenForPlugin(this.auth, 'catalog'),
+      },
+    );
+    const locations = (result?.items ?? []) as LocationEntity[];
+    const res = locations
+      .filter(
+        location => location.spec?.target && location.spec?.type === 'url',
+      )
+      .map(location => {
+        return {
+          id: location.metadata.uid,
+          target: location.spec.target!,
         };
       });
     return this.filterLocations(res, search);
