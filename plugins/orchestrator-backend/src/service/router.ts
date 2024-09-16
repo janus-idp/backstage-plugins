@@ -223,7 +223,7 @@ async function initRouterApi(
     },
   });
   await openApiBackend.init();
-  const v1 = new V1(orchestratorService);
+  const v1 = new V1();
   const v2 = new V2(orchestratorService);
   return { v1, v2, openApiBackend };
 }
@@ -909,44 +909,6 @@ function setupInternalRoutes(
         });
     },
   );
-
-  // v1
-  router.post('/instances/:instanceId/retrigger', async (req, res) => {
-    const {
-      params: { instanceId },
-    } = req;
-    const endpointName = 'InstancesInstanceIdRetrigger';
-    const endpoint = `/v1/instances/${instanceId}/retrigger`;
-
-    auditLogger.auditLog({
-      eventName: endpointName,
-      stage: 'start',
-      status: 'succeeded',
-      level: 'debug',
-      request: req,
-      message: `Received request to '${endpoint}' endpoint`,
-    });
-
-    const decision = await authorize(
-      req,
-      orchestratorWorkflowExecutePermission,
-      permissions,
-      httpAuth,
-    );
-    if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint, req);
-    }
-
-    await routerApi.v1
-      .retriggerInstanceInError(instanceId, req.body)
-      .then(result => res.status(200).json(result))
-      .catch((error: { message: string }) => {
-        auditLogRequestError(error, endpointName, endpoint, req);
-        res
-          .status(500)
-          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
-      });
-  });
 }
 
 // ======================================================
