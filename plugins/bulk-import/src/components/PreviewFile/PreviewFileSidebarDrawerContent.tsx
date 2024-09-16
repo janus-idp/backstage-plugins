@@ -59,7 +59,7 @@ const useDrawerContentStyles = makeStyles(theme => ({
     bottom: 0,
     paddingLeft: '24px',
     paddingBottom: '24px',
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.type === 'light' ? '#fff' : '#1b1d21',
     width: '100%',
     borderTopStyle: 'groove',
     border: theme.palette.divider,

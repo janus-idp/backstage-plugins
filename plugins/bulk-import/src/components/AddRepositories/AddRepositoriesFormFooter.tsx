@@ -35,7 +35,10 @@ const useStyles = makeStyles(theme => ({
     paddingTop: '24px',
     paddingBottom: '24px',
     paddingLeft: '24px',
-    backgroundColor: theme.palette.background.default,
+    backgroundColor:
+      theme.palette.type === 'light'
+        ? '#fff'
+        : theme.palette.navigation.background,
     width: '100%',
     borderTopStyle: 'groove',
     border: theme.palette.divider,
