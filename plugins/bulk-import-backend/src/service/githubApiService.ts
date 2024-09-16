@@ -120,18 +120,22 @@ export class GithubApiService {
       `${options.method}--${toFinalUrl(options)}`;
 
     octokit.hook.before('request', async options => {
-      const headers: any = {};
+      if (!options.headers) {
+        options.headers = {
+          accept: 'application/json',
+          'user-agent': 'rhdh/bulk-import',
+        };
+      }
       // Use ETag from in-memory cache if available
       const cacheKey = extractCacheKey(options);
       const existingEtag = await this.cache
         .get(cacheKey)
-        .then(val => (val as any)?.etag);
+        ?.then(val => (val as any)?.etag);
       if (existingEtag) {
-        headers['If-None-Match'] = existingEtag;
+        options.headers['If-None-Match'] = existingEtag;
       } else {
         this.logger.debug(`cache miss for key "${cacheKey}"`);
       }
-      options.headers = headers;
     });
 
     octokit.hook.after('request', async (response, options) => {
