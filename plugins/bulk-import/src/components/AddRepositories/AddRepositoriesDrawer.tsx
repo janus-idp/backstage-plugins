@@ -101,6 +101,7 @@ export const AddRepositoriesDrawer = ({
       open={open}
       variant="temporary"
       className={classes.drawerPaper}
+      onClose={onClose}
     >
       <Container className={classes.drawerContainer}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>

@@ -25,7 +25,9 @@ describe('useRepositories', () => {
     );
     await waitFor(() => {
       expect(result.current.loading).toBeFalsy();
-      expect(result.current.data?.repositories).toHaveLength(10);
+      expect(
+        Object.values(result.current.data?.repositories || {}).length,
+      ).toBe(10);
     });
   });
 
@@ -38,7 +40,9 @@ describe('useRepositories', () => {
     );
     await waitFor(() => {
       expect(result.current.loading).toBeFalsy();
-      expect(result.current.data?.organizations).toHaveLength(3);
+      expect(
+        Object.values(result.current.data?.organizations || {}).length,
+      ).toBe(3);
     });
   });
 
@@ -56,7 +60,9 @@ describe('useRepositories', () => {
     );
     await waitFor(() => {
       expect(result.current.loading).toBeFalsy();
-      expect(result.current.data?.repositories).toHaveLength(7);
+      expect(
+        Object.values(result.current.data?.repositories || {}).length,
+      ).toBe(7);
     });
   });
 });

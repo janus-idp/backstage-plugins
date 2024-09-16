@@ -30,15 +30,15 @@ export const RepositoriesList = () => {
   const { openDrawer, setOpenDrawer, drawerData } = useDrawer();
   const [pageNumber, setPageNumber] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [isMounted, setIsMounted] = React.useState(false);
+  const [searchString, setSearchString] = React.useState('');
   const classes = useStyles();
 
   const {
     data: importJobs,
     error: errJobs,
-    loading: loadingJobs,
+    loaded: jobsLoaded,
     retry,
-  } = useAddedRepositories(pageNumber + 1, rowsPerPage);
+  } = useAddedRepositories(pageNumber + 1, rowsPerPage, searchString);
 
   const closeDialog = () => {
     setOpenDialog(false);
@@ -55,12 +55,6 @@ export const RepositoriesList = () => {
     setOpenDrawer(false);
   };
 
-  React.useEffect(() => {
-    if (!isMounted && !loadingJobs) {
-      setIsMounted(true);
-    }
-  }, [loadingJobs, isMounted]);
-
   if (Object.keys(errJobs || {}).length > 0) {
     return <ErrorPage status={errJobs.name} statusMessage={errJobs.message} />;
   }
@@ -69,6 +63,9 @@ export const RepositoriesList = () => {
     <>
       <RepositoriesListToolbar />
       <Table
+        onSearchChange={(search: string) => {
+          setSearchString(search);
+        }}
         onPageChange={(page: number, pageSize: number) => {
           setPageNumber(page);
           setRowsPerPage(pageSize);
@@ -77,13 +74,13 @@ export const RepositoriesList = () => {
           setRowsPerPage(pageSize);
         }}
         title={
-          (loadingJobs && !isMounted) || !importJobs
+          !jobsLoaded || !importJobs
             ? 'Added repositories'
             : `Added repositories (${importJobs.length})`
         }
         options={{ padding: 'default', search: true, paging: true }}
         data={importJobs ?? []}
-        isLoading={loadingJobs && !isMounted}
+        isLoading={!jobsLoaded}
         columns={columns}
         emptyContent={
           <div

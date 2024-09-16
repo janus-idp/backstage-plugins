@@ -34,10 +34,16 @@ const EditCatalogInfo = ({
   const bulkImportApi = useApi(bulkImportApiRef);
   const { setSubmitting, setStatus, isSubmitting } =
     useFormikContext<AddRepositoriesFormValues>();
-
-  const yamlContent = yaml.loadAll(
-    importStatus?.github?.pullRequest?.catalogInfoContent,
-  )[0] as Entity;
+  let yamlContent = {} as Entity;
+  try {
+    yamlContent = yaml.loadAll(
+      importStatus?.github?.pullRequest?.catalogInfoContent,
+    )[0] as Entity;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn(e);
+    yamlContent = {} as Entity;
+  }
   const catalogEntityName = yamlContent?.metadata?.name;
   const entityOwner = yamlContent?.spec?.owner as string;
 

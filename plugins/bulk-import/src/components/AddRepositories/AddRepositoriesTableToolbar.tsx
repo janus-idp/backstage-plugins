@@ -49,6 +49,8 @@ export const AddRepositoriesTableToolbar = ({
       setFieldValue('repositoryType', type);
       onPageChange(0);
     }
+    setSearchString('');
+    setSearch('');
   };
 
   const handleSearch = (filter: string) => {

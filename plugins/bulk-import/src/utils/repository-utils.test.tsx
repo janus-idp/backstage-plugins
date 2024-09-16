@@ -4,6 +4,7 @@ import {
 } from '../mocks/mockData';
 import { ImportJobResponse, RepositoryStatus } from '../types';
 import {
+  cleanComponentName,
   componentNameRegex,
   evaluatePRTemplate,
   getJobErrors,
@@ -275,5 +276,15 @@ describe('Repository utils', () => {
     importJobStatus.github.pullRequest.catalogInfoContent =
       'kind: Component\nmetadata:\n  name: client\n  annotations:\n    github.com/project-slug: che-electron/client\nspec:\n  type: other\n  lifecycle: unknown\n  owner: user:default/debsmita1\n';
     expect(evaluatePRTemplate(importJobStatus).isInvalidEntity).toBeTruthy();
+  });
+
+  it('should clean the component name if there are any invalid characters in the string', () => {
+    expect(cleanComponentName('test-component')).toBe('test-component');
+    expect(cleanComponentName('1test-component')).toBe('1test-component');
+    expect(cleanComponentName('-component')).toBe('component');
+    expect(cleanComponentName('$component')).toBe('component');
+    expect(cleanComponentName('component$')).toBe('component');
+    expect(cleanComponentName('_component')).toBe('component');
+    expect(cleanComponentName('$,.')).toBe('my-component');
   });
 });
