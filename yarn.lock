@@ -5828,6 +5828,17 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
+"@janus-idp/backstage-plugin-audit-log-node@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-audit-log-node/-/backstage-plugin-audit-log-node-1.4.0.tgz#5fa861bd25c6073024a0935297b14f7ade68c957"
+  integrity sha512-qqxb9DzBeL9BQRk3x5QNBKRV1woHHqEEPvrNKJl56ycZv60EFDN6HHqSsPljc4LLzQc15au9RDYp9Ji5M2ZH+A==
+  dependencies:
+    "@backstage/backend-plugin-api" "^0.7.0"
+    "@backstage/errors" "^1.2.4"
+    "@backstage/types" "^1.1.1"
+    express "^4.19.2"
+    lodash "^4.17.21"
+
 "@janus-idp/cli@1.13.0":
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/@janus-idp/cli/-/cli-1.13.0.tgz#acdd10ad3239f3c8951caebd3d4611b6982036f6"
