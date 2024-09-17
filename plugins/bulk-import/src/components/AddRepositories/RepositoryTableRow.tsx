@@ -4,15 +4,21 @@ import { useAsync } from 'react-use';
 import { Link } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
+import { Checkbox, makeStyles, TableCell, TableRow } from '@material-ui/core';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import Checkbox from '@mui/material/Checkbox';
-import TableCell from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
 
 import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
 import { AddRepositoryData, RepositoryStatus } from '../../types';
 import { urlHelper } from '../../utils/repository-utils';
 import { CatalogInfoStatus } from './CatalogInfoStatus';
+
+const useStyles = makeStyles(() => ({
+  tableCellStyle: {
+    lineHeight: '1.5rem',
+    fontSize: '0.875rem',
+    padding: '15px 16px 15px 6px',
+  },
+}));
 
 export const RepositoryTableRow = ({
   handleClick,
@@ -25,19 +31,18 @@ export const RepositoryTableRow = ({
   data: AddRepositoryData;
   isDrawer?: boolean;
 }) => {
-  const tableCellStyle = {
-    lineHeight: '1.5rem',
-    fontSize: '0.875rem',
-    padding: '15px 16px 15px 6px',
-  };
+  const classes = useStyles();
   const bulkImportApi = useApi(bulkImportApiRef);
   const { value, loading } = useAsync(async () => {
-    const result = await bulkImportApi.getImportAction(
-      data.repoUrl || '',
-      data?.defaultBranch || 'main',
-    );
-    return result;
-  });
+    if (data.repoUrl) {
+      const result = await bulkImportApi.getImportAction(
+        data.repoUrl,
+        data?.defaultBranch || 'main',
+      );
+      return result;
+    }
+    return null;
+  }, [data.repoUrl]);
 
   return (
     <TableRow
@@ -47,7 +52,12 @@ export const RepositoryTableRow = ({
       key={data.id}
       selected={isItemSelected}
     >
-      <TableCell component="th" scope="row" padding="none" sx={tableCellStyle}>
+      <TableCell
+        component="th"
+        scope="row"
+        padding="none"
+        className={classes.tableCellStyle}
+      >
         <Checkbox
           disableRipple
           color="primary"
@@ -60,7 +70,7 @@ export const RepositoryTableRow = ({
         />
         {data.repoName}
       </TableCell>
-      <TableCell align="left" sx={tableCellStyle}>
+      <TableCell align="left" className={classes.tableCellStyle}>
         <Link to={data.repoUrl || ''}>
           <>
             {urlHelper(data?.repoUrl || '')}
@@ -71,7 +81,7 @@ export const RepositoryTableRow = ({
         </Link>
       </TableCell>
       {!isDrawer && (
-        <TableCell align="left" sx={tableCellStyle}>
+        <TableCell align="left" className={classes.tableCellStyle}>
           <Link to={data?.organizationUrl || ''}>
             <>
               {urlHelper(data?.organizationUrl || '')}
@@ -83,7 +93,7 @@ export const RepositoryTableRow = ({
         </TableCell>
       )}
 
-      <TableCell align="left" sx={tableCellStyle}>
+      <TableCell align="left" className={classes.tableCellStyle}>
         <CatalogInfoStatus
           data={data}
           importStatus={value?.status as string}

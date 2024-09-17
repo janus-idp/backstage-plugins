@@ -16,7 +16,7 @@ export const createAnnotatorAction = (
   actionId: string = 'catalog:annotate',
   actionDescription?: string,
   loggerInfoMsg?: string,
-  annotateEntityObject?: {
+  annotateEntityObjectProvider?: () => {
     annotations?: { [key: string]: string };
     labels?: { [key: string]: string };
     spec?: { [key: string]: Value };
@@ -86,6 +86,7 @@ export const createAnnotatorAction = (
       },
     },
     async handler(ctx) {
+      const annotateEntityObject = annotateEntityObjectProvider?.();
       let objToAnnotate: { [key: string]: any };
 
       if (ctx.input?.objectYaml) {

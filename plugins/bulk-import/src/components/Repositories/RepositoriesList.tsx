@@ -1,13 +1,16 @@
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { ErrorPage, Table } from '@backstage/core-components';
 
 import { makeStyles } from '@material-ui/core';
 
+import { useDeleteDialog, useDrawer } from '@janus-idp/shared-react';
+
 import { useAddedRepositories } from '../../hooks/useAddedRepositories';
 import { AddRepositoryData } from '../../types';
-import { useDeleteDialog } from '../DeleteDialogContext';
 import DeleteRepositoryDialog from './DeleteRepositoryDialog';
+import EditCatalogInfo from './EditCatalogInfo';
 import { columns } from './RepositoriesListColumns';
 import { RepositoriesListToolbar } from './RepositoriesListToolbar';
 
@@ -20,29 +23,37 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const RepositoriesList = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
   const { openDialog, setOpenDialog, deleteComponent } = useDeleteDialog();
+  const { openDrawer, setOpenDrawer, drawerData } = useDrawer();
   const [pageNumber, setPageNumber] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [isMounted, setIsMounted] = React.useState(false);
+  const [searchString, setSearchString] = React.useState('');
   const classes = useStyles();
 
   const {
     data: importJobs,
     error: errJobs,
-    loading: loadingJobs,
+    loaded: jobsLoaded,
     retry,
-  } = useAddedRepositories(pageNumber + 1, rowsPerPage);
+  } = useAddedRepositories(pageNumber + 1, rowsPerPage, searchString);
 
   const closeDialog = () => {
     setOpenDialog(false);
     retry();
   };
 
-  React.useEffect(() => {
-    if (!isMounted && !loadingJobs) {
-      setIsMounted(true);
-    }
-  }, [loadingJobs, isMounted]);
+  const closeDrawer = () => {
+    searchParams.delete('repository');
+    searchParams.delete('defaultBranch');
+    navigate({
+      pathname: location.pathname,
+      search: `?${searchParams.toString()}`,
+    });
+    setOpenDrawer(false);
+  };
 
   if (Object.keys(errJobs || {}).length > 0) {
     return <ErrorPage status={errJobs.name} statusMessage={errJobs.message} />;
@@ -52,6 +63,9 @@ export const RepositoriesList = () => {
     <>
       <RepositoriesListToolbar />
       <Table
+        onSearchChange={(search: string) => {
+          setSearchString(search);
+        }}
         onPageChange={(page: number, pageSize: number) => {
           setPageNumber(page);
           setRowsPerPage(pageSize);
@@ -60,13 +74,13 @@ export const RepositoriesList = () => {
           setRowsPerPage(pageSize);
         }}
         title={
-          (loadingJobs && !isMounted) || !importJobs
+          !jobsLoaded || !importJobs
             ? 'Added repositories'
             : `Added repositories (${importJobs.length})`
         }
         options={{ padding: 'default', search: true, paging: true }}
         data={importJobs ?? []}
-        isLoading={loadingJobs && !isMounted}
+        isLoading={!jobsLoaded}
         columns={columns}
         emptyContent={
           <div
@@ -77,6 +91,13 @@ export const RepositoriesList = () => {
           </div>
         }
       />
+      {openDrawer && (
+        <EditCatalogInfo
+          open={openDrawer}
+          onClose={closeDrawer}
+          importStatus={drawerData}
+        />
+      )}
       {openDialog && (
         <DeleteRepositoryDialog
           open={openDialog}

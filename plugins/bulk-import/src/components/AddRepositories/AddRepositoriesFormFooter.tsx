@@ -2,8 +2,7 @@ import React from 'react';
 
 import { Link } from '@backstage/core-components';
 
-import { makeStyles } from '@material-ui/core';
-import Button from '@mui/material/Button';
+import { Button, makeStyles } from '@material-ui/core';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import { useFormikContext } from 'formik';
@@ -36,10 +35,14 @@ const useStyles = makeStyles(theme => ({
     paddingTop: '24px',
     paddingBottom: '24px',
     paddingLeft: '24px',
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor:
+      theme.palette.type === 'light'
+        ? '#fff'
+        : theme.palette.navigation.background,
     width: '100%',
     borderTopStyle: 'groove',
     border: theme.palette.divider,
+    zIndex: 1,
   },
 }));
 
@@ -68,6 +71,7 @@ export const AddRepositoriesFormFooter = () => {
   const submitButton = (
     <Button
       variant="contained"
+      color="primary"
       onClick={handleSubmit as any}
       className={styles.createButton}
       disabled={disableCreate || isSubmitting}
@@ -80,7 +84,7 @@ export const AddRepositoriesFormFooter = () => {
   );
 
   return (
-    <div className={styles.footer}>
+    <div className={styles.footer} data-testid="add-repository-footer">
       {toolTipTitle ? (
         <Tooltip classes={{ tooltip: styles.tooltip }} title={toolTipTitle}>
           <span>{submitButton}</span>

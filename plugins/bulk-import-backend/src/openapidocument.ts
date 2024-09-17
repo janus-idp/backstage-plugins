@@ -8,7 +8,7 @@ const OPENAPI = `
   "info": {
     "version": "1.0",
     "title": "Bulk Import Backend",
-    "description": "The Bulk Import Backend APIs allow users to bulk import Backstage entities into the backstage catalog from remote sources such as Git."
+    "description": "The Bulk Import Backend APIs allow users to bulk import repositories into the Backstage catalog from remote sources such as Git."
   },
   "servers": [
     {
@@ -95,6 +95,14 @@ const OPENAPI = `
               "type": "integer",
               "default": 20
             }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "description": "returns only organizations that match the search string, by name",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -179,6 +187,14 @@ const OPENAPI = `
               "type": "integer",
               "default": 20
             }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "description": "returns only organization repositories that contain the search string, by repository name",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -254,6 +270,14 @@ const OPENAPI = `
               "type": "integer",
               "default": 20
             }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "description": "returns only repositories that contain the search string, by name",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -319,6 +343,14 @@ const OPENAPI = `
             "schema": {
               "type": "integer",
               "default": 20
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "description": "returns only Imports that contain the search string, by repository name",
+            "schema": {
+              "type": "string"
             }
           }
         ],

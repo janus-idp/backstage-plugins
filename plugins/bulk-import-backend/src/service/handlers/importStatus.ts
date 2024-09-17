@@ -80,6 +80,12 @@ async function getImportStatusWithCheckerFn(
         defaultBranch,
       });
     if (existsInCatalog && existsInRepo) {
+      // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
+      await catalogInfoGenerator.refreshLocationByRepoUrl(
+        config,
+        repoUrl,
+        defaultBranch,
+      );
       return { status: 'ADDED' };
     }
     return null;

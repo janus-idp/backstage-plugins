@@ -38,34 +38,46 @@ const mockCatalogApi = {
 
 class MockBulkImportApi implements BulkImportAPI {
   async dataFetcher(
-    _page: number,
-    _size: number,
-    options: APITypes,
+    page: number,
+    size: number,
+    searchString: string,
+    options?: APITypes,
   ): Promise<OrgAndRepoResponse> {
-    if (options.orgName) {
+    if (options?.orgName) {
       return {
         ...mockGetRepositories,
-        repositories: mockGetRepositories.repositories?.filter(r =>
-          r.id?.includes(options.orgName as string),
-        ),
+        repositories: mockGetRepositories.repositories
+          ?.filter(
+            r =>
+              r.id?.includes(options?.orgName as string) &&
+              r.repoName?.includes(searchString),
+          )
+          ?.slice((page - 1) * size, (page - 1) * size + size),
         totalCount: mockGetRepositories.repositories?.filter(r =>
           r.id?.includes(options.orgName as string),
         ).length,
       };
     }
-
-    if (options.fetchRepositories) {
-      return mockGetRepositories;
+    if (options?.fetchOrganizations) {
+      return {
+        ...mockGetOrganizations,
+        organizations: mockGetOrganizations.organizations
+          ?.filter(r => r.orgName?.includes(searchString))
+          ?.slice((page - 1) * size, (page - 1) * size + size),
+      };
     }
-    if (options.fetchOrganizations) {
-      return mockGetOrganizations;
-    }
-    return mockGetRepositories;
+    return {
+      ...mockGetRepositories,
+      repositories: mockGetRepositories.repositories
+        ?.filter(r => r.repoName?.includes(searchString))
+        ?.slice((page - 1) * size, (page - 1) * size + size),
+    };
   }
 
   async getImportJobs(
     _page: number,
     _size: number,
+    _seachString: string,
   ): Promise<ImportJobStatus[]> {
     return mockGetImportJobs;
   }
@@ -112,6 +124,9 @@ const mockPermissionApi = new MockPermissionApi();
 const mockConfigApi = new MockConfigApi({
   permission: {
     enabled: true,
+  },
+  app: {
+    baseUrl: 'https://base-url',
   },
 });
 

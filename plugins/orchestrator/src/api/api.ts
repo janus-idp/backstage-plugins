@@ -5,6 +5,7 @@ import { AxiosResponse } from 'axios';
 
 import {
   AssessedProcessInstanceDTO,
+  ExecuteWorkflowResponseDTO,
   FilterInfo,
   PaginationInfoDTO,
   ProcessInstanceListResultDTO,
@@ -16,13 +17,13 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 export interface OrchestratorApi {
-  abortWorkflowInstance(instanceId: string): Promise<void>;
+  abortWorkflowInstance(instanceId: string): Promise<AxiosResponse<string>>;
 
   executeWorkflow(args: {
     workflowId: string;
     parameters: JsonObject;
     businessKey?: string;
-  }): Promise<WorkflowExecutionResponse>;
+  }): Promise<AxiosResponse<ExecuteWorkflowResponseDTO>>;
 
   retriggerInstanceInError(args: {
     instanceId: string;
@@ -31,7 +32,7 @@ export interface OrchestratorApi {
 
   getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition>;
 
-  getWorkflowSource(workflowId: string): Promise<string>;
+  getWorkflowSource(workflowId: string): Promise<AxiosResponse<string>>;
 
   getInstance(
     instanceId: string,

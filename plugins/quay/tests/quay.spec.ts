@@ -40,7 +40,10 @@ test.describe('Quay plugin', () => {
   test('Vulnerabilities are listed', async () => {
     const severity = ['High:', 'Medium:', 'Low:'];
     for (const lvl of severity) {
-      await expect(page.getByRole('link', { name: lvl })).toBeVisible();
+      const tagWithAllVulnerabilities = await page.getByTestId(
+        'latest-linux-arm64-security-scan',
+      );
+      await expect(tagWithAllVulnerabilities).toContainText(lvl);
     }
   });
 

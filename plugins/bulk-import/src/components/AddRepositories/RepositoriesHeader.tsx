@@ -1,10 +1,12 @@
 import * as React from 'react';
 
-import Checkbox from '@mui/material/Checkbox';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
+import {
+  Checkbox,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableSortLabel,
+} from '@material-ui/core';
 
 import { Order } from '../../types';
 import { OrganizationsColumnHeader } from './OrganizationsColumnHeader';
@@ -25,7 +27,7 @@ export const RepositoriesHeader = ({
   numSelected: number;
   onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
   order: Order;
-  orderBy: string;
+  orderBy: string | undefined;
   rowCount: number;
   isDataLoading?: boolean;
   showOrganizations?: boolean;
@@ -47,13 +49,6 @@ export const RepositoriesHeader = ({
     return RepositoriesColumnHeader;
   };
 
-  const tableCellStyle = {
-    lineHeight: '1.5rem',
-    fontSize: '0.875rem',
-    padding: showOrganizations ? '15px 16px 15px 24px' : '15px 16px 15px 6px',
-    fontWeight: '700',
-  };
-
   return (
     <TableHead>
       <TableRow>
@@ -62,7 +57,14 @@ export const RepositoriesHeader = ({
             key={headCell.id as string}
             align="left"
             padding="normal"
-            sx={tableCellStyle}
+            style={{
+              lineHeight: '1.5rem',
+              fontSize: '0.875rem',
+              padding: showOrganizations
+                ? '15px 16px 15px 24px'
+                : '15px 16px 15px 6px',
+              fontWeight: '700',
+            }}
             sortDirection={orderBy === headCell.field ? order : 'asc'}
           >
             {index === 0 && !showOrganizations && (

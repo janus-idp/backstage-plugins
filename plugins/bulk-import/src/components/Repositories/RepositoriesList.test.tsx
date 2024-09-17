@@ -5,6 +5,7 @@ import { identityApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 
 import { render, screen } from '@testing-library/react';
+import { useFormikContext } from 'formik';
 
 import { useAddedRepositories } from '../../hooks';
 import { mockGetImportJobs } from '../../mocks/mockData';
@@ -84,7 +85,7 @@ jest.mock('./RepositoriesListColumns', () => ({
 }));
 
 const mockAsyncData = {
-  loading: false,
+  loaded: true,
   data: mockGetImportJobs,
   totalCount: 1,
   error: undefined,
@@ -101,6 +102,10 @@ describe('RepositoriesList', () => {
   });
 
   it('should have an add button and an Added repositories table', async () => {
+    (useFormikContext as jest.Mock).mockReturnValue({
+      status: null,
+      setFieldValue: jest.fn(),
+    });
     mockUseAddedRepositories.mockReturnValue(mockAsyncData);
     render(
       <Router>
@@ -123,6 +128,10 @@ describe('RepositoriesList', () => {
   });
 
   it('should render the component and display empty content when no data', async () => {
+    (useFormikContext as jest.Mock).mockReturnValue({
+      status: null,
+      setFieldValue: jest.fn(),
+    });
     mockUseAddedRepositories.mockReturnValue({ ...mockAsyncData, data: [] });
     render(
       <Router>
@@ -138,5 +147,27 @@ describe('RepositoriesList', () => {
     const emptyMessage = screen.getByTestId('added-repositories-table-empty');
     expect(emptyMessage).toBeInTheDocument();
     expect(emptyMessage).toHaveTextContent('No records found');
+  });
+
+  it('should display an alert if get import job api fails', async () => {
+    (useFormikContext as jest.Mock).mockReturnValue({
+      status: {
+        title: 'Not found',
+        url: 'https://xyz',
+      },
+      setFieldValue: jest.fn(),
+    });
+    mockUseAddedRepositories.mockReturnValue({ ...mockAsyncData, data: [] });
+    render(
+      <Router>
+        <TestApiProvider apis={[[identityApiRef, mockIdentityApi]]}>
+          <RepositoriesList />
+        </TestApiProvider>
+      </Router>,
+    );
+
+    expect(
+      screen.getByText('Not found https://xyz', { exact: false }),
+    ).toBeInTheDocument();
   });
 });

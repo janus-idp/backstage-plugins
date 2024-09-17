@@ -28,8 +28,10 @@ export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
       const catalogApi = new CatalogClient({
         discoveryApi: HostDiscovery.fromConfig(env.config),
       });
+      const cache = env.cache.getClient();
       return createRouter({
         ...env,
+        cache,
         catalogApi,
       });
     },
