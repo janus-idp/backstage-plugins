@@ -35,14 +35,17 @@ export class AapResourceEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
 
   static fromConfig(
-    config: Config,
-    options: {
+    deps: {
+      config: Config;
       logger: LoggerService;
-    } & (
+    },
+
+    options:
       | { schedule: SchedulerServiceTaskRunner }
-      | { scheduler: SchedulerService }
-    ),
+      | { scheduler: SchedulerService },
   ): AapResourceEntityProvider[] {
+    const { config, logger } = deps;
+
     const providerConfigs = readAapApiEntityConfigs(config);
 
     return providerConfigs.map(providerConfig => {
@@ -59,11 +62,7 @@ export class AapResourceEntityProvider implements EntityProvider {
         );
       }
 
-      return new AapResourceEntityProvider(
-        providerConfig,
-        options.logger,
-        taskRunner,
-      );
+      return new AapResourceEntityProvider(providerConfig, logger, taskRunner);
     });
   }
 
