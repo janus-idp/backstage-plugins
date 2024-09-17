@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { LoggerService, SchedulerService, SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
+import type {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -111,7 +115,9 @@ export class ManagedClusterProvider implements EntityProvider {
     await this.scheduleFn();
   }
 
-  private createScheduleFn(taskRunner: SchedulerServiceTaskRunner): () => Promise<void> {
+  private createScheduleFn(
+    taskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       return taskRunner.run({
         id: `run_ocm_refresh_${this.getProviderName()}`,
