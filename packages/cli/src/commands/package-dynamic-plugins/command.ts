@@ -142,6 +142,22 @@ COPY . .
       if (preserveTempDir) {
         Task.log(`Keeping temporary directory ${tmpDir}`);
       }
+
+      Task.log(`Successfully built image ${tag} with following plugins:`);
+      for (const plugin of pluginRegistryMetadata) {
+        Task.log(`  ${Object.keys(plugin)[0]}`);
+      }
+      Task.log(`
+Configuration example for the dynamic-plugins.yaml:
+
+packages:`);
+      for (const plugin of pluginRegistryMetadata) {
+        Task.log(`- package: oci://${tag}!${Object.keys(plugin)[0]}
+  disabled: false
+  pluginConfig:
+    # add required plugin configuration here
+`);
+      }
     } catch (err) {
       Task.error(
         `An error occurred while removing the temporary staging directory: ${err}`,
