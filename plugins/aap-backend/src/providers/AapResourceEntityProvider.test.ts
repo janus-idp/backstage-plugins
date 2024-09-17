@@ -70,9 +70,11 @@ describe('AapResourceEntityProvider', () => {
 
   it('should connect', async () => {
     const aap = AapResourceEntityProvider.fromConfig(
-      mockServices.rootConfig({ data: CONFIG }),
       {
+        config: mockServices.rootConfig({ data: CONFIG }),
         logger: mockServices.logger.mock(),
+      },
+      {
         schedule,
       },
     );
@@ -106,9 +108,11 @@ describe('AapResourceEntityProvider', () => {
     );
 
     const aap = AapResourceEntityProvider.fromConfig(
-      mockServices.rootConfig({ data: CONFIG }),
       {
+        config: mockServices.rootConfig({ data: CONFIG }),
         logger: mockServices.logger.mock(),
+      },
+      {
         schedule,
       },
     );
@@ -154,9 +158,8 @@ describe('AapResourceEntityProvider', () => {
     });
 
     const aap = AapResourceEntityProvider.fromConfig(
-      mockServices.rootConfig({ data: CONFIG }),
+      { config: mockServices.rootConfig({ data: CONFIG }), logger },
       {
-        logger,
         schedule,
       },
     );
