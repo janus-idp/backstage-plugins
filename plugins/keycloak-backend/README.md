@@ -30,8 +30,8 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
      providers:
        keycloakOrg:
          default:
-           # Remove the `/auth` if using keycloak 17+
-           baseUrl: https://<keycloak_host>/auth
+           # Add `/auth` to the baseUrl if using Keycloak versions older than 17
+           baseUrl: https://<keycloak_host>
            loginRealm: ${KEYCLOAK_REALM}
            realm: ${KEYCLOAK_REALM}
            clientId: ${KEYCLOAK_CLIENTID}
@@ -220,8 +220,8 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
      providers:
        keycloakOrg:
          default:
-           # Remove the `/auth` if using keycloak 17+
-           baseUrl: https://<keycloak_host>/auth
+           # Add `/auth` to the baseUrl if using Keycloak versions older than 17
+           baseUrl: https://<keycloak_host>
            loginRealm: ${KEYCLOAK_REALM}
            realm: ${KEYCLOAK_REALM}
            clientId: ${KEYCLOAK_CLIENTID}
@@ -309,7 +309,7 @@ The following table describes the parameters that you can configure to enable th
 
 | Name             | Description                                                                                                                    | Default Value | Required                                             |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------- | ---------------------------------------------------- |
-| `baseUrl`        | Location of the Keycloak server, such as `https://localhost:8443/auth`. Note that Keycloak 17+ omits the `/auth` context path. | ""            | Yes                                                  |
+| `baseUrl`        | Location of the Keycloak server, such as `https://localhost:8443`. Add `/auth` to the baseUrl if using Keycloak versions older than 17. | ""            | Yes                                                  |
 | `realm`          | Realm to synchronize                                                                                                           | `master`      | No                                                   |
 | `loginRealm`     | Realm used to authenticate                                                                                                     | `master`      | No                                                   |
 | `username`       | Username to authenticate                                                                                                       | ""            | Yes if using password based authentication           |
