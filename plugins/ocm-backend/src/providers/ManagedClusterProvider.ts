@@ -63,35 +63,38 @@ export class ManagedClusterProvider implements EntityProvider {
     client: CustomObjectsApi,
     hubResourceName: string,
     id: string,
-    options: { logger: LoggerService },
+    deps: { logger: LoggerService },
     owner: string,
     taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.client = client;
     this.hubResourceName = hubResourceName;
     this.id = id;
-    this.logger = options.logger;
+    this.logger = deps.logger;
     this.owner = owner;
     this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
   static fromConfig(
-    config: Config,
-    options: {
+    deps: {
+      config: Config;
       logger: LoggerService;
-      schedule?: SchedulerServiceTaskRunner;
-      scheduler?: SchedulerService;
     },
+    options:
+      | { schedule: SchedulerServiceTaskRunner }
+      | { scheduler: SchedulerService },
   ) {
+    const { config, logger } = deps;
+
     return readOcmConfigs(config).map(provider => {
-      const client = hubApiClient(provider, options.logger);
+      const client = hubApiClient(provider, logger);
       let taskRunner;
-      if (options.scheduler && provider.schedule) {
+      if ('scheduler' in options && provider.schedule) {
         // Create a scheduled task runner using the provided scheduler and schedule configuration
         taskRunner = options.scheduler.createScheduledTaskRunner(
           provider.schedule,
         );
-      } else if (options.schedule) {
+      } else if ('schedule' in options) {
         // Use the provided schedule directly
         taskRunner = options.schedule;
       } else {
@@ -104,7 +107,7 @@ export class ManagedClusterProvider implements EntityProvider {
         client,
         provider.hubResourceName,
         provider.id,
-        options,
+        deps,
         provider.owner,
         taskRunner,
       );

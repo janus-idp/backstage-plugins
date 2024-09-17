@@ -18,7 +18,6 @@ import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import {
   coreServices,
   createBackendPlugin,
-  DiscoveryService,
   HttpAuthService,
   LoggerService,
   PermissionsService,
@@ -61,20 +60,13 @@ import {
 import { createOpenApiRouter } from '../schema/openapi.generated';
 import { ManagedClusterInfo } from '../types';
 
-export interface RouterOptions {
-  logger: LoggerService;
+async function createRouter(deps: {
   config: Config;
-  discovery: DiscoveryService;
-  permissions: PermissionsService;
+  logger: LoggerService;
   httpAuth: HttpAuthService;
-}
-
-const buildRouter = async (
-  config: Config,
-  logger: LoggerService,
-  httpAuth: HttpAuthService,
-  permissions: PermissionsService,
-) => {
+  permissions: PermissionsService;
+}) {
+  const { config, logger, httpAuth, permissions } = deps;
   const router = await createOpenApiRouter();
 
   const permissionsIntegrationRouter = createPermissionIntegrationRouter({
@@ -185,14 +177,6 @@ const buildRouter = async (
 
   router.use(middleware.error());
   return router;
-};
-
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  const { logger, config, permissions, httpAuth } = options;
-
-  return await buildRouter(config, logger, httpAuth, permissions);
 }
 
 export const ocmPlugin = createBackendPlugin({
@@ -207,7 +191,7 @@ export const ocmPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
       },
       async init({ config, logger, http, httpAuth, permissions }) {
-        http.use(await buildRouter(config, logger, httpAuth, permissions));
+        http.use(await createRouter({ config, logger, httpAuth, permissions }));
       },
     });
   },

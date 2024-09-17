@@ -1,12 +1,11 @@
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
-import express from 'express';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
 
 import { handlers } from '../../__fixtures__/handlers';
-import { createRouter } from './router';
+import { ocmPlugin } from './router';
 
 const server = setupServer(...handlers);
 
@@ -14,7 +13,7 @@ beforeAll(() =>
   server.listen({
     /*
      *  This is required so that msw doesn't throw
-     *  warnings when the express app is requesting an endpoint
+     *  warnings when the backend is requesting an endpoint
      */
     onUnhandledRequest: 'bypass',
   }),
@@ -22,43 +21,35 @@ beforeAll(() =>
 afterEach(() => server.restoreHandlers());
 afterAll(() => server.close());
 
-const BASE_ROUTER_OPTIONS = {
-  logger: mockServices.logger.mock(),
-  config: mockServices.rootConfig({
-    data: {
-      catalog: {
-        providers: {
-          ocm: {
-            foo: {
-              name: 'thisishub',
-              url: 'http://localhost:5000',
-              serviceAccountToken: 'TOKEN',
-            },
+const config = mockServices.rootConfig.factory({
+  data: {
+    catalog: {
+      providers: {
+        ocm: {
+          foo: {
+            name: 'thisishub',
+            url: 'http://localhost:5000',
+            serviceAccountToken: 'TOKEN',
           },
         },
       },
     },
-  }),
-  permissions: mockServices.permissions.mock({
-    authorize: jest
-      .fn()
-      .mockImplementation(async () => [{ result: AuthorizeResult.ALLOW }]),
-  }),
-  discovery: mockServices.discovery(),
-  httpAuth: mockServices.httpAuth(),
-};
+  },
+});
 
 describe('GET /status', () => {
   it('should deny access when getting all clusters', async () => {
-    const router = await createRouter({
-      ...BASE_ROUTER_OPTIONS,
-      permissions: mockServices.permissions.mock({
-        authorize: async () => [{ result: AuthorizeResult.DENY }],
-      }),
+    const backend = await startTestBackend({
+      features: [
+        ocmPlugin,
+        config,
+        mockServices.permissions.mock({
+          authorize: async () => [{ result: AuthorizeResult.DENY }],
+        }).factory,
+      ],
     });
-    const app = express().use(router);
 
-    const result = await request(app).get('/status');
+    const result = await request(backend.server).get('/api/ocm/status');
 
     expect(result.statusCode).toBe(403);
     expect(result.body.error).toEqual({
@@ -67,10 +58,11 @@ describe('GET /status', () => {
     });
   });
   it('should get all clusters', async () => {
-    const router = await createRouter(BASE_ROUTER_OPTIONS);
-    const app = express().use(router);
+    const backend = await startTestBackend({
+      features: [ocmPlugin, config],
+    });
 
-    const result = await request(app).get('/status');
+    const result = await request(backend.server).get('/api/ocm/status');
 
     expect(result.status).toBe(200);
     expect(result.body).toEqual([
@@ -196,15 +188,19 @@ describe('GET /status', () => {
 
 describe('GET /status/:hubName/:clusterName', () => {
   it('should deny access when getting all clusters', async () => {
-    const router = await createRouter({
-      ...BASE_ROUTER_OPTIONS,
-      permissions: mockServices.permissions.mock({
-        authorize: async () => [{ result: AuthorizeResult.DENY }],
-      }),
+    const backend = await startTestBackend({
+      features: [
+        ocmPlugin,
+        config,
+        mockServices.permissions.mock({
+          authorize: async () => [{ result: AuthorizeResult.DENY }],
+        }).factory,
+      ],
     });
-    const app = express().use(router);
 
-    const result = await request(app).get('/status/foo/cluster1');
+    const result = await request(backend.server).get(
+      '/api/ocm/status/foo/cluster1',
+    );
 
     expect(result.statusCode).toBe(403);
     expect(result.body.error).toEqual({
@@ -213,10 +209,13 @@ describe('GET /status/:hubName/:clusterName', () => {
     });
   });
   it('should correctly parse a cluster', async () => {
-    const router = await createRouter(BASE_ROUTER_OPTIONS);
-    const app = express().use(router);
+    const backend = await startTestBackend({
+      features: [ocmPlugin, config],
+    });
 
-    const result = await request(app).get('/status/foo/cluster1');
+    const result = await request(backend.server).get(
+      '/api/ocm/status/foo/cluster1',
+    );
 
     expect(result.status).toBe(200);
     expect(result.body).toEqual({
@@ -251,10 +250,13 @@ describe('GET /status/:hubName/:clusterName', () => {
     });
   });
   it('should normalize the cluster name if the queried cluster is the hub', async () => {
-    const router = await createRouter(BASE_ROUTER_OPTIONS);
-    const app = express().use(router);
+    const backend = await startTestBackend({
+      features: [ocmPlugin, config],
+    });
 
-    const result = await request(app).get('/status/foo/thisishub');
+    const result = await request(backend.server).get(
+      '/api/ocm/status/foo/thisishub',
+    );
 
     expect(result.status).toBe(200);
     expect(result.body).toEqual({
@@ -288,10 +290,13 @@ describe('GET /status/:hubName/:clusterName', () => {
     });
   });
   it('should correctly parse an error while querying for non existent cluster', async () => {
-    const router = await createRouter(BASE_ROUTER_OPTIONS);
-    const app = express().use(router);
+    const backend = await startTestBackend({
+      features: [ocmPlugin, config],
+    });
 
-    const result = await request(app).get('/status/foo/non_existent_cluster');
+    const result = await request(backend.server).get(
+      '/api/ocm/status/foo/non_existent_cluster',
+    );
 
     expect(result.status).toBe(404);
     expect(result.body).toEqual({
