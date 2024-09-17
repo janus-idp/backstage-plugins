@@ -6,12 +6,15 @@
   "license": "Apache-2.0",
   "private": true,
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "pluginId": "lightspeed",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-lightspeed",
+      "@janus-idp/backstage-plugin-lightspeed-backend"
+    ]
   },
   "exports": {
     ".": "./src/index.ts",
@@ -76,7 +79,7 @@
   "configSchema": "config.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/janus-idp/backstage-plugins",
+    "url": "git+https://github.com/janus-idp/backstage-plugins.git",
     "directory": "plugins/lightspeed-backend"
   },
   "keywords": [

@@ -16,7 +16,8 @@
     "pluginId": "lightspeed",
     "pluginPackage": "@janus-idp/backstage-plugin-lightspeed",
     "pluginPackages": [
-      "@janus-idp/backstage-plugin-lightspeed"
+      "@janus-idp/backstage-plugin-lightspeed",
+      "@janus-idp/backstage-plugin-lightspeed-backend"
     ]
   },
   "sideEffects": [

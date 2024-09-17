@@ -11,7 +11,11 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "web-library"
+    "role": "web-library",
+    "pluginId": "orchestrator-form",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-orchestrator-form-react"
+    ]
   },
   "sideEffects": false,
   "scripts": {
