@@ -196,11 +196,17 @@ export const readKeycloakRealm = async (
     options?.groupQuerySize,
   )) as GroupRepresentationWithParent[];
 
-  const serverInfo = await client.serverInfo.find();
-  const serverVersion = parseInt(
-    serverInfo.systemInfo?.version?.slice(0, 2) || '',
-    10,
-  );
+  let serverVersion: number;
+
+  try {
+    const serverInfo = await client.serverInfo.find();
+    serverVersion = parseInt(
+      serverInfo.systemInfo?.version?.slice(0, 2) || '',
+      10,
+    );
+  } catch (error) {
+    throw new Error(`Failed to retrieve Keycloak server information: ${error}`);
+  }
 
   const isVersion23orHigher = serverVersion >= 23;
 
