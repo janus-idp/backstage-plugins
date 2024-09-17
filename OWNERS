@@ -1,4 +1,5 @@
 approvers:
+ - 04kash
  - AndrienkoAleksandr
  - BethGriggs
  - coreydaley
@@ -8,17 +9,15 @@ approvers:
  - gashcrumb
  - invincibleJai
  - jerolimov
+ - JessicaJHee  
  - kadel
  - kim-tsao
  - nickboldt
  - PatAKnight
  - rm3l
  - schultzp2020
- - Zaperex 
 
 reviewers:
- - 04kash
  - dzemanov 
  - Fortune-Ndlovu
  - its-mitesh-kumar
- - JessicaJHee  
