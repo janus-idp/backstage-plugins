@@ -61,6 +61,7 @@ import {
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 
 /* highlight-add-start */
 import { DefaultAuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
@@ -69,6 +70,7 @@ import { DefaultAuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 
 export interface RouterOptions {
   logger: LoggerService;
+  config: Config;
   auth: AuthService;
   httpAuth: HttpAuthService;
 }
@@ -76,7 +78,7 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, auth, httpAuth } = options;
+  const { logger, config, auth, httpAuth } = options;
 
   /* highlight-add-start */
   const auditLogger = new DefaultAuditLogger({
@@ -111,7 +113,10 @@ export async function createRouter(
     });
     /* highlight-add-end */
   });
-  router.use(errorHandler());
+
+  const middleware = MiddlewareFactory.create({ logger, config });
+
+  router.use(middleware.error());
   return router;
 }
 ```

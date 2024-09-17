@@ -17,23 +17,32 @@ export interface ServerOptions {
 export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
-  const logger = options.logger.child({ service: 'matomo-backend' });
-  const config = await loadBackendConfig({ logger, argv: [] });
-
+  const logger = options.logger.child({ service: 'lightspeed-backend' });
+  const config = await loadBackendConfig({ logger, argv: process.argv });
   logger.debug('Starting application server...');
   const router = await createRouter({
+    logger,
     config,
+
+    // TODO: for user authentication
+    // httpAuth: mockServices.httpAuth({
+    //   pluginId: 'lightspeed',
+    //   defaultCredentials: mockCredentials.user(),
+    // }),
+    // userInfo: mockServices.userInfo({
+    //   userEntityRef: 'user1',
+    // }),
   });
 
   let service = createServiceBuilder(module)
     .setPort(options.port)
-    .addRouter('/matomo', router);
+    .addRouter('/lightspeed', router);
   if (options.enableCors) {
     service = service.enableCors({ origin: 'http://localhost:3000' });
   }
 
   return await service.start().catch(err => {
-    logger.error('Standalone server failed:', err);
+    logger.error('Dev server failed:', err);
     process.exit(1);
   });
 }

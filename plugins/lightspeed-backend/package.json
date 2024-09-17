@@ -1,6 +1,5 @@
 {
-  "name": "@janus-idp/backstage-plugin-rbac-backend-module-test",
-  "description": "The test backend module for the rbac plugin.",
+  "name": "@janus-idp/backstage-plugin-lightspeed-backend",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -10,9 +9,12 @@
     "access": "public"
   },
   "backstage": {
-    "role": "backend-plugin-module",
-    "pluginId": "rbac",
-    "pluginPackage": "@janus-idp/backstage-plugin-rbac-backend"
+    "role": "backend-plugin",
+    "pluginId": "lightspeed",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-lightspeed",
+      "@janus-idp/backstage-plugin-lightspeed-backend"
+    ]
   },
   "exports": {
     ".": "./src/index.ts",
@@ -32,7 +34,7 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies",
+    "export-dynamic": "janus-cli package export-dynamic-plugin  --no-embed-as-dependencies",
     "lint": "backstage-cli package lint",
     "postpack": "backstage-cli package postpack",
     "postversion": "yarn run export-dynamic",
@@ -42,18 +44,29 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.23.3",
-    "@backstage/backend-dynamic-feature-service": "^0.2.15",
-    "@backstage/backend-plugin-api": "^0.7.0",
-    "@backstage/backend-tasks": "^0.5.27",
+    "@backstage/backend-app-api": "^0.9.3",
+    "@backstage/backend-common": "^0.23.2",
+    "@backstage/backend-dynamic-feature-service": "^0.3.2",
+    "@backstage/backend-plugin-api": "^0.6.21",
+    "@backstage/backend-plugin-manager": "npm:@janus-idp/backend-plugin-manager@0.0.2-janus.5",
+    "@backstage/backend-test-utils": "^0.5.1",
+    "@backstage/catalog-client": "^1.6.6",
     "@backstage/config": "^1.2.0",
-    "@janus-idp/backstage-plugin-rbac-node": "1.5.0",
-    "csv-parse": "^5.5.6"
+    "@backstage/plugin-catalog-node": "^1.12.6",
+    "@langchain/core": "^0.2.30",
+    "@langchain/openai": "^0.2.8",
+    "@types/express": "^*",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
+    "node-fetch": "^2.6.7",
+    "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "0.4.4",
-    "@backstage/cli": "0.26.11",
-    "@janus-idp/cli": "1.13.0"
+    "@backstage/cli": "0.26.10",
+    "@janus-idp/cli": "1.12.0",
+    "@types/supertest": "2.0.12",
+    "msw": "1.0.0",
+    "supertest": "6.2.4"
   },
   "files": [
     "dist",
@@ -66,8 +79,8 @@
   "configSchema": "config.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/janus-idp/backstage-plugins",
-    "directory": "plugins/rbac"
+    "url": "git+https://github.com/janus-idp/backstage-plugins.git",
+    "directory": "plugins/lightspeed-backend"
   },
   "keywords": [
     "backstage",

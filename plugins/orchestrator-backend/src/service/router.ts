@@ -1,14 +1,12 @@
-import {
-  createLegacyAuthAdapters,
-  errorHandler,
-  resolvePackagePath,
-} from '@backstage/backend-common';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import {
   HttpAuthService,
   LoggerService,
   PermissionsService,
+  resolvePackagePath,
+  SchedulerService,
 } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import {
@@ -45,7 +43,7 @@ import {
 import { UnauthorizedError } from '@janus-idp/backstage-plugin-rbac-common';
 
 import * as pkg from '../../package.json';
-import { RouterArgs } from '../routerWrapper';
+import { RouterOptions } from '../routerWrapper';
 import { buildFilter } from '../types/filters';
 import { buildPagination } from '../types/pagination';
 import { V1 } from './api/v1';
@@ -85,7 +83,7 @@ const authorize = async (
 };
 
 export async function createBackendRouter(
-  args: RouterArgs,
+  options: RouterOptions,
 ): Promise<express.Router> {
   const {
     config,
@@ -95,11 +93,11 @@ export async function createBackendRouter(
     urlReader,
     scheduler,
     permissions,
-  } = args;
+  } = options;
   const { auth, httpAuth } = createLegacyAuthAdapters({
-    httpAuth: args.httpAuth,
-    discovery: args.discovery,
-    auth: args.auth,
+    httpAuth: options.httpAuth,
+    discovery: options.discovery,
+    auth: options.auth,
   });
   const publicServices = initPublicServices(logger, config, scheduler);
 
@@ -159,14 +157,16 @@ export async function createBackendRouter(
     routerApi.openApiBackend.handleRequest(req as Request, req, res, next);
   });
 
-  router.use(errorHandler());
+  const middleware = MiddlewareFactory.create({ logger, config });
+
+  router.use(middleware.error());
   return router;
 }
 
 function initPublicServices(
   logger: LoggerService,
   config: Config,
-  scheduler: PluginTaskScheduler,
+  scheduler: SchedulerService,
 ): PublicServices {
   const dataIndexUrl = config.getString('orchestrator.dataIndexService.url');
   const dataIndexService = new DataIndexService(dataIndexUrl, logger);
