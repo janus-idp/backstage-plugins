@@ -1,7 +1,6 @@
 import * as React from 'react';
 
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
+import { Box, Paper } from '@material-ui/core';
 import { useFormikContext } from 'formik';
 
 import { AddRepositoriesFormValues, RepositorySelection } from '../../types';
@@ -15,7 +14,7 @@ export const AddRepositoriesTable = ({ title }: { title: string }) => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 7 }}>
+      <Paper style={{ width: '100%' }}>
         <AddRepositoriesTableToolbar
           title={title}
           setSearchString={setSearchString}

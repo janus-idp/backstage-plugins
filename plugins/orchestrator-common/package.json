@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-common",
-  "version": "1.15.1",
+  "version": "1.17.2",
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -37,7 +37,8 @@
   ],
   "files": [
     "config.d.ts",
-    "dist"
+    "dist",
+    "src/generated/docs/html"
   ],
   "configSchema": "config.d.ts",
   "sideEffects": false,

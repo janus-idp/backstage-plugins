@@ -18,11 +18,13 @@ export type BulkImportAPI = {
   dataFetcher: (
     page: number,
     size: number,
-    options: APITypes,
+    searchString: string,
+    options?: APITypes,
   ) => Promise<OrgAndRepoResponse>;
   getImportJobs: (
     page: number,
     size: number,
+    searchString: string,
   ) => Promise<ImportJobStatus[] | Response>;
   createImportJobs: (
     importRepositories: CreateImportJobRepository[],
@@ -58,26 +60,34 @@ export class BulkImportBackendClient implements BulkImportAPI {
     this.identityApi = options.identityApi;
   }
 
-  async dataFetcher(page: number, size: number, options: APITypes) {
+  async dataFetcher(
+    page: number,
+    size: number,
+    searchString: string,
+    options?: APITypes,
+  ) {
     const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const jsonResponse = await fetch(getApi(backendUrl, page, size, options), {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(idToken && { Authorization: `Bearer ${idToken}` }),
+    const jsonResponse = await fetch(
+      getApi(backendUrl, page, size, searchString, options),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+        },
       },
-    });
+    );
     if (jsonResponse.status !== 200 && jsonResponse.status !== 204) {
       return jsonResponse;
     }
     return jsonResponse.json();
   }
 
-  async getImportJobs(page: number, size: number) {
+  async getImportJobs(page: number, size: number, searchString: string) {
     const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
     const jsonResponse = await fetch(
-      `${backendUrl}/api/bulk-import/imports?pagePerIntegration=${page}&sizePerIntegration=${size}`,
+      `${backendUrl}/api/bulk-import/imports?pagePerIntegration=${page}&sizePerIntegration=${size}&search=${searchString}`,
       {
         headers: {
           'Content-Type': 'application/json',

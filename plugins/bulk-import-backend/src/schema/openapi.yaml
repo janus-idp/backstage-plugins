@@ -17,7 +17,7 @@ openapi: '3.1.0'
 info:
   version: '1.0'
   title: 'Bulk Import Backend'
-  description: The Bulk Import Backend APIs allow users to bulk import Backstage entities into the backstage catalog from remote sources such as Git.
+  description: The Bulk Import Backend APIs allow users to bulk import repositories into the Backstage catalog from remote sources such as Git.
 servers:
   - url: '{protocol}://{host}:{port}/{basePath}'
     variables:
@@ -69,6 +69,11 @@ paths:
           schema:
             type: integer
             default: 20
+        - in: query
+          name: search
+          description: returns only organizations that match the search string, by name
+          schema:
+            type: string
       responses:
         200:
           description: Organization list was fetched successfully with no errors
@@ -121,6 +126,11 @@ paths:
           schema:
             type: integer
             default: 20
+        - in: query
+          name: search
+          description: returns only organization repositories that contain the search string, by repository name
+          schema:
+            type: string
       responses:
         200:
           description: Org Repository list was fetched successfully with no errors
@@ -167,6 +177,11 @@ paths:
           schema:
             type: integer
             default: 20
+        - in: query
+          name: search
+          description: returns only repositories that contain the search string, by name
+          schema:
+            type: string
       responses:
         200:
           description: Repository list was fetched successfully with no errors
@@ -207,6 +222,11 @@ paths:
           schema:
             type: integer
             default: 20
+        - in: query
+          name: search
+          description: returns only Imports that contain the search string, by repository name
+          schema:
+            type: string
       responses:
         200:
           description: Import Jobs list was fetched successfully with no errors

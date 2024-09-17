@@ -49,3 +49,5 @@ export const BulkImportSidebarItem = () => {
   }
   return null;
 };
+
+export default BulkImportIcon;

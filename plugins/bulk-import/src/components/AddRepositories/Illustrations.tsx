@@ -7,6 +7,11 @@ import { getImageForIconClass } from '../../utils/icons';
 const useStyles = makeStyles(() => ({
   text: {
     maxWidth: '150px',
+    textAlign: 'center',
+  },
+  img: {
+    justifyContent: 'center',
+    display: 'flex',
   },
 }));
 
@@ -20,11 +25,13 @@ export const Illustrations = ({
   const styles = useStyles();
   return (
     <div>
-      <img
-        src={getImageForIconClass(iconClassname)}
-        alt={iconText}
-        height="100px"
-      />
+      <span className={styles.img}>
+        <img
+          src={getImageForIconClass(iconClassname)}
+          alt={iconText}
+          height="100px"
+        />
+      </span>
       <p className={styles.text}>{iconText}</p>
     </div>
   );

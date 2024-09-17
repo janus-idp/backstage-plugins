@@ -49,11 +49,7 @@ test.describe('RBAC plugin', () => {
     await common.loginAsGuest();
     const navSelector = 'nav [aria-label="Administration"]';
     await page.locator(navSelector).click();
-    await expect(
-      page.getByRole('heading', { name: 'Administration' }),
-    ).toBeVisible({ timeout: 20000 });
-    const rbacTabSelector = page.getByRole('tab', { name: 'RBAC' });
-    await expect(rbacTabSelector).toBeVisible({
+    await expect(page.getByRole('heading', { name: 'RBAC' })).toBeVisible({
       timeout: 20000,
     });
   });

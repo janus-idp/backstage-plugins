@@ -23,6 +23,7 @@ import {
   BackstageCredentials,
   BackstagePrincipalTypes,
 } from '@backstage/backend-plugin-api';
+import { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader, type Config } from '@backstage/config';
 
 import fetch from 'node-fetch';
@@ -41,6 +42,7 @@ describe('catalogInfoGenerator', () => {
   let catalogInfoGenerator: CatalogInfoGenerator;
   let mockDiscovery: PluginEndpointDiscovery;
   let mockAuth: AuthService;
+  let mockCatalogClient: CatalogClient;
 
   beforeAll(() => {
     (fetch as unknown as jest.Mock).mockReturnValue(
@@ -54,6 +56,9 @@ describe('catalogInfoGenerator', () => {
       getExternalBaseUrl: (pluginId: string) =>
         Promise.resolve(`${mockExternalBaseUrl}/my-${pluginId}`),
     };
+    mockCatalogClient = {
+      getEntities: jest.fn,
+    } as unknown as CatalogClient;
     mockAuth = {
       isPrincipal<TType extends keyof BackstagePrincipalTypes>(
         _credentials: BackstageCredentials,
@@ -77,6 +82,7 @@ describe('catalogInfoGenerator', () => {
       logger,
       mockDiscovery,
       mockAuth,
+      mockCatalogClient,
     );
   });
 

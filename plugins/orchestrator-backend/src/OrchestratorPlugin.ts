@@ -54,6 +54,10 @@ export const orchestratorPlugin = createBackendPlugin({
           path: '/health',
           allow: 'unauthenticated',
         });
+        httpRouter.addAuthPolicy({
+          path: '/docs',
+          allow: 'unauthenticated',
+        });
       },
     });
   },
