@@ -1,22 +1,30 @@
-import { errorHandler } from '@backstage/backend-common';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
 import express from 'express';
 
 import { KialiApiImpl } from '../clients/KialiAPIConnector';
-import { KialiDetails, readKialiConfigs } from './config';
+import { readKialiConfigs } from './config';
 
 export interface RouterOptions {
   logger: LoggerService;
   config: Config;
 }
 
-export const makeRouter = (
-  logger: LoggerService,
-  kialiAPI: KialiApiImpl,
-  kiali: KialiDetails,
-): express.Router => {
+/** @public */
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const { logger } = options;
+  const { config } = options;
+
+  logger.info('Initializing Kiali backend');
+
+  const kiali = readKialiConfigs(config);
+
+  const kialiAPI = new KialiApiImpl({ logger, kiali });
+
   const router = express.Router();
   router.use(express.json());
 
@@ -39,22 +47,8 @@ export const makeRouter = (
     res.json(await kialiAPI.status());
   });
 
-  router.use(errorHandler());
+  const middleware = MiddlewareFactory.create({ logger, config });
+
+  router.use(middleware.error());
   return router;
-};
-
-/** @public */
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  const { logger } = options;
-  const { config } = options;
-
-  logger.info('Initializing Kiali backend');
-
-  const kiali = readKialiConfigs(config);
-
-  const kialiAPI = new KialiApiImpl({ logger, kiali });
-
-  return makeRouter(logger, kialiAPI, kiali);
 }
