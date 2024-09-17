@@ -16,7 +16,10 @@ export const GROUP_PADDING = [
 
 export const MAXSHOWRESCOUNT = 3;
 
+export const RESOURCE_NAME_TRUNCATE_LENGTH = 13;
+
 export const TYPE_WORKLOAD = 'workload';
+export const TYPE_VM = 'virtualmachine';
 export const TYPE_APPLICATION_GROUP = 'part-of';
 export const TYPE_CONNECTS_TO = 'connects-to';
 export const INSTANCE_LABEL = 'app.kubernetes.io/instance';
@@ -33,3 +36,8 @@ export const TOPOLOGY_FILTERS = [
     disabled: false,
   },
 ];
+
+export const LABEL_USED_TEMPLATE_NAME = 'vm.kubevirt.io/template';
+export const TEMPLATE_OS_LABEL = 'os.template.kubevirt.io';
+export const TEMPLATE_OS_NAME_ANNOTATION = 'name.os.template.kubevirt.io';
+export const TEMPLATE_WORKLOAD_LABEL = 'workload.template.kubevirt.io';

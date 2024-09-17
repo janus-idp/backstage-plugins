@@ -102,6 +102,9 @@ export async function startStandaloneServer(
   const identity = DefaultIdentityClient.create({
     discovery,
   });
+  const cache = CacheManager.fromConfig(config)
+    .forPlugin('bulk-import')
+    .getClient();
 
   const createEnv = makeCreateEnv(config);
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
@@ -117,6 +120,7 @@ export async function startStandaloneServer(
   const router = await createRouter({
     config,
     logger,
+    cache,
     discovery,
     permissions,
     identity,
@@ -128,7 +132,7 @@ export async function startStandaloneServer(
     .enableCors({
       origin: '*',
     })
-    .addRouter('/api/bulk-import-backend', router)
+    .addRouter('/api/bulk-import', router)
     .addRouter('/api/catalog', await catalog(catalogEnv));
   if (options.enableCors) {
     service = service.enableCors({ origin: 'http://localhost:3000' });

@@ -3,6 +3,7 @@ import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 
 import axios, {
+  AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
   RawAxiosRequestHeaders,
@@ -12,10 +13,11 @@ import {
   AssessedProcessInstanceDTO,
   Configuration,
   DefaultApi,
+  ExecuteWorkflowResponseDTO,
+  FilterInfo,
   PaginationInfoDTO,
   ProcessInstanceListResultDTO,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
-  QUERY_PARAM_BUSINESS_KEY,
   QUERY_PARAM_INSTANCE_ID,
   WorkflowDefinition,
   WorkflowExecutionResponse,
@@ -30,32 +32,39 @@ import { OrchestratorApi } from './api';
 export interface OrchestratorClientOptions {
   discoveryApi: DiscoveryApi;
   identityApi: IdentityApi;
+  axiosInstance?: AxiosInstance;
 }
 export class OrchestratorClient implements OrchestratorApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
+  private axiosInstance?: AxiosInstance;
+
   private baseUrl: string | null = null;
   constructor(options: OrchestratorClientOptions) {
     this.discoveryApi = options.discoveryApi;
     this.identityApi = options.identityApi;
+    this.axiosInstance = options.axiosInstance;
   }
 
   async getDefaultAPI(): Promise<DefaultApi> {
     const baseUrl = await this.getBaseUrl();
     const { token: idToken } = await this.identityApi.getCredentials();
 
-    const axiosInstance = axios.create({
-      baseURL: baseUrl,
-      headers: {
-        ...(idToken && { Authorization: `Bearer ${idToken}` }),
-      },
-      withCredentials: true,
-    });
+    // Fixme: Following makes mocking of global axios complicated in the tests, ideally there should be just one axios instance:
+    this.axiosInstance =
+      this.axiosInstance ||
+      axios.create({
+        baseURL: baseUrl,
+        headers: {
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+        },
+        withCredentials: true,
+      });
     const config = new Configuration({
       basePath: baseUrl,
     });
 
-    return new DefaultApi(config, baseUrl, axiosInstance);
+    return new DefaultApi(config, baseUrl, this.axiosInstance);
   }
   private async getBaseUrl(): Promise<string> {
     if (!this.baseUrl) {
@@ -69,24 +78,24 @@ export class OrchestratorClient implements OrchestratorApi {
     workflowId: string;
     parameters: JsonObject;
     businessKey?: string;
-  }): Promise<WorkflowExecutionResponse> {
-    const baseUrl = await this.getBaseUrl();
-    const endpoint = `${baseUrl}/workflows/${args.workflowId}/execute`;
-    const urlToFetch = buildUrl(endpoint, {
-      [QUERY_PARAM_BUSINESS_KEY]: args.businessKey,
-    });
-    return await this.fetcher(urlToFetch, {
-      method: 'POST',
-      body: JSON.stringify(args.parameters),
-      headers: { 'Content-Type': 'application/json' },
-    }).then(r => r.json());
+  }): Promise<AxiosResponse<ExecuteWorkflowResponseDTO>> {
+    const defaultApi = await this.getDefaultAPI();
+    const reqConfigOption: AxiosRequestConfig =
+      await this.getDefaultReqConfig();
+    return await defaultApi.executeWorkflow(
+      args.workflowId,
+      { inputData: args.parameters },
+      reqConfigOption,
+    );
   }
 
-  async abortWorkflowInstance(instanceId: string): Promise<void> {
-    const baseUrl = await this.getBaseUrl();
-    return await this.fetcher(`${baseUrl}/instances/${instanceId}/abort`, {
-      method: 'DELETE',
-    }).then(_ => undefined);
+  async abortWorkflowInstance(
+    instanceId: string,
+  ): Promise<AxiosResponse<string>> {
+    const defaultApi = await this.getDefaultAPI();
+    const reqConfigOption: AxiosRequestConfig =
+      await this.getDefaultReqConfig();
+    return await defaultApi.abortWorkflow(instanceId, reqConfigOption);
   }
 
   async getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition> {
@@ -96,41 +105,35 @@ export class OrchestratorClient implements OrchestratorApi {
     );
   }
 
-  async getWorkflowSource(workflowId: string): Promise<string> {
-    const baseUrl = await this.getBaseUrl();
-    return await this.fetcher(`${baseUrl}/workflows/${workflowId}/source`).then(
-      r => r.text(),
-    );
+  async getWorkflowSource(workflowId: string): Promise<AxiosResponse<string>> {
+    const defaultApi = await this.getDefaultAPI();
+    const reqConfigOption: AxiosRequestConfig =
+      await this.getDefaultReqConfig();
+    reqConfigOption.responseType = 'text';
+    return await defaultApi.getWorkflowSourceById(workflowId, reqConfigOption);
   }
 
   async listWorkflowOverviews(
     paginationInfo?: PaginationInfoDTO,
+    filterInfo?: FilterInfo,
   ): Promise<AxiosResponse<WorkflowOverviewListResultDTO>> {
     const defaultApi = await this.getDefaultAPI();
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
     return await defaultApi.getWorkflowsOverview(
-      paginationInfo?.page,
-      paginationInfo?.pageSize,
-      paginationInfo?.orderBy,
-      paginationInfo?.orderDirection,
+      { paginationInfo, filterInfo },
       reqConfigOption,
     );
   }
 
-  async listInstances(
-    paginationInfo?: PaginationInfoDTO,
-  ): Promise<AxiosResponse<ProcessInstanceListResultDTO>> {
+  async listInstances(args: {
+    paginationInfo?: PaginationInfoDTO;
+    filterInfo?: FilterInfo;
+  }): Promise<AxiosResponse<ProcessInstanceListResultDTO>> {
     const defaultApi = await this.getDefaultAPI();
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
-    return await defaultApi.getInstances(
-      paginationInfo?.page,
-      paginationInfo?.pageSize,
-      paginationInfo?.orderBy,
-      paginationInfo?.orderDirection,
-      reqConfigOption,
-    );
+    return await defaultApi.getInstances(args, reqConfigOption);
   }
 
   async getInstance(

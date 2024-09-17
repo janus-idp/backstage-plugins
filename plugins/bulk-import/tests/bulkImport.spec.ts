@@ -23,8 +23,8 @@ test.describe('Bulk import plugin', () => {
     await browser.close();
   });
 
-  test('Repositories tab is shown', async () => {
-    await expect(page.getByText('Added repositories (1)')).toBeVisible();
+  test('Repositories list is shown', async () => {
+    await expect(page.getByText('Added repositories (4)')).toBeVisible();
     const columns = [
       'Name',
       'Repo URL',
@@ -42,7 +42,7 @@ test.describe('Bulk import plugin', () => {
 
   test('Edit icon, Delete icon and Refresh icon are shown', async () => {
     await expect(
-      page.locator('span[data-testid="edit-catalog-info"]').first(),
+      page.locator('span[data-testid="view-catalog-info"]').first(),
     ).toBeVisible();
     await expect(
       page.locator('span[data-testid="delete-repository"]').first(),
@@ -52,33 +52,10 @@ test.describe('Bulk import plugin', () => {
     ).toBeVisible();
   });
 
-  test('Edit catalog-info side panel is shown', async () => {
-    await page.locator('span[data-testid="edit-catalog-info"]').first().click();
-    await expect(
-      page.getByRole('heading', { name: 'org/desert/Gingerbread' }),
-    ).toBeVisible();
-    await expect(
-      page
-        .getByTestId('preview-file-sidebar')
-        .getByText('Pull request details'),
-    ).toBeVisible();
-    await page.locator('button[title="Close the drawer"]').click();
-
-    await expect(
-      page.getByRole('heading', {
-        name: 'Added repositories (1)',
-        exact: true,
-      }),
-    ).toBeVisible({
-      timeout: 20000,
-    });
-  });
-
   test('Remove repository alert window is shown', async () => {
+    await page.getByPlaceholder('Filter').fill('cupcake');
     await page.locator('span[data-testid="delete-repository"]').first().click();
-    await expect(
-      page.getByText('Remove Gingerbread repository?'),
-    ).toBeVisible();
+    await expect(page.getByText('Remove cupcake repository?')).toBeVisible();
     await expect(
       page.getByText(
         'Removing a repository erases all associated information from the Catalog page.',
@@ -88,15 +65,6 @@ test.describe('Bulk import plugin', () => {
     await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible();
 
     await page.locator('button[title="Close"]').click();
-
-    await expect(
-      page.getByRole('heading', {
-        name: 'Added repositories (1)',
-        exact: true,
-      }),
-    ).toBeVisible({
-      timeout: 20000,
-    });
   });
 
   test('Add button is shown', async () => {
@@ -111,7 +79,7 @@ test.describe('Bulk import plugin', () => {
   test('Add repositories page is shown', async () => {
     await expect(
       page.getByRole('heading', {
-        name: 'Add repositories to Red Hat Developer Hub in 5 steps',
+        name: 'Add repositories to Red Hat Developer Hub in 4 steps',
       }),
     ).toBeVisible({
       timeout: 20000,
@@ -128,6 +96,13 @@ test.describe('Bulk import plugin', () => {
     for (const col of columns) {
       await expect(thead.getByText(col)).toBeVisible();
     }
+    await page.click('input[aria-label="select all repositories"]');
+    await expect(
+      page.getByRole('heading', { name: 'Selected repositories (5)' }),
+    ).toBeVisible({
+      timeout: 20000,
+    });
+    await page.locator('button[aria-label="Next page"]').click();
     await page.click('input[aria-label="select all repositories"]');
     await expect(
       page.getByRole('heading', { name: 'Selected repositories (9)' }),
@@ -157,16 +132,19 @@ test.describe('Bulk import plugin', () => {
     });
     await page.click('input[aria-label="select all repositories"]');
     await expect(
-      page.getByRole('heading', { name: 'Selected repositories (0)' }),
+      page.getByRole('heading', { name: 'Selected repositories (4)' }),
     ).toBeVisible({
       timeout: 20000,
     });
     await page.locator(`button`).filter({ hasText: 'Organization' }).click();
     await expect(
-      page.locator('tr:has-text("org/pet-store-boston") >> text=None'),
+      page.locator('tr:has-text("org/pet-store-boston") >> text=1/1'),
+    ).toBeVisible();
+    await expect(
+      page.locator('tr:has-text("org/dessert") >> text=2/7'),
     ).toBeVisible();
     await page
-      .locator('tr:has-text("org/pet-store-boston") >> text=Select')
+      .locator('tr:has-text("org/pet-store-boston") >> text=Edit')
       .click();
     await expect(
       page.getByRole('heading', { name: 'org/pet-store-boston' }),
@@ -176,7 +154,7 @@ test.describe('Bulk import plugin', () => {
 
     const columns = ['Name', 'URL'];
     const thead = page.locator(
-      'table[aria-labelledby="drawer-repositories-table"] >> thead',
+      'table[data-testid="drawer-repositories-table"] >> thead',
     );
 
     for (const col of columns) {
@@ -186,56 +164,72 @@ test.describe('Bulk import plugin', () => {
   });
 
   test('Cancel button closes side panel', async () => {
-    await page
-      .locator('button[aria-labelledby="cancel-drawer-select"]')
-      .click();
+    await expect(
+      page.getByRole('heading', { name: 'org/pet-store-boston' }),
+    ).toBeVisible({
+      timeout: 20000,
+    });
 
+    await expect(
+      page.getByRole('heading', { name: 'Selected repositories (1)' }),
+    ).toBeVisible({
+      timeout: 20000,
+    });
+
+    await page.getByTestId('close-drawer').click();
     await expect(
       page.getByRole('heading', { name: 'org/pet-store-boston' }),
     ).not.toBeVisible({
       timeout: 20000,
     });
-
     await expect(
-      page.getByRole('heading', { name: 'Selected repositories (0)' }),
+      page.getByRole('heading', { name: 'Selected repositories (4)' }),
     ).toBeVisible({
       timeout: 20000,
     });
   });
 
-  test('Side panel selected repositories are shown in table', async () => {
-    await page
-      .locator('tr:has-text("org/pet-store-boston") >> text=Select')
-      .click();
+  test('preview pull requests for the selected repositories in the sidepanel', async () => {
+    await page.locator('tr:has-text("org/dessert") >> text=Edit').click();
     await expect(
-      page.getByRole('heading', { name: 'org/pet-store-boston' }),
+      page.getByRole('heading', { name: 'org/dessert' }),
     ).toBeVisible({
       timeout: 20000,
     });
-    await page.click('input[aria-label="select all repositories"]');
+    await page
+      .locator('input[aria-label="search-in-organization"]')
+      .fill('eclair');
+    await page.waitForTimeout(2000);
+    await page.click('input[type="checkbox"]');
     await expect(
-      page.getByRole('heading', { name: 'Selected repositories (2)' }),
+      page.getByRole('heading', { name: 'Selected repositories (3)' }),
     ).toBeVisible();
 
-    await page.locator('button[aria-labelledby="select-from-drawer"]').click();
+    await page.getByTestId('select-from-drawer').click();
+    await expect(
+      page.getByRole('heading', { name: 'Selected repositories (5)' }),
+    ).toBeVisible();
+    await expect(
+      page.locator('tr:has-text("org/pet-store-boston") >> text=1/1'),
+    ).toBeVisible();
+    await expect(
+      page.locator('tr:has-text("org/dessert") >> text=3/7'),
+    ).toBeVisible();
 
+    await page.getByPlaceholder('Search').fill('org/dessert');
+    await page.locator('a[data-testid="preview-files"]').click();
     await expect(
-      page.getByRole('heading', { name: 'Selected repositories (2)' }),
+      page.getByTestId('preview-pullrequest-sidebar').getByRole('tabpanel'),
     ).toBeVisible();
-    await expect(
-      page.locator('tr:has-text("org/pet-store-boston") >> text=2'),
-    ).toBeVisible();
-    await expect(
-      page.locator('tr:has-text("org/pet-store-boston") >> a >> text=Edit'),
-    ).toBeVisible();
+    await page.locator('button[title="Close the drawer"]').click();
+    await page.getByPlaceholder('Search').clear();
 
     await page.getByPlaceholder('Search').fill('org/pet-store-boston');
-    await page.locator('a[data-testid="preview-files"]').click();
-    await expect(page.getByRole('tab', { name: 'online-store' })).toBeVisible();
-    await expect(page.getByRole('tab', { name: 'pet-app' })).toBeVisible();
+    await page.waitForTimeout(2000);
+    await page.locator('a[data-testid="preview-file"]').click();
     await expect(
       page
-        .getByTestId('preview-file-sidebar')
+        .getByTestId('preview-pullrequest-sidebar')
         .getByText('Pull request details'),
     ).toBeVisible();
   });

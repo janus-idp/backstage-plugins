@@ -20,6 +20,7 @@ The Azure Container Registry (ACR) plugin displays information about your contai
      endpoints:
        '/acr/api':
          target: 'https://mycontainerregistry.azurecr.io/acr/v1/'
+         credentials: require
          changeOrigin: true
          headers:
            # If you use Bearer Token for authorization, please replace the 'Basic' with 'Bearer' in the following line.
@@ -27,6 +28,15 @@ The Azure Container Registry (ACR) plugin displays information about your contai
          # Change to "false" in case of using self hosted artifactory instance with a self-signed certificate
          secure: true
    ```
+
+   > [!NOTE]
+   > The value inside each route is either a simple URL string, or an object on the format accepted by [http-proxy-middleware](https://www.npmjs.com/package/http-proxy-middleware). Additionally, it has an optional `credentials` key which can have the following values:
+   >
+   > - `require`: Callers must provide Backstage user or service credentials with each request. The credentials are not forwarded to the proxy target. This is the **default**.
+   > - `forward`: Callers must provide Backstage user or service credentials with each request, and those credentials are forwarded to the proxy target.
+   > - `dangerously-allow-unauthenticated`: No Backstage credentials are required to access this proxy target. The target can still apply its own credentials checks, but the proxy will not help block non-Backstage-blessed callers. If you also add allowedHeaders: ['Authorization'] to an endpoint configuration, then the Backstage token (if provided) WILL be forwarded.
+   >
+   > Note that if you have `backend.auth.dangerouslyDisableDefaultAuthPolicy` set to true, the credentials value does not apply; the proxy will behave as if all endpoints were set to dangerously-allow-unauthenticated.
 
 1. Set the authorization using one of the following options:
 

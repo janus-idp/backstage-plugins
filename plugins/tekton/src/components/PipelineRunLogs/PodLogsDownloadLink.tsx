@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { useApi } from '@backstage/core-plugin-api';
-import { kubernetesProxyApiRef } from '@backstage/plugin-kubernetes';
 
 import { V1Pod } from '@kubernetes/client-node';
 import { createStyles, Link, makeStyles, Theme } from '@material-ui/core';
@@ -12,7 +11,10 @@ import { downloadLogFile } from '@janus-idp/shared-react';
 
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { ContainerScope } from '../../hooks/usePodLogsOfPipelineRun';
-import { TektonResourcesContextData } from '../../types/types';
+import {
+  kubernetesProxyApiRef,
+  TektonResourcesContextData,
+} from '../../types/types';
 import { getPodLogs } from '../../utils/log-downloader-utils';
 
 const useStyles = makeStyles((theme: Theme) =>

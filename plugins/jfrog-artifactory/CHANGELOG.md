@@ -1,3 +1,43 @@
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.10.3
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.10.2
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.10.1
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.13.1
+
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.7.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.7.2...@janus-idp/backstage-plugin-jfrog-artifactory@1.7.3) (2024-08-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.10.0
+
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.7.1...@janus-idp/backstage-plugin-jfrog-artifactory@1.7.2) (2024-08-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.10.0
+
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.7.0...@janus-idp/backstage-plugin-jfrog-artifactory@1.7.1) (2024-08-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.10.0
+
 ## @janus-idp/backstage-plugin-jfrog-artifactory [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.6.0...@janus-idp/backstage-plugin-jfrog-artifactory@1.7.0) (2024-07-26)
 
 

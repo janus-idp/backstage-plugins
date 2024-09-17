@@ -1,18 +1,88 @@
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: rhdh
+spec:
+  owner: rhdh-team
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: janus-idp-backstage-plugins
-  description: An example of a Backstage application.
+  title: RHDH plugins
+  description: Backstage Plugins by Red Hat
+  annotations:
+    backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main
+    backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/catalog-info.yaml
+    github.com/project-slug: janus-idp/backstage-plugins
+    github.com/team-slug: janus-idp/maintainers-plugins
+    sonarqube.org/project-key: janus-idp_backstage-plugins
+  links:
+    - url: https://github.com/janus-idp/backstage-plugins/tree/main
+      title: GitHub Source
+      icon: source
+      type: source
 spec:
   type: website
-  owner: group:janus-idp
   lifecycle: production
+  owner: rhdh-team
+  system: rhdh
 ---
+# https://backstage.io/docs/features/software-catalog/descriptor-format/#kind-location
 apiVersion: backstage.io/v1alpha1
 kind: Location
 metadata:
   name: janus-idp-backstage-plugins
 spec:
   targets:
-    - ./plugins/**/catalog-info.yaml
-    - ./utils/**/catalog-info.yaml
+    - ./plugins/3scale-backend/catalog-info.yaml
+    - ./plugins/aap-backend/catalog-info.yaml
+    - ./plugins/acr/catalog-info.yaml
+    - ./plugins/analytics-module-matomo/catalog-info.yaml
+    - ./plugins/analytics-provider-segment/catalog-info.yaml
+    - ./plugins/argocd/catalog-info.yaml
+    - ./plugins/argocd-common/catalog-info.yaml
+    - ./plugins/audit-log-node/catalog-info.yaml
+    - ./plugins/bulk-import/catalog-info.yaml
+    - ./plugins/bulk-import-backend/catalog-info.yaml
+    - ./plugins/bulk-import-common/catalog-info.yaml
+    - ./plugins/catalog-backend-module-scaffolder-relation-processor/catalog-info.yaml
+    - ./plugins/dynamic-plugins-info/catalog-info.yaml
+    - ./plugins/feedback/catalog-info.yaml
+    - ./plugins/feedback-backend/catalog-info.yaml
+    - ./plugins/jfrog-artifactory/catalog-info.yaml
+    - ./plugins/keycloak-backend/catalog-info.yaml
+    - ./plugins/kiali/catalog-info.yaml
+    - ./plugins/kiali-backend/catalog-info.yaml
+    - ./plugins/kubernetes-actions/catalog-info.yaml
+    - ./plugins/matomo/catalog-info.yaml
+    - ./plugins/matomo-backend/catalog-info.yaml
+    - ./plugins/nexus-repository-manager/catalog-info.yaml
+    - ./plugins/ocm/catalog-info.yaml
+    - ./plugins/ocm-backend/catalog-info.yaml
+    - ./plugins/ocm-common/catalog-info.yaml
+    - ./plugins/openshift-image-registry/catalog-info.yaml
+    - ./plugins/orchestrator/catalog-info.yaml
+    - ./plugins/orchestrator-backend/catalog-info.yaml
+    - ./plugins/orchestrator-common/catalog-info.yaml
+    - ./plugins/quay/catalog-info.yaml
+    - ./plugins/quay-common/catalog-info.yaml
+    - ./plugins/quay-actions/catalog-info.yaml
+    - ./plugins/rbac/catalog-info.yaml
+    - ./plugins/rbac-backend/catalog-info.yaml
+    - ./plugins/rbac-common/catalog-info.yaml
+    - ./plugins/rbac-node/catalog-info.yaml
+    - ./plugins/regex-actions/catalog-info.yaml
+    - ./plugins/scaffolder-annotator-action/catalog-info.yaml
+    - ./plugins/servicenow-actions/catalog-info.yaml
+    - ./plugins/shared-react/catalog-info.yaml
+    - ./plugins/sonarqube-actions/catalog-info.yaml
+    - ./plugins/tekton/catalog-info.yaml
+    - ./plugins/tekton-common/catalog-info.yaml
+    - ./plugins/topology/catalog-info.yaml
+    - ./plugins/topology-common/catalog-info.yaml
+    - ./plugins/web-terminal/catalog-info.yaml
+    - ./packages/cli/catalog-info.yaml

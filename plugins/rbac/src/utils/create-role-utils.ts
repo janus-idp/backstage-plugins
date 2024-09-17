@@ -301,10 +301,27 @@ export const getConditionsNumber = (values: RoleFormValues) => {
 
 export const getRulesNumber = (conditions?: ConditionsData) => {
   if (!conditions) return 0;
+  let rulesNumber = 0;
 
-  if (conditions.allOf) return conditions.allOf.length;
+  if (conditions.allOf) {
+    rulesNumber += conditions.allOf.reduce((acc, condition) => {
+      return acc + getRulesNumber(condition as ConditionsData);
+    }, 0);
+  }
 
-  if (conditions.anyOf) return conditions.anyOf.length;
+  if (conditions.anyOf) {
+    rulesNumber += conditions.anyOf.reduce((acc, condition) => {
+      return acc + getRulesNumber(condition as ConditionsData);
+    }, 0);
+  }
 
-  return 1;
+  if (conditions.not) {
+    rulesNumber += getRulesNumber(conditions.not as ConditionsData);
+  }
+
+  if (conditions.condition || Object.keys(conditions).includes('rule')) {
+    rulesNumber += 1;
+  }
+
+  return rulesNumber;
 };

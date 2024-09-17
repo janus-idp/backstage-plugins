@@ -3,17 +3,17 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import {
-  EntityKubernetesContent,
-  KubernetesApi,
-  kubernetesApiRef,
-} from '@backstage/plugin-kubernetes';
+import { KubernetesApi } from '@backstage/plugin-kubernetes-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
-import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { mockKubernetesResponse } from '../src/__fixtures__/1-deployments';
 import { TopologyPage, topologyPlugin } from '../src/plugin';
+import {
+  kubernetesApiRef,
+  kubernetesAuthProvidersApiRef,
+} from '../src/types/types';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -107,13 +107,29 @@ class MockKubernetesClient implements KubernetesApi {
   }
 }
 
+const mockKubernetesAuthProviderApiRef = {
+  decorateRequestBodyForAuth: async () => {
+    return {
+      entity: {
+        apiVersion: 'v1',
+        kind: 'xyz',
+        metadata: { name: 'hey' },
+      },
+    };
+  },
+  getCredentials: async () => {
+    return {};
+  },
+};
+
 createDevApp()
-  .addThemes(createDevAppThemes())
+  .addThemes(getAllThemes())
   .addPage({
     element: (
       <TestApiProvider
         apis={[
           [kubernetesApiRef, new MockKubernetesClient(mockKubernetesResponse)],
+          [kubernetesAuthProvidersApiRef, mockKubernetesAuthProviderApiRef],
         ]}
       >
         <EntityProvider entity={mockEntity}>
@@ -125,21 +141,6 @@ createDevApp()
     ),
     title: 'Topology Page',
     path: '/topology',
-  })
-  .addPage({
-    element: (
-      <TestApiProvider
-        apis={[
-          [kubernetesApiRef, new MockKubernetesClient(mockKubernetesResponse)],
-        ]}
-      >
-        <EntityProvider entity={mockEntity}>
-          <EntityKubernetesContent />
-        </EntityProvider>
-      </TestApiProvider>
-    ),
-    title: 'k8s Page',
-    path: '/kubernetes',
   })
   .registerPlugin(topologyPlugin)
   .render();

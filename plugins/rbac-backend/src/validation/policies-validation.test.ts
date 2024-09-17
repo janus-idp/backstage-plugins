@@ -68,6 +68,20 @@ describe('rest data validation', () => {
       expect(err?.message).toEqual(`'policy' field must not be empty`);
     });
 
+    it('should return an error when policy has an invalid value', () => {
+      const policy: RoleBasedPolicy = {
+        entityReference: 'user:default/guest',
+        permission: 'catalog-entity',
+        policy: 'invalid-policy',
+        effect: 'allow',
+      };
+      const err = validatePolicy(policy);
+      expect(err).toBeTruthy();
+      expect(err?.message).toEqual(
+        `'policy' has invalid value: 'invalid-policy'. It should be one of: create, read, update, delete, use`,
+      );
+    });
+
     it('should return an error when effect is empty', () => {
       const policy: RoleBasedPolicy = {
         entityReference: 'user:default/guest',
@@ -197,14 +211,53 @@ describe('rest data validation', () => {
       }
     });
 
-    it('should pass entity reference validation', () => {
-      const invalidOrUnsupportedEntityRefs = [
-        'user:default/guest',
-        'user:default/John Doe',
-        'user:default/John Doe/developer',
-        'role:default/team-a',
+    it('should return an error when entity reference name is invalid', () => {
+      const invalidEntityNames = [
+        'john@doe',
+        'John Doe',
+        'John/Doe',
+        'invalid-',
+        'invalid_',
+        '.invalid',
+        `too-long${'1'.repeat(60)}`,
       ];
-      for (const entityRef of invalidOrUnsupportedEntityRefs) {
+
+      for (const invalidName of invalidEntityNames) {
+        const expectedError = `The name '${invalidName}' in the entity reference must be a string that is sequences of [a-zA-Z0-9] separated by any of [-_.], at most 63 characters in total`;
+        const entityRef = `user:default/${invalidName}`;
+        const err = validateEntityReference(entityRef);
+        expect(err).toBeTruthy();
+        expect(err?.message).toEqual(expectedError);
+      }
+    });
+
+    it('should return an error when entity reference namespace is invalid', () => {
+      const invalidEntityNamespaces = [
+        'INVALID',
+        'invalid-',
+        '-invalid',
+        'invalid$namespace',
+        `too-long${'1'.repeat(60)}`,
+      ];
+
+      for (const invalidNamespace of invalidEntityNamespaces) {
+        const expectedError = `The namespace '${invalidNamespace}' in the entity reference must be a string that is sequences of [a-z0-9] separated by [-], at most 63 characters in total`;
+        const entityRef = `user:${invalidNamespace}/doe`;
+        const err = validateEntityReference(entityRef);
+        expect(err).toBeTruthy();
+        expect(err?.message).toEqual(expectedError);
+      }
+    });
+
+    it('should pass entity reference validation', () => {
+      const validEntityRefs = [
+        'user:default/guest',
+        'role:default/team-a',
+        'role:default/team_1',
+        'role:default/team.A',
+        'role:custom-1/doe',
+      ];
+      for (const entityRef of validEntityRefs) {
         const err = validateEntityReference(entityRef);
         expect(err).toBeFalsy();
       }

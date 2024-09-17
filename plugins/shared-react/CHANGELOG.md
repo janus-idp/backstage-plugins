@@ -1,3 +1,10 @@
+## @janus-idp/shared-react [2.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.9.0...@janus-idp/shared-react@2.10.0) (2024-08-02)
+
+
+### Features
+
+* **topology:** remove usage of k8s plugin from topology & tekton plugins ([#1869](https://github.com/janus-idp/backstage-plugins/issues/1869)) ([ae7d8ee](https://github.com/janus-idp/backstage-plugins/commit/ae7d8ee7014c109a5f5265967590559fc778eec7))
+
 ## @janus-idp/shared-react [2.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.8.0...@janus-idp/shared-react@2.9.0) (2024-07-26)
 
 

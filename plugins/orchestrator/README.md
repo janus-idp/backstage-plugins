@@ -224,7 +224,8 @@ The plugin provides OpenAPI `v2` endpoints definition to facilitate communicatio
 
 In addition, by leveraging on OpenAPI spec, it is possible to generate clients and create CI steps.
 
-OpenAPI specification [file](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common/src/openapi/openapi.yaml) is available in [orchestrator-common](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common).
+OpenAPI specification [file](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common/src/openapi/openapi.yaml) is available in [orchestrator-common](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common).  
+OpenAPI specification documentation is available [here](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common/src/generated/docs/markdown/README.md)
 
 > **NOTE:**\
 > While the OpenAPI specification is available in the Orchestrator plugin, the UI currently does not rely on this spec. \

@@ -1,6 +1,12 @@
 name: Push
 
 on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
   push:
     branches:
       # since we use multi-semantic-release, which assumes that all plugins in the 1.1.x branch
@@ -32,11 +38,6 @@ jobs:
           app-id: ${{ vars.JANUS_IDP_GITHUB_APP_ID }}
           private-key: ${{ secrets.JANUS_IDP_GITHUB_APP_PRIVATE_KEY }}
 
-      - name: Regen yarn.lock
-        uses: ./.github/actions/yarn-lock
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-
       - name: Build all packages
         uses: ./.github/actions/build
 
@@ -48,10 +49,11 @@ jobs:
 
       - name: Release via semantic-release
         run: |
+          echo -n "Loading tags... ";tagsFound="$(git fetch --tags 2>&1)"; echo "found $(echo "$tagsFound" | wc -l) tags."
           npm config set workspaces-update false
           yarn release --ignore-private-packages
         env:
-          GITHUB_TOKEN: ${{ steps.generate-token2.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_OPTIONS: '--max-old-space-size=8192'

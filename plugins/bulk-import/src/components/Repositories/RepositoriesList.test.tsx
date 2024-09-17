@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { useAsync } from 'react-use';
 
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
@@ -8,8 +7,8 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { render, screen } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 
-import * as mockDataModule from '../../mocks/mockData';
-import { AddRepositoriesData, RepositoryStatus } from '../../types';
+import { useAddedRepositories } from '../../hooks';
+import { mockGetImportJobs } from '../../mocks/mockData';
 import { RepositoriesList } from './RepositoriesList';
 
 jest.mock('react', () => ({
@@ -19,6 +18,11 @@ jest.mock('react', () => ({
 jest.mock('formik', () => ({
   ...jest.requireActual('formik'),
   useFormikContext: jest.fn(),
+}));
+
+jest.mock('./RepositoriesList', () => ({
+  ...jest.requireActual('./RepositoriesList'),
+  useStyles: jest.fn().mockReturnValue({ empty: 'empty' }),
 }));
 
 jest.mock('@material-ui/core', () => ({
@@ -35,13 +39,8 @@ jest.mock('@backstage/core-plugin-api', () => ({
   useApi: jest.fn(),
 }));
 
-jest.mock('react-use', () => ({
-  ...jest.requireActual('react-use'),
-  useAsync: jest.fn(),
-}));
-
-jest.mock('../../mocks/mockData', () => ({
-  getDataForRepositories: jest.fn(),
+jest.mock('../../hooks/useAddedRepositories', () => ({
+  useAddedRepositories: jest.fn(),
 }));
 
 const mockIdentityApi = {
@@ -49,32 +48,6 @@ const mockIdentityApi = {
     .fn()
     .mockResolvedValue({ userEntityRef: 'user:default/testuser' }),
 };
-
-const mockRepositoriesData: AddRepositoriesData[] = [
-  {
-    id: 5,
-    repoName: 'Gingerbread',
-    repoUrl: 'https://github.com/gingerbread',
-    orgName: 'org/desert',
-    organizationUrl: 'org/desert',
-    catalogInfoYaml: {
-      status: RepositoryStatus.Exists,
-      prTemplate: {
-        componentName: 'Gingerbread',
-        entityOwner: 'user:default/testuser',
-        prTitle: 'This is the pull request title',
-        prDescription: 'This is the description of the pull request',
-        useCodeOwnersFile: false,
-        yaml: {
-          kind: 'Component',
-          apiVersion: 'v1',
-          metadata: { name: 'Gingerbread' },
-        },
-      },
-    },
-    lastUpdated: 'Jun 24, 2024, 3:25 PM',
-  },
-];
 
 jest.mock('./RepositoriesListColumns', () => ({
   columns: [
@@ -111,29 +84,29 @@ jest.mock('./RepositoriesListColumns', () => ({
   ],
 }));
 
-describe('RepositoriesList', () => {
-  beforeEach(() => {
-    const setFieldValue = jest.fn();
-    (useFormikContext as jest.Mock).mockReturnValue({
-      setFieldValue,
-      values: {
-        repositories: {},
-        repositoryType: 'repository',
-      },
-    });
-    (useAsync as jest.Mock).mockReturnValue({
-      loading: false,
-      value: 'user:default/testuser',
-    });
-  });
+const mockAsyncData = {
+  loaded: true,
+  data: mockGetImportJobs,
+  totalCount: 1,
+  error: undefined,
+  retry: jest.fn(),
+};
 
+const mockUseAddedRepositories = useAddedRepositories as jest.MockedFunction<
+  typeof useAddedRepositories
+>;
+
+describe('RepositoriesList', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('should have an add button and an Added repositories table', async () => {
-    jest.spyOn(mockDataModule, 'getDataForRepositories').mockReturnValue([]);
-
+    (useFormikContext as jest.Mock).mockReturnValue({
+      status: null,
+      setFieldValue: jest.fn(),
+    });
+    mockUseAddedRepositories.mockReturnValue(mockAsyncData);
     render(
       <Router>
         <TestApiProvider apis={[[identityApiRef, mockIdentityApi]]}>
@@ -144,7 +117,7 @@ describe('RepositoriesList', () => {
     const addRepoButton = screen.getByText('Add');
     expect(addRepoButton).toBeInTheDocument();
     expect(
-      screen.getByText('Added repositories', { exact: false }),
+      screen.getByText('Added repositories (4)', { exact: false }),
     ).toBeInTheDocument();
     expect(screen.getByText('Name')).toBeInTheDocument();
     expect(screen.getByText('Repo URL')).toBeInTheDocument();
@@ -155,8 +128,11 @@ describe('RepositoriesList', () => {
   });
 
   it('should render the component and display empty content when no data', async () => {
-    jest.spyOn(mockDataModule, 'getDataForRepositories').mockReturnValue([]);
-
+    (useFormikContext as jest.Mock).mockReturnValue({
+      status: null,
+      setFieldValue: jest.fn(),
+    });
+    mockUseAddedRepositories.mockReturnValue({ ...mockAsyncData, data: [] });
     render(
       <Router>
         <TestApiProvider apis={[[identityApiRef, mockIdentityApi]]}>
@@ -165,23 +141,23 @@ describe('RepositoriesList', () => {
       </Router>,
     );
 
-    const emptyMessage = screen.getByTestId('repositories-table-empty');
+    expect(
+      screen.getByText('Added repositories (0)', { exact: false }),
+    ).toBeInTheDocument();
+    const emptyMessage = screen.getByTestId('added-repositories-table-empty');
     expect(emptyMessage).toBeInTheDocument();
     expect(emptyMessage).toHaveTextContent('No records found');
   });
 
-  it('should render the component and display table data', async () => {
+  it('should display an alert if get import job api fails', async () => {
     (useFormikContext as jest.Mock).mockReturnValue({
-      setFieldValue: jest.fn(),
-      values: {
-        repositories: mockRepositoriesData,
-        repositoryType: 'repository',
+      status: {
+        title: 'Not found',
+        url: 'https://xyz',
       },
+      setFieldValue: jest.fn(),
     });
-    jest
-      .spyOn(mockDataModule, 'getDataForRepositories')
-      .mockReturnValue(mockRepositoriesData);
-
+    mockUseAddedRepositories.mockReturnValue({ ...mockAsyncData, data: [] });
     render(
       <Router>
         <TestApiProvider apis={[[identityApiRef, mockIdentityApi]]}>
@@ -189,13 +165,9 @@ describe('RepositoriesList', () => {
         </TestApiProvider>
       </Router>,
     );
-    expect(screen.getByText('Added repositories (1)')).toBeInTheDocument();
-    expect(screen.getByText('Gingerbread')).toBeInTheDocument();
+
     expect(
-      screen.getByText('github.com/gingerbread', { exact: false }),
+      screen.getByText('Not found https://xyz', { exact: false }),
     ).toBeInTheDocument();
-    expect(screen.getByText('org/desert')).toBeInTheDocument();
-    expect(screen.getByText('Exists')).toBeInTheDocument();
-    expect(screen.getByText('Jun 24, 2024, 3:25 PM')).toBeInTheDocument();
   });
 });

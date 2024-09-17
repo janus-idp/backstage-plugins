@@ -16,7 +16,6 @@ import {
   getConditionalPermissionsData,
   getConditionsData,
   getConditionUpperCriteria,
-  getKindNamespaceName,
   getMembers,
   getMembersFromGroup,
   getPermissions,
@@ -185,19 +184,6 @@ describe('rbac utils', () => {
     ).toBe(true);
   });
 
-  it('should return kind, namespace and name from the reference', () => {
-    expect(getKindNamespaceName('role:default/xyz')).toEqual({
-      kind: 'role',
-      namespace: 'default',
-      name: 'xyz',
-    });
-    expect(getKindNamespaceName('role:abc/test')).toEqual({
-      kind: 'role',
-      namespace: 'abc',
-      name: 'test',
-    });
-  });
-
   it('should return the permissions data', () => {
     let data = getPermissionsData(mockPolicies, mockPermissionPolicies);
     expect(data[0]).toEqual({
@@ -302,14 +288,37 @@ describe('getConditionsData', () => {
     });
   });
 
-  it('should return undefined if nested condition exists', () => {
+  it('should return nested conditions if nested condition exists', () => {
     const conditions = {
       allOf: [mockConditions[1].conditions, mockConditions[0].conditions],
     } as AllOfCriteria<PermissionCondition>;
 
     const result = getConditionsData(conditions);
+    const expectedResult = {
+      allOf: [
+        {
+          allOf: [
+            {
+              params: { label: 'temp' },
+              resourceType: 'catalog-entity',
+              rule: 'HAS_LABEL',
+            },
+            {
+              params: { key: 'status' },
+              resourceType: 'catalog-entity',
+              rule: 'HAS_METADATA',
+            },
+          ],
+        },
+        {
+          params: { annotation: 'temp' },
+          resourceType: 'catalog-entity',
+          rule: 'HAS_ANNOTATION',
+        },
+      ],
+    };
 
-    expect(result).toBeUndefined();
+    expect(result).toEqual(expectedResult);
   });
 });
 
@@ -422,7 +431,7 @@ describe('getConditionalPermissionsData', () => {
     expect(result).toEqual([]);
   });
 
-  it('should skip conditional permission with nested upper criteria', () => {
+  it('should return nested conditional permission with nested upper criteria', () => {
     const conditionalPermissions = [
       {
         id: 1,
@@ -455,6 +464,41 @@ describe('getConditionalPermissionsData', () => {
       permissionPolicies,
     );
 
-    expect(result).toEqual([]);
+    const expectedResultConditions = {
+      allOf: [
+        {
+          allOf: [
+            {
+              params: {
+                label: 'temp',
+              },
+              resourceType: 'catalog-entity',
+              rule: 'HAS_LABEL',
+            },
+            {
+              params: {
+                key: 'status',
+              },
+              resourceType: 'catalog-entity',
+              rule: 'HAS_METADATA',
+            },
+          ],
+        },
+        {
+          params: {
+            annotation: 'temp',
+          },
+          resourceType: 'catalog-entity',
+          rule: 'HAS_ANNOTATION',
+        },
+      ],
+    };
+
+    expect(result[0].conditions?.allOf).toHaveLength(2);
+
+    const allOfConditions = result[0].conditions?.allOf || [];
+    expect(allOfConditions[0]).toHaveProperty('allOf');
+    expect(allOfConditions[1]).toHaveProperty('params');
+    expect(result[0].conditions).toEqual(expectedResultConditions);
   });
 });

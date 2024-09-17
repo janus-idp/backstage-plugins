@@ -10,30 +10,16 @@ servers:
   - url: /
 paths:
   /v2/workflows/overview:
-    get:
+    post:
       operationId: getWorkflowsOverview
       description: Get a list of workflow overviews
-      parameters:
-        - name: page
-          in: query
-          description: page number
-          schema:
-            type: number
-        - name: pageSize
-          in: query
-          description: page size
-          schema:
-            type: number
-        - name: orderBy
-          in: query
-          description: field name to order the data
-          schema:
-            type: string
-        - name: orderDirection
-          in: query
-          description: ascending or descending
-          schema:
-            type: string
+      requestBody:
+        required: false
+        description: Parameters for retrieving of workflow overviews
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetOverviewsRequestParams'
       responses:
         '200':
           description: Success
@@ -119,32 +105,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /v2/workflows/instances:
+  /v2/workflows/{workflowId}/inputSchema:
     get:
+      operationId: getWorkflowInputSchemaById
+      description: Get a workflow input schema by ID
+      parameters:
+        - name: workflowId
+          in: path
+          description: ID of the workflow to fetch
+          required: true
+          schema:
+            type: string
+        - name: instanceId
+          in: query
+          description: ID of instance
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Error fetching workflow input schema by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/workflows/instances:
+    post:
       operationId: getInstances
       summary: Get instances
       description: Retrieve an array of instances
-      parameters:
-        - name: page
-          in: query
-          description: page number
-          schema:
-            type: number
-        - name: pageSize
-          in: query
-          description: page size
-          schema:
-            type: number
-        - name: orderBy
-          in: query
-          description: field name to order the data
-          schema:
-            type: string
-        - name: orderDirection
-          in: query
-          description: ascending or descending
-          schema:
-            type: string
+      requestBody:
+        required: false
+        description: Parameters for retrieving instances
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetInstancesRequestParams'
       responses:
         '200':
           description: Success
@@ -239,7 +240,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /v2/instances/{instanceId}/abort:
+  /v2/workflows/instances/{instanceId}/abort:
     delete:
       summary: Abort a workflow instance
       operationId: abortWorkflow
@@ -285,6 +286,20 @@ components:
           type: string
       required:
         - message
+    GetInstancesRequestParams:
+      type: object
+      properties:
+        paginationInfo:
+          $ref: '#/components/schemas/PaginationInfoDTO'
+        filterInfo:
+          $ref: '#/components/schemas/FilterInfo'
+    GetOverviewsRequestParams:
+      type: object
+      properties:
+        paginationInfo:
+          $ref: '#/components/schemas/PaginationInfoDTO'
+        filterInfo:
+          $ref: '#/components/schemas/FilterInfo'
     WorkflowOverviewListResultDTO:
       type: object
       properties:
@@ -330,22 +345,42 @@ components:
       properties:
         pageSize:
           type: number
-          minimum: 10
-        page:
+        offset:
           type: number
-          default: 0
         totalCount:
           type: number
-          minimum: 0
         orderDirection:
           enum:
             - ASC
             - DESC
-          default: ASC
         orderBy:
           type: string
-          minimum: 0
       additionalProperties: false
+    FilterInfo:
+      type: object
+      properties:
+        fieldName:
+          description: The name of the field to filter on
+          type: string
+        operator:
+          $ref: '#/components/schemas/Operator'
+        fieldValue:
+          title: FilterValue
+          oneOf:
+            - type: string
+            - type: number
+            - type: boolean
+          description: The value to filter by, which can be a string, number, boolean, or ProcessInstanceStatusDTO
+      required:
+        - fieldName
+        - operator
+        - fieldValue
+    Operator:
+      type: string
+      description: The operator to use for filtering, such as equality or inclusion
+      enum:
+        - equal
+        - in
     WorkflowFormatDTO:
       type: string
       description: Format of the workflow definition
@@ -504,6 +539,8 @@ components:
       properties:
         id:
           type: string
+      required:
+        - id
     WorkflowProgressDTO:
       allOf:
         - $ref: '#/components/schemas/NodeInstanceDTO'

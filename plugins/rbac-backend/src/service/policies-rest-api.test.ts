@@ -23,6 +23,7 @@ import {
   RoleConditionalPolicyDecision,
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
+import { RBACProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import {
   RoleMetadataDao,
@@ -38,21 +39,12 @@ import { PoliciesServer } from './policies-rest-api';
 
 jest.setTimeout(60000);
 
-const pluginPermissionMetadataCollectorMock = {
-  getPluginPolicies: jest.fn().mockImplementation(),
-  getPluginConditionRules: jest.fn().mockImplementation(),
-  getMetadataByPluginId: jest.fn().mockImplementation(),
-};
-
-jest.mock('./plugin-endpoints', () => {
-  return {
-    PluginPermissionMetadataCollector: jest.fn(
-      (): Partial<PluginPermissionMetadataCollector> => {
-        return pluginPermissionMetadataCollectorMock;
-      },
-    ),
+const pluginPermissionMetadataCollectorMock: Partial<PluginPermissionMetadataCollector> =
+  {
+    getPluginPolicies: jest.fn().mockImplementation(),
+    getPluginConditionRules: jest.fn().mockImplementation(),
+    getMetadataByPluginId: jest.fn().mockImplementation(),
   };
-});
 
 jest.mock('@backstage/plugin-auth-node', () => ({
   getBearerTokenFromAuthorizationHeader: () => 'token',
@@ -165,6 +157,12 @@ const expectedConditions: RoleConditionalPolicyDecision<PermissionAction>[] = [
   },
 ];
 
+const providerMock: RBACProvider = {
+  getProviderName: jest.fn().mockImplementation(() => `testProvider`),
+  connect: jest.fn().mockImplementation(),
+  refresh: jest.fn().mockImplementation(),
+};
+
 const modifiedBy = 'user:default/some-admin';
 
 describe('REST policies api', () => {
@@ -195,12 +193,6 @@ describe('REST policies api', () => {
         ownershipEntityRefs: ['guest'],
       },
     })),
-  };
-
-  const backendPluginIDsProviderMock = {
-    getPluginIds: jest.fn().mockImplementation(() => {
-      return [];
-    }),
   };
 
   const logger = getVoidLogger();
@@ -295,6 +287,8 @@ describe('REST policies api', () => {
         mockEnforcer as EnforcerDelegate,
         roleMetadataStorageMock,
         knex,
+        pluginPermissionMetadataCollectorMock as PluginPermissionMetadataCollector,
+        mockAuth,
       ),
     };
 
@@ -306,7 +300,7 @@ describe('REST policies api', () => {
       mockHttpAuth,
       mockAuth,
       conditionalStorage,
-      backendPluginIDsProviderMock,
+      pluginPermissionMetadataCollectorMock as PluginPermissionMetadataCollector,
       roleMetadataStorageMock,
       auditLoggerMock,
     );
@@ -1240,7 +1234,7 @@ describe('REST policies api', () => {
               effect: 'allow',
             },
           ],
-          newPolicy: [{ permission: 'policy-entity', policy: 'write' }],
+          newPolicy: [{ permission: 'policy-entity', policy: 'create' }],
         });
 
       expect(result.statusCode).toEqual(400);
@@ -1261,7 +1255,7 @@ describe('REST policies api', () => {
               effect: 'unknown',
             },
           ],
-          newPolicy: [{ permission: 'policy-entity', policy: 'write' }],
+          newPolicy: [{ permission: 'policy-entity', policy: 'create' }],
         });
 
       expect(result.statusCode).toEqual(400);
@@ -1285,7 +1279,7 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'create',
               effect: 'allow',
             },
           ],
@@ -1344,7 +1338,7 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'create',
               effect: 'allow',
             },
           ],
@@ -1353,7 +1347,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toEqual(409);
       expect(result.body.error).toEqual({
         name: 'ConflictError',
-        message: `Policy '[user:default/permission_admin, policy-entity, write, allow]' has been already stored`,
+        message: `Policy '[user:default/permission_admin, policy-entity, create, allow]' has been already stored`,
       });
     });
 
@@ -1465,7 +1459,7 @@ describe('REST policies api', () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[2] === 'write') {
+          if (param[2] === 'create') {
             return false;
           }
           return true;
@@ -1489,7 +1483,7 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'create',
               effect: 'allow',
             },
           ],
@@ -1506,7 +1500,7 @@ describe('REST policies api', () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[2] === 'write') {
+          if (param[2] === 'create') {
             return false;
           }
           return true;
@@ -1532,7 +1526,7 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'create',
               effect: 'allow',
             },
           ],
@@ -1549,7 +1543,7 @@ describe('REST policies api', () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[2] === 'write') {
+          if (param[2] === 'create') {
             return false;
           }
           return true;
@@ -1569,7 +1563,7 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'create',
               effect: 'allow',
             },
           ],
@@ -1582,7 +1576,7 @@ describe('REST policies api', () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[2] === 'write') {
+          if (param[2] === 'create') {
             return false;
           }
           return true;
@@ -1606,7 +1600,7 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'create',
               effect: 'allow',
             },
             {
@@ -1628,7 +1622,7 @@ describe('REST policies api', () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[2] === 'write') {
+          if (param[2] === 'update') {
             return false;
           }
           return true;
@@ -1652,12 +1646,12 @@ describe('REST policies api', () => {
           newPolicy: [
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'update',
               effect: 'allow',
             },
             {
               permission: 'policy-entity',
-              policy: 'write',
+              policy: 'update',
               effect: 'allow',
             },
           ],
@@ -1666,7 +1660,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(409);
       expect(result.body.error).toEqual({
         name: 'ConflictError',
-        message: `Duplicate polices found; user:default/permission_admin, policy-entity, write, allow is a duplicate`,
+        message: `Duplicate polices found; user:default/permission_admin, policy-entity, update, allow is a duplicate`,
       });
     });
 
@@ -3478,6 +3472,102 @@ describe('REST policies api', () => {
     });
   });
 
+  describe('POST /refresh/:id', () => {
+    let appWithProvider: express.Express;
+
+    beforeEach(async () => {
+      mockedAuthorize.mockImplementation(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
+
+      const options: RouterOptions = {
+        config: config,
+        logger,
+        discovery: mockDiscovery,
+        identity: mockIdentityClient,
+        policy: await RBACPermissionPolicy.build(
+          logger,
+          auditLoggerMock,
+          config,
+          conditionalStorage,
+          mockEnforcer as EnforcerDelegate,
+          roleMetadataStorageMock,
+          knex,
+          pluginPermissionMetadataCollectorMock as PluginPermissionMetadataCollector,
+          mockAuth,
+        ),
+      };
+
+      server = new PoliciesServer(
+        mockPermissionEvaluator,
+        options,
+        mockEnforcer as EnforcerDelegate,
+        config,
+        mockHttpAuth,
+        mockAuth,
+        conditionalStorage,
+        pluginPermissionMetadataCollectorMock as PluginPermissionMetadataCollector,
+        roleMetadataStorageMock,
+        auditLoggerMock,
+        [providerMock],
+      );
+      const router = await server.serve();
+      appWithProvider = express().use(router);
+      appWithProvider.use(errorHandler());
+    });
+
+    it('should return a status of Unauthorized', async () => {
+      mockedAuthorize.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+      const result = await request(app).post('/refresh/test').send();
+
+      expect(mockedAuthorize).toHaveBeenCalledWith(
+        [
+          {
+            permission: policyEntityCreatePermission,
+            resourceRef: 'policy-entity',
+          },
+        ],
+        {
+          credentials: credentials,
+        },
+      );
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
+    });
+
+    it('should return a 200 for successful refresh set', async () => {
+      const result = await request(appWithProvider)
+        .post('/refresh/testProvider')
+        .send();
+      expect(result.statusCode).toBe(200);
+    });
+
+    it('should return a 404 when there are no rbac providers', async () => {
+      const result = await request(app).post('/refresh/test').send();
+      expect(result.statusCode).toBe(404);
+      expect(result.body.error).toEqual({
+        message: 'No RBAC providers were found',
+        name: 'NotFoundError',
+      });
+    });
+
+    it('should return a 404 when the rbac provider does not exist', async () => {
+      const result = await request(appWithProvider)
+        .post('/refresh/test')
+        .send();
+      expect(result.statusCode).toBe(404);
+      expect(result.body.error).toEqual({
+        message: 'The RBAC provider test was not found',
+        name: 'NotFoundError',
+      });
+    });
+  });
+
   describe('list plugin permissions and condition rules', () => {
     it('should return list plugins permission', async () => {
       const pluginMetadata: PluginPermissionMetaData[] = [
@@ -3649,7 +3739,7 @@ describe('REST policies api', () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (...param: string[]): Promise<boolean> => {
-          if (param[2] === 'write') {
+          if (param[2] === 'create') {
             return false;
           }
           return true;

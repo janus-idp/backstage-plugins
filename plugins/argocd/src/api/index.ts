@@ -23,6 +23,13 @@ export type RevisionDetailsListOptions = {
   instanceName?: string;
   apps: Application[];
 };
+
+export type GetApplicationOptions = {
+  url: string;
+  appName: string;
+  appNamespace?: string;
+  instance?: string;
+};
 export interface ArgoCDApi {
   listApps(options: listAppsOptions): Promise<{ items: Application[] }>;
   getRevisionDetails(
@@ -31,6 +38,7 @@ export interface ArgoCDApi {
   getRevisionDetailsList(
     options: RevisionDetailsListOptions,
   ): Promise<ArgoCDAppDeployRevisionDetails[]>;
+  getApplication(options: GetApplicationOptions): Promise<Application>;
 }
 
 export const argoCDApiRef = createApiRef<ArgoCDApi>({
@@ -107,9 +115,19 @@ export class ArgoCDApiClient implements ArgoCDApi {
       appNamespace: options.appNamespace,
     });
     return this.fetcher(
-      options.appSelector
-        ? `${proxyUrl}${options.url}/applications/selector/${options.appSelector}${query}`
-        : `${proxyUrl}${options.url}/applications${query}`,
+      `${proxyUrl}${options.url}/applications/selector/${options.appSelector}${query}`,
+    );
+  }
+
+  async getApplication(options: GetApplicationOptions) {
+    const proxyUrl = await this.getBaseUrl();
+    const query = this.getQueryParams({
+      appNamespace: options.appNamespace,
+    });
+    return this.fetcher(
+      `${proxyUrl}${options.url}/applications/${encodeURIComponent(
+        options.appName,
+      )}${query}`,
     );
   }
 
@@ -128,10 +146,8 @@ export class ArgoCDApiClient implements ArgoCDApi {
       `${proxyUrl}/argoInstance/${
         options.instanceName
       }/applications/name/${encodeURIComponent(
-        options.app as string,
-      )}/revisions/${encodeURIComponent(
-        options.revisionID as string,
-      )}/metadata${query}`,
+        options.app,
+      )}/revisions/${encodeURIComponent(options.revisionID)}/metadata${query}`,
     );
   }
 

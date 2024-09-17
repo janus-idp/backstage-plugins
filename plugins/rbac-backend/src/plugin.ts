@@ -8,6 +8,8 @@ import {
   PluginIdProvider,
   PluginIdProviderExtensionPoint,
   pluginIdProviderExtensionPoint,
+  RBACProvider,
+  rbacProviderExtensionPoint,
 } from '@janus-idp/backstage-plugin-rbac-node';
 
 /**
@@ -32,6 +34,16 @@ export const rbacPlugin = createBackendPlugin({
       pluginIdProviderExtensionPointImpl,
     );
 
+    const rbacProviders = new Array<RBACProvider>();
+
+    env.registerExtensionPoint(rbacProviderExtensionPoint, {
+      addRBACProvider(
+        ...providers: Array<RBACProvider | Array<RBACProvider>>
+      ): void {
+        rbacProviders.push(...providers.flat());
+      },
+    });
+
     env.registerInit({
       deps: {
         http: coreServices.httpRouter,
@@ -42,6 +54,7 @@ export const rbacPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
+        userInfo: coreServices.userInfo,
       },
       async init({
         http,
@@ -52,6 +65,7 @@ export const rbacPlugin = createBackendPlugin({
         permissions,
         auth,
         httpAuth,
+        userInfo,
       }) {
         http.use(
           await PolicyBuilder.build(
@@ -63,6 +77,7 @@ export const rbacPlugin = createBackendPlugin({
               permissions,
               auth,
               httpAuth,
+              userInfo,
             },
             {
               getPluginIds: () =>
@@ -74,6 +89,7 @@ export const rbacPlugin = createBackendPlugin({
                   ),
                 ),
             },
+            rbacProviders,
           ),
         );
       },

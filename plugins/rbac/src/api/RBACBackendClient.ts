@@ -1,3 +1,4 @@
+import { parseEntityRef } from '@backstage/catalog-model';
 import {
   ConfigApi,
   createApiRef,
@@ -18,7 +19,6 @@ import {
   RoleBasedConditions,
   RoleError,
 } from '../types';
-import { getKindNamespaceName } from '../utils/rbac-utils';
 
 // @public
 export type RBACAPI = {
@@ -122,7 +122,7 @@ export class RBACBackendClient implements RBACAPI {
   }
 
   async getAssociatedPolicies(entityReference: string) {
-    const { kind, namespace, name } = getKindNamespaceName(entityReference);
+    const { kind, namespace, name } = parseEntityRef(entityReference);
     const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
     const jsonResponse = await fetch(
@@ -142,7 +142,7 @@ export class RBACBackendClient implements RBACAPI {
   async deleteRole(role: string) {
     const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const { kind, namespace, name } = getKindNamespaceName(role);
+    const { kind, namespace, name } = parseEntityRef(role);
     const jsonResponse = await fetch(
       `${backendUrl}/api/permission/roles/${kind}/${namespace}/${name}`,
       {
@@ -159,7 +159,7 @@ export class RBACBackendClient implements RBACAPI {
   async getRole(role: string) {
     const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const { kind, namespace, name } = getKindNamespaceName(role);
+    const { kind, namespace, name } = parseEntityRef(role);
     const jsonResponse = await fetch(
       `${backendUrl}/api/permission/roles/${kind}/${namespace}/${name}`,
       {
@@ -232,7 +232,7 @@ export class RBACBackendClient implements RBACAPI {
   async updateRole(oldRole: Role, newRole: Role) {
     const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const { kind, namespace, name } = getKindNamespaceName(oldRole.name);
+    const { kind, namespace, name } = parseEntityRef(oldRole.name);
     const body = {
       oldRole,
       newRole,
@@ -266,7 +266,7 @@ export class RBACBackendClient implements RBACAPI {
   ) {
     const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const { kind, namespace, name } = getKindNamespaceName(entityReference);
+    const { kind, namespace, name } = parseEntityRef(entityReference);
     const body = {
       oldPolicy: oldPolicies,
       newPolicy: newPolicies,
@@ -292,7 +292,7 @@ export class RBACBackendClient implements RBACAPI {
   async deletePolicies(entityReference: string, policies: RoleBasedPolicy[]) {
     const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const { kind, namespace, name } = getKindNamespaceName(entityReference);
+    const { kind, namespace, name } = parseEntityRef(entityReference);
     const jsonResponse = await fetch(
       `${backendUrl}/api/permission/policies/${kind}/${namespace}/${name}`,
       {

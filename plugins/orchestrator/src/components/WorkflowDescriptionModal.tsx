@@ -1,17 +1,18 @@
-import React from 'react';
+import React, { forwardRef, ForwardRefRenderFunction } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import CloseIcon from '@mui/icons-material/Close';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  makeStyles,
+  Typography,
+} from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 
 import { WorkflowOverviewDTO } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -24,16 +25,20 @@ export type WorkflowDescriptionModalProps = {
 
 export type ParentComponentRef = HTMLElement;
 
-const CloseButton = styled(IconButton)({
-  position: 'absolute',
-  right: 8,
-  top: 8,
-});
+const useStyles = makeStyles(_theme => ({
+  closeBtn: {
+    position: 'absolute',
+    right: 8,
+    top: 8,
+  },
+}));
 
-export const WorkflowDescriptionModal = (
-  props: WorkflowDescriptionModalProps,
-) => {
+export const RefForwardingWorkflowDescriptionModal: ForwardRefRenderFunction<
+  ParentComponentRef,
+  WorkflowDescriptionModalProps
+> = (props, forwardedRef): JSX.Element | null => {
   const { workflow, open = false, onClose, runWorkflowLink } = props;
+  const classes = useStyles();
   const navigate = useNavigate();
 
   const handleRunWorkflow = () => {
@@ -43,22 +48,32 @@ export const WorkflowDescriptionModal = (
   };
 
   return (
-    <Dialog onClose={_ => onClose} open={open} maxWidth="sm" fullWidth>
+    <Dialog
+      onClose={_ => onClose}
+      open={open}
+      ref={forwardedRef}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>
         <Box>
           <Typography variant="h5">{workflow.name}</Typography>
-          <CloseButton aria-label="close" onClick={onClose}>
+          <IconButton
+            className={classes.closeBtn}
+            aria-label="close"
+            onClick={onClose}
+          >
             <CloseIcon />
-          </CloseButton>
+          </IconButton>
         </Box>
       </DialogTitle>
       <DialogContent>
         {workflow.description ? (
-          <DialogContentText>{workflow.description}</DialogContentText>
+          <Box>{workflow.description}</Box>
         ) : (
-          <DialogContentText>
+          <Box>
             <p>Are you sure you want to run this workflow?</p>
-          </DialogContentText>
+          </Box>
         )}
       </DialogContent>
       <DialogActions>
@@ -72,3 +87,7 @@ export const WorkflowDescriptionModal = (
     </Dialog>
   );
 };
+
+export const WorkflowDescriptionModal = forwardRef(
+  RefForwardingWorkflowDescriptionModal,
+);

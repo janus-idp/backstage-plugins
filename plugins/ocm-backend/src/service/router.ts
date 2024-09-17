@@ -33,7 +33,6 @@ import {
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
 import express from 'express';
-import Router from 'express-promise-router';
 import { Request } from 'express-serve-static-core';
 
 import {
@@ -61,6 +60,7 @@ import {
   translateOCMToResource,
   translateResourceToOCM,
 } from '../helpers/parser';
+import { createOpenApiRouter } from '../schema/openapi.generated';
 import { ManagedClusterInfo } from '../types';
 
 export interface RouterOptions {
@@ -71,13 +71,13 @@ export interface RouterOptions {
   httpAuth?: HttpAuthService;
 }
 
-const buildRouter = (
+const buildRouter = async (
   config: Config,
   logger: LoggerService,
   httpAuth: HttpAuthService,
   permissions: PermissionsService,
 ) => {
-  const router = Router();
+  const router = await createOpenApiRouter();
 
   const permissionsIntegrationRouter = createPermissionIntegrationRouter({
     permissions: ocmEntityPermissions,
@@ -198,7 +198,7 @@ export async function createRouter(
 
   const { httpAuth } = createLegacyAuthAdapters(options);
 
-  return buildRouter(config, logger, httpAuth, permissions);
+  return await buildRouter(config, logger, httpAuth, permissions);
 }
 
 export const ocmPlugin = createBackendPlugin({
@@ -213,7 +213,7 @@ export const ocmPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
       },
       async init({ config, logger, http, httpAuth, permissions }) {
-        http.use(buildRouter(config, logger, httpAuth, permissions));
+        http.use(await buildRouter(config, logger, httpAuth, permissions));
       },
     });
   },

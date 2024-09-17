@@ -2,6 +2,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 
 import {
   extractWorkflowFormat,
+  FilterInfo,
   fromWorkflowSource,
   getWorkflowCategory,
   ProcessInstance,
@@ -66,12 +67,14 @@ export class SonataFlowService {
   public async fetchWorkflowOverviews(args: {
     definitionIds?: string[];
     pagination?: Pagination;
+    filter?: FilterInfo;
   }): Promise<WorkflowOverview[] | undefined> {
-    const { definitionIds, pagination } = args;
+    const { definitionIds, pagination, filter } = args;
     try {
       const workflowInfos = await this.dataIndexService.fetchWorkflowInfos({
         definitionIds,
         pagination,
+        filter,
       });
       if (!workflowInfos?.length) {
         return [];
@@ -192,24 +195,6 @@ export class SonataFlowService {
       return response.ok;
     } catch (error) {
       this.logger.debug(`Error when pinging workflow service: ${error}`);
-    }
-    return false;
-  }
-
-  public async retriggerInstanceInError(args: {
-    definitionId: string;
-    serviceUrl: string;
-    instanceId: string;
-  }): Promise<boolean> {
-    const { definitionId, serviceUrl, instanceId } = args;
-    try {
-      const urlToFetch = `${serviceUrl}/management/processes/${definitionId}/instances/${instanceId}/retrigger`;
-      const response = await fetch(urlToFetch, {
-        method: 'POST',
-      });
-      return response.ok;
-    } catch (error) {
-      this.logger.error(`Error when retriggering workflow in error: ${error}`);
     }
     return false;
   }

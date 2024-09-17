@@ -1,13 +1,15 @@
 import * as React from 'react';
 
-import Checkbox from '@mui/material/Checkbox';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
+import {
+  Checkbox,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableSortLabel,
+} from '@material-ui/core';
 
 import { Order } from '../../types';
-import { OrganizationColumnHeader } from './OrganizationColumnHeader';
+import { OrganizationsColumnHeader } from './OrganizationsColumnHeader';
 import { RepositoriesColumnHeader } from './RepositoriesColumnHeader';
 import { ReposSelectDrawerColumnHeader } from './ReposSelectDrawerColumnHeader';
 
@@ -18,17 +20,19 @@ export const RepositoriesHeader = ({
   numSelected,
   rowCount,
   onRequestSort,
+  isDataLoading,
   showOrganizations,
   isRepoSelectDrawer = false,
 }: {
   numSelected: number;
   onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
-  orderBy: string;
+  orderBy: string | undefined;
   rowCount: number;
-  showOrganizations: boolean;
+  isDataLoading?: boolean;
+  showOrganizations?: boolean;
   isRepoSelectDrawer?: boolean;
+  onSelectAllClick?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const createSortHandler =
     (property: any) => (event: React.MouseEvent<unknown>) => {
@@ -37,19 +41,12 @@ export const RepositoriesHeader = ({
 
   const getColumnHeader = () => {
     if (showOrganizations) {
-      return OrganizationColumnHeader;
+      return OrganizationsColumnHeader;
     }
     if (isRepoSelectDrawer) {
       return ReposSelectDrawerColumnHeader;
     }
     return RepositoriesColumnHeader;
-  };
-
-  const tableCellStyle = {
-    lineHeight: '1.5rem',
-    fontSize: '0.875rem',
-    padding: showOrganizations ? '15px 16px 15px 24px' : '15px 16px 15px 6px',
-    fontWeight: '700',
   };
 
   return (
@@ -60,7 +57,14 @@ export const RepositoriesHeader = ({
             key={headCell.id as string}
             align="left"
             padding="normal"
-            sx={tableCellStyle}
+            style={{
+              lineHeight: '1.5rem',
+              fontSize: '0.875rem',
+              padding: showOrganizations
+                ? '15px 16px 15px 24px'
+                : '15px 16px 15px 6px',
+              fontWeight: '700',
+            }}
             sortDirection={orderBy === headCell.field ? order : 'asc'}
           >
             {index === 0 && !showOrganizations && (
@@ -74,6 +78,7 @@ export const RepositoriesHeader = ({
                 inputProps={{
                   'aria-label': 'select all repositories',
                 }}
+                disabled={isDataLoading}
               />
             )}
             <TableSortLabel

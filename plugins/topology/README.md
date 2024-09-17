@@ -1,6 +1,6 @@
 # Topology plugin for Backstage
 
-The Topology plugin enables you to visualize the workloads such as Deployment, Job, Daemonset, Statefulset, CronJob, and Pods powering any service on the Kubernetes cluster.
+The Topology plugin enables you to visualize the workloads such as Deployment, Job, Daemonset, Statefulset, CronJob, Pods and Virtual Machines powering any service on the Kubernetes cluster.
 
 ## For administrators
 
@@ -8,7 +8,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
 #### Prerequisites
 
-- The Kubernetes plugins including `@backstage/plugin-kubernetes` and `@backstage/plugin-kubernetes-backend` are installed and configured by following the [installation](https://backstage.io/docs/features/kubernetes/installation) and [configuration](https://backstage.io/docs/features/kubernetes/configuration) guides.
+- The Kubernetes backend plugin `@backstage/plugin-kubernetes-backend` is installed and configured by following the [installation](https://backstage.io/docs/features/kubernetes/installation) and [configuration](https://backstage.io/docs/features/kubernetes/configuration) guides.
 - The Kubernetes plugin is configured and connects to the cluster using a `ServiceAccount`.
 - The [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) must be granted to `ServiceAccount` accessing the cluster. If you have the Backstage Kubernetes plugin configured, then the `ClusterRole` is already granted.
 
@@ -108,6 +108,43 @@ The following permission must be granted to the [`ClusterRole`](https://backstag
         - group: 'tekton.dev'
           apiVersion: 'v1'
           plural: 'taskruns'
+  ```
+
+##### To view the Virtual Machines
+
+- OpenShift Virtualization Operator is [installed and configured](https://docs.openshift.com/container-platform/4.8/virt/install/installing-virt-web.html#virt-installing-virt-operator_installing-virt-web) on a Kubernetes cluster.
+- Ensure that read access is granted to the VirtualMachines resource in the [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control). You can use the following code to do so:
+
+  ```yaml
+    ...
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: backstage-read-only
+    rules:
+      ...
+      - apiGroups:
+          - kubevirt.io
+        resources:
+          - virtualmachines
+          - virtualmachineinstances
+        verbs:
+          - get
+          - list
+  ```
+
+- The following code must be added to the `kubernetes.customResources` property in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the VirtualMachine nodes on the topology plugin:
+
+  ```yaml
+    kubernetes:
+      ...
+      customResources:
+        - group: 'kubevirt.io'
+          apiVersion: 'v1'
+          plural: 'virtualmachines'
+        - group: 'kubevirt.io'
+          apiVersion: 'v1'
+          plural: 'virtualmachineinstances'
   ```
 
 ##### To enable the Source Code Editor

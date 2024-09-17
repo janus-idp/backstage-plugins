@@ -1,0 +1,56 @@
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: janus-idp-bulk-import-backend
+  title: '@janus-idp/backstage-plugin-bulk-import-backend'
+  description: Bulk Import Backend Plugin
+  annotations:
+    backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main/plugins/bulk-import-backend
+    backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/bulk-import-backend/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/bulk-import-backend/catalog-info.yaml
+    github.com/project-slug: janus-idp/backstage-plugins
+    github.com/team-slug: janus-idp/maintainers-plugins
+    sonarqube.org/project-key: janus-idp_backstage-plugins
+  links:
+    - url: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/bulk-import-backend
+      title: GitHub Source
+      icon: source
+      type: source
+spec:
+  type: backstage-backend-plugin
+  lifecycle: production
+  owner: rhdh-team
+  system: rhdh
+  subcomponentOf: janus-idp-bulk-import
+  providesApis:
+    - janus-idp-bulk-import-backend-api
+
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: janus-idp-bulk-import-backend-api
+  title: '@janus-idp/backstage-plugin-bulk-import-backend'
+  description: Bulk Import Backend Plugin
+  annotations:
+    backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main/plugins/bulk-import-backend
+    backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/bulk-import-backend/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/bulk-import-backend/catalog-info.yaml
+    github.com/project-slug: janus-idp/backstage-plugins
+    github.com/team-slug: janus-idp/maintainers-plugins
+    sonarqube.org/project-key: janus-idp_backstage-plugins
+  links:
+    - url: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/bulk-import-backend
+      title: GitHub Source
+      icon: source
+      type: source
+spec:
+  type: openapi
+  lifecycle: production
+  owner: rhdh-team
+  system: rhdh
+  subcomponentOf: janus-idp-bulk-import
+  definition:
+    $text: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/bulk-import-backend/src/schema/openapi.yaml

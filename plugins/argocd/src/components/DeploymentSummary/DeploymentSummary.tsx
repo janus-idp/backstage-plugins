@@ -9,12 +9,13 @@ import moment from 'moment';
 
 import { useApplications } from '../../hooks/useApplications';
 import { useArgocdConfig } from '../../hooks/useArgocdConfig';
+import { useArgocdViewPermission } from '../../hooks/useArgocdViewPermission';
 import { Application, HealthStatus, SyncStatuses } from '../../types';
 import {
-  getAppSelector,
+  getArgoCdAppConfig,
   getCommitUrl,
   getInstanceName,
-  getProjectName,
+  isAppHelmChartType,
 } from '../../utils/utils';
 import AppSyncStatus from '../AppStatus/AppSyncStatus';
 import { AppHealthIcon } from '../AppStatus/StatusIcons';
@@ -25,12 +26,19 @@ const DeploymentSummary = () => {
   const { baseUrl, instances, intervalMs } = useArgocdConfig();
   const instanceName = getInstanceName(entity) || instances?.[0]?.name;
 
+  const { appSelector, appName, projectName, appNamespace } =
+    getArgoCdAppConfig({ entity });
+
   const { apps, loading, error } = useApplications({
     instanceName,
     intervalMs,
-    appSelector: encodeURIComponent(getAppSelector(entity)),
-    projectName: getProjectName(entity),
+    appSelector,
+    projectName,
+    appName,
+    appNamespace,
   });
+
+  const hasArgocdViewAccess = useArgocdViewPermission();
 
   const supportsMultipleArgoInstances = !!instances.length;
   const getBaseUrl = (row: any): string | undefined => {
@@ -48,18 +56,16 @@ const DeploymentSummary = () => {
       field: 'name',
       render: (row: Application): React.ReactNode =>
         getBaseUrl(row) ? (
-          <>
-            <Link
-              href={`${getBaseUrl(row)}/applications/${row?.metadata?.name}`}
-              target="_blank"
-              rel="noopener"
-            >
-              {row.metadata.name}{' '}
-              <IconButton color="primary" size="small">
-                <ExternalLinkIcon />
-              </IconButton>
-            </Link>
-          </>
+          <Link
+            href={`${getBaseUrl(row)}/applications/${row?.metadata?.name}`}
+            target="_blank"
+            rel="noopener"
+          >
+            {row.metadata.name}{' '}
+            <IconButton color="primary" size="small">
+              <ExternalLinkIcon />
+            </IconButton>
+          </Link>
         ) : (
           row.metadata.name
         ),
@@ -75,7 +81,7 @@ const DeploymentSummary = () => {
       title: 'Instance',
       field: 'instance',
       render: (row: Application): React.ReactNode => {
-        return <>{row.metadata?.instance.name}</>;
+        return <>{row.metadata?.instance?.name || instanceName}</>;
       },
     },
     {
@@ -91,11 +97,14 @@ const DeploymentSummary = () => {
       render: (row: Application): React.ReactNode => {
         const historyList = row.status?.history ?? [];
         const latestRev = historyList[historyList.length - 1];
-        const commitUrl = getCommitUrl(
-          row?.spec?.source?.repoURL,
-          latestRev?.revision,
-          entity?.metadata?.annotations || {},
-        );
+        const repoUrl = row?.spec?.source?.repoURL;
+        const commitUrl = isAppHelmChartType(row)
+          ? repoUrl
+          : getCommitUrl(
+              repoUrl,
+              latestRev?.revision,
+              entity?.metadata?.annotations || {},
+            );
         return (
           <Link href={commitUrl} target="_blank" rel="noopener">
             {latestRev?.revision?.substring(0, 7) ?? '-'}
@@ -133,7 +142,7 @@ const DeploymentSummary = () => {
       title: 'Sync status',
       field: 'syncstatus',
       customSort: (a: Application, b: Application): number => {
-        const syncStatusOrder: String[] = Object.values(SyncStatuses);
+        const syncStatusOrder: string[] = Object.values(SyncStatuses);
         return (
           syncStatusOrder.indexOf(a?.status?.sync?.status) -
           syncStatusOrder.indexOf(b?.status?.sync?.status)
@@ -147,7 +156,7 @@ const DeploymentSummary = () => {
       title: 'Health status',
       field: 'healthstatus',
       customSort: (a: Application, b: Application): number => {
-        const healthStatusOrder: String[] = Object.values(HealthStatus);
+        const healthStatusOrder: string[] = Object.values(HealthStatus);
         return (
           healthStatusOrder.indexOf(a?.status?.health?.status) -
           healthStatusOrder.indexOf(b?.status?.health?.status)
@@ -162,7 +171,7 @@ const DeploymentSummary = () => {
     },
   ];
 
-  return !error ? (
+  return !error && hasArgocdViewAccess ? (
     <Table
       title="Deployment summary"
       options={{
@@ -172,7 +181,7 @@ const DeploymentSummary = () => {
         padding: 'dense',
       }}
       isLoading={loading}
-      data={apps as Application[]}
+      data={apps}
       columns={columns}
     />
   ) : null;

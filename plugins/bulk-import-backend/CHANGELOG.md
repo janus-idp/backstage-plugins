@@ -1,3 +1,29 @@
+### Dependencies
+
+* **@janus-idp/backstage-plugin-bulk-import-common:** upgraded to 1.0.1
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-bulk-import-common:** upgraded to 1.0.1
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-bulk-import-common:** upgraded to 1.0.1
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-audit-log-node:** upgraded to 1.0.0
+* **@janus-idp/backstage-plugin-bulk-import-common:** upgraded to 1.0.0
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-bulk-import-common:** upgraded to 1.0.0
+* **@janus-idp/cli:** upgraded to 1.0.0
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.13.1
+
 ## @janus-idp/backstage-plugin-bulk-import-backend [0.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-bulk-import-backend@0.1.0...@janus-idp/backstage-plugin-bulk-import-backend@0.2.0) (2024-07-25)
 
 

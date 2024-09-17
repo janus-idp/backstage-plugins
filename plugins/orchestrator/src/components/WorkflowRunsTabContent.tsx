@@ -9,7 +9,7 @@ import {
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
-import Grid from '@mui/material/Grid';
+import { Grid } from '@material-ui/core';
 
 import {
   capitalize,
@@ -50,7 +50,7 @@ export const WorkflowRunsTabContent = () => {
   );
 
   const fetchInstances = React.useCallback(async () => {
-    const instances = await orchestratorApi.listInstances();
+    const instances = await orchestratorApi.listInstances({});
     const clonedData: WorkflowRunDetail[] =
       instances.data.items?.map(mapProcessInstanceToDetails) || [];
     return clonedData;

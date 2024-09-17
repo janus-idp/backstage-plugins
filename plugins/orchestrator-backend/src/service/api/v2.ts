@@ -4,16 +4,20 @@ import {
   AssessedProcessInstanceDTO,
   ExecuteWorkflowRequestDTO,
   ExecuteWorkflowResponseDTO,
+  FilterInfo,
   ProcessInstance,
   ProcessInstanceListResultDTO,
   ProcessInstanceState,
+  ProcessInstanceVariables,
   WorkflowDTO,
+  WorkflowInfo,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
   WorkflowRunStatusDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { Pagination } from '../../types/pagination';
+import { retryAsyncFunction } from '../Helper';
 import { OrchestratorService } from '../OrchestratorService';
 import {
   mapToExecuteWorkflowResponseDTO,
@@ -22,19 +26,20 @@ import {
   mapToWorkflowOverviewDTO,
   mapToWorkflowRunStatusDTO,
 } from './mapping/V2Mappings';
-import { V1 } from './v1';
+
+const FETCH_INSTANCE_MAX_ATTEMPTS = 10;
+const FETCH_INSTANCE_RETRY_DELAY_MS = 1000;
 
 export class V2 {
-  constructor(
-    private readonly orchestratorService: OrchestratorService,
-    private readonly v1: V1,
-  ) {}
+  constructor(private readonly orchestratorService: OrchestratorService) {}
 
   public async getWorkflowsOverview(
     pagination: Pagination,
+    filter?: FilterInfo,
   ): Promise<WorkflowOverviewListResultDTO> {
     const overviews = await this.orchestratorService.fetchWorkflowOverviews({
       pagination,
+      filter,
     });
     if (!overviews) {
       throw new Error("Couldn't fetch workflow overviews");
@@ -43,7 +48,7 @@ export class V2 {
       overviews: overviews.map(item => mapToWorkflowOverviewDTO(item)),
       paginationInfo: {
         pageSize: pagination.limit,
-        page: pagination.offset,
+        offset: pagination.offset,
         totalCount: overviews.length,
       },
     };
@@ -65,20 +70,30 @@ export class V2 {
   }
 
   public async getWorkflowById(workflowId: string): Promise<WorkflowDTO> {
-    const resultV1 = await this.v1.getWorkflowSourceById(workflowId);
+    const resultV1 = await this.getWorkflowSourceById(workflowId);
     return mapToWorkflowDTO(resultV1);
   }
 
   public async getWorkflowSourceById(workflowId: string): Promise<string> {
-    const resultV1 = await this.v1.getWorkflowSourceById(workflowId);
-    return resultV1;
+    const source = await this.orchestratorService.fetchWorkflowSource({
+      definitionId: workflowId,
+      cacheHandler: 'throw',
+    });
+
+    if (!source) {
+      throw new Error(`Couldn't fetch workflow source for ${workflowId}`);
+    }
+
+    return source;
   }
 
   public async getInstances(
-    pagination: Pagination,
+    pagination?: Pagination,
+    filter?: FilterInfo,
   ): Promise<ProcessInstanceListResultDTO> {
     const instances = await this.orchestratorService.fetchInstances({
       pagination,
+      filter,
     });
     const totalCount =
       await this.orchestratorService.fetchInstancesTotalCount();
@@ -86,8 +101,8 @@ export class V2 {
     const result: ProcessInstanceListResultDTO = {
       items: instances?.map(mapToProcessInstanceDTO),
       paginationInfo: {
-        pageSize: pagination.limit,
-        page: pagination.offset,
+        pageSize: pagination?.limit,
+        offset: pagination?.offset,
         totalCount: totalCount,
       },
     };
@@ -135,21 +150,52 @@ export class V2 {
       );
     }
 
-    const executeWorkflowResponse = await this.v1.executeWorkflow(
-      executeWorkflowRequestDTO as unknown as Record<string, unknown>, // Temporary fix: this will be addresses in the next PR
-      workflowId,
+    const definition = await this.orchestratorService.fetchWorkflowInfo({
+      definitionId: workflowId,
+      cacheHandler: 'throw',
+    });
+    if (!definition) {
+      throw new Error(`Couldn't fetch workflow definition for ${workflowId}`);
+    }
+    if (!definition.serviceUrl) {
+      throw new Error(`ServiceURL is not defined for workflow ${workflowId}`);
+    }
+    const executionResponse = await this.orchestratorService.executeWorkflow({
+      definitionId: workflowId,
+      inputData:
+        executeWorkflowRequestDTO?.inputData as ProcessInstanceVariables,
+      serviceUrl: definition.serviceUrl,
       businessKey,
-    );
+      cacheHandler: 'throw',
+    });
 
-    if (!executeWorkflowResponse) {
+    if (!executionResponse) {
+      throw new Error(`Couldn't execute workflow ${workflowId}`);
+    }
+
+    // Making sure the instance data is available before returning
+    await retryAsyncFunction({
+      asyncFn: () =>
+        this.orchestratorService.fetchInstance({
+          instanceId: executionResponse.id,
+          cacheHandler: 'throw',
+        }),
+      maxAttempts: FETCH_INSTANCE_MAX_ATTEMPTS,
+      delayMs: FETCH_INSTANCE_RETRY_DELAY_MS,
+    });
+
+    if (!executionResponse) {
       throw new Error('Error executing workflow with id ${workflowId}');
     }
 
-    return mapToExecuteWorkflowResponseDTO(workflowId, executeWorkflowResponse);
+    return mapToExecuteWorkflowResponseDTO(workflowId, executionResponse);
   }
 
   public async abortWorkflow(instanceId: string): Promise<string> {
-    await this.v1.abortWorkflow(instanceId);
+    await this.orchestratorService.abortWorkflowInstance({
+      instanceId,
+      cacheHandler: 'throw',
+    });
     return `Workflow instance ${instanceId} successfully aborted`;
   }
 
@@ -162,6 +208,17 @@ export class V2 {
       ProcessInstanceState.Suspended,
       ProcessInstanceState.Pending,
     ].map(status => mapToWorkflowRunStatusDTO(status));
+  }
+
+  public async getWorkflowInputSchemaById(
+    workflowId: string,
+    serviceUrl: string,
+  ): Promise<WorkflowInfo | undefined> {
+    return this.orchestratorService.fetchWorkflowInfoOnService({
+      definitionId: workflowId,
+      serviceUrl: serviceUrl,
+      cacheHandler: 'throw',
+    });
   }
 
   public extractQueryParam(

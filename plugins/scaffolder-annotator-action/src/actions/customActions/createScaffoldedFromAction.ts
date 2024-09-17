@@ -5,10 +5,12 @@ export const createScaffoldedFromAction = () => {
     'catalog:scaffolded-from',
     'Creates a new `catalog:scaffolded-from` scaffolder action to update a catalog-info.yaml with the entityRef of the template that created it.',
     'Annotating catalog-info.yaml with template entityRef',
-    {
-      spec: {
-        scaffoldedFrom: { readFromContext: 'templateInfo.entityRef' },
-      },
+    () => {
+      return {
+        spec: {
+          scaffoldedFrom: { readFromContext: 'templateInfo.entityRef' },
+        },
+      };
     },
   );
 };

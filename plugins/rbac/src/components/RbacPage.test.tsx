@@ -8,6 +8,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 
 import { screen } from '@testing-library/react';
 
+import { useCheckIfLicensePluginEnabled } from '../hooks/useCheckIfLicensePluginEnabled';
 import { useRoles } from '../hooks/useRoles';
 import { RbacPage } from './RbacPage';
 
@@ -20,11 +21,20 @@ jest.mock('../hooks/useRoles', () => ({
   useRoles: jest.fn(),
 }));
 
+jest.mock('../hooks/useCheckIfLicensePluginEnabled', () => ({
+  useCheckIfLicensePluginEnabled: jest.fn(),
+}));
+
 const mockUsePermission = usePermission as jest.MockedFunction<
   typeof usePermission
 >;
 
 const mockUseRoles = useRoles as jest.MockedFunction<typeof useRoles>;
+
+const mockUseCheckIfLicensePluginEnabled =
+  useCheckIfLicensePluginEnabled as jest.MockedFunction<
+    typeof useCheckIfLicensePluginEnabled
+  >;
 
 const RequirePermissionMock = RequirePermission as jest.MockedFunction<
   typeof RequirePermission
@@ -46,8 +56,16 @@ describe('RbacPage', () => {
       createRoleAllowed: false,
       createRoleLoading: false,
     });
+    mockUseCheckIfLicensePluginEnabled.mockReturnValue({
+      loading: false,
+      isEnabled: false,
+      licenseCheckError: {
+        message: '',
+        name: '',
+      },
+    });
     await renderInTestApp(<RbacPage />);
-    expect(screen.getByText('Administration')).toBeInTheDocument();
+    expect(screen.getByText('RBAC')).toBeInTheDocument();
   });
 
   it('should not render if not authorized', async () => {
@@ -64,6 +82,6 @@ describe('RbacPage', () => {
 
     const { queryByText } = await renderInTestApp(<RbacPage />);
     expect(queryByText('Not Found')).not.toBeInTheDocument();
-    expect(queryByText('Administration')).not.toBeInTheDocument();
+    expect(queryByText('RBAC')).not.toBeInTheDocument();
   });
 });

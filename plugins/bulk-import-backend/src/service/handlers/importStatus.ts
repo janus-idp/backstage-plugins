@@ -16,6 +16,7 @@
 
 import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
+import { Config } from '@backstage/config';
 
 import { Logger } from 'winston';
 
@@ -23,31 +24,9 @@ import { CatalogInfoGenerator, getTokenForPlugin } from '../../helpers';
 import { Components } from '../../openapi';
 import { GithubApiService } from '../githubApiService';
 
-export async function getImportStatus(
-  logger: Logger,
-  githubApiService: GithubApiService,
-  auth: AuthService,
-  catalogApi: CatalogApi,
-  catalogInfoGenerator: CatalogInfoGenerator,
-  repoUrl: string,
-  defaultBranch?: string,
-): Promise<{
-  status: Components.Schemas.ImportStatus;
-  lastUpdate?: string;
-} | null> {
-  return getImportStatusWithCheckerFn(
-    logger,
-    githubApiService,
-    catalogInfoGenerator,
-    repoUrl,
-    async (catalogUrl: string) =>
-      await verifyLocationExistence(auth, catalogApi, catalogUrl),
-    defaultBranch,
-  );
-}
-
 export async function getImportStatusFromLocations(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
   repoUrl: string,
@@ -59,6 +38,7 @@ export async function getImportStatusFromLocations(
 } | null> {
   return getImportStatusWithCheckerFn(
     logger,
+    config,
     githubApiService,
     catalogInfoGenerator,
     repoUrl,
@@ -76,6 +56,7 @@ export async function getImportStatusFromLocations(
 
 async function getImportStatusWithCheckerFn(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
   repoUrl: string,
@@ -91,7 +72,7 @@ async function getImportStatusWithCheckerFn(
   });
   if (!openImportPr.prUrl) {
     const existsInCatalog = await catalogExistenceCheckFn(
-      catalogInfoGenerator.getCatalogUrl(repoUrl, defaultBranch),
+      catalogInfoGenerator.getCatalogUrl(config, repoUrl, defaultBranch),
     );
     const existsInRepo =
       await githubApiService.doesCatalogInfoAlreadyExistInRepo(logger, {
@@ -99,6 +80,12 @@ async function getImportStatusWithCheckerFn(
         defaultBranch,
       });
     if (existsInCatalog && existsInRepo) {
+      // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
+      await catalogInfoGenerator.refreshLocationByRepoUrl(
+        config,
+        repoUrl,
+        defaultBranch,
+      );
       return { status: 'ADDED' };
     }
     return null;

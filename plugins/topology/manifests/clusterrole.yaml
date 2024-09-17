@@ -71,6 +71,14 @@ rules:
       - get
       - list
   - apiGroups:
+      - kubevirt.io
+    resources:
+      - virtualmachines
+      - virtualmachineinstances
+    verbs:
+      - get
+      - list
+  - apiGroups:
       - route.openshift.io
     resources:
       - routes

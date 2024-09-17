@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
+
 import gitUrlParse from 'git-url-parse';
 import { Logger } from 'winston';
 
@@ -30,49 +32,63 @@ import { getImportStatusFromLocations } from './importStatus';
 
 export async function findAllRepositories(
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
-  checkStatus: boolean = false,
-  pageNumber: number = DefaultPageNumber,
-  pageSize: number = DefaultPageSize,
+  reqParams?: {
+    search?: string;
+    checkStatus?: boolean;
+    pageNumber?: number;
+    pageSize?: number;
+  },
 ): Promise<HandlerResponse<Components.Schemas.RepositoryList>> {
+  const search = reqParams?.search;
+  const checkStatus = reqParams?.checkStatus ?? false;
+  const pageNumber = reqParams?.pageNumber ?? DefaultPageNumber;
+  const pageSize = reqParams?.pageSize ?? DefaultPageSize;
   logger.debug(
-    `Getting all repositories - (page,size)=(${pageNumber},${pageSize})..`,
+    `Getting all repositories - (search,page,size)=('${search ?? ''}',${pageNumber},${pageSize})..`,
   );
   return githubApiService
-    .getRepositoriesFromIntegrations(pageNumber, pageSize)
+    .getRepositoriesFromIntegrations(search, pageNumber, pageSize)
     .then(response =>
       formatResponse(
         response,
         catalogInfoGenerator,
         checkStatus,
         logger,
+        config,
         githubApiService,
       ),
     );
 }
 
 export async function findRepositoriesByOrganization(
-  logger: Logger,
-  githubApiService: GithubApiService,
-  catalogInfoGenerator: CatalogInfoGenerator,
+  deps: {
+    logger: Logger;
+    config: Config;
+    githubApiService: GithubApiService;
+    catalogInfoGenerator: CatalogInfoGenerator;
+  },
   orgName: string,
+  search?: string,
   checkStatus: boolean = false,
   pageNumber: number = DefaultPageNumber,
   pageSize: number = DefaultPageSize,
 ): Promise<HandlerResponse<Components.Schemas.RepositoryList>> {
-  logger.debug(
-    `Getting all repositories for org "${orgName}" - (page,size)=(${pageNumber},${pageSize})..`,
+  deps.logger.debug(
+    `Getting all repositories for org "${orgName}" - (search,page,size)=(${search},${pageNumber},${pageSize})..`,
   );
-  return githubApiService
-    .getOrgRepositoriesFromIntegrations(orgName, pageNumber, pageSize)
+  return deps.githubApiService
+    .getOrgRepositoriesFromIntegrations(orgName, search, pageNumber, pageSize)
     .then(response =>
       formatResponse(
         response,
-        catalogInfoGenerator,
+        deps.catalogInfoGenerator,
         checkStatus,
-        logger,
-        githubApiService,
+        deps.logger,
+        deps.config,
+        deps.githubApiService,
       ),
     );
 }
@@ -82,6 +98,7 @@ async function formatResponse(
   catalogInfoGenerator: CatalogInfoGenerator,
   checkStatus: boolean,
   logger: Logger,
+  config: Config,
   githubApiService: GithubApiService,
 ) {
   const errorList: string[] = [];
@@ -101,7 +118,9 @@ async function formatResponse(
     };
   }
 
-  const catalogLocations = await catalogInfoGenerator.listCatalogUrlLocations();
+  const catalogLocations = checkStatus
+    ? await catalogInfoGenerator.listCatalogUrlLocations(config)
+    : [];
   const repoList: Components.Schemas.Repository[] = [];
   if (allReposAccessible.repositories) {
     for (const repo of allReposAccessible.repositories) {
@@ -115,6 +134,7 @@ async function formatResponse(
         importStatus = checkStatus
           ? await getImportStatusFromLocations(
               logger,
+              config,
               githubApiService,
               catalogInfoGenerator,
               repo.html_url,
@@ -138,6 +158,20 @@ async function formatResponse(
       });
     }
   }
+
+  // sorting the output to make it deterministic and easy to navigate in the UI
+  repoList.sort((a, b) => {
+    if (a.name === undefined && b.name === undefined) {
+      return 0;
+    }
+    if (a.name === undefined) {
+      return -1;
+    }
+    if (b.name === undefined) {
+      return 1;
+    }
+    return a.name.localeCompare(b.name);
+  });
 
   return {
     statusCode: 200,

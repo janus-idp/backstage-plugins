@@ -14,7 +14,7 @@ permission:
 ```
 
 When you run the previous command, a standalone server for the bulk-import backend is setup utilizing the root app configurations.
-The server is available at `http://localhost:7007/api/bulk-import-backend`.
+The server is available at `http://localhost:7007/api/bulk-import`.
 
 Please refer to the [API documentation](./api-docs/README.md) for the API endpoints and their corresponding request and response formats.
 

@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-common",
-  "version": "1.13.0",
+  "version": "1.17.2",
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -37,7 +37,8 @@
   ],
   "files": [
     "config.d.ts",
-    "dist"
+    "dist",
+    "src/generated/docs/html"
   ],
   "configSchema": "config.d.ts",
   "sideEffects": false,
@@ -59,7 +60,7 @@
     "@severlessworkflow/sdk-typescript": "^3.0.3",
     "js-yaml": "^4.1.0",
     "json-schema": "^0.4.0",
-    "axios": "^1.6.8"
+    "axios": "^1.7.4"
   },
   "devDependencies": {
     "@backstage/cli": "0.26.11",

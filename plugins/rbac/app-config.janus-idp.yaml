@@ -2,13 +2,18 @@ dynamicPlugins:
   frontend:
     janus-idp.backstage-plugin-rbac:
       appIcons:
-        - name: AdminPanelSettingsOutlinedIcon
+        - name: rbacIcon
+          importName: RbacIcon
           module: RbacPlugin
-          importName: AdminPanelSettingsOutlinedIcon
       dynamicRoutes:
         - path: /rbac
-          importName: RbacPage
           module: RbacPlugin
+          importName: RbacPage
           menuItem:
-            icon: AdminPanelSettingsOutlinedIcon
-            text: Administration
+            icon: rbacIcon
+            text: RBAC
+      menuItems:
+        rbac:
+          parent: admin
+          icon: rbacIcon
+          priority: 10

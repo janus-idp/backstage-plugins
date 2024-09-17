@@ -1,6 +1,6 @@
 # OrganizationApi
 
-All URIs are relative to *http://localhost:7007/api/bulk-import-backend*
+All URIs are relative to *http://localhost:7007/api/bulk-import*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
@@ -10,7 +10,7 @@ All URIs are relative to *http://localhost:7007/api/bulk-import-backend*
 
 <a name="findAllOrganizations"></a>
 # **findAllOrganizations**
-> OrganizationList findAllOrganizations(pagePerIntegration, sizePerIntegration)
+> OrganizationList findAllOrganizations(pagePerIntegration, sizePerIntegration, search)
 
 Fetch Organizations accessible by Backstage Github Integrations
 
@@ -20,6 +20,7 @@ Fetch Organizations accessible by Backstage Github Integrations
 |------------- | ------------- | ------------- | -------------|
 | **pagePerIntegration** | **Integer**| the page number for each Integration | [optional] [default to 1] |
 | **sizePerIntegration** | **Integer**| the number of items per Integration to return per page | [optional] [default to 20] |
+| **search** | **String**| returns only organizations that match the search string, by name | [optional] [default to null] |
 
 ### Return type
 
@@ -36,7 +37,7 @@ Fetch Organizations accessible by Backstage Github Integrations
 
 <a name="findRepositoriesByOrganization"></a>
 # **findRepositoriesByOrganization**
-> RepositoryList findRepositoriesByOrganization(organizationName, checkImportStatus, pagePerIntegration, sizePerIntegration)
+> RepositoryList findRepositoriesByOrganization(organizationName, checkImportStatus, pagePerIntegration, sizePerIntegration, search)
 
 Fetch Repositories in the specified GitHub organization, provided it is accessible by any of the configured GitHub Integrations.
 
@@ -48,6 +49,7 @@ Fetch Repositories in the specified GitHub organization, provided it is accessib
 | **checkImportStatus** | **Boolean**| whether to return import status. Note that this might incur a performance penalty because the import status is computed for each repository. | [optional] [default to false] |
 | **pagePerIntegration** | **Integer**| the page number for each Integration | [optional] [default to 1] |
 | **sizePerIntegration** | **Integer**| the number of items per Integration to return per page | [optional] [default to 20] |
+| **search** | **String**| returns only organization repositories that contain the search string, by repository name | [optional] [default to null] |
 
 ### Return type
 

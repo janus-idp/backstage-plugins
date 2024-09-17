@@ -8,6 +8,12 @@ import {
   TaskRunModel,
 } from './pipeline-models';
 import { GroupVersionKind, Model } from './types/types';
+import {
+  VirtualMachineGVK,
+  VirtualMachineInstanceGVK,
+  VirtualMachineInstanceModel,
+  VirtualMachineModel,
+} from './vm-models';
 
 export const ReplicaSetGVK: GroupVersionKind = {
   apiVersion: 'v1',
@@ -71,6 +77,11 @@ export const CheClusterGVK: GroupVersionKind = {
   apiGroup: 'org.eclipse.che',
   kind: 'CheCluster',
 };
+export const TemplateGVK: GroupVersionKind = {
+  apiVersion: 'v1',
+  apiGroup: 'template.openshift.io',
+  kind: 'Template',
+};
 
 export enum ModelsPlural {
   deployments = 'deployments',
@@ -86,6 +97,9 @@ export enum ModelsPlural {
   pipelines = 'pipelines',
   pipelineruns = 'pipelineruns',
   checlusters = 'checlusters',
+  virtualmachines = 'virtualmachines',
+  virtualmachineinstances = 'virtualmachineinstances',
+  // replicationcontrollers = 'replicationcontrollers',
 }
 
 export const resourceGVKs: { [key: string]: GroupVersionKind } = {
@@ -103,6 +117,8 @@ export const resourceGVKs: { [key: string]: GroupVersionKind } = {
   [PipelineModelsPlural.pipelines]: PipelineGVK,
   [PipelineModelsPlural.taskruns]: TaskRunGVK,
   [ModelsPlural.checlusters]: CheClusterGVK,
+  [ModelsPlural.virtualmachines]: VirtualMachineGVK,
+  [ModelsPlural.virtualmachineinstances]: VirtualMachineInstanceGVK,
 };
 
 export const DeploymentModel: Model = {
@@ -173,6 +189,14 @@ export const CheClusterModel: Model = {
   plural: 'checlusters',
 };
 
+export const TemplateModel: Model = {
+  ...TemplateGVK,
+  plural: 'templates',
+  abbr: 'T',
+  labelPlural: 'Templates',
+  color: '#2b9af3',
+};
+
 export const resourceModels = {
   [DeploymentModel.kind]: DeploymentModel,
   [PodModel.kind]: PodModel,
@@ -187,4 +211,7 @@ export const resourceModels = {
   [PipelineRunModel.kind]: PipelineRunModel,
   [TaskRunModel.kind]: TaskRunModel,
   [CheClusterModel.kind]: CheClusterModel,
+  [VirtualMachineModel.kind]: VirtualMachineModel,
+  [VirtualMachineInstanceModel.kind]: VirtualMachineInstanceModel,
+  [TemplateModel.kind]: TemplateModel,
 };

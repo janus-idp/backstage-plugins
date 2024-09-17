@@ -23,7 +23,7 @@ export interface ConditionalPolicyDecisionDAO {
 
 export interface ConditionalStorage {
   filterConditions(
-    roleEntityRef?: string,
+    roleEntityRef?: string | string[],
     pluginId?: string,
     resourceType?: string,
     actions?: PermissionAction[],
@@ -53,7 +53,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
   public constructor(private readonly knex: Knex<any, any[]>) {}
 
   async filterConditions(
-    roleEntityRef?: string,
+    roleEntityRef?: string | string[],
     pluginId?: string,
     resourceType?: string,
     actions?: PermissionAction[],
@@ -67,7 +67,11 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
         builder.where('resourceType', resourceType);
       }
       if (roleEntityRef) {
-        builder.where('roleEntityRef', roleEntityRef);
+        if (Array.isArray(roleEntityRef)) {
+          builder.whereIn('roleEntityRef', roleEntityRef);
+        } else {
+          builder.where('roleEntityRef', roleEntityRef);
+        }
       }
     });
 

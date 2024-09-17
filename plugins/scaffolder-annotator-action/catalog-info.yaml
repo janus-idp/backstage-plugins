@@ -1,0 +1,57 @@
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: janus-idp-scaffolder-annotator-action
+  title: Annotator scaffolder actions
+  description: The annotator module for @backstage/plugin-scaffolder-backend
+  annotations:
+    backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main/plugins/scaffolder-annotator-action
+    backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/scaffolder-annotator-action/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/scaffolder-annotator-action/catalog-info.yaml
+    github.com/project-slug: janus-idp/backstage-plugins
+    github.com/team-slug: janus-idp/maintainers-plugins
+    sonarqube.org/project-key: janus-idp_backstage-plugins
+  tags:
+    - scaffolder
+    - actions
+  links:
+    - url: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/scaffolder-annotator-action
+      title: GitHub Source
+      icon: source
+      type: source
+spec:
+  type: backstage-plugin
+  lifecycle: production
+  owner: rhdh-ui-team
+  system: rhdh
+  subcomponentOf: janus-idp-backstage-plugins
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: janus-idp-scaffolder-annotator-action-module
+  title: '@janus-idp/backstage-scaffolder-backend-module-annotator'
+  description: The annotator module for @backstage/plugin-scaffolder-backend
+  annotations:
+    backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main/plugins/scaffolder-annotator-action
+    backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/scaffolder-annotator-action/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/scaffolder-annotator-action/catalog-info.yaml
+    github.com/project-slug: janus-idp/backstage-plugins
+    github.com/team-slug: janus-idp/maintainers-plugins
+    sonarqube.org/project-key: janus-idp_backstage-plugins
+  tags:
+    - scaffolder
+    - actions
+  links:
+    - url: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/scaffolder-annotator-action
+      title: GitHub Source
+      icon: source
+      type: source
+spec:
+  type: backstage-frontend-plugin-module
+  lifecycle: production
+  owner: rhdh-ui-team
+  system: rhdh
+  subcomponentOf: janus-idp-scaffolder-annotator-action

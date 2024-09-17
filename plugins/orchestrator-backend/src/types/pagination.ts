@@ -1,11 +1,6 @@
 import { Request } from 'express-serve-static-core';
 
-import {
-  DEFAULT_PAGE_NUMBER,
-  DEFAULT_PAGE_SIZE,
-  DEFAULT_SORT_FIELD,
-  DEFAULT_SORT_ORDER,
-} from '../service/constants';
+import { PaginationInfoDTO } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 export interface Pagination {
   offset?: number;
@@ -15,18 +10,33 @@ export interface Pagination {
 }
 
 export function buildPagination(req: Request): Pagination {
-  return {
-    offset: isNaN(req.query.page as any)
-      ? DEFAULT_PAGE_NUMBER
-      : Number(req.query.page),
-    limit: isNaN(req.query.pageSize as any)
-      ? DEFAULT_PAGE_SIZE
-      : Number(req.query.pageSize),
-    sortField: req.query.orderBy
-      ? String(req.query.orderBy)
-      : DEFAULT_SORT_FIELD,
-    order: req.query.orderDirection
-      ? String(req.query.orderDirection)
-      : DEFAULT_SORT_ORDER,
+  const pagination: Pagination = {
+    limit: undefined,
+    offset: undefined,
+    order: undefined,
+    sortField: undefined,
   };
+
+  if (!req.body?.paginationInfo) {
+    return pagination;
+  }
+  const { offset, pageSize, orderBy, orderDirection } = req.body
+    .paginationInfo as PaginationInfoDTO;
+
+  if (!isNaN(Number(offset))) {
+    pagination.offset = Number(offset);
+  }
+
+  if (!isNaN(Number(pageSize))) {
+    pagination.limit = Number(pageSize);
+  }
+
+  if (orderBy) {
+    pagination.sortField = String(orderBy);
+  }
+
+  if (orderDirection) {
+    pagination.order = String(orderDirection).toUpperCase();
+  }
+  return pagination;
 }

@@ -1,3 +1,9 @@
+# ❗DEPRECATED❗
+
+This package has been deprecated.
+
+Please use the **[@backstage-community/plugin-redhat-argocd](https://www.npmjs.com/package/@backstage-community/plugin-redhat-argocd)** package instead.
+
 # Argo CD plugin for Backstage
 
 ## Getting started
@@ -114,15 +120,31 @@ const cicdcontent = (
 );
 ```
 
-- The following annotation is added to the entity's `catalog-info.yaml` file to enable Argo CD features in the backstage instance:
+- Add one of the following annotations to the entity's `catalog-info.yaml` file to enable Argo CD features in the backstage instance:
+
+  - To get all the applications matching the metadata labels.
 
   ```yaml
   annotations:
     ...
 
-    argocd/app-selector: 'rht-gitops.com/janus-argocd=quarkus-app'
+    argocd/app-selector: 'rht-gitops.com/janus-argocd=quarkus-app' # format: `label.key=label.value`
 
   ```
+
+      **or**
+
+  - To fetch a single application, use the following annotation in `catalog-info.yaml` file:
+
+  ```yaml
+  annotations:
+    ...
+
+    argocd/app-name: 'quarkus-app'
+
+  ```
+
+  > [!Note] > **You should not add both the annotations in the same catalog, adding both annotations will result in error in the plugin.**
 
 - To switch between argocd instances, you can use the following annotation
 
@@ -132,7 +154,7 @@ const cicdcontent = (
     argocd/instance-name: 'argoInstance2'
 ```
 
-**_Note: If this annotation is not set, the plugin will default to the first Argo CD instance configured in the `app.config.yaml`_**
+> [!Note] > **If this annotation is not set, the plugin will default to the first Argo CD instance configured in the `app.config.yaml`**
 
 ## Loading as Dynamic Plugin
 

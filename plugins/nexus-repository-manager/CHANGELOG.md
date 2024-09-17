@@ -1,3 +1,35 @@
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.10.3
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.10.2
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.10.1
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.13.1
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.9.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.9.1...@janus-idp/backstage-plugin-nexus-repository-manager@1.9.2) (2024-08-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.10.0
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.9.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.9.0...@janus-idp/backstage-plugin-nexus-repository-manager@1.9.1) (2024-08-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.10.0
+
 ## @janus-idp/backstage-plugin-nexus-repository-manager [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.8.0...@janus-idp/backstage-plugin-nexus-repository-manager@1.9.0) (2024-07-26)
 
 

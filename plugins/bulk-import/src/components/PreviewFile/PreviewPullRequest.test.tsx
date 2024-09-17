@@ -4,12 +4,13 @@ import { configApiRef } from '@backstage/core-plugin-api';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
 
-import { fireEvent, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 
-import { getDataForRepositories } from '../../mocks/mockData';
+import { mockGetRepositories } from '../../mocks/mockData';
 import { mockEntities } from '../../mocks/mockEntities';
-import { ApprovalTool, PullRequestPreview } from '../../types';
+import { ApprovalTool, RepositoryStatus } from '../../types';
+import { getPRTemplate } from '../../utils/repository-utils';
 import { PreviewPullRequest } from './PreviewPullRequest';
 
 jest.mock('react', () => ({
@@ -17,30 +18,15 @@ jest.mock('react', () => ({
   useState: jest.fn(),
 }));
 
-jest.mock('@material-ui/core', () => ({
-  ...jest.requireActual('@material-ui/core'),
-  makeStyles: () => () => {
-    return {
-      previewCard: 'previewcard',
-      previewCardContent: 'previewcardcontent',
-    };
-  },
-}));
-
 jest.mock('formik', () => ({
   ...jest.requireActual('formik'),
   useFormikContext: jest.fn(),
 }));
 
-jest.mock('react-use', () => ({
-  ...jest.requireActual('react-use'),
-  useAsync: jest.fn().mockReturnValue({ loading: false }),
-}));
-
-const seState = jest.fn();
+const setState = jest.fn();
 
 beforeEach(() => {
-  (useState as jest.Mock).mockImplementation(initial => [initial, seState]);
+  (useState as jest.Mock).mockImplementation(initial => [initial, setState]);
 });
 
 const mockCatalogApi: Partial<CatalogApi> = {
@@ -48,18 +34,32 @@ const mockCatalogApi: Partial<CatalogApi> = {
 };
 
 describe('Preview Pull Request', () => {
-  it('should render the pull request preview', async () => {
+  it('should show warning panel with error if PR fails', async () => {
     (useFormikContext as jest.Mock).mockReturnValue({
       errors: {},
+      status: {
+        errors: {
+          'org/dessert/cupcake': {
+            repository: {
+              name: mockGetRepositories.repositories[0].name,
+              organization: mockGetRepositories.repositories[0].orgName,
+            },
+            catalogEntityName: mockGetRepositories.repositories[0].name,
+            error: {
+              message: [RepositoryStatus.CODEOWNERS_FILE_NOT_FOUND_IN_REPO],
+            },
+          },
+        },
+      },
       values: {
         repositories: {
-          Cupcake: getDataForRepositories('user:default/guest')[0],
+          'org/dessert/cupcake': mockGetRepositories.repositories[0],
         },
         approvalTool: ApprovalTool.Git,
       },
     });
 
-    const { getByText, getByPlaceholderText } = render(
+    const { getByText } = render(
       <TestApiProvider
         apis={[
           [
@@ -76,10 +76,18 @@ describe('Preview Pull Request', () => {
         ]}
       >
         <PreviewPullRequest
-          repoName="Cupcake"
+          repoId="org/dessert/cupcake"
+          repoUrl="https://github.com/org/dessert/cupcake"
+          repoBranch="main"
           pullRequest={{
-            Cupcake: getDataForRepositories('user:default/guest')[0]
-              .catalogInfoYaml?.prTemplate as PullRequestPreview,
+            'org/dessert/cupcake': getPRTemplate(
+              'org/dessert/cupcake',
+              'org/dessert',
+              'user:default/guest',
+              'https://localhost:3001',
+              'https://github.com/org/dessert/cupcake',
+              'main',
+            ),
           }}
           setFormErrors={() => jest.fn()}
           formErrors={{}}
@@ -87,24 +95,40 @@ describe('Preview Pull Request', () => {
         />
       </TestApiProvider>,
     );
-    expect(getByText(/Pull request details/i)).toBeInTheDocument();
-    expect(getByText(/Preview pull request/i)).toBeInTheDocument();
-    expect(getByText(/Preview entities/i)).toBeInTheDocument();
-    expect(getByPlaceholderText(/groups and users/)).toBeInTheDocument();
+    expect(getByText(/Failed to create PR/)).toBeInTheDocument();
+    expect(
+      getByText(
+        /CODEOWNERS file is missing from the repository. Add a CODEOWNERS file to create a new PR./,
+      ),
+    ).toBeInTheDocument();
   });
 
-  it('should render the servicenow ticket preview', async () => {
+  it('should show info to display important message', async () => {
     (useFormikContext as jest.Mock).mockReturnValue({
       errors: {},
+      status: {
+        infos: {
+          'org/dessert/cupcake': {
+            repository: {
+              name: mockGetRepositories.repositories[0].name,
+              organization: mockGetRepositories.repositories[0].orgName,
+            },
+            catalogEntityName: mockGetRepositories.repositories[0].name,
+            error: {
+              message: [RepositoryStatus.CATALOG_INFO_FILE_EXISTS_IN_REPO],
+            },
+          },
+        },
+      },
       values: {
         repositories: {
-          Cupcake: getDataForRepositories('user:default/guest')[0],
+          'org/dessert/cupcake': mockGetRepositories.repositories[0],
         },
-        approvalTool: ApprovalTool.ServiceNow,
+        approvalTool: ApprovalTool.Git,
       },
     });
 
-    const { getByText, getByPlaceholderText } = render(
+    const { getByText } = render(
       <TestApiProvider
         apis={[
           [
@@ -121,10 +145,18 @@ describe('Preview Pull Request', () => {
         ]}
       >
         <PreviewPullRequest
-          repoName="Cupcake"
+          repoId="org/dessert/cupcake"
+          repoUrl="https://github.com/org/dessert/cupcake"
+          repoBranch="main"
           pullRequest={{
-            Cupcake: getDataForRepositories('user:default/guest')[0]
-              .catalogInfoYaml?.prTemplate as PullRequestPreview,
+            'org/dessert/cupcake': getPRTemplate(
+              'org/dessert/cupcake',
+              'org/dessert',
+              'user:default/guest',
+              'https://localhost:3001',
+              'https://github.com/org/dessert/cupcake',
+              'main',
+            ),
           }}
           setFormErrors={() => jest.fn()}
           formErrors={{}}
@@ -132,26 +164,26 @@ describe('Preview Pull Request', () => {
         />
       </TestApiProvider>,
     );
-    expect(getByText(/ServiceNow ticket details/i)).toBeInTheDocument();
-    expect(getByText(/Preview ServiceNow ticket/i)).toBeInTheDocument();
-    expect(getByText(/Preview entities/i)).toBeInTheDocument();
-    expect(getByPlaceholderText(/Component Name/)).toHaveValue('Cupcake');
+    expect(
+      getByText(
+        /Since catalog-info.yaml already exists in the repository, no new PR will be created. However, the entity will still be registered in the catalog page./,
+      ),
+    ).toBeInTheDocument();
   });
 
-  it('should show field error if PR title/component name field is empty', async () => {
+  it('should show PR link in the info if the job has a PR waiting for approval', async () => {
     (useFormikContext as jest.Mock).mockReturnValue({
       errors: {},
+      status: {},
       values: {
         repositories: {
-          Cupcake: getDataForRepositories('user:default/guest')[0],
+          'org/dessert/cupcake': mockGetRepositories.repositories[0],
         },
         approvalTool: ApprovalTool.Git,
       },
     });
 
-    const setFormErrors = jest.fn();
-
-    const { getByPlaceholderText } = render(
+    const { getByTestId } = render(
       <TestApiProvider
         apis={[
           [
@@ -168,33 +200,90 @@ describe('Preview Pull Request', () => {
         ]}
       >
         <PreviewPullRequest
-          repoName="Cupcake"
+          repoId="org/dessert/cupcake"
+          repoUrl="https://github.com/org/dessert/cupcake"
+          repoBranch="main"
           pullRequest={{
-            Cupcake: getDataForRepositories('user:default/guest')[0]
-              .catalogInfoYaml?.prTemplate as PullRequestPreview,
+            'org/dessert/cupcake': {
+              ...getPRTemplate(
+                'org/dessert/cupcake',
+                'org/dessert',
+                'user:default/guest',
+                'https://localhost:3001',
+                'https://github.com/org/dessert/cupcake',
+                'main',
+              ),
+              pullRequestUrl: 'https://github.com/org/dessert/cupcake/pulls/9',
+            },
           }}
-          setFormErrors={setFormErrors}
+          setFormErrors={() => jest.fn()}
           formErrors={{}}
           setPullRequest={() => jest.fn()}
         />
       </TestApiProvider>,
     );
-    const prTitle = getByPlaceholderText(
-      /Add Backstage catalog entity descriptor files/,
-    );
-    fireEvent.change(prTitle, { target: { value: '' } });
-    expect(setFormErrors).toHaveBeenCalledWith({
-      Cupcake: {
-        prTitle: 'Pull request title is missing',
+    expect(getByTestId('pull-request-info')).toBeInTheDocument();
+  });
+
+  it('should show an info if entity YAML is invalid', async () => {
+    (useFormikContext as jest.Mock).mockReturnValue({
+      errors: {},
+      status: {
+        infos: {
+          ['org/dessert/cupcake']: {
+            error: { message: ['invalid entity YAML'] },
+          },
+        },
+      },
+      values: {
+        repositories: {
+          'org/dessert/cupcake': mockGetRepositories.repositories[0],
+        },
+        approvalTool: ApprovalTool.Git,
       },
     });
 
-    const componentName = getByPlaceholderText(/Component Name/);
-    fireEvent.change(componentName, { target: { value: '' } });
-    expect(setFormErrors).toHaveBeenCalledWith({
-      Cupcake: {
-        componentName: 'Component name is missing',
-      },
-    });
+    const { getByTestId, getByText } = render(
+      <TestApiProvider
+        apis={[
+          [
+            configApiRef,
+            new MockConfigApi({
+              catalog: {
+                import: {
+                  entityFilename: 'test.yaml',
+                },
+              },
+            }),
+          ],
+          [catalogApiRef, mockCatalogApi],
+        ]}
+      >
+        <PreviewPullRequest
+          repoId="org/dessert/cupcake"
+          repoUrl="https://github.com/org/dessert/cupcake"
+          repoBranch="main"
+          pullRequest={{
+            'org/dessert/cupcake': {
+              ...getPRTemplate(
+                'org/dessert/cupcake',
+                'org/dessert',
+                'user:default/guest',
+                'https://localhost:3001',
+                'https://github.com/org/dessert/cupcake',
+                'main',
+              ),
+              pullRequestUrl: 'https://github.com/org/dessert/cupcake/pulls/9',
+            },
+          }}
+          setFormErrors={() => jest.fn()}
+          formErrors={{}}
+          setPullRequest={() => jest.fn()}
+        />
+      </TestApiProvider>,
+    );
+    expect(getByTestId('other-info')).toBeInTheDocument();
+    expect(getByText('invalid entity YAML')).toBeInTheDocument();
+    expect(getByTestId('pull-request-info')).toBeInTheDocument();
   });
 });

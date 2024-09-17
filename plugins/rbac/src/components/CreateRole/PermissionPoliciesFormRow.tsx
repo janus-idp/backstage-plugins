@@ -72,6 +72,26 @@ export const PermissionPoliciesFormRow = ({
 
   const [sidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
 
+  const tooltipTitle = () => (
+    <div>
+      <p style={{ textAlign: 'center' }}>
+        Define access conditions for the selected resource type using Rules.
+        Rules vary by resource type.{' '}
+        <b>Users have access to the resource type content by default</b> unless
+        configured otherwise.
+      </p>
+    </div>
+  );
+
+  const getTotalRules = (): string => {
+    let accessMessage = 'Configure access';
+
+    if (totalRules > 0) {
+      accessMessage += ` (${totalRules} ${totalRules > 1 ? 'rules' : 'rule'})`;
+    }
+    return accessMessage;
+  };
+
   return (
     <div>
       <div style={{ display: 'flex', flexFlow: 'column', gap: '15px' }}>
@@ -169,16 +189,9 @@ export const PermissionPoliciesFormRow = ({
                   disabled={!!conditionRulesError}
                 >
                   <ChecklistRtlIcon fontSize="small" />
-                  {totalRules > 0
-                    ? `Configure access (${totalRules} ${
-                        totalRules > 1 ? `rules` : 'rule'
-                      })`
-                    : 'Configure access'}
+                  {getTotalRules()}
                   &nbsp;
-                  <Tooltip
-                    title="Define access conditions for the selected resource type using Rules. Rules vary by resource type. Users have access to the resource type content by default unless configured otherwise."
-                    placement="top"
-                  >
+                  <Tooltip title={tooltipTitle()} placement="top">
                     <HelpOutlineIcon fontSize="inherit" />
                   </Tooltip>
                 </IconButton>

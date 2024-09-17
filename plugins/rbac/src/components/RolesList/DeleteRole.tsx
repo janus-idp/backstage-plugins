@@ -3,7 +3,7 @@ import React from 'react';
 import { IconButton, Tooltip } from '@material-ui/core';
 import Delete from '@mui/icons-material/Delete';
 
-import { useDeleteDialog } from './DeleteDialogContext';
+import { useDeleteDialog } from '@janus-idp/shared-react';
 
 type DeleteRoleProps = {
   roleName: string;
@@ -18,10 +18,10 @@ const DeleteRole = ({
   disable,
   dataTestId,
 }: DeleteRoleProps) => {
-  const { setDeleteRoleName, setOpenDialog } = useDeleteDialog();
+  const { setDeleteComponent, setOpenDialog } = useDeleteDialog();
 
   const openDialog = (name: string) => {
-    setDeleteRoleName(name);
+    setDeleteComponent({ roleName: name });
     setOpenDialog(true);
   };
 

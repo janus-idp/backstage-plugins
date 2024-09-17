@@ -2,7 +2,6 @@ import React from 'react';
 
 import { Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { kubernetesProxyApiRef } from '@backstage/plugin-kubernetes';
 
 import {
   ACSCheckResults,
@@ -17,7 +16,10 @@ import { Grid, Paper, Typography } from '@material-ui/core';
 import { PipelineRunKind, TaskRunKind } from '@janus-idp/shared-react';
 
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
-import { TektonResourcesContextData } from '../../types/types';
+import {
+  kubernetesProxyApiRef,
+  TektonResourcesContextData,
+} from '../../types/types';
 
 type PipelineRunOutputProps = {
   pipelineRun: PipelineRunKind;

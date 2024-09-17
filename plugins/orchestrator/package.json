@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator",
-  "version": "1.18.0",
+  "version": "1.22.3",
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -58,7 +58,9 @@
     "@backstage/plugin-catalog": "^1.21.1",
     "@backstage/plugin-permission-react": "^0.4.24",
     "@backstage/types": "^1.1.1",
-    "@janus-idp/backstage-plugin-orchestrator-common": "1.13.0",
+    "@janus-idp/backstage-plugin-orchestrator-common": "1.17.2",
+    "@janus-idp/backstage-plugin-orchestrator-form-api": "1.0.1",
+    "@janus-idp/backstage-plugin-orchestrator-form-react": "1.0.10",
     "@kie-tools-core/editor": "^0.32.0",
     "@kie-tools-core/notifications": "^0.32.0",
     "@kie-tools-core/react-hooks": "^0.32.0",
@@ -66,12 +68,7 @@
     "@kie-tools/serverless-workflow-language-service": "^0.32.0",
     "@kie-tools/serverless-workflow-service-catalog": "^0.32.0",
     "@monaco-editor/react": "^4.6.0",
-    "@mui/icons-material": "^5.15.18",
-    "@mui/material": "^5.15.18",
-    "@rjsf/core": "^5.18.4",
-    "@rjsf/mui": "^5.18.4",
-    "@rjsf/utils": "^5.18.4",
-    "@rjsf/validator-ajv8": "^5.18.4",
+    "axios": "1.7.4",
     "moment": "^2.29.4",
     "monaco-editor": "^0.49.0",
     "react-json-view": "^1.21.3",
@@ -79,20 +76,25 @@
     "react-use": "^17.4.0",
     "swr": "^2.0.0",
     "uuid": "^9.0.1",
-    "vscode-languageserver-types": "^3.16.0",
-    "axios": "1.6.8"
+    "vscode-languageserver-types": "^3.16.0"
   },
   "devDependencies": {
     "@backstage/cli": "0.26.11",
     "@backstage/dev-utils": "1.0.36",
     "@backstage/test-utils": "1.5.9",
-    "@janus-idp/cli": "1.13.0",
-    "@redhat-developer/red-hat-developer-hub-theme": "0.0.54",
+    "@backstage/types": "^1.1.1",
+    "@janus-idp/cli": "1.13.1",
+    "@redhat-developer/red-hat-developer-hub-theme": "0.2.0",
     "@storybook/preview-api": "7.6.20",
     "@storybook/react": "7.6.20",
-    "@testing-library/react": "14.3.1"
+    "@testing-library/react": "14.3.1",
+    "@types/json-schema": "^7.0.15"
   },
   "peerDependencies": {
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
+    "@material-ui/lab": "^4.0.0-alpha.45",
+    "@mui/icons-material": "^5.15.8",
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "^6.0.0"

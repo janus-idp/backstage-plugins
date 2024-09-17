@@ -26,16 +26,19 @@ const ClusterContext = createContext<ClusterContextType>(
 export const ClusterContextProvider = (props: any) => {
   const { entity } = useEntity();
   const ocmApi = useApi(OcmApiRef);
+  const providerId = entity.metadata.annotations![ANNOTATION_PROVIDER_ID];
   const [{ value: cluster, loading, error: asyncError }, refresh] = useAsyncFn(
     async () => {
-      const providerId = entity.metadata.annotations![ANNOTATION_PROVIDER_ID];
-      const cl = await ocmApi.getClusterByName(
-        providerId,
-        entity.metadata.name,
-      );
-      return cl;
+      if (providerId) {
+        const cl = await ocmApi.getClusterByName(
+          providerId,
+          entity.metadata.name,
+        );
+        return cl;
+      }
+      return null;
     },
-    [],
+    [providerId, entity.metadata.name],
     { loading: true },
   );
   useDebounce(refresh, 10);
@@ -55,6 +58,10 @@ export const ClusterContextProvider = (props: any) => {
     }),
     [cluster, isError, loading, error],
   );
+
+  if (!providerId) {
+    return <>{props.children}</>;
+  }
 
   return (
     <ClusterContext.Provider value={value}>

@@ -6,6 +6,7 @@ import {
 } from '@backstage/plugin-permission-react';
 import { renderInTestApp } from '@backstage/test-utils';
 
+import { useCheckIfLicensePluginEnabled } from '../../hooks/useCheckIfLicensePluginEnabled';
 import { useRoles } from '../../hooks/useRoles';
 import { RolesData } from '../../types';
 import { RolesList } from './RolesList';
@@ -17,6 +18,10 @@ jest.mock('@backstage/plugin-permission-react', () => ({
 
 jest.mock('../../hooks/useRoles', () => ({
   useRoles: jest.fn(),
+}));
+
+jest.mock('../../hooks/useCheckIfLicensePluginEnabled', () => ({
+  useCheckIfLicensePluginEnabled: jest.fn(),
 }));
 
 const useRolesMockData: RolesData[] = [
@@ -31,6 +36,7 @@ const useRolesMockData: RolesData[] = [
       delete: { allowed: true, loading: false },
       edit: { allowed: true, loading: false },
     },
+    accessiblePlugins: ['catalog'],
   },
   {
     name: 'role:default/rbac_admin',
@@ -43,6 +49,7 @@ const useRolesMockData: RolesData[] = [
       delete: { allowed: true, loading: false },
       edit: { allowed: true, loading: false },
     },
+    accessiblePlugins: ['catalog', 'permission', 'scaffolder'],
   },
 ];
 
@@ -51,6 +58,10 @@ const mockUsePermission = usePermission as jest.MockedFunction<
 >;
 
 const mockUseRoles = useRoles as jest.MockedFunction<typeof useRoles>;
+const mockUseCheckIfLicensePluginEnabled =
+  useCheckIfLicensePluginEnabled as jest.MockedFunction<
+    typeof useCheckIfLicensePluginEnabled
+  >;
 
 const RequirePermissionMock = RequirePermission as jest.MockedFunction<
   typeof RequirePermission
@@ -71,6 +82,14 @@ describe('RolesList', () => {
       retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
       createRoleLoading: false,
+    });
+    mockUseCheckIfLicensePluginEnabled.mockReturnValue({
+      loading: false,
+      isEnabled: false,
+      licenseCheckError: {
+        message: '',
+        name: '',
+      },
     });
     const { queryByText } = await renderInTestApp(<RolesList />);
     expect(queryByText('All roles (2)')).not.toBeNull();
@@ -306,5 +325,29 @@ describe('RolesList', () => {
         'Error fetching role conditions for role role:default/xyz, please try again later.',
       ),
     ).toBeInTheDocument();
+  });
+
+  it('should show accessible plugins for each role', async () => {
+    RequirePermissionMock.mockImplementation(props => <>{props.children}</>);
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+    mockUseRoles.mockReturnValue({
+      loading: false,
+      data: useRolesMockData,
+      error: {
+        rolesError: '',
+        policiesError: '',
+        roleConditionError: '',
+      },
+      retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
+      createRoleAllowed: false,
+      createRoleLoading: false,
+    });
+    const { queryByText } = await renderInTestApp(<RolesList />);
+    expect(queryByText('role:default/guests')).not.toBeNull();
+    expect(queryByText('Catalog', { exact: true })).not.toBeNull();
+    expect(queryByText('role:default/rbac_admin')).not.toBeNull();
+    expect(
+      queryByText('Catalog, Permission + 1', { exact: true }),
+    ).not.toBeNull();
   });
 });

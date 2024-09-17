@@ -5,14 +5,16 @@ import { ConfigReader } from '@backstage/config';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { TestApiProvider } from '@backstage/test-utils';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { MockPermissionApi, TestApiProvider } from '@backstage/test-utils';
 
 import { Box } from '@material-ui/core';
-import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import {
   ArgoCDApi,
   argoCDApiRef,
+  GetApplicationOptions,
   listAppsOptions,
   RevisionDetailsListOptions,
   RevisionDetailsOptions,
@@ -22,6 +24,7 @@ import {
   ArgocdDeploymentSummary,
   argocdPlugin,
 } from '../src/plugin';
+import { Application } from '../src/types';
 import {
   mockApplication,
   mockArgocdConfig,
@@ -47,7 +50,7 @@ const mockEntity: Entity = {
     owner: 'user:guest',
   },
 };
-
+const mockPermissionApi = new MockPermissionApi();
 export class MockArgoCDApiClient implements ArgoCDApi {
   async listApps(_options: listAppsOptions): Promise<any> {
     return { items: [mockApplication, preProdApplication, prodApplication] };
@@ -61,17 +64,21 @@ export class MockArgoCDApiClient implements ArgoCDApi {
   ): Promise<any> {
     return mockRevisions;
   }
+  async getApplication(_options: GetApplicationOptions): Promise<Application> {
+    return mockApplication;
+  }
 }
 
 createDevApp()
   .registerPlugin(argocdPlugin)
-  .addThemes(createDevAppThemes())
+  .addThemes(getAllThemes())
   .addPage({
     element: (
       <TestApiProvider
         apis={[
           [configApiRef, new ConfigReader(mockArgocdConfig)],
           [argoCDApiRef, new MockArgoCDApiClient()],
+          [permissionApiRef, mockPermissionApi],
         ]}
       >
         <EntityProvider entity={mockEntity}>

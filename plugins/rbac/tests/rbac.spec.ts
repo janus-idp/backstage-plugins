@@ -15,6 +15,33 @@ test.describe('RBAC plugin', () => {
     updateMembers: 'span[data-testid="update-members"]',
   };
 
+  const navigateToRole = async (roleName: string) => {
+    await expect(
+      page.getByRole('heading', { name: 'All roles (2)' }),
+    ).toBeVisible({ timeout: 20000 });
+    await page
+      .locator(`a`)
+      .filter({ hasText: `role:default/${roleName}` })
+      .click();
+    await expect(
+      page.getByRole('heading', { name: `role:default/${roleName}` }),
+    ).toBeVisible({ timeout: 20000 });
+    await page.getByRole('tab', { name: 'Overview' }).click();
+    await page.locator(RoleOverviewPO.updatePolicies).click();
+    await expect(page.getByRole('heading', { name: 'Edit Role' })).toBeVisible({
+      timeout: 20000,
+    });
+  };
+
+  const finishAndVerifyUpdate = async (button: string, message: string) => {
+    await common.clickButton('Next');
+    await common.clickButton(button);
+    await verifyText(message, page);
+    if (button === 'Save') {
+      await page.locator(`a`).filter({ hasText: 'RBAC' }).click();
+    }
+  };
+
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
@@ -22,11 +49,7 @@ test.describe('RBAC plugin', () => {
     await common.loginAsGuest();
     const navSelector = 'nav [aria-label="Administration"]';
     await page.locator(navSelector).click();
-    await expect(
-      page.getByRole('heading', { name: 'Administration' }),
-    ).toBeVisible({ timeout: 20000 });
-    const rbacTabSelector = page.getByRole('tab', { name: 'RBAC' });
-    await expect(rbacTabSelector).toBeVisible({
+    await expect(page.getByRole('heading', { name: 'RBAC' })).toBeVisible({
       timeout: 20000,
     });
   });
@@ -43,7 +66,7 @@ test.describe('RBAC plugin', () => {
     const columns = [
       'Name',
       'Users and groups',
-      'Permission Policies',
+      'Accessible plugins',
       'Actions',
     ];
     await verifyColumnHeading(columns, page);
@@ -52,8 +75,8 @@ test.describe('RBAC plugin', () => {
     const usersAndGroups = new RegExp(
       /^(1\s(user|group)|[2-9]\s(users|groups))(, (1\s(user|group)|[2-9]\s(users|groups)))?$/,
     );
-    const permissionPolicies = /\d/;
-    const cellIdentifier = [roleName, usersAndGroups, permissionPolicies];
+    const accessiblePlugins = /\d/;
+    const cellIdentifier = [roleName, usersAndGroups, accessiblePlugins];
 
     await verifyCellsInTable(cellIdentifier, page);
   });
@@ -85,7 +108,7 @@ test.describe('RBAC plugin', () => {
 
     // verify permission policy table
     await expect(
-      page.getByRole('heading', { name: 'Permission policies (7)' }),
+      page.getByRole('heading', { name: 'Permission policies (10)' }),
     ).toBeVisible({ timeout: 20000 });
     await verifyColumnHeading(['Plugin', 'Permission', 'Policies'], page);
     const policies =
@@ -233,34 +256,14 @@ test.describe('RBAC plugin', () => {
     await expect(page.getByText('Configure access (2 rules)')).toBeVisible({
       timeout: 20000,
     });
-
-    await common.clickButton('Next');
-
-    await common.clickButton('Create');
-    await verifyText(
+    await finishAndVerifyUpdate(
+      'Create',
       'Role role:default/sample-role-1 created successfully',
-      page,
     );
   });
 
   test('Edit role to convert simple policy into conditional policy', async () => {
-    await expect(
-      page.getByRole('heading', { name: 'All roles (2)' }),
-    ).toBeVisible({ timeout: 20000 });
-
-    // edit/update policies
-    await page.locator(`a`).filter({ hasText: 'role:default/guests' }).click();
-    await expect(
-      page.getByRole('heading', { name: 'role:default/guests' }),
-    ).toBeVisible({
-      timeout: 20000,
-    });
-    await page.getByRole('tab', { name: 'Overview' }).click();
-
-    await page.locator(RoleOverviewPO.updatePolicies).click();
-    await expect(page.getByRole('heading', { name: 'Edit Role' })).toBeVisible({
-      timeout: 20000,
-    });
+    navigateToRole('guests');
 
     // update simple policy to add conditions
     await page.getByText('Configure access', { exact: true }).click();
@@ -273,10 +276,76 @@ test.describe('RBAC plugin', () => {
       page.getByText('Configure access (1 rule)', { exact: true }),
     ).toBeVisible();
 
-    await common.clickButton('Next');
-    await common.clickButton('Save');
-    await verifyText('Role role:default/guests updated successfully', page);
+    finishAndVerifyUpdate(
+      'Save',
+      'Role role:default/guests updated successfully',
+    );
+  });
 
-    await page.locator(`a`).filter({ hasText: 'RBAC' }).click();
+  test('Edit role to convert conditional policy into nested conditional policy', async () => {
+    await navigateToRole('guests');
+
+    await page.getByText('Configure access', { exact: true }).click();
+    await page.getByText('AllOf', { exact: true }).click();
+    await page.getByPlaceholder('Select a rule').first().click();
+    await page.getByText('HAS_LABEL').click();
+    await page.getByLabel('label').fill('dev');
+    await page.getByText('Add nested condition').click();
+    await page.getByPlaceholder('Select a rule').last().click();
+    await page.getByText('HAS_METADATA').click();
+    await page.getByLabel('key').fill('status');
+    await page.getByTestId('save-conditions').click();
+
+    await expect(
+      page.getByText('Configure access (2 rules)', { exact: true }),
+    ).toBeVisible();
+
+    await finishAndVerifyUpdate(
+      'Save',
+      'Role role:default/guests updated successfully',
+    );
+  });
+
+  test('Edit existing nested conditional policy', async () => {
+    await navigateToRole('rbac_admin');
+
+    await page.getByText('Configure access (9 rules)', { exact: true }).click();
+    await expect(page.getByText('AllOf')).toHaveCount(2, { timeout: 20000 });
+    await page.getByText('Add nested condition').click();
+    await page.getByText('Not', { exact: true }).last().click();
+    await page.getByPlaceholder('Select a rule').last().click();
+    await page.getByText('HAS_LABEL').last().click();
+    await page.getByLabel('label').last().fill('test');
+    await page.getByTestId('save-conditions').click();
+
+    await expect(
+      page.getByText('Configure access (10 rules)', { exact: true }),
+    ).toBeVisible();
+
+    await finishAndVerifyUpdate(
+      'Save',
+      'Role role:default/rbac_admin updated successfully',
+    );
+  });
+
+  test('Remove existing nested conditional policy', async () => {
+    await navigateToRole('rbac_admin');
+
+    await expect(
+      page.getByText('Configure access (9 rules)', { exact: true }),
+    ).toHaveCount(1);
+    await page.getByText('Configure access (9 rules)', { exact: true }).click();
+    await expect(page.getByText('AllOf')).toHaveCount(2, { timeout: 20000 });
+    await page.getByTestId('remove-nested-condition').last().click();
+    await page.getByTestId('save-conditions').click();
+
+    await expect(
+      page.getByText('Configure access (2 rules)', { exact: true }),
+    ).toHaveCount(2);
+
+    await finishAndVerifyUpdate(
+      'Save',
+      'Role role:default/rbac_admin updated successfully',
+    );
   });
 });

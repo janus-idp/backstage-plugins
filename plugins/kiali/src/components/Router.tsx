@@ -18,6 +18,7 @@ import { KialiNoAnnotation } from '../pages/Kiali/KialiNoAnnotation';
 import { OverviewPage } from '../pages/Overview/OverviewPage';
 import { ServiceDetailsPage } from '../pages/ServiceDetails/ServiceDetailsPage';
 import { ServiceListPage } from '../pages/ServiceList/ServiceListPage';
+import TrafficGraphPage from '../pages/TrafficGraph/TrafficGraphPage';
 import { WorkloadDetailsPage } from '../pages/WorkloadDetails/WorkloadDetailsPage';
 import { WorkloadListPage } from '../pages/WorkloadList/WorkloadListPage';
 import { pluginName } from '../plugin';
@@ -29,6 +30,7 @@ import {
   overviewRouteRef,
   servicesDetailRouteRef,
   servicesRouteRef,
+  trafficGraphRouteRef,
   workloadsDetailRouteRef,
   workloadsRouteRef,
 } from '../routes';
@@ -76,6 +78,10 @@ export const getEntityRoutes = () => {
         path={`${istioConfigDetailRouteRef.path}`}
         element={<IstioConfigDetailsPage entity />}
       />
+      <Route
+        path={`${trafficGraphRouteRef.path}`}
+        element={<TrafficGraphPage />}
+      />
       <Route path="*" element={<KialiNoPath />} />
     </Routes>
   );
@@ -117,6 +123,10 @@ export const getRoutes = (dev?: boolean) => {
       <Route
         path={dev ? `/${pluginName}/istio` : istioConfigRouteRef.path}
         element={<IstioConfigListPage />}
+      />
+      <Route
+        path={dev ? `/${pluginName}/graph` : trafficGraphRouteRef.path}
+        element={<TrafficGraphPage />}
       />
       <Route
         path={

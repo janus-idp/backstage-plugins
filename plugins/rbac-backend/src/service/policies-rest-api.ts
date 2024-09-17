@@ -20,10 +20,7 @@ import {
   PolicyDecision,
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
-import {
-  createPermissionIntegrationRouter,
-  MetadataResponse,
-} from '@backstage/plugin-permission-node';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
 import express from 'express';
 import { Request } from 'express-serve-static-core';
@@ -33,7 +30,6 @@ import { ParsedQs } from 'qs';
 import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
   PermissionAction,
-  PermissionInfo,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
   policyEntityPermissions,
@@ -44,7 +40,7 @@ import {
   RoleBasedPolicy,
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
-import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
+import { RBACProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import {
   ConditionAuditInfo,
@@ -69,6 +65,7 @@ import {
   deepSortedEqual,
   isPermissionAction,
   policyToString,
+  processConditionMapping,
 } from '../helper';
 import { validateRoleCondition } from '../validation/condition-validation';
 import {
@@ -89,9 +86,10 @@ export class PoliciesServer {
     private readonly httpAuth: HttpAuthService,
     private readonly auth: AuthService,
     private readonly conditionalStorage: ConditionalStorage,
-    private readonly pluginIdProvider: PluginIdProvider,
+    private readonly pluginPermMetaData: PluginPermissionMetadataCollector,
     private readonly roleMetadata: RoleMetadataStorage,
     private readonly aLog: AuditLogger,
+    private readonly rbacProviders?: RBACProvider[],
   ) {}
 
   private async authorize(
@@ -121,7 +119,7 @@ export class PoliciesServer {
   async serve(): Promise<express.Router> {
     const router = await createRouter(this.options);
 
-    const { identity, discovery, logger, config } = this.options;
+    const { identity } = this.options;
 
     if (!identity) {
       throw new NotAllowedError(
@@ -140,13 +138,6 @@ export class PoliciesServer {
     if (!isPluginEnabled) {
       return router;
     }
-
-    const pluginPermMetaData = new PluginPermissionMetadataCollector(
-      discovery,
-      this.pluginIdProvider,
-      logger,
-      config,
-    );
 
     router.get('/', async (request, response) => {
       const decision = await this.authorize(
@@ -776,7 +767,7 @@ export class PoliciesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const body = await pluginPermMetaData.getPluginPolicies(this.auth);
+      const body = await this.pluginPermMetaData.getPluginPolicies(this.auth);
 
       await this.aLog.auditLog({
         message: `Return list plugin policies`,
@@ -801,7 +792,9 @@ export class PoliciesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const body = await pluginPermMetaData.getPluginConditionRules(this.auth);
+      const body = await this.pluginPermMetaData.getPluginConditionRules(
+        this.auth,
+      );
 
       await this.aLog.auditLog({
         message: `Return list conditional rules and schemas`,
@@ -868,9 +861,10 @@ export class PoliciesServer {
         request.body;
       validateRoleCondition(roleConditionPolicy);
 
-      const conditionToCreate = await this.processConditionMapping(
+      const conditionToCreate = await processConditionMapping(
         roleConditionPolicy,
-        pluginPermMetaData,
+        this.pluginPermMetaData,
+        this.auth,
       );
 
       const id =
@@ -991,9 +985,10 @@ export class PoliciesServer {
 
       validateRoleCondition(roleConditionPolicy);
 
-      const conditionToUpdate = await this.processConditionMapping(
+      const conditionToUpdate = await processConditionMapping(
         roleConditionPolicy,
-        pluginPermMetaData,
+        this.pluginPermMetaData,
+        this.auth,
       );
 
       await this.conditionalStorage.updateCondition(id, conditionToUpdate);
@@ -1008,6 +1003,36 @@ export class PoliciesServer {
         response: { status: 200 },
       });
 
+      response.status(200).end();
+    });
+
+    router.post('/refresh/:id', async (request, response) => {
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityCreatePermission,
+      );
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+
+      if (!this.rbacProviders) {
+        throw new NotFoundError(`No RBAC providers were found`);
+      }
+
+      const idProvider = this.rbacProviders.find(provider => {
+        const id = provider.getProviderName();
+        return id === request.params.id;
+      });
+
+      if (!idProvider) {
+        throw new NotFoundError(
+          `The RBAC provider ${request.params.id} was not found`,
+        );
+      }
+
+      await idProvider.refresh();
       response.status(200).end();
     });
 
@@ -1222,49 +1247,5 @@ export class PoliciesServer {
       return 1;
     }
     return 0;
-  }
-
-  async processConditionMapping(
-    roleConditionPolicy: RoleConditionalPolicyDecision<PermissionAction>,
-    pluginPermMetaData: PluginPermissionMetadataCollector,
-  ): Promise<RoleConditionalPolicyDecision<PermissionInfo>> {
-    const { token } = await this.auth.getPluginRequestToken({
-      onBehalfOf: await this.auth.getOwnServiceCredentials(),
-      targetPluginId: roleConditionPolicy.pluginId,
-    });
-
-    const rule: MetadataResponse | undefined =
-      await pluginPermMetaData.getMetadataByPluginId(
-        roleConditionPolicy.pluginId,
-        token,
-      );
-    if (!rule?.permissions) {
-      throw new Error(
-        `Unable to get permission list for plugin ${roleConditionPolicy.pluginId}`,
-      );
-    }
-
-    const permInfo: PermissionInfo[] = [];
-    for (const action of roleConditionPolicy.permissionMapping) {
-      const perm = rule.permissions.find(
-        permission =>
-          permission.type === 'resource' &&
-          (action === permission.attributes.action ||
-            (action === 'use' && permission.attributes.action === undefined)),
-      );
-      if (!perm) {
-        throw new Error(
-          `Unable to find permission to get permission name for resource type '${
-            roleConditionPolicy.resourceType
-          }' and action ${JSON.stringify(action)}`,
-        );
-      }
-      permInfo.push({ name: perm.name, action });
-    }
-
-    return {
-      ...roleConditionPolicy,
-      permissionMapping: permInfo,
-    };
   }
 }

@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import {
   AssessedProcessInstanceDTO,
   ExecuteWorkflowResponseDTO,
@@ -21,7 +23,6 @@ import {
   generateTestWorkflowOverviewList,
   generateWorkflowDefinition,
 } from './test-utils';
-import { V1 } from './v1';
 import { V2 } from './v2';
 
 jest.mock('../Helper.ts', () => ({
@@ -54,7 +55,7 @@ const createMockOrchestratorService = (): OrchestratorService => {
   return mockOrchestratorService;
 };
 const mockOrchestratorService = createMockOrchestratorService();
-const v2 = new V2(mockOrchestratorService, new V1(mockOrchestratorService));
+const v2 = new V2(mockOrchestratorService);
 
 describe('getWorkflowOverview', () => {
   beforeEach(() => {
@@ -63,14 +64,20 @@ describe('getWorkflowOverview', () => {
 
   it('0 items in workflow overview list', async () => {
     // Arrange
-    const mockRequest: any = {
-      query: {
-        page: 1,
-        pageSize: 50,
-        orderBy: 'lastUpdated',
-        orderDirection: 'DESC',
+    const mockRequest = {
+      query: {},
+      headers: {},
+      params: {},
+      body: {
+        paginationInfo: {
+          offset: 1,
+          pageSize: 50,
+          orderBy: 'lastUpdated',
+          orderDirection: 'DESC',
+        },
       },
-    };
+    } as Request;
+
     const mockOverviewsV1 = {
       items: [],
     };
@@ -90,7 +97,7 @@ describe('getWorkflowOverview', () => {
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
-        page: 1,
+        offset: 1,
         pageSize: 50,
         totalCount: mockOverviewsV1.items.length,
       },
@@ -100,7 +107,7 @@ describe('getWorkflowOverview', () => {
   it('1 item in workflow overview list', async () => {
     // Arrange
     const mockRequest: any = {
-      query: {},
+      body: {},
     };
     const mockOverviewsV1 = generateTestWorkflowOverviewList(1, {});
 
@@ -119,8 +126,8 @@ describe('getWorkflowOverview', () => {
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
-        page: 0,
-        pageSize: 10,
+        offset: undefined,
+        pageSize: undefined,
         totalCount: mockOverviewsV1.items.length,
       },
     });
@@ -129,11 +136,13 @@ describe('getWorkflowOverview', () => {
   it('many items in workflow overview list', async () => {
     // Arrange
     const mockRequest: any = {
-      query: {
-        page: 1,
-        pageSize: 50,
-        orderBy: 'lastUpdated',
-        orderDirection: 'DESC',
+      body: {
+        paginationInfo: {
+          offset: 1,
+          pageSize: 50,
+          orderBy: 'lastUpdated',
+          orderDirection: 'DESC',
+        },
       },
     };
     const mockOverviewsV1 = generateTestWorkflowOverviewList(100, {});
@@ -153,7 +162,7 @@ describe('getWorkflowOverview', () => {
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
-        page: 1,
+        offset: 1,
         pageSize: 50,
         totalCount: mockOverviewsV1.items.length,
       },

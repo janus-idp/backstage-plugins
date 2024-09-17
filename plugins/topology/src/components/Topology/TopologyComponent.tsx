@@ -44,6 +44,8 @@ export const TopologyComponent = () => {
     TektonModels.pipelineruns,
     TektonModels.pipelines,
     ModelsPlural.checlusters,
+    ModelsPlural.virtualmachines,
+    ModelsPlural.virtualmachineinstances,
   ];
 
   const k8sResourcesContextData = useK8sObjectsResponse(watchedResources);

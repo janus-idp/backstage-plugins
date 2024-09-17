@@ -1,4 +1,5 @@
 import {
+  FilterInfo,
   ProcessInstance,
   ProcessInstanceVariables,
   WorkflowDefinition,
@@ -53,10 +54,12 @@ export class OrchestratorService {
 
   public async fetchInstances(args: {
     pagination?: Pagination;
+    filter?: FilterInfo;
   }): Promise<ProcessInstance[]> {
     return await this.dataIndexService.fetchInstances({
       definitionIds: this.workflowCacheService.definitionIds,
       pagination: args.pagination,
+      filter: args.filter,
     });
   }
 
@@ -142,10 +145,12 @@ export class OrchestratorService {
 
   public async fetchWorkflowOverviews(args: {
     pagination?: Pagination;
+    filter?: FilterInfo;
   }): Promise<WorkflowOverview[] | undefined> {
     return await this.sonataFlowService.fetchWorkflowOverviews({
       definitionIds: this.workflowCacheService.definitionIds,
       pagination: args.pagination,
+      filter: args.filter,
     });
   }
 
@@ -178,42 +183,5 @@ export class OrchestratorService {
     return isWorkflowAvailable
       ? await this.sonataFlowService.fetchWorkflowOverview(definitionId)
       : undefined;
-  }
-
-  public async retriggerInstanceInError(args: {
-    definitionId: string;
-    serviceUrl: string;
-    instanceId: string;
-    cacheHandler?: CacheHandler;
-  }): Promise<boolean> {
-    const { definitionId, cacheHandler } = args;
-
-    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
-      definitionId,
-      cacheHandler,
-    );
-
-    return isWorkflowAvailable
-      ? await this.sonataFlowService.retriggerInstanceInError(args)
-      : false;
-  }
-
-  public async updateInstanceInputData(args: {
-    definitionId: string;
-    serviceUrl: string;
-    instanceId: string;
-    inputData: ProcessInstanceVariables;
-    cacheHandler?: CacheHandler;
-  }): Promise<boolean> {
-    const { definitionId, cacheHandler } = args;
-
-    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
-      definitionId,
-      cacheHandler,
-    );
-
-    return isWorkflowAvailable
-      ? await this.sonataFlowService.updateInstanceInputData(args)
-      : false;
   }
 }

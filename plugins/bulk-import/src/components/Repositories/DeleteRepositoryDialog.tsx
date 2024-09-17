@@ -1,38 +1,31 @@
 import React from 'react';
 
-import {
-  Box,
-  Button,
-  createStyles,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  makeStyles,
-  Theme,
-  Typography,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { useApi } from '@backstage/core-plugin-api';
+
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import CloseIcon from '@mui/icons-material/Close';
 import WarningIcon from '@mui/icons-material/Warning';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import { get } from 'lodash';
 
-import { AddRepositoriesData } from '../../types';
-
-type DeleteRepositoryDialogProps = {
-  open: boolean;
-  closeDialog: () => void;
-  repository: AddRepositoriesData;
-  removeRepository: () => void;
-};
+import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
+import { AddRepositoryData } from '../../types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     dialogContainer: {
       height: '70%',
     },
-    dialogContent: {
-      padding: '8px 0',
-    },
+
     titleContainer: {
       display: 'flex',
       alignItems: 'center',
@@ -70,13 +63,36 @@ const DeleteRepositoryDialog = ({
   open,
   closeDialog,
   repository,
-  removeRepository,
-}: DeleteRepositoryDialogProps) => {
+}: {
+  open: boolean;
+  repository: AddRepositoryData;
+  closeDialog: () => void;
+}) => {
   const classes = useStyles();
-  const handleClickRemove = () => {
-    removeRepository();
-    closeDialog();
+  const [error, setError] = React.useState<string>('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const bulkImportApi = useApi(bulkImportApiRef);
+  const handleClickRemove = async () => {
+    setIsSubmitting(true);
+    if (!repository.repoUrl || !repository?.defaultBranch) {
+      setIsSubmitting(false);
+      setError(
+        `Unable to remove repository. ${!repository?.repoUrl ? 'Repository URL missing' : 'Repository default branch is missing'}`,
+      );
+    } else {
+      const value = await bulkImportApi.deleteImportAction(
+        repository.repoUrl,
+        repository.defaultBranch,
+      );
+      setIsSubmitting(false);
+      if (get(value, 'error')) {
+        setError(`Unable to remove repository. ${get(value, 'error.message')}`);
+      } else {
+        closeDialog();
+      }
+    }
   };
+
   return (
     <Dialog
       maxWidth="md"
@@ -104,18 +120,27 @@ const DeleteRepositoryDialog = ({
             <CloseIcon />
           </IconButton>
         </Box>
-        <DialogContent className={classes.dialogContent}>
-          <Typography variant="body1">
-            Removing a repository erases all associated information from the
-            Catalog page.
-          </Typography>
-        </DialogContent>
       </DialogTitle>
+      <DialogContent>
+        <Typography variant="body1">
+          Removing a repository erases all associated information from the
+          Catalog page.
+        </Typography>
+      </DialogContent>
+      {error && (
+        <Box maxWidth="650px" marginLeft="20px">
+          <Alert severity="error">{error}</Alert>
+        </Box>
+      )}
       <DialogActions style={{ justifyContent: 'left', padding: '20px' }}>
         <Button
           variant="contained"
           className={`${classes.deleteButton} ${classes.button}`}
           onClick={() => handleClickRemove()}
+          disabled={isSubmitting}
+          startIcon={
+            isSubmitting && <CircularProgress size="20px" color="inherit" />
+          }
         >
           Remove
         </Button>

@@ -1,3 +1,63 @@
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.17.2
+* **@janus-idp/backstage-plugin-orchestrator-form-react:** upgraded to 1.0.10
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.17.1
+* **@janus-idp/backstage-plugin-orchestrator-form-react:** upgraded to 1.0.9
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.17.0
+* **@janus-idp/backstage-plugin-orchestrator-form-react:** upgraded to 1.0.8
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.16.0
+* **@janus-idp/backstage-plugin-orchestrator-form-react:** upgraded to 1.0.6
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.15.2
+* **@janus-idp/backstage-plugin-orchestrator-form-react:** upgraded to 1.0.5
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-form-react:** upgraded to 1.0.4
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.15.1
+* **@janus-idp/backstage-plugin-orchestrator-form-react:** upgraded to 1.0.3
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.15.0
+* **@janus-idp/backstage-plugin-orchestrator-form-react:** upgraded to 1.0.2
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.13.1
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-form-api:** upgraded to 1.0.1
+* **@janus-idp/backstage-plugin-orchestrator-form-react:** upgraded to 1.0.1
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.14.0
+
+## @janus-idp/backstage-plugin-orchestrator [1.18.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.18.0...@janus-idp/backstage-plugin-orchestrator@1.18.1) (2024-08-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.13.1
+
 ## @janus-idp/backstage-plugin-orchestrator [1.18.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.17.0...@janus-idp/backstage-plugin-orchestrator@1.18.0) (2024-07-26)
 
 

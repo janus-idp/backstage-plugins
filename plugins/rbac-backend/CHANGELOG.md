@@ -1,3 +1,55 @@
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.9.0
+* **@janus-idp/backstage-plugin-rbac-node:** upgraded to 1.5.0
+
+## @janus-idp/backstage-plugin-rbac-backend [4.7.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.7.2...@janus-idp/backstage-plugin-rbac-backend@4.7.3) (2024-08-06)
+
+
+### Bug Fixes
+
+* **rbac:** implement conditional aliases ([#1847](https://github.com/janus-idp/backstage-plugins/issues/1847)) ([dbc9a0b](https://github.com/janus-idp/backstage-plugins/commit/dbc9a0bc92f19a4382e406f83b4889905dc6e33d))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.8.2
+
+## @janus-idp/backstage-plugin-rbac-backend [4.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.7.1...@janus-idp/backstage-plugin-rbac-backend@4.7.2) (2024-08-05)
+
+
+### Bug Fixes
+
+* **rbac:** add additional validation for permission policies ([#1908](https://github.com/janus-idp/backstage-plugins/issues/1908)) ([592498f](https://github.com/janus-idp/backstage-plugins/commit/592498f34a3b605162d3c242184aa6877b0360e8)), closes [#1939](https://github.com/janus-idp/backstage-plugins/issues/1939)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.8.1
+
+## @janus-idp/backstage-plugin-rbac-backend [4.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.7.0...@janus-idp/backstage-plugin-rbac-backend@4.7.1) (2024-08-02)
+
+
+### Bug Fixes
+
+* **rbac:** log when plugin has no permissions ([#1917](https://github.com/janus-idp/backstage-plugins/issues/1917)) ([cc8752b](https://github.com/janus-idp/backstage-plugins/commit/cc8752b159364fdab62e7bbdaa51ca811288197b))
+
+## @janus-idp/backstage-plugin-rbac-backend [4.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.6.1...@janus-idp/backstage-plugin-rbac-backend@4.7.0) (2024-07-30)
+
+
+### Features
+
+* **argocd:** add permission support for argocd ([#1855](https://github.com/janus-idp/backstage-plugins/issues/1855)) ([3b78237](https://github.com/janus-idp/backstage-plugins/commit/3b782377683605ea4d584c43bea14be2f435003d))
+
+## @janus-idp/backstage-plugin-rbac-backend [4.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.6.0...@janus-idp/backstage-plugin-rbac-backend@4.6.1) (2024-07-29)
+
+
+### Bug Fixes
+
+* **rbac:** fix uncommited knex transaction in the addGroupingPolicies ([#1968](https://github.com/janus-idp/backstage-plugins/issues/1968)) ([24d5eef](https://github.com/janus-idp/backstage-plugins/commit/24d5eeffbce685bbe05f8895fe3a69ee26a4eb8a))
+
 ## @janus-idp/backstage-plugin-rbac-backend [4.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@4.5.0...@janus-idp/backstage-plugin-rbac-backend@4.6.0) (2024-07-26)
 
 

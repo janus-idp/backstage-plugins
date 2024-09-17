@@ -1,9 +1,12 @@
 import React from 'react';
 
+import { parseEntityRef } from '@backstage/catalog-model';
 import { Link, TableColumn } from '@backstage/core-components';
 
+import { Tooltip, Typography } from '@material-ui/core';
+
 import { RolesData } from '../../types';
-import { getKindNamespaceName, getMembers } from '../../utils/rbac-utils';
+import { getMembers } from '../../utils/rbac-utils';
 import EditRole from '../EditRole';
 import DeleteRole from './DeleteRole';
 
@@ -13,7 +16,7 @@ export const columns: TableColumn<RolesData>[] = [
     field: 'name',
     type: 'string',
     render: (props: RolesData) => {
-      const { kind, namespace, name } = getKindNamespaceName(props.name);
+      const { kind, namespace, name } = parseEntityRef(props.name);
       return (
         <Link to={`roles/${kind}/${namespace}/${name}`}>{props.name}</Link>
       );
@@ -39,10 +42,29 @@ export const columns: TableColumn<RolesData>[] = [
     },
   },
   {
-    title: 'Permission Policies',
-    field: 'permissions',
-    type: 'numeric',
+    title: 'Accessible plugins',
+    field: 'accessiblePlugins',
+    type: 'string',
     align: 'left',
+    render: (props: RolesData) => {
+      const pls = props.accessiblePlugins.map(
+        p => p[0].toUpperCase() + p.slice(1),
+      );
+      const plsTooltip = pls.join(', ');
+      const plsOverflowCount = pls.length > 2 ? `+ ${pls.length - 2}` : '';
+
+      return pls.length > 0 ? (
+        <Tooltip title={plsTooltip || ''} placement="top-start">
+          <Typography>
+            {pls.length === 1
+              ? `${pls[0]}`
+              : `${pls[0]}, ${pls[1]} ${plsOverflowCount}`}
+          </Typography>
+        </Tooltip>
+      ) : (
+        '-'
+      );
+    },
   },
   {
     title: 'Actions',

@@ -1,18 +1,16 @@
-import React, { useEffect } from 'react';
-import { useAsync } from 'react-use';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { ErrorPage, Progress, Table } from '@backstage/core-components';
-import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import { ErrorPage, Table } from '@backstage/core-components';
 
 import { makeStyles } from '@material-ui/core';
-import { useFormikContext } from 'formik';
 
-import { getDataForRepositories } from '../../mocks/mockData';
-import {
-  AddRepositoriesData,
-  AddRepositoriesFormValues,
-  RepositoryStatus,
-} from '../../types';
+import { useDeleteDialog, useDrawer } from '@janus-idp/shared-react';
+
+import { useAddedRepositories } from '../../hooks/useAddedRepositories';
+import { AddRepositoryData } from '../../types';
+import DeleteRepositoryDialog from './DeleteRepositoryDialog';
+import EditCatalogInfo from './EditCatalogInfo';
 import { columns } from './RepositoriesListColumns';
 import { RepositoriesListToolbar } from './RepositoriesListToolbar';
 
@@ -25,66 +23,88 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const RepositoriesList = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const { openDialog, setOpenDialog, deleteComponent } = useDeleteDialog();
+  const { openDrawer, setOpenDrawer, drawerData } = useDrawer();
+  const [pageNumber, setPageNumber] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [searchString, setSearchString] = React.useState('');
   const classes = useStyles();
-  const [addedRepositories, setAddedRepositories] = React.useState<number>(0);
-  const identityApi = useApi(identityApiRef);
+
   const {
-    loading,
-    error,
-    value: user,
-  } = useAsync(async () => {
-    const identityRef = await identityApi.getBackstageIdentity();
-    return identityRef.userEntityRef;
-  });
+    data: importJobs,
+    error: errJobs,
+    loaded: jobsLoaded,
+    retry,
+  } = useAddedRepositories(pageNumber + 1, rowsPerPage, searchString);
 
-  const { values, setFieldValue } =
-    useFormikContext<AddRepositoriesFormValues>();
-  const addedRepositoriesCount = Object.keys(values.repositories).length;
-
-  useEffect(() => {
-    if (user) {
-      const fetchedData = getDataForRepositories(user || '').filter(
-        (data: AddRepositoriesData) =>
-          data.catalogInfoYaml?.status === RepositoryStatus.Exists,
-      );
-      const repositories: { [key: string]: AddRepositoriesData } = {};
-      fetchedData.forEach(repo => {
-        repositories[repo.repoName || ''] = repo;
-      });
-      setFieldValue('repositories', repositories);
-    }
-  }, [user, setFieldValue]);
-
-  useEffect(() => {
-    setAddedRepositories(addedRepositoriesCount);
-  }, [addedRepositoriesCount]);
-
-  const onSearchResultsChange = (searchResults: AddRepositoriesData[]) => {
-    setAddedRepositories(searchResults.length);
+  const closeDialog = () => {
+    setOpenDialog(false);
+    retry();
   };
 
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <ErrorPage status={error.name} statusMessage={error.message} />;
+  const closeDrawer = () => {
+    searchParams.delete('repository');
+    searchParams.delete('defaultBranch');
+    navigate({
+      pathname: location.pathname,
+      search: `?${searchParams.toString()}`,
+    });
+    setOpenDrawer(false);
+  };
+
+  if (Object.keys(errJobs || {}).length > 0) {
+    return <ErrorPage status={errJobs.name} statusMessage={errJobs.message} />;
   }
 
   return (
     <>
       <RepositoriesListToolbar />
       <Table
-        title={`Added repositories (${addedRepositories ?? Object.keys(values.repositories).length})`}
+        onSearchChange={(search: string) => {
+          setSearchString(search);
+        }}
+        onPageChange={(page: number, pageSize: number) => {
+          setPageNumber(page);
+          setRowsPerPage(pageSize);
+        }}
+        onRowsPerPageChange={(pageSize: number) => {
+          setRowsPerPage(pageSize);
+        }}
+        title={
+          !jobsLoaded || !importJobs
+            ? 'Added repositories'
+            : `Added repositories (${importJobs.length})`
+        }
         options={{ padding: 'default', search: true, paging: true }}
-        data={Object.values(values.repositories)}
-        isLoading={false}
-        renderSummaryRow={summary => onSearchResultsChange(summary.data)}
+        data={importJobs ?? []}
+        isLoading={!jobsLoaded}
         columns={columns}
         emptyContent={
-          <div data-testid="repositories-table-empty" className={classes.empty}>
+          <div
+            data-testid="added-repositories-table-empty"
+            className={classes.empty}
+          >
             No records found
           </div>
         }
       />
+      {openDrawer && (
+        <EditCatalogInfo
+          open={openDrawer}
+          onClose={closeDrawer}
+          importStatus={drawerData}
+        />
+      )}
+      {openDialog && (
+        <DeleteRepositoryDialog
+          open={openDialog}
+          closeDialog={closeDialog}
+          repository={deleteComponent as AddRepositoryData}
+        />
+      )}
     </>
   );
 };

@@ -1,17 +1,14 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core';
-import Clear from '@mui/icons-material/Clear';
-import Search from '@mui/icons-material/Search';
-import FormControl from '@mui/material/FormControl';
-import IconButton from '@mui/material/IconButton';
-import Input from '@mui/material/Input';
-import InputAdornment from '@mui/material/InputAdornment';
-
-type RepositoriesSearchBarProps = {
-  value: string;
-  onChange: (filter: string) => void;
-};
+import {
+  FormControl,
+  IconButton,
+  Input,
+  InputAdornment,
+  makeStyles,
+} from '@material-ui/core';
+import Clear from '@material-ui/icons/Clear';
+import Search from '@material-ui/icons/Search';
 
 const useStyles = makeStyles({
   formControl: {
@@ -24,18 +21,24 @@ const useStyles = makeStyles({
 export const RepositoriesSearchBar = ({
   value,
   onChange,
-}: RepositoriesSearchBarProps) => {
+  activeOrganization,
+}: {
+  value: string;
+  onChange: (filter: string) => void;
+  activeOrganization?: boolean;
+}) => {
   const classes = useStyles();
+  const ariaLabel = activeOrganization ? 'search-in-organization' : 'search';
 
   return (
     <FormControl className={classes.formControl}>
       <Input
-        aria-label="search"
+        data-testid={ariaLabel}
         placeholder="Search"
+        inputProps={{ 'aria-label': ariaLabel }}
         autoComplete="off"
         onChange={event => onChange(event.target.value)}
         value={value}
-        size="medium"
         startAdornment={
           <InputAdornment position="start">
             <Search />

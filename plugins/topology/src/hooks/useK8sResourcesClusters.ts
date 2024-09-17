@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { KubernetesObjects } from '@backstage/plugin-kubernetes';
+import { KubernetesObjects } from '@backstage/plugin-kubernetes-react';
 
 import { ClusterErrors } from '../types/types';
 import { getClusters } from '../utils/topology-utils';

@@ -124,7 +124,7 @@ describe('plugin-endpoint', () => {
       ]);
     });
 
-    it('should skip not found error for not found endpoint', async () => {
+    it('should log warning for not found endpoint', async () => {
       backendPluginIDsProviderMock.getPluginIds.mockReturnValue([
         'permission',
         'unknown-plugin-id',
@@ -145,6 +145,7 @@ describe('plugin-endpoint', () => {
         '{"permissions":[{"type":"resource","resourceType":"policy-entity","name":"policy.entity.read","attributes":{"action":"read"}}]}',
       );
 
+      const errorSpy = jest.spyOn(logger, 'warn').mockClear();
       const collector = new PluginPermissionMetadataCollector(
         mockPluginEndpointDiscovery,
         backendPluginIDsProviderMock,
@@ -162,6 +163,10 @@ describe('plugin-endpoint', () => {
           policy: 'read',
         },
       ]);
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        'No permission metadata found for unknown-plugin-id. NotFoundError',
+      );
     });
 
     it('should log error when it is not possible to retrieve permission metadata for known endpoint', async () => {

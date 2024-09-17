@@ -3,7 +3,7 @@
 <a name="documentation-for-api-endpoints"></a>
 ## Documentation for API Endpoints
 
-All URIs are relative to *http://localhost:7007/api/bulk-import-backend*
+All URIs are relative to *http://localhost:7007/api/bulk-import*
 
 | Class | Method | HTTP request | Description |
 |------------ | ------------- | ------------- | -------------|
@@ -29,7 +29,6 @@ All URIs are relative to *http://localhost:7007/api/bulk-import-backend*
  - [ImportStatus](./Models/ImportStatus.md)
  - [Import_github](./Models/Import_github.md)
  - [Import_github_pullRequest](./Models/Import_github_pullRequest.md)
- - [Import_repository](./Models/Import_repository.md)
  - [Organization](./Models/Organization.md)
  - [OrganizationList](./Models/OrganizationList.md)
  - [Repository](./Models/Repository.md)

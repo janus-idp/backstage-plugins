@@ -1,34 +1,49 @@
 import * as React from 'react';
+import { useAsync } from 'react-use';
 
 import { Link } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
+import { Checkbox, makeStyles, TableCell, TableRow } from '@material-ui/core';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import Checkbox from '@mui/material/Checkbox';
-import TableCell from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
 
-import { AddRepositoriesData, RepositoryStatus } from '../../types';
+import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
+import { AddRepositoryData, RepositoryStatus } from '../../types';
 import { urlHelper } from '../../utils/repository-utils';
 import { CatalogInfoStatus } from './CatalogInfoStatus';
+
+const useStyles = makeStyles(() => ({
+  tableCellStyle: {
+    lineHeight: '1.5rem',
+    fontSize: '0.875rem',
+    padding: '15px 16px 15px 6px',
+  },
+}));
 
 export const RepositoryTableRow = ({
   handleClick,
   isItemSelected,
   data,
-  selectedRepositoryStatus,
   isDrawer = false,
 }: {
-  handleClick: (_event: React.MouseEvent, id: number) => void;
+  handleClick: (_event: React.MouseEvent, id: AddRepositoryData) => void;
   isItemSelected: boolean;
-  data: AddRepositoriesData;
-  selectedRepositoryStatus: string;
+  data: AddRepositoryData;
   isDrawer?: boolean;
 }) => {
-  const tableCellStyle = {
-    lineHeight: '1.5rem',
-    fontSize: '0.875rem',
-    padding: '15px 16px 15px 6px',
-  };
+  const classes = useStyles();
+  const bulkImportApi = useApi(bulkImportApiRef);
+  const { value, loading } = useAsync(async () => {
+    if (data.repoUrl) {
+      const result = await bulkImportApi.getImportAction(
+        data.repoUrl,
+        data?.defaultBranch || 'main',
+      );
+      return result;
+    }
+    return null;
+  }, [data.repoUrl]);
+
   return (
     <TableRow
       hover
@@ -37,22 +52,25 @@ export const RepositoryTableRow = ({
       key={data.id}
       selected={isItemSelected}
     >
-      <TableCell component="th" scope="row" padding="none" sx={tableCellStyle}>
+      <TableCell
+        component="th"
+        scope="row"
+        padding="none"
+        className={classes.tableCellStyle}
+      >
         <Checkbox
           disableRipple
           color="primary"
           checked={
-            selectedRepositoryStatus === RepositoryStatus.Exists
-              ? true
-              : isItemSelected
+            value?.status === RepositoryStatus.ADDED ? true : isItemSelected
           }
-          disabled={selectedRepositoryStatus === RepositoryStatus.Exists}
-          onClick={event => handleClick(event, data.id)}
+          disabled={loading || value?.status === RepositoryStatus.ADDED}
+          onClick={event => handleClick(event, data)}
           style={{ padding: '0 12px' }}
         />
         {data.repoName}
       </TableCell>
-      <TableCell align="left" sx={tableCellStyle}>
+      <TableCell align="left" className={classes.tableCellStyle}>
         <Link to={data.repoUrl || ''}>
           <>
             {urlHelper(data?.repoUrl || '')}
@@ -63,7 +81,7 @@ export const RepositoryTableRow = ({
         </Link>
       </TableCell>
       {!isDrawer && (
-        <TableCell align="left" sx={tableCellStyle}>
+        <TableCell align="left" className={classes.tableCellStyle}>
           <Link to={data?.organizationUrl || ''}>
             <>
               {urlHelper(data?.organizationUrl || '')}
@@ -75,9 +93,11 @@ export const RepositoryTableRow = ({
         </TableCell>
       )}
 
-      <TableCell align="left" sx={tableCellStyle}>
+      <TableCell align="left" className={classes.tableCellStyle}>
         <CatalogInfoStatus
           data={data}
+          importStatus={value?.status as string}
+          isLoading={loading}
           isItemSelected={isItemSelected}
           isDrawer={isDrawer}
         />

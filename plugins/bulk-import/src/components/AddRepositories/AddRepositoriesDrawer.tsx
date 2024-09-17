@@ -13,20 +13,16 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@mui/icons-material/Close';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { useFormikContext } from 'formik';
 
-import { AddRepositoriesData } from '../../types';
+import {
+  AddedRepositories,
+  AddRepositoriesFormValues,
+  AddRepositoryData,
+} from '../../types';
 import { urlHelper } from '../../utils/repository-utils';
 import { AddRepositoriesTableToolbar } from './AddRepositoriesTableToolbar';
 import { RepositoriesTable } from './RepositoriesTable';
-
-type AddRepositoriesDrawerProps = {
-  open: boolean;
-  onClose: () => void;
-  onSelect: (ids: number[], drawerOrgId: number) => void;
-  title: string;
-  data: AddRepositoriesData;
-  checkedRepos: number[];
-};
 
 const useStyles = makeStyles(theme => ({
   createButton: {
@@ -60,23 +56,44 @@ export const AddRepositoriesDrawer = ({
   onClose,
   onSelect,
   title,
-  data,
-  checkedRepos,
-}: AddRepositoriesDrawerProps) => {
+  orgData,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSelect: (repos: AddedRepositories, drawerOrgName: string) => void;
+  title: string;
+  orgData: AddRepositoryData;
+}) => {
   const classes = useStyles();
+  const { values, status, setStatus } =
+    useFormikContext<AddRepositoriesFormValues>();
   const [searchString, setSearchString] = useState<string>('');
+  const [selectedRepos, setSelectedRepos] = useState<AddedRepositories>({});
 
-  const [selectedReposID, setSelectedReposID] =
-    useState<number[]>(checkedRepos);
-
-  const updateSelectedReposInDrawer = (ids: number[]) => {
-    setSelectedReposID(ids);
+  const updateSelectedReposInDrawer = (repos: AddedRepositories) => {
+    setSelectedRepos(repos);
   };
 
-  const handleSelectRepoFromDrawer = (selected: number[]) => {
-    onSelect(selected, data?.id);
+  const handleSelectRepoFromDrawer = (selected: AddedRepositories) => {
+    onSelect(selected, orgData?.orgName || '');
+    const newStatus = { ...(status?.errors || {}) };
+    Object.keys(newStatus).forEach(s => {
+      if (!Object.keys(selected).find(sel => sel === s)) {
+        delete newStatus[s];
+      }
+    });
+    setStatus({ ...status, errors: newStatus });
     onClose();
   };
+
+  React.useEffect(() => {
+    const sr = Object.values(values.repositories).reduce(
+      (acc, repo) =>
+        repo.orgName === orgData?.orgName ? { ...acc, [repo.id]: repo } : acc,
+      {},
+    );
+    setSelectedRepos(sr);
+  }, [orgData?.orgName, values.repositories]);
 
   return (
     <Drawer
@@ -84,13 +101,14 @@ export const AddRepositoriesDrawer = ({
       open={open}
       variant="temporary"
       className={classes.drawerPaper}
+      onClose={onClose}
     >
       <Container className={classes.drawerContainer}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div>
-            <Typography variant="h5">{data?.orgName}</Typography>
-            <Link to={data?.organizationUrl || ''}>
-              {urlHelper(data?.organizationUrl || '')}
+            <Typography variant="h5">{orgData?.orgName}</Typography>
+            <Link to={orgData?.organizationUrl || ''}>
+              {urlHelper(orgData?.organizationUrl || '')}
               <OpenInNewIcon
                 style={{ verticalAlign: 'sub', paddingTop: '7px' }}
               />
@@ -106,13 +124,13 @@ export const AddRepositoriesDrawer = ({
           <AddRepositoriesTableToolbar
             title={title}
             setSearchString={setSearchString}
-            selectedReposFromDrawer={selectedReposID}
-            activeOrganization={data}
+            selectedReposFromDrawer={selectedRepos}
+            activeOrganization={orgData?.orgName}
           />
           <RepositoriesTable
             searchString={searchString}
             updateSelectedReposInDrawer={updateSelectedReposInDrawer}
-            drawerOrganization={data}
+            drawerOrganization={orgData?.orgName}
           />
         </Card>
         <div className={classes.sidePanelfooter}>
@@ -120,16 +138,16 @@ export const AddRepositoriesDrawer = ({
             <Button
               variant="contained"
               color="primary"
-              onClick={() => handleSelectRepoFromDrawer(selectedReposID)}
+              onClick={() => handleSelectRepoFromDrawer(selectedRepos)}
               className={classes.createButton}
-              aria-labelledby="select-from-drawer"
+              data-testid="select-from-drawer"
             >
               Select
             </Button>
           </span>
           <span>
             <Button
-              aria-labelledby="cancel-drawer-select"
+              data-testid="close-drawer"
               variant="outlined"
               onClick={onClose}
             >

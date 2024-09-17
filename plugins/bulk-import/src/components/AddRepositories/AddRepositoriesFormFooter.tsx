@@ -2,12 +2,16 @@ import React from 'react';
 
 import { Link } from '@backstage/core-components';
 
-import { makeStyles } from '@material-ui/core';
-import Button from '@mui/material/Button';
+import { Button, makeStyles } from '@material-ui/core';
+import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import { useFormikContext } from 'formik';
 
-import { AddRepositoriesFormValues, ApprovalTool } from '../../types';
+import {
+  AddedRepositories,
+  AddRepositoriesFormValues,
+  ApprovalTool,
+} from '../../types';
 
 const useStyles = makeStyles(theme => ({
   createButton: {
@@ -31,46 +35,63 @@ const useStyles = makeStyles(theme => ({
     paddingTop: '24px',
     paddingBottom: '24px',
     paddingLeft: '24px',
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor:
+      theme.palette.type === 'light'
+        ? '#fff'
+        : theme.palette.navigation.background,
     width: '100%',
     borderTopStyle: 'groove',
     border: theme.palette.divider,
+    zIndex: 1,
   },
 }));
 
+const sPad = (repositories: AddedRepositories) =>
+  Object.keys(repositories || []).length > 1 ? 's' : '';
+
 export const AddRepositoriesFormFooter = () => {
   const styles = useStyles();
-  const { values, handleSubmit } =
+  const { values, handleSubmit, isSubmitting } =
     useFormikContext<AddRepositoriesFormValues>();
-  const submitTitle =
+  const approvalToolTitle =
     (values.approvalTool === ApprovalTool.Git
-      ? 'Create pull request'
-      : 'Create ServiceNow ticket') +
-    (((values.repositories && Object.keys(values.repositories)?.length) || 0) >
-    1
-      ? 's'
-      : '');
+      ? 'pull request'
+      : 'ServiceNow ticket') + sPad(values.repositories);
+  const submitTitle = `Create ${approvalToolTitle}`;
+
+  const disableCreate =
+    !values.repositories || Object.values(values.repositories).length === 0;
+
+  const toolTipTitle = disableCreate
+    ? `Catalog-info.yaml files must be generated before creating a ${
+        approvalToolTitle
+      }`
+    : null;
+
+  const submitButton = (
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={handleSubmit as any}
+      className={styles.createButton}
+      disabled={disableCreate || isSubmitting}
+      startIcon={
+        isSubmitting && <CircularProgress size="20px" color="inherit" />
+      }
+    >
+      {submitTitle}
+    </Button>
+  );
 
   return (
-    <div className={styles.footer}>
-      <Tooltip
-        classes={{ tooltip: styles.tooltip }}
-        title="Please wait until the catalog-info.yaml files are generated"
-      >
-        <span>
-          <Button
-            variant="contained"
-            onClick={handleSubmit as any}
-            className={styles.createButton}
-            disabled={
-              !values.repositories ||
-              Object.keys(values.repositories).length === 0
-            }
-          >
-            {submitTitle}
-          </Button>
-        </span>
-      </Tooltip>
+    <div className={styles.footer} data-testid="add-repository-footer">
+      {toolTipTitle ? (
+        <Tooltip classes={{ tooltip: styles.tooltip }} title={toolTipTitle}>
+          <span>{submitButton}</span>
+        </Tooltip>
+      ) : (
+        submitButton
+      )}
       <Link to="/bulk-import/repositories">
         <Button variant="outlined">Cancel</Button>
       </Link>

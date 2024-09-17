@@ -9,12 +9,14 @@ import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
 import { argoCDApiRef } from '../../api';
 import { useApplications } from '../../hooks/useApplications';
 import { useArgocdConfig } from '../../hooks/useArgocdConfig';
+import { useArgocdViewPermission } from '../../hooks/useArgocdViewPermission';
 import { Application, Revision } from '../../types';
 import {
-  getAppSelector,
+  getArgoCdAppConfig,
   getInstanceName,
   getUniqueRevisions,
 } from '../../utils/utils';
+import PermissionAlert from '../Common/PermissionAlert';
 import DeploymentLifecycleCard from './DeploymentLifecycleCard';
 import DeploymentLifecycleDrawer from './DeploymentLifecycleDrawer';
 
@@ -44,11 +46,19 @@ const DeploymentLifecycle = () => {
 
   const { instances, intervalMs } = useArgocdConfig();
   const instanceName = getInstanceName(entity) || instances?.[0]?.name;
+  const { appSelector, appName, projectName, appNamespace } =
+    getArgoCdAppConfig({ entity });
+
   const { apps, loading, error } = useApplications({
     instanceName,
     intervalMs,
-    appSelector: encodeURIComponent(getAppSelector(entity)),
+    appSelector,
+    appName,
+    appNamespace,
+    projectName,
   });
+
+  const hasArgocdViewAccess = useArgocdViewPermission();
 
   const [open, setOpen] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState<string>();
@@ -86,6 +96,10 @@ const DeploymentLifecycle = () => {
   const toggleDrawer = () => setOpen(e => !e);
 
   const activeApp = apps.find(a => a.metadata.name === activeItem);
+
+  if (!hasArgocdViewAccess) {
+    return <PermissionAlert />;
+  }
 
   if (error) {
     return <ResponseErrorPanel data-testid="error-panel" error={error} />;

@@ -1,0 +1,28 @@
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: janus-idp-rbac-backend
+  title: '@janus-idp/backstage-plugin-rbac-backend'
+  description: RBAC backend plugin for Backstage
+  annotations:
+    backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main/plugins/rbac-backend
+    backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/rbac-backend/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/janus-idp/backstage-plugins/edit/main/plugins/rbac-backend/catalog-info.yaml
+    github.com/project-slug: janus-idp/backstage-plugins
+    github.com/team-slug: janus-idp/maintainers-plugins
+    sonarqube.org/project-key: janus-idp_backstage-plugins
+  tags:
+    - security
+    - rbac
+  links:
+    - url: https://github.com/janus-idp/backstage-plugins/tree/main/plugins/rbac-backend
+      title: GitHub Source
+      icon: source
+      type: source
+spec:
+  type: backstage-backend-plugin
+  lifecycle: production
+  owner: rhdh-team
+  system: rhdh
+  subcomponentOf: janus-idp-rbac

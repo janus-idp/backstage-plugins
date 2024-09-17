@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-bulk-import-backend-dynamic",
-  "version": "0.2.0",
+  "version": "1.5.3",
   "main": "./dist/index.cjs.js",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -10,7 +10,7 @@
   "backstage": {
     "role": "backend-plugin",
     "supported-versions": "1.28.4",
-    "pluginId": "bulk-import-backend",
+    "pluginId": "bulk-import",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-bulk-import-backend"
     ]
@@ -44,26 +44,8 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {},
-  "files": [
-    "dist",
-    "config.d.ts",
-    "app-config.janus-idp.yaml",
-    "alpha"
-  ],
-  "configSchema": "config.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/janus-idp/backstage-plugins.git",
-    "directory": "plugins/bulk-import-backend"
-  },
-  "keywords": [
-    "backstage",
-    "plugin"
-  ],
-  "homepage": "https://janus-idp.io/",
-  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
-  "bundleDependencies": true,
   "peerDependencies": {
+    "@janus-idp/backstage-plugin-audit-log-node": "1.4.0",
     "@backstage/backend-app-api": "^0.8.0",
     "@backstage/backend-common": "^0.23.3",
     "@backstage/backend-dynamic-feature-service": "^0.2.15",
@@ -78,6 +60,27 @@
     "@backstage/plugin-permission-common": "^0.8.0",
     "@backstage/plugin-permission-node": "^0.8.0"
   },
+  "files": [
+    "dist",
+    "config.d.ts",
+    "app-config.janus-idp.yaml",
+    "alpha"
+  ],
+  "configSchema": "config.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janus-idp/backstage-plugins.git",
+    "directory": "plugins/bulk-import-backend"
+  },
+  "keywords": [
+    "support:tech-preview",
+    "lifecycle:active",
+    "backstage",
+    "plugin"
+  ],
+  "homepage": "https://janus-idp.io/",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "bundleDependencies": true,
   "overrides": {
     "@aws-sdk/util-utf8-browser": {
       "@smithy/util-utf8": "^2.0.0"

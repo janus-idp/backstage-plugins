@@ -8,6 +8,8 @@ import {
   policyToString,
   removeTheDifference,
   transformArrayToPolicy,
+  typedPoliciesToString,
+  typedPolicyToString,
 } from './helper';
 // Import the function to test
 import { EnforcerDelegate } from './service/enforcer-delegate';
@@ -36,6 +38,21 @@ describe('helper.ts', () => {
     });
   });
 
+  describe('typedPolicyToString', () => {
+    it('should convert permission policy to string', () => {
+      const policy = [
+        'user:default/some-user',
+        'catalog-entity',
+        'read',
+        'allow',
+      ];
+      const type = 'p';
+      const expectedString =
+        'p, user:default/some-user, catalog-entity, read, allow';
+      expect(typedPolicyToString(policy, type)).toEqual(expectedString);
+    });
+  });
+
   describe('policiesToString', () => {
     it('should convert one permission policy to string', () => {
       const policies = [
@@ -50,6 +67,25 @@ describe('helper.ts', () => {
       const policies = [[]];
       const expectedString = '[[]]';
       expect(policiesToString(policies)).toEqual(expectedString);
+    });
+  });
+
+  describe('typedPoliciesToString', () => {
+    it('should convert one permission policy to string', () => {
+      const policies = [
+        ['user:default/some-user', 'catalog-entity', 'read', 'allow'],
+      ];
+      const type = 'p';
+      const expectedString = `\n    p, user:default/some-user, catalog-entity, read, allow\n  `;
+
+      expect(typedPoliciesToString(policies, type)).toEqual(expectedString);
+    });
+
+    it('should convert empty permission policy array to string', () => {
+      const policies = [[]];
+      const expectedString = `\n    \n  `;
+      const type = 'p';
+      expect(typedPoliciesToString(policies, type)).toEqual(expectedString);
     });
   });
 

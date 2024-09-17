@@ -39,6 +39,12 @@ export const istioConfigRouteRef = createSubRouteRef({
   path: '/istio',
 });
 
+export const trafficGraphRouteRef = createSubRouteRef({
+  id: 'kiali-traffic-graph',
+  parent: rootRouteRef,
+  path: '/graph',
+});
+
 export const workloadsDetailRouteRef = createSubRouteRef({
   id: 'kiali/workloads/details',
   parent: rootRouteRef,

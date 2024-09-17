@@ -20,7 +20,11 @@ describe('catalog annotator', () => {
       'catalog:timestamping',
       'Creates a new `catalog:timestamping` Scaffolder action to annotate scaffolded entities with creation timestamp.',
       'some logger info msg',
-      { annotations: { 'backstage.io/createdAt': getCurrentTimestamp() } },
+      () => {
+        return {
+          annotations: { 'backstage.io/createdAt': getCurrentTimestamp() },
+        };
+      },
     );
 
     const logger = getVoidLogger();
@@ -67,7 +71,9 @@ describe('catalog annotator', () => {
       'catalog:test-annotate',
       'Creates a new `catalog:test-annotate` Scaffolder action to annotate catalog-info.yaml with labels and annotations.',
       '',
-      {},
+      () => {
+        return {};
+      },
     );
 
     const logger = getVoidLogger();
@@ -126,7 +132,9 @@ describe('catalog annotator', () => {
       'catalog:test-annotate-obj',
       'Creates a new `catalog:test-annotate-obj` Scaffolder action to annotate any object yaml with labels and annotations.',
       'some logger info message',
-      {},
+      () => {
+        return {};
+      },
     );
 
     const logger = getVoidLogger();
@@ -199,8 +207,8 @@ describe('catalog annotator', () => {
       'catalog:entityRef',
       'Some description',
       'some logger info msg',
-      {
-        spec: { scaffoldedFrom: 'testt-ref' },
+      () => {
+        return { spec: { scaffoldedFrom: 'testt-ref' } };
       },
     );
 
@@ -245,8 +253,12 @@ describe('catalog annotator', () => {
       'catalog:entityRef',
       'Some description',
       'some logger info msg',
-      {
-        spec: { scaffoldedFrom: { readFromContext: 'templateInfo.entityRef' } },
+      () => {
+        return {
+          spec: {
+            scaffoldedFrom: { readFromContext: 'templateInfo.entityRef' },
+          },
+        };
       },
     );
 

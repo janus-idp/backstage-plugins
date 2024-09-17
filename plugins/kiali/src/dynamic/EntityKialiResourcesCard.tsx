@@ -15,6 +15,7 @@ import { Box } from '@material-ui/core';
 import { AppListPage } from '../pages/AppList/AppListPage';
 import { ServiceListPage } from '../pages/ServiceList/ServiceListPage';
 import { WorkloadListPage } from '../pages/WorkloadList/WorkloadListPage';
+import { KialiProvider } from '../store/KialiProvider';
 import { DRAWER } from '../types/types';
 
 const tabStyle: React.CSSProperties = {
@@ -110,27 +111,29 @@ export const EntityKialiResourcesCard = () => {
       }
     />
   ) : (
-    <TabbedCard
-      title="Service Mesh Resources"
-      onChange={handleChange}
-      value={value}
-      data-test="kiali-tabbed-card"
-    >
-      <CardTab label="Workloads" value="workload" data-test="workloads-tab">
-        <div style={tabStyle}>
-          <WorkloadListPage view={DRAWER} entity={entity} />
-        </div>
-      </CardTab>
-      <CardTab label="Services" value="service" data-test="services-tab">
-        <div style={tabStyle}>
-          <ServiceListPage view={DRAWER} entity={entity} />
-        </div>
-      </CardTab>
-      <CardTab label="Applications" value="application" data-test="apps-tab">
-        <div style={tabStyle}>
-          <AppListPage view={DRAWER} entity={entity} />
-        </div>
-      </CardTab>
-    </TabbedCard>
+    <KialiProvider>
+      <TabbedCard
+        title="Service Mesh Resources"
+        onChange={handleChange}
+        value={value}
+        data-test="kiali-tabbed-card"
+      >
+        <CardTab label="Workloads" value="workload" data-test="workloads-tab">
+          <div style={tabStyle}>
+            <WorkloadListPage view={DRAWER} entity={entity} />
+          </div>
+        </CardTab>
+        <CardTab label="Services" value="service" data-test="services-tab">
+          <div style={tabStyle}>
+            <ServiceListPage view={DRAWER} entity={entity} />
+          </div>
+        </CardTab>
+        <CardTab label="Applications" value="application" data-test="apps-tab">
+          <div style={tabStyle}>
+            <AppListPage view={DRAWER} entity={entity} />
+          </div>
+        </CardTab>
+      </TabbedCard>
+    </KialiProvider>
   );
 };

@@ -29,6 +29,11 @@ runs:
           echo "After 'yarn install', workspace is dirty! The following files have changed:"
           echo
           echo "$changed_files"
+          echo
+          echo "Look for an existing pull request at:   https://github.com/janus-idp/backstage-plugins/pulls?q=is%3Apr+regen+author%3Aapp%2Fjanus-idp"
+          echo "If none found, regenerate yarn.lock at: https://github.com/janus-idp/backstage-plugins/actions/workflows/yarn-lock.yaml"
+          echo
+          exit 42
         fi
 
     - name: Run prettier

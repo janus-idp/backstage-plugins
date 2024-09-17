@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: ❓ Janus IDP Community Slack
-    url: https://join.slack.com/t/janus-idp/shared_invite/zt-1pxtehxom-fCFtF9rRe3vFqUiFFeAkmg
-    about: Please ask and answer questions here.
+  - name: 🔌 Janus-IDP Plugins
+    url: https://issues.redhat.com/browse/RHIDP
+    about: Please report any issues with existing plugins in this repo in JIRA - https://issues.redhat.com/browse/RHIDP
+  - name: 🔌 Backstage Community Plugins
+    url: https://github.com/backstage/community-plugins/issues
+    about: For new plugin / feature requests, see https://github.com/backstage/community-plugins/issues

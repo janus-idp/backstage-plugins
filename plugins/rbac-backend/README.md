@@ -10,7 +10,9 @@ With the RBAC plugin, you'll have the means to efficiently administer permission
 
 Before you dive into utilizing the RBAC plugin for Backstage, there are a few essential prerequisites to ensure a seamless experience. Please review the following requirements to make sure your environment is properly set up
 
-### Setup Permision Framework
+### Setup Permission Framework
+
+**NOTE**: This section is only relevant if you are still on the old backend system.
 
 To effectively utilize the RBAC plugin, you must have the Backstage permission framework in place. If you're using the Red Hat Developer Hub, some of these steps may have already been completed for you. However, for other Backstage application instances, please verify that the following prerequisites are satisfied:
 
@@ -98,10 +100,15 @@ async function main() {
 
 The RBAC plugin supports the integration with the new backend system.
 
-Add the RBAC plugin to the `packages/backend/src/index.ts` file.
+Add the RBAC plugin to the `packages/backend/src/index.ts` file and remove the Permission backend plugin and Allow All Permission policy module.
 
-```ts
-backend.add(import('@janus-idp/backstage-plugin-rbac-backend'));
+```diff
+// permission plugin
+- backend.add(import('@backstage/plugin-permission-backend/alpha'));
+- backend.add(
+-    import('@backstage/plugin-permission-backend-module-allow-all-policy'),
+-  );
++ backend.add(import('@janus-idp/backstage-plugin-rbac-backend'));
 ```
 
 ### Configure policy admins
@@ -180,6 +187,68 @@ For more information on the available permissions within Showcase and RHDH, refe
 
 We also have a fairly strict validation for permission policies and roles based on the originating role's source information, refer to the [api documentation](./docs/apis.md).
 
+### Configuring conditional policies via file
+
+The RBAC plugin allows you to import conditional policies from an external file. User can defined conditional policies for roles created with the help of the policies-csv-file. Conditional policies should be defined as object sequences in the YAML format.
+
+You can specify the path to this configuration file in your application configuration:
+
+```YAML
+permission:
+  enabled: true
+  rbac:
+    conditionalPoliciesFile: /some/path/conditional-policies.yaml
+    policies-csv-file: /some/path/rbac-policy.csv
+```
+
+Also, there is an additional configuration value that allows for the reloading of the file without the need to restart.
+
+```YAML
+permission:
+  enabled: true
+  rbac:
+    conditionalPoliciesFile: /some/path/conditional-policies.yaml
+    policies-csv-file: /some/path/rbac-policy.csv
+    policyFileReload: true
+```
+
+This feature supports nested conditional policies.
+
+Example of the conditional policies file:
+
+```yaml
+---
+result: CONDITIONAL
+roleEntityRef: 'role:default/test'
+pluginId: catalog
+resourceType: catalog-entity
+permissionMapping:
+  - read
+  - update
+conditions:
+  rule: IS_ENTITY_OWNER
+  resourceType: catalog-entity
+  params:
+    claims:
+      - 'group:default/team-a'
+      - 'group:default/team-b'
+---
+result: CONDITIONAL
+roleEntityRef: 'role:default/test'
+pluginId: catalog
+resourceType: catalog-entity
+permissionMapping:
+  - delete
+conditions:
+  rule: IS_ENTITY_OWNER
+  resourceType: catalog-entity
+  params:
+    claims:
+      - 'group:default/team-a'
+```
+
+Information about condition policies format you can find in the doc: [Conditional policies documentation](./docs/conditions.md). There is only one difference: yaml format compare to json. But yaml and json are back convertiable.
+
 ### Configuring Database Storage for policies
 
 The RBAC plugin offers the option to store policies in a database. It supports two database storage options:
@@ -201,3 +270,9 @@ permission:
 ```
 
 The maxDepth must be greater than 0 to ensure that the graphs are built correctly. Also the graph will be built with a hierarchy of 1 + maxDepth.
+
+More information about group hierarchy can be found in the doc: [Group hierarchy](./docs/group-hierarchy.md).
+
+### Optional RBAC provider module support
+
+We also include the ability to create and load in RBAC backend plugin modules that can be used to make connections to third part access management tools. For more information, consult the [RBAC Providers documentation](./docs/providers.md).

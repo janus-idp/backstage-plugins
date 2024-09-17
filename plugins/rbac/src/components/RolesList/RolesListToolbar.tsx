@@ -35,16 +35,26 @@ export const RolesListToolbar = ({
           <AlertTitle className={classes.alertTitle}>
             Unable to create role.
           </AlertTitle>
-          To enable create role button, the role associated with your user
-          should have the permission policies mentioned{' '}
+          To enable create/edit role button, make sure required users/groups are
+          available in catalog as a role cannot be created without users/groups
+          and also the role associated with your user should have the permission
+          policies mentioned{' '}
           <a
             href="https://github.com/janus-idp/backstage-plugins/tree/main/plugins/rbac#prerequisites"
             target="blank"
             className={classes.rbacPreReqLink}
           >
             here
-          </a>{' '}
-          associated with it.
+          </a>
+          .
+          <br />
+          <span>
+            <span style={{ fontWeight: 'bold' }}>Note</span>: Even after
+            ingesting users/groups in catalog and applying above permissions if
+            the create/edit button is still disabled then please contact your
+            administrator as you might be conditionally restricted from
+            accessing the create/edit button.
+          </span>
         </Alert>
       )}
       <br />

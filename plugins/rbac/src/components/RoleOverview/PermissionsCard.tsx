@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { parseEntityRef } from '@backstage/catalog-model';
 import { Table, WarningPanel } from '@backstage/core-components';
 import { usePermission } from '@backstage/plugin-permission-react';
 
@@ -10,7 +11,6 @@ import { policyEntityUpdatePermission } from '@janus-idp/backstage-plugin-rbac-c
 
 import { usePermissionPolicies } from '../../hooks/usePermissionPolicies';
 import { PermissionsData } from '../../types';
-import { getKindNamespaceName } from '../../utils/rbac-utils';
 import EditRole from '../EditRole';
 import { columns } from './PermissionsListColumns';
 
@@ -29,7 +29,7 @@ type PermissionsCardProps = {
 
 const getRefreshIcon = () => <CachedIcon />;
 const getEditIcon = (isAllowed: boolean, roleName: string) => {
-  const { kind, name, namespace } = getKindNamespaceName(roleName);
+  const { kind, name, namespace } = parseEntityRef(roleName);
 
   return (
     <EditRole

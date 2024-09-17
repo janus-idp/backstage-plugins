@@ -2,14 +2,11 @@ import React from 'react';
 
 import { JsonObject } from '@backstage/types';
 
+import { Box, Grid, useTheme } from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import { Editor } from '@monaco-editor/react';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import { useTheme } from '@mui/material/styles';
 
-import SubmitButton from '../SubmitButton';
+import { SubmitButton } from '@janus-idp/backstage-plugin-orchestrator-form-react';
 
 const DEFAULT_VALUE = JSON.stringify({ myKey: 'myValue' }, null, 4);
 
@@ -43,13 +40,13 @@ const JsonTextAreaForm = ({
         </Alert>
       </Grid>
       <Grid item xs={12}>
-        <Box style={{ border: `1px solid ${theme.palette.divider}` }}>
+        <Box style={{ border: `1px solid ${theme.palette.border}` }}>
           <Editor
             value={jsonText}
             language="json"
             onChange={(value: string | undefined) => setJsonText(value ?? '')}
             height="30rem"
-            theme={theme.palette.mode === 'dark' ? 'vs-dark' : 'light'}
+            theme={theme.palette.type === 'dark' ? 'vs-dark' : 'light'}
             options={{
               minimap: { enabled: false },
             }}

@@ -100,11 +100,14 @@ Resource type permissions on the other hand are basic named permissions with a r
 
 ## Scaffolder
 
-| Name                               | Resource Type       | Policy | Description                                       | Requirements                                                      |
-| ---------------------------------- | ------------------- | ------ | ------------------------------------------------- | ----------------------------------------------------------------- |
-| scaffolder.action.execute          | scaffolder-action   |        | Allows the execution of an action from a template | scaffolder.template.parameter.read, scaffolder.template.step.read |
-| scaffolder.template.parameter.read | scaffolder-template | read   | Allows the user to read parameters of a template  | scaffolder.template.step.read                                     |
-| scaffolder.template.step.read      | scaffolder-template | read   | Allows the user to read steps of a template       | scaffolder.template.paramater.read                                |
+| Name                               | Resource Type       | Policy | Description                                                                                                                     | Requirements                                                      |
+| ---------------------------------- | ------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| scaffolder.action.execute          | scaffolder-action   |        | Allows the execution of an action from a template                                                                               | scaffolder.template.parameter.read, scaffolder.template.step.read |
+| scaffolder.template.parameter.read | scaffolder-template | read   | Allows the user to read parameters of a template                                                                                | scaffolder.template.step.read                                     |
+| scaffolder.template.step.read      | scaffolder-template | read   | Allows the user to read steps of a template                                                                                     | scaffolder.template.paramater.read                                |
+| scaffolder.task.create             |                     | create | This permission is used to authorize actions that involve the creation of tasks in the scaffolder                               | scaffolder.template.parameter.read, scaffolder.template.step.read |
+| scaffolder.task.read               |                     | read   | This permission is used to authorize actions that involve reading one or more tasks in the scaffolder and reading logs of tasks | scaffolder.template.parameter.read, scaffolder.template.step.read |
+| scaffolder.task.cancel             |                     | use    | This permission is used to authorize actions that involve the cancellation of tasks in the scaffolder                           | scaffolder.template.parameter.read, scaffolder.template.step.read |
 
 ## OCM
 
@@ -126,3 +129,21 @@ Resource type permissions on the other hand are basic named permissions with a r
 | ------------------ | ------------- | ------ | ----------------------------------------------------------------------------------------------------------- | ------------------- |
 | topology.view.read |               | read   | Allows the user to view the topology plugin                                                                 | X                   |
 | kubernetes.proxy   |               |        | Allows the user to access the proxy endpoint (ability to read pod logs and events within Showcase and RHDH) | catalog.entity.read |
+
+## Argocd
+
+| Name             | Resource Type | Policy | Description                               | Requirements        |
+| ---------------- | ------------- | ------ | ----------------------------------------- | ------------------- |
+| argocd.view.read |               | read   | Allows the user to view the argocd plugin | catalog.entity.read |
+
+## Quay
+
+| Name           | Resource Type | Policy | Description                             | Requirements        |
+| -------------- | ------------- | ------ | --------------------------------------- | ------------------- |
+| quay.view.read |               | read   | Allows the user to view the quay plugin | catalog.entity.read |
+
+## Bulk Import
+
+| Name        | Resource Type | Policy | Description                                                                                                                                                                          | Requirements |
+| ----------- | ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| bulk.import | bulk-import   |        | Allows the user to access the bulk import endpoints (listing all repositories and organizations accessible by all GitHub integrations, as well as managing the import requests, ...) | X            |

@@ -1,16 +1,22 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core';
-import HelpIcon from '@mui/icons-material/HelpOutline';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
 
-import { AddRepositoriesFormValues } from '../../types';
+import { useDrawer } from '@janus-idp/shared-react';
+
+import { AddRepositoriesFormValues, PullRequestPreviewData } from '../../types';
+import { PreviewFileSidebar } from '../PreviewFile/PreviewFileSidebar';
+// import HelpIcon from '@mui/icons-material/HelpOutline';
+// import FormControlLabel from '@mui/material/FormControlLabel';
+// import Radio from '@mui/material/Radio';
+// import RadioGroup from '@mui/material/RadioGroup';
+// import Tooltip from '@mui/material/Tooltip';
+// import Typography from '@mui/material/Typography';
+// import { useFormikContext } from 'formik';
+// import { AddRepositoriesFormValues } from '../../types';
 import { AddRepositoriesFormFooter } from './AddRepositoriesFormFooter';
 import { AddRepositoriesTable } from './AddRepositoriesTable';
 
@@ -39,15 +45,44 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const AddRepositoriesForm = () => {
-  const { values, setFieldValue } =
-    useFormikContext<AddRepositoriesFormValues>();
+export const AddRepositoriesForm = ({
+  error,
+}: {
+  error: { message: string; title: string } | null;
+}) => {
   const styles = useStyles();
+  const { openDrawer, setOpenDrawer, drawerData } = useDrawer();
+  const { setFieldValue, values } =
+    useFormikContext<AddRepositoriesFormValues>();
+
+  const closeDrawer = () => {
+    setOpenDrawer(false);
+  };
+
+  const handleSave = (pullRequest: PullRequestPreviewData, _event: any) => {
+    Object.keys(pullRequest).forEach(pr => {
+      setFieldValue(
+        `repositories.${pr}.catalogInfoYaml.prTemplate`,
+        pullRequest[pr],
+      );
+    });
+    setOpenDrawer(false);
+  };
 
   return (
     <>
       <FormControl fullWidth>
         <div className={styles.body}>
+          {error && (
+            <div style={{ paddingBottom: '10px' }}>
+              <Alert severity="error">
+                <AlertTitle>{error?.title}</AlertTitle>
+                {error?.message}
+              </Alert>
+            </div>
+          )}
+          {/* 
+          // Enable this when ServiceNow approval tool is supported
           <span className={styles.approvalTool}>
             <Typography fontSize="16px" fontWeight="500">
               Approval tool
@@ -64,7 +99,6 @@ export const AddRepositoriesForm = () => {
               id="approval-tool"
               data-testid="approval-tool"
               row
-              aria-labelledby="approval-tool"
               name="approvalTool"
               value={values.approvalTool}
               onChange={(_event, value: string) => {
@@ -76,14 +110,24 @@ export const AddRepositoriesForm = () => {
                 value="servicenow"
                 control={<Radio />}
                 label="ServiceNow"
+                disabled
               />
             </RadioGroup>
-          </span>
+          </span> */}
           <AddRepositoriesTable title="Selected repositories" />
         </div>
         <br />
       </FormControl>
       <AddRepositoriesFormFooter />
+      {openDrawer && (
+        <PreviewFileSidebar
+          open={openDrawer}
+          onClose={closeDrawer}
+          data={drawerData}
+          repositoryType={values.repositoryType}
+          handleSave={handleSave}
+        />
+      )}
     </>
   );
 };

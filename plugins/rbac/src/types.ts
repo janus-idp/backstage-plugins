@@ -21,6 +21,7 @@ export type RolesData = {
     delete: { allowed: boolean; loading: boolean };
     edit: { allowed: boolean; loading: boolean };
   };
+  accessiblePlugins: string[];
 };
 
 export type MembersData = {

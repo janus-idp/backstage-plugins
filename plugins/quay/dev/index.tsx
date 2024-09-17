@@ -3,15 +3,22 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { TestApiProvider } from '@backstage/test-utils';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { MockPermissionApi, TestApiProvider } from '@backstage/test-utils';
 
-import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { quayApiRef, QuayApiV1 } from '../src/api';
 import { QuayPage, quayPlugin } from '../src/plugin';
 import { labels } from './__data__/labels';
 import { manifestDigest } from './__data__/manifest_digest';
-import { securityDetails } from './__data__/security_vulnerabilities';
+import {
+  securityDetails,
+  v1securityDetails,
+  v2securityDetails,
+  v3securityDetails,
+  v4securityDetails,
+} from './__data__/security_vulnerabilities';
 import { tags } from './__data__/tags';
 
 const mockEntity: Entity = {
@@ -44,17 +51,50 @@ export class MockQuayApiClient implements QuayApiV1 {
     return manifestDigest;
   }
 
-  async getSecurityDetails() {
+  async getSecurityDetails(_: string, __: string, digest: string) {
+    if (
+      digest ===
+      'sha256:79c96c750aa532d92d9cb56cad59159b7cc26b10e39ff4a895c28345d2cd775d'
+    ) {
+      return v3securityDetails;
+    }
+
+    if (
+      digest ===
+      'sha256:89c96c750aa532d92d9cb56cad59159b7cc26b10e39ff4a895c28345d2cd775e'
+    ) {
+      return v2securityDetails;
+    }
+    if (
+      digest ===
+      'sha256:99c96c750aa532d92d9cb56cad59159b7cc26b10e39ff4a895c28345d2cd775f'
+    ) {
+      return v1securityDetails;
+    }
+
+    if (
+      digest ===
+      'sha256:29c96c750aa532d92d9cb56cad59159b7cc26b10e39ff4a895c28345d2cd775d'
+    ) {
+      return v4securityDetails;
+    }
+
     return securityDetails;
   }
 }
+const mockPermissionApi = new MockPermissionApi();
 
 createDevApp()
   .registerPlugin(quayPlugin)
-  .addThemes(createDevAppThemes())
+  .addThemes(getAllThemes())
   .addPage({
     element: (
-      <TestApiProvider apis={[[quayApiRef, new MockQuayApiClient()]]}>
+      <TestApiProvider
+        apis={[
+          [quayApiRef, new MockQuayApiClient()],
+          [permissionApiRef, mockPermissionApi],
+        ]}
+      >
         <EntityProvider entity={mockEntity}>
           <QuayPage />
         </EntityProvider>
