@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-import { BackendDynamicPluginInstaller } from '@backstage/backend-dynamic-feature-service';
+import type { BackendDynamicPluginInstaller } from '@backstage/backend-dynamic-feature-service';
 
-import { AapResourceEntityProvider } from '../providers';
+import { catalogModuleAapResourceEntityProvider } from '../module';
 
 export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
-  kind: 'legacy',
-  async catalog(builder, env) {
-    builder.addEntityProvider(
-      AapResourceEntityProvider.fromConfig(env.config, {
-        logger: env.logger,
-        schedule: env.scheduler.createScheduledTaskRunner({
-          frequency: { minutes: 30 },
-          timeout: { minutes: 3 },
-        }),
-        scheduler: env.scheduler,
-      }),
-    );
-  },
+  kind: 'new',
+  install: () => [catalogModuleAapResourceEntityProvider],
 };

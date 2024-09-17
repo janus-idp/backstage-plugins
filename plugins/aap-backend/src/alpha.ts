@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { catalogModuleAapResourceEntityProvider as default } from './module';
+export { dynamicPluginInstaller } from './dynamic/alpha';
+export { catalogModuleAapResourceEntityProvider } from './module';

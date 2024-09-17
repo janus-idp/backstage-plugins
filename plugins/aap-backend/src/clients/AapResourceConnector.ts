@@ -1,39 +1,43 @@
 import { JobTemplates } from './types';
 
-export function listJobTemplates(
+export async function listJobTemplates(
   baseUrl: string,
   access_token: string,
 ): Promise<JobTemplates> {
-  return fetch(`${baseUrl}/api/v2/job_templates`, {
+  const res = await fetch(`${baseUrl}/api/v2/job_templates`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: access_token,
     },
     method: 'GET',
-  }).then(async response => {
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-    const resData = await response.json();
-    return resData.results as Promise<JobTemplates>;
   });
+
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+
+  const data = (await res.json()) as { results: JobTemplates };
+
+  return data.results;
 }
 
-export function listWorkflowJobTemplates(
+export async function listWorkflowJobTemplates(
   baseUrl: string,
   access_token: string,
 ): Promise<JobTemplates> {
-  return fetch(`${baseUrl}/api/v2/workflow_job_templates`, {
+  const res = await fetch(`${baseUrl}/api/v2/workflow_job_templates`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: access_token,
     },
     method: 'GET',
-  }).then(async response => {
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-    const resData = await response.json();
-    return resData.results as Promise<JobTemplates>;
   });
+
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+
+  const data = (await res.json()) as { results: JobTemplates };
+
+  return data.results;
 }
