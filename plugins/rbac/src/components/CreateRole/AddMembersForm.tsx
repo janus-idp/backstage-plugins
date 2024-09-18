@@ -51,23 +51,35 @@ export const AddMembersForm = ({
       : undefined;
   };
 
-  const membersOptions: SelectedMember[] = membersData.members
-    ? membersData.members.map((member: MemberEntity, index: number) => {
-        const tag =
-          member.metadata.etag ??
-          `${member.metadata.name}-${member.kind}-${index}`;
-        return {
-          id: tag,
-          label: member.spec?.profile?.displayName ?? member.metadata.name,
-          description: getDescription(member),
-          etag: tag,
-          type: member.kind,
-          namespace: member.metadata.namespace,
-          members: getMembersCount(member),
-          ref: stringifyEntityRef(member),
-        };
-      })
-    : ([] as SelectedMember[]);
+  const membersOptions: SelectedMember[] = React.useMemo(() => {
+    return membersData.members
+      ? membersData.members.map((member: MemberEntity, index: number) => {
+          const tag =
+            member.metadata.etag ??
+            `${member.metadata.name}-${member.kind}-${index}`;
+          return {
+            id: tag,
+            label: member.spec?.profile?.displayName ?? member.metadata.name,
+            description: getDescription(member),
+            etag: tag,
+            type: member.kind,
+            namespace: member.metadata.namespace,
+            members: getMembersCount(member),
+            ref: stringifyEntityRef(member),
+          };
+        })
+      : ([] as SelectedMember[]);
+  }, [membersData.members]);
+
+  const filteredMembers = React.useMemo(() => {
+    if (search) {
+      return membersOptions
+        .filter(m => m.label.toLowerCase().includes(search.toLowerCase()))
+        .slice(0, 99);
+    }
+
+    return membersOptions.slice(0, 99);
+  }, [membersOptions, search]);
 
   return (
     <>
@@ -77,7 +89,7 @@ export const AddMembersForm = ({
       </FormHelperText>
       <br />
       <Autocomplete
-        options={membersOptions || []}
+        options={filteredMembers || []}
         getOptionLabel={(option: SelectedMember) => option.label ?? ''}
         getOptionSelected={(option: SelectedMember, value: SelectedMember) =>
           value.etag

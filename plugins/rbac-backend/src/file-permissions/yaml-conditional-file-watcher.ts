@@ -35,7 +35,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
   private conditionsDiff: ConditionalPoliciesDiff;
 
   constructor(
-    filePath: string,
+    filePath: string | undefined,
     allowReload: boolean,
     logger: LoggerService,
     private readonly conditionalStorage: ConditionalStorage,
@@ -43,7 +43,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     private readonly auth: AuthService,
     private readonly pluginMetadataCollector: PluginPermissionMetadataCollector,
     private readonly roleMetadataStorage: RoleMetadataStorage,
-    roleEventEmitter: RoleEventEmitter<RoleEvents>,
+    private readonly roleEventEmitter: RoleEventEmitter<RoleEvents>,
   ) {
     super(filePath, allowReload, logger);
 
@@ -51,11 +51,12 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       addedConditions: [],
       removedConditions: [],
     };
-
-    roleEventEmitter.on('roleAdded', this.onChange.bind(this));
   }
 
   async initialize(): Promise<void> {
+    if (!this.filePath) {
+      return;
+    }
     const fileExists = fs.existsSync(this.filePath);
     if (!fileExists) {
       const err = new Error(`File '${this.filePath}' was not found`);
@@ -66,6 +67,8 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       );
       return;
     }
+
+    this.roleEventEmitter.on('roleAdded', this.onChange.bind(this));
     await this.onChange();
 
     if (this.allowReload) {
@@ -164,12 +167,12 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     return data;
   }
 
-  async handleFileChanges(): Promise<void> {
+  private async handleFileChanges(): Promise<void> {
     await this.removeConditions();
     await this.addConditions();
   }
 
-  async addConditions(): Promise<void> {
+  private async addConditions(): Promise<void> {
     try {
       for (const condition of this.conditionsDiff.addedConditions) {
         const conditionToCreate = await processConditionMapping(
@@ -198,7 +201,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     this.conditionsDiff.addedConditions = [];
   }
 
-  async removeConditions(): Promise<void> {
+  private async removeConditions(): Promise<void> {
     try {
       for (const condition of this.conditionsDiff.removedConditions) {
         const conditionToDelete = (
@@ -230,7 +233,7 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
     this.conditionsDiff.removedConditions = [];
   }
 
-  async handleError(
+  private async handleError(
     message: string,
     error: unknown,
     event: string,
@@ -242,5 +245,22 @@ export class YamlConditinalPoliciesFileWatcher extends AbstractFileWatcher<
       status: 'failed',
       errors: [error],
     });
+  }
+
+  async cleanUpConditionalPolicies(): Promise<void> {
+    const csvFileRoles =
+      await this.roleMetadataStorage.filterRoleMetadata('csv-file');
+    const existedFileConds = (
+      await this.conditionalStorage.filterConditions(
+        csvFileRoles.map(role => role.roleEntityRef),
+      )
+    ).map(condition => {
+      return {
+        ...condition,
+        permissionMapping: condition.permissionMapping.map(pm => pm.action),
+      };
+    });
+    this.conditionsDiff.removedConditions = existedFileConds;
+    await this.removeConditions();
   }
 }

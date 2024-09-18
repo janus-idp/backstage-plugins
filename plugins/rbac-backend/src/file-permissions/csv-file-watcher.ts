@@ -49,7 +49,7 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
   private csvFilePolicies: CSVFilePolicies;
 
   constructor(
-    filePath: string,
+    filePath: string | undefined,
     allowReload: boolean,
     logger: LoggerService,
     private readonly enforcer: EnforcerDelegate,
@@ -91,6 +91,9 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
    * @param allowReload Whether or not we will allow reloads of the CSV file
    */
   async initialize(): Promise<void> {
+    if (!this.filePath) {
+      return;
+    }
     let content: string[][] = [];
     // If the file is set load the file contents
     content = this.parse();
@@ -156,7 +159,7 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
   // This will involve update "legacy" source in the role metadata if it exist in both the
   // temp enforcer (csv file) and a role metadata storage.
   // We will update role metadata with the new source "csv-file"
-  async migrateLegacyMetadata(tempEnforcer: Enforcer) {
+  private async migrateLegacyMetadata(tempEnforcer: Enforcer) {
     let legacyRolesMetadata =
       await this.roleMetadataStorage.filterRoleMetadata('legacy');
     const legacyRoles = legacyRolesMetadata.map(meta => meta.roleEntityRef);
@@ -198,12 +201,13 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
    * It will finally call updatePolicies with the new content.
    */
   async onChange(): Promise<void> {
+    const newContent = this.parse();
+
     const tempEnforcer = await newEnforcer(
       newModelFromString(MODEL),
-      new FileAdapter(this.filePath),
+      new FileAdapter(this.filePath!),
     );
 
-    const newContent = this.parse();
     const currentFlatContent = this.currentContent.flatMap(data => {
       return policyToString(data);
     });
@@ -253,7 +257,7 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
    * @param newContent The new content present in the CSV file
    * @param tempEnforcer Temporary enforcer for checking for duplicates when adding policies
    */
-  async updatePolicies(
+  private async updatePolicies(
     newContent: string[][],
     tempEnforcer: Enforcer,
   ): Promise<void> {
@@ -275,7 +279,7 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
    * If a warning is encountered, we will skip adding the permission policy to the enforcer.
    * @param tempEnforcer Temporary enforcer for checking for duplicates when adding policies
    */
-  async addPermissionPolicies(tempEnforcer: Enforcer): Promise<void> {
+  private async addPermissionPolicies(tempEnforcer: Enforcer): Promise<void> {
     for (const policy of this.csvFilePolicies.addedPolicies) {
       const transformedPolicy = transformArrayToPolicy(policy);
       const metadata = await this.roleMetadataStorage.findRoleMetadata(
@@ -301,7 +305,7 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
       err = await checkForDuplicatePolicies(
         tempEnforcer,
         policy,
-        this.filePath,
+        this.filePath!,
       );
       if (err) {
         this.logger.warn(err.message);
@@ -331,7 +335,7 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
   /**
    * removePermissionPolicies will remove the permission policies that are no longer present in the CSV file.
    */
-  async removePermissionPolicies(): Promise<void> {
+  private async removePermissionPolicies(): Promise<void> {
     try {
       await this.enforcer.removePolicies(this.csvFilePolicies.removedPolicies);
 
@@ -362,7 +366,7 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
    * If a warning is encountered, we will skip adding the role to the enforcer.
    * @param tempEnforcer Temporary enforcer for checking for duplicates when adding policies
    */
-  async addRoles(tempEnforcer: Enforcer): Promise<void> {
+  private async addRoles(tempEnforcer: Enforcer): Promise<void> {
     for (const groupPolicy of this.csvFilePolicies.addedGroupPolicies) {
       let err = await validateGroupingPolicy(
         groupPolicy,
@@ -379,7 +383,7 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
       err = await checkForDuplicateGroupPolicies(
         tempEnforcer,
         groupPolicy,
-        this.filePath,
+        this.filePath!,
       );
       if (err) {
         this.logger.warn(err.message);
@@ -426,7 +430,7 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
    * If the role exists with multiple groups and or users, we will update it role information.
    * Otherwise, we will remove the role completely.
    */
-  async removeRoles(): Promise<void> {
+  private async removeRoles(): Promise<void> {
     for (const groupPolicy of this.csvFilePolicies.removedGroupPolicies) {
       const roleEntityRef = groupPolicy[1];
       // this requires knowledge of whether or not it is an update
@@ -473,5 +477,24 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
       }
     }
     this.csvFilePolicies.removedGroupPolicies = [];
+  }
+
+  async cleanUpRolesAndPolicies(): Promise<void> {
+    const roleMetadatas =
+      await this.roleMetadataStorage.filterRoleMetadata('csv-file');
+    const fileRoles = roleMetadatas.map(meta => meta.roleEntityRef);
+
+    if (fileRoles.length > 0) {
+      for (const fileRole of fileRoles) {
+        this.csvFilePolicies.removedGroupPolicies.push(
+          ...(await this.enforcer.getFilteredGroupingPolicy(1, fileRole)),
+        );
+        this.csvFilePolicies.removedPolicies.push(
+          ...(await this.enforcer.getFilteredPolicy(0, fileRole)),
+        );
+      }
+    }
+    await this.removePermissionPolicies();
+    await this.removeRoles();
   }
 }
