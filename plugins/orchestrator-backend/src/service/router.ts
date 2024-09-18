@@ -779,7 +779,7 @@ function setupInternalRoutes(
       }
 
       if (!definition.dataInputSchema) {
-        res.status(200).json(res);
+        res.status(200).json({});
         return;
       }
 
@@ -808,7 +808,7 @@ function setupInternalRoutes(
         !workflowInfo.inputSchema ||
         !workflowInfo.inputSchema.properties
       ) {
-        res.status(200);
+        res.status(200).json({});
         return;
       }
 
