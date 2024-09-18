@@ -1,4 +1,5 @@
 import {
+  Layer,
   SecurityDetailsResponse,
   VulnerabilitySeverity,
 } from '../../src/types';
@@ -325,5 +326,50 @@ export const securityDetails: SecurityDetailsResponse = {
         },
       ],
     },
+  },
+};
+
+export const v1securityDetails: SecurityDetailsResponse = {
+  ...securityDetails,
+  status: 'unsupported',
+  data: {
+    ...securityDetails.data,
+    Layer: {
+      ...(securityDetails?.data?.Layer ?? {}),
+      Features: [],
+    } as Layer,
+  },
+};
+
+export const v2securityDetails: SecurityDetailsResponse = {
+  ...securityDetails,
+  status: 'queued',
+  data: {
+    ...securityDetails.data,
+    Layer: {
+      ...(securityDetails?.data?.Layer ?? {}),
+      Features: securityDetails.data?.Layer?.Features?.slice(0, 5) ?? [],
+    } as Layer,
+  },
+};
+
+export const v3securityDetails: SecurityDetailsResponse = {
+  ...securityDetails,
+  data: {
+    ...securityDetails.data,
+    Layer: {
+      ...(securityDetails?.data?.Layer ?? {}),
+      Features: [],
+    } as Layer,
+  },
+};
+export const v4securityDetails: SecurityDetailsResponse = {
+  ...securityDetails,
+  data: {
+    ...securityDetails.data,
+    Layer: {
+      ...(securityDetails?.data?.Layer ?? {}),
+      Features: securityDetails.data?.Layer?.Features?.slice(0, 5) ?? [],
+    } as Layer,
   },
 };
