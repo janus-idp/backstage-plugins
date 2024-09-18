@@ -58,7 +58,7 @@ export class AapResourceEntityProvider implements EntityProvider {
         taskRunner = options.schedule;
       } else {
         throw new InputError(
-          `No schedule provided neither via code nor config for AapResourceEntityProvider:${providerConfig.id}.`,
+          `No schedule provided via config for AapResourceEntityProvider:${providerConfig.id}.`,
         );
       }
 
