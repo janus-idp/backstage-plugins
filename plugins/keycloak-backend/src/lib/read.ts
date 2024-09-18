@@ -106,17 +106,6 @@ export const parseUser = async (
   return await transformer(entity, user, realm, keycloakGroups);
 };
 
-// eslint-disable-next-line consistent-return
-export function* traverseGroups(
-  group: GroupRepresentation,
-): IterableIterator<GroupRepresentationWithParent> {
-  yield group;
-  for (const g of group.subGroups ?? []) {
-    (g as GroupRepresentationWithParent).parent = group.name!;
-    yield* traverseGroups(g);
-  }
-}
-
 export async function getEntities<T extends Users | Groups>(
   entities: T,
   config: KeycloakProviderConfig,
@@ -146,6 +135,42 @@ export async function getEntities<T extends Users | Groups>(
   return entityResults;
 }
 
+export async function processGroupsRecursively(
+  topLevelGroups: GroupRepresentationWithParent[],
+  entities: Groups,
+) {
+  const allGroups: GroupRepresentationWithParent[] = [];
+  for (const group of topLevelGroups) {
+    allGroups.push(group);
+
+    if (group.subGroupCount! > 0) {
+      const subgroups = await entities.listSubGroups({
+        parentId: group.id!,
+        first: 0,
+        max: group.subGroupCount,
+        briefRepresentation: true,
+      });
+      const subGroupResults = await processGroupsRecursively(
+        subgroups,
+        entities,
+      );
+      allGroups.push(...subGroupResults);
+    }
+  }
+
+  return allGroups;
+}
+
+export function* traverseGroups(
+  group: GroupRepresentation,
+): IterableIterator<GroupRepresentationWithParent> {
+  yield group;
+  for (const g of group.subGroups ?? []) {
+    (g as GroupRepresentationWithParent).parent = group.name!;
+    yield* traverseGroups(g);
+  }
+}
+
 export const readKeycloakRealm = async (
   client: KeycloakAdminClient,
   config: KeycloakProviderConfig,
@@ -165,24 +190,67 @@ export const readKeycloakRealm = async (
     options?.userQuerySize,
   );
 
-  const rawKGroups = await getEntities(
+  const topLevelKGroups = (await getEntities(
     client.groups,
     config,
     options?.groupQuerySize,
-  );
-  const flatKGroups = rawKGroups.reduce((acc, g) => {
-    const newAcc = acc.concat(...traverseGroups(g));
-    return newAcc;
-  }, [] as GroupRepresentationWithParent[]);
+  )) as GroupRepresentationWithParent[];
+
+  let serverVersion: number;
+
+  try {
+    const serverInfo = await client.serverInfo.find();
+    serverVersion = parseInt(
+      serverInfo.systemInfo?.version?.slice(0, 2) || '',
+      10,
+    );
+  } catch (error) {
+    throw new Error(`Failed to retrieve Keycloak server information: ${error}`);
+  }
+
+  const isVersion23orHigher = serverVersion >= 23;
+
+  let rawKGroups: GroupRepresentationWithParent[] = [];
+
+  if (isVersion23orHigher) {
+    rawKGroups = await processGroupsRecursively(
+      topLevelKGroups,
+      client.groups as Groups,
+    );
+  } else {
+    rawKGroups = topLevelKGroups.reduce(
+      (acc, g) => acc.concat(...traverseGroups(g)),
+      [] as GroupRepresentationWithParent[],
+    );
+  }
   const kGroups = await Promise.all(
-    flatKGroups.map(async g => {
+    rawKGroups.map(async g => {
       g.members = (
         await client.groups.listMembers({
           id: g.id!,
           max: options?.userQuerySize,
           realm: config.realm,
         })
-      ).map(m => m.username!);
+      )?.map(m => m.username!);
+
+      if (isVersion23orHigher) {
+        if (g.subGroupCount! > 0) {
+          g.subGroups = await client.groups.listSubGroups({
+            parentId: g.id!,
+            first: 0,
+            max: g.subGroupCount,
+            briefRepresentation: false,
+          });
+        }
+        if (g.parentId) {
+          const groupParent = await client.groups.findOne({
+            id: g.parentId,
+            realm: config.realm,
+          });
+          g.parent = groupParent?.name;
+        }
+      }
+
       return g;
     }),
   );
