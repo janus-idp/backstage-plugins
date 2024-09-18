@@ -27,14 +27,16 @@ import {
 export async function findAllOrganizations(
   logger: Logger,
   githubApiService: GithubApiService,
+  search?: string,
   pageNumber: number = DefaultPageNumber,
   pageSize: number = DefaultPageSize,
 ): Promise<HandlerResponse<Components.Schemas.OrganizationList>> {
   logger.debug(
-    `Getting all organizations (page,size)=(${pageNumber},${pageSize})..`,
+    `Getting all organizations (search,page,size)=('${search ?? ''}',${pageNumber},${pageSize})..`,
   );
   const allOrgsAccessible =
     await githubApiService.getOrganizationsFromIntegrations(
+      search,
       pageNumber,
       pageSize,
     );
@@ -79,11 +81,26 @@ export async function findAllOrganizations(
     }
   }
 
+  // sorting the output to make it deterministic and easy to navigate in the UI
+  const organizations = Array.from(orgMap.values());
+  organizations.sort((a, b) => {
+    if (a.name === undefined && b.name === undefined) {
+      return 0;
+    }
+    if (a.name === undefined) {
+      return -1;
+    }
+    if (b.name === undefined) {
+      return 1;
+    }
+    return a.name.localeCompare(b.name);
+  });
+
   return {
     statusCode: 200,
     responseBody: {
       errors: errorList,
-      organizations: Array.from(orgMap.values()),
+      organizations,
       totalCount: allOrgsAccessible.totalCount,
       pagePerIntegration: pageNumber,
       sizePerIntegration: pageSize,

@@ -55,7 +55,7 @@ const KeyValueTextField: React.FC<KeyValueTextFieldProps> = ({
     return {
       ...formErrors,
       [repoId]: {
-        ...formErrors[repoId],
+        ...(formErrors?.[repoId] || {}),
         [fieldName]: validationError,
       },
     };

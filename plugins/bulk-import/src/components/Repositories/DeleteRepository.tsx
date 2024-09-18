@@ -4,8 +4,9 @@ import Delete from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 
+import { useDeleteDialog } from '@janus-idp/shared-react';
+
 import { AddRepositoryData } from '../../types';
-import { useDeleteDialog } from '../DeleteDialogContext';
 
 const DeleteRepository = ({ data }: { data: AddRepositoryData }) => {
   const { setDeleteComponent, setOpenDialog } = useDeleteDialog();

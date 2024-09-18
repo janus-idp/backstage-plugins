@@ -19,7 +19,18 @@ import {
 const LOCAL_ADDR = 'https://localhost:7007';
 const handlers = [
   rest.get(`${LOCAL_ADDR}/api/bulk-import/repositories`, (req, res, ctx) => {
+    const searchParam = req.url.searchParams.get('search');
     const test = req.headers.get('Content-Type');
+    if (searchParam) {
+      return res(
+        ctx.status(200),
+        ctx.json(
+          mockGetRepositories.repositories.filter(r =>
+            r.repoName?.includes(searchParam),
+          ),
+        ),
+      );
+    }
     if (test === 'application/json') {
       return res(ctx.status(200), ctx.json(mockGetRepositories.repositories));
     }
@@ -29,6 +40,19 @@ const handlers = [
     `${LOCAL_ADDR}/api/bulk-import/organizations/org/dessert/repositories`,
     (req, res, ctx) => {
       const test = req.headers.get('Content-Type');
+      const searchParam = req.url.searchParams.get('search');
+      if (searchParam) {
+        return res(
+          ctx.status(200),
+          ctx.json(
+            mockGetRepositories.repositories.filter(
+              r =>
+                r.orgName === 'org/dessert' &&
+                r.repoName?.includes(searchParam),
+            ),
+          ),
+        );
+      }
       if (test === 'application/json') {
         return res(
           ctx.status(200),
@@ -44,6 +68,18 @@ const handlers = [
   ),
   rest.get(`${LOCAL_ADDR}/api/bulk-import/organizations`, (req, res, ctx) => {
     const test = req.headers.get('Content-Type');
+    const searchParam = req.url.searchParams.get('search');
+
+    if (searchParam) {
+      return res(
+        ctx.status(200),
+        ctx.json(
+          mockGetOrganizations.organizations.filter(r =>
+            r.orgName?.includes(searchParam),
+          ),
+        ),
+      );
+    }
     if (test === 'application/json') {
       return res(ctx.status(200), ctx.json(mockGetOrganizations.organizations));
     }
@@ -61,6 +97,18 @@ const handlers = [
   ),
   rest.get(`${LOCAL_ADDR}/api/bulk-import/imports`, (req, res, ctx) => {
     const test = req.headers.get('Content-Type');
+    const searchParam = req.url.searchParams.get('search');
+
+    if (searchParam) {
+      return res(
+        ctx.status(200),
+        ctx.json(
+          mockGetImportJobs.filter(r =>
+            r.repository.name?.includes(searchParam),
+          ),
+        ),
+      );
+    }
     if (test === 'application/json') {
       return res(ctx.status(200), ctx.json(mockGetImportJobs));
     }
@@ -147,10 +195,15 @@ describe('BulkImportBackendClient', () => {
 
   describe('getRepositories', () => {
     it('getRepositories should retrieve repositories successfully', async () => {
-      const repositories = await bulkImportApi.dataFetcher(1, 2, {
-        fetchRepositories: true,
-      });
+      const repositories = await bulkImportApi.dataFetcher(1, 2, '');
       expect(repositories).toEqual(mockGetRepositories.repositories);
+    });
+
+    it('getRepositories should retrieve repositories based on search string', async () => {
+      const repositories = await bulkImportApi.dataFetcher(1, 2, 'ap');
+      expect(repositories).toEqual(
+        mockGetRepositories.repositories.filter(r => r.repoName.includes('ap')),
+      );
     });
 
     it('getRepositories should handle non-200/204 responses correctly', async () => {
@@ -163,29 +216,51 @@ describe('BulkImportBackendClient', () => {
         ),
       );
 
-      await expect(
-        bulkImportApi.dataFetcher(1, 2, { fetchRepositories: true }),
-      ).resolves.toEqual(expect.objectContaining([]));
+      await expect(bulkImportApi.dataFetcher(1, 2, '')).resolves.toEqual(
+        expect.objectContaining([]),
+      );
     });
   });
 
   describe('getRepositories from an organization', () => {
     it('getRepositories should retrieve repositories from an organization successfully', async () => {
-      const repositories = await bulkImportApi.dataFetcher(1, 2, {
+      const repositories = await bulkImportApi.dataFetcher(1, 2, '', {
         orgName: 'org/dessert',
       });
       expect(repositories).toEqual(
         mockGetRepositories.repositories.slice(0, 7),
       );
     });
+
+    it('getRepositories should retrieve repositories from an organization based on search string', async () => {
+      const repositories = await bulkImportApi.dataFetcher(1, 2, 'des', {
+        orgName: 'org/dessert',
+      });
+      expect(repositories).toEqual(
+        mockGetRepositories.repositories
+          .slice(0, 7)
+          .filter(r => r.repoName.includes('des')),
+      );
+    });
   });
 
   describe('getOrganizations', () => {
     it('getOrganizations should retrieve organizations successfully', async () => {
-      const orgs = await bulkImportApi.dataFetcher(1, 2, {
+      const orgs = await bulkImportApi.dataFetcher(1, 2, '', {
         fetchOrganizations: true,
       });
       expect(orgs).toEqual(mockGetOrganizations.organizations);
+    });
+
+    it('getOrganizations should retrieve organizations based on search string', async () => {
+      const orgs = await bulkImportApi.dataFetcher(1, 2, 'des', {
+        fetchOrganizations: true,
+      });
+      expect(orgs).toEqual(
+        mockGetOrganizations.organizations.filter(r =>
+          r.orgName.includes('des'),
+        ),
+      );
     });
 
     it('getOrganizations should handle non-200/204 responses correctly', async () => {
@@ -199,19 +274,26 @@ describe('BulkImportBackendClient', () => {
       );
 
       await expect(
-        bulkImportApi.dataFetcher(1, 2, { fetchOrganizations: true }),
+        bulkImportApi.dataFetcher(1, 2, '', { fetchOrganizations: true }),
       ).resolves.toEqual(expect.objectContaining([]));
     });
   });
 
   describe('getImportJobs', () => {
     it('getImportJobs should retrieve the import jobs successfully', async () => {
-      const jobs = await bulkImportApi.getImportJobs(1, 2);
+      const jobs = await bulkImportApi.getImportJobs(1, 2, '');
       expect(jobs).toEqual(mockGetImportJobs);
     });
 
+    it('getImportJobs should retrieve the import jobs based on search string', async () => {
+      const jobs = await bulkImportApi.getImportJobs(1, 2, 'cup');
+      expect(jobs).toEqual(
+        mockGetImportJobs.filter(r => r.repository.name?.includes('cup')),
+      );
+    });
+
     it('getImportJobs should handle non-200/204 responses correctly', async () => {
-      await expect(bulkImportApi.getImportJobs(1, 2)).resolves.toEqual(
+      await expect(bulkImportApi.getImportJobs(1, 2, '')).resolves.toEqual(
         expect.objectContaining([]),
       );
     });

@@ -170,7 +170,7 @@ export const mockGetImportJobs: ImportJobStatus[] = [
       pullRequest: {
         body: 'PR body',
         catalogInfoContent:
-          'apiVersion: backstage.io/v1alpha1\nkind: Component\nmetadata:\n  name: che1\n  annotations:\n    github.com/project-slug: debsmita1/che\nspec:\n  type: other\n  lifecycle: unknown\n  owner: user:default/debsmita1\n',
+          '\nkind: Component\nmetadata:\n  name: che1\n  annotations:\n    github.com/project-slug: debsmita1/che\nspec:\n  type: other\n  lifecycle: unknown\n  owner: user:default/debsmita1\n',
         title: 'PR title',
         number: 91,
         url: 'https://github.com/org/dessert/donut/pull/91',
