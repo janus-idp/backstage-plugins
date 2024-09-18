@@ -16,10 +16,12 @@
 
 import type { BackendDynamicPluginInstaller } from '@backstage/backend-dynamic-feature-service';
 
-import { catalogModuleOCMEntityProvider } from '../providers';
-import { ocmPlugin } from '../service/router';
+import { catalogModuleOCMEntityProvider } from './providers';
+import { ocmPlugin } from './service/router';
 
-export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
+// TODO: In 1.30 switch to `createBackendFeatureLoader` from `@backstage/backend-plugin-api`
+// and remove `@backstage/backend-dynamic-feature-service` dependency
+export const bundle: BackendDynamicPluginInstaller = {
   kind: 'new',
   install: () => [catalogModuleOCMEntityProvider, ocmPlugin],
 };
