@@ -10,7 +10,9 @@ With the RBAC plugin, you'll have the means to efficiently administer permission
 
 Before you dive into utilizing the RBAC plugin for Backstage, there are a few essential prerequisites to ensure a seamless experience. Please review the following requirements to make sure your environment is properly set up
 
-### Setup Permision Framework
+### Setup Permission Framework
+
+**NOTE**: This section is only relevant if you are still on the old backend system.
 
 To effectively utilize the RBAC plugin, you must have the Backstage permission framework in place. If you're using the Red Hat Developer Hub, some of these steps may have already been completed for you. However, for other Backstage application instances, please verify that the following prerequisites are satisfied:
 
@@ -98,10 +100,15 @@ async function main() {
 
 The RBAC plugin supports the integration with the new backend system.
 
-Add the RBAC plugin to the `packages/backend/src/index.ts` file.
+Add the RBAC plugin to the `packages/backend/src/index.ts` file and remove the Permission backend plugin and Allow All Permission policy module.
 
-```ts
-backend.add(import('@janus-idp/backstage-plugin-rbac-backend'));
+```diff
+// permission plugin
+- backend.add(import('@backstage/plugin-permission-backend/alpha'));
+- backend.add(
+-    import('@backstage/plugin-permission-backend-module-allow-all-policy'),
+-  );
++ backend.add(import('@janus-idp/backstage-plugin-rbac-backend'));
 ```
 
 ### Configure policy admins
@@ -263,6 +270,8 @@ permission:
 ```
 
 The maxDepth must be greater than 0 to ensure that the graphs are built correctly. Also the graph will be built with a hierarchy of 1 + maxDepth.
+
+More information about group hierarchy can be found in the doc: [Group hierarchy](./docs/group-hierarchy.md).
 
 ### Optional RBAC provider module support
 
