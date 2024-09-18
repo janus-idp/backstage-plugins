@@ -221,11 +221,13 @@ declare namespace Paths {
     namespace FindAllImports {
         namespace Parameters {
             export type PagePerIntegration = number;
+            export type Search = string;
             export type SizePerIntegration = number;
         }
         export interface QueryParameters {
             pagePerIntegration?: Parameters.PagePerIntegration;
             sizePerIntegration?: Parameters.SizePerIntegration;
+            search?: Parameters.Search;
         }
         namespace Responses {
             export type $200 = /* Import Job */ Components.Schemas.Import[];
@@ -236,11 +238,13 @@ declare namespace Paths {
     namespace FindAllOrganizations {
         namespace Parameters {
             export type PagePerIntegration = number;
+            export type Search = string;
             export type SizePerIntegration = number;
         }
         export interface QueryParameters {
             pagePerIntegration?: Parameters.PagePerIntegration;
             sizePerIntegration?: Parameters.SizePerIntegration;
+            search?: Parameters.Search;
         }
         namespace Responses {
             export type $200 = /* Organization List */ Components.Schemas.OrganizationList;
@@ -251,12 +255,14 @@ declare namespace Paths {
         namespace Parameters {
             export type CheckImportStatus = boolean;
             export type PagePerIntegration = number;
+            export type Search = string;
             export type SizePerIntegration = number;
         }
         export interface QueryParameters {
             checkImportStatus?: Parameters.CheckImportStatus;
             pagePerIntegration?: Parameters.PagePerIntegration;
             sizePerIntegration?: Parameters.SizePerIntegration;
+            search?: Parameters.Search;
         }
         namespace Responses {
             export type $200 = /* Repository List */ Components.Schemas.RepositoryList;
@@ -283,6 +289,7 @@ declare namespace Paths {
             export type CheckImportStatus = boolean;
             export type OrganizationName = string;
             export type PagePerIntegration = number;
+            export type Search = string;
             export type SizePerIntegration = number;
         }
         export interface PathParameters {
@@ -292,6 +299,7 @@ declare namespace Paths {
             checkImportStatus?: Parameters.CheckImportStatus;
             pagePerIntegration?: Parameters.PagePerIntegration;
             sizePerIntegration?: Parameters.SizePerIntegration;
+            search?: Parameters.Search;
         }
         namespace Responses {
             export type $200 = /* Repository List */ Components.Schemas.RepositoryList;

@@ -27,11 +27,11 @@ const SyncRepository = ({ data }: SyncRepositoryProps) => {
       data?.defaultBranch || 'main',
     );
     setFieldValue(
-      `repositories.[${data.repoName}].catalogInfoYaml.status`,
+      `repositories.[${data.id}].catalogInfoYaml.status`,
       (value as ImportJobStatus).status,
     );
     setFieldValue(
-      `repositories.[${data.repoName}].catalogInfoYaml.lastUpdated`,
+      `repositories.[${data.id}].catalogInfoYaml.lastUpdated`,
       (value as ImportJobStatus).lastUpdate,
     );
   };

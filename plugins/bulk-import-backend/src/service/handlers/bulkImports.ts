@@ -47,30 +47,54 @@ export async function findAllImports(
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
+  search?: string,
   pageNumber: number = DefaultPageNumber,
   pageSize: number = DefaultPageSize,
 ): Promise<HandlerResponse<Components.Schemas.Import[]>> {
   logger.debug('Getting all bulk import jobs..');
-  const importStatusPromises: Promise<
-    HandlerResponse<Components.Schemas.Import>
-  >[] = [];
-  const catalogLocations = paginateArray(
-    await catalogInfoGenerator.listCatalogUrlLocations(),
+
+  const catalogFilename = getCatalogFilename(config);
+
+  const allLocations = await catalogInfoGenerator.listCatalogUrlLocations(
+    config,
+    search,
     pageNumber,
     pageSize,
   );
-  const paginatedLocations = catalogLocations.result;
-  for (const loc of paginatedLocations) {
-    // loc has the following format: https://github.com/<org>/<repo>/blob/<default-branch>/catalog-info.yaml
-    const split = loc.split('/blob/');
-    if (split.length < 2) {
+
+  // resolve default branches for each unique repo URL from GH,
+  // because we cannot easily determine that from the location target URL.
+  // It can be 'main' or something more convoluted like 'our/awesome/main'.
+  const defaultBranchByRepoUrl = await resolveReposDefaultBranches(
+    logger,
+    githubApiService,
+    allLocations,
+    catalogFilename,
+  );
+
+  // filter out locations that do not match what we are expecting, i.e.:
+  // an URL to a catalog-info YAML file at the root of the repo
+  const importCandidates = findImportCandidates(
+    allLocations,
+    defaultBranchByRepoUrl,
+    catalogFilename,
+  );
+
+  // Keep only repos that are accessible from the configured GH integrations
+  const importsReachableFromGHIntegrations =
+    await githubApiService.filterLocationsAccessibleFromIntegrations(
+      importCandidates,
+    );
+
+  // now fetch the import statuses in different promises
+  const importStatusPromises: Promise<
+    HandlerResponse<Components.Schemas.Import>
+  >[] = [];
+  for (const loc of importsReachableFromGHIntegrations) {
+    const repoUrl = repoUrlFromLocation(loc);
+    if (!repoUrl) {
       continue;
     }
-    const repoUrl = split[0];
-
-    // Split the URL at "/blob" and "/catalog-info.yaml"
-    const parts = split[1].split(`/${getCatalogFilename(config)}`);
-    const defaultBranch = parts.length !== 0 ? parts[0] : undefined;
 
     importStatusPromises.push(
       findImportStatusByRepo(
@@ -79,7 +103,7 @@ export async function findAllImports(
         githubApiService,
         catalogInfoGenerator,
         repoUrl,
-        defaultBranch,
+        defaultBranchByRepoUrl.get(repoUrl),
         false,
       ),
     );
@@ -89,23 +113,110 @@ export async function findAllImports(
   const imports = result
     .filter(res => res.responseBody)
     .map(res => res.responseBody!);
-  // sorting the output to simplify the tests on the response
+  // sorting the output to make it deterministic and easy to navigate in the UI
   imports.sort((a, b) => {
-    if (a.id === undefined && b.id === undefined) {
+    if (a.repository?.name === undefined && b.repository?.name === undefined) {
       return 0;
     }
-    if (a.id === undefined) {
+    if (a.repository?.name === undefined) {
       return -1;
     }
-    if (b.id === undefined) {
+    if (b.repository?.name === undefined) {
       return 1;
     }
-    return a.id.localeCompare(b.id);
+    return a.repository.name.localeCompare(b.repository.name);
   });
   return {
     statusCode: 200,
-    responseBody: imports,
+    responseBody: paginateArray(imports, pageNumber, pageSize).result,
   };
+}
+
+async function resolveReposDefaultBranches(
+  logger: Logger,
+  githubApiService: GithubApiService,
+  allLocations: string[],
+  catalogFilename: string,
+) {
+  const defaultBranchByRepoUrlPromises: Promise<{
+    repoUrl: string;
+    defaultBranch?: string;
+  }>[] = [];
+  for (const loc of allLocations) {
+    // loc has the following format: https://github.com/<org>/<repo>/blob/<default-branch>/catalog-info.yaml
+    // but it can have a more convoluted format like 'https://github.com/janus-idp/backstage-plugins/blob/main/plugins/scaffolder-annotator-action/examples/templates/01-scaffolder-template.yaml'
+    // if registered manually from the 'Register existing component' feature in Backstage.
+    if (!loc.endsWith(catalogFilename)) {
+      logger.debug(
+        `Ignored location ${loc} because it does not point to a file named ${catalogFilename}`,
+      );
+      continue;
+    }
+    const repoUrl = repoUrlFromLocation(loc);
+    if (!repoUrl) {
+      continue;
+    }
+    defaultBranchByRepoUrlPromises.push(
+      githubApiService
+        .getRepositoryFromIntegrations(repoUrl)
+        .then(resp => {
+          return { repoUrl, defaultBranch: resp?.repository?.default_branch };
+        })
+        .catch((err: any) => {
+          logger.debug(
+            `Ignored repo ${repoUrl} due to an error while fetching details from GitHub: ${err}`,
+          );
+          return {
+            repoUrl,
+            defaultBranch: undefined,
+          };
+        }),
+    );
+  }
+  const defaultBranchesResponses = await Promise.all(
+    defaultBranchByRepoUrlPromises,
+  );
+  return new Map(
+    defaultBranchesResponses
+      .flat()
+      .filter(r => r.defaultBranch)
+      .map(r => [r.repoUrl, r.defaultBranch!]),
+  );
+}
+
+function repoUrlFromLocation(loc: string) {
+  const split = loc.split('/blob/');
+  if (split.length < 2) {
+    return undefined;
+  }
+  return split[0];
+}
+
+function findImportCandidates(
+  allLocations: string[],
+  defaultBranchByRepoUrl: Map<string, string>,
+  catalogFilename: string,
+) {
+  const filteredLocations: string[] = [];
+  for (const loc of allLocations) {
+    const repoUrl = repoUrlFromLocation(loc);
+    if (!repoUrl) {
+      continue;
+    }
+
+    const defaultBranch = defaultBranchByRepoUrl.get(repoUrl);
+    if (!defaultBranch) {
+      continue;
+    }
+    if (loc !== `${repoUrl}/blob/${defaultBranch}/${catalogFilename}`) {
+      // Because users can use the "Register existing component" workflow to register a Location
+      // using any file path in the repo, we consider a repository as an Import Location only
+      // if it is at the root of the repository, because that is what the import PR ultimately does.
+      continue;
+    }
+    filteredLocations.push(loc);
+  }
+  return filteredLocations;
 }
 
 async function createPR(
@@ -243,9 +354,15 @@ export async function createImportJobs(
       const ghRepo = await githubApiService.getRepositoryFromIntegrations(
         req.repository.url,
       );
+      // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
+      await catalogInfoGenerator.refreshLocationByRepoUrl(
+        config,
+        req.repository.url,
+        req.repository.defaultBranch,
+      );
       result.push({
         status: 'ADDED',
-        lastUpdate: ghRepo.repository?.updated_at ?? undefined,
+        lastUpdate: ghRepo?.repository?.updated_at ?? undefined,
         repository: {
           url: req.repository.url,
           name: gitUrl.name,
@@ -283,6 +400,13 @@ export async function createImportJobs(
       if (prToRepo.hasChanges === false) {
         logger.debug(
           `No bulk import PR created on ${req.repository.url} since its default branch (${req.repository.defaultBranch}) already contains a catalog-info file`,
+        );
+
+        // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
+        await catalogInfoGenerator.refreshLocationByRepoUrl(
+          config,
+          req.repository.url,
+          req.repository.defaultBranch,
         );
         result.push({
           status: 'ADDED',
@@ -469,7 +593,7 @@ export async function findImportStatusByRepo(
     });
     if (!openImportPr.prUrl) {
       const catalogLocations =
-        await catalogInfoGenerator.listCatalogUrlLocations();
+        await catalogInfoGenerator.listCatalogUrlLocations(config);
       const catalogUrl = catalogInfoGenerator.getCatalogUrl(
         config,
         repoUrl,
@@ -490,6 +614,12 @@ export async function findImportStatusByRepo(
         }))
       ) {
         result.status = 'ADDED';
+        // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
+        await catalogInfoGenerator.refreshLocationByRepoUrl(
+          config,
+          repoUrl,
+          defaultBranch,
+        );
       }
       // No import PR => let's determine last update from the repository
       const ghRepo =
@@ -543,29 +673,41 @@ export async function deleteImportByRepo(
   const openImportPr = await githubApiService.findImportOpenPr(logger, {
     repoUrl: repoUrl,
   });
+  const gitUrl = gitUrlParse(repoUrl);
   if (openImportPr.prUrl) {
     // Close PR
+    const appTitle =
+      config.getOptionalString('app.title') ?? 'Red Hat Developer Hub';
+    const appBaseUrl = config.getString('app.baseUrl');
     await githubApiService.closePR(logger, {
       repoUrl,
-      gitUrl: gitUrlParse(repoUrl),
-      comment: `Closing PR upon request for bulk import deletion`,
+      gitUrl,
+      comment: `Closing PR upon request for bulk import deletion. This request was created from [${appTitle}](${appBaseUrl}).`,
     });
   }
+  // Also delete the import branch, so that it is not outdated if we try later to import the repo again
+  await githubApiService.deleteImportBranch(logger, {
+    repoUrl,
+    gitUrl,
+  });
   // Remove Location from catalog
-  const catalogLocations =
-    await catalogInfoGenerator.listCatalogUrlLocationsById();
   const catalogUrl = catalogInfoGenerator.getCatalogUrl(
     config,
     repoUrl,
     defaultBranch,
   );
-  let locationId: string | undefined;
-  for (const [id, loc] of catalogLocations) {
-    if (loc === catalogUrl) {
-      locationId = id;
-      break;
+  const findLocationFrom = (list: { id?: string; target: string }[]) => {
+    for (const loc of list) {
+      if (loc.target === catalogUrl) {
+        return loc.id;
+      }
     }
-  }
+    return undefined;
+  };
+
+  const locationId = findLocationFrom(
+    await catalogInfoGenerator.listCatalogUrlLocationsByIdFromLocationsEndpoint(),
+  );
   if (locationId) {
     await catalogInfoGenerator.deleteCatalogLocationById(locationId);
   }
