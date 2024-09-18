@@ -1,9 +1,11 @@
 import React from 'react';
 
 import { ResourceIcon } from '../../../common/components/ResourceName';
+import Status from '../../../common/components/Status';
 import { LABEL_USED_TEMPLATE_NAME } from '../../../const';
 import { K8sResourcesContext } from '../../../hooks/K8sResourcesContext';
-import { VMKind } from '../../../types/vm';
+import { VMIKind, VMKind } from '../../../types/vm';
+import { getStatus } from '../../../utils/vm-status-utils';
 import {
   findPodFromVMI,
   findVMI,
@@ -41,19 +43,22 @@ const TopologyVirtualMachineDetails = ({
   const vmi = findVMI(vm, allVMIs);
   const pods = findPodFromVMI(vmi, allPods);
   const devices = getLabeledDevices(vm) || [];
-  const ipAddrs = getVmiIpAddresses(vmi); // Need data to test
+  const ipAddrs = getVmiIpAddresses(vmi);
   const description = getDescription(vm);
   const templateName = getLabel(vm, LABEL_USED_TEMPLATE_NAME);
   const nodeName = getVMINodeName(vmi) || getNodeName(pods);
   const os = getOperatingSystemName(vm) || getOperatingSystem(vm);
   const workloadProfile = getWorkloadProfile(vm);
-
+  const vmStatus = getStatus(vm, vmi as VMIKind, pods?.[0]);
   return (
     <>
       <div className="topology-workload-details">
         <TopologyWorkloadDetails resource={vm}>
           <TopologySideBarDetailsItem label="Status">
-            {vm?.status?.printableStatus}
+            <Status
+              status={vmStatus}
+              displayStatusText={vm?.status?.printableStatus}
+            />
           </TopologySideBarDetailsItem>
         </TopologyWorkloadDetails>
       </div>
