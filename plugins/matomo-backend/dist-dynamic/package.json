@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-matomo-backend-dynamic",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "main": "./dist/index.cjs.js",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -65,9 +65,10 @@
   "bundleDependencies": true,
   "peerDependencies": {
     "@backstage/backend-common": "^0.23.3",
+    "@backstage/backend-defaults": "^0.4.1",
+    "@backstage/backend-dynamic-feature-service": "^0.2.15",
     "@backstage/backend-plugin-api": "^0.7.0",
-    "@backstage/config": "^1.2.0",
-    "@backstage/backend-dynamic-feature-service": "^0.2.15"
+    "@backstage/config": "^1.2.0"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {

@@ -34,6 +34,7 @@ export const matomoBackendPlugin = createBackendPlugin({
         logger.info('Matomo plugin is running');
         const router = await createRouter({
           config,
+          logger,
         });
         http.use(router);
       },

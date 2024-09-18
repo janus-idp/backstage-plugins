@@ -1,5 +1,9 @@
 ### Dependencies
 
+* **@janus-idp/backstage-plugin-audit-log-node:** upgraded to 1.4.1
+
+### Dependencies
+
 * **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.17.2
 
 ### Dependencies

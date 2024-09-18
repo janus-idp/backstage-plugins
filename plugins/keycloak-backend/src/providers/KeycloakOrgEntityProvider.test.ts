@@ -1,41 +1,47 @@
 import { ConfigReader } from '@backstage/config';
 
+// @ts-ignore
+import inclusion from 'inclusion';
+
 import {
   assertLogMustNotInclude,
   authMock,
   BASIC_VALID_CONFIG,
   connection,
   createLogger,
-  KeycloakAdminClientMock,
+  KeycloakAdminClientMockServerv18,
+  KeycloakAdminClientMockServerv24,
   logMock,
   ManualTaskRunner,
 } from '../../__fixtures__/helpers';
 import { KeycloakOrgEntityProvider } from './KeycloakOrgEntityProvider';
 
-jest.mock('@keycloak/keycloak-admin-client', () => {
-  const actual = jest.requireActual('@keycloak/keycloak-admin-client');
-  return {
-    ...actual,
-    default: KeycloakAdminClientMock,
-  };
-});
+jest.mock('inclusion', () => jest.fn());
 
-describe('KeycloakOrgEntityProvider', () => {
+describe.each([
+  ['v24', KeycloakAdminClientMockServerv24],
+  ['v18', KeycloakAdminClientMockServerv18],
+])('KeycloakOrgEntityProvider with %s', (_version, mockImplementation) => {
   const logger = createLogger();
-
-  // Steps to run the user and group sync similar to a scheduled job:
-  // 1. Schedule a task with k.schedule(manualTaskRunner)
-  // 2. Open the connection with k.connect() that automatically append a task to that task runner
-  // 3. Run the tasks with manualTaskRunner.runAll() that starts the read from keycloak
   const manualTaskRunner = new ManualTaskRunner();
 
   beforeEach(() => {
     jest.resetAllMocks();
+    jest.mock('inclusion', () => jest.fn());
+    (inclusion as jest.Mock).mockImplementation(() => {
+      return { default: mockImplementation }; // Return the correct mock based on the version
+    });
     manualTaskRunner.clear();
   });
-
   afterEach(() => {
     assertLogMustNotInclude(['myclientsecret', 'mypassword']); // NOSONAR
+  });
+
+  it('should mock inclusion', async () => {
+    const KeyCloakAdminClient = await inclusion(
+      '@keycloak/keycloak-admin-client',
+    );
+    expect(KeyCloakAdminClient).toEqual({ default: mockImplementation });
   });
 
   it('should return an empty array if no providers are configured', () => {
@@ -124,7 +130,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               clientId: 'myclientid',
             },
           },
@@ -148,7 +154,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               clientId: 'myclientid',
               clientSecret: 'myclientsecret',
             },
@@ -187,7 +193,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               username: 'myusername',
             },
           },
@@ -211,7 +217,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               username: 'myusername',
               password: 'mypassword', // NOSONAR
             },
@@ -262,7 +268,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               username: 'myusername',
               password: 'mypassword', // NOSONAR
             },
@@ -324,7 +330,7 @@ describe('KeycloakOrgEntityProvider', () => {
         providers: {
           keycloakOrg: {
             default: {
-              baseUrl: 'http://localhost:8080/auth',
+              baseUrl: 'http://localhost:8080',
               username: 'myusername',
               password: 'mypassword', // NOSONAR
             },

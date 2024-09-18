@@ -7,12 +7,12 @@
   "license": "Apache-2.0",
   "private": true,
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "rbac",
+    "pluginPackage": "@janus-idp/backstage-plugin-rbac-backend"
   },
   "exports": {
     ".": "./src/index.ts",
