@@ -1,7 +1,7 @@
 {
   "name": "@janus-idp/backstage-plugin-bulk-import-common",
   "description": "Common functionalities for the bulk-import plugin",
-  "version": "0.2.0",
+  "version": "1.0.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -17,6 +17,7 @@
     "pluginId": "bulk-import",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-bulk-import",
+      "@janus-idp/backstage-plugin-bulk-import-backend",
       "@janus-idp/backstage-plugin-bulk-import-common"
     ]
   },
@@ -43,6 +44,8 @@
     "directory": "plugins/bulk-import-common"
   },
   "keywords": [
+    "support:tech-preview",
+    "lifecycle:active",
     "backstage",
     "plugin"
   ],
