@@ -27,8 +27,9 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 
-import KcAdminClient from '@keycloak/keycloak-admin-client';
 import type { Credentials } from '@keycloak/keycloak-admin-client/lib/utils/auth';
+// @ts-ignore
+import inclusion from 'inclusion';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
 
@@ -189,7 +190,12 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
     const provider = this.options.provider;
 
     const { markReadComplete } = trackProgress(logger);
-    const kcAdminClient = new KcAdminClient({
+    const KeyCloakAdminClientModule = await inclusion(
+      '@keycloak/keycloak-admin-client',
+    );
+    const KeyCloakAdminClient = KeyCloakAdminClientModule.default;
+
+    const kcAdminClient = new KeyCloakAdminClient({
       baseUrl: provider.baseUrl,
       realmName: provider.loginRealm,
     });
