@@ -32,3 +32,24 @@ export interface QueryRequestBody {
   // A combination of user_id & session_id in the format of <user_id>+<session_id>
   conversation_id: string;
 }
+
+/**
+ * Define the type for the request body of the /session/load endpoint.
+ */
+export interface SessionLoadRequestBody {
+  // A combination of user_id & session_id in the format of <user_id>+<session_id>
+  conversation_id: string;
+
+  // number of message history being loaded. default is DEFAULT_HISTORY_LENGTH
+  historyLength?: number;
+}
+
+// For create AIMessage, HumanMessage, SystemMessage respectively
+export const Roles = {
+  AIRole: 'ai',
+  HumanRole: 'human',
+  SystemRole: 'system',
+} as const;
+
+// default number of message history being loaded
+export const DEFAULT_HISTORY_LENGTH = 10;
