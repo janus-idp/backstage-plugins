@@ -92,17 +92,17 @@ describe('createRouter', () => {
       });
       expect(response.statusCode).toEqual(200);
       // Parse response body
-      const responseData: BaseMessage[] = response.body;
+      const responseData = response.body;
 
       // Check that responseData is an array
       expect(Array.isArray(responseData)).toBe(true);
       expect(responseData.length).toBe(2);
 
       expect(responseData[0].id).toContain('HumanMessage');
-      expect(responseData[0].kwargs.content).toBe(humanMessage);
+      expect(responseData[0].kwargs?.content).toBe(humanMessage);
 
       expect(responseData[1].id).toContain('AIMessage');
-      expect(responseData[1].kwargs.content).toBe(aiMessage);
+      expect(responseData[1].kwargs?.content).toBe(aiMessage);
     });
 
     it('load history with unkown conversation_id', async () => {

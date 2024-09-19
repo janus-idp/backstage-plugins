@@ -1,10 +1,7 @@
 import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
-import { InMemoryStore } from '@langchain/core/stores';
 
 import { Roles } from '../service/types';
-import { deleteHistory, loadHistory, saveHistory } from './chatHistory'; // adjust the path accordingly
-
-const historyStore = new InMemoryStore<BaseMessage[]>();
+import { deleteHistory, loadHistory, saveHistory } from './chatHistory';
 
 const mockConversationId = 'user1+1q2w3e4r-qwer1234';
 

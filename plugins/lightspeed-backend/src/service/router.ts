@@ -1,6 +1,6 @@
 import { errorHandler } from '@backstage/backend-common';
 
-import { BaseMessage, HumanMessage } from '@langchain/core/messages';
+import { HumanMessage } from '@langchain/core/messages';
 import {
   ChatPromptTemplate,
   MessagesPlaceholder,
