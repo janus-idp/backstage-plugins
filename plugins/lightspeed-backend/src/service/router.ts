@@ -9,7 +9,11 @@ import { ChatOpenAI } from '@langchain/openai';
 import express from 'express';
 import Router from 'express-promise-router';
 
-import { loadHistory, saveHistory } from '../handlers/chatHistory';
+import {
+  deleteHistory,
+  loadHistory,
+  saveHistory,
+} from '../handlers/chatHistory';
 import {
   DEFAULT_HISTORY_LENGTH,
   QueryRequestBody,
@@ -44,6 +48,21 @@ export async function createRouter(
       try {
         const history = await loadHistory(conversation_id, loadhistoryLength);
         response.status(200).json(history);
+        response.end();
+      } catch (error) {
+        const errormsg = `Error: ${error}`;
+        logger.error(errormsg);
+        response.status(500).json({ error: errormsg });
+      }
+    },
+  );
+
+  router.delete(
+    '/conversations/:conversation_id',
+    async (request, response) => {
+      const conversation_id = request.params.conversation_id;
+      try {
+        response.status(200).json(await deleteHistory(conversation_id));
         response.end();
       } catch (error) {
         const errormsg = `Error: ${error}`;

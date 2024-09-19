@@ -88,4 +88,8 @@ describe('Test History Functions', () => {
 
     expect(await loadHistory(mockConversationId, 1)).toBeDefined();
   });
+
+  test('deleteHistory should not return error with unknown id', async () => {
+    await expect(() => deleteHistory(mockConversationId)).not.toThrow();
+  });
 });

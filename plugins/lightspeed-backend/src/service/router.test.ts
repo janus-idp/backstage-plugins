@@ -80,7 +80,7 @@ describe('createRouter', () => {
     });
   });
 
-  describe('GET /conversations/:conversation_id', () => {
+  describe('GET and DELETE /conversations/:conversation_id', () => {
     it('load history', async () => {
       const humanMessage = 'Hello';
       const aiMessage = 'Hi! How can I help you today?';
@@ -105,8 +105,18 @@ describe('createRouter', () => {
       expect(responseData[1].kwargs?.content).toBe(aiMessage);
     });
 
-    it('load history with unkown conversation_id', async () => {
-      const response = await request(app).get('/conversations/unknown');
+    it('delete history', async () => {
+      // delete request
+      const deleteResponse = await request(app).delete(
+        `/conversations/${mockConversationId}`,
+      );
+      expect(deleteResponse.statusCode).toEqual(200);
+    });
+
+    it('load history with deleted conversation_id', async () => {
+      const response = await request(app).get(
+        `/conversations/${mockConversationId}`,
+      );
       expect(response.statusCode).toEqual(500);
       expect(response.body.error).toContain('unkown conversation_id');
     });
