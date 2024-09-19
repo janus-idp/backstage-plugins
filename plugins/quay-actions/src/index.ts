@@ -6,3 +6,4 @@
  */
 
 export * from './actions';
+export { scaffolderModuleQuayAction as default } from './module';
