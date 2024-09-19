@@ -15,7 +15,6 @@ import {
   QueryRequestBody,
   Roles,
   RouterOptions,
-  SessionLoadRequestBody,
 } from './types';
 import {
   validateCompletionsRequest,
@@ -35,23 +34,17 @@ export async function createRouter(
   });
 
   router.get(
-    '/session/load',
+    '/conversations/:conversation_id',
     validateLoadHistoryRequest,
     async (request, response) => {
-      const { conversation_id, historyLength }: SessionLoadRequestBody =
-        request.body;
+      const conversation_id = request.params.conversation_id;
+      const historyLength = Number(request.query.historyLength);
 
       const loadhistoryLength: number = historyLength || DEFAULT_HISTORY_LENGTH;
       try {
         const history = await loadHistory(conversation_id, loadhistoryLength);
-        if (history) {
-          response.status(200).json(history);
-          response.end();
-        } else {
-          const errormsg = `Error: unkown conversation_id: ${conversation_id}`;
-          logger.error(errormsg);
-          response.status(500).json({ error: errormsg });
-        }
+        response.status(200).json(history);
+        response.end();
       } catch (error) {
         const errormsg = `Error: ${error}`;
         logger.error(errormsg);

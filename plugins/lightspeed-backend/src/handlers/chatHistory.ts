@@ -47,7 +47,10 @@ export async function loadHistory(
   historyLength: number,
 ): Promise<BaseMessage[]> {
   const sessionHistory = await historyStore.mget([conversation_id]);
-  return sessionHistory[0]?.slice(-historyLength) || undefined;
+  if (!sessionHistory[0]) {
+    throw new Error(`unkown conversation_id: ${conversation_id}`);
+  }
+  return sessionHistory[0]?.slice(-historyLength);
 }
 
 export async function deleteHistory(conversation_id: string): Promise<void> {

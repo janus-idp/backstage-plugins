@@ -80,16 +80,16 @@ describe('createRouter', () => {
     });
   });
 
-  describe('GET /session/load', () => {
+  describe('GET /conversations/:conversation_id', () => {
     it('load history', async () => {
       const humanMessage = 'Hello';
       const aiMessage = 'Hi! How can I help you today?';
       await saveHistory(mockConversationId, Roles.HumanRole, humanMessage);
       await saveHistory(mockConversationId, Roles.AIRole, aiMessage);
 
-      const response = await request(app).get('/session/load').send({
-        conversation_id: mockConversationId,
-      });
+      const response = await request(app).get(
+        `/conversations/${mockConversationId}`,
+      );
       expect(response.statusCode).toEqual(200);
       // Parse response body
       const responseData = response.body;
@@ -106,19 +106,9 @@ describe('createRouter', () => {
     });
 
     it('load history with unkown conversation_id', async () => {
-      const response = await request(app).get('/session/load').send({
-        conversation_id: 'unknown',
-      });
+      const response = await request(app).get('/conversations/unknown');
       expect(response.statusCode).toEqual(500);
       expect(response.body.error).toContain('unkown conversation_id');
-    });
-
-    it('returns 400 if conversation_id is missing', async () => {
-      const response = await request(app).get('/session/load');
-      expect(response.statusCode).toEqual(400);
-      expect(response.body.error).toBe(
-        'conversation_id is required and must be a non-empty string',
-      );
     });
   });
 

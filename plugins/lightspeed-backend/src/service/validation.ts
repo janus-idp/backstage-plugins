@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { QueryRequestBody, SessionLoadRequestBody } from './types';
+import { QueryRequestBody } from './types';
 
 export const validateCompletionsRequest = (
   req: Request,
@@ -49,15 +49,10 @@ export const validateLoadHistoryRequest = (
   res: Response,
   next: NextFunction,
 ) => {
-  const reqData: SessionLoadRequestBody = req.body;
+  const historyLength = Number(req.query.historyLength);
 
-  if (
-    typeof reqData.conversation_id !== 'string' ||
-    reqData.conversation_id.trim() === ''
-  ) {
-    return res.status(400).json({
-      error: 'conversation_id is required and must be a non-empty string',
-    });
+  if (historyLength && !Number.isInteger(historyLength)) {
+    return res.status(400).send('historyLength has to be a valid integer');
   }
 
   // TODO: Need to extract out the user_id from conversation_id, and verify with the login user entity
