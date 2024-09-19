@@ -1,4 +1,4 @@
-import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
+import { AIMessage, HumanMessage } from '@langchain/core/messages';
 
 import { Roles } from '../service/types';
 import { deleteHistory, loadHistory, saveHistory } from './chatHistory';

@@ -2,7 +2,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 // import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { MockConfigApi } from '@backstage/test-utils';
 
-import { AIMessage, BaseMessage } from '@langchain/core/messages';
+import { AIMessage } from '@langchain/core/messages';
 import express from 'express';
 import request from 'supertest';
 
