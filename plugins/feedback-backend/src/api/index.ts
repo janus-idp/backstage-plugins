@@ -1,1 +1,0 @@
-export { JiraApiService } from './jiraApiService';
