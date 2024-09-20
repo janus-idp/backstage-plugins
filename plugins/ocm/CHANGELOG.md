@@ -1,5 +1,10 @@
 ### Dependencies
 
+* **@janus-idp/backstage-plugin-ocm-common:** upgraded to 3.4.0
+* **@janus-idp/cli:** upgraded to 1.14.0
+
+### Dependencies
+
 * **@janus-idp/cli:** upgraded to 1.13.2
 
 ### Dependencies

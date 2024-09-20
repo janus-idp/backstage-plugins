@@ -1,5 +1,11 @@
 ### Dependencies
 
+* **@janus-idp/cli:** upgraded to 1.14.0
+* **@janus-idp/backstage-plugin-audit-log-node:** upgraded to 1.5.0
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.10.0
+
+### Dependencies
+
 * **@janus-idp/cli:** upgraded to 1.13.2
 
 ### Dependencies
