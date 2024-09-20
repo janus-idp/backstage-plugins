@@ -1,11 +1,11 @@
-import { Config } from '@backstage/config';
-import { ConfigApi } from '@backstage/core-plugin-api';
+import type { Config } from '@backstage/config';
+import type { ConfigApi } from '@backstage/core-plugin-api';
 
 import { Knex } from 'knex';
 import TypeORMAdapter from 'typeorm-adapter';
 
 import { resolve } from 'path';
-import { ConnectionOptions, TlsOptions } from 'tls';
+import type { ConnectionOptions, TlsOptions } from 'tls';
 
 import '@backstage/backend-defaults/database';
 

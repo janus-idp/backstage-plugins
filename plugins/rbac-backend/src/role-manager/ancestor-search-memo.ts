@@ -1,6 +1,6 @@
-import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
+import type { AuthService, LoggerService } from '@backstage/backend-plugin-api';
+import type { CatalogApi } from '@backstage/catalog-client';
+import type { Entity } from '@backstage/catalog-model';
 
 import { alg, Graph } from '@dagrejs/graphlib';
 import { Knex } from 'knex';

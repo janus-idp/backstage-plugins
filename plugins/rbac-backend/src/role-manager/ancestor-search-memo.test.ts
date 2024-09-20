@@ -1,5 +1,5 @@
 import { mockServices } from '@backstage/backend-test-utils';
-import { Entity, GroupEntity } from '@backstage/catalog-model';
+import type { Entity, GroupEntity } from '@backstage/catalog-model';
 
 import * as Knex from 'knex';
 import { createTracker, MockClient, Tracker } from 'knex-mock-client';

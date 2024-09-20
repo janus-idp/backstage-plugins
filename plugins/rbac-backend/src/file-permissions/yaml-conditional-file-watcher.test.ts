@@ -1,6 +1,6 @@
 import { mockServices } from '@backstage/backend-test-utils';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { MetadataResponse } from '@backstage/plugin-permission-node';
+import type { MetadataResponse } from '@backstage/plugin-permission-node';
 
 import { resolve } from 'path';
 

@@ -1,4 +1,4 @@
-import { LoggerService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 
@@ -12,7 +12,7 @@ import {
 import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
 
-import {
+import type {
   RBACProvider,
   RBACProviderConnection,
 } from '@janus-idp/backstage-plugin-rbac-node';

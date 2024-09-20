@@ -4,7 +4,7 @@ import {
   PermissionRuleParams,
 } from '@backstage/plugin-permission-common';
 
-import {
+import type {
   PermissionAction,
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';

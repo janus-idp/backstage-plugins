@@ -3,9 +3,9 @@ import {
   PolicyDecision,
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
-import { PolicyQuery } from '@backstage/plugin-permission-node';
+import type { PolicyQuery } from '@backstage/plugin-permission-node';
 
-import { AuditLogOptions } from '@janus-idp/backstage-plugin-audit-log-node';
+import type { AuditLogOptions } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
   PermissionAction,
   RoleConditionalPolicyDecision,

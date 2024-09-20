@@ -1,13 +1,13 @@
-import { UserInfoService } from '@backstage/backend-plugin-api';
+import type { UserInfoService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
-import { Adapter, Enforcer } from 'casbin';
-import { Router } from 'express';
-import TypeORMAdapter from 'typeorm-adapter';
+import type { Adapter, Enforcer } from 'casbin';
+import type { Router } from 'express';
+import type TypeORMAdapter from 'typeorm-adapter';
 
-import {
+import type {
   PluginIdProvider,
   RBACProvider,
 } from '@janus-idp/backstage-plugin-rbac-node';

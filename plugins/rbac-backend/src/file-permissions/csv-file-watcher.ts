@@ -1,10 +1,10 @@
-import { LoggerService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 
 import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { parse } from 'csv-parse/sync';
 import { difference } from 'lodash';
 
-import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+import type { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 
 import {
   HANDLE_RBAC_DATA_STAGE,

@@ -1,4 +1,4 @@
-import { PluginDatabaseManager } from '@backstage/backend-common';
+import type { DatabaseService } from '@backstage/backend-plugin-api';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 
 import * as Knex from 'knex';
@@ -21,7 +21,7 @@ describe('role-metadata-db-table', () => {
 
   async function createDatabase(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
-    const databaseManagerMock: PluginDatabaseManager = {
+    const databaseManagerMock: DatabaseService = {
       getClient: jest.fn(() => {
         return Promise.resolve(knex);
       }),

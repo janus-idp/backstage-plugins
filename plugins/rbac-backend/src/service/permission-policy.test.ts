@@ -1,13 +1,12 @@
-import { getVoidLogger } from '@backstage/backend-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
-import { Entity } from '@backstage/catalog-model';
+import type { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
   AuthorizeResult,
   createPermission,
 } from '@backstage/plugin-permission-common';
-import {
+import type {
   PolicyQuery,
   PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
@@ -23,7 +22,7 @@ import {
 import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
 
-import { RoleMetadata } from '@janus-idp/backstage-plugin-rbac-common';
+import type { RoleMetadata } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { resolve } from 'path';
 
@@ -1791,7 +1790,7 @@ describe('Policy checks for conditional policies', () => {
     );
     const config = newConfigReader(undefined, []);
     const theModel = newModelFromString(MODEL);
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     const enf = await createEnforcer(theModel, adapter, logger, config);
 
     const enfDelegate = new EnforcerDelegate(
@@ -2211,7 +2210,7 @@ async function newEnforcerDelegate(
   storedGroupingPolicies?: string[][],
 ): Promise<EnforcerDelegate> {
   const theModel = newModelFromString(MODEL);
-  const logger = getVoidLogger();
+  const logger = mockServices.logger.mock();
 
   const enf = await createEnforcer(theModel, adapter, logger, config);
 
@@ -2231,7 +2230,7 @@ async function newPermissionPolicy(
   enfDelegate: EnforcerDelegate,
   roleMock?: RoleMetadataStorage,
 ): Promise<RBACPermissionPolicy> {
-  const logger = getVoidLogger();
+  const logger = mockServices.logger.mock();
   const permissionPolicy = await RBACPermissionPolicy.build(
     logger,
     auditLoggerMock,

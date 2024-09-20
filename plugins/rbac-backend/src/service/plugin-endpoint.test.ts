@@ -1,4 +1,4 @@
-import { getVoidLogger, ReadUrlResponse } from '@backstage/backend-common';
+import type { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
@@ -13,7 +13,7 @@ const backendPluginIDsProviderMock = {
 
 const config = new ConfigReader({});
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 const mockUrlReaderService = {
   readUrl: jest.fn().mockImplementation(() => {}),
@@ -28,12 +28,14 @@ const mockUrlReaderService = {
 
 const mockAuth = mockServices.auth();
 
-jest.mock('@backstage/backend-common', () => {
-  const actualBackendCommon = jest.requireActual('@backstage/backend-common');
-  actualBackendCommon.UrlReaders = {
+jest.mock('@backstage/backend-defaults/urlReader', () => {
+  const actualBackendDefaultsUrlReader = jest.requireActual(
+    '@backstage/backend-defaults/urlReader',
+  );
+  actualBackendDefaultsUrlReader.UrlReaders = {
     default: jest.fn(() => mockUrlReaderService),
   };
-  return actualBackendCommon;
+  return actualBackendDefaultsUrlReader;
 });
 
 describe('plugin-endpoint', () => {
@@ -48,7 +50,7 @@ describe('plugin-endpoint', () => {
     toString: jest.fn().mockImplementation(),
   };
 
-  const mockReadUrlResponse: ReadUrlResponse = {
+  const mockReadUrlResponse: UrlReaderServiceReadUrlResponse = {
     buffer: jest.fn().mockImplementation(async () => {
       return Promise.resolve(bufferMock as any as Buffer);
     }),

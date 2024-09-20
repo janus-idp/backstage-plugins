@@ -1,11 +1,11 @@
-import { BackstageUserInfo } from '@backstage/backend-plugin-api';
-import {
+import type { BackstageUserInfo } from '@backstage/backend-plugin-api';
+import type {
   PermissionCondition,
   PermissionCriteria,
   PermissionRuleParam,
   PermissionRuleParams,
 } from '@backstage/plugin-permission-common';
-import { JsonPrimitive } from '@backstage/types';
+import type { JsonPrimitive } from '@backstage/types';
 
 import {
   CONDITION_ALIAS_SIGN,

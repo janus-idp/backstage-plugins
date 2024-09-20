@@ -3,6 +3,4 @@
  *
  * @packageDocumentation
  */
-
-export * from './dynamic/index';
-export * from './module';
+export { rbacModuleTest as default } from './module';

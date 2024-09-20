@@ -38,64 +38,6 @@ yarn workspace backend add @janus-idp/backstage-plugin-rbac-backend
 
 ### Configuring the Backend
 
-#### Old Backend System
-
-To connect the RBAC framework to your backend use the `PolicyBuilder` class in your backend permissions plugin (typically `packages/backend/src/plugins/permissions.ts`) as follows:
-
-```ts
-/* highlight-add-start */
-import { Router } from 'express';
-
-import {
-  PluginIdProvider,
-  PolicyBuilder,
-} from '@janus-idp/backstage-plugin-rbac-backend';
-
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-  pluginIdProvider: PluginIdProvider,
-): Promise<Router> {
-  return PolicyBuilder.build(
-    {
-      config: env.config,
-      logger: env.logger,
-      discovery: env.discovery,
-      identity: env.identity,
-      permissions: env.permissions,
-    },
-    pluginIdProvider,
-  );
-}
-/* highlight-add-end */
-```
-
-Secondly, in your backend router (typically `packages/backend/src/index.ts`) add a route for `/permission` specifying the list of plugin id's that support permissions:
-
-```ts
-// ...
-/* highlight-add-next-line */
-import permission from './plugins/permissions';
-
-async function main() {
-  // ...
-  /* highlight-add-next-line */
-  const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
-
-  // ...
-  /* highlight-add-start */
-  apiRouter.use(
-    '/permission',
-    await permission(permissionEnv, {
-      // return list static plugin which supports Backstage permissions.
-      getPluginIds: () => ['catalog', 'scaffolder', 'permission'],
-    }),
-  );
-  /* highlight-add-end */
-}
-```
-
 #### New Backend System
 
 The RBAC plugin supports the integration with the new backend system.

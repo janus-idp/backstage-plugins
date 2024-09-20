@@ -1,11 +1,15 @@
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  ServiceFactoryTester,
+  TestDatabaseId,
+  TestDatabases,
+} from '@backstage/backend-test-utils';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import * as Knex from 'knex';
 import { createTracker, MockClient } from 'knex-mock-client';
 
-import {
+import type {
   PermissionInfo,
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
@@ -83,14 +87,14 @@ describe('DataBaseConditionalStorage', () => {
 
   async function createDatabase(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
-    const databaseManagerMock: PluginDatabaseManager = {
-      getClient: jest.fn(() => {
-        return Promise.resolve(knex);
-      }),
+    const mockDatabaseFactory = mockServices.database.mock({
+      getClient: async () => knex,
       migrations: { skip: false },
-    };
+    }).factory;
+    const databaseService =
+      await ServiceFactoryTester.from(mockDatabaseFactory).getSubject();
 
-    await migrate(databaseManagerMock);
+    await migrate(databaseService);
     return {
       knex,
       db: new DataBaseConditionalStorage(knex),

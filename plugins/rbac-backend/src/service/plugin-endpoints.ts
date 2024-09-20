@@ -1,30 +1,30 @@
 import {
   FetchUrlReader,
-  PluginEndpointDiscovery,
   ReaderFactory,
   UrlReaders,
-} from '@backstage/backend-common';
-import {
+} from '@backstage/backend-defaults/urlReader';
+import type {
   AuthService,
+  DiscoveryService,
   LoggerService,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import type { Config } from '@backstage/config';
 import { isError } from '@backstage/errors';
 import {
   isResourcePermission,
   Permission,
 } from '@backstage/plugin-permission-common';
-import {
+import type {
   MetadataResponse,
   MetadataResponseSerializedRule,
 } from '@backstage/plugin-permission-node';
 
-import {
+import type {
   PluginPermissionMetaData,
   PolicyDetails,
 } from '@janus-idp/backstage-plugin-rbac-common';
-import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
+import type { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 type PluginMetadataResponse = {
   pluginId: string;
@@ -41,7 +41,7 @@ export class PluginPermissionMetadataCollector {
   private urlReader: UrlReaderService;
 
   constructor(
-    private readonly discovery: PluginEndpointDiscovery,
+    private readonly discovery: DiscoveryService,
     private readonly pluginIdProvider: PluginIdProvider,
     private readonly logger: LoggerService,
     config: Config,

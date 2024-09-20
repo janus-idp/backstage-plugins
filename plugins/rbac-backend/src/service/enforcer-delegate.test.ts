@@ -1,4 +1,3 @@
-import { getVoidLogger } from '@backstage/backend-common';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 
@@ -120,7 +119,7 @@ describe('EnforcerDelegate', () => {
     groupingPolicies?: string[][],
   ): Promise<EnforcerDelegate> {
     const theModel = newModelFromString(MODEL);
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
 
     const sqliteInMemoryAdapter = await new CasbinDBAdapterFactory(
       config,

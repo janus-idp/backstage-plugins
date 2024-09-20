@@ -1,7 +1,7 @@
-import { LoggerService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
-import { CatalogApi } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
+import type { CatalogApi } from '@backstage/catalog-client';
+import type { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 
 import * as Knex from 'knex';

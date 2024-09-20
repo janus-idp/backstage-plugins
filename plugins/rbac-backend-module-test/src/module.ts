@@ -25,14 +25,16 @@ export const rbacModuleTest = createBackendModule({
       },
       async init({ logger, rbac, scheduler, config }) {
         rbac.addRBACProvider(
-          TestProvider.fromConfig(config, {
-            logger,
-            scheduler: scheduler,
-            schedule: scheduler.createScheduledTaskRunner({
-              frequency: { minutes: 30 },
-              timeout: { minutes: 3 },
-            }),
-          }),
+          TestProvider.fromConfig(
+            { config, logger },
+            {
+              scheduler: scheduler,
+              schedule: scheduler.createScheduledTaskRunner({
+                frequency: { minutes: 30 },
+                timeout: { minutes: 3 },
+              }),
+            },
+          ),
         );
       },
     });

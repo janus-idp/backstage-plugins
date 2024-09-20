@@ -1,5 +1,5 @@
 import { AuthService } from '@backstage/backend-plugin-api';
-import { MetadataResponse } from '@backstage/plugin-permission-node';
+import type { MetadataResponse } from '@backstage/plugin-permission-node';
 
 import {
   difference,
