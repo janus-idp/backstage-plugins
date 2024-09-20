@@ -1,5 +1,7 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 
+import { WorkflowExecutionResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
+
 import { DataIndexService } from './DataIndexService';
 import { SonataFlowService } from './SonataFlowService';
 
@@ -116,20 +118,39 @@ describe('SonataFlowService', () => {
     const definitionId = 'workflow-123';
     const urlToFetch = `${serviceUrl}/${definitionId}`;
     const functionName = 'executeWorkflow';
+    const inputData = { var1: 'value1' };
+
+    const setupTest = (responseConfig: {
+      ok: boolean;
+      status?: number;
+      json: any;
+    }) => {
+      const mockResponse = {
+        ok: responseConfig.ok,
+        status: responseConfig.status || (responseConfig.ok ? 200 : 500),
+        statusText: responseConfig.ok ? 'OK' : 'Internal Server Error',
+        json: jest.fn().mockResolvedValue(responseConfig.json),
+      };
+      global.fetch = jest.fn().mockResolvedValue(mockResponse as any);
+    };
+
+    const runErrorTest = async (
+      jsonResponse: any,
+    ): Promise<WorkflowExecutionResponse | undefined> => {
+      setupTest({ ok: false, json: jsonResponse });
+      return await sonataFlowService.executeWorkflow({
+        definitionId,
+        serviceUrl,
+        inputData,
+      });
+    };
 
     beforeEach(() => {
       jest.clearAllMocks();
     });
     it('should return workflow execution response when the request is successful', async () => {
       // Given
-      const mockResponse = {
-        ok: true,
-        status: 200,
-        json: jest
-          .fn()
-          .mockResolvedValue({ id: definitionId, status: 'completed' }),
-      };
-      global.fetch = jest.fn().mockResolvedValue(mockResponse as any);
+      setupTest({ ok: true, json: { id: definitionId, status: 'completed' } });
 
       // When
       const result = await sonataFlowService.executeWorkflow({
@@ -159,14 +180,7 @@ describe('SonataFlowService', () => {
     it('should include businessKey in the URL if provided', async () => {
       // Given
       const businessKey = 'key-123';
-      const inputData = { var1: 'value1' };
-      const mockResponse = {
-        ok: true,
-        json: jest
-          .fn()
-          .mockResolvedValue({ id: definitionId, status: 'completed' }),
-      };
-      global.fetch = jest.fn().mockResolvedValue(mockResponse as any);
+      setupTest({ ok: true, json: { id: definitionId, status: 'completed' } });
 
       // When
       const result = await sonataFlowService.executeWorkflow({
@@ -189,22 +203,8 @@ describe('SonataFlowService', () => {
     });
 
     it('should log an error and return undefined when the fetch response is not ok without extra info', async () => {
-      // Given
-      const mockResponse = {
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error',
-        json: jest.fn().mockResolvedValueOnce({}),
-      };
-      global.fetch = jest.fn().mockResolvedValue(mockResponse as any);
-      const inputData = { var1: 'value1' };
-
       // When
-      const result = await sonataFlowService.executeWorkflow({
-        definitionId,
-        serviceUrl,
-        inputData,
-      });
+      const result = await runErrorTest({});
 
       // Then
       expect(fetch).toHaveBeenCalledWith(urlToFetch, {
@@ -219,24 +219,10 @@ describe('SonataFlowService', () => {
       );
     });
     it('should log an error and return undefined when the fetch response is not ok with extra info', async () => {
-      // Given
-      const mockResponse = {
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error',
-        json: jest.fn().mockResolvedValueOnce({
-          details: 'Error details test',
-          stack: 'Error stacktrace test',
-        }),
-      };
-      global.fetch = jest.fn().mockResolvedValue(mockResponse as any);
-      const inputData = { var1: 'value1' };
-
       // When
-      const result = await sonataFlowService.executeWorkflow({
-        definitionId,
-        serviceUrl,
-        inputData,
+      const result = await runErrorTest({
+        details: 'Error details test',
+        stack: 'Error stacktrace test',
       });
 
       // Then
@@ -254,7 +240,6 @@ describe('SonataFlowService', () => {
     it('should log an error and return undefined when fetch throws an error', async () => {
       // Given
       global.fetch = jest.fn().mockRejectedValue(new Error('Network Error'));
-      const inputData = { var1: 'value1' };
 
       // When
       const result = await sonataFlowService.executeWorkflow({
