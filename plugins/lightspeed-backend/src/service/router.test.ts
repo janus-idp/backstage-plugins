@@ -118,7 +118,7 @@ describe('createRouter', () => {
         `/conversations/${mockConversationId}`,
       );
       expect(response.statusCode).toEqual(500);
-      expect(response.body.error).toContain('unkown conversation_id');
+      expect(response.body.error).toContain('unknown conversation_id');
     });
   });
 

@@ -65,7 +65,7 @@ export async function createRouter(
         response.status(200).json(await deleteHistory(conversation_id));
         response.end();
       } catch (error) {
-        const errormsg = `Error: ${error}`;
+        const errormsg = `${error}`;
         logger.error(errormsg);
         response.status(500).json({ error: errormsg });
       }

@@ -48,7 +48,7 @@ export async function loadHistory(
 ): Promise<BaseMessage[]> {
   const sessionHistory = await historyStore.mget([conversation_id]);
   if (!sessionHistory[0]) {
-    throw new Error(`unkown conversation_id: ${conversation_id}`);
+    throw new Error(`unknown conversation_id: ${conversation_id}`);
   }
   return sessionHistory[0]?.slice(-historyLength);
 }

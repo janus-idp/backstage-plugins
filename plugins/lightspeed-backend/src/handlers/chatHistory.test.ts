@@ -83,7 +83,7 @@ describe('Test History Functions', () => {
     await deleteHistory('conv2');
 
     await expect(loadHistory('conv2', 1)).rejects.toThrow(
-      'unkown conversation_id: conv2',
+      'unknown conversation_id: conv2',
     );
 
     expect(await loadHistory(mockConversationId, 1)).toBeDefined();
