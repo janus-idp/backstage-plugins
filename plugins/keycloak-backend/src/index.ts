@@ -19,3 +19,5 @@ export type { UserTransformer, GroupTransformer } from './lib';
 export * from './lib/transformers';
 export * from './extensions';
 export * from './lib/types';
+export * from './module';
+export { default } from './module';
