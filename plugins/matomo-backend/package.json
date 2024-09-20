@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "0.26.11",
-    "@janus-idp/cli": "1.13.1",
+    "@janus-idp/cli": "1.13.2",
     "@types/supertest": "2.0.16",
     "msw": "1.3.3",
     "supertest": "6.3.4"
