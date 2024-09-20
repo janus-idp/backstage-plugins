@@ -1,5 +1,11 @@
 ### Dependencies
 
+* **@janus-idp/backstage-plugin-orchestrator-form-api:** upgraded to 1.1.0
+* **@janus-idp/backstage-plugin-orchestrator-form-react:** upgraded to 1.1.0
+* **@janus-idp/cli:** upgraded to 1.14.0
+
+### Dependencies
+
 * **@janus-idp/cli:** upgraded to 1.13.2
 
 ### Dependencies
