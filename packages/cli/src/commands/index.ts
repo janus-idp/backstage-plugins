@@ -157,9 +157,9 @@ export function registerScriptCommand(program: Command) {
       'Tag name to use when building the plugin registry image',
     )
     .option(
-      '--container-tool <tool>',
-      'The container tool to use for building the image (podman or docker, podman is the default)',
-      'podman',
+      '--use-docker',
+      'By defult, the command uses podman to build the container image. Use this flag to use docker instead.',
+      false,
     )
     .action(
       lazy(() => import('./package-dynamic-plugins').then(m => m.command)),

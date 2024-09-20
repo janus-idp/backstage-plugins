@@ -10,7 +10,7 @@ import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
 
 export async function command(opts: OptionValues): Promise<void> {
-  const { forceExport, preserveTempDir, tag, containerTool } = opts;
+  const { forceExport, preserveTempDir, tag, useDocker } = opts;
   const workspacePackage = await fs.readJson(
     paths.resolveTarget('package.json'),
   );
@@ -124,6 +124,7 @@ export async function command(opts: OptionValues): Promise<void> {
       JSON.stringify(pluginRegistryMetadata, undefined, 2),
     );
     // run the command to generate the image
+    const containerTool = useDocker ? 'docker' : 'podman';
     Task.log(`Creating image using ${containerTool}`);
     await Task.forCommand(
       `echo "from scratch
