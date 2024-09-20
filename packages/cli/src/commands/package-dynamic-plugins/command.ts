@@ -11,6 +11,17 @@ import { Task } from '../../lib/tasks';
 
 export async function command(opts: OptionValues): Promise<void> {
   const { forceExport, preserveTempDir, tag, useDocker } = opts;
+  const containerTool = useDocker ? 'docker' : 'podman';
+  // check if the container tool is available
+  try {
+    await Task.forCommand(`${containerTool} --version`);
+  } catch (e) {
+    Task.error(
+      `Unable to find ${containerTool} command: ${e}\nMake sure that ${containerTool} is installed and available in your PATH.`,
+    );
+    return;
+  }
+
   const workspacePackage = await fs.readJson(
     paths.resolveTarget('package.json'),
   );
@@ -124,7 +135,6 @@ export async function command(opts: OptionValues): Promise<void> {
       JSON.stringify(pluginRegistryMetadata, undefined, 2),
     );
     // run the command to generate the image
-    const containerTool = useDocker ? 'docker' : 'podman';
     Task.log(`Creating image using ${containerTool}`);
     await Task.forCommand(
       `echo "from scratch
