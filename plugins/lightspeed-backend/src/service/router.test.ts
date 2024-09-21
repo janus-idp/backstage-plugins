@@ -1,11 +1,13 @@
 import { getVoidLogger } from '@backstage/backend-common';
 // import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
+import { MockConfigApi } from '@backstage/test-utils';
 
 import { AIMessage } from '@langchain/core/messages';
 import express from 'express';
 import request from 'supertest';
 
+import { saveHistory } from '../handlers/chatHistory';
+import { Roles } from '../service/types';
 import { createRouter } from './router';
 
 const mockAIMessage = new AIMessage('Mockup AI Message');
@@ -27,6 +29,22 @@ jest.mock('@langchain/core/prompts', () => {
   };
 });
 
+const mockConversationId = 'user1+1q2w3e4r-qwer1234';
+const mockServerURL = 'http://localhost:7007/api/proxy/lightspeed/api';
+const mockModel = 'test-model';
+
+const mockConfiguration = new MockConfigApi({
+  lightspeed: {
+    servers: [
+      {
+        id: 'test-server',
+        url: mockServerURL,
+        token: 'dummy-token',
+      },
+    ],
+  },
+});
+
 (global.fetch as jest.Mock) = jest.fn();
 
 describe('createRouter', () => {
@@ -35,7 +53,7 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
-      config: new ConfigReader({}),
+      config: mockConfiguration,
 
       // TODO: for user authentication
       // httpAuth: mockServices.httpAuth({
@@ -62,9 +80,47 @@ describe('createRouter', () => {
     });
   });
 
-  const mockConversationId = 'user1+1q2w3e4r-qwer1234';
-  const mockServerURL = 'http://localhost:7007/api/proxy/lightspeed/api';
-  const mockModel = 'test-model';
+  describe('GET and DELETE /conversations/:conversation_id', () => {
+    it('load history', async () => {
+      const humanMessage = 'Hello';
+      const aiMessage = 'Hi! How can I help you today?';
+      await saveHistory(mockConversationId, Roles.HumanRole, humanMessage);
+      await saveHistory(mockConversationId, Roles.AIRole, aiMessage);
+
+      const response = await request(app).get(
+        `/conversations/${mockConversationId}`,
+      );
+      expect(response.statusCode).toEqual(200);
+      // Parse response body
+      const responseData = response.body;
+
+      // Check that responseData is an array
+      expect(Array.isArray(responseData)).toBe(true);
+      expect(responseData.length).toBe(2);
+
+      expect(responseData[0].id).toContain('HumanMessage');
+      expect(responseData[0].kwargs?.content).toBe(humanMessage);
+
+      expect(responseData[1].id).toContain('AIMessage');
+      expect(responseData[1].kwargs?.content).toBe(aiMessage);
+    });
+
+    it('delete history', async () => {
+      // delete request
+      const deleteResponse = await request(app).delete(
+        `/conversations/${mockConversationId}`,
+      );
+      expect(deleteResponse.statusCode).toEqual(200);
+    });
+
+    it('load history with deleted conversation_id', async () => {
+      const response = await request(app).get(
+        `/conversations/${mockConversationId}`,
+      );
+      expect(response.statusCode).toEqual(500);
+      expect(response.body.error).toContain('unknown conversation_id');
+    });
+  });
 
   describe('POST /v1/query', () => {
     it('chat completions', async () => {
