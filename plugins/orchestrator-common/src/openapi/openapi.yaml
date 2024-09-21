@@ -493,22 +493,61 @@ components:
     WorkflowDataDTO:
       type: object
       properties:
-        workflowoptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowOptionsDTO'
+        result:
+          $ref: '#/components/schemas/WorkflowResultDTO'
       additionalProperties: true
-    WorkflowOptionsDTO:
-      type: array
-      items:
-        $ref: '#/components/schemas/WorkflowSuggestionDTO'
-    WorkflowSuggestionDTO:
+    WorkflowResultDTO:
+      # Keep in sync with https://github.com/parodos-dev/serverless-workflows/blob/main/shared/schemas/workflow-result-schema.json
+      description: Result of a workflow execution
       type: object
       properties:
-        id:
+        completedWith:
+          description: The state of workflow completion.
           type: string
-        name:
+          enum:
+            - error
+            - success
+        message:
+          description: High-level summary of the current status, free-form text, human readable.
           type: string
+        nextWorkflows:
+          description: List of workflows suggested to run next. Items at lower indexes are of higher priority.
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                description: Workflow identifier
+                type: string
+              name:
+                description: Human readable title describing the workflow.
+                type: string
+            required:
+              - id
+              - name
+        outputs:
+          description: Additional structured output of workflow processing. This can contain identifiers of created resources, links to resources, logs or other output.
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                description: Unique identifier of the option. Preferably human-readable.
+                type: string
+              value:
+                description: Free form value of the option.
+                anyOf:
+                  - type: string
+                  - type: number
+              format:
+                description: More detailed type of the 'value' property. Defaults to 'text'.
+                enum:
+                  - text
+                  - number
+                  - link
+            required:
+              - key
+              - value
     ProcessInstanceStatusDTO:
       type: string
       description: Status of the workflow run
