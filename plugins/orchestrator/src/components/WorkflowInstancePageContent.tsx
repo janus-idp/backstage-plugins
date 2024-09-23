@@ -94,14 +94,11 @@ export const WorkflowInstancePageContent: React.FC<{
           </InfoCard>
         </Grid>
         <Grid item xs={6}>
-          <InfoCard
-            title="Results"
-            divider={false}
+          <WorkflowResult
+            assessedInstance={assessedInstance}
             className={styles.topRowCard}
             cardClassName={styles.autoOverflow}
-          >
-            <WorkflowResult assessedInstance={assessedInstance} />
-          </InfoCard>
+          />
         </Grid>
 
         <Grid item xs={6}>

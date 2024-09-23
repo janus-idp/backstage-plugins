@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Link } from '@backstage/core-components';
+import { InfoCard, Link } from '@backstage/core-components';
 import { RouteFunc, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { AboutField } from '@backstage/plugin-catalog';
 
@@ -10,11 +10,8 @@ import {
   List,
   ListItem,
   makeStyles,
-  Typography,
 } from '@material-ui/core';
 import DotIcon from '@material-ui/icons/FiberManualRecord';
-// TODO: use material-ui Stack once the library gets updated
-import { Stack, StackItem } from '@patternfly/react-core';
 
 import {
   AssessedProcessInstanceDTO,
@@ -37,6 +34,9 @@ const useStyles = makeStyles(theme => ({
       textTransform: 'none',
       fontSize: 'small',
     },
+  },
+  links: {
+    padding: '0px',
   },
   errorIcon: {
     color: theme.palette.error.main,
@@ -61,17 +61,15 @@ const ResultMessage = ({
   if (!resultMessage && !errorMessage) {
     if (['Error', 'Completed', 'Aborted', 'Suspended'].includes(status || '')) {
       noResult = (
-        <StackItem>
-          <i>The workflow provided no additional info about the status.</i>
-        </StackItem>
+        <i>The workflow provided no additional info about the status.</i>
       );
     } else {
       noResult = (
-        <StackItem>
+        <>
           <CircularProgress size="0.75rem" />
           &nbsp;The workflow has not yet provided additional info about the
           status.
-        </StackItem>
+        </>
       );
     }
   }
@@ -79,22 +77,20 @@ const ResultMessage = ({
   return (
     <>
       {resultMessage && (
-        <StackItem>
+        <>
           {completedWith === 'error' && (
-            <DotIcon
-              style={{ fontSize: '0.75rem' }}
-              className={styles.errorIcon}
-            />
+            <>
+              <DotIcon
+                style={{ fontSize: '0.75rem' }}
+                className={styles.errorIcon}
+              />
+              &nbsp;
+            </>
           )}
-          &nbsp;
           {resultMessage}
-        </StackItem>
+        </>
       )}
-      {errorMessage && (
-        <StackItem>
-          <b>{errorMessage}</b>
-        </StackItem>
-      )}
+      {errorMessage && <b>{errorMessage}</b>}
       {noResult}
     </>
   );
@@ -107,6 +103,8 @@ const NextWorkflows = ({
   instanceId: string;
   nextWorkflows: WorkflowResultDTO['nextWorkflows'];
 }) => {
+  const styles = useStyles();
+
   const orchestratorApi = useApi(orchestratorApiRef);
   const executeWorkflowLink: RouteFunc<{ workflowId: string }> = useRouteRef(
     executeWorkflowRouteRef,
@@ -171,32 +169,31 @@ const NextWorkflows = ({
       : 'Suggested next workflows';
 
   return (
-    <StackItem>
-      <Typography variant="h6" component="div">
-        {sectionLabel}
-      </Typography>
-      <List dense>
-        {nextWorkflows.map(item => (
-          <ListItem key={item.id}>
-            <Link
-              color="primary"
-              to="#"
-              onClick={() => {
-                openWorkflowDescriptionModal(item.id);
-              }}
-            >
-              {item.name}
-            </Link>
-          </ListItem>
-        ))}
-      </List>
+    <Grid item xs={12} className={styles.outputGrid}>
+      <AboutField label={sectionLabel}>
+        <List dense>
+          {nextWorkflows.map(item => (
+            <ListItem key={item.id}>
+              <Link
+                color="primary"
+                to="#"
+                onClick={() => {
+                  openWorkflowDescriptionModal(item.id);
+                }}
+              >
+                {item.name}
+              </Link>
+            </ListItem>
+          ))}
+        </List>
+      </AboutField>
       <WorkflowDescriptionModal
         workflow={currentWorkflow}
         runWorkflowLink={runWorkflowLink}
         open={!!currentOpenedWorkflowDescriptionModalID}
         onClose={closeWorkflowDescriptionModal}
       />
-    </StackItem>
+    </Grid>
   );
 };
 
@@ -211,53 +208,73 @@ const WorkflowOutputs = ({
     return null;
   }
 
-  return (
-    <StackItem>
-      <Typography variant="h6" component="div">
-        Output
-      </Typography>
-      <Grid container alignContent="flex-start">
-        {outputs?.map(item => {
-          // Keep the order set by backend, it might matter
-          let value;
-          const itemValue = (item.value || VALUE_UNAVAILABLE) as string;
-          if (item.format === 'link') {
-            value = <Link to={itemValue}>{item.key}</Link>;
-          } else {
-            value = <AboutField label={item.key} value={itemValue} />;
-          }
+  const links = outputs?.filter(item => item.format === 'link');
+  const nonLinks = outputs?.filter(item => item.format !== 'link');
 
-          return (
-            <Grid item md={4} key={item.key} className={styles.outputGrid}>
-              {value}
-            </Grid>
-          );
-        })}
-      </Grid>
-    </StackItem>
+  return (
+    <>
+      {nonLinks.map(item => (
+        <Grid item md={6} key={item.key} className={styles.outputGrid}>
+          <AboutField
+            label={item.key}
+            value={(item.value || VALUE_UNAVAILABLE) as string}
+          />
+        </Grid>
+      ))}
+
+      {links?.length > 0 && (
+        <Grid item md={12} key="__links" className={styles.links}>
+          <AboutField label="Links">
+            <List dense>
+              {links.map(item => {
+                return (
+                  <ListItem>
+                    {item.value && (
+                      <Link to={item.value as string}>{item.key}</Link>
+                    )}
+                    {!item.value && VALUE_UNAVAILABLE}
+                  </ListItem>
+                );
+              })}
+            </List>
+          </AboutField>
+        </Grid>
+      )}
+    </>
   );
 };
 
 export const WorkflowResult: React.FC<{
   assessedInstance: AssessedProcessInstanceDTO;
-}> = ({ assessedInstance }) => {
+  className: string;
+  cardClassName: string;
+}> = ({ assessedInstance, className, cardClassName }) => {
   const instance = assessedInstance.instance;
   const result = instance.workflowdata?.result;
 
   return (
-    <Stack hasGutter>
-      <ResultMessage
-        status={instance.status}
-        error={instance.error}
-        resultMessage={result?.message}
-        completedWith={result?.completedWith}
-      />
-      <NextWorkflows
-        instanceId={instance.id}
-        nextWorkflows={result?.nextWorkflows}
-      />
-      <WorkflowOutputs outputs={result?.outputs} />
-    </Stack>
+    <InfoCard
+      title="Results"
+      subheader={
+        <ResultMessage
+          status={instance.status}
+          error={instance.error}
+          resultMessage={result?.message}
+          completedWith={result?.completedWith}
+        />
+      }
+      divider={false}
+      className={className}
+      cardClassName={cardClassName}
+    >
+      <Grid container alignContent="flex-start">
+        <NextWorkflows
+          instanceId={instance.id}
+          nextWorkflows={result?.nextWorkflows}
+        />
+        <WorkflowOutputs outputs={result?.outputs} />
+      </Grid>
+    </InfoCard>
   );
 };
 
