@@ -484,8 +484,6 @@ components:
             $ref: '#/components/schemas/NodeInstanceDTO'
         error:
           $ref: '#/components/schemas/ProcessInstanceErrorDTO'
-        variables:
-          $ref: '#/components/schemas/ProcessInstanceVariablesDTO'
       required:
         - id
         - processId
@@ -595,6 +593,3 @@ components:
           description: Error message (optional)
       required:
         - nodeDefinitionId
-    ProcessInstanceVariablesDTO:
-      type: object
-      additionalProperties: true
