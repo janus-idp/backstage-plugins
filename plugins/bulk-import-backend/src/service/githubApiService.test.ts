@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { CacheService } from '@backstage/backend-plugin-api';
+import { CacheService, LoggerService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { Config, ConfigReader } from '@backstage/config';
 
 import { CustomGithubCredentialsProvider } from '../helpers';
@@ -61,9 +61,6 @@ const mockGetAllCredentials = jest.fn();
 CustomGithubCredentialsProvider.prototype.getAllCredentials =
   mockGetAllCredentials;
 
-const logger = getVoidLogger();
-const errorLog = jest.spyOn(logger, 'error');
-
 const mockCache: CacheService = {
   delete: jest.fn(),
   get: jest.fn(),
@@ -74,9 +71,13 @@ const mockCache: CacheService = {
 describe('GithubApiService tests', () => {
   let config: Config;
   let githubApiService: GithubApiService;
+  let logger: LoggerService;
+  let errorLog: jest.SpyInstance;
 
   beforeEach(() => {
     jest.resetAllMocks();
+    logger = mockServices.logger.mock();
+    errorLog = jest.spyOn(logger, 'error');
     mockGetAllCredentials.mockResolvedValue(
       Promise.resolve([
         {

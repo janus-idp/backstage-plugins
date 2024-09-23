@@ -14,27 +14,26 @@
  * limitations under the License.
  */
 
-import {
-  createLegacyAuthAdapters,
-  errorHandler,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import {
   AuthService,
   CacheService,
+  DiscoveryService,
   HttpAuthService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
 import { fullFormats } from 'ajv-formats/dist/formats';
-import express from 'express';
-import Router from 'express-promise-router';
-import { Context, OpenAPIBackend, Request } from 'openapi-backend';
-import { Logger } from 'winston';
+import express, { Request, Response, Router } from 'express';
+import {
+  Context,
+  OpenAPIBackend,
+  Request as OpenAPIRequest,
+} from 'openapi-backend';
 
 import {
   AuditLogger,
@@ -65,14 +64,13 @@ import {
 } from './handlers/repositories';
 
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   permissions: PermissionEvaluator;
   config: Config;
   cache: CacheService;
-  discovery: PluginEndpointDiscovery;
-  identity: IdentityApi;
-  httpAuth?: HttpAuthService;
-  auth?: AuthService;
+  discovery: DiscoveryService;
+  httpAuth: HttpAuthService;
+  auth: AuthService;
   catalogApi: CatalogApi;
   githubApi?: GithubApiService;
   catalogInfoHelper?: CatalogInfoGenerator;
@@ -83,6 +81,8 @@ export async function createRouter(
 ): Promise<express.Router> {
   const {
     logger,
+    httpAuth,
+    auth,
     permissions,
     config,
     cache,
@@ -91,8 +91,6 @@ export async function createRouter(
     githubApi,
     catalogInfoHelper,
   } = options;
-
-  const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
   const auditLogger: AuditLogger = new DefaultAuditLogger({
     logger: logger,
@@ -115,11 +113,11 @@ export async function createRouter(
     validate: true,
     definition: openApiDocument,
     handlers: {
-      validationFail: async (c, _req: express.Request, res: express.Response) =>
+      validationFail: async (c, _req: Request, res: Response) =>
         res.status(400).json({ err: c.validation.errors }),
-      notFound: async (_c, req: express.Request, res: express.Response) =>
+      notFound: async (_c, req: Request, res: Response) =>
         res.status(404).json({ err: `'${req.method} ${req.path}' not found` }),
-      notImplemented: async (_c, req: express.Request, res: express.Response) =>
+      notImplemented: async (_c, req: Request, res: Response) =>
         res
           .status(500)
           .json({ err: `'${req.method} ${req.path}' not implemented` }),
@@ -128,17 +126,14 @@ export async function createRouter(
 
   await api.init();
 
-  api.register(
-    'ping',
-    async (_c: Context, _req: express.Request, res: express.Response) => {
-      const result = await ping(logger);
-      return res.status(result.statusCode).json(result.responseBody);
-    },
-  );
+  api.register('ping', async (_c: Context, _req: Request, res: Response) => {
+    const result = await ping(logger);
+    return res.status(result.statusCode).json(result.responseBody);
+  });
 
   api.register(
     'findAllOrganizations',
-    async (c: Context, _req: express.Request, res: express.Response) => {
+    async (c: Context, _req: Request, res: Response) => {
       const q: Paths.FindAllOrganizations.QueryParameters = {
         ...c.request.query,
       };
@@ -164,7 +159,7 @@ export async function createRouter(
 
   api.register(
     'findAllRepositories',
-    async (c: Context, _req: express.Request, res: express.Response) => {
+    async (c: Context, _req: Request, res: Response) => {
       const q: Paths.FindAllRepositories.QueryParameters = {
         ...c.request.query,
       };
@@ -197,7 +192,7 @@ export async function createRouter(
 
   api.register(
     'findRepositoriesByOrganization',
-    async (c: Context, _req: express.Request, res: express.Response) => {
+    async (c: Context, _req: Request, res: Response) => {
       const q: Paths.FindRepositoriesByOrganization.QueryParameters = {
         ...c.request.query,
       };
@@ -231,7 +226,7 @@ export async function createRouter(
 
   api.register(
     'findAllImports',
-    async (c: Context, _req: express.Request, res: express.Response) => {
+    async (c: Context, _req: Request, res: Response) => {
       const q: Paths.FindAllImports.QueryParameters = {
         ...c.request.query,
       };
@@ -255,8 +250,8 @@ export async function createRouter(
     'createImportJobs',
     async (
       c: Context<Paths.CreateImportJobs.RequestBody>,
-      _req: express.Request,
-      res: express.Response,
+      _req: Request,
+      res: Response,
     ) => {
       const q: Paths.CreateImportJobs.QueryParameters = {
         ...c.request.query,
@@ -280,7 +275,7 @@ export async function createRouter(
 
   api.register(
     'findImportStatusByRepo',
-    async (c: Context, _req: express.Request, res: express.Response) => {
+    async (c: Context, _req: Request, res: Response) => {
       const q: Paths.FindImportStatusByRepo.QueryParameters = {
         ...c.request.query,
       };
@@ -302,7 +297,7 @@ export async function createRouter(
 
   api.register(
     'deleteImportByRepo',
-    async (c: Context, _req: express.Request, res: express.Response) => {
+    async (c: Context, _req: Request, res: Response) => {
       const q: Paths.DeleteImportByRepo.QueryParameters = {
         ...c.request.query,
       };
@@ -333,40 +328,35 @@ export async function createRouter(
     if (req.path !== '/ping') {
       await permissionCheck(
         auditLogger,
-        api.matchOperation(req as Request)?.operationId,
+        api.matchOperation(req as OpenAPIRequest)?.operationId,
         permissions,
         httpAuth,
         req,
-      );
+      ).catch(next);
     }
     next();
   });
 
   router.use(async (req, res, next) => {
-    if (!next) {
-      throw new Error('next is undefined');
-    }
-    const reqCast = req as Request;
+    const reqCast = req as OpenAPIRequest;
     const operationId = api.matchOperation(reqCast)?.operationId;
     try {
-      const response = (await api.handleRequest(
-        reqCast,
-        req,
-        res,
-      )) as express.Response;
+      const response = (await api.handleRequest(reqCast, req, res)) as Response;
       auditLogRequestSuccess(
         auditLogger,
         operationId,
         req,
         response.statusCode,
       );
+      next();
     } catch (err: any) {
       auditLogRequestError(auditLogger, operationId, req, err);
       next(err);
     }
   });
 
-  router.use(errorHandler());
+  const middleware = MiddlewareFactory.create({ logger, config });
+  router.use(middleware.error());
 
   return router;
 }

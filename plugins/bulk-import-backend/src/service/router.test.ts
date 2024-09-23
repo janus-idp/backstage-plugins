@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   AuthService,
   BackstageCredentials,
   BackstagePrincipalTypes,
   CacheService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import {
   CatalogClient,
   CatalogRequestOptions,
@@ -35,7 +36,6 @@ import {
 
 import express from 'express';
 import request from 'supertest';
-import { Logger } from 'winston';
 
 import { CatalogInfoGenerator } from '../helpers';
 import {
@@ -51,16 +51,6 @@ import { createRouter } from './router';
 const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
   jest.fn();
 
-const mockUser = {
-  type: 'User',
-  userEntityRef: 'user:default/guest',
-  ownershipEntityRefs: ['guest'],
-};
-const mockIdentityClient = {
-  getIdentity: jest.fn().mockImplementation(async () => ({
-    identity: mockUser,
-  })),
-};
 const mockDiscovery = {
   getBaseUrl: jest.fn().mockResolvedValue('https://api.example.com'),
   getExternalBaseUrl: jest.fn().mockResolvedValue('https://api.example.com'),
@@ -178,28 +168,29 @@ describe('createRouter', () => {
       queryEntities: jest.fn(),
       refreshEntity: jest.fn(),
     } as unknown as CatalogClient;
-    const voidLogger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     mockCatalogInfoGenerator = new CatalogInfoGenerator(
-      voidLogger,
+      logger,
       mockDiscovery,
       mockAuth,
       mockCatalogClient,
     );
     mockGithubApiService = new GithubApiService(
-      voidLogger,
+      logger,
       configuration,
       mockCache,
     );
     const router = await createRouter({
-      logger: voidLogger,
+      logger: logger,
       config: configuration,
       permissions: permissionEvaluator,
       cache: mockCache,
       discovery: mockDiscovery,
       catalogApi: mockCatalogClient,
-      identity: mockIdentityClient,
       catalogInfoHelper: mockCatalogInfoGenerator,
       githubApi: mockGithubApiService,
+      auth: mockAuth,
+      httpAuth: mockServices.httpAuth.mock(),
     });
     app = express().use(router);
   });
@@ -1376,7 +1367,7 @@ spec:
         .spyOn(mockGithubApiService, 'doesCatalogInfoAlreadyExistInRepo')
         .mockImplementation(
           async (
-            _logger: Logger,
+            _logger: LoggerService,
             input: {
               repoUrl: string;
             },
@@ -1394,7 +1385,7 @@ spec:
         .spyOn(mockGithubApiService, 'doesCodeOwnersAlreadyExistInRepo')
         .mockImplementation(
           async (
-            _logger: Logger,
+            _logger: LoggerService,
             input: {
               repoUrl: string;
             },

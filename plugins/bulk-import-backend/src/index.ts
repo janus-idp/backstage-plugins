@@ -19,6 +19,5 @@
  *
  * @packageDocumentation
  */
-
-export * from './dynamic/index';
+export { bulkImportPlugin as default } from './plugin';
 export * from './service/router';

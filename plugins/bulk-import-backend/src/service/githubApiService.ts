@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CacheService } from '@backstage/backend-plugin-api';
+import { CacheService, LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
   GithubCredentials,
@@ -24,7 +24,6 @@ import {
 
 import { Octokit } from '@octokit/rest';
 import gitUrlParse from 'git-url-parse';
-import { Logger } from 'winston';
 
 import {
   CustomGithubCredentialsProvider,
@@ -53,14 +52,18 @@ const GITHUB_DEFAULT_API_ENDPOINT = 'https://api.github.com';
 const RESPONSE_CACHE_TTL_MILLIS = 60 * 60 * 1000;
 
 export class GithubApiService {
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly integrations: ScmIntegrations;
   private readonly githubCredentialsProvider: CustomGithubCredentialsProvider;
   private readonly config: Config;
   // Cache for storing ETags (used for efficient caching of unchanged data returned by GitHub)
   private readonly cache: CacheService;
 
-  constructor(logger: Logger, config: Config, cacheService: CacheService) {
+  constructor(
+    logger: LoggerService,
+    config: Config,
+    cacheService: CacheService,
+  ) {
     this.logger = logger;
     this.config = config;
     this.integrations = ScmIntegrations.fromConfig(config);
@@ -1020,7 +1023,7 @@ export class GithubApiService {
   }
 
   async findImportOpenPr(
-    logger: Logger,
+    logger: LoggerService,
     input: {
       repoUrl: string;
       includeCatalogInfoContent?: boolean;
@@ -1072,7 +1075,7 @@ export class GithubApiService {
   }
 
   private async findOpenPRForBranch(
-    logger: Logger,
+    logger: LoggerService,
     octo: Octokit,
     owner: string,
     repo: string,
@@ -1120,7 +1123,7 @@ export class GithubApiService {
   }
 
   private async getCatalogInfoContentFromPR(
-    logger: Logger,
+    logger: LoggerService,
     octo: Octokit,
     owner: string,
     repo: string,
@@ -1201,7 +1204,7 @@ export class GithubApiService {
   }
 
   async submitPrToRepo(
-    logger: Logger,
+    logger: LoggerService,
     input: {
       repoUrl: string;
       gitUrl: gitUrlParse.GitUrl;
@@ -1384,7 +1387,7 @@ export class GithubApiService {
   }
 
   private async fileExistsInDefaultBranch(
-    logger: Logger,
+    logger: LoggerService,
     octo: Octokit,
     owner: string,
     repo: string,
@@ -1411,7 +1414,7 @@ export class GithubApiService {
   }
 
   async doesCatalogInfoAlreadyExistInRepo(
-    logger: Logger,
+    logger: LoggerService,
     input: {
       repoUrl: string;
       defaultBranch?: string;
@@ -1424,7 +1427,7 @@ export class GithubApiService {
   }
 
   async doesCodeOwnersAlreadyExistInRepo(
-    logger: Logger,
+    logger: LoggerService,
     input: {
       repoUrl: string;
       defaultBranch?: string;
@@ -1437,7 +1440,7 @@ export class GithubApiService {
   }
 
   async hasFileInRepo(
-    logger: Logger,
+    logger: LoggerService,
     input: {
       repoUrl: string;
       defaultBranch?: string;
@@ -1494,7 +1497,7 @@ export class GithubApiService {
   }
 
   async closePR(
-    logger: Logger,
+    logger: LoggerService,
     input: {
       repoUrl: string;
       gitUrl: gitUrlParse.GitUrl;
@@ -1592,7 +1595,7 @@ export class GithubApiService {
   }
 
   async deleteImportBranch(
-    logger: Logger,
+    logger: LoggerService,
     input: {
       repoUrl: string;
       gitUrl: gitUrlParse.GitUrl;

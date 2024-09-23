@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
-import { Logger } from 'winston';
 
 import { CatalogInfoGenerator } from '../../helpers';
 import { Components } from '../../openapi.d';
@@ -31,7 +31,7 @@ import {
 import { getImportStatusFromLocations } from './importStatus';
 
 export async function findAllRepositories(
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
@@ -65,7 +65,7 @@ export async function findAllRepositories(
 
 export async function findRepositoriesByOrganization(
   deps: {
-    logger: Logger;
+    logger: LoggerService;
     config: Config;
     githubApiService: GithubApiService;
     catalogInfoGenerator: CatalogInfoGenerator;
@@ -97,7 +97,7 @@ async function formatResponse(
   allReposAccessible: GithubRepositoryResponse,
   catalogInfoGenerator: CatalogInfoGenerator,
   checkStatus: boolean,
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
 ) {

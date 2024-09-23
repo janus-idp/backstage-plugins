@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-
-import { Logger } from 'winston';
 
 import { CatalogInfoGenerator, getTokenForPlugin } from '../../helpers';
 import { Components } from '../../openapi';
 import { GithubApiService } from '../githubApiService';
 
 export async function getImportStatusFromLocations(
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
@@ -55,7 +53,7 @@ export async function getImportStatusFromLocations(
 }
 
 async function getImportStatusWithCheckerFn(
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,

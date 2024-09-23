@@ -15,14 +15,12 @@
  */
 
 import {
-  getVoidLogger,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
-import {
   AuthService,
   BackstageCredentials,
   BackstagePrincipalTypes,
+  DiscoveryService,
 } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader, type Config } from '@backstage/config';
 
@@ -32,15 +30,13 @@ import { CatalogInfoGenerator } from './catalogInfoGenerator';
 
 jest.mock('node-fetch');
 
-const logger = getVoidLogger();
-
 const mockBaseUrl = 'http://127.0.0.1:65535';
 const mockExternalBaseUrl = 'https://127.0.0.127';
 
 describe('catalogInfoGenerator', () => {
   let config: Config;
   let catalogInfoGenerator: CatalogInfoGenerator;
-  let mockDiscovery: PluginEndpointDiscovery;
+  let mockDiscovery: DiscoveryService;
   let mockAuth: AuthService;
   let mockCatalogClient: CatalogClient;
 
@@ -79,7 +75,7 @@ describe('catalogInfoGenerator', () => {
       listPublicServiceKeys: jest.fn(),
     };
     catalogInfoGenerator = new CatalogInfoGenerator(
-      logger,
+      mockServices.logger.mock(),
       mockDiscovery,
       mockAuth,
       mockCatalogClient,

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   AuthService,
   BackstageCredentials,
   BackstagePrincipalTypes,
   CacheService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
-import { Logger } from 'winston';
 
 import { CatalogInfoGenerator } from '../../helpers';
 import { GithubApiService } from '../githubApiService';
@@ -60,7 +60,7 @@ const config = new ConfigReader({
 });
 
 describe('bulkimports.ts tests', () => {
-  let logger: Logger;
+  let logger: LoggerService;
   let mockAuth: AuthService;
   let mockCatalogClient: CatalogClient;
   let mockCatalogInfoGenerator: CatalogInfoGenerator;
@@ -68,7 +68,7 @@ describe('bulkimports.ts tests', () => {
   let mockGithubApiService: GithubApiService;
 
   beforeAll(() => {
-    logger = getVoidLogger();
+    logger = mockServices.logger.mock();
     mockAuth = {
       isPrincipal<TType extends keyof BackstagePrincipalTypes>(
         _credentials: BackstageCredentials,

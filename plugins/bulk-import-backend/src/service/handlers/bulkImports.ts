@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
-import { Logger } from 'winston';
 
 import {
   CatalogInfoGenerator,
@@ -43,7 +42,7 @@ type CreateImportDryRunStatus =
   | 'REPO_EMPTY';
 
 export async function findAllImports(
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
@@ -133,7 +132,7 @@ export async function findAllImports(
 }
 
 async function resolveReposDefaultBranches(
-  logger: Logger,
+  logger: LoggerService,
   githubApiService: GithubApiService,
   allLocations: string[],
   catalogFilename: string,
@@ -221,7 +220,7 @@ function findImportCandidates(
 
 async function createPR(
   githubApiService: GithubApiService,
-  logger: Logger,
+  logger: LoggerService,
   req: Components.Schemas.ImportRequest,
   gitUrl: gitUrlParse.GitUrl,
   catalogInfoGenerator: CatalogInfoGenerator,
@@ -277,7 +276,7 @@ async function possiblyCreateLocation(
 }
 
 export async function createImportJobs(
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   auth: AuthService,
   catalogApi: CatalogApi,
@@ -456,7 +455,7 @@ export async function createImportJobs(
 }
 
 async function performDryRunChecks(
-  logger: Logger,
+  logger: LoggerService,
   auth: AuthService,
   catalogApi: CatalogApi,
   githubApiService: GithubApiService,
@@ -560,7 +559,7 @@ async function performDryRunChecks(
 }
 
 export async function findImportStatusByRepo(
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
@@ -660,7 +659,7 @@ export async function findImportStatusByRepo(
 }
 
 export async function deleteImportByRepo(
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,

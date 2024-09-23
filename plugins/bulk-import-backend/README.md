@@ -6,64 +6,7 @@ This is `bulk-import-backend` plugin which provides Rest API to bulk import cata
 
 ### Installation and Configuration
 
-#### Setting up the bulk import backend package for the legacy backend
-
-1. Install the NPM Package
-
-```console
-# From your backstage root directory
-yarn workspace backend add @janus-idp/backstage-plugin-bulk-import-backend
-```
-
-1. Create a plugin instance in the `src/packages/backend/plugins/bulk-import.ts` file:
-
-```ts title="src/packages/backend/plugins/bulk-import.ts"
-import { HostDiscovery } from '@backstage/backend-common';
-import { CatalogClient } from '@backstage/catalog-client';
-
-import { Router } from 'express';
-
-import { BulkImportApi } from '@janus-idp/backstage-plugin-bulk-import-backend';
-
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const catalogApi = new CatalogClient({
-    discoveryApi: env.discovery,
-  });
-  return await createRouter({
-    config: env.config,
-    logger: env.logger,
-    permissions: env.permissions,
-    catalogApi: env.catalogApi,
-  });
-}
-```
-
-1. Import the plugin into the backend in the `packages/backend/src/index.ts` file:
-
-   ```ts title="packages/backend/src/index.ts"
-   /* highlight-add-next-line */
-   import bulkImport from './plugins/bulk-import';
-
-   async function main() {
-     // ...
-     const createEnv = makeCreateEnv(config);
-     // ...
-     /* highlight-add-next-line */
-     const bulkImportEnv = useHotMemoize(module, () => createEnv('bulkImport'));
-     // ...
-     const apiRouter = Router();
-     // ...
-     /* highlight-add-next-line */
-     apiRouter.use('/bulk-import', await bulkImport(bulkImportEnv));
-     // ...
-   }
-   ```
-
-#### Setting up the bulk import backend package for the new backend
+To set up the bulk import backend package for the new backend:
 
 1. Install the bulk import backend plugin using the following command:
 
@@ -76,7 +19,7 @@ export default async function createPlugin(
    ```ts title="packages/backend/src/index.ts"
    const backend = createBackend();
    /* highlight-add-next-line */
-   backend.add(import('@janus-idp/backstage-plugin-bulk-import-backend/alpha'));
+   backend.add(import('@janus-idp/backstage-plugin-bulk-import-backend'));
 
    backend.start();
    ```
