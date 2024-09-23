@@ -90,6 +90,9 @@ export const WorkflowInstancePageContent: React.FC<{
             <WorkflowRunDetails
               details={details}
               assessedBy={assessedInstance.assessedBy}
+              completedWith={
+                assessedInstance.instance?.workflowdata?.result?.completedWith
+              }
             />
           </InfoCard>
         </Grid>
@@ -129,20 +132,6 @@ export const WorkflowInstancePageContent: React.FC<{
             />
           </InfoCard>
         </Grid>
-
-        {/* TODO: remove following, FLPATH-1672 */}
-        {/* nextWorkflows.length > 0 ? (
-          <Grid item xs={12}>
-            <InfoCard
-              title="Variables"
-              divider={false}
-              className={styles.bottomRowCard}
-              cardClassName={styles.autoOverflow}
-            >
-              <WorkflowVariablesViewer variables={instanceVariables} />
-            </InfoCard>
-          </Grid>
-        ) : null */}
       </Grid>
     </Content>
   );

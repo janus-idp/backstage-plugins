@@ -20,6 +20,7 @@ import {
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   WorkflowOverviewDTO,
   WorkflowResultDTO,
+  WorkflowResultDTOCompletedWithEnum,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../api';
@@ -43,6 +44,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const finalStates: ProcessInstanceStatusDTO[] = [
+  ProcessInstanceStatusDTO.Error,
+  ProcessInstanceStatusDTO.Completed,
+  ProcessInstanceStatusDTO.Aborted,
+  ProcessInstanceStatusDTO.Suspended,
+];
+
 const ResultMessage = ({
   status,
   error,
@@ -59,17 +67,17 @@ const ResultMessage = ({
   const errorMessage = error?.message || error?.toString();
   let noResult = <></>;
   if (!resultMessage && !errorMessage) {
-    if (['Error', 'Completed', 'Aborted', 'Suspended'].includes(status || '')) {
+    if (status && finalStates.includes(status)) {
       noResult = (
         <i>The workflow provided no additional info about the status.</i>
       );
     } else {
       noResult = (
-        <>
+        <span>
           <CircularProgress size="0.75rem" />
           &nbsp;The workflow has not yet provided additional info about the
           status.
-        </>
+        </span>
       );
     }
   }
@@ -77,8 +85,8 @@ const ResultMessage = ({
   return (
     <>
       {resultMessage && (
-        <>
-          {completedWith === 'error' && (
+        <span>
+          {completedWith === WorkflowResultDTOCompletedWithEnum.Error && (
             <>
               <DotIcon
                 style={{ fontSize: '0.75rem' }}
@@ -88,7 +96,7 @@ const ResultMessage = ({
             </>
           )}
           {resultMessage}
-        </>
+        </span>
       )}
       {errorMessage && <b>{errorMessage}</b>}
       {noResult}
@@ -171,9 +179,9 @@ const NextWorkflows = ({
   return (
     <Grid item xs={12} className={styles.outputGrid}>
       <AboutField label={sectionLabel}>
-        <List dense>
+        <List dense disablePadding>
           {nextWorkflows.map(item => (
-            <ListItem key={item.id}>
+            <ListItem key={item.id} disableGutters>
               <Link
                 color="primary"
                 to="#"
@@ -225,10 +233,10 @@ const WorkflowOutputs = ({
       {links?.length > 0 && (
         <Grid item md={12} key="__links" className={styles.links}>
           <AboutField label="Links">
-            <List dense>
+            <List dense disablePadding>
               {links.map(item => {
                 return (
-                  <ListItem>
+                  <ListItem disableGutters key={item.key}>
                     {item.value && (
                       <Link to={item.value as string}>{item.key}</Link>
                     )}

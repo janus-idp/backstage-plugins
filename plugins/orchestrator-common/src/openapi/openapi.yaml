@@ -497,7 +497,7 @@ components:
           $ref: '#/components/schemas/WorkflowResultDTO'
       additionalProperties: true
     WorkflowResultDTO:
-      # Keep in sync with https://github.com/parodos-dev/serverless-workflows/blob/main/shared/schemas/workflow-result-schema.json
+      # Based on https://github.com/parodos-dev/serverless-workflows/blob/main/shared/schemas/workflow-result-schema.json
       description: Result of a workflow execution
       type: object
       properties:
