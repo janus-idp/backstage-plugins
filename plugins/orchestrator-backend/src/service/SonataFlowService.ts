@@ -39,10 +39,7 @@ export class SonataFlowService {
         return json;
       }
       throw new Error(
-        this.createPrefixFetchErrorMessage(
-          urlToFetch,
-          'fetchWorkflowInfoOnService',
-        ),
+        await this.createPrefixFetchErrorMessage(urlToFetch, response),
       );
     } catch (error) {
       this.logger.error(`Error when fetching workflow info: ${error}`);
@@ -117,9 +114,8 @@ export class SonataFlowService {
         this.logger.debug(`Execute workflow result: ${JSON.stringify(json)}`);
         return json;
       }
-      const res = await response.json();
       throw new Error(
-        `${this.createPrefixFetchErrorMessage(urlToFetch, 'executeWorkflow', 'POST')} - Details: ${res?.details}, Stack: ${res?.stack}`,
+        `${await this.createPrefixFetchErrorMessage(urlToFetch, response, 'POST')}`,
       );
     } catch (error) {
       this.logger.error(`Error when executing workflow: ${error}`);
@@ -228,11 +224,30 @@ export class SonataFlowService {
     return false;
   }
 
-  public createPrefixFetchErrorMessage(
+  public async createPrefixFetchErrorMessage(
     urlToFetch: string,
-    functionName: string,
+    response: Response,
     httpMethod = 'GET',
-  ): string {
-    return `Response status was NOT successful when ${functionName}(${httpMethod}) fetch(${urlToFetch})`;
+  ): Promise<string> {
+    const res = await response.json();
+    const errorInfo = [];
+    let errorMsg = `Request ${httpMethod} ${urlToFetch} failed with: StatusCode: ${response.status}`;
+
+    if (response.statusText) {
+      errorInfo.push(`StatusText: ${response.statusText}`);
+    }
+    if (res?.details) {
+      errorInfo.push(`Details: ${res?.details}`);
+    }
+    if (res?.stack) {
+      errorInfo.push(`Stack: ${res?.stack}`);
+    }
+    if (errorInfo.length > 0) {
+      errorMsg += ` ${errorInfo.join(', ')}`;
+    } else {
+      errorMsg += ' Unexpected error';
+    }
+
+    return errorMsg;
   }
 }

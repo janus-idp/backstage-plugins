@@ -35,14 +35,13 @@ describe('SonataFlowService', () => {
     const serviceUrl = 'http://example.com';
     const definitionId = 'workflow-123';
     const urlToFetch = 'http://example.com/management/processes/workflow-123';
-    const methodName = 'fetchWorkflowInfoOnService';
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
     it('should return workflow info when the fetch response is ok', async () => {
       // Given
-      const mockResponse = {
+      const mockResponse: Partial<Response> = {
         ok: true,
         json: jest.fn().mockResolvedValue({ id: 'workflow-123' }),
       };
@@ -64,7 +63,7 @@ describe('SonataFlowService', () => {
 
     it('should log an error and return undefined when the fetch response is not ok', async () => {
       // Given
-      const mockResponse = {
+      const mockResponse: Partial<Response> = {
         ok: false,
         status: 500,
         statusText: 'Not Found',
@@ -86,7 +85,7 @@ describe('SonataFlowService', () => {
       expect(result).toBeUndefined();
       expect(loggerMock.error).toHaveBeenCalledTimes(1);
       expect(loggerMock.error).toHaveBeenCalledWith(
-        `Error when fetching workflow info: Error: ${sonataFlowService.createPrefixFetchErrorMessage(urlToFetch, methodName)}`,
+        `Error when fetching workflow info: Error: ${await sonataFlowService.createPrefixFetchErrorMessage(urlToFetch, mockResponse as Response)}`,
       );
       expect(loggerMock.info).not.toHaveBeenCalled();
       expect(loggerMock.debug).not.toHaveBeenCalled();
@@ -117,27 +116,35 @@ describe('SonataFlowService', () => {
     const serviceUrl = 'http://example.com/workflows';
     const definitionId = 'workflow-123';
     const urlToFetch = `${serviceUrl}/${definitionId}`;
-    const functionName = 'executeWorkflow';
     const inputData = { var1: 'value1' };
+
+    const expectedFetchRequestInit = (): RequestInit => {
+      return {
+        method: 'POST',
+        body: JSON.stringify(inputData),
+        headers: { 'content-type': 'application/json' },
+      };
+    };
 
     const setupTest = (responseConfig: {
       ok: boolean;
       status?: number;
+      statusText?: string;
       json: any;
-    }) => {
-      const mockResponse = {
+    }): Partial<Response> => {
+      const mockResponse: Partial<Response> = {
         ok: responseConfig.ok,
         status: responseConfig.status || (responseConfig.ok ? 200 : 500),
-        statusText: responseConfig.ok ? 'OK' : 'Internal Server Error',
+        statusText: responseConfig.statusText,
         json: jest.fn().mockResolvedValue(responseConfig.json),
       };
       global.fetch = jest.fn().mockResolvedValue(mockResponse as any);
+      return mockResponse;
     };
 
-    const runErrorTest = async (
-      jsonResponse: any,
-    ): Promise<WorkflowExecutionResponse | undefined> => {
-      setupTest({ ok: false, json: jsonResponse });
+    const runErrorTest = async (): Promise<
+      WorkflowExecutionResponse | undefined
+    > => {
       return await sonataFlowService.executeWorkflow({
         definitionId,
         serviceUrl,
@@ -160,11 +167,10 @@ describe('SonataFlowService', () => {
       });
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(urlToFetch, {
-        method: 'POST',
-        body: JSON.stringify({ var1: 'value1' }),
-        headers: { 'content-type': 'application/json' },
-      });
+      expect(fetch).toHaveBeenCalledWith(
+        urlToFetch,
+        expectedFetchRequestInit(),
+      );
       expect(result).toEqual({ id: definitionId, status: 'completed' });
       expect(loggerMock.debug).toHaveBeenCalledWith(
         `Execute workflow result: {"id":"${definitionId}","status":"completed"}`,
@@ -193,48 +199,50 @@ describe('SonataFlowService', () => {
       // Then
       expect(fetch).toHaveBeenCalledWith(
         `${serviceUrl}/${definitionId}?businessKey=${businessKey}`,
-        {
-          method: 'POST',
-          body: JSON.stringify(inputData),
-          headers: { 'content-type': 'application/json' },
-        },
+        expectedFetchRequestInit(),
       );
       expect(result).toEqual({ id: definitionId, status: 'completed' });
     });
-
     it('should log an error and return undefined when the fetch response is not ok without extra info', async () => {
       // When
-      const result = await runErrorTest({});
+      const mockResponse = setupTest({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+        json: { details: undefined, stack: undefined },
+      });
+
+      const result = await runErrorTest();
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(urlToFetch, {
-        method: 'POST',
-        body: JSON.stringify(inputData),
-        headers: { 'content-type': 'application/json' },
-      });
+      expect(fetch).toHaveBeenCalledWith(
+        urlToFetch,
+        expectedFetchRequestInit(),
+      );
       expect(result).toBeUndefined();
       expect(loggerMock.error).toHaveBeenCalledTimes(1);
       expect(loggerMock.error).toHaveBeenCalledWith(
-        `Error when executing workflow: Error: ${sonataFlowService.createPrefixFetchErrorMessage(urlToFetch, functionName, 'POST')} - Details: undefined, Stack: undefined`,
+        `Error when executing workflow: Error: ${await sonataFlowService.createPrefixFetchErrorMessage(urlToFetch, mockResponse as Response, 'POST')}`,
       );
     });
     it('should log an error and return undefined when the fetch response is not ok with extra info', async () => {
       // When
-      const result = await runErrorTest({
-        details: 'Error details test',
-        stack: 'Error stacktrace test',
+      const mockResponse = setupTest({
+        ok: false,
+        json: { details: 'Error details test', stack: 'Error stacktrace test' },
       });
 
+      const result = await runErrorTest();
+
       // Then
-      expect(fetch).toHaveBeenCalledWith(urlToFetch, {
-        method: 'POST',
-        body: JSON.stringify(inputData),
-        headers: { 'content-type': 'application/json' },
-      });
+      expect(fetch).toHaveBeenCalledWith(
+        urlToFetch,
+        expectedFetchRequestInit(),
+      );
       expect(result).toBeUndefined();
       expect(loggerMock.error).toHaveBeenCalledTimes(1);
       expect(loggerMock.error).toHaveBeenCalledWith(
-        `Error when executing workflow: Error: ${sonataFlowService.createPrefixFetchErrorMessage(urlToFetch, functionName, 'POST')} - Details: Error details test, Stack: Error stacktrace test`,
+        `Error when executing workflow: Error: ${await sonataFlowService.createPrefixFetchErrorMessage(urlToFetch, mockResponse as Response, 'POST')}`,
       );
     });
     it('should log an error and return undefined when fetch throws an error', async () => {
@@ -249,15 +257,116 @@ describe('SonataFlowService', () => {
       });
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(urlToFetch, {
-        method: 'POST',
-        body: JSON.stringify(inputData),
-        headers: { 'content-type': 'application/json' },
-      });
+      expect(fetch).toHaveBeenCalledWith(
+        urlToFetch,
+        expectedFetchRequestInit(),
+      );
       expect(result).toBeUndefined();
       expect(loggerMock.error).toHaveBeenCalledWith(
         'Error when executing workflow: Error: Network Error',
       );
+    });
+  });
+
+  describe('createPrefixFetchErrorMessage', () => {
+    // Constants
+    const TEST_URL = 'http://example.com';
+    const STATUS_TEXT_BAD_REQUEST = 'Bad Request';
+    const STATUS_TEXT_NOT_FOUND = 'Not Found';
+    const STATUS_TEXT_INTERNAL_SERVER_ERROR = 'Internal Server Error';
+    const DETAILS = 'Some error details';
+    const STACK_TRACE = 'Error stack trace';
+
+    it('should return the correct message with all fields provided', async () => {
+      // Given
+      const mockResponseJson = { details: DETAILS, stack: STACK_TRACE };
+      const mockResponse = new Response(JSON.stringify(mockResponseJson), {
+        status: 400,
+        statusText: STATUS_TEXT_BAD_REQUEST,
+      });
+
+      // When
+      const result = await sonataFlowService.createPrefixFetchErrorMessage(
+        TEST_URL,
+        mockResponse,
+        'POST',
+      );
+
+      // Then
+      const expectedMessage = `Request POST ${TEST_URL} failed with: StatusCode: 400 StatusText: ${STATUS_TEXT_BAD_REQUEST}, Details: ${DETAILS}, Stack: ${STACK_TRACE}`;
+      expect(result).toBe(expectedMessage);
+    });
+
+    it('should return the correct message without details and stack', async () => {
+      // Given
+      const mockResponseJson = {};
+      const mockResponse = new Response(JSON.stringify(mockResponseJson), {
+        status: 404,
+        statusText: STATUS_TEXT_NOT_FOUND,
+      });
+
+      // When
+      const result = await sonataFlowService.createPrefixFetchErrorMessage(
+        TEST_URL,
+        mockResponse,
+      );
+
+      // Then
+      const expectedMessage = `Request GET ${TEST_URL} failed with: StatusCode: 404 StatusText: ${STATUS_TEXT_NOT_FOUND}`;
+      expect(result).toBe(expectedMessage);
+    });
+
+    it('should return the correct message with only status code', async () => {
+      // Given
+      const mockResponseJson = {};
+      const mockResponse = new Response(JSON.stringify(mockResponseJson), {
+        status: 500,
+      });
+
+      // When
+      const result = await sonataFlowService.createPrefixFetchErrorMessage(
+        TEST_URL,
+        mockResponse,
+      );
+
+      // Then
+      const expectedMessage = `Request GET ${TEST_URL} failed with: StatusCode: 500 Unexpected error`;
+      expect(result).toBe(expectedMessage);
+    });
+
+    it('should return the unexpected error message if no other fields are present', async () => {
+      // Given
+      const mockResponseJson = {};
+      const mockResponse = new Response(JSON.stringify(mockResponseJson));
+
+      // When
+      const result = await sonataFlowService.createPrefixFetchErrorMessage(
+        TEST_URL,
+        mockResponse,
+      );
+
+      // Then
+      const expectedMessage = `Request GET ${TEST_URL} failed with: StatusCode: 200 Unexpected error`;
+      expect(result).toBe(expectedMessage);
+    });
+
+    it('should handle response with undefined JSON gracefully', async () => {
+      // Given
+      const mockResponse = new Response(undefined, {
+        status: 500,
+        statusText: STATUS_TEXT_INTERNAL_SERVER_ERROR,
+      });
+      jest.spyOn(mockResponse, 'json').mockResolvedValue(undefined);
+
+      // When
+      const result = await sonataFlowService.createPrefixFetchErrorMessage(
+        TEST_URL,
+        mockResponse,
+      );
+
+      // Then
+      const expectedMessage = `Request GET ${TEST_URL} failed with: StatusCode: 500 StatusText: ${STATUS_TEXT_INTERNAL_SERVER_ERROR}`;
+      expect(result).toBe(expectedMessage);
     });
   });
 });
