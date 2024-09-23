@@ -22,6 +22,7 @@ All URIs are relative to *http://localhost:7007/api/bulk-import*
 
  - [ApprovalTool](./Models/ApprovalTool.md)
  - [Import](./Models/Import.md)
+ - [ImportJobList](./Models/ImportJobList.md)
  - [ImportRequest](./Models/ImportRequest.md)
  - [ImportRequest_github](./Models/ImportRequest_github.md)
  - [ImportRequest_github_pullRequest](./Models/ImportRequest_github_pullRequest.md)

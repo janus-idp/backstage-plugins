@@ -56,6 +56,16 @@ declare namespace Components {
             };
         }
         /**
+         * Import Job List
+         */
+        export interface ImportJobList {
+            imports?: /* Import Job */ Import[];
+            errors?: string[];
+            totalCount?: number;
+            page?: number;
+            size?: number;
+        }
+        /**
          * Import Job request
          */
         export interface ImportRequest {
@@ -220,19 +230,18 @@ declare namespace Paths {
     }
     namespace FindAllImports {
         namespace Parameters {
-            export type PagePerIntegration = number;
+            export type Page = number;
             export type Search = string;
-            export type SizePerIntegration = number;
+            export type Size = number;
         }
         export interface QueryParameters {
-            pagePerIntegration?: Parameters.PagePerIntegration;
-            sizePerIntegration?: Parameters.SizePerIntegration;
+            page?: Parameters.Page;
+            size?: Parameters.Size;
             search?: Parameters.Search;
         }
         namespace Responses {
-            export type $200 = /* Import Job */ Components.Schemas.Import[];
-            export interface $500 {
-            }
+            export type $200 = /* Import Job List */ Components.Schemas.ImportJobList;
+            export type $500 = /* Import Job List */ Components.Schemas.ImportJobList;
         }
     }
     namespace FindAllOrganizations {

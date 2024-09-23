@@ -64,7 +64,7 @@ null (empty response body)
 
 <a name="findAllImports"></a>
 # **findAllImports**
-> List findAllImports(pagePerIntegration, sizePerIntegration, search)
+> ImportJobList findAllImports(page, size, search)
 
 Fetch Import Jobs
 
@@ -72,13 +72,13 @@ Fetch Import Jobs
 
 |Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **pagePerIntegration** | **Integer**| the page number for each Integration | [optional] [default to 1] |
-| **sizePerIntegration** | **Integer**| the number of items per Integration to return per page | [optional] [default to 20] |
+| **page** | **Integer**| the requested page number | [optional] [default to 1] |
+| **size** | **Integer**| the maximum number of items to return per page | [optional] [default to 20] |
 | **search** | **String**| returns only Imports that contain the search string, by repository name | [optional] [default to null] |
 
 ### Return type
 
-[**List**](../Models/Import.md)
+[**ImportJobList**](../Models/ImportJobList.md)
 
 ### Authorization
 

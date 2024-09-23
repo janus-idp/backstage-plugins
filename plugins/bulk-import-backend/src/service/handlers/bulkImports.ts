@@ -50,17 +50,19 @@ export async function findAllImports(
   search?: string,
   pageNumber: number = DefaultPageNumber,
   pageSize: number = DefaultPageSize,
-): Promise<HandlerResponse<Components.Schemas.Import[]>> {
+): Promise<HandlerResponse<Components.Schemas.ImportJobList>> {
   logger.debug('Getting all bulk import jobs..');
 
   const catalogFilename = getCatalogFilename(config);
 
-  const allLocations = await catalogInfoGenerator.listCatalogUrlLocations(
-    config,
-    search,
-    pageNumber,
-    pageSize,
-  );
+  const allLocations = (
+    await catalogInfoGenerator.listCatalogUrlLocations(
+      config,
+      search,
+      pageNumber,
+      pageSize,
+    )
+  ).targetUrls;
 
   // resolve default branches for each unique repo URL from GH,
   // because we cannot easily determine that from the location target URL.
@@ -126,9 +128,15 @@ export async function findAllImports(
     }
     return a.repository.name.localeCompare(b.repository.name);
   });
+  const paginated = paginateArray(imports, pageNumber, pageSize);
   return {
     statusCode: 200,
-    responseBody: paginateArray(imports, pageNumber, pageSize).result,
+    responseBody: {
+      imports: paginated.result,
+      totalCount: paginated.totalCount,
+      page: pageNumber,
+      size: pageSize,
+    },
   };
 }
 
@@ -594,8 +602,9 @@ export async function findImportStatusByRepo(
       includeCatalogInfoContent,
     });
     if (!openImportPr.prUrl) {
-      const catalogLocations =
-        await catalogInfoGenerator.listCatalogUrlLocations(config);
+      const catalogLocations = (
+        await catalogInfoGenerator.listCatalogUrlLocations(config)
+      ).targetUrls;
       const catalogUrl = catalogInfoGenerator.getCatalogUrl(
         config,
         repoUrl,
@@ -708,7 +717,9 @@ export async function deleteImportByRepo(
   };
 
   const locationId = findLocationFrom(
-    await catalogInfoGenerator.listCatalogUrlLocationsByIdFromLocationsEndpoint(),
+    (
+      await catalogInfoGenerator.listCatalogUrlLocationsByIdFromLocationsEndpoint()
+    ).locations,
   );
   if (locationId) {
     await catalogInfoGenerator.deleteCatalogLocationById(locationId);

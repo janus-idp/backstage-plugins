@@ -615,7 +615,12 @@ describe('bulk-import router tests', () => {
       );
 
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual([]);
+      expect(response.body).toEqual({
+        imports: [],
+        page: 1,
+        size: 20,
+        totalCount: 0,
+      });
     });
 
     it('returns 200 with appropriate import status (with data coming from the repos and data coming from the app-config files)', async () => {
@@ -659,55 +664,60 @@ describe('bulk-import router tests', () => {
       );
 
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual([
-        {
-          approvalTool: 'GIT',
-          id: 'https://github.com/octocat/my-awesome-repo',
-          lastUpdate: '2011-01-26T19:14:43Z',
-          repository: {
-            defaultBranch: 'dev',
-            id: 'octocat/my-awesome-repo',
-            name: 'my-awesome-repo',
-            organization: 'octocat',
-            url: 'https://github.com/octocat/my-awesome-repo',
-          },
-          status: null,
-        },
-        {
-          approvalTool: 'GIT',
-          id: 'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
-          lastUpdate: '2011-01-26T19:14:43Z',
-          repository: {
-            defaultBranch: 'main',
-            id: 'my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
-            name: 'my-repo-with-existing-catalog-info-in-default-branch',
-            organization: 'my-org-1',
-            url: 'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
-          },
-          status: 'ADDED',
-        },
-        {
-          approvalTool: 'GIT',
-          github: {
-            pullRequest: {
-              body: 'Onboarding this repository into Red Hat Developer Hub.',
-              number: 1347,
-              title: 'Add catalog-info.yaml',
-              url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/pull/1347',
+      expect(response.body).toEqual({
+        imports: [
+          {
+            approvalTool: 'GIT',
+            id: 'https://github.com/octocat/my-awesome-repo',
+            lastUpdate: '2011-01-26T19:14:43Z',
+            repository: {
+              defaultBranch: 'dev',
+              id: 'octocat/my-awesome-repo',
+              name: 'my-awesome-repo',
+              organization: 'octocat',
+              url: 'https://github.com/octocat/my-awesome-repo',
             },
+            status: null,
           },
-          id: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
-          lastUpdate: '2011-01-26T19:01:12Z',
-          repository: {
-            defaultBranch: 'main',
-            id: 'my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
-            name: 'my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
-            organization: 'my-org-1',
-            url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+          {
+            approvalTool: 'GIT',
+            id: 'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
+            lastUpdate: '2011-01-26T19:14:43Z',
+            repository: {
+              defaultBranch: 'main',
+              id: 'my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
+              name: 'my-repo-with-existing-catalog-info-in-default-branch',
+              organization: 'my-org-1',
+              url: 'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
+            },
+            status: 'ADDED',
           },
-          status: 'WAIT_PR_APPROVAL',
-        },
-      ]);
+          {
+            approvalTool: 'GIT',
+            github: {
+              pullRequest: {
+                body: 'Onboarding this repository into Red Hat Developer Hub.',
+                number: 1347,
+                title: 'Add catalog-info.yaml',
+                url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/pull/1347',
+              },
+            },
+            id: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+            lastUpdate: '2011-01-26T19:01:12Z',
+            repository: {
+              defaultBranch: 'main',
+              id: 'my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+              name: 'my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+              organization: 'my-org-1',
+              url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+            },
+            status: 'WAIT_PR_APPROVAL',
+          },
+        ],
+        page: 1,
+        size: 20,
+        totalCount: 3,
+      });
       // Location entity refresh triggered (on each 'ADDED' repo)
       expect(mockCatalogClient.refreshEntity).toHaveBeenCalledTimes(1);
     });

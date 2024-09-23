@@ -329,8 +329,8 @@ const OPENAPI = `
         "parameters": [
           {
             "in": "query",
-            "name": "pagePerIntegration",
-            "description": "the page number for each Integration",
+            "name": "page",
+            "description": "the requested page number",
             "schema": {
               "type": "integer",
               "default": 1
@@ -338,8 +338,8 @@ const OPENAPI = `
           },
           {
             "in": "query",
-            "name": "sizePerIntegration",
-            "description": "the number of items per Integration to return per page",
+            "name": "size",
+            "description": "the maximum number of items to return per page",
             "schema": {
               "type": "integer",
               "default": 20
@@ -356,25 +356,34 @@ const OPENAPI = `
         ],
         "responses": {
           "200": {
-            "description": "Import Jobs list was fetched successfully with no errors",
+            "description": "Import Job list was fetched successfully with no errors",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Import"
-                  }
+                  "$ref": "#/components/schemas/ImportJobList"
                 },
                 "examples": {
-                  "twoImports": {
-                    "$ref": "#/components/examples/twoImports"
+                  "multipleImportJobs": {
+                    "$ref": "#/components/examples/multipleImportJobs"
                   }
                 }
               }
             }
           },
           "500": {
-            "description": "Generic error"
+            "description": "Generic error when there are errors and no Import Job is returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportJobList"
+                },
+                "examples": {
+                  "repositoryListErrors": {
+                    "$ref": "#/components/examples/importJobListErrors"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -432,7 +441,7 @@ const OPENAPI = `
                 },
                 "examples": {
                   "twoImports": {
-                    "$ref": "#/components/examples/twoImports"
+                    "$ref": "#/components/examples/twoImportJobs"
                   }
                 }
               }
@@ -679,6 +688,33 @@ const OPENAPI = `
           null
         ]
       },
+      "ImportJobList": {
+        "title": "Import Job List",
+        "type": "object",
+        "properties": {
+          "imports": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Import"
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "totalCount": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "size": {
+            "type": "integer"
+          }
+        }
+      },
       "Import": {
         "title": "Import Job",
         "type": "object",
@@ -897,8 +933,59 @@ const OPENAPI = `
           "repositories": []
         }
       },
-      "twoImports": {
+      "multipleImportJobs": {
         "summary": "Two import job requests",
+        "value": {
+          "errors": [],
+          "imports": [
+            {
+              "id": "bulk-import-id-1",
+              "status": "WAIT_PR_APPROVAL",
+              "errors": [],
+              "approvalTool": "GIT",
+              "repository": {
+                "name": "pet-app",
+                "url": "https://github.com/my-org/pet-app",
+                "organization": "my-org"
+              },
+              "github": {
+                "pullRequest": {
+                  "url": "https://github.com/my-org/pet-app/pull/1",
+                  "number": 1
+                }
+              }
+            },
+            {
+              "id": "bulk-import-id-2",
+              "status": "PR_REJECTED",
+              "errors": [],
+              "approvalTool": "GIT",
+              "repository": {
+                "name": "pet-app-test",
+                "url": "https://github.com/my-org/pet-app-test",
+                "organization": "my-org"
+              },
+              "github": {
+                "pullRequest": {
+                  "url": "https://github.com/my-org/pet-app-test/pull/10",
+                  "number": 10
+                }
+              }
+            }
+          ]
+        }
+      },
+      "importJobListErrors": {
+        "summary": "Errors when listing import jobs",
+        "value": {
+          "errors": [
+            "Github App with ID xyz-123 failed spectacularly"
+          ],
+          "imports": []
+        }
+      },
+      "twoImportJobs": {
+        "summary": "Two import jobs",
         "value": [
           {
             "id": "bulk-import-id-1",

@@ -125,18 +125,21 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     search?: string,
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
-  ): Promise<string[]> {
-    const list = await this.listCatalogUrlLocationsById(
+  ): Promise<{ targetUrls: string[]; totalCount?: number }> {
+    const byId = await this.listCatalogUrlLocationsById(
       config,
       search,
       pageNumber,
       pageSize,
     );
     const result = new Set<string>();
-    for (const l of list) {
+    for (const l of byId.locations) {
       result.add(l.target);
     }
-    return Array.from(result.values());
+    return {
+      targetUrls: Array.from(result.values()),
+      totalCount: byId.totalCount,
+    };
   }
 
   async listCatalogUrlLocationsById(
@@ -144,18 +147,32 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     search?: string,
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
-  ): Promise<{ id?: string; target: string }[]> {
+  ): Promise<{
+    locations: { id?: string; target: string }[];
+    totalCount?: number;
+  }> {
     const result = await Promise.all([
       this.listCatalogUrlLocationsFromConfig(config, search),
       this.listCatalogUrlLocationsByIdFromLocationsEndpoint(search),
       this.listCatalogUrlLocationEntitiesById(search, pageNumber, pageSize),
     ]);
-    return result.flat();
+    const locations = result.flatMap(u => u.locations);
+    // we might have duplicate elements here
+    const totalCount = result
+      .map(l => l.totalCount ?? 0)
+      .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    return {
+      locations,
+      totalCount,
+    };
   }
 
   async listCatalogUrlLocationsByIdFromLocationsEndpoint(
     search?: string,
-  ): Promise<{ id?: string; target: string }[]> {
+  ): Promise<{
+    locations: { id?: string; target: string }[];
+    totalCount?: number;
+  }> {
     const url = `${await this.discovery.getBaseUrl('catalog')}/locations`;
     const response = await fetch(url, {
       headers: {
@@ -168,7 +185,7 @@ ${jsYaml.dump(generatedEntity.entity)}`,
       data: { id: string; target: string; type: string };
     }[];
     if (!Array.isArray(locations)) {
-      return [];
+      return { locations: [] };
     }
     const res = locations
       .filter(
@@ -180,13 +197,14 @@ ${jsYaml.dump(generatedEntity.entity)}`,
           target: location.data.target,
         };
       });
-    return this.filterLocations(res, search);
+    const filtered = this.filterLocations(res, search);
+    return { locations: filtered, totalCount: filtered.length };
   }
 
   listCatalogUrlLocationsFromConfig(
     config: Config,
     search?: string,
-  ): { id?: string; target: string }[] {
+  ): { locations: { id?: string; target: string }[]; totalCount?: number } {
     const locationConfigs =
       config.getOptionalConfigArray('catalog.locations') ?? [];
     const res = locationConfigs
@@ -202,14 +220,18 @@ ${jsYaml.dump(generatedEntity.entity)}`,
           target,
         };
       });
-    return this.filterLocations(res, search);
+    const filtered = this.filterLocations(res, search);
+    return { locations: filtered, totalCount: filtered.length };
   }
 
   async listCatalogUrlLocationEntitiesById(
     search?: string,
     _pageNumber: number = DefaultPageNumber,
     _pageSize: number = DefaultPageSize,
-  ): Promise<{ id?: string; target: string }[]> {
+  ): Promise<{
+    locations: { id?: string; target: string }[];
+    totalCount?: number;
+  }> {
     const result = await this.catalogApi.getEntities(
       {
         filter: {
@@ -217,8 +239,9 @@ ${jsYaml.dump(generatedEntity.entity)}`,
         },
         // There is no query parameter to find entities with target URLs containing a string.
         // The existing filter does an exact matching. That's why we are retrieving this hard-coded high number of Locations.
-        limit: 1000,
+        limit: 9999,
         offset: 0,
+        order: { field: 'metadata.name', order: 'desc' },
       },
       {
         token: await getTokenForPlugin(this.auth, 'catalog'),
@@ -235,7 +258,8 @@ ${jsYaml.dump(generatedEntity.entity)}`,
           target: location.spec.target!,
         };
       });
-    return this.filterLocations(res, search);
+    const filtered = this.filterLocations(res, search);
+    return { locations: filtered, totalCount: filtered.length };
   }
 
   private filterLocations(

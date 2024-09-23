@@ -1,9 +1,11 @@
+.openapi-generator-ignore
 Apis/ImportApi.md
 Apis/ManagementApi.md
 Apis/OrganizationApi.md
 Apis/RepositoryApi.md
 Models/ApprovalTool.md
 Models/Import.md
+Models/ImportJobList.md
 Models/ImportRequest.md
 Models/ImportRequest_github.md
 Models/ImportRequest_github_pullRequest.md

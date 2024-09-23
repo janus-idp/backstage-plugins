@@ -231,16 +231,16 @@ export async function createRouter(
         ...c.request.query,
       };
       // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
-      q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
-      q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
+      q.page = stringToNumber(q.page);
+      q.size = stringToNumber(q.size);
       const response = await findAllImports(
         logger,
         config,
         githubApiService,
         catalogInfoGenerator,
         q.search,
-        q.pagePerIntegration,
-        q.sizePerIntegration,
+        q.page,
+        q.size,
       );
       return res.status(response.statusCode).json(response.responseBody);
     },
