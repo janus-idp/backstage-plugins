@@ -22,6 +22,9 @@ Models/WorkflowListResultDTO.md
 Models/WorkflowOverviewDTO.md
 Models/WorkflowOverviewListResultDTO.md
 Models/WorkflowProgressDTO.md
+Models/WorkflowResultDTO.md
+Models/WorkflowResultDTO_nextWorkflows_inner.md
+Models/WorkflowResultDTO_outputs_inner.md
+Models/WorkflowResultDTO_outputs_inner_value.md
 Models/WorkflowRunStatusDTO.md
-Models/WorkflowSuggestionDTO.md
 README.md

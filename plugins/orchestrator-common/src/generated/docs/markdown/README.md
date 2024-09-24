@@ -45,8 +45,11 @@ All URIs are relative to *http://localhost*
  - [WorkflowOverviewDTO](./Models/WorkflowOverviewDTO.md)
  - [WorkflowOverviewListResultDTO](./Models/WorkflowOverviewListResultDTO.md)
  - [WorkflowProgressDTO](./Models/WorkflowProgressDTO.md)
+ - [WorkflowResultDTO](./Models/WorkflowResultDTO.md)
+ - [WorkflowResultDTO_nextWorkflows_inner](./Models/WorkflowResultDTO_nextWorkflows_inner.md)
+ - [WorkflowResultDTO_outputs_inner](./Models/WorkflowResultDTO_outputs_inner.md)
+ - [WorkflowResultDTO_outputs_inner_value](./Models/WorkflowResultDTO_outputs_inner_value.md)
  - [WorkflowRunStatusDTO](./Models/WorkflowRunStatusDTO.md)
- - [WorkflowSuggestionDTO](./Models/WorkflowSuggestionDTO.md)
 
 
 <a name="documentation-for-authorization"></a>
