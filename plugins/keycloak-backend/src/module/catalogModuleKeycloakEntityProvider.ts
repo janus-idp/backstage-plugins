@@ -64,10 +64,6 @@ export const catalogModuleKeycloakEntityProvider = createBackendModule({
             { config, logger },
             {
               scheduler: scheduler,
-              schedule: scheduler.createScheduledTaskRunner({
-                frequency: { minutes: 30 },
-                timeout: { minutes: 3 },
-              }),
               userTransformer: userTransformer,
               groupTransformer: groupTransformer,
             },
