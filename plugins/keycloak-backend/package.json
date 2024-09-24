@@ -60,7 +60,7 @@
     "@backstage/plugin-catalog-backend": "1.24.0",
     "@backstage/plugin-permission-common": "0.8.0",
     "@backstage/plugin-permission-node": "0.8.0",
-    "@janus-idp/cli": "1.15.0",
+    "@janus-idp/cli": "1.14.0",
     "@types/lodash": "4.17.5",
     "@types/supertest": "2.0.16",
     "@types/uuid": "9.0.8",

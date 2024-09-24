@@ -1,11 +1,5 @@
-import type {
-  LoggerService,
-  SchedulerServiceTaskInvocationDefinition,
-  SchedulerServiceTaskRunner,
-} from '@backstage/backend-plugin-api';
-import { mockServices } from '@backstage/backend-test-utils';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import type { ServiceMock } from '@backstage/backend-test-utils';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 
 import {
   groupMembers,
@@ -20,6 +14,20 @@ export const CONFIG = {
       keycloakOrg: {
         default: {
           baseUrl: 'http://localhost:8080',
+        },
+      },
+    },
+  },
+} as const;
+
+export const PASSWORD_CONFIG = {
+  catalog: {
+    providers: {
+      keycloakOrg: {
+        default: {
+          baseUrl: 'http://localhost:8080',
+          username: 'myusername',
+          password: 'mypassword', // NOSONAR
         },
       },
     },
@@ -145,29 +153,3 @@ export class KeycloakAdminClientMockServerv24 {
 
   auth = authMock;
 }
-
-export class SchedulerServiceTaskRunnerMock
-  implements SchedulerServiceTaskRunner
-{
-  private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
-  async run(task: SchedulerServiceTaskInvocationDefinition) {
-    this.tasks.push(task);
-  }
-  async runAll() {
-    const abortSignal = jest.fn() as unknown as AbortSignal;
-    for await (const task of this.tasks) {
-      await task.fn(abortSignal);
-    }
-  }
-}
-
-export const scheduler = mockServices.scheduler.mock({
-  createScheduledTaskRunner() {
-    return new SchedulerServiceTaskRunnerMock();
-  },
-});
-
-export const connection = {
-  applyMutation: jest.fn(),
-  refresh: jest.fn(),
-} as unknown as EntityProviderConnection;

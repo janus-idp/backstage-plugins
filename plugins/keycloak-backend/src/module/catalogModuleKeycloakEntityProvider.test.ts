@@ -43,16 +43,17 @@ const CONFIG = {
 } as const;
 
 describe('catalogModuleKeycloakEntityProvider', () => {
-  it('should return an empty array if no providers are configured', async () => {
-    let addedProviders: EntityProvider[] | EntityProvider[][] | undefined;
-    const extensionPoint = {
-      addEntityProvider: (
-        ...providers: EntityProvider[] | EntityProvider[][]
-      ) => {
-        addedProviders = providers;
-      },
-    };
+  let addedProviders: EntityProvider[] | EntityProvider[][] | undefined;
 
+  const extensionPoint = {
+    addEntityProvider: (
+      ...providers: EntityProvider[] | EntityProvider[][]
+    ) => {
+      addedProviders = providers;
+    },
+  };
+
+  it('should return an empty array if no providers are configured', async () => {
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
@@ -79,9 +80,7 @@ describe('catalogModuleKeycloakEntityProvider', () => {
               catalog: {
                 providers: {
                   keycloakOrg: {
-                    dev: {
-                      ...SCHEDULE,
-                    },
+                    dev: { ...SCHEDULE },
                   },
                 },
               },
@@ -134,41 +133,16 @@ describe('catalogModuleKeycloakEntityProvider', () => {
       features: [
         catalogPlugin,
         catalogModuleKeycloakEntityProvider,
-        mockServices.rootConfig.factory({
-          data: {
-            catalog: {
-              providers: {
-                keycloakOrg: {
-                  dev: {
-                    baseUrl: 'https://example.com/auth',
-                    schedule: {
-                      frequency: 'P1M',
-                      timeout: 'PT5M',
-                    },
-                  },
-                },
-              },
-            },
-          },
-        }),
+        mockServices.rootConfig.factory({ data: CONFIG }),
         scheduler.factory,
       ],
     });
 
     expect(usedSchedule?.frequency).toEqual({ months: 1 });
-    expect(usedSchedule?.timeout).toEqual({ minutes: 5 });
+    expect(usedSchedule?.timeout).toEqual({ minutes: 3 });
   });
 
   it('should return multiple providers', async () => {
-    let addedProviders: EntityProvider[] | EntityProvider[][] | undefined;
-    const extensionPoint = {
-      addEntityProvider: (
-        ...providers: EntityProvider[] | EntityProvider[][]
-      ) => {
-        addedProviders = providers;
-      },
-    };
-
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
@@ -202,15 +176,6 @@ describe('catalogModuleKeycloakEntityProvider', () => {
   });
 
   it('should return provider name', async () => {
-    let addedProviders: EntityProvider[] | EntityProvider[][] | undefined;
-    const extensionPoint = {
-      addEntityProvider: (
-        ...providers: EntityProvider[] | EntityProvider[][]
-      ) => {
-        addedProviders = providers;
-      },
-    };
-
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
