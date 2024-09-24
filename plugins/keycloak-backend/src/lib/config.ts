@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  readTaskScheduleDefinitionFromConfig,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
-import { Config } from '@backstage/config';
+import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
+import type { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
+import { InputError } from '@backstage/errors';
 
 /**
  * The configuration parameters for a single Keycloak provider.
@@ -73,7 +72,7 @@ export type KeycloakProviderConfig = {
   /**
    * Schedule configuration for refresh tasks.
    */
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
 
   /**
    * The number of users to query at a time.
@@ -112,23 +111,27 @@ const readProviderConfig = (
     providerConfigInstance.getOptionalNumber('groupQuerySize');
 
   if (clientId && !clientSecret) {
-    throw new Error(`clientSecret must be provided when clientId is defined.`);
+    throw new InputError(
+      `clientSecret must be provided when clientId is defined.`,
+    );
   }
 
   if (clientSecret && !clientId) {
-    throw new Error(`clientId must be provided when clientSecret is defined.`);
+    throw new InputError(
+      `clientId must be provided when clientSecret is defined.`,
+    );
   }
 
   if (username && !password) {
-    throw new Error(`password must be provided when username is defined.`);
+    throw new InputError(`password must be provided when username is defined.`);
   }
 
   if (password && !username) {
-    throw new Error(`username must be provided when password is defined.`);
+    throw new InputError(`username must be provided when password is defined.`);
   }
 
   const schedule = providerConfigInstance.has('schedule')
-    ? readTaskScheduleDefinitionFromConfig(
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
         providerConfigInstance.getConfig('schedule'),
       )
     : undefined;

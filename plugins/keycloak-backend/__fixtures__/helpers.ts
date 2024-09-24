@@ -1,5 +1,10 @@
-import { getVoidLogger } from '@backstage/backend-common';
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+import type {
+  LoggerService,
+  SchedulerServiceTaskInvocationDefinition,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
+import type { ServiceMock } from '@backstage/backend-test-utils';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 
 import {
@@ -9,7 +14,7 @@ import {
   users,
 } from './data';
 
-export const BASIC_VALID_CONFIG = {
+export const CONFIG = {
   catalog: {
     providers: {
       keycloakOrg: {
@@ -21,24 +26,25 @@ export const BASIC_VALID_CONFIG = {
   },
 } as const;
 
-export const logMock = jest.fn();
-
-export const createLogger = () => {
-  const logger = getVoidLogger();
-  logger.child = () => logger;
-  ['log', ...Object.keys(logger.levels)].forEach(logFunctionName => {
-    (logger as any)[logFunctionName] = function LogMock() {
-      logMock(logFunctionName, ...arguments);
-    };
-  });
-  return logger;
-};
-
-export const assertLogMustNotInclude = (secrets: string[]) => {
-  const json = JSON.stringify(logMock.mock.calls);
-  secrets.forEach(secret => {
-    if (json.includes(secret)) {
-      throw new Error(`Log must not include secret "${secret}"`);
+export const assertLogMustNotInclude = (
+  logger: ServiceMock<LoggerService>,
+  secrets: string[],
+) => {
+  const logMethods: (keyof LoggerService)[] = [
+    'debug',
+    'error',
+    'info',
+    'warn',
+  ];
+  logMethods.forEach(methodName => {
+    const method = logger[methodName];
+    if (jest.isMockFunction(method)) {
+      const json = JSON.stringify(method.mock.calls);
+      secrets.forEach(secret => {
+        if (json.includes(secret)) {
+          throw new Error(`Log must not include secret "${secret}"`);
+        }
+      });
     }
   });
 };
@@ -140,36 +146,26 @@ export class KeycloakAdminClientMockServerv24 {
   auth = authMock;
 }
 
-class FakeAbortSignal implements AbortSignal {
-  readonly aborted = false;
-  readonly reason = undefined;
-  onabort() {}
-  throwIfAborted() {}
-  addEventListener() {}
-  removeEventListener() {}
-  dispatchEvent() {
-    return true;
-  }
-}
-
-export class ManualTaskRunner implements TaskRunner {
-  private tasks: TaskInvocationDefinition[] = [];
-
-  async run(task: TaskInvocationDefinition) {
+export class SchedulerServiceTaskRunnerMock
+  implements SchedulerServiceTaskRunner
+{
+  private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
+  async run(task: SchedulerServiceTaskInvocationDefinition) {
     this.tasks.push(task);
   }
-
   async runAll() {
-    const abortSignal = new FakeAbortSignal();
+    const abortSignal = jest.fn() as unknown as AbortSignal;
     for await (const task of this.tasks) {
       await task.fn(abortSignal);
     }
   }
-
-  clear() {
-    this.tasks = [];
-  }
 }
+
+export const scheduler = mockServices.scheduler.mock({
+  createScheduledTaskRunner() {
+    return new SchedulerServiceTaskRunnerMock();
+  },
+});
 
 export const connection = {
   applyMutation: jest.fn(),

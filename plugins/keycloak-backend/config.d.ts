@@ -1,4 +1,4 @@
-import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+import type { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
 
 export interface Config {
   catalog?: {
@@ -36,7 +36,7 @@ export interface Config {
            * @see https://www.keycloak.org/docs-api/11.0/rest-api/index.html#_groups_resource
            */
           groupQuerySize?: number;
-          schedule?: TaskScheduleDefinitionConfig;
+          schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
         } & (
           | {
               /**

@@ -18,6 +18,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
+import { InputError } from '@backstage/errors';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 
 import { keycloakTransformerExtensionPoint } from '../extensions';
@@ -39,13 +40,13 @@ export const catalogModuleKeycloakEntityProvider = createBackendModule({
     env.registerExtensionPoint(keycloakTransformerExtensionPoint, {
       setUserTransformer(transformer) {
         if (userTransformer) {
-          throw new Error('User transformer may only be set once');
+          throw new InputError('User transformer may only be set once');
         }
         userTransformer = transformer;
       },
       setGroupTransformer(transformer) {
         if (groupTransformer) {
-          throw new Error('Group transformer may only be set once');
+          throw new InputError('Group transformer may only be set once');
         }
         groupTransformer = transformer;
       },
@@ -59,13 +60,18 @@ export const catalogModuleKeycloakEntityProvider = createBackendModule({
       },
       async init({ catalog, config, logger, scheduler }) {
         catalog.addEntityProvider(
-          KeycloakOrgEntityProvider.fromConfig(config, {
-            id: 'development',
-            logger,
-            scheduler,
-            userTransformer: userTransformer,
-            groupTransformer: groupTransformer,
-          }),
+          KeycloakOrgEntityProvider.fromConfig(
+            { config, logger },
+            {
+              scheduler: scheduler,
+              schedule: scheduler.createScheduledTaskRunner({
+                frequency: { minutes: 30 },
+                timeout: { minutes: 3 },
+              }),
+              userTransformer: userTransformer,
+              groupTransformer: groupTransformer,
+            },
+          ),
         );
       },
     });

@@ -2,7 +2,7 @@ import { ConfigReader } from '@backstage/config';
 
 import deepmerge from 'deepmerge';
 
-import { BASIC_VALID_CONFIG } from '../../__fixtures__/helpers';
+import { CONFIG } from '../../__fixtures__/helpers';
 import { readProviderConfigs } from './config';
 
 describe('readProviderConfigs', () => {
@@ -15,7 +15,7 @@ describe('readProviderConfigs', () => {
   });
 
   it('should return an array of provider configs', () => {
-    const config = new ConfigReader(BASIC_VALID_CONFIG);
+    const config = new ConfigReader(CONFIG);
 
     const result = readProviderConfigs(config);
 
@@ -38,7 +38,7 @@ describe('readProviderConfigs', () => {
 
   it('should return an array of provider configs with optional values', () => {
     const config = new ConfigReader(
-      deepmerge(BASIC_VALID_CONFIG, {
+      deepmerge(CONFIG, {
         catalog: {
           providers: {
             keycloakOrg: {
@@ -89,7 +89,7 @@ describe('readProviderConfigs', () => {
 
   it('should throw an error if clientId is provided without clientSecret', () => {
     const config = new ConfigReader(
-      deepmerge(BASIC_VALID_CONFIG, {
+      deepmerge(CONFIG, {
         catalog: {
           providers: {
             keycloakOrg: {
@@ -109,7 +109,7 @@ describe('readProviderConfigs', () => {
 
   it('should throw an error if clientSecret is provided without clientId', () => {
     const config = new ConfigReader(
-      deepmerge(BASIC_VALID_CONFIG, {
+      deepmerge(CONFIG, {
         catalog: {
           providers: {
             keycloakOrg: {
@@ -129,7 +129,7 @@ describe('readProviderConfigs', () => {
 
   it('should throw an error if username is provided without password', () => {
     const config = new ConfigReader(
-      deepmerge(BASIC_VALID_CONFIG, {
+      deepmerge(CONFIG, {
         catalog: {
           providers: {
             keycloakOrg: {
@@ -149,7 +149,7 @@ describe('readProviderConfigs', () => {
 
   it('should throw an error if password is provided without username', () => {
     const config = new ConfigReader(
-      deepmerge(BASIC_VALID_CONFIG, {
+      deepmerge(CONFIG, {
         catalog: {
           providers: {
             keycloakOrg: {

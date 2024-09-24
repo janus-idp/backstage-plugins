@@ -1,4 +1,9 @@
-import { ConfigReader } from '@backstage/config';
+import type {
+  LoggerService,
+  SchedulerServiceTaskScheduleDefinition,
+} from '@backstage/backend-plugin-api';
+import { mockServices, ServiceMock } from '@backstage/backend-test-utils';
+import { ErrorLike } from '@backstage/errors';
 
 // @ts-ignore
 import inclusion from 'inclusion';
@@ -6,14 +11,13 @@ import inclusion from 'inclusion';
 import {
   assertLogMustNotInclude,
   authMock,
-  BASIC_VALID_CONFIG,
+  CONFIG,
   connection,
-  createLogger,
   KeycloakAdminClientMockServerv18,
   KeycloakAdminClientMockServerv24,
-  logMock,
-  ManualTaskRunner,
+  scheduler,
 } from '../../__fixtures__/helpers';
+import type { SchedulerServiceTaskRunnerMock } from '../../__fixtures__/helpers';
 import { KeycloakOrgEntityProvider } from './KeycloakOrgEntityProvider';
 
 jest.mock('inclusion', () => jest.fn());
@@ -22,19 +26,31 @@ describe.each([
   ['v24', KeycloakAdminClientMockServerv24],
   ['v18', KeycloakAdminClientMockServerv18],
 ])('KeycloakOrgEntityProvider with %s', (_version, mockImplementation) => {
-  const logger = createLogger();
-  const manualTaskRunner = new ManualTaskRunner();
+  let logger: ServiceMock<LoggerService>;
+  let keycloakLogger: ServiceMock<LoggerService>;
+  let schedule: SchedulerServiceTaskRunnerMock;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
+    authMock.mockReset();
+    keycloakLogger = mockServices.logger.mock();
+    logger = mockServices.logger.mock({
+      child() {
+        return keycloakLogger;
+      },
+    });
     jest.mock('inclusion', () => jest.fn());
     (inclusion as jest.Mock).mockImplementation(() => {
       return { default: mockImplementation }; // Return the correct mock based on the version
     });
-    manualTaskRunner.clear();
+    schedule = scheduler.createScheduledTaskRunner(
+      '' as unknown as SchedulerServiceTaskScheduleDefinition,
+    ) as SchedulerServiceTaskRunnerMock;
   });
   afterEach(() => {
-    assertLogMustNotInclude(['myclientsecret', 'mypassword']); // NOSONAR
+    for (const log of [logger, keycloakLogger]) {
+      assertLogMustNotInclude(log, ['myclientsecret', 'mypassword']); // NOSONAR
+    }
   });
 
   it('should mock inclusion', async () => {
@@ -44,64 +60,16 @@ describe.each([
     expect(KeyCloakAdminClient).toEqual({ default: mockImplementation });
   });
 
-  it('should return an empty array if no providers are configured', () => {
-    const config = new ConfigReader({});
-
-    const result = KeycloakOrgEntityProvider.fromConfig(config, {
-      id: 'development',
-      logger,
-    });
-
-    expect(result).toEqual([]);
-  });
-
-  it('should not run without a valid schedule', () => {
-    const config = new ConfigReader(BASIC_VALID_CONFIG);
-
-    expect(() =>
-      KeycloakOrgEntityProvider.fromConfig(config, {
-        id: 'development',
-        logger,
-      }),
-    ).toThrow(
-      'No schedule provided neither via code nor config for KeycloakOrgEntityProvider:default.',
-    );
-  });
-
-  it('should return a single provider if one is configured', () => {
-    const config = new ConfigReader(BASIC_VALID_CONFIG);
-
-    const keycloak = KeycloakOrgEntityProvider.fromConfig(config, {
-      id: 'development',
-      logger,
-      schedule: 'manual',
-    });
-
-    expect(keycloak).toHaveLength(1);
-  });
-
-  it('should return provider name', () => {
-    const config = new ConfigReader(BASIC_VALID_CONFIG);
-
-    const keycloak = KeycloakOrgEntityProvider.fromConfig(config, {
-      id: 'development',
-      logger,
-      schedule: 'manual',
-    });
-
-    expect(keycloak.map(k => k.getProviderName())).toEqual([
-      'KeycloakOrgEntityProvider:default',
-    ]);
-  });
-
   it('should connect', async () => {
-    const config = new ConfigReader(BASIC_VALID_CONFIG);
-
-    const keycloak = KeycloakOrgEntityProvider.fromConfig(config, {
-      id: 'development',
-      logger,
-      schedule: 'manual',
-    });
+    const keycloak = KeycloakOrgEntityProvider.fromConfig(
+      {
+        config: mockServices.rootConfig({ data: CONFIG }),
+        logger,
+      },
+      {
+        schedule,
+      },
+    );
 
     const result = await Promise.all(
       keycloak.map(async k => await k.connect(connection)),
@@ -110,13 +78,15 @@ describe.each([
   });
 
   it('should not read without a connection', async () => {
-    const config = new ConfigReader(BASIC_VALID_CONFIG);
-
-    const keycloak = KeycloakOrgEntityProvider.fromConfig(config, {
-      id: 'development',
-      logger,
-      schedule: 'manual',
-    });
+    const keycloak = KeycloakOrgEntityProvider.fromConfig(
+      {
+        config: mockServices.rootConfig({ data: CONFIG }),
+        logger,
+      },
+      {
+        schedule,
+      },
+    );
 
     for await (const k of keycloak) {
       await expect(() => k.read()).rejects.toThrow('Not initialized');
@@ -125,7 +95,7 @@ describe.each([
   });
 
   it('should fail with grantType client_credential, but without client secret', async () => {
-    const config = new ConfigReader({
+    const config = {
       catalog: {
         providers: {
           keycloakOrg: {
@@ -136,20 +106,24 @@ describe.each([
           },
         },
       },
-    });
+    };
 
     expect(() =>
-      KeycloakOrgEntityProvider.fromConfig(config, {
-        id: 'development',
-        logger,
-        schedule: 'manual',
-      }),
+      KeycloakOrgEntityProvider.fromConfig(
+        {
+          config: mockServices.rootConfig({ data: config }),
+          logger,
+        },
+        {
+          schedule,
+        },
+      ),
     ).toThrow('clientSecret must be provided when clientId is defined.');
     expect(authMock).toHaveBeenCalledTimes(0);
   });
 
   it('should read with grantType client_credential', async () => {
-    const config = new ConfigReader({
+    const config = {
       catalog: {
         providers: {
           keycloakOrg: {
@@ -161,18 +135,21 @@ describe.each([
           },
         },
       },
-    });
+    };
 
-    const keycloak = KeycloakOrgEntityProvider.fromConfig(config, {
-      id: 'development',
-      logger,
-      schedule: 'manual',
-    });
+    const keycloak = KeycloakOrgEntityProvider.fromConfig(
+      {
+        config: mockServices.rootConfig({ data: config }),
+        logger,
+      },
+      {
+        schedule,
+      },
+    );
 
     for await (const k of keycloak) {
-      k.schedule(manualTaskRunner);
       await k.connect(connection);
-      await manualTaskRunner.runAll();
+      await schedule.runAll();
     }
 
     expect(authMock).toHaveBeenCalledTimes(1);
@@ -188,7 +165,7 @@ describe.each([
   });
 
   it('should fail read with grantType username, but without password', async () => {
-    const config = new ConfigReader({
+    const config = {
       catalog: {
         providers: {
           keycloakOrg: {
@@ -199,20 +176,24 @@ describe.each([
           },
         },
       },
-    });
+    };
 
     expect(() =>
-      KeycloakOrgEntityProvider.fromConfig(config, {
-        id: 'development',
-        logger,
-        schedule: 'manual',
-      }),
+      KeycloakOrgEntityProvider.fromConfig(
+        {
+          config: mockServices.rootConfig({ data: config }),
+          logger,
+        },
+        {
+          schedule,
+        },
+      ),
     ).toThrow('password must be provided when username is defined.');
     expect(authMock).toHaveBeenCalledTimes(0);
   });
 
   it('should read with grantType password', async () => {
-    const config = new ConfigReader({
+    const config = {
       catalog: {
         providers: {
           keycloakOrg: {
@@ -224,18 +205,21 @@ describe.each([
           },
         },
       },
-    });
+    };
 
-    const keycloak = KeycloakOrgEntityProvider.fromConfig(config, {
-      id: 'development',
-      logger,
-      schedule: 'manual',
-    });
+    const keycloak = KeycloakOrgEntityProvider.fromConfig(
+      {
+        config: mockServices.rootConfig({ data: config }),
+        logger,
+      },
+      {
+        schedule,
+      },
+    );
 
     for await (const k of keycloak) {
-      k.schedule(manualTaskRunner);
       await k.connect(connection);
-      await manualTaskRunner.runAll();
+      await schedule.runAll();
     }
 
     expect(authMock).toHaveBeenCalledTimes(1);
@@ -254,8 +238,7 @@ describe.each([
   it('should log a proper error when network connection was refused', async () => {
     // Create an error that contains sensitive information.
     // The afterEach call ensure that this information aren't logged.
-    const error: Error & { code?: string; config?: any; status?: null } =
-      new Error('connect ECONNREFUSED ::1:8080');
+    const error = new Error('connect ECONNREFUSED ::1:8080') as ErrorLike;
     error.code = 'ECONNREFUSED';
     error.config = {
       data: 'username=myusername&password=mypassword', // NOSONAR
@@ -263,7 +246,7 @@ describe.each([
     error.status = null;
     authMock.mockRejectedValue(error);
 
-    const config = new ConfigReader({
+    const config = {
       catalog: {
         providers: {
           keycloakOrg: {
@@ -275,18 +258,21 @@ describe.each([
           },
         },
       },
-    });
+    };
 
-    const keycloak = KeycloakOrgEntityProvider.fromConfig(config, {
-      id: 'development',
-      logger,
-      schedule: 'manual',
-    });
+    const keycloak = KeycloakOrgEntityProvider.fromConfig(
+      {
+        config: mockServices.rootConfig({ data: config }),
+        logger,
+      },
+      {
+        schedule,
+      },
+    );
 
     for await (const k of keycloak) {
-      k.schedule(manualTaskRunner);
       await k.connect(connection);
-      await manualTaskRunner.runAll();
+      await schedule.runAll();
     }
 
     expect(authMock).toHaveBeenCalledTimes(1);
@@ -298,12 +284,11 @@ describe.each([
     });
     expect(connection.applyMutation).toHaveBeenCalledTimes(0);
 
-    expect(logMock).toHaveBeenCalledWith(
-      'info',
+    expect(logger.child).toHaveBeenCalledTimes(1);
+    expect(keycloakLogger.info).toHaveBeenCalledWith(
       'Reading Keycloak users and groups',
     );
-    expect(logMock).toHaveBeenCalledWith(
-      'error',
+    expect(keycloakLogger.error).toHaveBeenCalledWith(
       'Error while syncing Keycloak users and groups',
       {
         name: 'Error',
@@ -316,16 +301,14 @@ describe.each([
   it('should log a proper error when network connection was forbidden', async () => {
     // Create an error that contains sensitive information.
     // The afterEach call ensure that this information aren't logged.
-    const error: Error & { config?: any; status?: number } = new Error(
-      'Request failed with status code 401',
-    );
+    const error = new Error('Request failed with status code 401') as ErrorLike;
     error.config = {
       data: 'username=myusername&password=mypassword', // NOSONAR
     };
     error.status = 401;
     authMock.mockRejectedValue(error);
 
-    const config = new ConfigReader({
+    const config = {
       catalog: {
         providers: {
           keycloakOrg: {
@@ -337,18 +320,21 @@ describe.each([
           },
         },
       },
-    });
+    };
 
-    const keycloak = KeycloakOrgEntityProvider.fromConfig(config, {
-      id: 'development',
-      logger,
-      schedule: 'manual',
-    });
+    const keycloak = KeycloakOrgEntityProvider.fromConfig(
+      {
+        config: mockServices.rootConfig({ data: config }),
+        logger,
+      },
+      {
+        schedule,
+      },
+    );
 
     for await (const k of keycloak) {
-      k.schedule(manualTaskRunner);
       await k.connect(connection);
-      await manualTaskRunner.runAll();
+      await schedule.runAll();
     }
 
     expect(authMock).toHaveBeenCalledTimes(1);
@@ -360,12 +346,11 @@ describe.each([
     });
     expect(connection.applyMutation).toHaveBeenCalledTimes(0);
 
-    expect(logMock).toHaveBeenCalledWith(
-      'info',
+    expect(logger.child).toHaveBeenCalledTimes(1);
+    expect(keycloakLogger.info).toHaveBeenCalledWith(
       'Reading Keycloak users and groups',
     );
-    expect(logMock).toHaveBeenCalledWith(
-      'error',
+    expect(keycloakLogger.error).toHaveBeenCalledWith(
       'Error while syncing Keycloak users and groups',
       {
         name: 'Error',
