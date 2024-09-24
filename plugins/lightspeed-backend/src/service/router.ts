@@ -87,7 +87,6 @@ export async function createRouter(
         const openAIApi = new ChatOpenAI({
           apiKey: apiToken || 'sk-no-key-required', // set to sk-no-key-required if api token is not provided
           model: model,
-          // streaming: false,
           streaming: true,
           streamUsage: false,
           temperature: 0,
