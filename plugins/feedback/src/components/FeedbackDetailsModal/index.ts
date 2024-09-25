@@ -1,1 +1,0 @@
-export { FeedbackDetailsModal } from './FeedbackDetailsModal';

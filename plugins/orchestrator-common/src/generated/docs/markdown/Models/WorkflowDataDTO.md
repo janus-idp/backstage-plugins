@@ -3,7 +3,7 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-| **workflowoptions** | [**List**](array.md) |  | [optional] [default to null] |
+| **result** | [**WorkflowResultDTO**](WorkflowResultDTO.md) |  | [optional] [default to null] |
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

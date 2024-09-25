@@ -32,3 +32,13 @@ export interface QueryRequestBody {
   // A combination of user_id & session_id in the format of <user_id>+<session_id>
   conversation_id: string;
 }
+
+// For create AIMessage, HumanMessage, SystemMessage respectively
+export const Roles = {
+  AIRole: 'ai',
+  HumanRole: 'human',
+  SystemRole: 'system',
+} as const;
+
+// default number of message history being loaded
+export const DEFAULT_HISTORY_LENGTH = 10;

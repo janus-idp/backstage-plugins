@@ -1,13 +1,14 @@
 import React from 'react';
 
 import { V1Pod, V1Service, V1ServicePort } from '@kubernetes/client-node';
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { ChartLabel } from '@patternfly/react-charts';
-import { LongArrowAltRightIcon } from '@patternfly/react-icons';
 import { BaseNode } from '@patternfly/react-topology';
+
+import { Status } from '@janus-idp/shared-react';
 
 import ResourceName from '../../../common/components/ResourceName';
 import ResourceStatus from '../../../common/components/ResourceStatus';
-import Status from '../../../common/components/Status';
 import { MAXSHOWRESCOUNT } from '../../../const';
 import {
   CronJobModel,
@@ -163,7 +164,9 @@ const TopologyResourcesTabPanel = ({
                       </span>{' '}
                       {name || `${port}-${protocol}`}
                       &nbsp;
-                      <LongArrowAltRightIcon />
+                      <ArrowRightAltIcon
+                        style={{ width: '0.8em', verticalAlign: '-0.300em' }}
+                      />
                       &nbsp;
                       <span className="bs-topology-text-muted">
                         Pod port:
