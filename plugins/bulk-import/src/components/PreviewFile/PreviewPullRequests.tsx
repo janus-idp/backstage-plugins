@@ -102,6 +102,7 @@ export const PreviewPullRequests = ({
           value={value}
           onChange={handleChange}
           variant="scrollable"
+          indicatorColor="primary"
           scrollButtons="auto"
           aria-label="preview-pull-requests"
         >
