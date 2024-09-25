@@ -67,32 +67,22 @@ backend.start();
 
 ### Plugin Configurations
 
-Add the following proxy configurations into your `app-config.yaml` file:
+Add the following lightspeed configurations into your `app-config.yaml` file:
 
 ```yaml
-proxy:
-  endpoints:
-    '/lightspeed/api':
-      target: '<LLM server URL>'
-      headers:
-        content-type: 'application/json'
-        Authorization: 'Bearer <api-token>'
-      secure: true
-      changeOrigin: true
-      credentials: 'dangerously-allow-unauthenticated' # No Backstage credentials are required to access this proxy target
+lightspeed:
+  servers:
+    - id: <server id>
+      url: <serverURL>
+      token: <api key> # dummy token
 ```
 
 Example local development configuration:
 
 ```yaml
-proxy:
-  endpoints:
-    '/lightspeed/api':
-      target: 'https://localhost:443/v1'
-      headers:
-        content-type: 'application/json'
-        Authorization: 'Bearer js92n-ssj28dbdk902' # dummy token
-      secure: true
-      changeOrigin: true
-      credentials: 'dangerously-allow-unauthenticated' # No Backstage credentials are required to access this proxy target
+lightspeed:
+  servers:
+    - id: 'my-llm-server'
+      url: 'https://localhost:443/v1'
+      token: 'js92n-ssj28dbdk902' # dummy token
 ```

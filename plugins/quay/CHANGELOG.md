@@ -1,5 +1,20 @@
 ### Dependencies
 
+* **@janus-idp/shared-react:** upgraded to 2.11.1
+* **@janus-idp/cli:** upgraded to 1.15.0
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-quay-common:** upgraded to 1.1.0
+* **@janus-idp/shared-react:** upgraded to 2.11.0
+* **@janus-idp/cli:** upgraded to 1.14.0
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.13.2
+
+### Dependencies
+
 * **@janus-idp/shared-react:** upgraded to 2.10.3
 
 ### Dependencies

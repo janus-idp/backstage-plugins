@@ -1,15 +1,10 @@
-.tp-decorator {
-  color: var(--pf-v5-global--Color--200);
-  transition: color 0.2s ease;
-  outline: none;
-}
-.tp-decorator__link:hover {
+.bs-topology-decorator__link:hover {
   text-decoration: none;
 }
-.tp-decorator__bg {
+.bs-topology-decorator__bg {
   fill: var(--pf-v5-global--BackgroundColor--light-100);
 }
-.tp-decorator:hover,
-.tp-decorator:active {
+.bs-topology-decorator:hover,
+.bs-topology-decorator:active {
   color: var(--pf-v5-global--link--Color--hover);
 }
