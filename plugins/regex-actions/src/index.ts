@@ -1,2 +1,2 @@
 export * from './actions';
-export * from './dynamic/index';
+export { scaffolderModuleRegexActions as default } from './module';
