@@ -138,20 +138,21 @@ catalog:
 
 For more information about the default owner configuration, see [upstream string references documentation](https://backstage.io/docs/features/software-catalog/references/#string-references).
 
-##### Installing the OCM backend package into the new backend
+##### Installing the OCM backend package
 
-The OCM plugin supports integration with the [new backend system](https://backstage.io/docs/backend-system/). In order to install the plugin follow the first 2 configuration steps described [here](#setting-up-the-ocm-backend-package). Then add the following lines to the `packages/backend/src/index.ts` file.
+In order to install the plugin follow the first 2 configuration steps described [here](#setting-up-the-ocm-backend-package). Then add the following lines to the `packages/backend/src/index.ts` file.
 
 ```ts title="packages/backend/src/index.ts"
 import {
   catalogModuleOCMEntityProvider,
   ocmPlugin,
-} from '@janus-idp/backstage-plugin-ocm-backend/alpha';
+} from '@janus-idp/backstage-plugin-ocm-backend';
 
 const backend = createBackend();
-/* highlight-add-next-line */
+/* highlight-add-start */
 backend.add(catalogModuleOCMEntityProvider);
 backend.add(ocmPlugin);
+/* highlight-add-end */
 
 backend.start();
 ```

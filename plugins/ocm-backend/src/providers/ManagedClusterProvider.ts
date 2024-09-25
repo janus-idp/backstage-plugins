@@ -25,6 +25,7 @@ import {
   ResourceEntity,
 } from '@backstage/catalog-model';
 import type { Config } from '@backstage/config';
+import { InputError } from '@backstage/errors';
 import type {
   EntityProvider,
   EntityProviderConnection,
@@ -86,29 +87,29 @@ export class ManagedClusterProvider implements EntityProvider {
   ) {
     const { config, logger } = deps;
 
-    return readOcmConfigs(config).map(provider => {
-      const client = hubApiClient(provider, logger);
+    return readOcmConfigs(config).map(providerConfig => {
+      const client = hubApiClient(providerConfig, logger);
       let taskRunner;
-      if ('scheduler' in options && provider.schedule) {
+      if ('scheduler' in options && providerConfig.schedule) {
         // Create a scheduled task runner using the provided scheduler and schedule configuration
         taskRunner = options.scheduler.createScheduledTaskRunner(
-          provider.schedule,
+          providerConfig.schedule,
         );
       } else if ('schedule' in options) {
         // Use the provided schedule directly
         taskRunner = options.schedule;
       } else {
-        throw new Error(
-          `No schedule provided neither via code nor config for "${provider.id}" hub.`,
+        throw new InputError(
+          `No schedule provided via config for OCMProvider:${providerConfig.id}.`,
         );
       }
 
       return new ManagedClusterProvider(
         client,
-        provider.hubResourceName,
-        provider.id,
+        providerConfig.hubResourceName,
+        providerConfig.id,
         deps,
-        provider.owner,
+        providerConfig.owner,
         taskRunner,
       );
     });
