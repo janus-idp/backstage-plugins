@@ -1,3 +1,9 @@
+# ❗DEPRECATED❗
+
+This package has been deprecated.
+
+Please use the **[@backstage-community/plugin-acr](https://www.npmjs.com/package/@backstage-community/plugin-acr)** package instead.
+
 # Azure Container Registry plugin for Backstage
 
 The Azure Container Registry (ACR) plugin displays information about your container images available in the Azure Container Registry.
