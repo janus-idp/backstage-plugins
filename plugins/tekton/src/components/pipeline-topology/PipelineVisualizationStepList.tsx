@@ -3,10 +3,9 @@ import React from 'react';
 import { RunStatus } from '@patternfly/react-topology';
 import classNames from 'classnames';
 
-import { getRunStatusColor } from '@janus-idp/shared-react';
+import { Status } from '@janus-idp/shared-react';
 
 import { StepStatus } from '../../types/taskRun';
-import { Status, StatusProps } from '../common/Status';
 
 import './PipelineVisualizationStepList.css';
 
@@ -25,34 +24,7 @@ type TooltipColoredStatusIconProps = {
 const TooltipColoredStatusIcon = ({
   status,
 }: TooltipColoredStatusIconProps) => {
-  const size = 18;
-  const sharedProps: StatusProps = {
-    status,
-    iconOnly: true,
-    height: size,
-    width: size,
-  };
-
-  const icon = <Status {...sharedProps} spin />;
-
-  if (status === RunStatus.Succeeded || status === RunStatus.Failed) {
-    // Succeeded and Failed icons have transparent centers shapes - in tooltips, this becomes an undesired black
-    // This will simply wrap the icon and place a white backdrop
-    return (
-      <div style={{ color: getRunStatusColor(status).color }}>
-        <svg {...sharedProps}>
-          <circle
-            className="bs-tkn-pipeline-visualization-step-list__icon-backdrop"
-            cx={size / 2}
-            cy={size / 2}
-            r={size / 2 - 1}
-          />
-          {icon}
-        </svg>
-      </div>
-    );
-  }
-
+  const icon = <Status status={status} iconOnly />;
   return icon;
 };
 

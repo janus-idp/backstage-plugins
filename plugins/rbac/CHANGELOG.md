@@ -1,5 +1,10 @@
 ### Dependencies
 
+* **@janus-idp/shared-react:** upgraded to 2.11.1
+* **@janus-idp/cli:** upgraded to 1.15.0
+
+### Dependencies
+
 * **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.10.0
 * **@janus-idp/shared-react:** upgraded to 2.11.0
 * **@janus-idp/cli:** upgraded to 1.14.0

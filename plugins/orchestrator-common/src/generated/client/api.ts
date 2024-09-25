@@ -369,6 +369,12 @@ export interface ProcessInstanceDTO {
      * @memberof ProcessInstanceDTO
      */
     'error'?: ProcessInstanceErrorDTO;
+    /**
+     * 
+     * @type {object}
+     * @memberof ProcessInstanceDTO
+     */
+    'variables'?: object;
 }
 
 
@@ -501,10 +507,10 @@ export interface WorkflowDTO {
 export interface WorkflowDataDTO {
     /**
      * 
-     * @type {Array<Array<WorkflowSuggestionDTO>>}
+     * @type {WorkflowResultDTO}
      * @memberof WorkflowDataDTO
      */
-    'workflowoptions'?: Array<Array<WorkflowSuggestionDTO>>;
+    'result'?: WorkflowResultDTO;
 }
 /**
  * Format of the workflow definition
@@ -691,6 +697,105 @@ export interface WorkflowProgressDTO {
 
 
 /**
+ * Result of a workflow execution
+ * @export
+ * @interface WorkflowResultDTO
+ */
+export interface WorkflowResultDTO {
+    /**
+     * The state of workflow completion.
+     * @type {string}
+     * @memberof WorkflowResultDTO
+     */
+    'completedWith'?: WorkflowResultDTOCompletedWithEnum;
+    /**
+     * High-level summary of the current status, free-form text, human readable.
+     * @type {string}
+     * @memberof WorkflowResultDTO
+     */
+    'message'?: string;
+    /**
+     * List of workflows suggested to run next. Items at lower indexes are of higher priority.
+     * @type {Array<WorkflowResultDTONextWorkflowsInner>}
+     * @memberof WorkflowResultDTO
+     */
+    'nextWorkflows'?: Array<WorkflowResultDTONextWorkflowsInner>;
+    /**
+     * Additional structured output of workflow processing. This can contain identifiers of created resources, links to resources, logs or other output.
+     * @type {Array<WorkflowResultDTOOutputsInner>}
+     * @memberof WorkflowResultDTO
+     */
+    'outputs'?: Array<WorkflowResultDTOOutputsInner>;
+}
+
+export const WorkflowResultDTOCompletedWithEnum = {
+    Error: 'error',
+    Success: 'success'
+} as const;
+
+export type WorkflowResultDTOCompletedWithEnum = typeof WorkflowResultDTOCompletedWithEnum[keyof typeof WorkflowResultDTOCompletedWithEnum];
+
+/**
+ * 
+ * @export
+ * @interface WorkflowResultDTONextWorkflowsInner
+ */
+export interface WorkflowResultDTONextWorkflowsInner {
+    /**
+     * Workflow identifier
+     * @type {string}
+     * @memberof WorkflowResultDTONextWorkflowsInner
+     */
+    'id': string;
+    /**
+     * Human readable title describing the workflow.
+     * @type {string}
+     * @memberof WorkflowResultDTONextWorkflowsInner
+     */
+    'name': string;
+}
+/**
+ * 
+ * @export
+ * @interface WorkflowResultDTOOutputsInner
+ */
+export interface WorkflowResultDTOOutputsInner {
+    /**
+     * Unique identifier of the option. Preferably human-readable.
+     * @type {string}
+     * @memberof WorkflowResultDTOOutputsInner
+     */
+    'key': string;
+    /**
+     * 
+     * @type {WorkflowResultDTOOutputsInnerValue}
+     * @memberof WorkflowResultDTOOutputsInner
+     */
+    'value': WorkflowResultDTOOutputsInnerValue;
+    /**
+     * More detailed type of the \'value\' property. Defaults to \'text\'.
+     * @type {string}
+     * @memberof WorkflowResultDTOOutputsInner
+     */
+    'format'?: WorkflowResultDTOOutputsInnerFormatEnum;
+}
+
+export const WorkflowResultDTOOutputsInnerFormatEnum = {
+    Text: 'text',
+    Number: 'number',
+    Link: 'link'
+} as const;
+
+export type WorkflowResultDTOOutputsInnerFormatEnum = typeof WorkflowResultDTOOutputsInnerFormatEnum[keyof typeof WorkflowResultDTOOutputsInnerFormatEnum];
+
+/**
+ * Free form value of the option.
+ * @export
+ * @interface WorkflowResultDTOOutputsInnerValue
+ */
+export interface WorkflowResultDTOOutputsInnerValue {
+}
+/**
  * 
  * @export
  * @interface WorkflowRunStatusDTO
@@ -708,25 +813,6 @@ export interface WorkflowRunStatusDTO {
      * @memberof WorkflowRunStatusDTO
      */
     'value'?: string;
-}
-/**
- * 
- * @export
- * @interface WorkflowSuggestionDTO
- */
-export interface WorkflowSuggestionDTO {
-    /**
-     * 
-     * @type {string}
-     * @memberof WorkflowSuggestionDTO
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof WorkflowSuggestionDTO
-     */
-    'name'?: string;
 }
 
 /**
