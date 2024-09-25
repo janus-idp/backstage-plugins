@@ -68,7 +68,7 @@
     "@kie-tools/serverless-workflow-language-service": "^0.32.0",
     "@kie-tools/serverless-workflow-service-catalog": "^0.32.0",
     "@monaco-editor/react": "^4.6.0",
-    "axios": "1.7.4",
+    "axios": "1.7.5",
     "moment": "^2.29.4",
     "monaco-editor": "^0.49.0",
     "react-json-view": "^1.21.3",
