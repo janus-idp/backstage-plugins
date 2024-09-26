@@ -32,6 +32,7 @@ import {
   CustomGithubCredentialsProvider,
   getBranchName,
   getCatalogFilename,
+  logErrorIfNeeded,
   paginateArray,
 } from '../helpers';
 import {
@@ -236,8 +237,10 @@ export class GithubApiService {
         totalCount++;
       }
     } catch (err: any) {
-      this.logger.error(
-        `Fetching organizations with access token for github app, failed with ${err}`,
+      logErrorIfNeeded(
+        this.logger,
+        `Fetching organizations with access token for github app`,
+        err,
       );
       errors.set(-1, err.message);
     }
@@ -487,9 +490,11 @@ export class GithubApiService {
         });
         totalCount = resp?.data?.total_count;
       }
-    } catch (err) {
-      this.logger.error(
-        `Fetching repositories with access token for github app ${credential.appId}, failed with ${err}`,
+    } catch (err: any) {
+      logErrorIfNeeded(
+        this.logger,
+        `Fetching repositories with access token for github app ${credential.appId}`,
+        err,
       );
       const credentialError = this.createCredentialError(
         credential,
@@ -604,7 +609,7 @@ export class GithubApiService {
     errors: Map<number, GithubFetchError>,
     err: any,
   ) {
-    this.logger.error(`${desc} failed with ${err}`);
+    logErrorIfNeeded(this.logger, `${desc} failed`, err);
     const credentialError = this.createCredentialError(
       credential,
       err as Error,
@@ -1070,8 +1075,8 @@ export class GithubApiService {
           branchName,
           input.includeCatalogInfoContent,
         );
-      } catch (error) {
-        logger.warn(`Error fetching pull requests: ${error}`);
+      } catch (error: any) {
+        logErrorIfNeeded(this.logger, 'Error fetching pull requests', error);
       }
     }
     return {};
@@ -1120,13 +1125,13 @@ export class GithubApiService {
         }
       }
     } catch (error) {
-      logger.warn(`Error fetching pull requests: ${error}`);
+      logErrorIfNeeded(this.logger, 'Error fetching pull requests', error);
     }
     return {};
   }
 
   private async getCatalogInfoContentFromPR(
-    logger: LoggerService,
+    _logger: LoggerService,
     octo: Octokit,
     owner: string,
     repo: string,
@@ -1151,8 +1156,10 @@ export class GithubApiService {
         'utf-8',
       );
     } catch (error: any) {
-      logger.warn(
-        `Error fetching catalog-info content from PR ${prNumber}: ${error}`,
+      logErrorIfNeeded(
+        this.logger,
+        `Error fetching catalog-info content from PR ${prNumber}`,
+        error,
       );
       return undefined;
     }
@@ -1322,8 +1329,10 @@ export class GithubApiService {
               head: repoData.data.default_branch,
             });
           } catch (error: any) {
-            logger.debug(
-              `could not merge default branch ${repoData.data.default_branch} into import branch ${branchName}: ${error}`,
+            logErrorIfNeeded(
+              this.logger,
+              `Could not merge default branch ${repoData.data.default_branch} into import branch ${branchName}`,
+              error,
             );
           }
         }
@@ -1352,7 +1361,11 @@ export class GithubApiService {
           hasChanges: true,
         };
       } catch (e: any) {
-        logger.warn(`Couldn't create PR in ${input.repoUrl}: ${e}`);
+        logErrorIfNeeded(
+          this.logger,
+          `Couldn't create PR in ${input.repoUrl}`,
+          e,
+        );
         errors.push(e.message);
       }
     }
@@ -1533,7 +1546,11 @@ export class GithubApiService {
           return;
         }
       } catch (e: any) {
-        logger.warn(`Couldn't close PR in ${input.repoUrl}: ${e}`);
+        logErrorIfNeeded(
+          this.logger,
+          `Couldn't close PR in ${input.repoUrl}`,
+          e,
+        );
       }
     }
   }
@@ -1598,7 +1615,7 @@ export class GithubApiService {
   }
 
   async deleteImportBranch(
-    logger: LoggerService,
+    _logger: LoggerService,
     input: {
       repoUrl: string;
       gitUrl: gitUrlParse.GitUrl;
@@ -1619,8 +1636,10 @@ export class GithubApiService {
         });
         return;
       } catch (e: any) {
-        logger.warn(
-          `Couldn't close import PR and/or delete import branch in ${input.repoUrl}: ${e}`,
+        logErrorIfNeeded(
+          this.logger,
+          `Couldn't close import PR and/or delete import branch in ${input.repoUrl}`,
+          e,
         );
       }
     }

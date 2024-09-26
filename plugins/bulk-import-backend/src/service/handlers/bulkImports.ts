@@ -23,6 +23,7 @@ import gitUrlParse from 'git-url-parse';
 import {
   getCatalogFilename,
   getTokenForPlugin,
+  logErrorIfNeeded,
   paginateArray,
   type CatalogInfoGenerator,
 } from '../../helpers';
@@ -162,8 +163,10 @@ async function resolveReposDefaultBranches(
           return { repoUrl, defaultBranch: resp?.repository?.default_branch };
         })
         .catch((err: any) => {
-          logger.debug(
-            `Ignored repo ${repoUrl} due to an error while fetching details from GitHub: ${err}`,
+          logErrorIfNeeded(
+            logger,
+            `Ignored repo ${repoUrl} due to an error while fetching details from GitHub`,
+            err,
           );
           return {
             repoUrl,

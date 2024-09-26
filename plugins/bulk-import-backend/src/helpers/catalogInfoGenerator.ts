@@ -31,6 +31,7 @@ import {
   DefaultPageSize,
 } from '../service/handlers/handlers';
 import { getTokenForPlugin } from './auth';
+import { logErrorIfNeeded } from './loggingUtils';
 
 export class CatalogInfoGenerator {
   private readonly logger: LoggerService;
@@ -92,7 +93,11 @@ spec:
       generatedEntities = (await response.json()).generateEntities;
     } catch (error: any) {
       // fallback to the default catalog-info value
-      this.logger.debug(`could not analyze location ${repoUrl}: ${error}`);
+      logErrorIfNeeded(
+        this.logger,
+        `Could not analyze location ${repoUrl}`,
+        error,
+      );
     }
 
     if (generatedEntities.length === 0) {
@@ -260,9 +265,11 @@ ${jsYaml.dump(generatedEntity.entity)}`,
         },
         method: 'DELETE',
       });
-    } catch (err: any) {
-      this.logger.debug(
-        `Could not delete location ${locationId}, cause: ${err}`,
+    } catch (error: any) {
+      logErrorIfNeeded(
+        this.logger,
+        `Could not delete location ${locationId}`,
+        error,
       );
     }
   }
