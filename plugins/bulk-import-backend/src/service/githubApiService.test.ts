@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { CacheService, LoggerService } from '@backstage/backend-plugin-api';
+import type {
+  CacheService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
-import { Config, ConfigReader } from '@backstage/config';
+import { ConfigReader, type Config } from '@backstage/config';
 
 import { CustomGithubCredentialsProvider } from '../helpers';
 import { GithubApiService } from './githubApiService';

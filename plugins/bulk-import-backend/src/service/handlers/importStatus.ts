@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
+import type { AuthService, LoggerService } from '@backstage/backend-plugin-api';
+import type { CatalogApi } from '@backstage/catalog-client';
+import type { Config } from '@backstage/config';
 
-import { CatalogInfoGenerator, getTokenForPlugin } from '../../helpers';
-import { Components } from '../../openapi';
-import { GithubApiService } from '../githubApiService';
+import { getTokenForPlugin, type CatalogInfoGenerator } from '../../helpers';
+import type { Components } from '../../openapi';
+import type { GithubApiService } from '../githubApiService';
 
 export async function getImportStatusFromLocations(
   logger: LoggerService,

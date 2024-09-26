@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
+import type {
   AuthService,
   DiscoveryService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { LocationEntity } from '@backstage/catalog-model';
+import type { CatalogApi } from '@backstage/catalog-client';
+import type { LocationEntity } from '@backstage/catalog-model';
 import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';

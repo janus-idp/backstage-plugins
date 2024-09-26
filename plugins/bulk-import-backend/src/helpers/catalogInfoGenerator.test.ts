@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import {
+import type {
   AuthService,
   BackstageCredentials,
   BackstagePrincipalTypes,
   DiscoveryService,
 } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
-import { CatalogClient } from '@backstage/catalog-client';
+import type { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader, type Config } from '@backstage/config';
 
 import fetch from 'node-fetch';

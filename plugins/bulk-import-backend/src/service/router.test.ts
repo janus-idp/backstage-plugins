@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {
+import type {
   AuthService,
   BackstageCredentials,
   BackstagePrincipalTypes,
@@ -22,7 +22,7 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
-import {
+import type {
   CatalogClient,
   CatalogRequestOptions,
   QueryEntitiesRequest,
@@ -38,7 +38,7 @@ import express from 'express';
 import request from 'supertest';
 
 import { CatalogInfoGenerator } from '../helpers';
-import {
+import type {
   GithubOrganization,
   GithubOrganizationResponse,
   GithubRepository,

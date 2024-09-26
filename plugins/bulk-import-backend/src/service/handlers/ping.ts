@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 
-import { Paths } from '../../openapi.d';
-import { HandlerResponse } from './handlers';
+import type { Paths } from '../../openapi.d';
+import type { HandlerResponse } from './handlers';
 
 export async function ping(
   logger: LoggerService,

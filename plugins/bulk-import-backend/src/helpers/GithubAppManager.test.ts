@@ -17,10 +17,10 @@
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 
-import { RestEndpointMethodTypes } from '@octokit/rest';
+import type { RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
 
-import { ExtendedGithubCredentialsProvider } from '../types';
+import type { ExtendedGithubCredentialsProvider } from '../types';
 import {
   CustomGithubCredentialsProvider,
   CustomSingleInstanceGithubCredentialsProvider,

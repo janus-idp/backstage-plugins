@@ -15,29 +15,29 @@
  */
 
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import {
+import type {
   AuthService,
   CacheService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import type { CatalogApi } from '@backstage/catalog-client';
+import type { Config } from '@backstage/config';
+import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
 import { fullFormats } from 'ajv-formats/dist/formats';
-import express, { Request, Response, Router } from 'express';
+import express, { Router, type Request, type Response } from 'express';
 import {
-  Context,
   OpenAPIBackend,
-  Request as OpenAPIRequest,
+  type Context,
+  type Request as OpenAPIRequest,
 } from 'openapi-backend';
 
 import {
-  AuditLogger,
   DefaultAuditLogger,
+  type AuditLogger,
 } from '@janus-idp/backstage-plugin-audit-log-node';
 import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
 
@@ -47,7 +47,7 @@ import {
 } from '../helpers/auditLogUtils';
 import { permissionCheck } from '../helpers/auth';
 import { CatalogInfoGenerator } from '../helpers/catalogInfoGenerator';
-import { Components, Paths } from '../openapi.d';
+import type { Components, Paths } from '../openapi.d';
 import { openApiDocument } from '../openapidocument';
 import { GithubApiService } from './githubApiService';
 import {

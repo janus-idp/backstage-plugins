@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {
+import type {
   AuthService,
   BackstageCredentials,
   BackstagePrincipalTypes,
@@ -22,7 +22,7 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
-import { CatalogClient } from '@backstage/catalog-client';
+import type { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';

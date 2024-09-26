@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import { CacheService, LoggerService } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import type {
+  CacheService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
 import {
-  GithubCredentials,
-  GithubIntegrationConfig,
   ScmIntegrations,
+  type GithubCredentials,
+  type GithubIntegrationConfig,
 } from '@backstage/integration';
 
 import { Octokit } from '@octokit/rest';
@@ -32,14 +35,14 @@ import {
   paginateArray,
 } from '../helpers';
 import {
-  ExtendedGithubCredentials,
-  GithubAppCredentials,
-  GithubFetchError,
-  GithubOrganization,
-  GithubOrganizationResponse,
-  GithubRepository,
-  GithubRepositoryResponse,
   isGithubAppCredential,
+  type ExtendedGithubCredentials,
+  type GithubAppCredentials,
+  type GithubFetchError,
+  type GithubOrganization,
+  type GithubOrganizationResponse,
+  type GithubRepository,
+  type GithubRepositoryResponse,
 } from '../types';
 import { DefaultPageNumber, DefaultPageSize } from './handlers/handlers';
 

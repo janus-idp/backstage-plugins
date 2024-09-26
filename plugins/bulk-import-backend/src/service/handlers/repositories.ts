@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import type { LoggerService } from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
 
-import { CatalogInfoGenerator } from '../../helpers';
-import { Components } from '../../openapi.d';
-import { GithubRepositoryResponse } from '../../types';
-import { GithubApiService } from '../githubApiService';
+import type { CatalogInfoGenerator } from '../../helpers';
+import type { Components } from '../../openapi.d';
+import type { GithubRepositoryResponse } from '../../types';
+import type { GithubApiService } from '../githubApiService';
 import {
   DefaultPageNumber,
   DefaultPageSize,
-  HandlerResponse,
+  type HandlerResponse,
 } from './handlers';
 import { getImportStatusFromLocations } from './importStatus';
 
