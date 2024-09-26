@@ -22,20 +22,12 @@ import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/
 
 import { catalogModuleKeycloakEntityProvider } from './catalogModuleKeycloakEntityProvider';
 
-const SCHEDULE = {
-  schedule: {
-    frequency: 'P1M',
-    timeout: 'PT3M',
-  },
-} as const;
-
 const CONFIG = {
   catalog: {
     providers: {
       keycloakOrg: {
         default: {
           baseUrl: 'https://example.com/auth',
-          ...SCHEDULE,
         },
       },
     },
@@ -80,7 +72,7 @@ describe('catalogModuleKeycloakEntityProvider', () => {
               catalog: {
                 providers: {
                   keycloakOrg: {
-                    dev: { ...SCHEDULE },
+                    dev: {},
                   },
                 },
               },
@@ -93,33 +85,7 @@ describe('catalogModuleKeycloakEntityProvider', () => {
     );
   });
 
-  it('should not run without a schedule', async () => {
-    await expect(
-      startTestBackend({
-        features: [
-          catalogPlugin,
-          catalogModuleKeycloakEntityProvider,
-          mockServices.rootConfig.factory({
-            data: {
-              catalog: {
-                providers: {
-                  keycloakOrg: {
-                    dev: {
-                      baseUrl: 'https://example.com/auth',
-                    },
-                  },
-                },
-              },
-            },
-          }),
-        ],
-      }),
-    ).rejects.toThrow(
-      "Module 'catalog-backend-module-keycloak' for plugin 'catalog' startup failed; caused by InputError: No schedule provided via config for KeycloakOrgEntityProvider:dev.",
-    );
-  });
-
-  it('should return a single provider with a specified schedule', async () => {
+  it('should return a single provider with the default schedule', async () => {
     let usedSchedule: SchedulerServiceTaskScheduleDefinition | undefined;
     const runner = jest.fn();
     const scheduler = mockServices.scheduler.mock({
@@ -138,8 +104,47 @@ describe('catalogModuleKeycloakEntityProvider', () => {
       ],
     });
 
-    expect(usedSchedule?.frequency).toEqual({ months: 1 });
+    expect(usedSchedule?.frequency).toEqual({ minutes: 30 });
     expect(usedSchedule?.timeout).toEqual({ minutes: 3 });
+  });
+
+  it('should return a single provider with a specified schedule', async () => {
+    let usedSchedule: SchedulerServiceTaskScheduleDefinition | undefined;
+    const runner = jest.fn();
+    const scheduler = mockServices.scheduler.mock({
+      createScheduledTaskRunner(schedule) {
+        usedSchedule = schedule;
+        return { run: runner };
+      },
+    });
+
+    await startTestBackend({
+      features: [
+        catalogPlugin,
+        catalogModuleKeycloakEntityProvider,
+        mockServices.rootConfig.factory({
+          data: {
+            catalog: {
+              providers: {
+                keycloakOrg: {
+                  dev: {
+                    baseUrl: 'https://example.com/auth',
+                    schedule: {
+                      frequency: 'P1M',
+                      timeout: 'PT5M',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }),
+        scheduler.factory,
+      ],
+    });
+
+    expect(usedSchedule?.frequency).toEqual({ months: 1 });
+    expect(usedSchedule?.timeout).toEqual({ minutes: 5 });
   });
 
   it('should return multiple providers', async () => {
@@ -154,11 +159,9 @@ describe('catalogModuleKeycloakEntityProvider', () => {
                 keycloakOrg: {
                   dev: {
                     baseUrl: 'https://example.com/auth',
-                    ...SCHEDULE,
                   },
                   production: {
                     baseUrl: 'https://example.com/auth',
-                    ...SCHEDULE,
                   },
                 },
               },

@@ -23,7 +23,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
 
 #### New Backend Configuration
 
-1. Add the following configuration to the `app-config.yaml` file, and customize the schedule to fit your needs:
+1. Add the following configuration to the `app-config.yaml` file. The default schedule is a frequency of 30 minutes and a timeout of 3 minutes, please configure the schedule in the `app-config.yaml` as per your requirement.
 
    ```yaml title="app-config.yaml"
    catalog:
@@ -35,12 +35,11 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
            realm: ${KEYCLOAK_REALM}
            clientId: ${KEYCLOAK_CLIENTID}
            clientSecret: ${KEYCLOAK_CLIENTSECRET}
-           schedule: # Mandatory; same options as in TaskScheduleDefinition
+           schedule: # Optional (defaults to the configurations below if not provided); same options as in TaskScheduleDefinition
              # supports cron, ISO duration, "human duration" as used in code
              frequency: { minutes: 30 } # Customize this to fit your needs
              # supports ISO duration, "human duration" as used in code
              timeout: { minutes: 3 } # Customize this to fit your needs
-             initialDelay: { seconds: 15 } # Customize this to fit your needs
    ```
 
 1. Register the plugin in the `packages/backend/src/index.ts` file:
