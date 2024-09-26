@@ -8,108 +8,7 @@ The Ansible Automation Platform (AAP) Backstage provider plugin synchronizes the
 
 The AAP Backstage provider plugin allows the configuration of one or multiple providers using the `app-config.yaml` configuration file of Backstage.
 
-#### Legacy Backend Procedure
-
-1. Run the following command to install the AAP Backstage provider plugin:
-
-   ```console
-   yarn workspace backend add @janus-idp/backstage-plugin-aap-backend
-   ```
-
-1. Use `aap` marker to configure the `app-config.yaml` file of Backstage as follows:
-
-   ```yaml title="app-config.yaml"
-   catalog:
-     providers:
-       aap:
-         dev:
-           baseUrl: <URL>
-           authorization: 'Bearer ${AAP_AUTH_TOKEN}'
-           owner: <owner>
-           system: <system>
-           schedule: # optional; same options as in TaskScheduleDefinition
-             # supports cron, ISO duration, "human duration" as used in code
-             frequency: { minutes: 1 }
-             # supports ISO duration, "human duration" as used in code
-             timeout: { minutes: 1 }
-   ```
-
-1. Configure the scheduler using one of the following options:
-
-   - **Method 1**: If the scheduler is configured inside the `app-config.yaml` using the schedule config key mentioned previously, add the following code to `packages/backend/src/plugins/catalog.ts` file:
-
-     ```ts title="packages/backend/src/plugins/catalog.ts"
-     /* highlight-add-next-line */
-     import { AapResourceEntityProvider } from '@janus-idp/backstage-plugin-aap-backend';
-
-     export default async function createPlugin(
-       env: PluginEnvironment,
-     ): Promise<Router> {
-       const builder = await CatalogBuilder.create(env);
-
-       /* ... other processors and/or providers ... */
-       /* highlight-add-start */
-       builder.addEntityProvider(
-         AapResourceEntityProvider.fromConfig(env.config, {
-           logger: env.logger,
-           scheduler: env.scheduler,
-         }),
-       );
-       /* highlight-add-end */
-
-       const { processingEngine, router } = await builder.build();
-       await processingEngine.start();
-       return router;
-     }
-     ```
-
-     ***
-
-     **NOTE**
-
-     If you have made any changes to the schedule in the `app-config.yaml` file, then restart to apply the changes.
-
-     ***
-
-   - **Method 2**: Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file as follows:
-
-     ```ts title="packages/backend/src/plugins/catalog.ts"
-     /* highlight-add-next-line */
-     import { AapResourceEntityProvider } from '@janus-idp/backstage-plugin-aap-backend';
-
-     export default async function createPlugin(
-       env: PluginEnvironment,
-     ): Promise<Router> {
-       const builder = await CatalogBuilder.create(env);
-
-       /* ... other processors and/or providers ... */
-       /* highlight-add-start */
-       builder.addEntityProvider(
-         AapResourceEntityProvider.fromConfig(env.config, {
-           logger: env.logger,
-           schedule: env.scheduler.createScheduledTaskRunner({
-             frequency: { minutes: 30 },
-             timeout: { minutes: 3 },
-           }),
-         }),
-       );
-       /* highlight-add-end */
-
-       const { processingEngine, router } = await builder.build();
-       await processingEngine.start();
-       return router;
-     }
-     ```
-
-   ***
-
-   **NOTE**
-
-   If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence. However, if the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
-
-   ***
-
-#### New Backend Procedure
+#### Backend Procedure
 
 1. Run the following command to install the AAP Backstage provider plugin:
 
@@ -141,7 +40,7 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
    const backend = createBackend();
 
    /* highlight-add-next-line */
-   backend.add(import('@janus-idp/backstage-plugin-aap-backend/alpha'));
+   backend.add(import('@janus-idp/backstage-plugin-aap-backend'));
 
    backend.start();
    ```

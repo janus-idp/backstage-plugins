@@ -2932,7 +2932,7 @@
     yn "^4.0.0"
     zod "^3.22.4"
 
-"@backstage/backend-defaults@^0.4.0", "@backstage/backend-defaults@^0.4.1":
+"@backstage/backend-defaults@0.4.1", "@backstage/backend-defaults@^0.4.0", "@backstage/backend-defaults@^0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@backstage/backend-defaults/-/backend-defaults-0.4.1.tgz#072f5bbd2bb8a8c4998f6baba7e1134d7171a8dc"
   integrity sha512-dLuFjJCPsWDJQzdauNQMdPjinV2YB+k6Jx2JSx04l3SCspjdmBRnZf/jwIrPcQyzgQrCQhupHeprYq7wJSXgbA==
