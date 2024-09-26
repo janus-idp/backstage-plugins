@@ -1,22 +1,18 @@
 import * as React from 'react';
 
 import { makeStyles, Theme } from '@material-ui/core';
+import AngleDoubleDownIcon from '@mui/icons-material/KeyboardDoubleArrowDownOutlined';
+import AngleDoubleUpIcon from '@mui/icons-material/KeyboardDoubleArrowUpOutlined';
 import { Tooltip } from '@patternfly/react-core';
-import {
-  AngleDoubleDownIcon,
-  AngleDoubleUpIcon,
-  CriticalRiskIcon,
-  EqualsIcon,
-} from '@patternfly/react-icons';
-import { global_palette_blue_300 as lowColor } from '@patternfly/react-tokens/dist/js/global_palette_blue_300';
 import { global_palette_gold_400 as mediumColor } from '@patternfly/react-tokens/dist/js/global_palette_gold_400';
 import { global_palette_orange_300 as highColor } from '@patternfly/react-tokens/dist/js/global_palette_orange_300';
-import { global_palette_red_200 as criticalColor } from '@patternfly/react-tokens/dist/js/global_palette_red_200';
 import classNames from 'classnames';
 
 import { PipelineRunKind } from '@janus-idp/shared-react';
 
 import { usePipelineRunScanResults } from '../../hooks/usePipelineRunScanResults';
+import CriticalRiskIcon from '../Icons/CriticalRiskIcon';
+import EqualsIcon from '../Icons/EqualsIcon';
 
 const useVStyles = makeStyles((theme: Theme) => ({
   pipelineVulnerabilities: {
@@ -40,16 +36,22 @@ const useVStyles = makeStyles((theme: Theme) => ({
     fontWeight: 'bold',
   },
   criticalStatus: {
-    color: criticalColor.value,
+    height: '1em',
+    width: '1em',
   },
   highStatus: {
     color: highColor.value,
+    height: '0.8em',
+    width: '0.8em',
   },
   mediumStatus: {
     color: mediumColor.value,
+    height: '1.3em',
+    width: '1.3em',
   },
   lowStatus: {
-    color: lowColor.value,
+    height: '0.8em',
+    width: '0.8em',
   },
 }));
 
@@ -73,8 +75,8 @@ const PipelineRunVulnerabilities: React.FC<PipelineRunVulnerabilitiesProps> = ({
             <span className={classes.severityStatus}>
               <Tooltip content="Critical">
                 <CriticalRiskIcon
-                  title="Critical"
                   className={classes.criticalStatus}
+                  title="Critical"
                 />
               </Tooltip>
               {!condensed ? 'Critical' : null}
@@ -87,8 +89,8 @@ const PipelineRunVulnerabilities: React.FC<PipelineRunVulnerabilitiesProps> = ({
             <span className={classes.severityStatus}>
               <Tooltip content="High">
                 <AngleDoubleUpIcon
-                  title="High"
                   className={classes.highStatus}
+                  titleAccess="High"
                 />
               </Tooltip>
               {!condensed ? 'High' : null}
@@ -100,7 +102,7 @@ const PipelineRunVulnerabilities: React.FC<PipelineRunVulnerabilitiesProps> = ({
           <div className={classNames(classes.severityContainer, 'severity')}>
             <span className={classes.severityStatus}>
               <Tooltip content="Medium">
-                <EqualsIcon title="Medium" className={classes.mediumStatus} />
+                <EqualsIcon className={classes.mediumStatus} title="Medium" />
               </Tooltip>
               {!condensed ? 'Medium' : null}
             </span>
@@ -112,8 +114,8 @@ const PipelineRunVulnerabilities: React.FC<PipelineRunVulnerabilitiesProps> = ({
             <span className={classes.severityStatus}>
               <Tooltip content="Low">
                 <AngleDoubleDownIcon
-                  title="Low"
                   className={classes.lowStatus}
+                  titleAccess="Low"
                 />
               </Tooltip>
               {!condensed ? 'Low' : null}

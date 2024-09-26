@@ -49,6 +49,8 @@ No authorization required
 
 Execute a workflow
 
+    Execute a workflow
+
 ### Parameters
 
 |Name | Type | Description  | Notes |
@@ -74,6 +76,8 @@ No authorization required
 > AssessedProcessInstanceDTO getInstanceById(instanceId, includeAssessment)
 
 Get Workflow Instance by ID
+
+    Get a workflow execution/run (instance)
 
 ### Parameters
 
@@ -101,7 +105,7 @@ No authorization required
 
 Get instances
 
-    Retrieve an array of instances
+    Retrieve an array of workflow executions (instances)
 
 ### Parameters
 
@@ -128,7 +132,7 @@ No authorization required
 
 
 
-    Get a workflow by ID
+    Get full workflow info
 
 ### Parameters
 
@@ -155,7 +159,7 @@ No authorization required
 
 
 
-    Get a workflow input schema by ID
+    Get the workflow input schema. It defines the input fields of the workflow
 
 ### Parameters
 
@@ -183,7 +187,7 @@ No authorization required
 
 
 
-    Get a workflow overview by ID
+    Returns the key fields of the workflow including data on the last run instance
 
 ### Parameters
 
@@ -210,7 +214,7 @@ No authorization required
 
 
 
-    Get a workflow source by ID
+    Get the workflow&#39;s definition
 
 ### Parameters
 
@@ -237,7 +241,7 @@ No authorization required
 
 Get workflow status list
 
-    Retrieve an array of workflow statuses
+    Retrieve array with the status of all instances
 
 ### Parameters
 This endpoint does not need any parameter.
@@ -261,13 +265,13 @@ No authorization required
 
 
 
-    Get a list of workflow overviews
+    Returns the key fields of the workflow including data on the last run instance
 
 ### Parameters
 
 |Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **GetOverviewsRequestParams** | [**GetOverviewsRequestParams**](../Models/GetOverviewsRequestParams.md)| Parameters for retrieving of workflow overviews | [optional] |
+| **GetOverviewsRequestParams** | [**GetOverviewsRequestParams**](../Models/GetOverviewsRequestParams.md)| Pagination and filters | [optional] |
 
 ### Return type
 

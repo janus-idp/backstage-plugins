@@ -1,13 +1,17 @@
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+import type {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
   ResourceEntity,
 } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
-import {
+import type { Config } from '@backstage/config';
+import { InputError, isError, NotFoundError } from '@backstage/errors';
+import type {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
@@ -16,9 +20,9 @@ import {
   listJobTemplates,
   listWorkflowJobTemplates,
 } from '../clients/AapResourceConnector';
-import { JobTemplate } from '../clients/types';
+import type { JobTemplate } from '../clients/types';
 import { readAapApiEntityConfigs } from './config';
-import { AapConfig } from './types';
+import type { AapConfig } from './types';
 
 export class AapResourceEntityProvider implements EntityProvider {
   private readonly env: string;
@@ -31,47 +35,47 @@ export class AapResourceEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
 
   static fromConfig(
-    configRoot: Config,
-    options: {
+    deps: {
+      config: Config;
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
     },
+
+    options:
+      | { schedule: SchedulerServiceTaskRunner }
+      | { scheduler: SchedulerService },
   ): AapResourceEntityProvider[] {
-    const providerConfigs = readAapApiEntityConfigs(configRoot);
+    const { config, logger } = deps;
+
+    const providerConfigs = readAapApiEntityConfigs(config);
 
     return providerConfigs.map(providerConfig => {
       let taskRunner;
-      if (options.scheduler && providerConfig.schedule) {
+      if ('scheduler' in options && providerConfig.schedule) {
         taskRunner = options.scheduler.createScheduledTaskRunner(
           providerConfig.schedule,
         );
-      } else if (options.schedule) {
+      } else if ('schedule' in options) {
         taskRunner = options.schedule;
       } else {
-        throw new Error(
-          `No schedule provided neither via code nor config for AapResourceEntityProvider:${providerConfig.id}.`,
+        throw new InputError(
+          `No schedule provided via config for AapResourceEntityProvider:${providerConfig.id}.`,
         );
       }
 
-      return new AapResourceEntityProvider(
-        providerConfig,
-        options.logger,
-        taskRunner,
-      );
+      return new AapResourceEntityProvider(providerConfig, logger, taskRunner);
     });
   }
 
   private constructor(
     config: AapConfig,
     logger: LoggerService,
-    taskRunner: TaskRunner,
+    taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.env = config.id;
     this.baseUrl = config.baseUrl;
     this.authorization = config.authorization;
     this.owner = config.owner;
-    this.system = config.system || '';
+    this.system = config.system ?? '';
     this.logger = logger.child({
       target: this.getProviderName(),
     });
@@ -79,7 +83,9 @@ export class AapResourceEntityProvider implements EntityProvider {
     this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
-  createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
+  createScheduleFn(
+    taskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:run`;
       return taskRunner.run({
@@ -87,19 +93,21 @@ export class AapResourceEntityProvider implements EntityProvider {
         fn: async () => {
           try {
             await this.run();
-          } catch (error: any) {
-            // Ensure that we don't log any sensitive internal data:
-            this.logger.error(
-              `Error while syncing resources from AAP ${this.baseUrl}`,
-              {
-                // Default Error properties:
-                name: error.name,
-                message: error.message,
-                stack: error.stack,
-                // Additional status code if available:
-                status: error.response?.status,
-              },
-            );
+          } catch (error) {
+            if (isError(error)) {
+              // Ensure that we don't log any sensitive internal data:
+              this.logger.error(
+                `Error while syncing resources from AAP ${this.baseUrl}`,
+                {
+                  // Default Error properties:
+                  name: error.name,
+                  message: error.message,
+                  stack: error.stack,
+                  // Additional status code if available:
+                  status: (error.response as { status?: string })?.status,
+                },
+              );
+            }
           }
         },
       });
@@ -117,7 +125,7 @@ export class AapResourceEntityProvider implements EntityProvider {
 
   async run(): Promise<void> {
     if (!this.connection) {
-      throw new Error('Not initialized');
+      throw new NotFoundError('Not initialized');
     }
 
     this.logger.info(`Discovering ResourceEntities from AAP ${this.baseUrl}`);

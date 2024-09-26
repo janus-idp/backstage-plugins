@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+import type {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   ResourceEntity,
 } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
-import {
+import type { Config } from '@backstage/config';
+import { InputError } from '@backstage/errors';
+import type {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
@@ -60,49 +64,52 @@ export class ManagedClusterProvider implements EntityProvider {
     client: CustomObjectsApi,
     hubResourceName: string,
     id: string,
-    options: { logger: LoggerService },
+    deps: { logger: LoggerService },
     owner: string,
-    taskRunner: TaskRunner,
+    taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.client = client;
     this.hubResourceName = hubResourceName;
     this.id = id;
-    this.logger = options.logger;
+    this.logger = deps.logger;
     this.owner = owner;
     this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
   static fromConfig(
-    config: Config,
-    options: {
+    deps: {
+      config: Config;
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
     },
+    options:
+      | { schedule: SchedulerServiceTaskRunner }
+      | { scheduler: SchedulerService },
   ) {
-    return readOcmConfigs(config).map(provider => {
-      const client = hubApiClient(provider, options.logger);
+    const { config, logger } = deps;
+
+    return readOcmConfigs(config).map(providerConfig => {
+      const client = hubApiClient(providerConfig, logger);
       let taskRunner;
-      if (options.scheduler && provider.schedule) {
+      if ('scheduler' in options && providerConfig.schedule) {
         // Create a scheduled task runner using the provided scheduler and schedule configuration
         taskRunner = options.scheduler.createScheduledTaskRunner(
-          provider.schedule,
+          providerConfig.schedule,
         );
-      } else if (options.schedule) {
+      } else if ('schedule' in options) {
         // Use the provided schedule directly
         taskRunner = options.schedule;
       } else {
-        throw new Error(
-          `No schedule provided neither via code nor config for "${provider.id}" hub.`,
+        throw new InputError(
+          `No schedule provided via config for OCMProvider:${providerConfig.id}.`,
         );
       }
 
       return new ManagedClusterProvider(
         client,
-        provider.hubResourceName,
-        provider.id,
-        options,
-        provider.owner,
+        providerConfig.hubResourceName,
+        providerConfig.id,
+        deps,
+        providerConfig.owner,
         taskRunner,
       );
     });
@@ -112,7 +119,9 @@ export class ManagedClusterProvider implements EntityProvider {
     await this.scheduleFn();
   }
 
-  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
+  private createScheduleFn(
+    taskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       return taskRunner.run({
         id: `run_ocm_refresh_${this.getProviderName()}`,

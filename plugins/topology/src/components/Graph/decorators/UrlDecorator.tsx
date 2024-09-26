@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { Tooltip, TooltipPosition } from '@patternfly/react-core';
-import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 
+import UrlDecoratorIcon from '../../Icons/UrlDecoratorIcon';
 import Decorator from './Decorator';
 
 interface DefaultDecoratorProps {
@@ -36,7 +36,7 @@ export const UrlDecorator = ({ url, radius, x, y }: DefaultDecoratorProps) => {
           ariaLabel={label}
         >
           <g transform={`translate(-${radius / 2}, -${radius / 2})`}>
-            <ExternalLinkAltIcon style={{ fontSize: radius }} title={label} />
+            <UrlDecoratorIcon style={{ fontSize: radius }} />
           </g>
         </Decorator>
       </g>
