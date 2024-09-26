@@ -20,19 +20,8 @@ import catalogPlugin from '@backstage/plugin-catalog-backend/alpha';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 
+import { CONFIG } from '../../__fixtures__/helpers';
 import { catalogModuleKeycloakEntityProvider } from './catalogModuleKeycloakEntityProvider';
-
-const CONFIG = {
-  catalog: {
-    providers: {
-      keycloakOrg: {
-        default: {
-          baseUrl: 'https://example.com/auth',
-        },
-      },
-    },
-  },
-} as const;
 
 describe('catalogModuleKeycloakEntityProvider', () => {
   let addedProviders: EntityProvider[] | EntityProvider[][] | undefined;
@@ -56,7 +45,6 @@ describe('catalogModuleKeycloakEntityProvider', () => {
 
     // Only the Keycloak provider should be in the array
     expect((addedProviders as EntityProvider[][]).length).toEqual(1);
-
     // Keycloak returns an array of entity providers
     expect((addedProviders as EntityProvider[][])[0].length).toEqual(0);
   });
@@ -158,10 +146,10 @@ describe('catalogModuleKeycloakEntityProvider', () => {
               providers: {
                 keycloakOrg: {
                   dev: {
-                    baseUrl: 'https://example.com/auth',
+                    baseUrl: 'https://example1.com/auth',
                   },
                   production: {
-                    baseUrl: 'https://example.com/auth',
+                    baseUrl: 'https://example2.com/auth',
                   },
                 },
               },
@@ -173,7 +161,6 @@ describe('catalogModuleKeycloakEntityProvider', () => {
 
     // Only the Keycloak provider should be in the array
     expect((addedProviders as EntityProvider[][]).length).toEqual(1);
-
     // Keycloak returns an array of entity providers
     expect((addedProviders as EntityProvider[][])[0].length).toEqual(2);
   });
@@ -191,7 +178,6 @@ describe('catalogModuleKeycloakEntityProvider', () => {
 
     // Only the Keycloak provider should be in the array
     expect((addedProviders as EntityProvider[][]).length).toEqual(1);
-
     // Keycloak returns an array of entity providers
     expect(
       (addedProviders as EntityProvider[][])[0][0].getProviderName(),
