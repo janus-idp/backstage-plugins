@@ -12,10 +12,10 @@ paths:
   /v2/workflows/overview:
     post:
       operationId: getWorkflowsOverview
-      description: Get a list of workflow overviews
+      description: Returns the key fields of the workflow including data on the last run instance
       requestBody:
         required: false
-        description: Parameters for retrieving of workflow overviews
+        description: Pagination and filters
         content:
           application/json:
             schema:
@@ -36,7 +36,7 @@ paths:
   /v2/workflows/{workflowId}/overview:
     get:
       operationId: getWorkflowOverviewById
-      description: Get a workflow overview by ID
+      description: Returns the key fields of the workflow including data on the last run instance
       parameters:
         - name: workflowId
           in: path
@@ -60,7 +60,7 @@ paths:
   /v2/workflows/{workflowId}:
     get:
       operationId: getWorkflowById
-      description: Get a workflow by ID
+      description: Get full workflow info
       parameters:
         - name: workflowId
           in: path
@@ -84,7 +84,7 @@ paths:
   /v2/workflows/{workflowId}/source:
     get:
       operationId: getWorkflowSourceById
-      description: Get a workflow source by ID
+      description: Get the workflow's definition
       parameters:
         - name: workflowId
           in: path
@@ -108,7 +108,7 @@ paths:
   /v2/workflows/{workflowId}/inputSchema:
     get:
       operationId: getWorkflowInputSchemaById
-      description: Get a workflow input schema by ID
+      description: Get the workflow input schema. It defines the input fields of the workflow
       parameters:
         - name: workflowId
           in: path
@@ -138,7 +138,7 @@ paths:
     post:
       operationId: getInstances
       summary: Get instances
-      description: Retrieve an array of instances
+      description: Retrieve an array of workflow executions (instances)
       requestBody:
         required: false
         description: Parameters for retrieving instances
@@ -162,6 +162,7 @@ paths:
   /v2/workflows/instances/{instanceId}:
     get:
       summary: Get Workflow Instance by ID
+      description: Get a workflow execution/run (instance)
       operationId: getInstanceById
       parameters:
         - name: instanceId
@@ -194,7 +195,7 @@ paths:
     get:
       operationId: getWorkflowStatuses
       summary: Get workflow status list
-      description: Retrieve an array of workflow statuses
+      description: Retrieve array with the status of all instances
       responses:
         '200':
           description: Success
@@ -213,6 +214,7 @@ paths:
   /v2/workflows/{workflowId}/execute:
     post:
       summary: Execute a workflow
+      description: Execute a workflow
       operationId: executeWorkflow
       parameters:
         - name: workflowId

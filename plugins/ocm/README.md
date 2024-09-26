@@ -138,146 +138,21 @@ catalog:
 
 For more information about the default owner configuration, see [upstream string references documentation](https://backstage.io/docs/features/software-catalog/references/#string-references).
 
-##### Installing the OCM backend package into the legacy backend
+##### Installing the OCM backend package
 
-1. Create a new plugin instance in `packages/backend/src/plugins/ocm.ts` file as follows:
-
-   ```ts title="packages/backend/src/plugins/ocm.ts"
-   import { Router } from 'express';
-
-   import { createRouter } from '@janus-idp/backstage-plugin-ocm-backend';
-
-   import { PluginEnvironment } from '../types';
-
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     return await createRouter({
-       logger: env.logger,
-       config: env.config,
-       permissions: env.permissions,
-       discovery: env.discovery,
-     });
-   }
-   ```
-
-1. Import and plug the new instance into the `packages/backend/src/index.ts` file:
-
-   ```ts title="packages/backend/src/index.ts"
-   /* highlight-add-next-line */
-   import ocm from './plugins/ocm';
-
-   async function main() {
-     // ...
-     const createEnv = makeCreateEnv(config);
-     // ...
-     /* highlight-add-next-line */
-     const ocmEnv = useHotMemoize(module, () => createEnv('ocm'));
-     // ...
-     const apiRouter = Router();
-     // ...
-     /* highlight-add-next-line */
-     apiRouter.use('/ocm', await ocm(ocmEnv));
-     // ...
-   }
-   ```
-
-1. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file. The scheduler also needs to be configured. Two configurations are possible here:
-
-   - **Method 1**: If the scheduler is configured inside the `app-config.yaml` using the schedule config key as follows:
-
-     ```yaml title="app-config.yaml"
-     catalog:
-       providers:
-         ocm:
-           env:
-             # ...
-             # highlight-add-start
-             schedule: # optional; same options as in TaskScheduleDefinition
-               # supports cron, ISO duration, "human duration" as used in code
-               frequency: { minutes: 1 } # Customize with your desired frequency
-               # supports ISO duration, "human duration" as used in code
-               timeout: { minutes: 1 } # Customize with your desired timeout
-             # highlight-add-end
-     ```
-
-     Then use the configured scheduler by adding the following to the `packages/backend/src/plugins/catalog.ts`:
-
-     ```ts title="packages/backend/src/plugins/catalog.ts"
-     /* highlight-add-next-line */
-     import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
-
-     export default async function createPlugin(
-       env: PluginEnvironment,
-     ): Promise<Router> {
-       const builder = await CatalogBuilder.create(env);
-       // ...
-       /* highlight-add-start */
-       const ocm = ManagedClusterProvider.fromConfig(env.config, {
-         logger: env.logger,
-         scheduler: env.scheduler,
-       });
-       builder.addEntityProvider(ocm);
-       /* highlight-add-start */
-       // ...
-     }
-     ```
-
-     ***
-
-     **NOTE**
-
-     If you have made any changes to the schedule in the `app-config.yaml` file, then restart to apply the changes.
-
-     ***
-
-   - **Method 2**: Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file:
-
-     ```ts title="packages/backend/src/plugins/catalog.ts"
-     /* highlight-add-next-line */
-     import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
-
-     export default async function createPlugin(
-       env: PluginEnvironment,
-     ): Promise<Router> {
-       const builder = await CatalogBuilder.create(env);
-       // ...
-       /* highlight-add-start */
-       const ocm = ManagedClusterProvider.fromConfig(env.config, {
-         logger: env.logger,
-         schedule: env.scheduler.createScheduledTaskRunner({
-           frequency: { minutes: 1 },
-           timeout: { minutes: 1 },
-         }),
-       });
-       builder.addEntityProvider(ocm);
-       /* highlight-add-start */
-       // ...
-     }
-     ```
-
-   ***
-
-   **NOTE**
-
-   If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence. However, if the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
-
-   ***
-
-##### Installing the OCM backend package into the new backend
-
-The OCM plugin supports integration with the [new backend system](https://backstage.io/docs/backend-system/). In order to install the plugin follow the first 2 configuration steps described [here](#setting-up-the-ocm-backend-package). Then add the following lines to the `packages/backend/src/index.ts` file.
+In order to install the plugin follow the first 2 configuration steps described [here](#setting-up-the-ocm-backend-package). Then add the following lines to the `packages/backend/src/index.ts` file.
 
 ```ts title="packages/backend/src/index.ts"
 import {
   catalogModuleOCMEntityProvider,
   ocmPlugin,
-} from '@janus-idp/backstage-plugin-ocm-backend/alpha';
+} from '@janus-idp/backstage-plugin-ocm-backend';
 
 const backend = createBackend();
-/* highlight-add-next-line */
+/* highlight-add-start */
 backend.add(catalogModuleOCMEntityProvider);
 backend.add(ocmPlugin);
+/* highlight-add-end */
 
 backend.start();
 ```

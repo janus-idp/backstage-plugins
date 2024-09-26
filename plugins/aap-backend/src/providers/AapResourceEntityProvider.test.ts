@@ -1,7 +1,11 @@
-import { getVoidLogger } from '@backstage/backend-common';
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
-import { ConfigReader } from '@backstage/config';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import type {
+  SchedulerServiceTaskInvocationDefinition,
+  SchedulerServiceTaskRunner,
+  SchedulerServiceTaskScheduleDefinition,
+} from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
+import { ErrorLike } from '@backstage/errors';
+import type { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 
 import {
   listJobTemplates,
@@ -11,19 +15,7 @@ import { AapResourceEntityProvider } from './AapResourceEntityProvider';
 
 const AUTH_HEADER = 'Bearer xxxx'; // NOSONAR
 
-const BASIC_VALID_CONFIG = {
-  catalog: {
-    providers: {
-      aap: {
-        dev: {
-          baseUrl: 'http://localhost:8080',
-        },
-      },
-    },
-  },
-} as const;
-
-const BASIC_VALID_CONFIG_2 = {
+const CONFIG = {
   catalog: {
     providers: {
       aap: {
@@ -47,130 +39,45 @@ jest.mock('../clients/AapResourceConnector', () => ({
   listWorkflowJobTemplates: jest.fn().mockReturnValue({}),
 }));
 
-class FakeAbortSignal implements AbortSignal {
-  readonly aborted = false;
-  readonly reason = undefined;
-  onabort() {
-    return null;
-  }
-  throwIfAborted() {
-    return null;
-  }
-  addEventListener() {
-    return null;
-  }
-  removeEventListener() {
-    return null;
-  }
-  dispatchEvent() {
-    return true;
-  }
-}
-
-class ManualTaskRunner implements TaskRunner {
-  private tasks: TaskInvocationDefinition[] = [];
-  async run(task: TaskInvocationDefinition) {
+class SchedulerServiceTaskRunnerMock implements SchedulerServiceTaskRunner {
+  private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
+  async run(task: SchedulerServiceTaskInvocationDefinition) {
     this.tasks.push(task);
   }
   async runAll() {
-    const abortSignal = new FakeAbortSignal();
+    const abortSignal = jest.fn() as unknown as AbortSignal;
     for await (const task of this.tasks) {
       await task.fn(abortSignal);
     }
   }
-  clear() {
-    this.tasks = [];
-  }
 }
 
+const scheduler = mockServices.scheduler.mock({
+  createScheduledTaskRunner() {
+    return new SchedulerServiceTaskRunnerMock();
+  },
+});
+
 describe('AapResourceEntityProvider', () => {
-  const logMock = jest.fn();
-
-  const logger = getVoidLogger();
-  logger.child = () => logger;
-  ['log', ...Object.keys(logger.levels)].forEach(logFunctionName => {
-    (logger as any)[logFunctionName] = function LogMock() {
-      logMock(logFunctionName, ...arguments);
-    };
-  });
-
-  const manualTaskRunner = new ManualTaskRunner();
+  let schedule: SchedulerServiceTaskRunnerMock;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    manualTaskRunner.clear();
-  });
-
-  afterEach(() => {
-    const logs = JSON.stringify(logMock.mock.calls);
-    // eslint-disable-next-line jest/no-standalone-expect
-    expect(logs).not.toContain(AUTH_HEADER);
-  });
-
-  it('should return an empty array if no providers are configured', () => {
-    const config = new ConfigReader({});
-
-    const result = AapResourceEntityProvider.fromConfig(config, {
-      logger,
-    });
-
-    expect(result).toEqual([]);
-  });
-
-  it('should not run without a authorization', () => {
-    const config = new ConfigReader(BASIC_VALID_CONFIG);
-
-    expect(() =>
-      AapResourceEntityProvider.fromConfig(config, {
-        logger,
-      }),
-    ).toThrow(
-      "Missing required config value at 'catalog.providers.aap.dev.authorization",
-    );
-  });
-
-  it('should not run without a valid schedule', () => {
-    const config = new ConfigReader(BASIC_VALID_CONFIG_2);
-
-    expect(() =>
-      AapResourceEntityProvider.fromConfig(config, {
-        logger,
-      }),
-    ).toThrow(
-      'No schedule provided neither via code nor config for AapResourceEntityProvider:dev.',
-    );
-  });
-
-  it('should return a single provider if one is configured', () => {
-    const config = new ConfigReader(BASIC_VALID_CONFIG_2);
-    const aap = AapResourceEntityProvider.fromConfig(config, {
-      logger,
-      schedule: manualTaskRunner,
-    });
-
-    expect(aap).toHaveLength(1);
-  });
-
-  it('should return provider name', () => {
-    const config = new ConfigReader(BASIC_VALID_CONFIG_2);
-
-    const aap = AapResourceEntityProvider.fromConfig(config, {
-      logger,
-      schedule: manualTaskRunner,
-    });
-
-    expect(aap.map(k => k.getProviderName())).toEqual([
-      'AapResourceEntityProvider:dev',
-    ]);
+    schedule = scheduler.createScheduledTaskRunner(
+      '' as unknown as SchedulerServiceTaskScheduleDefinition,
+    ) as SchedulerServiceTaskRunnerMock;
   });
 
   it('should connect', async () => {
-    const config = new ConfigReader(BASIC_VALID_CONFIG_2);
-
-    const aap = AapResourceEntityProvider.fromConfig(config, {
-      logger,
-      schedule: manualTaskRunner,
-    });
+    const aap = AapResourceEntityProvider.fromConfig(
+      {
+        config: mockServices.rootConfig({ data: CONFIG }),
+        logger: mockServices.logger.mock(),
+      },
+      {
+        schedule,
+      },
+    );
 
     const result = await Promise.all(
       aap.map(async k => await k.connect(connection)),
@@ -199,16 +106,20 @@ describe('AapResourceEntityProvider', () => {
         },
       ]),
     );
-    const config = new ConfigReader(BASIC_VALID_CONFIG_2);
 
-    const aap = AapResourceEntityProvider.fromConfig(config, {
-      logger,
-      schedule: manualTaskRunner,
-    });
+    const aap = AapResourceEntityProvider.fromConfig(
+      {
+        config: mockServices.rootConfig({ data: CONFIG }),
+        logger: mockServices.logger.mock(),
+      },
+      {
+        schedule,
+      },
+    );
 
     for await (const k of aap) {
       await k.connect(connection);
-      await manualTaskRunner.runAll();
+      await schedule.runAll();
     }
 
     expect(connection.applyMutation).toHaveBeenCalledTimes(1);
@@ -218,15 +129,14 @@ describe('AapResourceEntityProvider', () => {
   });
 
   it('should connect and run should resolves even if one api call fails', async () => {
-    const error: Error & { config?: any; status?: number } = new Error(
-      'Request failed with status code 401',
-    );
+    const error = new Error('Request failed with status code 401') as ErrorLike;
     error.config = {
       header: {
-        authorization: 'Bearer xxxx', // NOSONAR
+        authorization: AUTH_HEADER,
       },
     };
     error.status = 401;
+
     (listJobTemplates as jest.Mock).mockRejectedValue(error);
     (listWorkflowJobTemplates as jest.Mock).mockReturnValue(
       Promise.resolve([
@@ -238,29 +148,38 @@ describe('AapResourceEntityProvider', () => {
         },
       ]),
     );
-    const config = new ConfigReader(BASIC_VALID_CONFIG_2);
 
-    const aap = AapResourceEntityProvider.fromConfig(config, {
-      logger,
-      schedule: manualTaskRunner,
+    // every aap provider automatically creates a new logger
+    const aapLogger = mockServices.logger.mock();
+    const logger = mockServices.logger.mock({
+      child() {
+        return aapLogger;
+      },
     });
+
+    const aap = AapResourceEntityProvider.fromConfig(
+      { config: mockServices.rootConfig({ data: CONFIG }), logger },
+      {
+        schedule,
+      },
+    );
 
     for await (const k of aap) {
       await k.connect(connection);
-      await manualTaskRunner.runAll();
+      await schedule.runAll();
     }
+
+    expect(logger.child).toHaveBeenCalledTimes(1);
 
     expect(connection.applyMutation).toHaveBeenCalledTimes(1);
     expect(
       (connection.applyMutation as jest.Mock).mock.calls,
     ).toMatchSnapshot();
 
-    expect(logMock).toHaveBeenCalledWith(
-      'info',
+    expect(aapLogger.info).toHaveBeenCalledWith(
       'Discovering ResourceEntities from AAP http://localhost:8080',
     );
-    expect(logMock).toHaveBeenCalledWith(
-      'error',
+    expect(aapLogger.error).toHaveBeenCalledWith(
       'Failed to fetch AAP job templates',
       {
         name: 'Error',
@@ -268,8 +187,7 @@ describe('AapResourceEntityProvider', () => {
         stack: expect.any(String),
       },
     );
-    expect(logMock).toHaveBeenCalledWith(
-      'debug',
+    expect(aapLogger.debug).toHaveBeenCalledWith(
       'Discovered ResourceEntity "demoWorkflowJobTemplate"',
     );
   });

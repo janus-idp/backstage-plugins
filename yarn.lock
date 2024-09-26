@@ -2932,7 +2932,7 @@
     yn "^4.0.0"
     zod "^3.22.4"
 
-"@backstage/backend-defaults@^0.4.0", "@backstage/backend-defaults@^0.4.1":
+"@backstage/backend-defaults@0.4.1", "@backstage/backend-defaults@^0.4.0", "@backstage/backend-defaults@^0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@backstage/backend-defaults/-/backend-defaults-0.4.1.tgz#072f5bbd2bb8a8c4998f6baba7e1134d7171a8dc"
   integrity sha512-dLuFjJCPsWDJQzdauNQMdPjinV2YB+k6Jx2JSx04l3SCspjdmBRnZf/jwIrPcQyzgQrCQhupHeprYq7wJSXgbA==
@@ -3091,7 +3091,7 @@
   resolved "https://registry.yarnpkg.com/@backstage/backend-dev-utils/-/backend-dev-utils-0.1.4.tgz#65d204939c49b5df6a2148e8ad4dc718ccd1df07"
   integrity sha512-5YgAPz4CRtnqdaUlYCHwGmXvpkGQ1jaUMoDtiQ81WDxQrf+0iYZCwS4ftVyQmB0Ga6BaGOUf6GG/OuFA56Y5mA==
 
-"@backstage/backend-dynamic-feature-service@^0.2.15":
+"@backstage/backend-dynamic-feature-service@0.2.15", "@backstage/backend-dynamic-feature-service@^0.2.15":
   version "0.2.15"
   resolved "https://registry.yarnpkg.com/@backstage/backend-dynamic-feature-service/-/backend-dynamic-feature-service-0.2.15.tgz#02630afb4006d1192e55a52cdccc8fe2042e10cb"
   integrity sha512-qkfLtV/Fi40M/+ORWNUaduO2PLnE23W3niJqgYC3NAlFllyxHbh/04xItAx5zeE0qoYxg7JG66jeXNsjRWxLeA==

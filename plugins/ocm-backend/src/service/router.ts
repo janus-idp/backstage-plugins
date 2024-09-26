@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import {
   coreServices,
   createBackendPlugin,
-  DiscoveryService,
   HttpAuthService,
   LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import type { Config } from '@backstage/config';
 import { NotAllowedError } from '@backstage/errors';
 import {
   AuthorizeResult,
@@ -32,8 +30,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
-import express from 'express';
-import { Request } from 'express-serve-static-core';
+import express, { Request } from 'express';
 
 import {
   Cluster,
@@ -63,20 +60,13 @@ import {
 import { createOpenApiRouter } from '../schema/openapi.generated';
 import { ManagedClusterInfo } from '../types';
 
-export interface RouterOptions {
-  logger: LoggerService;
+async function createRouter(deps: {
   config: Config;
-  discovery: DiscoveryService;
+  logger: LoggerService;
+  httpAuth: HttpAuthService;
   permissions: PermissionsService;
-  httpAuth?: HttpAuthService;
-}
-
-const buildRouter = async (
-  config: Config,
-  logger: LoggerService,
-  httpAuth: HttpAuthService,
-  permissions: PermissionsService,
-) => {
+}) {
+  const { config, logger, httpAuth, permissions } = deps;
   const router = await createOpenApiRouter();
 
   const permissionsIntegrationRouter = createPermissionIntegrationRouter({
@@ -171,7 +161,7 @@ const buildRouter = async (
             status: parseClusterStatus(mc),
             platform: getClaim(mc, 'platform.open-cluster-management.io'),
             openshiftVersion:
-              mc.metadata!.labels?.openshiftVersion ||
+              mc.metadata!.labels?.openshiftVersion ??
               getClaim(mc, 'version.openshift.io'),
             nodes: parseNodeStatus(mci),
             ...parseUpdateInfo(mci),
@@ -187,18 +177,6 @@ const buildRouter = async (
 
   router.use(middleware.error());
   return router;
-};
-
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  const { logger } = options;
-  const { config } = options;
-  const { permissions } = options;
-
-  const { httpAuth } = createLegacyAuthAdapters(options);
-
-  return await buildRouter(config, logger, httpAuth, permissions);
 }
 
 export const ocmPlugin = createBackendPlugin({
@@ -213,7 +191,7 @@ export const ocmPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
       },
       async init({ config, logger, http, httpAuth, permissions }) {
-        http.use(await buildRouter(config, logger, httpAuth, permissions));
+        http.use(await createRouter({ config, logger, httpAuth, permissions }));
       },
     });
   },

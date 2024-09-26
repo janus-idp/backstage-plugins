@@ -1794,7 +1794,7 @@ The identifier of the workflow instance to abort.
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked"></p>
+                        <p class="marked">Execute a workflow</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/v2/workflows/{workflowId}/execute</span></code></pre>
@@ -2272,7 +2272,7 @@ $(document).ready(function() {
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked"></p>
+                        <p class="marked">Get a workflow execution/run (instance)</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/v2/workflows/instances/{instanceId}</span></code></pre>
@@ -2729,7 +2729,7 @@ Whether to include assessment
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Retrieve an array of instances</p>
+                        <p class="marked">Retrieve an array of workflow executions (instances)</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/v2/workflows/instances</span></code></pre>
@@ -3179,7 +3179,7 @@ $(document).ready(function() {
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Get a workflow by ID</p>
+                        <p class="marked">Get full workflow info</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/v2/workflows/{workflowId}</span></code></pre>
@@ -3593,7 +3593,7 @@ ID of the workflow to fetch
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Get a workflow input schema by ID</p>
+                        <p class="marked">Get the workflow input schema. It defines the input fields of the workflow</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/v2/workflows/{workflowId}/inputSchema</span></code></pre>
@@ -4047,7 +4047,7 @@ ID of instance
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Get a workflow overview by ID</p>
+                        <p class="marked">Returns the key fields of the workflow including data on the last run instance</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/v2/workflows/{workflowId}/overview</span></code></pre>
@@ -4461,7 +4461,7 @@ Unique identifier of the workflow
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Get a workflow source by ID</p>
+                        <p class="marked">Get the workflow&#39;s definition</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/v2/workflows/{workflowId}/source</span></code></pre>
@@ -4875,7 +4875,7 @@ ID of the workflow to fetch
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Retrieve an array of workflow statuses</p>
+                        <p class="marked">Retrieve array with the status of all instances</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/v2/workflows/instances/statuses</span></code></pre>
@@ -5251,7 +5251,7 @@ pub fn main() {
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Get a list of workflow overviews</p>
+                        <p class="marked">Returns the key fields of the workflow including data on the last run instance</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/v2/workflows/overview</span></code></pre>
@@ -5519,11 +5519,11 @@ pub fn main() {
                               </tr>
                                 <tr><td style="width:150px;">getOverviewsRequestParams </td>
 <td>
-<p class="marked">Parameters for retrieving of workflow overviews</p>
+<p class="marked">Pagination and filters</p>
 <script>
 $(document).ready(function() {
   var schemaWrapper = {
-  "description" : "Parameters for retrieving of workflow overviews",
+  "description" : "Pagination and filters",
   "content" : {
     "application/json" : {
       "schema" : {

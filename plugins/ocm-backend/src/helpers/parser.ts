@@ -1,6 +1,6 @@
 import { maxSatisfying } from 'semver';
 
-import {
+import type {
   ClusterDetails,
   ClusterNodesStatus,
   ClusterStatus,
@@ -32,7 +32,7 @@ export const getClaim = (
   claimName: string,
 ): string =>
   cluster.status?.clusterClaims?.find(value => value.name === claimName)
-    ?.value || '';
+    ?.value ?? '';
 
 export const parseClusterStatus = (mc: ManagedCluster): ClusterStatus => {
   const available = mc.status?.conditions.find(
@@ -51,9 +51,9 @@ export const parseManagedCluster = (mc: ManagedCluster): ClusterDetails => ({
   kubernetesVersion: getClaim(mc, 'kubeversion.open-cluster-management.io'),
   oauthUrl: getClaim(mc, 'oauthredirecturis.openshift.io'),
   openshiftId:
-    mc.metadata!.labels?.clusterID || getClaim(mc, 'id.openshift.io'),
+    mc.metadata!.labels?.clusterID ?? getClaim(mc, 'id.openshift.io'),
   openshiftVersion:
-    mc.metadata!.labels?.openshiftVersion ||
+    mc.metadata!.labels?.openshiftVersion ??
     getClaim(mc, 'version.openshift.io'),
   platform: getClaim(mc, 'platform.open-cluster-management.io'),
   region: getClaim(mc, 'region.open-cluster-management.io'),
