@@ -60,18 +60,13 @@ export interface KeycloakOrgEntityProviderOptions {
 
   /**
    * The refresh schedule to use.
-   *
-   * @defaultValue "manual"
    * @remarks
    *
-   * If you pass in 'manual', you are responsible for calling the `read` method
-   * manually at some interval.
-   *
-   * But more commonly you will pass in the result of
+   * You can pass in the result of
    * {@link @backstage/backend-plugin-api#SchedulerService.createScheduledTaskRunner}
    * to enable automatic scheduling of tasks.
    */
-  schedule?: 'manual' | SchedulerServiceTaskRunner;
+  schedule?: SchedulerServiceTaskRunner;
 
   /**
    * Scheduler used to schedule refreshes based on
@@ -131,7 +126,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
       logger: LoggerService;
     },
     options: (
-      | { schedule: 'manual' | SchedulerServiceTaskRunner }
+      | { schedule: SchedulerServiceTaskRunner }
       | { scheduler: SchedulerService }
     ) & {
       userTransformer?: UserTransformer;
@@ -159,13 +154,10 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
         id: providerConfig.id,
         provider: providerConfig,
         logger: logger,
+        taskRunner: taskRunner,
         userTransformer: options.userTransformer,
         groupTransformer: options.groupTransformer,
       });
-
-      if (typeof taskRunner !== 'string') {
-        provider.schedule(taskRunner);
-      }
 
       return provider;
     });
@@ -176,10 +168,13 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
       id: string;
       provider: KeycloakProviderConfig;
       logger: LoggerService;
+      taskRunner: SchedulerServiceTaskRunner;
       userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
     },
-  ) {}
+  ) {
+    this.schedule(options.taskRunner);
+  }
 
   getProviderName(): string {
     return `KeycloakOrgEntityProvider:${this.options.id}`;
