@@ -16,14 +16,10 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
-      "alpha": [
-        "src/alpha.ts"
-      ],
       "package.json": [
         "package.json"
       ]
@@ -44,12 +40,9 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.23.3",
-    "@backstage/backend-dynamic-feature-service": "^0.2.15",
     "@backstage/backend-plugin-api": "^0.7.0",
-    "@backstage/backend-tasks": "^0.5.27",
     "@backstage/catalog-model": "^1.5.0",
-    "@backstage/config": "^1.2.0",
+    "@backstage/errors": "^1.2.4",
     "@backstage/plugin-catalog-node": "^1.12.4",
     "@keycloak/keycloak-admin-client": "24.0.5",
     "inclusion": "^1.0.1",
@@ -62,11 +55,12 @@
     "@backstage/backend-defaults": "0.3.3",
     "@backstage/backend-test-utils": "0.4.4",
     "@backstage/cli": "0.26.11",
+    "@backstage/config": "^1.2.0",
     "@backstage/plugin-auth-node": "0.4.17",
     "@backstage/plugin-catalog-backend": "1.24.0",
     "@backstage/plugin-permission-common": "0.8.0",
     "@backstage/plugin-permission-node": "0.8.0",
-    "@janus-idp/cli": "1.15.0",
+    "@janus-idp/cli": "1.14.0",
     "@types/lodash": "4.17.5",
     "@types/supertest": "2.0.16",
     "@types/uuid": "9.0.8",
@@ -82,7 +76,6 @@
     "config.d.ts",
     "dist-dynamic/*.*",
     "dist-dynamic/dist/**",
-    "dist-dynamic/alpha/*",
     "app-config.janus-idp.yaml"
   ],
   "configSchema": "config.d.ts",

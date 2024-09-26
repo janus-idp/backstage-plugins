@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+import type {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
 } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
-import {
+import type { Config } from '@backstage/config';
+import { InputError, isError, NotFoundError } from '@backstage/errors';
+import type {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
@@ -57,24 +60,19 @@ export interface KeycloakOrgEntityProviderOptions {
 
   /**
    * The refresh schedule to use.
-   *
-   * @defaultValue "manual"
    * @remarks
    *
-   * If you pass in 'manual', you are responsible for calling the `read` method
-   * manually at some interval.
-   *
-   * But more commonly you will pass in the result of
-   * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
+   * You can pass in the result of
+   * {@link @backstage/backend-plugin-api#SchedulerService.createScheduledTaskRunner}
    * to enable automatic scheduling of tasks.
    */
-  schedule?: 'manual' | TaskRunner;
+  schedule?: SchedulerServiceTaskRunner;
 
   /**
    * Scheduler used to schedule refreshes based on
    * the schedule config.
    */
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
 
   /**
    * The logger to use.
@@ -123,36 +121,43 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
   private scheduleFn?: () => Promise<void>;
 
   static fromConfig(
-    configRoot: Config,
-    options: KeycloakOrgEntityProviderOptions,
+    deps: {
+      config: Config;
+      logger: LoggerService;
+    },
+    options: (
+      | { schedule: SchedulerServiceTaskRunner }
+      | { scheduler: SchedulerService }
+    ) & {
+      userTransformer?: UserTransformer;
+      groupTransformer?: GroupTransformer;
+    },
   ): KeycloakOrgEntityProvider[] {
-    return readProviderConfigs(configRoot).map(providerConfig => {
-      let taskRunner;
-      if (options.scheduler && providerConfig.schedule) {
+    const { config, logger } = deps;
+    return readProviderConfigs(config).map(providerConfig => {
+      let taskRunner: SchedulerServiceTaskRunner | string;
+      if ('scheduler' in options && providerConfig.schedule) {
         // Create a scheduled task runner using the provided scheduler and schedule configuration
         taskRunner = options.scheduler.createScheduledTaskRunner(
           providerConfig.schedule,
         );
-      } else if (options.schedule) {
+      } else if ('schedule' in options) {
         // Use the provided schedule directly
         taskRunner = options.schedule;
       } else {
-        throw new Error(
-          `No schedule provided neither via code nor config for KeycloakOrgEntityProvider:${providerConfig.id}.`,
+        throw new InputError(
+          `No schedule provided via config for KeycloakOrgEntityProvider:${providerConfig.id}.`,
         );
       }
 
       const provider = new KeycloakOrgEntityProvider({
         id: providerConfig.id,
         provider: providerConfig,
-        logger: options.logger,
+        logger: logger,
+        taskRunner: taskRunner,
         userTransformer: options.userTransformer,
         groupTransformer: options.groupTransformer,
       });
-
-      if (taskRunner !== 'manual') {
-        provider.schedule(taskRunner);
-      }
 
       return provider;
     });
@@ -163,10 +168,13 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
       id: string;
       provider: KeycloakProviderConfig;
       logger: LoggerService;
+      taskRunner: SchedulerServiceTaskRunner;
       userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
     },
-  ) {}
+  ) {
+    this.schedule(options.taskRunner);
+  }
 
   getProviderName(): string {
     return `KeycloakOrgEntityProvider:${this.options.id}`;
@@ -183,7 +191,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
    */
   async read(options?: { logger?: LoggerService }) {
     if (!this.connection) {
-      throw new Error('Not initialized');
+      throw new NotFoundError('Not initialized');
     }
 
     const logger = options?.logger ?? this.options.logger;
@@ -216,7 +224,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
         clientSecret: provider.clientSecret,
       };
     } else {
-      throw new Error(
+      throw new InputError(
         `username and password or clientId and clientSecret must be provided.`,
       );
     }
@@ -243,7 +251,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
     markCommitComplete();
   }
 
-  schedule(taskRunner: TaskRunner) {
+  schedule(taskRunner: SchedulerServiceTaskRunner) {
     this.scheduleFn = async () => {
       const id = `${this.getProviderName()}:refresh`;
       await taskRunner.run({
@@ -257,16 +265,18 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
 
           try {
             await this.read({ logger });
-          } catch (error: any) {
-            // Ensure that we don't log any sensitive internal data:
-            logger.error('Error while syncing Keycloak users and groups', {
-              // Default Error properties:
-              name: error.name,
-              message: error.message,
-              stack: error.stack,
-              // Additional status code if available:
-              status: error.response?.status,
-            });
+          } catch (error) {
+            if (isError(error)) {
+              // Ensure that we don't log any sensitive internal data:
+              logger.error('Error while syncing Keycloak users and groups', {
+                // Default Error properties:
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+                // Additional status code if available:
+                status: (error.response as { status?: string })?.status,
+              });
+            }
           }
         },
       });

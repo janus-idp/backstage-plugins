@@ -21,198 +21,9 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
 
 ### Configuration
 
-#### Legacy Backend Configuration
-
-1. Add the following configuration to the `app-config.yaml` file:
-
-   ```yaml title="app-config.yaml"
-   catalog:
-     providers:
-       keycloakOrg:
-         default:
-           baseUrl: https://<keycloak_host>
-           loginRealm: ${KEYCLOAK_REALM}
-           realm: ${KEYCLOAK_REALM}
-           clientId: ${KEYCLOAK_CLIENTID}
-           clientSecret: ${KEYCLOAK_CLIENTSECRET}
-   ```
-
-1. Register the plugin in the `packages/backend/src/plugins/catalog.ts` file. You can also configure a schedule in this step. However, there are possible ways of configuration, such as:
-
-   1. Configure a schedule inside the `app-config.yaml` file:
-
-      ```yaml title="app-config.yaml"
-      catalog:
-        providers:
-          keycloakOrg:
-            default:
-              # ...
-              # highlight-add-start
-              schedule: # optional; same options as in TaskScheduleDefinition
-                # supports cron, ISO duration, "human duration" as used in code
-                frequency: { minutes: 30 }
-                # supports ISO duration, "human duration" as used in code
-                timeout: { minutes: 3 }
-                initialDelay: { seconds: 15 }
-                # highlight-add-end
-      ```
-
-      Then use the configured scheduler by adding the following to the `packages/backend/src/plugins/catalog.ts`:
-
-      ```ts title="packages/backend/src/plugins/catalog.ts"
-      /* highlight-add-start */
-      import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
-
-      /* highlight-add-end */
-
-      export default async function createPlugin(
-        env: PluginEnvironment,
-      ): Promise<Router> {
-        const builder = await CatalogBuilder.create(env);
-
-        /* ... other processors and/or providers ... */
-        /* highlight-add-start */
-        builder.addEntityProvider(
-          KeycloakOrgEntityProvider.fromConfig(env.config, {
-            id: 'development',
-            logger: env.logger,
-            scheduler: env.scheduler,
-          }),
-        );
-        /* highlight-add-end */
-
-        const { processingEngine, router } = await builder.build();
-        await processingEngine.start();
-        return router;
-      }
-      ```
-
-      ***
-
-      **NOTE**
-
-      If you have made any changes to the schedule in the `app-config.yaml` file, then restart to apply the changes.
-
-      ***
-
-   1. Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file as follows:
-
-      ```ts title="packages/backend/src/plugins/catalog.ts"
-      /* highlight-add-start */
-      import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
-
-      /* highlight-add-end */
-
-      export default async function createPlugin(
-        env: PluginEnvironment,
-      ): Promise<Router> {
-        const builder = await CatalogBuilder.create(env);
-
-        /* ... other processors and/or providers ... */
-        builder.addEntityProvider(
-          KeycloakOrgEntityProvider.fromConfig(env.config, {
-            id: 'development',
-            logger: env.logger,
-            /* highlight-add-start */
-            schedule: env.scheduler.createScheduledTaskRunner({
-              frequency: { minutes: 30 },
-              timeout: { minutes: 3 },
-              initialDelay: { seconds: 15 },
-            }),
-            /* highlight-add-end */
-          }),
-        );
-
-        const { processingEngine, router } = await builder.build();
-        await processingEngine.start();
-        return router;
-      }
-      ```
-
-   ***
-
-   **NOTE**
-
-   If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence. However, if the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
-
-   ***
-
-1. Optional: override the default Keycloak query parameters. Configure the parameters inside the `app-config.yaml` file:
-
-   ```yaml title="app-config.yaml"
-   catalog:
-     providers:
-       keycloakOrg:
-         default:
-           # ...
-           # highlight-add-start
-           userQuerySize: 500 # Optional
-           groupQuerySize: 250 # Optional
-           # highlight-add-end
-   ```
-
-1. Optional: provide a transformer function for user/group to mutate the entity before their ingestion into catalog. Extend `packages/backend/src/plugins/catalog.ts` with custom `userTransformer` and `groupTransformer` functions:
-
-   ```ts title="packages/backend/src/plugins/catalog.ts"
-   /* highlight-add-start */
-   import {
-     GroupTransformer,
-     UserTransformer,
-   } from '@janus-idp/backstage-plugin-keycloak-backend';
-
-   /* highlight-add-end */
-
-   /* highlight-add-start */
-   // Suffix user entity name with realm name
-   const userTransformer: UserTransformer = async (
-     entity,
-     user,
-     realm,
-     groups,
-   ) => {
-     entity.metadata.name = `${entity.metadata.name}_${realm}`;
-     return entity;
-   };
-   /* highlight-add-end */
-
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     const builder = await CatalogBuilder.create(env);
-
-     /* ... other processors and/or providers ... */
-     builder.addEntityProvider(
-       KeycloakOrgEntityProvider.fromConfig(env.config, {
-         id: 'development',
-         logger: env.logger,
-         /* highlight-add-start */
-         userTransformer,
-         /* highlight-add-end */
-       }),
-     );
-
-     const { processingEngine, router } = await builder.build();
-     await processingEngine.start();
-     return router;
-   }
-   ```
-
-   `userTransformer` is an async function that is expected to resolve to `UserEntity` object or `undefined` (if you want to reject the entity) and accepts following parameters:
-
-   - `entity`: The output of the default parser
-   - `user`: Keycloak user representation
-   - `realm`: Realm name
-   - `groups`: Data about available groups
-
-   `groupTransformer` is an async function that is expected to resolve to `GroupEntity` object or `undefined` (if you want to reject the entity) and accepts following parameters:
-
-   - `entity`: The output of the default parser
-   - `group`: Keycloak group representation
-   - `realm`: Realm name
-
 #### New Backend Configuration
 
-1. Add the following configuration to the `app-config.yaml` file, and customize the schedule to fit your needs:
+1. Add the following configuration to the `app-config.yaml` file. The default schedule is a frequency of 30 minutes and a timeout of 3 minutes, please configure the schedule in the `app-config.yaml` as per your requirement.
 
    ```yaml title="app-config.yaml"
    catalog:
@@ -224,12 +35,11 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
            realm: ${KEYCLOAK_REALM}
            clientId: ${KEYCLOAK_CLIENTID}
            clientSecret: ${KEYCLOAK_CLIENTSECRET}
-           schedule: # Mandatory; same options as in TaskScheduleDefinition
+           schedule: # Optional (defaults to the configurations below if not provided); same options as in TaskScheduleDefinition
              # supports cron, ISO duration, "human duration" as used in code
              frequency: { minutes: 30 } # Customize this to fit your needs
              # supports ISO duration, "human duration" as used in code
              timeout: { minutes: 3 } # Customize this to fit your needs
-             initialDelay: { seconds: 15 } # Customize this to fit your needs
    ```
 
 1. Register the plugin in the `packages/backend/src/index.ts` file:
@@ -238,7 +48,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
    const backend = createBackend();
 
    /* highlight-add-next-line */
-   backend.add(import('@janus-idp/backstage-plugin-keycloak-backend/alpha'));
+   backend.add(import('@janus-idp/backstage-plugin-keycloak-backend'));
 
    backend.start();
    ```
