@@ -22,9 +22,7 @@ Add the following to your `packages/backend/src/index.ts` file:
 const backend = createBackend();
 
 // Add the following line
-backend.add(
-  import('@janus-idp/backstage-scaffolder-backend-module-quay/alpha'),
-);
+backend.add(import('@janus-idp/backstage-scaffolder-backend-module-quay'));
 
 backend.start();
 ```
