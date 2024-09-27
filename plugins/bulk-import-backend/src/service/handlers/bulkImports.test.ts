@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  AuthService,
-  BackstageCredentials,
-  BackstagePrincipalTypes,
-  CacheService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import type { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
@@ -30,11 +24,6 @@ import gitUrlParse from 'git-url-parse';
 import { CatalogInfoGenerator } from '../../helpers';
 import { GithubApiService } from '../githubApiService';
 import { deleteImportByRepo, findAllImports } from './bulkImports';
-
-const mockDiscovery = {
-  getBaseUrl: jest.fn().mockResolvedValue('https://api.example.com'),
-  getExternalBaseUrl: jest.fn().mockResolvedValue('https://api.example.com'),
-};
 
 const config = new ConfigReader({
   app: {
@@ -61,34 +50,21 @@ const config = new ConfigReader({
 
 describe('bulkimports.ts tests', () => {
   let logger: LoggerService;
-  let mockAuth: AuthService;
-  let mockCatalogClient: CatalogClient;
   let mockCatalogInfoGenerator: CatalogInfoGenerator;
-  let mockCache: CacheService;
   let mockGithubApiService: GithubApiService;
 
-  beforeAll(() => {
+  beforeEach(() => {
     logger = mockServices.logger.mock();
-    mockAuth = {
-      isPrincipal<TType extends keyof BackstagePrincipalTypes>(
-        _credentials: BackstageCredentials,
-        _type: TType,
-      ): _credentials is BackstageCredentials<BackstagePrincipalTypes[TType]> {
-        return false;
+    const mockAuth = mockServices.auth.mock({
+      getPluginRequestToken: async () => {
+        return {
+          token: 'ey123.abc.xyzzz', // notsecret
+        };
       },
-      getPluginRequestToken: () =>
-        Promise.resolve({ token: 'ey123.abc.xyzzz' }),
-      authenticate: jest.fn(),
-      getNoneCredentials: jest.fn(),
-      getOwnServiceCredentials: jest.fn().mockResolvedValue({
-        principal: {
-          subject: 'my-sub',
-        },
-      }),
-      getLimitedUserToken: jest.fn(),
-      listPublicServiceKeys: jest.fn(),
-    };
-    mockCatalogClient = {
+    });
+    const mockCache = mockServices.cache.mock();
+    const mockDiscovery = mockServices.discovery.mock();
+    const mockCatalogClient = {
       getEntitiesByRefs: jest.fn(),
       validateEntity: jest.fn(),
       addLocation: jest.fn(),
@@ -101,31 +77,83 @@ describe('bulkimports.ts tests', () => {
       mockAuth,
       mockCatalogClient,
     );
-    const mockCacheStore = new Map<string, any>();
-    mockCache = {
-      delete: jest
-        .fn()
-        .mockImplementation(async (key: string): Promise<void> => {
-          mockCacheStore.delete(key);
-        }),
-      get: jest.fn().mockImplementation(async (key: string): Promise<any> => {
-        return Promise.resolve(mockCacheStore.get(key));
-      }),
-      set: jest
-        .fn()
-        .mockImplementation(
-          async (key: string, value: any, _options?: any): Promise<void> => {
-            mockCacheStore.set(key, value);
-          },
-        ),
-      withOptions: jest.fn(),
-    };
     mockGithubApiService = new GithubApiService(logger, config, mockCache);
+    initializeGithubApiServiceMock();
   });
 
-  beforeEach(() => {
+  afterEach(() => {
     jest.resetAllMocks();
   });
+
+  function initializeGithubApiServiceMock() {
+    jest
+      .spyOn(mockGithubApiService, 'getRepositoryFromIntegrations')
+      .mockImplementation(async (repoUrl: string) => {
+        let defaultBranch = 'main';
+        switch (repoUrl) {
+          case 'https://github.com/my-org-2/my-repo-21':
+          case 'https://github.com/my-org-2/my-repo-22':
+            defaultBranch = 'master';
+            break;
+          case 'https://github.com/my-org-3/my-repo-32':
+          case 'https://github.com/my-org-3/my-repo-33':
+            defaultBranch = 'dev';
+            break;
+          default:
+            break;
+        }
+        const gitUrl = gitUrlParse(repoUrl);
+        return {
+          repository: {
+            name: gitUrl.name,
+            full_name: gitUrl.full_name,
+            url: repoUrl,
+            html_url: repoUrl,
+            updated_at: null,
+            default_branch: defaultBranch,
+          },
+        };
+      });
+
+    jest
+      .spyOn(mockGithubApiService, 'findImportOpenPr')
+      .mockImplementation((_logger, input) => {
+        const resp: {
+          prNum?: number;
+          prUrl?: string;
+        } = {};
+        switch (input.repoUrl) {
+          case 'https://github.com/my-user/my-repo-123':
+            return Promise.reject(
+              new Error(
+                'could not find out if there is an import PR open on this repo',
+              ),
+            );
+          case 'https://github.com/my-org-1/my-repo-11':
+            resp.prNum = 987;
+            resp.prUrl = `https://github.com/my-org-1/my-repo-11/pull/${resp.prNum}`;
+            break;
+          case 'https://github.com/my-org-3/my-repo-32':
+            resp.prNum = 100;
+            resp.prUrl = `https://github.com/my-org-2/my-repo-21/pull/${resp.prNum}`;
+            break;
+          default:
+            break;
+        }
+        return Promise.resolve(resp);
+      });
+
+    jest
+      .spyOn(mockGithubApiService, 'doesCatalogInfoAlreadyExistInRepo')
+      .mockImplementation((_logger, input) => {
+        return Promise.resolve(
+          [
+            'https://github.com/my-org-2/my-repo-21',
+            'https://github.com/my-org-3/my-repo-31',
+          ].includes(input.repoUrl),
+        );
+      });
+  }
 
   describe('findAllImports', () => {
     it('should return only imports from repos that are accessible from the configured GH integrations', async () => {
@@ -150,34 +178,6 @@ describe('bulkimports.ts tests', () => {
           'https://github.com/my-org-3/my-repo-34/blob/dev/path/to/catalog-info.yaml',
         ]);
       jest
-        .spyOn(mockGithubApiService, 'getRepositoryFromIntegrations')
-        .mockImplementation(async (repoUrl: string) => {
-          let defaultBranch = 'main';
-          switch (repoUrl) {
-            case 'https://github.com/my-org-2/my-repo-21':
-            case 'https://github.com/my-org-2/my-repo-22':
-              defaultBranch = 'master';
-              break;
-            case 'https://github.com/my-org-3/my-repo-32':
-            case 'https://github.com/my-org-3/my-repo-33':
-              defaultBranch = 'dev';
-              break;
-            default:
-              break;
-          }
-          const gitUrl = gitUrlParse(repoUrl);
-          return {
-            repository: {
-              name: gitUrl.name,
-              full_name: gitUrl.full_name,
-              url: repoUrl,
-              html_url: repoUrl,
-              updated_at: null,
-              default_branch: defaultBranch,
-            },
-          };
-        });
-      jest
         .spyOn(
           mockGithubApiService,
           'filterLocationsAccessibleFromIntegrations',
@@ -192,43 +192,6 @@ describe('bulkimports.ts tests', () => {
           'https://github.com/my-org-3/my-repo-31/blob/main/catalog-info.yaml', // ADDED
           'https://github.com/my-org-3/my-repo-32/blob/dev/catalog-info.yaml', // PR
         ]);
-      jest
-        .spyOn(mockGithubApiService, 'findImportOpenPr')
-        .mockImplementation((_logger, input) => {
-          const resp: {
-            prNum?: number;
-            prUrl?: string;
-          } = {};
-          switch (input.repoUrl) {
-            case 'https://github.com/my-user/my-repo-123':
-              return Promise.reject(
-                new Error(
-                  'could not find out if there is an import PR open on this repo',
-                ),
-              );
-            case 'https://github.com/my-org-1/my-repo-11':
-              resp.prNum = 987;
-              resp.prUrl = `https://github.com/my-org-1/my-repo-11/pull/${resp.prNum}`;
-              break;
-            case 'https://github.com/my-org-3/my-repo-32':
-              resp.prNum = 100;
-              resp.prUrl = `https://github.com/my-org-2/my-repo-21/pull/${resp.prNum}`;
-              break;
-            default:
-              break;
-          }
-          return Promise.resolve(resp);
-        });
-      jest
-        .spyOn(mockGithubApiService, 'doesCatalogInfoAlreadyExistInRepo')
-        .mockImplementation((_logger, input) => {
-          return Promise.resolve(
-            [
-              'https://github.com/my-org-2/my-repo-21',
-              'https://github.com/my-org-3/my-repo-31',
-            ].includes(input.repoUrl),
-          );
-        });
       jest
         .spyOn(mockCatalogInfoGenerator, 'findLocationEntitiesByTargetUrl')
         .mockResolvedValue([]);

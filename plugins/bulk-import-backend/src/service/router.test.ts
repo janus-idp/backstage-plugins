@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  AuthService,
-  BackstageCredentials,
-  BackstagePrincipalTypes,
-  CacheService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import type {
   CatalogClient,
@@ -51,11 +45,6 @@ import { createRouter } from './router';
 const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
   jest.fn();
 
-const mockDiscovery = {
-  getBaseUrl: jest.fn().mockResolvedValue('https://api.example.com'),
-  getExternalBaseUrl: jest.fn().mockResolvedValue('https://api.example.com'),
-};
-
 const permissionEvaluator: PermissionEvaluator = {
   authorize: mockedAuthorize,
   authorizeConditional: jest.fn(),
@@ -71,17 +60,6 @@ const denyAll: PermissionEvaluator['authorize'] = async queries => {
   return queries.map(() => ({
     result: AuthorizeResult.DENY,
   }));
-};
-
-const mockAddLocation = jest.fn();
-const mockValidateEntity = jest.fn();
-const mockGetEntitiesByRefs = jest.fn();
-
-const mockCache: CacheService = {
-  delete: jest.fn(),
-  get: jest.fn(),
-  set: jest.fn(),
-  withOptions: jest.fn(),
 };
 
 const configuration = new ConfigReader({
@@ -135,70 +113,83 @@ function filterOrganizations(
 
 describe('createRouter', () => {
   let app: express.Express;
-  let mockAuth: AuthService;
   let mockCatalogClient: CatalogClient;
   let mockCatalogInfoGenerator: CatalogInfoGenerator;
   let mockGithubApiService: GithubApiService;
 
-  beforeAll(async () => {
-    mockAuth = {
-      isPrincipal<TType extends keyof BackstagePrincipalTypes>(
-        _credentials: BackstageCredentials,
-        _type: TType,
-      ): _credentials is BackstageCredentials<BackstagePrincipalTypes[TType]> {
-        return false;
+  beforeEach(async () => {
+    const mockLogger = mockServices.logger.mock();
+    const mockCache = mockServices.cache.mock();
+    const mockDiscovery = mockServices.discovery.mock();
+    const mockAuth = mockServices.auth.mock({
+      getPluginRequestToken: async () => {
+        return {
+          token: 'ey123.abc.xyzzz', // notsecret
+        };
       },
-      getPluginRequestToken: () =>
-        Promise.resolve({ token: 'ey123.abc.xyzzz' }),
-      authenticate: jest.fn(),
-      getNoneCredentials: jest.fn(),
-      getOwnServiceCredentials: jest.fn().mockResolvedValue({
-        principal: {
-          subject: 'my-sub',
-        },
-      }),
-      getLimitedUserToken: jest.fn(),
-      listPublicServiceKeys: jest.fn(),
-    };
+    });
+    // TODO(rm3l): Move to 'catalogServiceMock' from '@backstage/plugin-catalog-node/testUtils'
+    //  once '@backstage/plugin-catalog-node' is upgraded
     mockCatalogClient = {
-      getEntitiesByRefs: mockGetEntitiesByRefs,
-      validateEntity: mockValidateEntity,
-      addLocation: mockAddLocation,
       getEntities: jest.fn(),
-      queryEntities: jest.fn(),
       refreshEntity: jest.fn(),
     } as unknown as CatalogClient;
-    const logger = mockServices.logger.mock();
     mockCatalogInfoGenerator = new CatalogInfoGenerator(
-      logger,
+      mockLogger,
       mockDiscovery,
       mockAuth,
       mockCatalogClient,
     );
     mockGithubApiService = new GithubApiService(
-      logger,
+      mockLogger,
       configuration,
       mockCache,
     );
+    initializeGithubApiServiceMock();
+
     const router = await createRouter({
-      logger: logger,
+      logger: mockLogger,
       config: configuration,
       permissions: permissionEvaluator,
+      httpAuth: mockServices.httpAuth.mock(),
+      auth: mockAuth,
       cache: mockCache,
       discovery: mockDiscovery,
       catalogApi: mockCatalogClient,
       catalogInfoHelper: mockCatalogInfoGenerator,
       githubApi: mockGithubApiService,
-      auth: mockAuth,
-      httpAuth: mockServices.httpAuth.mock(),
     });
     app = express().use(router);
   });
 
-  beforeEach(() => {
+  afterEach(() => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
   });
+
+  function initializeGithubApiServiceMock() {
+    jest
+      .spyOn(mockGithubApiService, 'getRepositoriesFromIntegrations')
+      .mockResolvedValue({
+        repositories: [
+          {
+            name: 'A',
+            full_name: 'my-ent-org-1/A',
+            url: 'https://api.github.com/repos/my-ent-org-1/A',
+            html_url: 'https://github.com/my-ent-org-1/A',
+            default_branch: 'master',
+          },
+          {
+            name: 'B',
+            full_name: 'my-ent-org-1/B',
+            url: 'https://api.github.com/repos/my-ent-org-1/B',
+            html_url: 'https://github.com/my-ent-org-1/B',
+            default_branch: 'main',
+          },
+        ],
+        errors: [],
+      });
+  }
 
   describe('GET /ping', () => {
     it('returns ok when unauthenticated', async () => {
@@ -444,10 +435,10 @@ describe('createRouter', () => {
           ],
         });
 
-      const response = await request(app).get('/organizations');
+      const orgResp = await request(app).get('/organizations');
 
-      expect(response.status).toEqual(500);
-      expect(response.body).toEqual({
+      expect(orgResp.status).toEqual(500);
+      expect(orgResp.body).toEqual({
         errors: ['Github App with ID 1234567890 returned an error'],
       });
     });
@@ -456,34 +447,13 @@ describe('createRouter', () => {
   describe('GET /repositories', () => {
     it('returns 403 when denied by permission framework', async () => {
       mockedAuthorize.mockImplementation(denyAll);
-      const response = await request(app).get('/repositories');
-      expect(response.status).toEqual(403);
+      const reposResp = await request(app).get('/repositories');
+      expect(reposResp.status).toEqual(403);
     });
 
     it('returns 200 when repositories are fetched without errors', async () => {
       mockedAuthorize.mockImplementation(allowAll);
 
-      jest
-        .spyOn(mockGithubApiService, 'getRepositoriesFromIntegrations')
-        .mockResolvedValue({
-          repositories: [
-            {
-              name: 'A',
-              full_name: 'my-ent-org-1/A',
-              url: 'https://api.github.com/repos/my-ent-org-1/A',
-              html_url: 'https://github.com/my-ent-org-1/A',
-              default_branch: 'master',
-            },
-            {
-              name: 'B',
-              full_name: 'my-ent-org-1/B',
-              url: 'https://api.github.com/repos/my-ent-org-1/B',
-              html_url: 'https://github.com/my-ent-org-1/B',
-              default_branch: 'main',
-            },
-          ],
-          errors: [],
-        });
       jest
         .spyOn(mockGithubApiService, 'findImportOpenPr')
         .mockResolvedValue({});
@@ -608,10 +578,10 @@ describe('createRouter', () => {
         .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
         .mockResolvedValue([]);
 
-      const response = await request(app).get('/repositories');
+      const reposResp = await request(app).get('/repositories');
 
-      expect(response.status).toEqual(500);
-      expect(response.body).toEqual({
+      expect(reposResp.status).toEqual(500);
+      expect(reposResp.body).toEqual({
         errors: ['Github App with ID 1234567890 returned an error'],
       });
     });
@@ -850,12 +820,12 @@ describe('createRouter', () => {
         .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
         .mockResolvedValue([]);
 
-      const response = await request(app).get(
+      const orgReposResp = await request(app).get(
         '/organizations/some-org/repositories',
       );
 
-      expect(response.status).toEqual(500);
-      expect(response.body).toEqual({
+      expect(orgReposResp.status).toEqual(500);
+      expect(orgReposResp.body).toEqual({
         errors: ['Github App with ID 1234567890 returned an error'],
       });
     });
@@ -864,34 +834,13 @@ describe('createRouter', () => {
   describe('GET /imports', () => {
     it('returns 403 when denied by permission framework', async () => {
       mockedAuthorize.mockImplementation(denyAll);
-      const response = await request(app).get('/imports');
-      expect(response.status).toEqual(403);
+      const importsResp = await request(app).get('/imports');
+      expect(importsResp.status).toEqual(403);
     });
 
     it('returns 200 with empty list when there is nothing in catalog yet and no open PR for each repo', async () => {
       mockedAuthorize.mockImplementation(allowAll);
 
-      jest
-        .spyOn(mockGithubApiService, 'getRepositoriesFromIntegrations')
-        .mockResolvedValue({
-          repositories: [
-            {
-              name: 'A',
-              full_name: 'my-ent-org-1/A',
-              url: 'https://api.github.com/repos/my-ent-org-1/A',
-              html_url: 'https://github.com/my-ent-org-1/A',
-              default_branch: 'master',
-            },
-            {
-              name: 'B',
-              full_name: 'my-ent-org-1/B',
-              url: 'https://api.github.com/repos/my-ent-org-1/B',
-              html_url: 'https://github.com/my-ent-org-1/B',
-              default_branch: 'main',
-            },
-          ],
-          errors: [],
-        });
       jest
         .spyOn(mockGithubApiService, 'findImportOpenPr')
         .mockResolvedValue({});

@@ -90,7 +90,7 @@ spec:
           }),
         },
       );
-      generatedEntities = (await response.json()).generateEntities;
+      generatedEntities = (await response.json()).generateEntities ?? [];
     } catch (error: any) {
       // fallback to the default catalog-info value
       logErrorIfNeeded(

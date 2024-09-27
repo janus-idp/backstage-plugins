@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  CacheService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
-import { ConfigReader, type Config } from '@backstage/config';
+import { ConfigReader } from '@backstage/config';
 
 import { CustomGithubCredentialsProvider } from '../helpers';
 import { GithubApiService } from './githubApiService';
@@ -64,23 +60,15 @@ const mockGetAllCredentials = jest.fn();
 CustomGithubCredentialsProvider.prototype.getAllCredentials =
   mockGetAllCredentials;
 
-const mockCache: CacheService = {
-  delete: jest.fn(),
-  get: jest.fn(),
-  set: jest.fn(),
-  withOptions: jest.fn(),
-};
-
 describe('GithubApiService tests', () => {
-  let config: Config;
   let githubApiService: GithubApiService;
-  let logger: LoggerService;
   let errorLog: jest.SpyInstance;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    logger = mockServices.logger.mock();
+    const logger = mockServices.logger.mock();
     errorLog = jest.spyOn(logger, 'error');
+    const mockCache = mockServices.cache.mock();
     mockGetAllCredentials.mockResolvedValue(
       Promise.resolve([
         {
@@ -102,7 +90,7 @@ describe('GithubApiService tests', () => {
         },
       ]),
     );
-    config = new ConfigReader({
+    const config = new ConfigReader({
       integrations: {
         github: [
           {
@@ -478,9 +466,9 @@ describe('GithubApiService tests', () => {
 
   it('does not throw an error if no integration in config because there is one added automatically', async () => {
     const repos = await new GithubApiService(
-      logger,
+      mockServices.logger.mock(),
       new ConfigReader({}),
-      mockCache,
+      mockServices.cache.mock(),
     ).getRepositoriesFromIntegrations();
     expect(repos).toEqual({
       errors: [],
