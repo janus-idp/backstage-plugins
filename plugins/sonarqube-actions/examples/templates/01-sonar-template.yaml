@@ -70,8 +70,8 @@ spec:
       input:
         baseUrl: ${{ parameters.baseUrl }}
         token: ${{ parameters.authParams.token }}
-        username: ${{ parameters.username }}
-        password: ${{ parameters.password }}
+        username: ${{ parameters.authParams.username }}
+        password: ${{ parameters.authParams.password }}
         name: ${{ parameters.name }}
         key: ${{ parameters.key }}
         branch: ${{ parameters.branch }}
