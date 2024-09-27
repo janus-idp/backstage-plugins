@@ -2,7 +2,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 // import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { MockConfigApi } from '@backstage/test-utils';
 
-import { AIMessage } from '@langchain/core/messages';
+import { AIMessageChunk } from '@langchain/core/messages';
 import express from 'express';
 import request from 'supertest';
 
@@ -10,8 +10,29 @@ import { saveHistory } from '../handlers/chatHistory';
 import { Roles } from '../service/types';
 import { createRouter } from './router';
 
-const mockAIMessage = new AIMessage('Mockup AI Message');
-const mockInvokeReturnValue = jest.fn().mockResolvedValue(mockAIMessage);
+const mockChunks = [
+  new AIMessageChunk({
+    content: 'Mockup',
+  }),
+  new AIMessageChunk({
+    content: 'AI',
+  }),
+  new AIMessageChunk({
+    content: 'Message',
+  }),
+  new AIMessageChunk({
+    content: '',
+    response_metadata: {
+      finish_reason: 'stop',
+    },
+  }),
+];
+
+const mockStream = jest.fn().mockImplementation(async function* stream() {
+  for (const chunk of mockChunks) {
+    yield chunk;
+  }
+});
 
 jest.mock('@langchain/core/prompts', () => {
   // Import the actual module to ensure other exports are available
@@ -22,7 +43,7 @@ jest.mock('@langchain/core/prompts', () => {
     ChatPromptTemplate: {
       fromMessages: jest.fn().mockImplementation(() => ({
         pipe: jest.fn().mockReturnValue({
-          invoke: mockInvokeReturnValue,
+          stream: mockStream,
         }),
       })),
     },
@@ -130,9 +151,33 @@ describe('createRouter', () => {
         query: 'Hello',
         serverURL: mockServerURL,
       });
-      const expectedData = 'Mockup AI Message';
+
       expect(response.statusCode).toEqual(200);
-      expect(response.text).toContain(expectedData);
+      const expectedData = 'Mockup AI Message';
+      let receivedData = '';
+      const chunkList = response.text.split('}{').map((chunk, index, arr) => {
+        if (index === 0) {
+          return `${chunk}}`;
+        } else if (index === arr.length - 1) {
+          return `{${chunk}`;
+        }
+        return `{${chunk}}`;
+      });
+      expect(chunkList.length).toEqual(4);
+      // Parse each chunk individually
+      chunkList.forEach(chunk => {
+        const parsedChunk = JSON.parse(chunk);
+        expect(parsedChunk.conversation_id).toEqual(mockConversationId);
+        if (
+          parsedChunk.response?.kwargs?.response_metadata?.finish_reason !==
+          'stop'
+        ) {
+          receivedData += parsedChunk.response?.kwargs?.content;
+          receivedData += ' ';
+        }
+      });
+      receivedData = receivedData.trimEnd(); // remove space at the last chunk
+      expect(receivedData).toEqual(expectedData);
     });
 
     it('returns 400 if conversation_id is missing', async () => {
@@ -143,7 +188,7 @@ describe('createRouter', () => {
       expect(response.body.error).toBe(
         'conversation_id is required and must be a non-empty string',
       );
-      expect(mockInvokeReturnValue).not.toHaveBeenCalled();
+      expect(mockStream).not.toHaveBeenCalled();
     });
 
     it('returns 400 if serverURL is missing', async () => {
@@ -155,7 +200,7 @@ describe('createRouter', () => {
       expect(response.body.error).toBe(
         'serverURL is required and must be a non-empty string',
       );
-      expect(mockInvokeReturnValue).not.toHaveBeenCalled();
+      expect(mockStream).not.toHaveBeenCalled();
     });
 
     it('returns 400 if model is missing', async () => {
@@ -167,7 +212,7 @@ describe('createRouter', () => {
       expect(response.body.error).toBe(
         'model is required and must be a non-empty string',
       );
-      expect(mockInvokeReturnValue).not.toHaveBeenCalled();
+      expect(mockStream).not.toHaveBeenCalled();
     });
 
     it('returns 400 if query is missing', async () => {
@@ -180,11 +225,11 @@ describe('createRouter', () => {
       expect(response.body.error).toBe(
         'query is required and must be a non-empty string',
       );
-      expect(mockInvokeReturnValue).not.toHaveBeenCalled();
+      expect(mockStream).not.toHaveBeenCalled();
     });
 
     it('returns 500 if unexpected error', async () => {
-      mockInvokeReturnValue.mockImplementationOnce(async () => {
+      mockStream.mockImplementationOnce(async () => {
         throw new Error();
       });
       const response = await request(app).post('/v1/query').send({

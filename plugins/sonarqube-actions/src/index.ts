@@ -6,4 +6,4 @@
  */
 
 export * from './actions';
-export * from './dynamic/index';
+export { scaffolderModuleSonarqubeActions as default } from './module';

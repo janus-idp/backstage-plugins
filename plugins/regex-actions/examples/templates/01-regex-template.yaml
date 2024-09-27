@@ -47,6 +47,7 @@ spec:
           ui:options:
             catalogFilter:
               kind:
+                - User
                 - System
 
   steps:
@@ -66,47 +67,29 @@ spec:
               - key: componentName
                 value: ${{ parameters.componentName }}
 
-    - id: sourceCodeTemplate
-      name: Generating the Source Code Component
+
+    - id: fetch
+      name: Template Docs Skeleton
       action: fetch:template
       input:
-        url: ./skeleton
-        copyWithoutTemplating:
-          - .github/workflows/
+        url: https://github.com/backstage/software-templates/tree/main/scaffolder-templates/docs-template/skeleton
         values:
-          githubOrg: ${{ steps.regexReplace.output.values.system }}
-          repoName: ${{ steps.regexReplace.output.values.componentName }}-techdocs
+          name: ${{ steps.regexValues.output.values.componentName }}-techdocs
+          description: Contains the techdocs for ${{ steps.regexValues.output.values.componentName }}
+          destination:
+            owner: ${{ steps.regexValues.output.values.system }}
+            repo: ${{ steps.regexValues.output.values.componentName }}-techdocs
           owner: ${{ parameters.owner }}
-          system: ${{ parameters.system }}
-          applicationType: documentation
-          description: Contains the techdocs for ${{ steps.regexReplace.output.values.componentName }}
-
-    - id: catalogTemplate
-      name: Generating the Catalog Info Component
-      action: fetch:template
-      input:
-        url: ../../scaffolder-skeletons/catalog-info-skeleton/
-        values:
-          # Gitops specific values
-          partOf: ${{ parameters.componentName }}
-
-          githubOrg: ${{ steps.regexReplace.output.values.system }}
-          repoName: ${{ steps.regexReplace.output.values.componentName }}-techdocs
-          owner: ${{ parameters.owner }}
-          system: ${{ parameters.system }}
-          applicationType: documentation
-          description: Contains the techdocs for ${{ steps.regexReplace.output.values.componentName }}
-
-          regex: ${{ steps.regexReplace.output.values }}
 
     - id: publish
       name: Publishing to the Source Code Repository
       action: publish:github
       input:
         allowedHosts: ['github.com']
-        description: Contains the techdocs for ${{ steps.regexReplace.output.values.componentName }}
-        repoUrl: github.com?owner=${{ steps.regexReplace.output.values.system }}&repo=${{ steps.regexReplace.output.values.componentName }}-techdocs
+        description: Contains the techdocs for ${{ steps.regexValues.output.values.componentName }}
+        repoUrl: github.com?owner=${{ steps.regexValues.output.values.system }}&repo=${{ steps.regexValues.output.values.componentName }}-techdocs
         defaultBranch: main
+        repoVisibility: public
 
     - id: register
       name: Registering the Catalog Info Component
