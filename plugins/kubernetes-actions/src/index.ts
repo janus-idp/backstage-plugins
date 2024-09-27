@@ -6,3 +6,4 @@
  */
 
 export * from './actions';
+export { scaffolderModuleKubernetesAction as default } from './module';
