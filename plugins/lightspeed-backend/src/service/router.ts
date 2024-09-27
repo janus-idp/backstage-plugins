@@ -87,9 +87,8 @@ export async function createRouter(
         const openAIApi = new ChatOpenAI({
           apiKey: apiToken || 'sk-no-key-required', // set to sk-no-key-required if api token is not provided
           model: model,
-          streaming: false,
-          // streaming: true,
-          // streamUsage: false,
+          streaming: true,
+          streamUsage: false,
           temperature: 0,
           configuration: {
             baseOptions: {
@@ -110,20 +109,22 @@ export async function createRouter(
         ]);
 
         const chain = prompt.pipe(openAIApi);
-
-        const res = await chain.invoke({
+        let content = '';
+        for await (const chunk of await chain.stream({
           messages: [new HumanMessage(query)],
-        });
-
-        const data = {
-          conversation_id: conversation_id,
-          response: res.content,
-        };
-        response.json(data);
+        })) {
+          const data = {
+            conversation_id: conversation_id,
+            response: chunk,
+          };
+          const buf = Buffer.from(JSON.stringify(data));
+          content += String(chunk.content);
+          response.write(buf);
+        }
         response.end();
 
         await saveHistory(conversation_id, Roles.HumanRole, query);
-        await saveHistory(conversation_id, Roles.AIRole, String(res.content));
+        await saveHistory(conversation_id, Roles.AIRole, content);
       } catch (error) {
         const errormsg = `Error fetching completions from ${serverURL}: ${error}`;
         logger.error(errormsg);
