@@ -17,7 +17,6 @@
 import type { DiscoveryService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import type { CatalogClient } from '@backstage/catalog-client';
-import { ConfigReader } from '@backstage/config';
 
 import fetch from 'node-fetch';
 
@@ -27,10 +26,12 @@ jest.mock('node-fetch');
 
 const mockBaseUrl = 'http://127.0.0.1:65535';
 
-const config = new ConfigReader({
-  catalog: {
-    import: {
-      entityFilename: 'my-catalog-info.yaml',
+const config = mockServices.rootConfig({
+  data: {
+    catalog: {
+      import: {
+        entityFilename: 'my-catalog-info.yaml',
+      },
     },
   },
 });
@@ -92,7 +93,7 @@ describe('catalogInfoGenerator', () => {
     const defaultBranch = 'dev';
     expect(
       catalogInfoGenerator.getCatalogUrl(
-        new ConfigReader({}),
+        mockServices.rootConfig(),
         repoUrl,
         defaultBranch,
       ),

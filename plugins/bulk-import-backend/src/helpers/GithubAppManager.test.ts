@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
+import { mockServices } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 
 import type { RestEndpointMethodTypes } from '@octokit/rest';
@@ -684,34 +684,36 @@ describe('CustomGithubCredentialsProvider tests', () => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
     integrations = ScmIntegrations.fromConfig(
-      new ConfigReader({
-        integrations: {
-          github: [
-            {
-              host: 'github.com',
-              apps: [
-                {
-                  appId: 1,
-                  privateKey: 'privateKey',
-                  webhookSecret: '123',
-                  clientId: 'CLIENT_ID',
-                  clientSecret: 'CLIENT_SECRET',
-                },
-                {
-                  appId: 2,
-                  privateKey: 'privateKey2',
-                  webhookSecret: '456',
-                  clientId: 'CLIENT_ID2',
-                  clientSecret: 'CLIENT_SECRET2',
-                },
-              ],
-              token: 'hardcoded_token',
-            },
-            {
-              host: 'grithub.com',
-              token: 'hardcoded_token_2',
-            },
-          ],
+      mockServices.rootConfig({
+        data: {
+          integrations: {
+            github: [
+              {
+                host: 'github.com',
+                apps: [
+                  {
+                    appId: 1,
+                    privateKey: 'privateKey',
+                    webhookSecret: '123',
+                    clientId: 'CLIENT_ID',
+                    clientSecret: 'CLIENT_SECRET',
+                  },
+                  {
+                    appId: 2,
+                    privateKey: 'privateKey2',
+                    webhookSecret: '456',
+                    clientId: 'CLIENT_ID2',
+                    clientSecret: 'CLIENT_SECRET2',
+                  },
+                ],
+                token: 'hardcoded_token',
+              },
+              {
+                host: 'grithub.com',
+                token: 'hardcoded_token_2',
+              },
+            ],
+          },
         },
       }),
     );
@@ -808,37 +810,39 @@ describe('CustomGithubCredentialsProvider tests', () => {
   describe('#getAllCredentials', () => {
     it('returns the access tokens for all installed apps and tokens on a github org/user', async () => {
       const customIntegrations = ScmIntegrations.fromConfig(
-        new ConfigReader({
-          integrations: {
-            github: [
-              {
-                host: 'github.com',
-                apps: [
-                  {
-                    appId: 1,
-                    privateKey: 'privateKey',
-                    webhookSecret: '123',
-                    clientId: 'CLIENT_ID',
-                    clientSecret: 'CLIENT_SECRET',
-                  },
-                  {
-                    appId: 2,
-                    privateKey: 'privateKey_2',
-                    webhookSecret: '456',
-                    clientId: 'CLIENT_ID_2',
-                    clientSecret: 'CLIENT_SECRET_2',
-                  },
-                  {
-                    appId: 3,
-                    privateKey: 'privateKey_3',
-                    webhookSecret: '789',
-                    clientId: 'CLIENT_ID_3',
-                    clientSecret: 'CLIENT_SECRET_3',
-                  },
-                ],
-                token: 'hardcoded_token',
-              },
-            ],
+        mockServices.rootConfig({
+          data: {
+            integrations: {
+              github: [
+                {
+                  host: 'github.com',
+                  apps: [
+                    {
+                      appId: 1,
+                      privateKey: 'privateKey',
+                      webhookSecret: '123',
+                      clientId: 'CLIENT_ID',
+                      clientSecret: 'CLIENT_SECRET',
+                    },
+                    {
+                      appId: 2,
+                      privateKey: 'privateKey_2',
+                      webhookSecret: '456',
+                      clientId: 'CLIENT_ID_2',
+                      clientSecret: 'CLIENT_SECRET_2',
+                    },
+                    {
+                      appId: 3,
+                      privateKey: 'privateKey_3',
+                      webhookSecret: '789',
+                      clientId: 'CLIENT_ID_3',
+                      clientSecret: 'CLIENT_SECRET_3',
+                    },
+                  ],
+                  token: 'hardcoded_token',
+                },
+              ],
+            },
           },
         }),
       );

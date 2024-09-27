@@ -22,7 +22,6 @@ import type {
   QueryEntitiesRequest,
   QueryEntitiesResponse,
 } from '@backstage/catalog-client';
-import { ConfigReader } from '@backstage/config';
 import {
   AuthorizeResult,
   PermissionEvaluator,
@@ -62,43 +61,45 @@ const denyAll: PermissionEvaluator['authorize'] = async queries => {
   }));
 };
 
-const configuration = new ConfigReader({
-  app: {
-    baseUrl: 'https://my-backstage-app.example.com',
-  },
-  catalog: {
-    locations: [
-      {
-        type: 'url',
-        // import status should be ADDED because it contains a catalog-info.yaml in its default branch
-        target:
-          'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/blob/main/catalog-info.yaml',
-      },
-      {
-        type: 'url',
-        // same repo but with path not to the root of the repo => will be ignored
-        target:
-          'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/blob/main/path/to/some/other/component/catalog-info.yaml',
-      },
-      {
-        type: 'url',
-        // import status should be WAIT_PR_APPROVAL because it does not contain a catalog-info.yaml in its default branch but has an import PR open
-        target:
-          'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/blob/main/catalog-info.yaml',
-      },
-      {
-        type: 'url',
-        // import status should be null because it does not contain a catalog-info.yaml in its default branch and has no an import PR open
-        target:
-          'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr/blob/main/catalog-info.yaml',
-      },
-      {
-        type: 'url',
-        // Location not considered as Import job
-        target:
-          'https://github.com/my-org-3/another-repo/blob/main/some/path/to/my-component.yaml',
-      },
-    ],
+const configuration = mockServices.rootConfig({
+  data: {
+    app: {
+      baseUrl: 'https://my-backstage-app.example.com',
+    },
+    catalog: {
+      locations: [
+        {
+          type: 'url',
+          // import status should be ADDED because it contains a catalog-info.yaml in its default branch
+          target:
+            'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/blob/main/catalog-info.yaml',
+        },
+        {
+          type: 'url',
+          // same repo but with path not to the root of the repo => will be ignored
+          target:
+            'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/blob/main/path/to/some/other/component/catalog-info.yaml',
+        },
+        {
+          type: 'url',
+          // import status should be WAIT_PR_APPROVAL because it does not contain a catalog-info.yaml in its default branch but has an import PR open
+          target:
+            'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/blob/main/catalog-info.yaml',
+        },
+        {
+          type: 'url',
+          // import status should be null because it does not contain a catalog-info.yaml in its default branch and has no an import PR open
+          target:
+            'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr/blob/main/catalog-info.yaml',
+        },
+        {
+          type: 'url',
+          // Location not considered as Import job
+          target:
+            'https://github.com/my-org-3/another-repo/blob/main/some/path/to/my-component.yaml',
+        },
+      ],
+    },
   },
 });
 

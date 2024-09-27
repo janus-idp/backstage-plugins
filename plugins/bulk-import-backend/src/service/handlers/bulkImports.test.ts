@@ -17,7 +17,6 @@
 import type { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import type { CatalogClient } from '@backstage/catalog-client';
-import { ConfigReader } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
 
@@ -25,26 +24,28 @@ import { CatalogInfoGenerator } from '../../helpers';
 import { GithubApiService } from '../githubApiService';
 import { deleteImportByRepo, findAllImports } from './bulkImports';
 
-const config = new ConfigReader({
-  app: {
-    baseUrl: 'https://my-backstage-app.example.com',
-  },
-  integrations: {
-    github: [
-      {
-        host: 'github.com',
-        apps: [
-          {
-            appId: 1,
-            privateKey: 'privateKey',
-            webhookSecret: '123',
-            clientId: 'CLIENT_ID',
-            clientSecret: 'CLIENT_SECRET',
-          },
-        ],
-        token: 'hardcoded_token',
-      },
-    ],
+const config = mockServices.rootConfig({
+  data: {
+    app: {
+      baseUrl: 'https://my-backstage-app.example.com',
+    },
+    integrations: {
+      github: [
+        {
+          host: 'github.com',
+          apps: [
+            {
+              appId: 1,
+              privateKey: 'privateKey',
+              webhookSecret: '123',
+              clientId: 'CLIENT_ID',
+              clientSecret: 'CLIENT_SECRET',
+            },
+          ],
+          token: 'hardcoded_token',
+        },
+      ],
+    },
   },
 });
 

@@ -15,7 +15,6 @@
  */
 
 import { mockServices } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
 
 import { CustomGithubCredentialsProvider } from '../helpers';
 import { GithubApiService } from './githubApiService';
@@ -90,30 +89,32 @@ describe('GithubApiService tests', () => {
         },
       ]),
     );
-    const config = new ConfigReader({
-      integrations: {
-        github: [
-          {
-            host: 'github.com',
-            apps: [
-              {
-                appId: 1,
-                privateKey: 'privateKey',
-                webhookSecret: '123',
-                clientId: 'CLIENT_ID',
-                clientSecret: 'CLIENT_SECRET',
-              },
-              {
-                appId: 2,
-                privateKey: 'privateKey2',
-                webhookSecret: '456',
-                clientId: 'CLIENT_ID2',
-                clientSecret: 'CLIENT_SECRET2',
-              },
-            ],
-            token: 'hardcoded_token',
-          },
-        ],
+    const config = mockServices.rootConfig({
+      data: {
+        integrations: {
+          github: [
+            {
+              host: 'github.com',
+              apps: [
+                {
+                  appId: 1,
+                  privateKey: 'privateKey',
+                  webhookSecret: '123',
+                  clientId: 'CLIENT_ID',
+                  clientSecret: 'CLIENT_SECRET',
+                },
+                {
+                  appId: 2,
+                  privateKey: 'privateKey2',
+                  webhookSecret: '456',
+                  clientId: 'CLIENT_ID2',
+                  clientSecret: 'CLIENT_SECRET2',
+                },
+              ],
+              token: 'hardcoded_token',
+            },
+          ],
+        },
       },
     });
     githubApiService = new GithubApiService(logger, config, mockCache);
@@ -467,7 +468,7 @@ describe('GithubApiService tests', () => {
   it('does not throw an error if no integration in config because there is one added automatically', async () => {
     const repos = await new GithubApiService(
       mockServices.logger.mock(),
-      new ConfigReader({}),
+      mockServices.rootConfig(),
       mockServices.cache.mock(),
     ).getRepositoriesFromIntegrations();
     expect(repos).toEqual({
