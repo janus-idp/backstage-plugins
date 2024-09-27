@@ -504,6 +504,7 @@ async function searchEmbedded(
 
         let resolvedPackage: BackstagePackageJson | undefined;
         let resolvedPackageDir: string;
+        let alreadyPacked = false;
         if (relatedMonoRepoPackages.length === 1) {
           const monoRepoPackage = relatedMonoRepoPackages[0];
 
@@ -552,6 +553,7 @@ async function searchEmbedded(
               `Resolved package named '${dep}' at '${resolvedPackageDir}' doesn't satisfy dependency version requirement in parent package '${pkg.name}': '${resolvedPackage.version}', '${dependencyVersion}'.`,
             );
           }
+          alreadyPacked = !resolvedPackage.main?.endsWith('.ts');
         }
 
         if (resolvedPackage.bundled) {
@@ -570,7 +572,7 @@ async function searchEmbedded(
             packageName: resolvedPackage.name,
             version: resolvedPackage.version ?? '0.0.0',
             parentPackageName: pkg.name,
-            alreadyPacked: resolvedPackage.main?.endsWith('.cjs.js') || false,
+            alreadyPacked,
           });
 
           resolved.push(
