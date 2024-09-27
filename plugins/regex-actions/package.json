@@ -16,14 +16,10 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
-      "alpha": [
-        "src/alpha.ts"
-      ],
       "package.json": [
         "package.json"
       ]
@@ -42,14 +38,12 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/backend-dynamic-feature-service": "^0.2.15",
     "@backstage/backend-plugin-api": "^0.7.0",
     "@backstage/plugin-scaffolder-node": "^0.4.8",
     "yaml": "^2.3.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@backstage/backend-common": "0.23.3",
     "@backstage/cli": "0.26.11",
     "@backstage/plugin-scaffolder-node-test-utils": "0.1.9",
     "@janus-idp/cli": "1.15.0"
@@ -57,8 +51,7 @@
   "files": [
     "dist",
     "dist-dynamic/*.*",
-    "dist-dynamic/dist/**",
-    "dist-dynamic/alpha/*"
+    "dist-dynamic/dist/**"
   ],
   "repository": {
     "type": "git",
