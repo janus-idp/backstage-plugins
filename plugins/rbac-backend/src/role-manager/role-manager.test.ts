@@ -2,7 +2,7 @@ import type { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import type { CatalogApi } from '@backstage/catalog-client';
 import type { Entity } from '@backstage/catalog-model';
-import { ConfigReader } from '@backstage/config';
+import { Config } from '@backstage/config';
 
 import * as Knex from 'knex';
 import { createTracker, MockClient, Tracker } from 'knex-mock-client';
@@ -12,14 +12,13 @@ import { BackstageRoleManager } from '../role-manager/role-manager';
 describe('BackstageRoleManager', () => {
   const catalogDBClient = Knex.knex({ client: MockClient });
   const rbacDBClient = Knex.knex({ client: MockClient });
+  // TODO: Move to 'catalogServiceMock' from '@backstage/plugin-catalog-node/testUtils'
+  // once '@backstage/plugin-catalog-node' is upgraded
   const catalogApiMock: any = {
     getEntities: jest.fn().mockImplementation(),
   };
 
-  const loggerMock: any = {
-    warn: jest.fn().mockImplementation(),
-    debug: jest.fn().mockImplementation(),
-  };
+  const loggerMock = mockServices.logger.mock();
 
   const mockAuthService = mockServices.auth();
 
@@ -29,7 +28,7 @@ describe('BackstageRoleManager', () => {
       .fn()
       .mockImplementation(() => Promise.resolve({ items: [] }));
 
-    const config = newConfigReader();
+    const config = newConfig();
 
     roleManager = new BackstageRoleManager(
       catalogApiMock as CatalogApi,
@@ -49,7 +48,7 @@ describe('BackstageRoleManager', () => {
     it('should throw an error whenever max depth is less than 0', () => {
       let expectedError;
       let errorRoleManager;
-      const config = newConfigReader(-1);
+      const config = newConfig(-1);
 
       try {
         errorRoleManager = new BackstageRoleManager(
@@ -341,7 +340,7 @@ describe('BackstageRoleManager', () => {
     //
     it('should disable group inheritance when max-depth=0', async () => {
       // max-depth=0
-      const config = newConfigReader(0);
+      const config = newConfig(0);
       const rm = new BackstageRoleManager(
         catalogApiMock as CatalogApi,
         loggerMock as LoggerService,
@@ -1086,7 +1085,7 @@ describe('BackstageRoleManager', () => {
     //               user:default/mike -------------------|---------------------------------|
     //
     it('should return false for hasLink, when user:default/mike inherits role from group tree with group:default/team-e, complex tree, maxDepth of 3', async () => {
-      const config = newConfigReader(1);
+      const config = newConfig(1);
 
       const roleManagerMaxDepth = new BackstageRoleManager(
         catalogApiMock as CatalogApi,
@@ -1724,11 +1723,11 @@ describe('BackstageRoleManager', () => {
   }
 });
 
-function newConfigReader(
+function newConfig(
   maxDepth?: number,
   users?: Array<{ name: string }>,
   superUsers?: Array<{ name: string }>,
-): ConfigReader {
+): Config {
   const testUsers = [
     {
       name: 'user:default/guest',
@@ -1738,20 +1737,22 @@ function newConfigReader(
     },
   ];
 
-  return new ConfigReader({
-    permission: {
-      rbac: {
-        admin: {
-          users: users || testUsers,
-          superUsers: superUsers,
+  return mockServices.rootConfig({
+    data: {
+      permission: {
+        rbac: {
+          admin: {
+            users: users || testUsers,
+            superUsers: superUsers,
+          },
+          maxDepth,
         },
-        maxDepth,
       },
-    },
-    backend: {
-      database: {
-        client: 'better-sqlite3',
-        connection: ':memory:',
+      backend: {
+        database: {
+          client: 'better-sqlite3',
+          connection: ':memory:',
+        },
       },
     },
   });

@@ -1,6 +1,5 @@
 import type { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
 
 import {
   Adapter,
@@ -91,6 +90,8 @@ const auditLoggerMock = {
   auditLog: jest.fn().mockImplementation(() => Promise.resolve()),
 };
 
+// TODO: Move to 'catalogServiceMock' from '@backstage/plugin-catalog-node/testUtils'
+// once '@backstage/plugin-catalog-node' is upgraded
 const catalogApi = {
   getEntityAncestors: jest.fn().mockImplementation(),
   getLocationById: jest.fn().mockImplementation(),
@@ -138,15 +139,26 @@ const existingPolicy = [
   ['role:default/existing-provider-role', 'catalog-entity', 'read', 'allow'],
 ];
 
+const config = mockServices.rootConfig({
+  data: {
+    permission: {
+      rbac: {},
+    },
+    backend: {
+      database: {
+        client: 'better-sqlite3',
+        connection: ':memory:',
+      },
+    },
+  },
+});
+
 describe('Connection', () => {
   let provider: Connection;
   let enforcerDelegate: EnforcerDelegate;
 
   beforeEach(async () => {
     const id = 'test';
-
-    const config = newConfigReader();
-
     const adapter = await new CasbinDBAdapterFactory(
       config,
       dbManagerMock,
@@ -436,7 +448,6 @@ describe('connectRBACProviders', () => {
   >;
   it('should initialize rbac providers', async () => {
     connectSpy = jest.spyOn(providerMock, 'connect');
-    const config = newConfigReader();
 
     const adapter = await new CasbinDBAdapterFactory(
       config,
@@ -466,20 +477,6 @@ describe('connectRBACProviders', () => {
   });
 });
 
-function newConfigReader(): ConfigReader {
-  return new ConfigReader({
-    permission: {
-      rbac: {},
-    },
-    backend: {
-      database: {
-        client: 'better-sqlite3',
-        connection: ':memory:',
-      },
-    },
-  });
-}
-
 async function createEnforcer(
   theModel: Model,
   adapter: Adapter,
@@ -488,8 +485,6 @@ async function createEnforcer(
   const catalogDBClient = Knex.knex({ client: MockClient });
   const rbacDBClient = Knex.knex({ client: MockClient });
   const enf = await newEnforcer(theModel, adapter);
-
-  const config = newConfigReader();
 
   const rm = new BackstageRoleManager(
     catalogApi,

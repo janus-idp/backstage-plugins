@@ -38,20 +38,23 @@ export type PluginMetadataResponseSerializedRule = {
 
 export class PluginPermissionMetadataCollector {
   private readonly pluginIds: string[];
-  private urlReader: UrlReaderService;
+  private readonly urlReader: UrlReaderService;
 
   constructor(
     private readonly discovery: DiscoveryService,
     private readonly pluginIdProvider: PluginIdProvider,
     private readonly logger: LoggerService,
     config: Config,
+    urlReader?: UrlReaderService,
   ) {
     this.pluginIds = this.pluginIdProvider.getPluginIds();
-    this.urlReader = UrlReaders.default({
-      config,
-      logger,
-      factories: [PluginPermissionMetadataCollector.permissionFactory],
-    });
+    this.urlReader =
+      urlReader ??
+      UrlReaders.default({
+        config,
+        logger,
+        factories: [PluginPermissionMetadataCollector.permissionFactory],
+      });
   }
 
   async getPluginConditionRules(

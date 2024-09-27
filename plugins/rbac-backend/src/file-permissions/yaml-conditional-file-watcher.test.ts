@@ -14,11 +14,7 @@ import { RoleEventEmitter, RoleEvents } from '../service/enforcer-delegate';
 import { PluginPermissionMetadataCollector } from '../service/plugin-endpoints';
 import { YamlConditinalPoliciesFileWatcher } from './yaml-conditional-file-watcher'; // Adjust the import path as necessary
 
-const loggerMock: any = {
-  warn: jest.fn().mockImplementation(),
-  debug: jest.fn().mockImplementation(),
-  info: jest.fn().mockImplementation(),
-};
+const loggerMock = mockServices.logger.mock();
 
 let loggerWarnSpy: jest.SpyInstance;
 

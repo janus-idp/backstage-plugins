@@ -1,6 +1,6 @@
 import type { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
+import type { Config } from '@backstage/config';
 
 import {
   Adapter,
@@ -54,6 +54,8 @@ const configPermission = [
 
 const configRole = ['user:default/guest', 'role:default/config'];
 
+// TODO: Move to 'catalogServiceMock' from '@backstage/plugin-catalog-node/testUtils'
+// once '@backstage/plugin-catalog-node' is upgraded
 const catalogApi = {
   getEntityAncestors: jest.fn().mockImplementation(),
   getLocationById: jest.fn().mockImplementation(),
@@ -71,11 +73,7 @@ const catalogApi = {
   getLocationByEntity: jest.fn().mockImplementation(),
 };
 
-const loggerMock: any = {
-  warn: jest.fn().mockImplementation(),
-  debug: jest.fn().mockImplementation(),
-  info: jest.fn().mockImplementation(),
-};
+const loggerMock = mockServices.logger.mock();
 
 const modifiedBy = 'user:default/some-admin';
 
@@ -155,7 +153,7 @@ describe('CSVFileWatcher', () => {
       './../__fixtures__/data/valid-csv/rbac-policy.csv',
     );
 
-    const config = newConfigReader();
+    const config = newConfig();
 
     const adapter = await new CasbinDBAdapterFactory(
       config,
@@ -697,7 +695,7 @@ async function createEnforcer(
   const rbacDBClient = Knex.knex({ client: MockClient });
   const enf = await newEnforcer(theModel, adapter);
 
-  const config = newConfigReader();
+  const config = newConfig();
 
   const rm = new BackstageRoleManager(
     catalogApi,
@@ -714,10 +712,10 @@ async function createEnforcer(
   return enf;
 }
 
-function newConfigReader(
+function newConfig(
   users?: Array<{ name: string }>,
   superUsers?: Array<{ name: string }>,
-): ConfigReader {
+): Config {
   const testUsers = [
     {
       name: 'user:default/guest',
@@ -727,19 +725,21 @@ function newConfigReader(
     },
   ];
 
-  return new ConfigReader({
-    permission: {
-      rbac: {
-        admin: {
-          users: users || testUsers,
-          superUsers: superUsers,
+  return mockServices.rootConfig({
+    data: {
+      permission: {
+        rbac: {
+          admin: {
+            users: users || testUsers,
+            superUsers: superUsers,
+          },
         },
       },
-    },
-    backend: {
-      database: {
-        client: 'better-sqlite3',
-        connection: ':memory:',
+      backend: {
+        database: {
+          client: 'better-sqlite3',
+          connection: ':memory:',
+        },
       },
     },
   });

@@ -1,6 +1,5 @@
 import type { UserInfoService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import type { Adapter, Enforcer } from 'casbin';
@@ -129,10 +128,7 @@ describe('PolicyBuilder', () => {
     })),
   };
 
-  const mockDiscovery = {
-    getBaseUrl: jest.fn(),
-    getExternalBaseUrl: jest.fn(),
-  };
+  const mockDiscovery = mockServices.discovery.mock();
 
   const backendPluginIDsProviderMock = {
     getPluginIds: jest.fn().mockImplementation(() => {
@@ -149,16 +145,18 @@ describe('PolicyBuilder', () => {
   it('should build policy server', async () => {
     const router = await PolicyBuilder.build(
       {
-        config: new ConfigReader({
-          backend: {
-            database: {
-              client: 'better-sqlite3',
-              connection: ':memory:',
+        config: mockServices.rootConfig({
+          data: {
+            backend: {
+              database: {
+                client: 'better-sqlite3',
+                connection: ':memory:',
+              },
             },
-          },
-          permission: {
-            enabled: true,
-            rbac: {},
+            permission: {
+              enabled: true,
+              rbac: {},
+            },
           },
         }),
         logger,
@@ -184,16 +182,18 @@ describe('PolicyBuilder', () => {
   it('should build policy server with rbac providers', async () => {
     const router = await PolicyBuilder.build(
       {
-        config: new ConfigReader({
-          backend: {
-            database: {
-              client: 'better-sqlite3',
-              connection: ':memory:',
+        config: mockServices.rootConfig({
+          data: {
+            backend: {
+              database: {
+                client: 'better-sqlite3',
+                connection: ':memory:',
+              },
             },
-          },
-          permission: {
-            enabled: true,
-            rbac: {},
+            permission: {
+              enabled: true,
+              rbac: {},
+            },
           },
         }),
         logger,
@@ -221,16 +221,18 @@ describe('PolicyBuilder', () => {
   it('should build policy server, but log warning that permission framework disabled', async () => {
     const router = await PolicyBuilder.build(
       {
-        config: new ConfigReader({
-          backend: {
-            database: {
-              client: 'better-sqlite3',
-              connection: ':memory:',
+        config: mockServices.rootConfig({
+          data: {
+            backend: {
+              database: {
+                client: 'better-sqlite3',
+                connection: ':memory:',
+              },
             },
-          },
-          permission: {
-            enabled: false,
-            rbac: {},
+            permission: {
+              enabled: false,
+              rbac: {},
+            },
           },
         }),
         logger,
@@ -259,17 +261,19 @@ describe('PolicyBuilder', () => {
     const pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] };
     const router = await PolicyBuilder.build(
       {
-        config: new ConfigReader({
-          backend: {
-            database: {
-              client: 'better-sqlite3',
-              connection: ':memory:',
+        config: mockServices.rootConfig({
+          data: {
+            backend: {
+              database: {
+                client: 'better-sqlite3',
+                connection: ':memory:',
+              },
             },
-          },
-          permission: {
-            enabled: true,
-            rbac: {
-              pluginsWithPermission: ['catalog'],
+            permission: {
+              enabled: true,
+              rbac: {
+                pluginsWithPermission: ['catalog'],
+              },
             },
           },
         }),
@@ -299,17 +303,19 @@ describe('PolicyBuilder', () => {
     const pluginIdProvider: PluginIdProvider = { getPluginIds: () => ['rbac'] };
     const router = await PolicyBuilder.build(
       {
-        config: new ConfigReader({
-          backend: {
-            database: {
-              client: 'better-sqlite3',
-              connection: ':memory:',
+        config: mockServices.rootConfig({
+          data: {
+            backend: {
+              database: {
+                client: 'better-sqlite3',
+                connection: ':memory:',
+              },
             },
-          },
-          permission: {
-            enabled: true,
-            rbac: {
-              pluginsWithPermission: ['catalog'],
+            permission: {
+              enabled: true,
+              rbac: {
+                pluginsWithPermission: ['catalog'],
+              },
             },
           },
         }),
@@ -337,17 +343,19 @@ describe('PolicyBuilder', () => {
 
   it('should get list plugin ids from application configuration, but provider should be created by default', async () => {
     const router = await PolicyBuilder.build({
-      config: new ConfigReader({
-        backend: {
-          database: {
-            client: 'better-sqlite3',
-            connection: ':memory:',
+      config: mockServices.rootConfig({
+        data: {
+          backend: {
+            database: {
+              client: 'better-sqlite3',
+              connection: ':memory:',
+            },
           },
-        },
-        permission: {
-          enabled: true,
-          rbac: {
-            pluginsWithPermission: ['catalog'],
+          permission: {
+            enabled: true,
+            rbac: {
+              pluginsWithPermission: ['catalog'],
+            },
           },
         },
       }),

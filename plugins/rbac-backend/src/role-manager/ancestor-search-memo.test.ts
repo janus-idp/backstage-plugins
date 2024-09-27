@@ -54,6 +54,8 @@ describe('ancestor-search-memo', () => {
 
   const testUserGroups = [createGroupEntity('team-a', 'team-b', [], ['adam'])];
 
+  // TODO: Move to 'catalogServiceMock' from '@backstage/plugin-catalog-node/testUtils'
+  // once '@backstage/plugin-catalog-node' is upgraded
   const catalogApiMock: any = {
     getEntities: jest.fn().mockImplementation((arg: any) => {
       const hasMember = arg.filter['relations.hasMember'];

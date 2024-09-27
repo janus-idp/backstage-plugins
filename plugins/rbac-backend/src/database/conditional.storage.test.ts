@@ -1,6 +1,5 @@
 import {
   mockServices,
-  ServiceFactoryTester,
   TestDatabaseId,
   TestDatabases,
 } from '@backstage/backend-test-utils';
@@ -87,14 +86,12 @@ describe('DataBaseConditionalStorage', () => {
 
   async function createDatabase(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
-    const mockDatabaseFactory = mockServices.database.mock({
+    const mockDatabaseService = mockServices.database.mock({
       getClient: async () => knex,
       migrations: { skip: false },
-    }).factory;
-    const databaseService =
-      await ServiceFactoryTester.from(mockDatabaseFactory).getSubject();
+    });
 
-    await migrate(databaseService);
+    await migrate(mockDatabaseService);
     return {
       knex,
       db: new DataBaseConditionalStorage(knex),

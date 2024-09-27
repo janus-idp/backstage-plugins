@@ -1,7 +1,7 @@
 import type { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import type { Entity } from '@backstage/catalog-model';
-import { ConfigReader } from '@backstage/config';
+import { Config } from '@backstage/config';
 import {
   AuthorizeResult,
   createPermission,
@@ -40,6 +40,8 @@ import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 
 type PermissionAction = 'create' | 'read' | 'update' | 'delete';
 
+// TODO: Move to 'catalogServiceMock' from '@backstage/plugin-catalog-node/testUtils'
+// once '@backstage/plugin-catalog-node' is upgraded
 const catalogApi = {
   getEntityAncestors: jest.fn().mockImplementation(),
   getLocationById: jest.fn().mockImplementation(),
@@ -117,7 +119,7 @@ describe('RBACPermissionPolicy Tests', () => {
   });
 
   it('should build', async () => {
-    const config = newConfigReader();
+    const config = newConfig();
     const adapter = await newAdapter(config);
     const enfDelegate = await newEnforcerDelegate(adapter, config);
 
@@ -134,7 +136,7 @@ describe('RBACPermissionPolicy Tests', () => {
       });
 
     const stringPolicy = `p, user:default/known_user, test-resource, update, allow `;
-    const config = newConfigReader();
+    const config = newConfig();
     const adapter = await newAdapter(config, stringPolicy);
     const enfDelegate = await newEnforcerDelegate(adapter, config);
 
@@ -148,7 +150,7 @@ describe('RBACPermissionPolicy Tests', () => {
     let policy: RBACPermissionPolicy;
 
     beforeEach(async () => {
-      const config = newConfigReader();
+      const config = newConfig();
       const adapter = await newAdapter(config);
       enfDelegate = await newEnforcerDelegate(adapter, config);
       policy = await newPermissionPolicy(config, enfDelegate);
@@ -250,7 +252,7 @@ describe('RBACPermissionPolicy Tests', () => {
   });
 
   describe('Policy checks for clean up old policies for csv file', () => {
-    let config: ConfigReader;
+    let config: Config;
     let adapter: Adapter;
     let enforcerDelegate: EnforcerDelegate;
     let rbacPolicy: RBACPermissionPolicy;
@@ -290,7 +292,7 @@ describe('RBACPermissionPolicy Tests', () => {
     beforeEach(async () => {
       (roleMetadataStorageMock.removeRoleMetadata as jest.Mock).mockReset();
 
-      config = newConfigReader();
+      config = newConfig();
       adapter = await newAdapter(config);
 
       catalogApi.getEntities.mockReturnValue({ items: [] });
@@ -607,7 +609,7 @@ describe('RBACPermissionPolicy Tests', () => {
         __dirname,
         './../__fixtures__/data/valid-csv/basic-and-resource-policies.csv',
       );
-      const config = newConfigReader(basicAndResourcePermissions);
+      const config = newConfig(basicAndResourcePermissions);
       const adapter = await newAdapter(config);
       enfDelegate = await newEnforcerDelegate(adapter, config);
 
@@ -914,7 +916,7 @@ describe('RBACPermissionPolicy Tests', () => {
           },
         );
 
-      const config = newConfigReader(csvPermFile, admins, superUser);
+      const config = newConfig(csvPermFile, admins, superUser);
       const adapter = await newAdapter(config);
 
       enfDelegate = await newEnforcerDelegate(adapter, config);
@@ -952,17 +954,19 @@ describe('RBACPermissionPolicy Tests', () => {
           throw new Error(`Failed to create`);
         });
 
-      const config = new ConfigReader({
-        permission: {
-          rbac: {
-            'policies-csv-file': csvPermFile,
-            policyFileReload: true,
+      const config = mockServices.rootConfig({
+        data: {
+          permission: {
+            rbac: {
+              'policies-csv-file': csvPermFile,
+              policyFileReload: true,
+            },
           },
-        },
-        backend: {
-          database: {
-            client: 'better-sqlite3',
-            connection: ':memory:',
+          backend: {
+            database: {
+              client: 'better-sqlite3',
+              connection: ':memory:',
+            },
           },
         },
       });
@@ -1084,7 +1088,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
   let policy: RBACPermissionPolicy;
 
   beforeEach(async () => {
-    const config = newConfigReader();
+    const config = newConfig();
     const adapter = await newAdapter(config);
     enfDelegate = await newEnforcerDelegate(adapter, config);
     policy = await newPermissionPolicy(
@@ -1305,7 +1309,7 @@ describe('Policy checks for users and groups', () => {
       __dirname,
       './../__fixtures__/data/valid-csv/policy-checks.csv',
     );
-    const config = newConfigReader(policyChecksCSV);
+    const config = newConfig(policyChecksCSV);
     const adapter = await newAdapter(config);
 
     const enfDelegate = await newEnforcerDelegate(adapter, config);
@@ -1788,7 +1792,7 @@ describe('Policy checks for conditional policies', () => {
       g, group:default/qa, role:default/qa
       `,
     );
-    const config = newConfigReader(undefined, []);
+    const config = newConfig(undefined, []);
     const theModel = newModelFromString(MODEL);
     const logger = mockServices.logger.mock();
     const enf = await createEnforcer(theModel, adapter, logger, config);
@@ -2131,11 +2135,11 @@ function newPolicyQueryUser(
   return undefined;
 }
 
-function newConfigReader(
+function newConfig(
   permFile?: string,
   users?: Array<{ name: string }>,
   superUsers?: Array<{ name: string }>,
-): ConfigReader {
+): Config {
   const testUsers = [
     {
       name: 'user:default/guest',
@@ -2145,28 +2149,30 @@ function newConfigReader(
     },
   ];
 
-  return new ConfigReader({
-    permission: {
-      rbac: {
-        'policies-csv-file': permFile || csvPermFile,
-        policyFileReload: true,
-        admin: {
-          users: users || testUsers,
-          superUsers: superUsers,
+  return mockServices.rootConfig({
+    data: {
+      permission: {
+        rbac: {
+          'policies-csv-file': permFile || csvPermFile,
+          policyFileReload: true,
+          admin: {
+            users: users || testUsers,
+            superUsers: superUsers,
+          },
         },
       },
-    },
-    backend: {
-      database: {
-        client: 'better-sqlite3',
-        connection: ':memory:',
+      backend: {
+        database: {
+          client: 'better-sqlite3',
+          connection: ':memory:',
+        },
       },
     },
   });
 }
 
 async function newAdapter(
-  config: ConfigReader,
+  config: Config,
   stringPolicy?: string,
 ): Promise<Adapter> {
   if (stringPolicy) {
@@ -2182,7 +2188,7 @@ async function createEnforcer(
   theModel: Model,
   adapter: Adapter,
   logger: LoggerService,
-  config: ConfigReader,
+  config: Config,
 ): Promise<Enforcer> {
   const catalogDBClient = Knex.knex({ client: MockClient });
   const rbacDBClient = Knex.knex({ client: MockClient });
@@ -2205,7 +2211,7 @@ async function createEnforcer(
 
 async function newEnforcerDelegate(
   adapter: Adapter,
-  config: ConfigReader,
+  config: Config,
   storedPolicies?: string[][],
   storedGroupingPolicies?: string[][],
 ): Promise<EnforcerDelegate> {
@@ -2226,7 +2232,7 @@ async function newEnforcerDelegate(
 }
 
 async function newPermissionPolicy(
-  config: ConfigReader,
+  config: Config,
   enfDelegate: EnforcerDelegate,
   roleMock?: RoleMetadataStorage,
 ): Promise<RBACPermissionPolicy> {
