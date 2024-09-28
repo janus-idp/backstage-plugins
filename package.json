@@ -68,7 +68,8 @@
     "@babel/core": "7.24.9",
     "@babel/traverse": "7.24.8",
     "@babel/generator": "7.24.10",
-    "dset": "^3.1.4"
+    "dset": "^3.1.4",
+    "@backstage/plugin-catalog-backend": "^1.26.0"
   },
   "lint-staged": {
     "*": "turbo run prettier:fix --",
