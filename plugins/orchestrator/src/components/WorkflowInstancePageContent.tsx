@@ -7,7 +7,6 @@ import moment from 'moment';
 
 import {
   AssessedProcessInstanceDTO,
-  parseWorkflowVariables,
   ProcessInstanceDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -30,10 +29,6 @@ export const mapProcessInstanceToDetails = (
   }
 
   const started = start?.toDate().toLocaleString() ?? VALUE_UNAVAILABLE;
-  const variables = parseWorkflowVariables(instance?.variables);
-  const nextWorkflowSuggestions: WorkflowRunDetail['nextWorkflowSuggestions'] =
-    // @ts-ignore
-    variables?.workflowdata?.workflowOptions;
 
   return {
     id: instance.id,
@@ -44,7 +39,6 @@ export const mapProcessInstanceToDetails = (
     category: instance.category,
     status: instance.status,
     description: instance.description,
-    nextWorkflowSuggestions,
     businessKey: instance.businessKey,
   };
 };
