@@ -1330,6 +1330,9 @@ ul.nav-tabs {
                     <li data-group="Default" data-name="getWorkflowInputSchemaById" class="">
                       <a href="#api-Default-getWorkflowInputSchemaById">getWorkflowInputSchemaById</a>
                     </li>
+                    <li data-group="Default" data-name="getWorkflowInstances" class="">
+                      <a href="#api-Default-getWorkflowInstances">getWorkflowInstances</a>
+                    </li>
                     <li data-group="Default" data-name="getWorkflowOverviewById" class="">
                       <a href="#api-Default-getWorkflowOverviewById">getWorkflowOverviewById</a>
                     </li>
@@ -4030,6 +4033,497 @@ ID of instance
                                     </script>
                                   </div>
                                   <input id='responses-Default-getWorkflowInputSchemaById-500-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Default-getWorkflowInstances">
+                      <article id="api-Default-getWorkflowInstances-0" data-group="User" data-name="getWorkflowInstances" data-version="0">
+                        <div class="pull-left">
+                          <h1>getWorkflowInstances</h1>
+                          <p>Get instances for a specific workflow</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Retrieve an array of workflow executions (instances) for the given workflow</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/v2/workflows/{workflowId}/instances</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Default-getWorkflowInstances-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Default-getWorkflowInstances-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Default-getWorkflowInstances-0-dart">Dart</a></li>
+                          <li class=""><a href="#examples-Default-getWorkflowInstances-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Default-getWorkflowInstances-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Default-getWorkflowInstances-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Default-getWorkflowInstances-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Default-getWorkflowInstances-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Default-getWorkflowInstances-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Default-getWorkflowInstances-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Default-getWorkflowInstances-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Default-getWorkflowInstances-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Default-getWorkflowInstances-0-rust">Rust</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Default-getWorkflowInstances-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST \
+ -H "Accept: application/json" \
+ -H "Content-Type: application/json" \
+ "http://localhost/v2/workflows/{workflowId}/instances" \
+ -d '{
+  &quot;paginationInfo&quot; : {
+    &quot;offset&quot; : 5.962133916683182,
+    &quot;pageSize&quot; : 1.4658129805029452,
+    &quot;orderDirection&quot; : &quot;ASC&quot;,
+    &quot;orderBy&quot; : &quot;orderBy&quot;,
+    &quot;totalCount&quot; : 5.637376656633329
+  },
+  &quot;filterInfo&quot; : {
+    &quot;fieldName&quot; : &quot;fieldName&quot;,
+    &quot;fieldValue&quot; : &quot;FilterValue&quot;
+  }
+}'
+</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Default-getWorkflowInstances-0-java">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
+import org.openapitools.client.auth.*;
+import org.openapitools.client.model.*;
+import org.openapitools.client.api.DefaultApi;
+
+import java.io.File;
+import java.util.*;
+
+public class DefaultApiExample {
+    public static void main(String[] args) {
+
+        // Create an instance of the API class
+        DefaultApi apiInstance = new DefaultApi();
+        String workflowId = workflowId_example; // String | ID of the workflow
+        GetInstancesRequestParams getInstancesRequestParams = ; // GetInstancesRequestParams | 
+
+        try {
+            ProcessInstanceListResultDTO result = apiInstance.getWorkflowInstances(workflowId, getInstancesRequestParams);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DefaultApi#getWorkflowInstances");
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Default-getWorkflowInstances-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String workflowId = new String(); // String | ID of the workflow
+final GetInstancesRequestParams getInstancesRequestParams = new GetInstancesRequestParams(); // GetInstancesRequestParams | 
+
+try {
+    final result = await api_instance.getWorkflowInstances(workflowId, getInstancesRequestParams);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getWorkflowInstances: $e\n');
+}
+
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Default-getWorkflowInstances-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.DefaultApi;
+
+public class DefaultApiExample {
+    public static void main(String[] args) {
+        DefaultApi apiInstance = new DefaultApi();
+        String workflowId = workflowId_example; // String | ID of the workflow
+        GetInstancesRequestParams getInstancesRequestParams = ; // GetInstancesRequestParams | 
+
+        try {
+            ProcessInstanceListResultDTO result = apiInstance.getWorkflowInstances(workflowId, getInstancesRequestParams);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DefaultApi#getWorkflowInstances");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Default-getWorkflowInstances-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Default-getWorkflowInstances-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+
+// Create an instance of the API class
+DefaultApi *apiInstance = [[DefaultApi alloc] init];
+String *workflowId = workflowId_example; // ID of the workflow (default to null)
+GetInstancesRequestParams *getInstancesRequestParams = ; //  (optional)
+
+// Get instances for a specific workflow
+[apiInstance getWorkflowInstancesWith:workflowId
+    getInstancesRequestParams:getInstancesRequestParams
+              completionHandler: ^(ProcessInstanceListResultDTO output, NSError* error) {
+    if (output) {
+        NSLog(@"%@", output);
+    }
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+}];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-getWorkflowInstances-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var OrchestratorPlugin = require('orchestrator_plugin');
+
+// Create an instance of the API class
+var api = new OrchestratorPlugin.DefaultApi()
+var workflowId = workflowId_example; // {String} ID of the workflow
+var opts = {
+  'getInstancesRequestParams':  // {GetInstancesRequestParams} 
+};
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.getWorkflowInstances(workflowId, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Default-getWorkflowInstances-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Default-getWorkflowInstances-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class getWorkflowInstancesExample
+    {
+        public void main()
+        {
+
+            // Create an instance of the API class
+            var apiInstance = new DefaultApi();
+            var workflowId = workflowId_example;  // String | ID of the workflow (default to null)
+            var getInstancesRequestParams = new GetInstancesRequestParams(); // GetInstancesRequestParams |  (optional) 
+
+            try {
+                // Get instances for a specific workflow
+                ProcessInstanceListResultDTO result = apiInstance.getWorkflowInstances(workflowId, getInstancesRequestParams);
+                Debug.WriteLine(result);
+            } catch (Exception e) {
+                Debug.Print("Exception when calling DefaultApi.getWorkflowInstances: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-getWorkflowInstances-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Create an instance of the API class
+$api_instance = new OpenAPITools\Client\Api\DefaultApi();
+$workflowId = workflowId_example; // String | ID of the workflow
+$getInstancesRequestParams = ; // GetInstancesRequestParams | 
+
+try {
+    $result = $api_instance->getWorkflowInstances($workflowId, $getInstancesRequestParams);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling DefaultApi->getWorkflowInstances: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-getWorkflowInstances-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::OPenAPIClient::Configuration;
+use WWW::OPenAPIClient::DefaultApi;
+
+# Create an instance of the API class
+my $api_instance = WWW::OPenAPIClient::DefaultApi->new();
+my $workflowId = workflowId_example; # String | ID of the workflow
+my $getInstancesRequestParams = WWW::OPenAPIClient::Object::GetInstancesRequestParams->new(); # GetInstancesRequestParams | 
+
+eval {
+    my $result = $api_instance->getWorkflowInstances(workflowId => $workflowId, getInstancesRequestParams => $getInstancesRequestParams);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling DefaultApi->getWorkflowInstances: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-getWorkflowInstances-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import openapi_client
+from openapi_client.rest import ApiException
+from pprint import pprint
+
+# Create an instance of the API class
+api_instance = openapi_client.DefaultApi()
+workflowId = workflowId_example # String | ID of the workflow (default to null)
+getInstancesRequestParams =  # GetInstancesRequestParams |  (optional)
+
+try:
+    # Get instances for a specific workflow
+    api_response = api_instance.get_workflow_instances(workflowId, getInstancesRequestParams=getInstancesRequestParams)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling DefaultApi->getWorkflowInstances: %s\n" % e)</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-getWorkflowInstances-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate DefaultApi;
+
+pub fn main() {
+    let workflowId = workflowId_example; // String
+    let getInstancesRequestParams = ; // GetInstancesRequestParams
+
+    let mut context = DefaultApi::Context::default();
+    let result = client.getWorkflowInstances(workflowId, getInstancesRequestParams, &context).wait();
+
+    println!("{:?}", result);
+}
+</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Scopes</h2>
+                          <table>
+                            
+                          </table>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">workflowId*</td>
+<td>
+
+
+    <div id="d2e199_getWorkflowInstances_workflowId">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+ID of the workflow
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">getInstancesRequestParams </td>
+<td>
+<p class="marked">Parameters for retrieving workflow instances</p>
+<script>
+$(document).ready(function() {
+  var schemaWrapper = {
+  "description" : "Parameters for retrieving workflow instances",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/GetInstancesRequestParams"
+      }
+    }
+  },
+  "required" : false
+};
+
+  var schema = findNode('schema',schemaWrapper).schema;
+  if (!schema) {
+    schema = schemaWrapper.schema;
+  }
+  if (schema.$ref != null) {
+    schema = defsParser.$refs.get(schema.$ref);
+  } else {
+    schemaWrapper.definitions = Object.assign({}, defs);
+    $RefParser.dereference(schemaWrapper).catch(function(err) {
+      console.log(err);
+    });
+  }
+
+  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+  var result = $('#d2e199_getWorkflowInstances_getInstancesRequestParams');
+  result.empty();
+  result.append(view.render());
+});
+</script>
+<div id="d2e199_getWorkflowInstances_getInstancesRequestParams"></div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3 id="examples-Default-getWorkflowInstances-title-200"></h3>
+                            <p id="examples-Default-getWorkflowInstances-description-200" class="marked"></p>
+                            <script>
+                              var responseDefault200_description = `Success`;
+                              var responseDefault200_description_break = responseDefault200_description.indexOf('\n');
+                              if (responseDefault200_description_break == -1) {
+                                $("#examples-Default-getWorkflowInstances-title-200").text("Status: 200 - " + responseDefault200_description);
+                              } else {
+                                $("#examples-Default-getWorkflowInstances-title-200").text("Status: 200 - " + responseDefault200_description.substring(0, responseDefault200_description_break));
+                                $("#examples-Default-getWorkflowInstances-description-200").html(responseDefault200_description.substring(responseDefault200_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Default-getWorkflowInstances-200" class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-Default-getWorkflowInstances-200-schema">Schema</a>
+                                </li>
+
+
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Default-getWorkflowInstances-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Default-getWorkflowInstances-200-schema">
+                                  <div id="responses-Default-getWorkflowInstances-schema-200" class="exampleStyle">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = ;
+                                        var schema = findNode('schema',schemaWrapper).schema;
+                                        if (!schema) {
+                                          schema = schemaWrapper.schema;
+                                        }
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                          Object.keys(schema.properties).forEach( (item) => {
+                                            if (schema.properties[item].$ref != null) {
+                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
+                                            }
+                                          });
+                                        } else if (schema.items != null && schema.items.$ref != null) {
+                                            schema.items = defsParser.$refs.get(schema.items.$ref);
+                                        } else {
+                                          schemaWrapper.definitions = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-Default-getWorkflowInstances-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Default-getWorkflowInstances-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-Default-getWorkflowInstances-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+                            <h3 id="examples-Default-getWorkflowInstances-title-500"></h3>
+                            <p id="examples-Default-getWorkflowInstances-description-500" class="marked"></p>
+                            <script>
+                              var responseDefault500_description = `Error fetching instances`;
+                              var responseDefault500_description_break = responseDefault500_description.indexOf('\n');
+                              if (responseDefault500_description_break == -1) {
+                                $("#examples-Default-getWorkflowInstances-title-500").text("Status: 500 - " + responseDefault500_description);
+                              } else {
+                                $("#examples-Default-getWorkflowInstances-title-500").text("Status: 500 - " + responseDefault500_description.substring(0, responseDefault500_description_break));
+                                $("#examples-Default-getWorkflowInstances-description-500").html(responseDefault500_description.substring(responseDefault500_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Default-getWorkflowInstances-500" class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-Default-getWorkflowInstances-500-schema">Schema</a>
+                                </li>
+
+
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Default-getWorkflowInstances-500-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Default-getWorkflowInstances-500-schema">
+                                  <div id="responses-Default-getWorkflowInstances-schema-500" class="exampleStyle">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = ;
+                                        var schema = findNode('schema',schemaWrapper).schema;
+                                        if (!schema) {
+                                          schema = schemaWrapper.schema;
+                                        }
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                          Object.keys(schema.properties).forEach( (item) => {
+                                            if (schema.properties[item].$ref != null) {
+                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
+                                            }
+                                          });
+                                        } else if (schema.items != null && schema.items.$ref != null) {
+                                            schema.items = defsParser.$refs.get(schema.items.$ref);
+                                        } else {
+                                          schemaWrapper.definitions = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-Default-getWorkflowInstances-500-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Default-getWorkflowInstances-schema-500');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-Default-getWorkflowInstances-500-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
                         </article>

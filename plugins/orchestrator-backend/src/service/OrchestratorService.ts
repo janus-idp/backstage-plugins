@@ -55,18 +55,23 @@ export class OrchestratorService {
   public async fetchInstances(args: {
     pagination?: Pagination;
     filter?: FilterInfo;
+    workflowId?: string;
   }): Promise<ProcessInstance[]> {
+    const definitionIds = args.workflowId
+      ? [args.workflowId]
+      : this.workflowCacheService.definitionIds;
     return await this.dataIndexService.fetchInstances({
-      definitionIds: this.workflowCacheService.definitionIds,
+      definitionIds: definitionIds,
       pagination: args.pagination,
       filter: args.filter,
     });
   }
 
-  public async fetchInstancesTotalCount(): Promise<number> {
-    return await this.dataIndexService.fetchInstancesTotalCount(
-      this.workflowCacheService.definitionIds,
-    );
+  public async fetchInstancesTotalCount(workflowId?: string): Promise<number> {
+    const definitionIds = workflowId
+      ? [workflowId]
+      : this.workflowCacheService.definitionIds;
+    return await this.dataIndexService.fetchInstancesTotalCount(definitionIds);
   }
 
   public async fetchWorkflowSource(args: {
