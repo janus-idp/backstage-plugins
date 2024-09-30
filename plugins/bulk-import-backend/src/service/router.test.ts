@@ -31,7 +31,6 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
-import supertest from 'supertest';
 
 import * as crypto from 'crypto';
 
@@ -160,6 +159,35 @@ describe('bulk-import router tests', () => {
     server.resetHandlers();
   });
 
+  function addHandlersForGHTokenAppErrors() {
+    server.use(
+      rest.get(`${LOCAL_ADDR}/user/orgs`, (_, res, ctx) =>
+        res(
+          ctx.status(500),
+          ctx.json({ message: 'Github Token auth did not succeed' }),
+        ),
+      ),
+      rest.get(`${LOCAL_ADDR}/app/installations`, (_, res, ctx) =>
+        res(
+          ctx.status(403),
+          ctx.json({ message: 'Github App auth returned an error' }),
+        ),
+      ),
+      rest.get(`${LOCAL_ADDR}/user/repos`, (_, res, ctx) =>
+        res(
+          ctx.status(401),
+          ctx.json({ message: 'Github Token auth did not succeed' }),
+        ),
+      ),
+      rest.get(`${LOCAL_ADDR}/orgs/some-org/repos`, (_, res, ctx) =>
+        res(
+          ctx.status(502),
+          ctx.json({ message: 'Github Token auth did not succeed' }),
+        ),
+      ),
+    );
+  }
+
   async function startNewBackendServer(
     authorizeResult?: AuthorizeResult.DENY | AuthorizeResult.ALLOW,
     config?: any,
@@ -214,27 +242,27 @@ describe('bulk-import router tests', () => {
     it.each([
       [
         'GET /organizations',
-        async (req: supertest.SuperTest<supertest.Test>) =>
+        async (req: request.SuperTest<request.Test>) =>
           req.get('/api/bulk-import/organizations'),
       ],
       [
         'GET /repositories',
-        async (req: supertest.SuperTest<supertest.Test>) =>
+        async (req: request.SuperTest<request.Test>) =>
           req.get('/api/bulk-import/repositories'),
       ],
       [
         'GET /organizations/:org/repositories',
-        async (req: supertest.SuperTest<supertest.Test>) =>
+        async (req: request.SuperTest<request.Test>) =>
           req.get('/api/bulk-import/organizations/my-org-1/repositories'),
       ],
       [
         'GET /imports',
-        async (req: supertest.SuperTest<supertest.Test>) =>
+        async (req: request.SuperTest<request.Test>) =>
           req.get('/api/bulk-import/imports'),
       ],
       [
         'POST /imports',
-        async (req: supertest.SuperTest<supertest.Test>) =>
+        async (req: request.SuperTest<request.Test>) =>
           req.post('/api/bulk-import/imports'),
       ],
     ])(
@@ -242,8 +270,8 @@ describe('bulk-import router tests', () => {
       async (
         _endpoint: string,
         reqHandler: (
-          req: supertest.SuperTest<supertest.Test>,
-        ) => Promise<supertest.Response>,
+          req: request.SuperTest<request.Test>,
+        ) => Promise<request.Response>,
       ) => {
         const backendServer = await startNewBackendServer(AuthorizeResult.DENY);
 
@@ -367,27 +395,14 @@ describe('bulk-import router tests', () => {
     it('returns 500 when one or more errors are returned with no successful organization fetched', async () => {
       const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
       // change the responses to simulate error retrieving list of orgs from all GH integrations.
-      server.use(
-        rest.get(`${LOCAL_ADDR}/user/orgs`, (_, res, ctx) =>
-          res(
-            ctx.status(403),
-            ctx.json({ message: 'Github Token auth did not succeed' }),
-          ),
-        ),
-        rest.get(`${LOCAL_ADDR}/app/installations`, (_, res, ctx) =>
-          res(
-            ctx.status(403),
-            ctx.json({ message: 'Github App auth returned an error' }),
-          ),
-        ),
-      );
+      addHandlersForGHTokenAppErrors();
 
-      const response = await request(backendServer).get(
+      const orgResp = await request(backendServer).get(
         '/api/bulk-import/organizations',
       );
 
-      expect(response.status).toEqual(500);
-      expect(response.body).toEqual({
+      expect(orgResp.status).toEqual(500);
+      expect(orgResp.body).toEqual({
         errors: [
           'Github Token auth did not succeed',
           'Github App auth returned an error',
@@ -478,27 +493,14 @@ describe('bulk-import router tests', () => {
     it('returns 500 when one or more errors are returned with no successful repository fetches', async () => {
       const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
       // change the responses to simulate error retrieving list of repos from all GH integrations.
-      server.use(
-        rest.get(`${LOCAL_ADDR}/user/repos`, (_, res, ctx) =>
-          res(
-            ctx.status(403),
-            ctx.json({ message: 'Github Token auth did not succeed' }),
-          ),
-        ),
-        rest.get(`${LOCAL_ADDR}/app/installations`, (_, res, ctx) =>
-          res(
-            ctx.status(403),
-            ctx.json({ message: 'Github App auth returned an error' }),
-          ),
-        ),
-      );
+      addHandlersForGHTokenAppErrors();
 
-      const response = await request(backendServer).get(
+      const reposResp = await request(backendServer).get(
         '/api/bulk-import/repositories',
       );
 
-      expect(response.status).toEqual(500);
-      expect(response.body).toEqual({
+      expect(reposResp.status).toEqual(500);
+      expect(reposResp.body).toEqual({
         errors: [
           'Github Token auth did not succeed',
           'Github App auth returned an error',
@@ -577,14 +579,7 @@ describe('bulk-import router tests', () => {
     it('returns 500 when one or more errors are returned with no successful repository fetched', async () => {
       const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
       // change the response to simulate an error retrieving list from GH Token.
-      server.use(
-        rest.get(`${LOCAL_ADDR}/orgs/some-org/repos`, (_, res, ctx) =>
-          res(
-            ctx.status(403),
-            ctx.json({ message: 'Github Token auth did not succeed' }),
-          ),
-        ),
-      );
+      addHandlersForGHTokenAppErrors();
 
       const orgReposResp = await request(backendServer).get(
         '/api/bulk-import/organizations/some-org/repositories',
