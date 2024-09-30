@@ -8,6 +8,7 @@ import {
 import { ChatOpenAI } from '@langchain/openai';
 import express from 'express';
 import Router from 'express-promise-router';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 import {
   deleteHistory,
@@ -30,11 +31,33 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { logger, config } = options;
 
+  // Proxy middleware configuration
+  const apiProxy = createProxyMiddleware({
+    target: config.getConfigArray('lightspeed.servers')[0].getString('url'), // currently only single llm server is supported
+    changeOrigin: true,
+    onError: (err, _, res) => {
+      res.status(500).json({ error: 'Proxy error', details: err.message });
+    },
+  });
+
   const router = Router();
   router.use(express.json());
 
   router.get('/health', (_, response) => {
     response.json({ status: 'ok' });
+  });
+
+  // Middleware proxy to exclude /v1/query
+  router.use('/v1', (req, res, next) => {
+    if (req.path === '/query') {
+      return next(); // This will skip proxying and go to /v1/query endpoint
+    }
+    // For all other /v1/* requests, use the proxy
+    const apiToken = config
+      .getConfigArray('lightspeed.servers')[0]
+      .getOptionalString('token'); // currently only single llm server is supported
+    req.headers.authorization = `Bearer ${apiToken}`;
+    return apiProxy(req, res, next);
   });
 
   router.get(
