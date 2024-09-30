@@ -188,7 +188,7 @@ describe('bulk-import router tests', () => {
     );
   }
 
-  async function startNewBackendServer(
+  async function startBackendServer(
     authorizeResult?: AuthorizeResult.DENY | AuthorizeResult.ALLOW,
     config?: any,
   ) {
@@ -213,7 +213,7 @@ describe('bulk-import router tests', () => {
         }).factory,
       );
     }
-    return startTestBackend({ features }).then(backend => backend.server);
+    return (await startTestBackend({ features })).server;
   }
 
   describe('GET /ping', () => {
@@ -224,7 +224,7 @@ describe('bulk-import router tests', () => {
     ])(
       'should return ok when %s (auth result=%s)',
       async (_desc, authorizeResult?) => {
-        const backendServer = await startNewBackendServer(
+        const backendServer = await startBackendServer(
           authorizeResult as
             | AuthorizeResult.DENY
             | AuthorizeResult.ALLOW
@@ -276,7 +276,7 @@ describe('bulk-import router tests', () => {
           req: request.SuperTest<request.Test>,
         ) => Promise<request.Response>,
       ) => {
-        const backendServer = await startNewBackendServer(AuthorizeResult.DENY);
+        const backendServer = await startBackendServer(AuthorizeResult.DENY);
 
         const response = await reqHandler(request(backendServer));
 
@@ -287,7 +287,7 @@ describe('bulk-import router tests', () => {
 
   describe('GET /organizations', () => {
     it('returns 200 when organizations are fetched without errors', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
 
       const response = await request(backendServer).get(
         '/api/bulk-import/organizations',
@@ -336,7 +336,7 @@ describe('bulk-import router tests', () => {
     });
 
     it('filters out organizations when a search query parameter is provided', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
 
       const response = await request(backendServer).get(
         '/api/bulk-import/organizations?search=octo',
@@ -361,7 +361,7 @@ describe('bulk-import router tests', () => {
     });
 
     it('returns 200 with the errors in the body when organizations are fetched, but errors have occurred', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
       // change the response to 'GET /user/orgs'
       // to simulate an error retrieving list of orgs from GH Token.
       server.use(
@@ -396,7 +396,7 @@ describe('bulk-import router tests', () => {
     });
 
     it('returns 500 when one or more errors are returned with no successful organization fetched', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
       // change the responses to simulate error retrieving list of orgs from all GH integrations.
       addHandlersForGHTokenAppErrors();
 
@@ -416,7 +416,7 @@ describe('bulk-import router tests', () => {
 
   describe('GET /repositories', () => {
     it('returns 200 when repositories are fetched without errors', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
 
       const response = await request(backendServer).get(
         '/api/bulk-import/repositories',
@@ -459,7 +459,7 @@ describe('bulk-import router tests', () => {
     });
 
     it('returns 200 with the errors in the body when repositories are fetched, but errors have occurred', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
       // change the response to 'GET /user/repos'
       // to simulate an error retrieving list of orgs from GH Token.
       server.use(
@@ -494,7 +494,7 @@ describe('bulk-import router tests', () => {
     });
 
     it('returns 500 when one or more errors are returned with no successful repository fetches', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
       // change the responses to simulate error retrieving list of repos from all GH integrations.
       addHandlersForGHTokenAppErrors();
 
@@ -514,7 +514,7 @@ describe('bulk-import router tests', () => {
 
   describe('GET /organizations/{org}/repositories', () => {
     it('returns 200 when repositories are fetched without errors', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
 
       let response = await request(backendServer).get(
         '/api/bulk-import/organizations/my-ent-org-1/repositories',
@@ -580,7 +580,7 @@ describe('bulk-import router tests', () => {
     });
 
     it('returns 500 when one or more errors are returned with no successful repository fetched', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
       // change the response to simulate an error retrieving list from GH Token.
       addHandlersForGHTokenAppErrors();
 
@@ -597,7 +597,7 @@ describe('bulk-import router tests', () => {
 
   describe('GET /imports', () => {
     it('returns 200 with empty list when there is nothing in catalog yet and no open PR for each repo', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW, {
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW, {
         catalog: { locations: [] },
       });
       server.use(
@@ -619,7 +619,7 @@ describe('bulk-import router tests', () => {
     });
 
     it('returns 200 with appropriate import status (with data coming from the repos and data coming from the app-config files)', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
       server.use(
         rest.get(
           `http://localhost:${backendServer.port()}/api/catalog/locations`,
@@ -715,7 +715,7 @@ describe('bulk-import router tests', () => {
 
   describe('POST /imports', () => {
     it('returns 400 if there is nothing in request body', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
 
       const response = await request(backendServer)
         .post('/api/bulk-import/imports')
@@ -725,7 +725,7 @@ describe('bulk-import router tests', () => {
     });
 
     it('returns 202 with appropriate import statuses', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
 
       mockCatalogClient.addLocation = jest
         .fn()
@@ -1065,7 +1065,7 @@ spec:
     });
 
     it('return dry-run results in errors array for each item in request body', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
 
       mockCatalogClient.queryEntities = jest.fn().mockImplementation(
         async (req: {

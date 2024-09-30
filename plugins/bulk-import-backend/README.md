@@ -6,7 +6,7 @@ This is `bulk-import-backend` plugin which provides Rest API to bulk import cata
 
 ### Installation and Configuration
 
-To set up the bulk import backend package for the new backend:
+To set up the bulk import backend package for the backend:
 
 1. Install the bulk import backend plugin using the following command:
 
