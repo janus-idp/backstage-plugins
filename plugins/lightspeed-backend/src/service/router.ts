@@ -31,15 +31,6 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { logger, config } = options;
 
-  // Proxy middleware configuration
-  const apiProxy = createProxyMiddleware({
-    target: config.getConfigArray('lightspeed.servers')[0].getString('url'), // currently only single llm server is supported
-    changeOrigin: true,
-    onError: (err, _, res) => {
-      res.status(500).json({ error: 'Proxy error', details: err.message });
-    },
-  });
-
   const router = Router();
   router.use(express.json());
 
@@ -52,6 +43,14 @@ export async function createRouter(
     if (req.path === '/query') {
       return next(); // This will skip proxying and go to /v1/query endpoint
     }
+
+    // TODO: parse server_id from req.body and get URL and token when multi-server is supported
+
+    // Proxy middleware configuration
+    const apiProxy = createProxyMiddleware({
+      target: config.getConfigArray('lightspeed.servers')[0].getString('url'), // currently only single llm server is supported
+      changeOrigin: true,
+    });
     // For all other /v1/* requests, use the proxy
     const apiToken = config
       .getConfigArray('lightspeed.servers')[0]
