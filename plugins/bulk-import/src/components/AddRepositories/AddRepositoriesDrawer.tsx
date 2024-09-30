@@ -60,7 +60,7 @@ export const AddRepositoriesDrawer = ({
 }: {
   open: boolean;
   onClose: () => void;
-  onSelect: (repos: AddedRepositories, drawerOrgName: string) => void;
+  onSelect: (repos: AddedRepositories) => void;
   title: string;
   orgData: AddRepositoryData;
 }) => {
@@ -75,7 +75,7 @@ export const AddRepositoriesDrawer = ({
   };
 
   const handleSelectRepoFromDrawer = (selected: AddedRepositories) => {
-    onSelect(selected, orgData?.orgName || '');
+    onSelect(selected);
     const newStatus = { ...(status?.errors || {}) };
     Object.keys(newStatus).forEach(s => {
       if (!Object.keys(selected).find(sel => sel === s)) {

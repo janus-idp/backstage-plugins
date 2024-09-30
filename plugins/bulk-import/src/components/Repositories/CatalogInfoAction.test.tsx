@@ -9,6 +9,7 @@ import { useFormikContext } from 'formik';
 
 import { mockGetImportJobs, mockGetRepositories } from '../../mocks/mockData';
 import { RepositoryStatus } from '../../types';
+import { getPRTemplate } from '../../utils/repository-utils';
 import CatalogInfoAction from './CatalogInfoAction';
 
 jest.mock('@backstage/plugin-permission-react', () => ({
@@ -105,8 +106,18 @@ describe('CatalogInfoAction', () => {
         repositories: {
           ['org/dessert/cupcake']: {
             ...mockGetImportJobs.imports[0],
+            repoUrl: 'https://github.com/org/dessert/cupcake',
+            status: RepositoryStatus.ADDED,
             catalogInfoYaml: {
               status: RepositoryStatus.ADDED,
+              prTemplate: getPRTemplate(
+                'org/dessert/cupcake',
+                'org/dessert',
+                'user:default/guest',
+                'https://localhost:3001',
+                'https://github.com/org/dessert/cupcake',
+                'main',
+              ),
             },
           },
         },

@@ -46,7 +46,7 @@ export const BulkImportPage = () => {
     }
     if (bulkImportViewPermissionResult.allowed) {
       return (
-        <QueryClientProvider client={queryClientRef.current as QueryClient}>
+        <QueryClientProvider client={queryClientRef.current!}>
           <Formik
             initialValues={initialValues}
             enableReinitialize

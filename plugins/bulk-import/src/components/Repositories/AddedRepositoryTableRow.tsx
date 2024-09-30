@@ -46,23 +46,34 @@ export const AddedRepositoryTableRow = ({
   const classes = useStyles();
 
   return (
-    <TableRow hover key={data.id}>
+    <TableRow hover>
       <TableCell component="th" scope="row" className={classes.tableCellStyle}>
         {data.repoName}
       </TableCell>
       <TableCell align="left" className={classes.tableCellStyle}>
-        <Link to={data?.repoUrl || ''}>
-          {urlHelper(data?.repoUrl || '')}
-          <OpenInNewIcon style={{ verticalAlign: 'sub', paddingTop: '7px' }} />
-        </Link>
+        {data?.repoUrl ? (
+          <Link to={data.repoUrl}>
+            {urlHelper(data.repoUrl)}
+            <OpenInNewIcon
+              style={{ verticalAlign: 'sub', paddingTop: '7px' }}
+            />
+          </Link>
+        ) : (
+          <>-</>
+        )}
       </TableCell>
       <TableCell align="left" className={classes.tableCellStyle}>
-        <Link to={data?.organizationUrl || ''}>
-          {urlHelper(data?.organizationUrl || '')}
-          <OpenInNewIcon style={{ verticalAlign: 'sub', paddingTop: '7px' }} />
-        </Link>
+        {data?.organizationUrl ? (
+          <Link to={data.organizationUrl}>
+            {urlHelper(data.organizationUrl)}
+            <OpenInNewIcon
+              style={{ verticalAlign: 'sub', paddingTop: '7px' }}
+            />
+          </Link>
+        ) : (
+          <>-</>
+        )}
       </TableCell>
-
       <TableCell align="left" className={classes.tableCellStyle}>
         <ImportStatus data={data} />
       </TableCell>

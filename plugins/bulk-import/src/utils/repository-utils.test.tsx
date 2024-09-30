@@ -8,7 +8,6 @@ import {
   componentNameRegex,
   evaluatePRTemplate,
   getJobErrors,
-  getNewOrgsData,
   getYamlKeyValuePairs,
   updateWithNewSelectedRepositories,
   urlHelper,
@@ -64,33 +63,6 @@ describe('Repository utils', () => {
     expect(url).toBe('hjkh/hj');
     url = urlHelper('');
     expect(url).toBe('-');
-  });
-
-  it('should update organization data when repositories are selected', () => {
-    const newOrgsData = getNewOrgsData(
-      {
-        'org/dessert': {
-          id: '1234',
-          orgName: 'org/dessert',
-          organizationUrl: 'https://github.com/org/dessert',
-        },
-        'org/food': {
-          id: '1235',
-          orgName: 'org/food',
-          organizationUrl: 'https://github.com/org/food',
-        },
-        'org/pet-store-boston': {
-          id: '1236',
-          orgName: 'org/pet-store-boston',
-          organizationUrl: 'https://github.com/org/pet-store-boston',
-        },
-      },
-      mockGetRepositories.repositories[1],
-    );
-    expect(
-      Object.values(newOrgsData).find(o => o.orgName === 'org/dessert')
-        ?.selectedRepositories,
-    ).toEqual({ 'org/dessert/donut': mockGetRepositories.repositories[1] });
   });
 
   it('should parse key-value pairs correctly with semicolons', () => {

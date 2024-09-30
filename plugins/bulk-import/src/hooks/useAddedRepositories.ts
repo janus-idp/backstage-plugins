@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAsync, useDebounce } from 'react-use';
+import { useAsync } from 'react-use';
 
 import {
   configApiRef,
@@ -9,11 +9,6 @@ import {
 
 import { useQuery } from '@tanstack/react-query';
 import { useFormikContext } from 'formik';
-
-import {
-  useDebounceCallback,
-  useDeepCompareMemoize,
-} from '@janus-idp/shared-react';
 
 import { bulkImportApiRef } from '../api/BulkImportBackendClient';
 import {
@@ -29,20 +24,14 @@ export const useAddedRepositories = (
   searchString: string,
   pollInterval?: number,
 ): {
-  loaded: boolean;
   data: {
     addedRepositories: AddRepositoryData[];
     totalJobs: number;
   };
   error: any;
+  loading: boolean;
   refetch: () => void;
 } => {
-  const [addedRepositoriesData, setAddedRepositoriesData] = React.useState<{
-    [id: string]: AddRepositoryData;
-  }>({});
-  const [totalImportJobs, setTotalImportJobs] = React.useState(0);
-  const [loaded, setLoaded] = React.useState<boolean>(false);
-  const [debouncedSearch, setDebouncedSearch] = React.useState(searchString);
   const identityApi = useApi(identityApiRef);
   const configApi = useApi(configApiRef);
   const { value: user } = useAsync(async () => {
@@ -50,76 +39,51 @@ export const useAddedRepositories = (
     return identityRef.userEntityRef;
   });
 
-  useDebounce(
-    () => {
-      setDebouncedSearch(searchString);
-    },
-    200,
-    [searchString],
-  );
-
   const { value: baseUrl } = useAsync(async () => {
     const url = configApi.getString('app.baseUrl');
     return url;
   });
 
   const bulkImportApi = useApi(bulkImportApiRef);
-  const { setFieldValue } = useFormikContext<AddRepositoriesFormValues>();
+  const { setFieldValue, values } =
+    useFormikContext<AddRepositoriesFormValues>();
   const fetchAddedRepositories = async (
     page: number,
     size: number,
     searchStr: string,
-  ) => {
-    const response = await bulkImportApi.getImportJobs(page, size, searchStr);
-    return response;
-  };
+  ) => await bulkImportApi.getImportJobs(page, size, searchStr);
 
   const {
     data: value,
     error,
-    isLoading: loading,
+    isLoading: isLoadingTable,
     refetch,
   } = useQuery(
-    ['importJobs', pageNumber, rowsPerPage, debouncedSearch],
-    () => fetchAddedRepositories(pageNumber, rowsPerPage, debouncedSearch),
-    { keepPreviousData: true, refetchInterval: pollInterval || 60000 },
+    ['importJobs', pageNumber, rowsPerPage, searchString],
+    () => fetchAddedRepositories(pageNumber, rowsPerPage, searchString),
+    { refetchInterval: pollInterval || 60000 },
   );
 
-  const prepareData = React.useCallback(
-    (addedRepositories: ImportJobs | Response, isLoading: boolean) => {
-      if (!isLoading) {
-        const repoData = prepareDataForAddedRepositories(
-          addedRepositories,
-          user as string,
-          baseUrl as string,
-        );
-        setAddedRepositoriesData(repoData);
-        setFieldValue(`repositories`, repoData);
-        setTotalImportJobs((addedRepositories as ImportJobs)?.totalCount || 0);
-        setLoaded(true);
-      }
-    },
-    [
-      user,
-      baseUrl,
-      setFieldValue,
-      setAddedRepositoriesData,
-      setTotalImportJobs,
-    ],
-  );
+  const prepareData = React.useMemo(() => {
+    const repoData = prepareDataForAddedRepositories(
+      value as ImportJobs | Response,
+      user as string,
+      baseUrl as string,
+    );
+    if (
+      Object.values(repoData.repoData).length !==
+      Object.values(values.repositories).length
+    )
+      setFieldValue(`repositories`, repoData.repoData);
+    return {
+      addedRepositories: Object.values(repoData.repoData),
+      totalJobs: repoData.totalJobs,
+    };
+  }, [value, user, baseUrl, values.repositories, setFieldValue]);
 
-  const debouncedUpdateResources = useDebounceCallback(prepareData, 250);
-
-  React.useEffect(() => {
-    debouncedUpdateResources?.(value, loading);
-  }, [debouncedUpdateResources, value, loading]);
-
-  return useDeepCompareMemoize({
-    data: {
-      addedRepositories: Object.values(addedRepositoriesData),
-      totalJobs: totalImportJobs,
-    },
-    loaded,
+  return {
+    data: prepareData,
+    loading: isLoadingTable,
     error: {
       ...(error ?? {}),
       ...((value as Response)?.statusText
@@ -130,5 +94,5 @@ export const useAddedRepositories = (
         : {}),
     },
     refetch,
-  });
+  };
 };

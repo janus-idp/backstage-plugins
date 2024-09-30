@@ -63,6 +63,10 @@ const CatalogInfoAction = ({ data }: { data: AddRepositoryData }) => {
     values.repositories[data.id]?.catalogInfoYaml?.status ===
       RepositoryStatus.WAIT_PR_APPROVAL;
 
+  const canView =
+    values?.repositories?.[data.id]?.catalogInfoYaml?.status ===
+      RepositoryStatus.ADDED && values?.repositories?.[data.id]?.repoUrl;
+
   const removeQueryParams = () => {
     searchParams.delete('repository');
     searchParams.delete('defaultBranch');
@@ -95,20 +99,11 @@ const CatalogInfoAction = ({ data }: { data: AddRepositoryData }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [repoUrl, defaultBranch, value?.status, values?.repositories, loading]);
 
-  return (
-    <Tooltip
-      title={
-        hasPermissionToEdit
-          ? 'Edit catalog-info.yaml pull request'
-          : 'View catalog-info.yaml file'
-      }
-    >
-      <span
-        data-testid={
-          hasPermissionToEdit ? 'edit-catalog-info' : 'view-catalog-info'
-        }
-      >
-        {hasPermissionToEdit ? (
+  const catalogIcon = () => {
+    if (hasPermissionToEdit) {
+      return {
+        tooltip: 'Edit catalog-info.yaml pull request',
+        icon: (
           <IconButton
             color="inherit"
             aria-label="Update"
@@ -117,24 +112,34 @@ const CatalogInfoAction = ({ data }: { data: AddRepositoryData }) => {
           >
             <EditIcon />
           </IconButton>
-        ) : (
+        ),
+        dataTestId: 'edit-catalog-info',
+      };
+    }
+    if (canView) {
+      return {
+        tooltip: 'View catalog-info.yaml file',
+        icon: (
           <IconButton
             target="_blank"
-            href={
-              values?.repositories?.[data.id]?.catalogInfoYaml?.prTemplate
-                ?.pullRequestUrl ||
-              values?.repositories?.[data.id]?.repoUrl ||
-              ''
-            }
+            href={canView}
             color="inherit"
             aria-label="View"
           >
             <OpenInNewIcon />
           </IconButton>
-        )}
-      </span>
+        ),
+        dataTestId: 'view-catalog-info',
+      };
+    }
+    return null;
+  };
+
+  return catalogIcon()?.tooltip ? (
+    <Tooltip title={catalogIcon()?.tooltip || ''}>
+      <span data-testid={catalogIcon()?.dataTestId}>{catalogIcon()?.icon}</span>
     </Tooltip>
-  );
+  ) : null;
 };
 
 export default CatalogInfoAction;

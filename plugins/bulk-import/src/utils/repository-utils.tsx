@@ -21,7 +21,9 @@ import {
   ImportStatus,
   JobErrors,
   Order,
+  OrgAndRepoResponse,
   PullRequestPreview,
+  Repository,
   RepositorySelection,
   RepositoryStatus,
 } from '../types';
@@ -46,8 +48,8 @@ export const descendingComparator = (
   };
 
   if (orderBy === 'selectedRepositories') {
-    value1 = value1?.length;
-    value2 = value2?.length;
+    value1 = Object.keys(value1)?.length;
+    value2 = Object.values(value2)?.length;
   }
 
   if (orderBy === 'catalogInfoYaml.status') {
@@ -191,37 +193,6 @@ export const urlHelper = (url: string) => {
   return url.split('https://')[1] || url;
 };
 
-export const getNewOrgsData = (
-  orgsData: { [name: string]: AddRepositoryData },
-  repo: AddRepositoryData,
-): { [name: string]: AddRepositoryData } => {
-  const org = Object.values(orgsData)?.find(o => o.orgName === repo.orgName);
-
-  let selectedRepositories = { ...(org?.selectedRepositories || {}) };
-  selectedRepositories = selectedRepositories[repo.id]
-    ? Object.keys(selectedRepositories).reduce(
-        (acc, sr) => (sr === repo.id ? { ...acc, [repo.id]: repo } : acc),
-        {},
-      )
-    : { ...selectedRepositories, [repo.id]: repo };
-
-  const newOrgsData =
-    org &&
-    Object.values(orgsData)?.reduce((acc, od) => {
-      if (od.orgName === org.orgName) {
-        return {
-          ...acc,
-          [org.orgName as string]: {
-            ...org,
-            selectedRepositories: selectedRepositories || [],
-          },
-        };
-      }
-      return acc;
-    }, {});
-  return newOrgsData || [];
-};
-
 export const getImportStatus = (status: string, showIcon?: boolean) => {
   if (!status) {
     return '';
@@ -318,7 +289,7 @@ export const areAllRowsSelected = (
 export const getJobErrors = (
   createJobResponse: ImportJobResponse[],
 ): JobErrors => {
-  return createJobResponse.reduce(
+  return createJobResponse?.reduce(
     (acc: JobErrors, res: ImportJobResponse) => {
       if (res.errors?.length > 0) {
         const errs =
@@ -554,13 +525,68 @@ export const evaluatePRTemplate = (
   }
 };
 
+export const prepareDataForOrganizations = (result: OrgAndRepoResponse) => {
+  const orgData: { [id: string]: AddRepositoryData } =
+    result?.organizations?.reduce(
+      (acc: { [id: string]: AddRepositoryData }, val: Repository) => {
+        return {
+          ...acc,
+          [val.id]: {
+            id: val.id,
+            orgName: val.name,
+            organizationUrl: `https://github.com/${val?.name}`,
+            totalReposInOrg: val.totalRepoCount,
+          },
+        };
+      },
+      {},
+    ) || {};
+  return { organizations: orgData, totalOrganizations: result?.totalCount };
+};
+
+export const prepareDataForRepositories = (
+  result: OrgAndRepoResponse,
+  user: string,
+  baseUrl: string,
+) => {
+  const repoData: { [id: string]: AddRepositoryData } =
+    result?.repositories?.reduce((acc, val: Repository) => {
+      const id = val.id;
+      return {
+        ...acc,
+        [id]: {
+          id,
+          repoName: val.name,
+          defaultBranch: val.defaultBranch || 'main',
+          orgName: val.organization,
+          repoUrl: val.url,
+          organizationUrl: val.url?.substring(
+            0,
+            val.url.indexOf(val?.name || '') - 1,
+          ),
+          catalogInfoYaml: {
+            prTemplate: getPRTemplate(
+              val.name || '',
+              val.organization || '',
+              user,
+              baseUrl || '',
+              val.url || '',
+              val.defaultBranch || 'main',
+            ),
+          },
+        },
+      };
+    }, {}) || {};
+  return { repositories: repoData, totalRepositories: result?.totalCount };
+};
+
 export const prepareDataForAddedRepositories = (
   addedRepositories: ImportJobs | Response | undefined,
   user: string,
   baseUrl: string,
-) => {
+): { repoData: AddedRepositories; totalJobs: number } => {
   if (!Array.isArray((addedRepositories as ImportJobs)?.imports)) {
-    return {};
+    return { repoData: {}, totalJobs: 0 };
   }
   const importJobs = addedRepositories as ImportJobs;
   const repoData: { [id: string]: AddRepositoryData } =
@@ -596,5 +622,8 @@ export const prepareDataForAddedRepositories = (
         },
       };
     }, {});
-  return repoData;
+  return {
+    repoData,
+    totalJobs: (addedRepositories as ImportJobs)?.totalCount || 0,
+  };
 };

@@ -50,7 +50,7 @@ const mockIdentityApi = {
 };
 
 const mockAsyncData = {
-  loaded: true,
+  loading: false,
   data: {
     addedRepositories: mockGetImportJobs.imports,
     totalJobs: mockGetImportJobs.imports.length,
