@@ -6,4 +6,3 @@
  */
 
 export * from './actions';
-export * from './dynamic';
