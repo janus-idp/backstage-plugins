@@ -31,6 +31,7 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
+import supertest from 'supertest';
 
 import * as crypto from 'crypto';
 
@@ -188,40 +189,72 @@ describe('bulk-import router tests', () => {
   }
 
   describe('GET /ping', () => {
-    it('returns ok when unauthenticated', async () => {
-      const backendServer = await startNewBackendServer();
+    it.each([
+      ['anonymous', undefined],
+      ['allowed', AuthorizeResult.DENY],
+      ['denied', AuthorizeResult.ALLOW],
+    ])(
+      'should return ok when %s (auth result=%s)',
+      async (_desc, authorizeResult?) => {
+        const backendServer = await startNewBackendServer(
+          authorizeResult as AuthorizeResult.DENY | AuthorizeResult.ALLOW,
+        );
 
-      const response = await request(backendServer).get(
-        '/api/bulk-import/ping',
-      );
+        const response = await request(backendServer).get(
+          '/api/bulk-import/ping',
+        );
 
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({ status: 'ok' });
-    });
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({ status: 'ok' });
+      },
+    );
+  });
 
-    it('returns ok even when denied by permission framework', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.DENY);
+  describe('permission framework denial', () => {
+    it.each([
+      [
+        'GET /organizations',
+        async (req: supertest.SuperTest<supertest.Test>) =>
+          req.get('/api/bulk-import/organizations'),
+      ],
+      [
+        'GET /repositories',
+        async (req: supertest.SuperTest<supertest.Test>) =>
+          req.get('/api/bulk-import/repositories'),
+      ],
+      [
+        'GET /organizations/:org/repositories',
+        async (req: supertest.SuperTest<supertest.Test>) =>
+          req.get('/api/bulk-import/organizations/my-org-1/repositories'),
+      ],
+      [
+        'GET /imports',
+        async (req: supertest.SuperTest<supertest.Test>) =>
+          req.get('/api/bulk-import/imports'),
+      ],
+      [
+        'POST /imports',
+        async (req: supertest.SuperTest<supertest.Test>) =>
+          req.post('/api/bulk-import/imports'),
+      ],
+    ])(
+      '%s: returns 403 when denied by permission framework',
+      async (
+        _endpoint: string,
+        reqHandler: (
+          req: supertest.SuperTest<supertest.Test>,
+        ) => Promise<supertest.Response>,
+      ) => {
+        const backendServer = await startNewBackendServer(AuthorizeResult.DENY);
 
-      const response = await request(backendServer).get(
-        '/api/bulk-import/ping',
-      );
+        const response = await reqHandler(request(backendServer));
 
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({ status: 'ok' });
-    });
+        expect(response.status).toEqual(403);
+      },
+    );
   });
 
   describe('GET /organizations', () => {
-    it('returns 403 when denied by permission framework', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.DENY);
-
-      const response = await request(backendServer).get(
-        '/api/bulk-import/organizations',
-      );
-
-      expect(response.status).toEqual(403);
-    });
-
     it('returns 200 when organizations are fetched without errors', async () => {
       const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
 
@@ -364,16 +397,6 @@ describe('bulk-import router tests', () => {
   });
 
   describe('GET /repositories', () => {
-    it('returns 403 when denied by permission framework', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.DENY);
-
-      const response = await request(backendServer).get(
-        '/api/bulk-import/repositories',
-      );
-
-      expect(response.status).toEqual(403);
-    });
-
     it('returns 200 when repositories are fetched without errors', async () => {
       const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
 
@@ -485,16 +508,6 @@ describe('bulk-import router tests', () => {
   });
 
   describe('GET /organizations/{org}/repositories', () => {
-    it('returns 403 when denied by permission framework', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.DENY);
-
-      const response = await request(backendServer).get(
-        '/api/bulk-import/organizations/my-ent-org-1/repositories',
-      );
-
-      expect(response.status).toEqual(403);
-    });
-
     it('returns 200 when repositories are fetched without errors', async () => {
       const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
 
@@ -585,16 +598,6 @@ describe('bulk-import router tests', () => {
   });
 
   describe('GET /imports', () => {
-    it('returns 403 when denied by permission framework', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.DENY);
-
-      const response = await request(backendServer).get(
-        '/api/bulk-import/imports',
-      );
-
-      expect(response.status).toEqual(403);
-    });
-
     it('returns 200 with empty list when there is nothing in catalog yet and no open PR for each repo', async () => {
       const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW, {
         catalog: { locations: [] },
@@ -713,16 +716,6 @@ describe('bulk-import router tests', () => {
   });
 
   describe('POST /imports', () => {
-    it('returns 403 when denied by permission framework', async () => {
-      const backendServer = await startNewBackendServer(AuthorizeResult.DENY);
-
-      const response = await request(backendServer)
-        .post('/api/bulk-import/imports')
-        .send([]);
-
-      expect(response.status).toEqual(403);
-    });
-
     it('returns 400 if there is nothing in request body', async () => {
       const backendServer = await startNewBackendServer(AuthorizeResult.ALLOW);
 
