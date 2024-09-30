@@ -3,9 +3,11 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { Client, fetchExchange, gql } from '@urql/core';
 
 import {
-  FilterInfo,
+  Filter,
   fromWorkflowSource,
   getWorkflowCategory,
+  IntrospectionField,
+  IntrospectionQuery,
   parseWorkflowVariables,
   ProcessInstance,
   WorkflowDefinition,
@@ -21,7 +23,9 @@ import { Pagination } from '../types/pagination';
 import { FETCH_PROCESS_INSTANCES_SORT_FIELD } from './constants';
 
 export class DataIndexService {
-  private client: Client;
+  private readonly client: Client;
+  public processDefinitionArguments: IntrospectionField[] = [];
+  public processInstanceArguments: IntrospectionField[] = [];
 
   public constructor(
     private readonly dataIndexUrl: string,
@@ -40,6 +44,111 @@ export class DataIndexService {
       url: diURL,
       exchanges: [fetchExchange],
     });
+  }
+
+  public async initInputProcessDefinitionArgs(): Promise<IntrospectionField[]> {
+    if (this.processDefinitionArguments.length === 0) {
+      this.processDefinitionArguments =
+        await this.inspectInputArgument('ProcessDefinition');
+    }
+    return this.processDefinitionArguments; // For testing purposes
+  }
+
+  public graphQLArgumentQuery(type: string): string {
+    return `query ${type}Argument {
+        __type(name: "${type}Argument") {
+          kind
+          name
+          inputFields {
+            name
+            type {
+              kind
+              name
+              ofType {
+                kind
+                name
+                ofType {
+                  kind
+                  name
+                  ofType {
+                    kind
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`;
+  }
+  public async inspectInputArgument(
+    type: string,
+  ): Promise<IntrospectionField[]> {
+    const result = await this.client.query(this.graphQLArgumentQuery(type), {});
+
+    this.logger.debug(`Introspection query result: ${JSON.stringify(result)}`);
+
+    if (result?.error) {
+      this.logger.error(`Error executing introspection query ${result.error}`);
+      throw result.error;
+    }
+
+    const pairs: IntrospectionField[] = [];
+    if (result?.data?.__type?.inputFields) {
+      for (const field of result.data.__type.inputFields) {
+        if (
+          field.name !== 'and' &&
+          field.name !== 'or' &&
+          field.name !== 'not'
+        ) {
+          pairs.push({
+            name: field.name,
+            type: {
+              name: field.type.name,
+              kind: field.type.kind,
+              ofType: field.type.ofType,
+            },
+          });
+        }
+      }
+    }
+    return pairs;
+  }
+
+  public async getSchemaTypes(type: string): Promise<IntrospectionQuery> {
+    const graphQlQuery = `query IntrospectionQuery {
+  __type(name: "${type}") {
+    name
+    kind
+    description
+    fields {
+      name
+      type {
+        kind
+        name
+        ofType {
+          kind
+          name
+          ofType {
+            kind
+            name
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
+    const result = await this.client.query(graphQlQuery, {});
+
+    this.logger.debug(`Introspection query result: ${JSON.stringify(result)}`);
+
+    if (result.error) {
+      this.logger.error(`Error executing introspection query ${result.error}`);
+      throw result.error;
+    }
+    return result as unknown as IntrospectionQuery;
   }
 
   public async abortWorkflowInstance(instanceId: string): Promise<void> {
@@ -117,7 +226,7 @@ export class DataIndexService {
   public async fetchWorkflowInfos(args: {
     definitionIds?: string[];
     pagination?: Pagination;
-    filter?: FilterInfo;
+    filter?: Filter;
   }): Promise<WorkflowInfo[]> {
     this.logger.info(`fetchWorkflowInfos() called: ${this.dataIndexUrl}`);
     const { definitionIds, pagination, filter } = args;
@@ -126,13 +235,21 @@ export class DataIndexService {
       definitionIds !== undefined && definitionIds.length > 0
         ? `id: {in: ${JSON.stringify(definitionIds)}}`
         : undefined;
-    const filterCondition = buildFilterCondition(filter);
+
+    const filterCondition = filter
+      ? buildFilterCondition(
+          await this.initInputProcessDefinitionArgs(),
+          filter,
+        )
+      : undefined;
 
     let whereClause: string | undefined;
     if (definitionIds && filter) {
       whereClause = `and: [{${definitionIdsCondition}}, {${filterCondition}}]`;
     } else if (definitionIdsCondition || filterCondition) {
       whereClause = definitionIdsCondition ?? filterCondition;
+    } else {
+      whereClause = undefined;
     }
 
     const graphQlQuery = buildGraphQlQuery({
@@ -143,7 +260,6 @@ export class DataIndexService {
     });
     this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     const result = await this.client.query(graphQlQuery, {});
-
     this.logger.debug(
       `Get workflow definitions result: ${JSON.stringify(result)}`,
     );
@@ -161,7 +277,7 @@ export class DataIndexService {
   public async fetchInstances(args: {
     definitionIds?: string[];
     pagination?: Pagination;
-    filter?: FilterInfo;
+    filter?: Filter;
   }): Promise<ProcessInstance[]> {
     const { pagination, definitionIds, filter } = args;
     if (pagination) pagination.sortField ??= FETCH_PROCESS_INSTANCES_SORT_FIELD;
@@ -170,7 +286,12 @@ export class DataIndexService {
     const definitionIdsCondition = definitionIds
       ? `processId: {in: ${JSON.stringify(definitionIds)}}`
       : undefined;
-    const filterCondition = buildFilterCondition(filter);
+    const filterCondition = filter
+      ? buildFilterCondition(
+          await this.inspectInputArgument('ProcessInstance'),
+          filter,
+        )
+      : '';
 
     let whereClause = '';
     const conditions = [];
@@ -224,15 +345,33 @@ export class DataIndexService {
 
   public async fetchInstancesTotalCount(
     definitionIds?: string[],
+    filter?: Filter,
   ): Promise<number> {
+    const definitionIdsCondition = definitionIds
+      ? `processId: {in: ${JSON.stringify(definitionIds)}}`
+      : undefined;
+    this.initInputProcessDefinitionArgs();
+    const filterCondition = filter
+      ? buildFilterCondition(
+          await this.inspectInputArgument('ProcessInstance'),
+          filter,
+        )
+      : '';
+
+    let whereClause: string | undefined;
+    if (definitionIds && filter) {
+      whereClause = `and: [{${definitionIdsCondition}}, {${filterCondition}}]`;
+    } else if (definitionIdsCondition || filterCondition) {
+      whereClause = definitionIdsCondition ?? filterCondition;
+    }
+
     const graphQlQuery = buildGraphQlQuery({
       type: 'ProcessInstances',
       queryBody: 'id',
-      whereClause: definitionIds
-        ? `processId: {in: ${JSON.stringify(definitionIds)}}`
-        : undefined,
+      whereClause,
     });
     this.logger.debug(`GraphQL query: ${graphQlQuery}`);
+
     const result = await this.client.query(graphQlQuery, {});
 
     if (result.error) {
