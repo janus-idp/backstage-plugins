@@ -225,7 +225,10 @@ describe('bulk-import router tests', () => {
       'should return ok when %s (auth result=%s)',
       async (_desc, authorizeResult?) => {
         const backendServer = await startNewBackendServer(
-          authorizeResult as AuthorizeResult.DENY | AuthorizeResult.ALLOW | undefined,
+          authorizeResult as
+            | AuthorizeResult.DENY
+            | AuthorizeResult.ALLOW
+            | undefined,
         );
 
         const response = await request(backendServer).get(
