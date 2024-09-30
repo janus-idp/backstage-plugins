@@ -16,14 +16,10 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
-      "alpha": [
-        "src/alpha.ts"
-      ],
       "package.json": [
         "package.json"
       ]
@@ -44,7 +40,6 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.23.3",
-    "@backstage/backend-dynamic-feature-service": "^0.2.15",
     "@backstage/backend-plugin-api": "^0.7.0",
     "@backstage/catalog-model": "^1.5.0",
     "@backstage/plugin-scaffolder-node": "^0.4.8",
@@ -54,6 +49,7 @@
   },
   "devDependencies": {
     "@backstage/backend-common": "0.23.3",
+    "@backstage/backend-test-utils": "^1.0.0",
     "@backstage/cli": "0.26.11"
   },
   "files": [
@@ -61,7 +57,6 @@
     "config.d.ts",
     "dist-dynamic/*.*",
     "dist-dynamic/dist/**",
-    "dist-dynamic/alpha/*",
     "app-config.janus-idp.yaml"
   ],
   "repository": {

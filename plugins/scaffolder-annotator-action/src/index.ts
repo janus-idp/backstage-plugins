@@ -6,3 +6,4 @@
  */
 
 export * from './actions';
+export { scaffolderCustomActionsScaffolderModule as default } from './module';
