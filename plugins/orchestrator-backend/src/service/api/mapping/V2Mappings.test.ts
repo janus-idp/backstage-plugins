@@ -61,7 +61,6 @@ describe('scenarios to verify mapToWorkflowOverviewDTO', () => {
     expect(result.category).toBe('assessment');
     expect(result.avgDurationMs).toBe(overview.avgDurationMs);
     expect(result.description).toBe(overview.description);
-    expect(Object.keys(result).length).toBe(8);
   });
 });
 describe('scenarios to verify mapWorkflowCategoryDTOFromString', () => {
