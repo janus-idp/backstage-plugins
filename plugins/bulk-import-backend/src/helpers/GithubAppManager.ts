@@ -18,7 +18,7 @@
  * Base code taken from upstream https://github.com/backstage/backstage/blob/master/packages/integration/src/github/SingleInstanceGithubCredentialsProvider.ts
  * due to them not exporting the `GithubAppManager` class. Modifications were made to grab access tokens from all apps scoped to a repository/organization/user
  */
-import {
+import type {
   GithubAppConfig,
   GithubCredentials,
   GithubCredentialType,
@@ -27,11 +27,11 @@ import {
 } from '@backstage/integration';
 
 import { createAppAuth } from '@octokit/auth-app';
-import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
+import { Octokit, type RestEndpointMethodTypes } from '@octokit/rest';
 import gitUrlParse from 'git-url-parse';
 import { DateTime } from 'luxon';
 
-import {
+import type {
   AppCredentialFetchResult,
   ExtendedGithubCredentials,
   ExtendedGithubCredentialsProvider,

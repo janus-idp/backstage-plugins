@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {
+import type {
   AuthService,
   HttpAuthService,
   PermissionsService,
@@ -24,7 +24,7 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import express from 'express';
 
-import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+import type { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
 
 import { auditLogAuthError } from './auditLogUtils';
