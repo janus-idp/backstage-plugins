@@ -54,6 +54,7 @@
     "formik": "^2.4.5",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
+    "@tanstack/react-query": "^4.29.21",
     "react-use": "^17.2.4",
     "yaml": "^2.0.0"
   },

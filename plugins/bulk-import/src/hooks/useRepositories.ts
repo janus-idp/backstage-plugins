@@ -7,6 +7,8 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 
+import { useQuery } from '@tanstack/react-query';
+
 import {
   useDebounceCallback,
   useDeepCompareMemoize,
@@ -15,19 +17,16 @@ import {
 import { bulkImportApiRef } from '../api/BulkImportBackendClient';
 import {
   AddRepositoryData,
+  DataFetcherQueryParams,
   OrgAndRepoResponse,
   RepositoriesError,
   Repository,
 } from '../types';
 import { getPRTemplate } from '../utils/repository-utils';
 
-export const useRepositories = (options: {
-  page: number;
-  querySize: number;
-  showOrganizations?: boolean;
-  orgName?: string;
-  searchString?: string;
-}): {
+export const useRepositories = (
+  options: DataFetcherQueryParams,
+): {
   loading: boolean;
   data: {
     repositories?: { [id: string]: AddRepositoryData };
@@ -51,6 +50,7 @@ export const useRepositories = (options: {
   }>({});
   const identityApi = useApi(identityApiRef);
   const configApi = useApi(configApiRef);
+  const bulkImportApi = useApi(bulkImportApiRef);
 
   useDebounce(
     () => {
@@ -70,57 +70,66 @@ export const useRepositories = (options: {
     return url;
   });
 
-  const bulkImportApi = useApi(bulkImportApiRef);
-  const { value, loading, error } = useAsync(async () => {
-    setIsLoading(true);
-    if (options.showOrganizations) {
-      return await bulkImportApi.dataFetcher(
-        options.page,
-        options.querySize,
-        debouncedSearch || '',
-        {
-          fetchOrganizations: true,
-        },
-      );
+  const fetchRepositories = async (
+    pageNo: number,
+    size: number,
+    showOrganizations: boolean,
+    orgName: string,
+    searchStr: string = '',
+  ) => {
+    if (showOrganizations) {
+      return await bulkImportApi.dataFetcher(pageNo, size, searchStr, {
+        fetchOrganizations: true,
+      });
     }
-    if (options.orgName) {
-      return await bulkImportApi.dataFetcher(
-        options.page,
-        options.querySize,
-        debouncedSearch || '',
-        {
-          orgName: options.orgName,
-        },
-      );
+    if (orgName) {
+      return await bulkImportApi.dataFetcher(pageNo, size, searchStr, {
+        orgName,
+      });
     }
-    return await bulkImportApi.dataFetcher(
-      options.page,
-      options.querySize,
-      debouncedSearch || '',
-    );
-  }, [
-    options?.page,
-    options?.querySize,
-    options?.showOrganizations,
-    options?.orgName,
-    debouncedSearch,
-  ]);
+    return await bulkImportApi.dataFetcher(pageNo, size, searchStr);
+  };
+
+  const {
+    data: value,
+    error,
+    isLoading: loading,
+  } = useQuery(
+    [
+      'repositories',
+      options?.page,
+      options?.querySize,
+      options?.showOrganizations,
+      options?.orgName,
+      debouncedSearch,
+    ],
+    () =>
+      fetchRepositories(
+        options?.page,
+        options?.querySize,
+        options?.showOrganizations || false,
+        options?.orgName || '',
+        debouncedSearch,
+      ),
+    { keepPreviousData: true },
+  );
 
   const prepareData = React.useCallback(
     (result: OrgAndRepoResponse, dataLoading: boolean) => {
+      setIsLoading(true);
       const prepareDataForRepositories = () => {
         const repoData: { [id: string]: AddRepositoryData } =
           result?.repositories?.reduce((acc, val: Repository) => {
-            const id = val.id || `${val.organization}/${val.name}`;
+            const id = val.id;
             return {
               ...acc,
               [id]: {
                 id,
                 repoName: val.name,
-                defaultBranch: val.defaultBranch,
+                defaultBranch: val.defaultBranch || 'main',
                 orgName: val.organization,
                 repoUrl: val.url,
-                organizationUrl: val?.url?.substring(
+                organizationUrl: val.url?.substring(
                   0,
                   val.url.indexOf(val?.name || '') - 1,
                 ),
