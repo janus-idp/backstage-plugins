@@ -7,7 +7,7 @@ import {
 } from '@backstage/core-components';
 
 import { Button, Grid, makeStyles, Tooltip } from '@material-ui/core';
-import { ArrowCircleUpIcon } from '@patternfly/react-icons';
+import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 
 import { ClusterStatus } from '@janus-idp/backstage-plugin-ocm-common';
 
