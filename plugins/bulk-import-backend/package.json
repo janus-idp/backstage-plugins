@@ -70,6 +70,7 @@
     "@janus-idp/cli": "1.15.0",
     "@types/express": "^*",
     "@types/supertest": "2.0.16",
+    "msw": "1.3.3",
     "supertest": "6.3.4"
   },
   "peerDependencies": {
