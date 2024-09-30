@@ -53,7 +53,7 @@ test.describe('Bulk import plugin', () => {
   });
 
   test('Remove repository alert window is shown', async () => {
-    await page.getByPlaceholder('Filter').fill('cupcake');
+    await page.getByPlaceholder('Search').fill('cupcake');
     await page.locator('span[data-testid="delete-repository"]').first().click();
     await expect(page.getByText('Remove cupcake repository?')).toBeVisible();
     await expect(

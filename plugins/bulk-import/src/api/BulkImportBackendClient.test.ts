@@ -90,7 +90,7 @@ const handlers = [
     (req, res, ctx) => {
       const test = req.headers.get('Content-Type');
       if (test === 'application/json') {
-        return res(ctx.status(200), ctx.json(mockGetImportJobs[1]));
+        return res(ctx.status(200), ctx.json(mockGetImportJobs.imports[1]));
       }
       return res(ctx.status(404));
     },
@@ -103,7 +103,7 @@ const handlers = [
       return res(
         ctx.status(200),
         ctx.json(
-          mockGetImportJobs.filter(r =>
+          mockGetImportJobs.imports.filter(r =>
             r.repository.name?.includes(searchParam),
           ),
         ),
@@ -288,7 +288,9 @@ describe('BulkImportBackendClient', () => {
     it('getImportJobs should retrieve the import jobs based on search string', async () => {
       const jobs = await bulkImportApi.getImportJobs(1, 2, 'cup');
       expect(jobs).toEqual(
-        mockGetImportJobs.filter(r => r.repository.name?.includes('cup')),
+        mockGetImportJobs.imports.filter(r =>
+          r.repository.name?.includes('cup'),
+        ),
       );
     });
 
@@ -316,7 +318,7 @@ describe('BulkImportBackendClient', () => {
       );
 
       expect(response.status).toBe(RepositoryStatus.WAIT_PR_APPROVAL);
-      expect(response).toEqual(mockGetImportJobs[1]);
+      expect(response).toEqual(mockGetImportJobs.imports[1]);
     });
   });
 
