@@ -219,13 +219,13 @@ describe('bulk-import router tests', () => {
   describe('GET /ping', () => {
     it.each([
       ['anonymous', undefined],
-      ['allowed', AuthorizeResult.DENY],
-      ['denied', AuthorizeResult.ALLOW],
+      ['allowed', AuthorizeResult.ALLOW],
+      ['denied', AuthorizeResult.DENY],
     ])(
       'should return ok when %s (auth result=%s)',
       async (_desc, authorizeResult?) => {
         const backendServer = await startNewBackendServer(
-          authorizeResult as AuthorizeResult.DENY | AuthorizeResult.ALLOW,
+          authorizeResult as AuthorizeResult.DENY | AuthorizeResult.ALLOW | undefined,
         );
 
         const response = await request(backendServer).get(
