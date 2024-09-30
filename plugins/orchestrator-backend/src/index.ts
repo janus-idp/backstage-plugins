@@ -1,3 +1,1 @@
-export * from './dynamic/index';
-
-export { createRouter } from './routerWrapper';
+export { orchestratorPlugin as default } from './plugin';
