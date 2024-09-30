@@ -14,25 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, EntityMeta } from '@backstage/catalog-model';
-import { SerializedError } from '@backstage/errors';
-import {
+import type { SerializedError } from '@backstage/errors';
+import type {
   GithubCredentials,
   GithubCredentialsProvider,
 } from '@backstage/integration';
-
-export type GithubRepositoryRequest = {
-  /**
-   * The owner of the repositories in a specific github host in the form of an HTML url
-   * e.g "https://github.com/janus-idp"
-   */
-  owner: string;
-
-  /**
-   * Optional token to use for the permissions framework
-   */
-  backstageToken?: string; // Used for RBAC
-};
 
 // From https://docs.github.com/en/rest/orgs/orgs?apiVersion=2022-11-28#list-organizations
 export type GithubOrganization = {
@@ -147,20 +133,3 @@ export interface ExtendedGithubCredentialsProvider
     host: string;
   }) => Promise<ExtendedGithubCredentials[]>;
 }
-
-export type CatalogInfoGeneratorOptions = {
-  repoInfo: GithubRepository;
-  backstageToken?: string;
-  /**
-   * Every batch of bulk import operation has it's own UUID to track the import job
-   */
-  bulkImportUUID: string;
-  metadata?: EntityMeta;
-};
-
-export type ValidatedEntity = Entity | SerializedError[];
-
-export type CatalogInfoEntities = {
-  entity: ValidatedEntity;
-  locationEntity: ValidatedEntity;
-};

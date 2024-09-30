@@ -14,89 +14,64 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
-  AuthService,
-  BackstageCredentials,
-  BackstagePrincipalTypes,
-  CacheService,
+  createServiceFactory,
+  type BackendFeature,
 } from '@backstage/backend-plugin-api';
-import {
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import type {
   CatalogClient,
   CatalogRequestOptions,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
 } from '@backstage/catalog-client';
-import { ConfigReader } from '@backstage/config';
-import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
-import express from 'express';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import request from 'supertest';
-import { Logger } from 'winston';
 
-import { CatalogInfoGenerator } from '../helpers';
+import * as crypto from 'crypto';
+
 import {
-  GithubOrganization,
-  GithubOrganizationResponse,
-  GithubRepository,
-  GithubRepositoryResponse,
-} from '../types';
-import { GithubApiService } from './githubApiService';
-import { DefaultPageNumber, DefaultPageSize } from './handlers/handlers';
-import { createRouter } from './router';
+  DEFAULT_TEST_HANDLERS,
+  loadTestFixture,
+  LOCAL_ADDR,
+} from '../../__fixtures__/handlers';
+import { bulkImportPlugin } from '../plugin';
 
-const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
-  jest.fn();
-
-const mockUser = {
-  type: 'User',
-  userEntityRef: 'user:default/guest',
-  ownershipEntityRefs: ['guest'],
-};
-const mockIdentityClient = {
-  getIdentity: jest.fn().mockImplementation(async () => ({
-    identity: mockUser,
-  })),
-};
-const mockDiscovery = {
-  getBaseUrl: jest.fn().mockResolvedValue('https://api.example.com'),
-  getExternalBaseUrl: jest.fn().mockResolvedValue('https://api.example.com'),
-};
-
-const permissionEvaluator: PermissionEvaluator = {
-  authorize: mockedAuthorize,
-  authorizeConditional: jest.fn(),
-};
-
-const allowAll: PermissionEvaluator['authorize'] = async queries => {
-  return queries.map(() => ({
-    result: AuthorizeResult.ALLOW,
-  }));
-};
-
-const denyAll: PermissionEvaluator['authorize'] = async queries => {
-  return queries.map(() => ({
-    result: AuthorizeResult.DENY,
-  }));
-};
-
-const mockAddLocation = jest.fn();
-const mockValidateEntity = jest.fn();
-const mockGetEntitiesByRefs = jest.fn();
-
-const mockCache: CacheService = {
-  delete: jest.fn(),
-  get: jest.fn(),
-  set: jest.fn(),
-  withOptions: jest.fn(),
-};
-
-const configuration = new ConfigReader({
+const BASE_CONFIG = {
   app: {
     baseUrl: 'https://my-backstage-app.example.com',
+  },
+  integrations: {
+    github: [
+      {
+        host: 'github.com',
+        apiBaseUrl: LOCAL_ADDR,
+        rawBaseUrl: `${LOCAL_ADDR}/raw`,
+        token: 'my_super_secret_gh_token', // notsecret
+      },
+      {
+        host: 'enterprise.github.com',
+        apiBaseUrl: LOCAL_ADDR,
+        rawBaseUrl: `${LOCAL_ADDR}/raw`,
+        apps: [
+          {
+            appId: 1234567890,
+            clientId: 'my-client-id', // notsecret
+            clientSecret: 'my-client-secret', // notsecret
+            webhookSecret: 'my-webhook-secret', // notsecret
+            privateKey: crypto.generateKeyPairSync('rsa', {
+              modulusLength: 2048,
+              publicKeyEncoding: { type: 'spki', format: 'pem' },
+              privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+            }).privateKey,
+          },
+        ],
+      },
+    ],
   },
   catalog: {
     locations: [
@@ -132,919 +107,529 @@ const configuration = new ConfigReader({
       },
     ],
   },
-});
+};
 
-function filterOrganizations(
-  organizations: GithubOrganization[],
-  search?: string,
-) {
-  return search
-    ? organizations.filter(org => org.name.toLowerCase().includes(search))
-    : organizations;
-}
+describe('bulk-import router tests', () => {
+  const server = setupServer(...DEFAULT_TEST_HANDLERS);
 
-describe('createRouter', () => {
-  let app: express.Express;
-  let mockAuth: AuthService;
   let mockCatalogClient: CatalogClient;
-  let mockCatalogInfoGenerator: CatalogInfoGenerator;
-  let mockGithubApiService: GithubApiService;
 
-  beforeAll(async () => {
-    mockAuth = {
-      isPrincipal<TType extends keyof BackstagePrincipalTypes>(
-        _credentials: BackstageCredentials,
-        _type: TType,
-      ): _credentials is BackstageCredentials<BackstagePrincipalTypes[TType]> {
-        return false;
+  beforeAll(() =>
+    server.listen({
+      /*
+       *  This is required so that msw doesn't throw
+       *  warnings when the backend is requesting an endpoint
+       */
+      onUnhandledRequest: (req, print) => {
+        if (req.url.pathname.startsWith('/api/bulk-import')) {
+          // bypass
+          return;
+        }
+        print.warning();
       },
-      getPluginRequestToken: () =>
-        Promise.resolve({ token: 'ey123.abc.xyzzz' }),
-      authenticate: jest.fn(),
-      getNoneCredentials: jest.fn(),
-      getOwnServiceCredentials: jest.fn().mockResolvedValue({
-        principal: {
-          subject: 'my-sub',
-        },
-      }),
-      getLimitedUserToken: jest.fn(),
-      listPublicServiceKeys: jest.fn(),
-    };
+    }),
+  );
+
+  afterAll(() => server.close());
+
+  beforeEach(async () => {
+    // TODO(rm3l): Use 'catalogServiceMock' from '@backstage/plugin-catalog-node/testUtils'
+    //  once '@backstage/plugin-catalog-node' is upgraded
     mockCatalogClient = {
-      getEntitiesByRefs: mockGetEntitiesByRefs,
-      validateEntity: mockValidateEntity,
-      addLocation: mockAddLocation,
       getEntities: jest.fn(),
+      getEntitiesByRefs: jest.fn(),
       queryEntities: jest.fn(),
+      getEntityAncestors: jest.fn(),
+      getEntityByRef: jest.fn(),
+      removeEntityByUid: jest.fn(),
       refreshEntity: jest.fn(),
+      getEntityFacets: jest.fn(),
+      getLocationById: jest.fn(),
+      getLocationByRef: jest.fn(),
+      addLocation: jest.fn(),
+      removeLocationById: jest.fn(),
+      getLocationByEntity: jest.fn(),
+      validateEntity: jest.fn(),
     } as unknown as CatalogClient;
-    const voidLogger = getVoidLogger();
-    mockCatalogInfoGenerator = new CatalogInfoGenerator(
-      voidLogger,
-      mockDiscovery,
-      mockAuth,
-      mockCatalogClient,
-    );
-    mockGithubApiService = new GithubApiService(
-      voidLogger,
-      configuration,
-      mockCache,
-    );
-    const router = await createRouter({
-      logger: voidLogger,
-      config: configuration,
-      permissions: permissionEvaluator,
-      cache: mockCache,
-      discovery: mockDiscovery,
-      catalogApi: mockCatalogClient,
-      identity: mockIdentityClient,
-      catalogInfoHelper: mockCatalogInfoGenerator,
-      githubApi: mockGithubApiService,
-    });
-    app = express().use(router);
   });
 
-  beforeEach(() => {
+  afterEach(() => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
+    server.resetHandlers();
   });
 
+  function addHandlersForGHTokenAppErrors() {
+    server.use(
+      rest.get(`${LOCAL_ADDR}/user/orgs`, (_, res, ctx) =>
+        res(
+          ctx.status(500),
+          ctx.json({ message: 'Github Token auth did not succeed' }),
+        ),
+      ),
+      rest.get(`${LOCAL_ADDR}/app/installations`, (_, res, ctx) =>
+        res(
+          ctx.status(403),
+          ctx.json({ message: 'Github App auth returned an error' }),
+        ),
+      ),
+      rest.get(`${LOCAL_ADDR}/user/repos`, (_, res, ctx) =>
+        res(
+          ctx.status(401),
+          ctx.json({ message: 'Github Token auth did not succeed' }),
+        ),
+      ),
+      rest.get(`${LOCAL_ADDR}/orgs/some-org/repos`, (_, res, ctx) =>
+        res(
+          ctx.status(502),
+          ctx.json({ message: 'Github Token auth did not succeed' }),
+        ),
+      ),
+    );
+  }
+
+  async function startBackendServer(
+    authorizeResult?: AuthorizeResult.DENY | AuthorizeResult.ALLOW,
+    config?: any,
+  ) {
+    const features: (BackendFeature | Promise<{ default: BackendFeature }>)[] =
+      [
+        bulkImportPlugin,
+        mockServices.rootLogger.factory,
+        mockServices.rootConfig.factory({
+          data: { ...BASE_CONFIG, ...(config || {}) },
+        }),
+        mockServices.cache.factory,
+        createServiceFactory({
+          service: catalogServiceRef,
+          deps: {},
+          factory: () => mockCatalogClient,
+        }),
+      ];
+    if (authorizeResult) {
+      features.push(
+        mockServices.permissions.mock({
+          authorize: async () => [{ result: authorizeResult }],
+        }).factory,
+      );
+    }
+    return (await startTestBackend({ features })).server;
+  }
+
   describe('GET /ping', () => {
-    it('returns ok when unauthenticated', async () => {
-      const response = await request(app).get('/ping');
+    it.each([
+      ['anonymous', undefined],
+      ['allowed', AuthorizeResult.ALLOW],
+      ['denied', AuthorizeResult.DENY],
+    ])(
+      'should return ok when %s (auth result=%s)',
+      async (_desc, authorizeResult?) => {
+        const backendServer = await startBackendServer(
+          authorizeResult as
+            | AuthorizeResult.DENY
+            | AuthorizeResult.ALLOW
+            | undefined,
+        );
 
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({ status: 'ok' });
-    });
+        const response = await request(backendServer).get(
+          '/api/bulk-import/ping',
+        );
 
-    it('returns ok even when denied by permission framework', async () => {
-      mockedAuthorize.mockImplementation(denyAll);
-      const response = await request(app).get('/ping');
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({ status: 'ok' });
+      },
+    );
+  });
 
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({ status: 'ok' });
-    });
+  describe('permission framework denial', () => {
+    it.each([
+      [
+        'GET /organizations',
+        async (req: request.SuperTest<request.Test>) =>
+          req.get('/api/bulk-import/organizations'),
+      ],
+      [
+        'GET /repositories',
+        async (req: request.SuperTest<request.Test>) =>
+          req.get('/api/bulk-import/repositories'),
+      ],
+      [
+        'GET /organizations/:org/repositories',
+        async (req: request.SuperTest<request.Test>) =>
+          req.get('/api/bulk-import/organizations/my-org-1/repositories'),
+      ],
+      [
+        'GET /imports',
+        async (req: request.SuperTest<request.Test>) =>
+          req.get('/api/bulk-import/imports'),
+      ],
+      [
+        'POST /imports',
+        async (req: request.SuperTest<request.Test>) =>
+          req.post('/api/bulk-import/imports'),
+      ],
+    ])(
+      '%s: returns 403 when denied by permission framework',
+      async (
+        _endpoint: string,
+        reqHandler: (
+          req: request.SuperTest<request.Test>,
+        ) => Promise<request.Response>,
+      ) => {
+        const backendServer = await startBackendServer(AuthorizeResult.DENY);
+
+        const response = await reqHandler(request(backendServer));
+
+        expect(response.status).toEqual(403);
+      },
+    );
   });
 
   describe('GET /organizations', () => {
-    it('returns 403 when denied by permission framework', async () => {
-      mockedAuthorize.mockImplementation(denyAll);
-      const response = await request(app).get('/organizations');
-      expect(response.status).toEqual(403);
-    });
-
     it('returns 200 when organizations are fetched without errors', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
 
-      jest
-        .spyOn(mockGithubApiService, 'getOrganizationsFromIntegrations')
-        .mockResolvedValue({
-          organizations: [
-            {
-              id: 166016847,
-              name: 'my-org-ent-1',
-              url: 'https://api.github.com/users/my-org-ent-1',
-              description: 'an awesome org',
-              public_repos: 10,
-              total_private_repos: 25,
-            },
-            {
-              id: 266016847,
-              name: 'my-org-ent-2',
-              url: 'https://api.github.com/users/my-org-ent-2',
-              total_private_repos: 1234,
-            },
-            {
-              id: 987654321,
-              name: 'my-org-ent-3-undefined-repo-count',
-              url: 'https://api.github.com/users/my-org-ent-3-undefined-repo-count',
-            },
-            {
-              id: 123,
-              name: 'my-org-ent-4-only-internal-repos',
-              url: 'https://api.github.com/users/my-org-ent-4-only-internal-repos',
-              owned_private_repos: 7,
-            },
-          ],
-          errors: [],
-        });
+      const response = await request(backendServer).get(
+        '/api/bulk-import/organizations',
+      );
 
-      const response = await request(app).get('/organizations');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         errors: [],
-        pagePerIntegration: DefaultPageNumber,
-        sizePerIntegration: DefaultPageSize,
         organizations: [
           {
-            id: '166016847',
-            name: 'my-org-ent-1',
-            url: 'https://api.github.com/users/my-org-ent-1',
-            description: 'an awesome org',
-            totalRepoCount: 35,
+            description: 'A great organization',
             errors: [],
+            id: '1',
+            name: 'github',
+            totalRepoCount: 913,
+            url: 'http://localhost:8765/my-org-1',
           },
           {
-            id: '266016847',
-            name: 'my-org-ent-2',
-            url: 'https://api.github.com/users/my-org-ent-2',
-            totalRepoCount: 1234,
+            description: 'A great organization',
             errors: [],
+            id: '111',
+            name: 'my-org-1',
+            totalRepoCount: 913,
+            url: 'http://localhost:8765/my-org-1',
           },
           {
-            id: '987654321',
-            name: 'my-org-ent-3-undefined-repo-count',
-            url: 'https://api.github.com/users/my-org-ent-3-undefined-repo-count',
+            description: 'A second great organization',
             errors: [],
+            id: '222',
+            name: 'my-org-2',
+            totalRepoCount: 913,
+            url: 'http://localhost:8765/my-org-2',
           },
           {
-            id: '123',
-            name: 'my-org-ent-4-only-internal-repos',
-            url: 'https://api.github.com/users/my-org-ent-4-only-internal-repos',
-            totalRepoCount: 7,
             errors: [],
+            id: '1',
+            name: 'octocat',
+            totalRepoCount: 3134,
+            url: 'http://localhost:8765/octocat',
           },
         ],
+        pagePerIntegration: 1,
+        sizePerIntegration: 20,
+        totalCount: 4,
       });
     });
 
     it('filters out organizations when a search query parameter is provided', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
 
-      const orgs = [
-        {
-          id: 166016847,
-          name: 'my-org-ent-1',
-          url: 'https://api.github.com/users/my-org-ent-1',
-          description: 'an awesome org',
-          public_repos: 10,
-          total_private_repos: 25,
-        },
-        {
-          id: 266016847,
-          name: 'my-org-ent-2',
-          url: 'https://api.github.com/users/my-org-ent-2',
-          total_private_repos: 1234,
-        },
-        {
-          id: 987654321,
-          name: 'my-org-ent-3-undefined-repo-count',
-          url: 'https://api.github.com/users/my-org-ent-3-undefined-repo-count',
-        },
-        {
-          id: 123,
-          name: 'my-org-ent-4-only-internal-repos',
-          url: 'https://api.github.com/users/my-org-ent-4-only-internal-repos',
-          owned_private_repos: 7,
-        },
-      ];
-      jest
-        .spyOn(GithubApiService.prototype, 'getOrganizationsFromIntegrations')
-        .mockImplementation(
-          (
-            search?: string,
-            _pageNumber: number = DefaultPageNumber,
-            _pageSize: number = DefaultPageSize,
-          ) => {
-            return Promise.resolve({
-              organizations: filterOrganizations(orgs, search),
-              errors: [],
-            });
-          },
-        );
+      const response = await request(backendServer).get(
+        '/api/bulk-import/organizations?search=octo',
+      );
 
-      const response = await request(app).get('/organizations?search=repo');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         errors: [],
-        pagePerIntegration: DefaultPageNumber,
-        sizePerIntegration: DefaultPageSize,
         organizations: [
           {
-            id: '987654321',
-            name: 'my-org-ent-3-undefined-repo-count',
-            url: 'https://api.github.com/users/my-org-ent-3-undefined-repo-count',
             errors: [],
-          },
-          {
-            id: '123',
-            name: 'my-org-ent-4-only-internal-repos',
-            url: 'https://api.github.com/users/my-org-ent-4-only-internal-repos',
-            totalRepoCount: 7,
-            errors: [],
+            id: '1',
+            name: 'octocat',
+            totalRepoCount: 3134,
+            url: 'http://localhost:8765/octocat',
           },
         ],
+        pagePerIntegration: 1,
+        sizePerIntegration: 20,
+        totalCount: 1,
       });
     });
 
     it('returns 200 with the errors in the body when organizations are fetched, but errors have occurred', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
+      // change the response to 'GET /user/orgs'
+      // to simulate an error retrieving list of orgs from GH Token.
+      server.use(
+        rest.get(`${LOCAL_ADDR}/user/orgs`, (_, res, ctx) => {
+          return res(
+            ctx.status(403),
+            ctx.json({ message: 'Github Token auth did not succeed' }),
+          );
+        }),
+      );
 
-      const githubApiServiceResponse: GithubOrganizationResponse = {
-        organizations: [
-          {
-            id: 166016847,
-            name: 'my-org-ent-1',
-            url: 'https://api.github.com/users/my-org-ent-1',
-            description: 'an awesome org',
-          },
-          {
-            id: 266016847,
-            name: 'my-org-ent-2',
-            url: 'https://api.github.com/users/my-org-ent-2',
-          },
-        ],
-        errors: [
-          {
-            error: {
-              name: 'customError',
-              message: 'Github App with ID 2 failed spectacularly',
-            },
-            type: 'app',
-            appId: 2,
-          },
-        ],
-      };
-      jest
-        .spyOn(mockGithubApiService, 'getOrganizationsFromIntegrations')
-        .mockResolvedValue(githubApiServiceResponse);
-
-      const response = await request(app).get('/organizations');
+      const response = await request(backendServer).get(
+        '/api/bulk-import/organizations',
+      );
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
-        errors: ['Github App with ID 2 failed spectacularly'],
-        pagePerIntegration: DefaultPageNumber,
-        sizePerIntegration: DefaultPageSize,
+        errors: ['Github Token auth did not succeed'],
         organizations: [
           {
-            id: '166016847',
-            name: 'my-org-ent-1',
-            url: 'https://api.github.com/users/my-org-ent-1',
-            description: 'an awesome org',
             errors: [],
-          },
-          {
-            id: '266016847',
-            name: 'my-org-ent-2',
-            url: 'https://api.github.com/users/my-org-ent-2',
-            errors: [],
+            id: '1',
+            name: 'octocat',
+            totalRepoCount: 3134,
+            url: 'http://localhost:8765/octocat',
           },
         ],
+        pagePerIntegration: 1,
+        sizePerIntegration: 20,
+        totalCount: 1,
       });
     });
 
     it('returns 500 when one or more errors are returned with no successful organization fetched', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
+      // change the responses to simulate error retrieving list of orgs from all GH integrations.
+      addHandlersForGHTokenAppErrors();
 
-      jest
-        .spyOn(mockGithubApiService, 'getOrganizationsFromIntegrations')
-        .mockResolvedValue({
-          organizations: [],
-          errors: [
-            {
-              error: {
-                name: 'some error',
-                message: 'Github App with ID 1234567890 returned an error',
-              },
-              type: 'app',
-              appId: 2,
-            },
-          ],
-        });
+      const orgResp = await request(backendServer).get(
+        '/api/bulk-import/organizations',
+      );
 
-      const response = await request(app).get('/organizations');
-
-      expect(response.status).toEqual(500);
-      expect(response.body).toEqual({
-        errors: ['Github App with ID 1234567890 returned an error'],
+      expect(orgResp.status).toEqual(500);
+      expect(orgResp.body).toEqual({
+        errors: [
+          'Github Token auth did not succeed',
+          'Github App auth returned an error',
+        ],
       });
     });
   });
 
   describe('GET /repositories', () => {
-    it('returns 403 when denied by permission framework', async () => {
-      mockedAuthorize.mockImplementation(denyAll);
-      const response = await request(app).get('/repositories');
-      expect(response.status).toEqual(403);
-    });
-
     it('returns 200 when repositories are fetched without errors', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
 
-      jest
-        .spyOn(mockGithubApiService, 'getRepositoriesFromIntegrations')
-        .mockResolvedValue({
-          repositories: [
-            {
-              name: 'A',
-              full_name: 'my-ent-org-1/A',
-              url: 'https://api.github.com/repos/my-ent-org-1/A',
-              html_url: 'https://github.com/my-ent-org-1/A',
-              default_branch: 'master',
-            },
-            {
-              name: 'B',
-              full_name: 'my-ent-org-1/B',
-              url: 'https://api.github.com/repos/my-ent-org-1/B',
-              html_url: 'https://github.com/my-ent-org-1/B',
-              default_branch: 'main',
-            },
-          ],
-          errors: [],
-        });
-      jest
-        .spyOn(mockGithubApiService, 'findImportOpenPr')
-        .mockResolvedValue({});
-      jest
-        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
-        .mockResolvedValue([]);
+      const response = await request(backendServer).get(
+        '/api/bulk-import/repositories',
+      );
 
-      const response = await request(app).get('/repositories');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         errors: [],
         repositories: [
           {
-            id: 'my-ent-org-1/A',
-            name: 'A',
-            organization: 'my-ent-org-1',
-            url: 'https://github.com/my-ent-org-1/A',
-            errors: [],
             defaultBranch: 'master',
+            errors: [],
+            id: 'octocat/animated-happiness',
+            lastUpdate: '2011-01-26T19:14:43Z',
+            name: 'animated-happiness',
+            organization: 'octocat',
+            url: 'http://localhost:8765/octocat/animated-happiness',
           },
           {
-            id: 'my-ent-org-1/B',
-            name: 'B',
-            organization: 'my-ent-org-1',
-            url: 'https://github.com/my-ent-org-1/B',
+            defaultBranch: 'master',
             errors: [],
-            defaultBranch: 'main',
+            id: 'octocat/Hello-World',
+            lastUpdate: '2011-01-26T19:14:43Z',
+            name: 'Hello-World',
+            organization: 'octocat',
+            url: 'http://localhost:8765/octocat/Hello-World',
+          },
+          {
+            defaultBranch: 'master',
+            errors: [],
+            id: 'my-user/Lorem-Ipsum',
+            lastUpdate: '2011-01-26T19:14:43Z',
+            name: 'Lorem-Ipsum',
+            organization: 'my-user',
+            url: 'http://localhost:8765/my-user/Lorem-Ipsum',
           },
         ],
+        totalCount: 3,
       });
     });
 
     it('returns 200 with the errors in the body when repositories are fetched, but errors have occurred', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
+      // change the response to 'GET /user/repos'
+      // to simulate an error retrieving list of orgs from GH Token.
+      server.use(
+        rest.get(`${LOCAL_ADDR}/user/repos`, (_, res, ctx) =>
+          res(
+            ctx.status(403),
+            ctx.json({ message: 'Github Token auth did not succeed' }),
+          ),
+        ),
+      );
 
-      const githubApiServiceResponse: GithubRepositoryResponse = {
-        repositories: [
-          {
-            name: 'A',
-            full_name: 'backstage/A',
-            url: 'https://api.github.com/repos/backstage/A',
-            html_url: 'https://github.com/backstage/A',
-            default_branch: 'master',
-          },
-          {
-            name: 'B',
-            full_name: 'backstage/B',
-            url: 'https://api.github.com/repos/backstage/B',
-            html_url: 'https://github.com/backstage/B',
-            default_branch: 'main',
-          },
-        ],
-        errors: [
-          {
-            error: {
-              name: 'customError',
-              message: 'Github App with ID 2 failed spectacularly',
-            },
-            type: 'app',
-            appId: 2,
-          },
-        ],
-      };
-      jest
-        .spyOn(mockGithubApiService, 'getRepositoriesFromIntegrations')
-        .mockResolvedValue(githubApiServiceResponse);
-      jest
-        .spyOn(mockGithubApiService, 'findImportOpenPr')
-        .mockResolvedValue({});
-      jest
-        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
-        .mockResolvedValue([]);
-
-      const response = await request(app).get('/repositories');
+      const response = await request(backendServer).get(
+        '/api/bulk-import/repositories',
+      );
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
-        errors: ['Github App with ID 2 failed spectacularly'],
+        errors: ['Github Token auth did not succeed'],
         repositories: [
           {
             defaultBranch: 'master',
             errors: [],
-            id: 'backstage/A',
-            name: 'A',
-            organization: 'backstage',
-            url: 'https://github.com/backstage/A',
-          },
-          {
-            defaultBranch: 'main',
-            errors: [],
-            id: 'backstage/B',
-            name: 'B',
-            organization: 'backstage',
-            url: 'https://github.com/backstage/B',
+            id: 'octocat/Hello-World',
+            lastUpdate: '2011-01-26T19:14:43Z',
+            name: 'Hello-World',
+            organization: 'octocat',
+            url: 'http://localhost:8765/octocat/Hello-World',
           },
         ],
+        totalCount: 1,
       });
     });
 
     it('returns 500 when one or more errors are returned with no successful repository fetches', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
+      // change the responses to simulate error retrieving list of repos from all GH integrations.
+      addHandlersForGHTokenAppErrors();
 
-      jest
-        .spyOn(mockGithubApiService, 'getRepositoriesFromIntegrations')
-        .mockResolvedValue({
-          repositories: [],
-          errors: [
-            {
-              error: {
-                name: 'some error',
-                message: 'Github App with ID 1234567890 returned an error',
-              },
-              type: 'app',
-              appId: 2,
-            },
-          ],
-        });
-      jest
-        .spyOn(mockGithubApiService, 'findImportOpenPr')
-        .mockResolvedValue({});
-      jest
-        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
-        .mockResolvedValue([]);
+      const reposResp = await request(backendServer).get(
+        '/api/bulk-import/repositories',
+      );
 
-      const response = await request(app).get('/repositories');
-
-      expect(response.status).toEqual(500);
-      expect(response.body).toEqual({
-        errors: ['Github App with ID 1234567890 returned an error'],
+      expect(reposResp.status).toEqual(500);
+      expect(reposResp.body).toEqual({
+        errors: [
+          'Github Token auth did not succeed',
+          'Github App auth returned an error',
+        ],
       });
     });
   });
 
   describe('GET /organizations/{org}/repositories', () => {
-    it('returns 403 when denied by permission framework', async () => {
-      mockedAuthorize.mockImplementation(denyAll);
-      const response = await request(app).get(
-        '/organizations/my-ent-org-1/repositories',
-      );
-      expect(response.status).toEqual(403);
-    });
-
     it('returns 200 when repositories are fetched without errors', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
 
-      jest
-        .spyOn(mockGithubApiService, 'getOrgRepositoriesFromIntegrations')
-        .mockImplementation(
-          async (
-            orgName: string,
-            _search?: string,
-            _pageNumber?: number,
-            _pageSize?: number,
-          ): Promise<GithubRepositoryResponse> => {
-            switch (orgName) {
-              case 'my-ent-org-1':
-                return {
-                  repositories: [
-                    {
-                      name: 'A',
-                      full_name: 'my-ent-org-1/A',
-                      url: 'https://api.github.com/repos/my-ent-org-1/A',
-                      html_url: 'https://github.com/my-ent-org-1/A',
-                      default_branch: 'master',
-                    },
-                    {
-                      name: 'B',
-                      full_name: 'my-ent-org-1/B',
-                      url: 'https://api.github.com/repos/my-ent-org-1/B',
-                      html_url: 'https://github.com/my-ent-org-1/B',
-                      default_branch: 'main',
-                    },
-                  ],
-                  errors: [],
-                };
-              case 'my-ent-org-2':
-                return {
-                  repositories: [
-                    {
-                      name: 'AA',
-                      full_name: 'my-ent-org-2/AA',
-                      url: 'https://api.github.com/repos/my-ent-org-2/AA',
-                      html_url: 'https://github.com/my-ent-org-2/AA',
-                      default_branch: 'master',
-                    },
-                    {
-                      name: 'BB',
-                      full_name: 'my-ent-org-2/BB',
-                      url: 'https://api.github.com/repos/my-ent-org-2/BB',
-                      html_url: 'https://github.com/my-ent-org-2/BB',
-                      default_branch: 'main',
-                    },
-                  ],
-                  errors: [],
-                };
-              default:
-                return {
-                  repositories: [],
-                  errors: [],
-                };
-            }
-          },
-        );
-      jest
-        .spyOn(mockGithubApiService, 'findImportOpenPr')
-        .mockResolvedValue({});
-      jest
-        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
-        .mockResolvedValue([]);
-
-      let response = await request(app).get(
-        '/organizations/my-ent-org-1/repositories',
+      let response = await request(backendServer).get(
+        '/api/bulk-import/organizations/my-ent-org-1/repositories',
       );
+
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         errors: [],
         repositories: [
           {
-            id: 'my-ent-org-1/A',
-            name: 'A',
-            organization: 'my-ent-org-1',
-            url: 'https://github.com/my-ent-org-1/A',
-            errors: [],
-            defaultBranch: 'master',
-          },
-          {
-            id: 'my-ent-org-1/B',
-            name: 'B',
-            organization: 'my-ent-org-1',
-            url: 'https://github.com/my-ent-org-1/B',
-            errors: [],
             defaultBranch: 'main',
+            errors: [],
+            id: 'my-ent-org-1/Hello-World',
+            lastUpdate: '2011-01-26T19:14:43Z',
+            name: 'Hello-World',
+            organization: 'my-ent-org-1',
+            url: 'http://localhost:8765/my-ent-org-1/Hello-World',
           },
         ],
+        totalCount: 1,
       });
 
-      response = await request(app).get(
-        '/organizations/my-ent-org-2/repositories',
+      response = await request(backendServer).get(
+        '/api/bulk-import/organizations/my-ent-org-2/repositories',
       );
+
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         errors: [],
         repositories: [
           {
-            defaultBranch: 'master',
+            defaultBranch: 'main',
             errors: [],
-            id: 'my-ent-org-2/AA',
-            name: 'AA',
+            id: 'my-ent-org-2/awesome-dogs',
+            lastUpdate: '2011-01-26T19:14:43Z',
+            name: 'awesome-dogs',
             organization: 'my-ent-org-2',
-            url: 'https://github.com/my-ent-org-2/AA',
+            url: 'http://localhost:8765/my-ent-org-2/awesome-dogs',
           },
           {
             defaultBranch: 'main',
             errors: [],
-            id: 'my-ent-org-2/BB',
-            name: 'BB',
+            id: 'my-ent-org-2/lorem-ipsum',
+            lastUpdate: '2011-01-26T19:14:43Z',
+            name: 'lorem-ipsum',
             organization: 'my-ent-org-2',
-            url: 'https://github.com/my-ent-org-2/BB',
+            url: 'http://localhost:8765/my-ent-org-2/lorem-ipsum',
           },
         ],
+        totalCount: 2,
       });
 
-      response = await request(app).get(
-        '/organizations/my-ent-org--no-repos/repositories',
+      response = await request(backendServer).get(
+        '/api/bulk-import/organizations/my-ent-org--no-repos/repositories',
       );
+
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         errors: [],
         repositories: [],
-      });
-    });
-
-    it('returns 200 with the errors in the body when repositories are fetched, but errors have occurred', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
-
-      const githubApiServiceResponse: GithubRepositoryResponse = {
-        repositories: [
-          {
-            name: 'A',
-            full_name: 'backstage/A',
-            url: 'https://api.github.com/repos/backstage/A',
-            html_url: 'https://github.com/backstage/A',
-            default_branch: 'master',
-          },
-          {
-            name: 'B',
-            full_name: 'backstage/B',
-            url: 'https://api.github.com/repos/backstage/B',
-            html_url: 'https://github.com/backstage/B',
-            default_branch: 'main',
-          },
-        ],
-        errors: [
-          {
-            error: {
-              name: 'customError',
-              message: 'Github App with ID 2 failed spectacularly',
-            },
-            type: 'app',
-            appId: 2,
-          },
-        ],
-      };
-      jest
-        .spyOn(mockGithubApiService, 'getOrgRepositoriesFromIntegrations')
-        .mockResolvedValue(githubApiServiceResponse);
-      jest
-        .spyOn(mockGithubApiService, 'findImportOpenPr')
-        .mockResolvedValue({});
-      jest
-        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
-        .mockResolvedValue([]);
-
-      const response = await request(app).get(
-        '/organizations/some-org/repositories',
-      );
-
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({
-        errors: ['Github App with ID 2 failed spectacularly'],
-        repositories: [
-          {
-            defaultBranch: 'master',
-            errors: [],
-            id: 'backstage/A',
-            name: 'A',
-            organization: 'backstage',
-            url: 'https://github.com/backstage/A',
-          },
-          {
-            defaultBranch: 'main',
-            errors: [],
-            id: 'backstage/B',
-            name: 'B',
-            organization: 'backstage',
-            url: 'https://github.com/backstage/B',
-          },
-        ],
+        totalCount: 0,
       });
     });
 
     it('returns 500 when one or more errors are returned with no successful repository fetched', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
+      // change the response to simulate an error retrieving list from GH Token.
+      addHandlersForGHTokenAppErrors();
 
-      jest
-        .spyOn(mockGithubApiService, 'getOrgRepositoriesFromIntegrations')
-        .mockResolvedValue({
-          repositories: [],
-          errors: [
-            {
-              error: {
-                name: 'some error',
-                message: 'Github App with ID 1234567890 returned an error',
-              },
-              type: 'app',
-              appId: 2,
-            },
-          ],
-        });
-      jest
-        .spyOn(mockGithubApiService, 'findImportOpenPr')
-        .mockResolvedValue({});
-      jest
-        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
-        .mockResolvedValue([]);
-
-      const response = await request(app).get(
-        '/organizations/some-org/repositories',
+      const orgReposResp = await request(backendServer).get(
+        '/api/bulk-import/organizations/some-org/repositories',
       );
 
-      expect(response.status).toEqual(500);
-      expect(response.body).toEqual({
-        errors: ['Github App with ID 1234567890 returned an error'],
+      expect(orgReposResp.status).toEqual(500);
+      expect(orgReposResp.body).toEqual({
+        errors: ['Github Token auth did not succeed'],
       });
     });
   });
 
   describe('GET /imports', () => {
-    it('returns 403 when denied by permission framework', async () => {
-      mockedAuthorize.mockImplementation(denyAll);
-      const response = await request(app).get('/imports');
-      expect(response.status).toEqual(403);
-    });
-
     it('returns 200 with empty list when there is nothing in catalog yet and no open PR for each repo', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW, {
+        catalog: { locations: [] },
+      });
+      server.use(
+        rest.get(
+          `http://localhost:${backendServer.port()}/api/catalog/locations`,
+          (_, res, ctx) => res(ctx.status(200), ctx.json([])),
+        ),
+      );
+      mockCatalogClient.queryEntities = jest
+        .fn()
+        .mockResolvedValue({ items: [] });
 
-      jest
-        .spyOn(mockGithubApiService, 'getRepositoriesFromIntegrations')
-        .mockResolvedValue({
-          repositories: [
-            {
-              name: 'A',
-              full_name: 'my-ent-org-1/A',
-              url: 'https://api.github.com/repos/my-ent-org-1/A',
-              html_url: 'https://github.com/my-ent-org-1/A',
-              default_branch: 'master',
-            },
-            {
-              name: 'B',
-              full_name: 'my-ent-org-1/B',
-              url: 'https://api.github.com/repos/my-ent-org-1/B',
-              html_url: 'https://github.com/my-ent-org-1/B',
-              default_branch: 'main',
-            },
-          ],
-          errors: [],
-        });
-      jest
-        .spyOn(mockGithubApiService, 'findImportOpenPr')
-        .mockResolvedValue({});
-      jest
-        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
-        .mockResolvedValue([]);
+      const response = await request(backendServer).get(
+        '/api/bulk-import/imports',
+      );
 
-      const response = await request(app).get('/imports');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([]);
     });
 
     it('returns 200 with appropriate import status (with data coming from the repos and data coming from the app-config files)', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
-
-      // fromLocationsEndpoint simulates a response from the 'GET /locations' endpoint,
-      // returning Locations coming from Bulk Import or 'Register existing component'
-      const fromLocationsEndpoint = [
-        {
-          id: '1',
-          target:
-            'https://github.com/my-ent-org-1/A1/blob/dev/catalog-info.yaml',
-        },
-        {
-          id: '2',
-          target:
-            'https://github.com/my-ent-org-1/B/blob/main/catalog-info.yaml',
-        },
-        {
-          id: '3',
-          target:
-            'https://github.com/my-ent-org-2/A2/blob/master/catalog-info.yaml',
-        },
-        // purposely duplicated
-        {
-          id: '4',
-          target:
-            'https://github.com/my-ent-org-2/A2/blob/master/catalog-info.yaml',
-        },
-        // should be ignored because the default branch is 'master'
-        {
-          id: '5',
-          target:
-            'https://github.com/my-ent-org-2/A2/blob/feature/myAwesomeFeat/catalog-info.yaml',
-        },
-        // some unconventional default branch name: blob/some/path/to/default/branch
-        {
-          id: '6',
-          target:
-            'https://github.com/my-ent-org-3/C/blob/blob/some/path/to/default/branch/catalog-info.yaml',
-        },
-        // should be ignored because we expect the catalog-info.yaml to be at the root of the default branch
-        {
-          id: '7',
-          target:
-            'https://github.com/my-org/my-repo/blob/main/plugins/my-plugin/examples/templates/01-some-template.yaml',
-        },
-      ];
-
-      jest
-        .spyOn(
-          mockCatalogInfoGenerator,
-          'listCatalogUrlLocationsByIdFromLocationsEndpoint',
-        )
-        .mockResolvedValue(fromLocationsEndpoint);
-      jest
-        .spyOn(
-          mockGithubApiService,
-          'filterLocationsAccessibleFromIntegrations',
-        )
-        .mockImplementation((locationUrls: string[]) => {
-          // filter returning the same input
-          return Promise.resolve(locationUrls);
-        });
-      jest
-        .spyOn(mockGithubApiService, 'getRepositoryFromIntegrations')
-        .mockImplementation(repoUrl => {
-          let defaultBranch: string | undefined;
-          switch (repoUrl) {
-            case 'https://github.com/my-ent-org-1/A1':
-              defaultBranch = 'dev';
-              break;
-            case 'https://github.com/my-ent-org-1/B':
-              defaultBranch = 'main';
-              break;
-            case 'https://github.com/my-ent-org-2/A2':
-              defaultBranch = 'master';
-              break;
-            case 'https://github.com/my-ent-org-3/C':
-              defaultBranch = 'blob/some/path/to/default/branch';
-              break;
-            case 'https://github.com/my-org/my-repo':
-              // simulate a failure to retrieve the default branch => default value should still be 'main'
-              defaultBranch = undefined;
-              break;
-            default:
-              defaultBranch = 'main';
-              break;
-          }
-          return Promise.resolve({
-            repository: {
-              default_branch: defaultBranch,
-              url: repoUrl,
-            } as GithubRepository,
-          });
-        });
-      jest
-        .spyOn(mockGithubApiService, 'findImportOpenPr')
-        .mockImplementation((_logger, input) => {
-          const resp: {
-            prNum?: number;
-            prUrl?: string;
-          } = {};
-          switch (input.repoUrl) {
-            case 'https://github.com/my-ent-org-1/B':
-              return Promise.reject(
-                new Error(
-                  'could not find out if there is an import PR open on this repo',
-                ),
-              );
-            case 'https://github.com/my-ent-org-2/A2':
-              resp.prNum = 987;
-              resp.prUrl = `https://github.com/my-ent-org-2/A2/pull/${resp.prNum}`;
-              break;
-            case 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr':
-              resp.prNum = 100;
-              resp.prUrl = `https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/pull/${resp.prNum}`;
-              break;
-            default:
-              break;
-          }
-          return Promise.resolve(resp);
-        });
-      jest
-        .spyOn(mockGithubApiService, 'doesCatalogInfoAlreadyExistInRepo')
-        .mockImplementation((_logger, input) => {
-          return Promise.resolve(
-            [
-              'https://github.com/my-ent-org-1/A1',
-              'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
-            ].includes(input.repoUrl),
-          );
-        });
-
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
+      server.use(
+        rest.get(
+          `http://localhost:${backendServer.port()}/api/catalog/locations`,
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json(loadTestFixture('catalog/locations.json')),
+            ),
+        ),
+      );
       mockCatalogClient.queryEntities = jest
         .fn()
         .mockImplementation(
@@ -1069,69 +654,29 @@ describe('createRouter', () => {
           },
         );
 
-      const response = await request(app).get('/imports');
+      const response = await request(backendServer).get(
+        '/api/bulk-import/imports',
+      );
+
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([
         {
           approvalTool: 'GIT',
-          id: 'https://github.com/my-ent-org-1/A1',
+          id: 'https://github.com/octocat/my-awesome-repo',
+          lastUpdate: '2011-01-26T19:14:43Z',
           repository: {
-            name: 'A1',
-            organization: 'my-ent-org-1',
-            url: 'https://github.com/my-ent-org-1/A1',
             defaultBranch: 'dev',
-            id: 'my-ent-org-1/A1',
-          },
-          status: 'ADDED',
-        },
-        {
-          approvalTool: 'GIT',
-          id: 'https://github.com/my-ent-org-2/A2',
-          github: {
-            pullRequest: {
-              number: 987,
-              url: 'https://github.com/my-ent-org-2/A2/pull/987',
-            },
-          },
-          repository: {
-            name: 'A2',
-            organization: 'my-ent-org-2',
-            url: 'https://github.com/my-ent-org-2/A2',
-            defaultBranch: 'master',
-            id: 'my-ent-org-2/A2',
-          },
-          status: 'WAIT_PR_APPROVAL',
-        },
-        {
-          approvalTool: 'GIT',
-          errors: [
-            'could not find out if there is an import PR open on this repo',
-          ],
-          id: 'https://github.com/my-ent-org-1/B',
-          repository: {
-            name: 'B',
-            organization: 'my-ent-org-1',
-            url: 'https://github.com/my-ent-org-1/B',
-            defaultBranch: 'main',
-            id: 'my-ent-org-1/B',
-          },
-          status: 'PR_ERROR',
-        },
-        {
-          approvalTool: 'GIT',
-          id: 'https://github.com/my-ent-org-3/C',
-          repository: {
-            defaultBranch: 'blob/some/path/to/default/branch',
-            id: 'my-ent-org-3/C',
-            name: 'C',
-            organization: 'my-ent-org-3',
-            url: 'https://github.com/my-ent-org-3/C',
+            id: 'octocat/my-awesome-repo',
+            name: 'my-awesome-repo',
+            organization: 'octocat',
+            url: 'https://github.com/octocat/my-awesome-repo',
           },
           status: null,
         },
         {
           approvalTool: 'GIT',
           id: 'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
+          lastUpdate: '2011-01-26T19:14:43Z',
           repository: {
             defaultBranch: 'main',
             id: 'my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
@@ -1145,11 +690,14 @@ describe('createRouter', () => {
           approvalTool: 'GIT',
           github: {
             pullRequest: {
-              number: 100,
-              url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/pull/100',
+              body: 'Onboarding this repository into Red Hat Developer Hub.',
+              number: 1347,
+              title: 'Add catalog-info.yaml',
+              url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/pull/1347',
             },
           },
           id: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+          lastUpdate: '2011-01-26T19:01:12Z',
           repository: {
             defaultBranch: 'main',
             id: 'my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
@@ -1159,39 +707,26 @@ describe('createRouter', () => {
           },
           status: 'WAIT_PR_APPROVAL',
         },
-        {
-          approvalTool: 'GIT',
-          id: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
-          repository: {
-            defaultBranch: 'main',
-            id: 'my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
-            name: 'my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
-            organization: 'my-org-1',
-            url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-no-import-pr',
-          },
-          status: null,
-        },
       ]);
-      // Location entity refresh triggered twice (on each 'ADDED' repo)
-      expect(mockCatalogClient.refreshEntity).toHaveBeenCalledTimes(2);
+      // Location entity refresh triggered (on each 'ADDED' repo)
+      expect(mockCatalogClient.refreshEntity).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('POST /imports', () => {
-    it('returns 403 when denied by permission framework', async () => {
-      mockedAuthorize.mockImplementation(denyAll);
-      const response = await request(app).post('/imports').send([]);
-      expect(response.status).toEqual(403);
-    });
-
     it('returns 400 if there is nothing in request body', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
-      const response = await request(app).post('/imports').send([]);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
+
+      const response = await request(backendServer)
+        .post('/api/bulk-import/imports')
+        .send([]);
+
       expect(response.status).toEqual(400);
     });
 
     it('returns 202 with appropriate import statuses', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
+
       mockCatalogClient.addLocation = jest
         .fn()
         .mockImplementation(
@@ -1209,39 +744,6 @@ describe('createRouter', () => {
             return Promise.resolve({ exists: exists });
           },
         );
-
-      jest
-        .spyOn(mockGithubApiService, 'doesCatalogInfoAlreadyExistInRepo')
-        .mockImplementation((_logger, input) => {
-          return Promise.resolve(
-            input.repoUrl ===
-              'https://github.com/my-org-ent-1/java-quarkus-starter',
-          );
-        });
-
-      jest
-        .spyOn(mockGithubApiService, 'submitPrToRepo')
-        .mockImplementation((_logger, input) => {
-          switch (input.repoUrl) {
-            case 'https://github.com/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation':
-              return Promise.reject(
-                new Error('unable to create PR due to a server error'),
-              );
-            case 'https://github.com/my-org-ent-2/animated-happiness':
-              return Promise.resolve({
-                prUrl: `${input.repoUrl}/pull/345678`,
-                prNumber: 345678,
-              });
-            case 'https://github.com/my-org-ent-1/java-quarkus-starter':
-              return Promise.resolve({
-                hasChanges: false,
-              });
-            default:
-              return Promise.reject(
-                new Error(`unknown repo url: ${input.repoUrl}`),
-              );
-          }
-        });
       mockCatalogClient.queryEntities = jest
         .fn()
         .mockImplementation(
@@ -1266,8 +768,224 @@ describe('createRouter', () => {
           },
         );
 
-      const response = await request(app)
-        .post('/imports')
+      server.use(
+        rest.post(
+          `http://localhost:${backendServer.port()}/api/catalog/analyze-location`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                existingEntityFiles: [],
+                generateEntities: [],
+              }),
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation/contents/catalog-info.yaml`,
+          (_req, res, ctx) => res(ctx.status(404)),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation/pulls`,
+          (_req, res, ctx) => res(ctx.status(200), ctx.json([])),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                name: 'does-not-exist-in-catalog-but-errors-with-pr-creation',
+                full_name:
+                  'my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation',
+                url: 'https://github.com/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation',
+                html_url:
+                  'https://github.com/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation',
+                default_branch: 'dev',
+                updated_at: '2017-07-08T16:18:44-04:00',
+              }),
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation/git/ref/heads%2Fdev`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                ref: 'refs/heads/dev',
+                node_id: 'MDM6UmVmcmVmcy9oZWFkcy9mZWF0dXJlQQ==',
+                url: 'https://api.github.com/repos/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation/git/refs/heads/dev',
+                object: {
+                  type: 'commit',
+                  sha: 'aa218f56b14c9653891f9e74264a383fa43fefbd',
+                  url: 'https://api.github.com/repos/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation/git/commits/aa218f56b14c9653891f9e74264a383fa43fefbd',
+                },
+              }),
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation/git/ref/heads%2Fbackstage-integration`,
+          (_req, res, ctx) => res(ctx.status(404)),
+        ),
+        rest.post(
+          `${LOCAL_ADDR}/repos/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation/git/refs`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(422),
+              ctx.json({
+                message: 'unable to create PR due to a server error',
+              }),
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/animated-happiness/contents/catalog-info.yaml`,
+          (_req, res, ctx) => res(ctx.status(404)),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/animated-happiness/pulls`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json(
+                loadTestFixture(
+                  'github/repos/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/pulls/open.json',
+                ),
+              ),
+            ),
+        ),
+        rest.patch(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/animated-happiness/pulls/1347`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json(
+                loadTestFixture(
+                  'github/repos/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/pulls/open.json',
+                )[0],
+              ),
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/animated-happiness/contents/catalog-info.yaml`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json(
+                loadTestFixture(
+                  'github/repos/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/contents/catalog-info.yaml.json',
+                ),
+              ),
+            ),
+        ),
+        rest.put(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/animated-happiness/contents/catalog-info.yaml`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(201),
+              ctx.json({
+                content: loadTestFixture(
+                  'github/repos/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/contents/catalog-info.yaml.json',
+                ),
+              }),
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/animated-happiness`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                name: 'animated-happiness',
+                full_name: 'my-org-ent-2/animated-happiness',
+                url: 'https://github.com/my-org-ent-2/animated-happiness',
+                html_url: 'https://github.com/my-org-ent-2/animated-happiness',
+                default_branch: 'main',
+                updated_at: '2017-07-08T16:18:44-04:00',
+              }),
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/animated-happiness/git/ref/heads%2Fmain`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                ref: 'refs/heads/main',
+                node_id: 'MDM6UmVmcmVmcy9oZWFkcy9mZWF0dXJlQQ==',
+                url: 'https://api.github.com/repos/my-org-ent-2/animated-happiness/git/refs/heads/main',
+                object: {
+                  type: 'commit',
+                  sha: 'aa218f56b14c9653891f9e74264a383fa43fefbd',
+                  url: 'https://api.github.com/repos/my-org-ent-2/animated-happiness/git/commits/aa218f56b14c9653891f9e74264a383fa43fefbd',
+                },
+              }),
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/animated-happiness/git/ref/heads%2Fbackstage-integration`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                ref: 'refs/heads/backstage-integration',
+                node_id: 'MDM6UmVmcmVmcy9oZWFkcy9mZWF0dXJlQQ==',
+                url: 'https://api.github.com/repos/my-org-ent-2/animated-happiness/git/refs/heads/backstage-integration',
+                object: {
+                  type: 'commit',
+                  sha: 'aa218f56b14c9653891f9e74264a383fa43fefbd',
+                  url: 'https://api.github.com/repos/my-org-ent-2/animated-happiness/git/commits/aa218f56b14c9653891f9e74264a383fa43fefbd',
+                },
+              }),
+            ),
+        ),
+        rest.post(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/animated-happiness/git/refs`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(201),
+              ctx.json({
+                ref: 'refs/heads/backstage-integration',
+                node_id: 'MDM6UmVmcmVmcy9oZWFkcy9mZWF0dXJlQQ==',
+                url: 'https://api.github.com/repos/my-org-ent-2/animated-happiness/git/refs/heads/featureA',
+                object: {
+                  type: 'commit',
+                  sha: 'ca218f56b14c9653891f9e74264a383fa43fefbd',
+                  url: 'https://api.github.com/repos/my-org-ent-2/animated-happiness/git/commits/ca218f56b14c9653891f9e74264a383fa43fefbd',
+                },
+              }),
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-1/java-quarkus-starter/contents/catalog-info.yaml`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json(
+                loadTestFixture(
+                  'github/repos/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/contents/catalog-info.yaml.json',
+                ),
+              ),
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-1/java-quarkus-starter`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                name: 'animated-happiness',
+                full_name: 'my-org-ent-1/java-quarkus-starter',
+                url: 'https://github.com/my-org-ent-1/java-quarkus-starter',
+                html_url:
+                  'https://github.com/my-org-ent-1/java-quarkus-starter',
+                default_branch: 'main',
+                updated_at: '2024-07-08T16:18:44-04:00',
+              }),
+            ),
+        ),
+      );
+
+      const response = await request(backendServer)
+        .post('/api/bulk-import/imports')
         .send([
           {
             repository: {
@@ -1306,13 +1024,13 @@ spec:
             },
           },
         ]);
+
       expect(response.status).toEqual(202);
       expect(response.body).toEqual([
         {
           errors: ['unable to create PR due to a server error'],
           repository: {
-            name: 'does-not-exist-in-catalog-but-errors-with-pr-creation',
-            organization: 'my-org-ent-1',
+            defaultBranch: 'dev',
             url: 'https://github.com/my-org-ent-1/does-not-exist-in-catalog-but-errors-with-pr-creation',
           },
           status: 'PR_ERROR',
@@ -1320,10 +1038,11 @@ spec:
         {
           github: {
             pullRequest: {
-              number: 345678,
-              url: 'https://github.com/my-org-ent-2/animated-happiness/pull/345678',
+              number: 1347,
+              url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/pull/1347',
             },
           },
+          lastUpdate: '2011-01-26T19:01:12Z',
           repository: {
             name: 'animated-happiness',
             organization: 'my-org-ent-2',
@@ -1332,6 +1051,7 @@ spec:
           status: 'WAIT_PR_APPROVAL',
         },
         {
+          lastUpdate: '2024-07-08T16:18:44-04:00',
           repository: {
             name: 'java-quarkus-starter',
             organization: 'my-org-ent-1',
@@ -1343,11 +1063,10 @@ spec:
       // Location entity refresh triggered (on each 'ADDED' repo)
       expect(mockCatalogClient.refreshEntity).toHaveBeenCalledTimes(1);
     });
-  });
 
-  describe('POST /imports with dryRun=true', () => {
     it('return dry-run results in errors array for each item in request body', async () => {
-      mockedAuthorize.mockImplementation(allowAll);
+      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
+
       mockCatalogClient.queryEntities = jest.fn().mockImplementation(
         async (req: {
           filter: {
@@ -1371,38 +1090,62 @@ spec:
           return { totalItems: 0, items: [] };
         },
       );
+      server.use(
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-1/my-repo-a/contributors`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json([loadTestFixture('github/user/user.json')]),
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-1/my-repo-a/contents/catalog-info.yaml`,
+          (_req, res, ctx) => res(ctx.status(404)),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/my-repo-b/contributors`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json([loadTestFixture('github/user/user.json')]),
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/my-repo-b/contents/catalog-info.yaml`,
+          (_req, res, ctx) => res(ctx.status(200)),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/my-repo-c/contributors`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(204), // repo empty
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/my-repo-c/contents/catalog-info.yaml`,
+          (_req, res, ctx) => res(ctx.status(404)),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/my-repo-d/contributors`,
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json([loadTestFixture('github/user/user.json')]),
+            ),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/my-repo-d/contents/catalog-info.yaml`,
+          (_req, res, ctx) => res(ctx.status(404)),
+        ),
+        rest.get(
+          `${LOCAL_ADDR}/repos/my-org-ent-2/my-repo-d/contents/.github%2FCODEOWNERS`,
+          (_req, res, ctx) => res(ctx.status(404)),
+        ),
+      );
 
-      jest
-        .spyOn(mockGithubApiService, 'doesCatalogInfoAlreadyExistInRepo')
-        .mockImplementation(
-          async (
-            _logger: Logger,
-            input: {
-              repoUrl: string;
-            },
-          ) => input.repoUrl === 'https://github.com/my-org-ent-2/my-repo-b',
-        );
-
-      jest
-        .spyOn(mockGithubApiService, 'isRepoEmpty')
-        .mockImplementation(
-          async (input: { repoUrl: string }) =>
-            input.repoUrl === 'https://github.com/my-org-ent-2/my-repo-c',
-        );
-
-      jest
-        .spyOn(mockGithubApiService, 'doesCodeOwnersAlreadyExistInRepo')
-        .mockImplementation(
-          async (
-            _logger: Logger,
-            input: {
-              repoUrl: string;
-            },
-          ) => input.repoUrl !== 'https://github.com/my-org-ent-2/my-repo-d',
-        );
-
-      const response = await request(app)
-        .post('/imports')
+      const response = await request(backendServer)
+        .post('/api/bulk-import/imports')
         .query({ dryRun: true })
         .send([
           {

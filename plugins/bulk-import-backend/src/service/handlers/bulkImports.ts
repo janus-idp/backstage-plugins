@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import { AuthService } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
+import type { AuthService, LoggerService } from '@backstage/backend-plugin-api';
+import type { CatalogApi } from '@backstage/catalog-client';
+import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
-import { Logger } from 'winston';
 
 import {
-  CatalogInfoGenerator,
   getCatalogFilename,
   getTokenForPlugin,
+  logErrorIfNeeded,
   paginateArray,
+  type CatalogInfoGenerator,
 } from '../../helpers';
-import { Components, Paths } from '../../openapi.d';
-import { GithubApiService } from '../githubApiService';
+import type { Components, Paths } from '../../openapi.d';
+import type { GithubApiService } from '../githubApiService';
 import {
   DefaultPageNumber,
   DefaultPageSize,
-  HandlerResponse,
+  type HandlerResponse,
 } from './handlers';
 import { hasEntityInCatalog, verifyLocationExistence } from './importStatus';
 
@@ -43,7 +43,7 @@ type CreateImportDryRunStatus =
   | 'REPO_EMPTY';
 
 export async function findAllImports(
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
@@ -133,7 +133,7 @@ export async function findAllImports(
 }
 
 async function resolveReposDefaultBranches(
-  logger: Logger,
+  logger: LoggerService,
   githubApiService: GithubApiService,
   allLocations: string[],
   catalogFilename: string,
@@ -163,8 +163,10 @@ async function resolveReposDefaultBranches(
           return { repoUrl, defaultBranch: resp?.repository?.default_branch };
         })
         .catch((err: any) => {
-          logger.debug(
-            `Ignored repo ${repoUrl} due to an error while fetching details from GitHub: ${err}`,
+          logErrorIfNeeded(
+            logger,
+            `Ignored repo ${repoUrl} due to an error while fetching details from GitHub`,
+            err,
           );
           return {
             repoUrl,
@@ -221,7 +223,7 @@ function findImportCandidates(
 
 async function createPR(
   githubApiService: GithubApiService,
-  logger: Logger,
+  logger: LoggerService,
   req: Components.Schemas.ImportRequest,
   gitUrl: gitUrlParse.GitUrl,
   catalogInfoGenerator: CatalogInfoGenerator,
@@ -277,7 +279,7 @@ async function possiblyCreateLocation(
 }
 
 export async function createImportJobs(
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   auth: AuthService,
   catalogApi: CatalogApi,
@@ -456,7 +458,7 @@ export async function createImportJobs(
 }
 
 async function performDryRunChecks(
-  logger: Logger,
+  logger: LoggerService,
   auth: AuthService,
   catalogApi: CatalogApi,
   githubApiService: GithubApiService,
@@ -560,7 +562,7 @@ async function performDryRunChecks(
 }
 
 export async function findImportStatusByRepo(
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
@@ -660,7 +662,7 @@ export async function findImportStatusByRepo(
 }
 
 export async function deleteImportByRepo(
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
