@@ -4,7 +4,6 @@ import {
   AssessedProcessInstanceDTO,
   ExecuteWorkflowResponseDTO,
   FieldFilterOperatorEnum,
-  LogicalFilterOperatorEnum,
   ProcessInstanceListResultDTO,
   SearchRequest,
   toWorkflowYaml,
@@ -174,7 +173,7 @@ describe('getWorkflowOverview', () => {
 
   it('filter test', async () => {
     // Arrange
-    // category = "electronics" AND (price <= 1000 OR (brand IN ("Apple", "Samsung") AND brand != 'LG'))
+    // category = "electronics" AND (price <= 1000 OR (brand IN ("Apple", "Samsung") AND brand like 'Apple'))
     const mockRequest: SearchRequest = {
       filters: {
         operator: 'AND',
@@ -202,8 +201,8 @@ describe('getWorkflowOverview', () => {
                   },
                   {
                     field: 'brand',
-                    operator: FieldFilterOperatorEnum.Ne,
-                    value: 'LG',
+                    operator: FieldFilterOperatorEnum.Like,
+                    value: 'Apple',
                   },
                 ],
               },
