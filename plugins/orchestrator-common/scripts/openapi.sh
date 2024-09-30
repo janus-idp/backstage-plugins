@@ -14,6 +14,7 @@ openapi_generate() {
     npx --yes @openapitools/openapi-generator-cli@v2.13.4 generate -g typescript-axios -i ${OPENAPI_SPEC_FILE} -o ${CLIENT_FOLDER}
 
     # Docs generation
+    rm -rf ./src/generated/docs/markdown ./src/generated/docs/html
     npx --yes @openapitools/openapi-generator-cli@v2.13.4 generate -g markdown -i ${OPENAPI_SPEC_FILE} -o ./src/generated/docs/markdown/
     npx --yes @openapitools/openapi-generator-cli@v2.13.4 generate -g html2 -i ${OPENAPI_SPEC_FILE} -o ./src/generated/docs/html
     
