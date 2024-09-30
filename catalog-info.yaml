@@ -50,7 +50,6 @@ spec:
     - ./plugins/bulk-import-backend/catalog-info.yaml
     - ./plugins/bulk-import-common/catalog-info.yaml
     - ./plugins/catalog-backend-module-scaffolder-relation-processor/catalog-info.yaml
-    - ./plugins/dynamic-plugins-info/catalog-info.yaml
     - ./plugins/feedback/catalog-info.yaml
     - ./plugins/feedback-backend/catalog-info.yaml
     - ./plugins/jfrog-artifactory/catalog-info.yaml
