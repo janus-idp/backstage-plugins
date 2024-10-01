@@ -1,0 +1,45 @@
+[
+  {
+    "login": "github",
+    "id": 1,
+    "node_id": "MDEyOk9yZ2FuaXphdGlvbjE=",
+    "url": "https://github.com/orgs/my-org-1",
+    "repos_url": "https://github.com/orgs/my-org-1/repos",
+    "events_url": "https://github.com/orgs/my-org-1/events",
+    "hooks_url": "https://github.com/orgs/my-org-1/hooks",
+    "issues_url": "https://github.com/orgs/my-org-1/issues",
+    "members_url": "https://github.com/orgs/my-org-1/members{/member}",
+    "public_members_url": "https://github.com/orgs/my-org-1/public_members{/member}",
+    "avatar_url": "https://github.com/images/error/my-org-1.gif",
+    "description": "A great organization"
+  },
+  {
+    "login": "my-org-1",
+    "id": 111,
+    "node_id": "MDEyOk9yZ2FuaXphdGlvbjE=",
+    "url": "https://github.com/orgs/my-org-1",
+    "repos_url": "https://github.com/orgs/my-org-1/repos",
+    "events_url": "https://github.com/orgs/my-org-1/events",
+    "hooks_url": "https://github.com/orgs/my-org-1/hooks",
+    "issues_url": "https://github.com/orgs/my-org-1/issues",
+    "members_url": "https://github.com/orgs/my-org-1/members{/member}",
+    "public_members_url": "https://github.com/orgs/my-org-1/public_members{/member}",
+    "avatar_url": "https://github.com/images/error/my-org-1.gif",
+    "description": "A great organization"
+  },
+
+  {
+    "login": "my-org-2",
+    "id": 222,
+    "node_id": "MDEyOk9yZ2FuaXphdGlvbjF=",
+    "url": "https://github.com/orgs/my-org-2",
+    "repos_url": "https://github.com/orgs/my-org-2/repos",
+    "events_url": "https://github.com/orgs/my-org-2/events",
+    "hooks_url": "https://github.com/orgs/my-org-2/hooks",
+    "issues_url": "https://github.com/orgs/my-org-2/issues",
+    "members_url": "https://github.com/orgs/my-org-2/members{/member}",
+    "public_members_url": "https://github.com/orgs/my-org-2/public_members{/member}",
+    "avatar_url": "https://github.com/images/error/my-org-2.gif",
+    "description": "A second great organization"
+  }
+]

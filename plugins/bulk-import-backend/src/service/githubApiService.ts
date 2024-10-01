@@ -14,33 +14,36 @@
  * limitations under the License.
  */
 
-import { CacheService } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import type {
+  CacheService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
 import {
-  GithubCredentials,
-  GithubIntegrationConfig,
   ScmIntegrations,
+  type GithubCredentials,
+  type GithubIntegrationConfig,
 } from '@backstage/integration';
 
 import { Octokit } from '@octokit/rest';
 import gitUrlParse from 'git-url-parse';
-import { Logger } from 'winston';
 
 import {
   CustomGithubCredentialsProvider,
   getBranchName,
   getCatalogFilename,
+  logErrorIfNeeded,
   paginateArray,
 } from '../helpers';
 import {
-  ExtendedGithubCredentials,
-  GithubAppCredentials,
-  GithubFetchError,
-  GithubOrganization,
-  GithubOrganizationResponse,
-  GithubRepository,
-  GithubRepositoryResponse,
   isGithubAppCredential,
+  type ExtendedGithubCredentials,
+  type GithubAppCredentials,
+  type GithubFetchError,
+  type GithubOrganization,
+  type GithubOrganizationResponse,
+  type GithubRepository,
+  type GithubRepositoryResponse,
 } from '../types';
 import { DefaultPageNumber, DefaultPageSize } from './handlers/handlers';
 
@@ -53,14 +56,18 @@ const GITHUB_DEFAULT_API_ENDPOINT = 'https://api.github.com';
 const RESPONSE_CACHE_TTL_MILLIS = 60 * 60 * 1000;
 
 export class GithubApiService {
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly integrations: ScmIntegrations;
   private readonly githubCredentialsProvider: CustomGithubCredentialsProvider;
   private readonly config: Config;
   // Cache for storing ETags (used for efficient caching of unchanged data returned by GitHub)
   private readonly cache: CacheService;
 
-  constructor(logger: Logger, config: Config, cacheService: CacheService) {
+  constructor(
+    logger: LoggerService,
+    config: Config,
+    cacheService: CacheService,
+  ) {
     this.logger = logger;
     this.config = config;
     this.integrations = ScmIntegrations.fromConfig(config);
@@ -230,8 +237,10 @@ export class GithubApiService {
         totalCount++;
       }
     } catch (err: any) {
-      this.logger.error(
-        `Fetching organizations with access token for github app, failed with ${err}`,
+      logErrorIfNeeded(
+        this.logger,
+        `Fetching organizations with access token for github app`,
+        err,
       );
       errors.set(-1, err.message);
     }
@@ -481,9 +490,11 @@ export class GithubApiService {
         });
         totalCount = resp?.data?.total_count;
       }
-    } catch (err) {
-      this.logger.error(
-        `Fetching repositories with access token for github app ${credential.appId}, failed with ${err}`,
+    } catch (err: any) {
+      logErrorIfNeeded(
+        this.logger,
+        `Fetching repositories with access token for github app ${credential.appId}`,
+        err,
       );
       const credentialError = this.createCredentialError(
         credential,
@@ -598,7 +609,7 @@ export class GithubApiService {
     errors: Map<number, GithubFetchError>,
     err: any,
   ) {
-    this.logger.error(`${desc} failed with ${err}`);
+    logErrorIfNeeded(this.logger, `${desc} failed`, err);
     const credentialError = this.createCredentialError(
       credential,
       err as Error,
@@ -1020,7 +1031,7 @@ export class GithubApiService {
   }
 
   async findImportOpenPr(
-    logger: Logger,
+    logger: LoggerService,
     input: {
       repoUrl: string;
       includeCatalogInfoContent?: boolean;
@@ -1064,15 +1075,15 @@ export class GithubApiService {
           branchName,
           input.includeCatalogInfoContent,
         );
-      } catch (error) {
-        logger.warn(`Error fetching pull requests: ${error}`);
+      } catch (error: any) {
+        logErrorIfNeeded(this.logger, 'Error fetching pull requests', error);
       }
     }
     return {};
   }
 
   private async findOpenPRForBranch(
-    logger: Logger,
+    logger: LoggerService,
     octo: Octokit,
     owner: string,
     repo: string,
@@ -1114,13 +1125,13 @@ export class GithubApiService {
         }
       }
     } catch (error) {
-      logger.warn(`Error fetching pull requests: ${error}`);
+      logErrorIfNeeded(this.logger, 'Error fetching pull requests', error);
     }
     return {};
   }
 
   private async getCatalogInfoContentFromPR(
-    logger: Logger,
+    _logger: LoggerService,
     octo: Octokit,
     owner: string,
     repo: string,
@@ -1145,8 +1156,10 @@ export class GithubApiService {
         'utf-8',
       );
     } catch (error: any) {
-      logger.warn(
-        `Error fetching catalog-info content from PR ${prNumber}: ${error}`,
+      logErrorIfNeeded(
+        this.logger,
+        `Error fetching catalog-info content from PR ${prNumber}`,
+        error,
       );
       return undefined;
     }
@@ -1201,7 +1214,7 @@ export class GithubApiService {
   }
 
   async submitPrToRepo(
-    logger: Logger,
+    logger: LoggerService,
     input: {
       repoUrl: string;
       gitUrl: gitUrlParse.GitUrl;
@@ -1316,8 +1329,10 @@ export class GithubApiService {
               head: repoData.data.default_branch,
             });
           } catch (error: any) {
-            logger.debug(
-              `could not merge default branch ${repoData.data.default_branch} into import branch ${branchName}: ${error}`,
+            logErrorIfNeeded(
+              this.logger,
+              `Could not merge default branch ${repoData.data.default_branch} into import branch ${branchName}`,
+              error,
             );
           }
         }
@@ -1346,7 +1361,11 @@ export class GithubApiService {
           hasChanges: true,
         };
       } catch (e: any) {
-        logger.warn(`Couldn't create PR in ${input.repoUrl}: ${e}`);
+        logErrorIfNeeded(
+          this.logger,
+          `Couldn't create PR in ${input.repoUrl}`,
+          e,
+        );
         errors.push(e.message);
       }
     }
@@ -1384,7 +1403,7 @@ export class GithubApiService {
   }
 
   private async fileExistsInDefaultBranch(
-    logger: Logger,
+    logger: LoggerService,
     octo: Octokit,
     owner: string,
     repo: string,
@@ -1411,7 +1430,7 @@ export class GithubApiService {
   }
 
   async doesCatalogInfoAlreadyExistInRepo(
-    logger: Logger,
+    logger: LoggerService,
     input: {
       repoUrl: string;
       defaultBranch?: string;
@@ -1424,7 +1443,7 @@ export class GithubApiService {
   }
 
   async doesCodeOwnersAlreadyExistInRepo(
-    logger: Logger,
+    logger: LoggerService,
     input: {
       repoUrl: string;
       defaultBranch?: string;
@@ -1437,7 +1456,7 @@ export class GithubApiService {
   }
 
   async hasFileInRepo(
-    logger: Logger,
+    logger: LoggerService,
     input: {
       repoUrl: string;
       defaultBranch?: string;
@@ -1494,7 +1513,7 @@ export class GithubApiService {
   }
 
   async closePR(
-    logger: Logger,
+    logger: LoggerService,
     input: {
       repoUrl: string;
       gitUrl: gitUrlParse.GitUrl;
@@ -1527,7 +1546,11 @@ export class GithubApiService {
           return;
         }
       } catch (e: any) {
-        logger.warn(`Couldn't close PR in ${input.repoUrl}: ${e}`);
+        logErrorIfNeeded(
+          this.logger,
+          `Couldn't close PR in ${input.repoUrl}`,
+          e,
+        );
       }
     }
   }
@@ -1592,7 +1615,7 @@ export class GithubApiService {
   }
 
   async deleteImportBranch(
-    logger: Logger,
+    _logger: LoggerService,
     input: {
       repoUrl: string;
       gitUrl: gitUrlParse.GitUrl;
@@ -1613,8 +1636,10 @@ export class GithubApiService {
         });
         return;
       } catch (e: any) {
-        logger.warn(
-          `Couldn't close import PR and/or delete import branch in ${input.repoUrl}: ${e}`,
+        logErrorIfNeeded(
+          this.logger,
+          `Couldn't close import PR and/or delete import branch in ${input.repoUrl}`,
+          e,
         );
       }
     }

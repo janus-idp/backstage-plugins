@@ -369,12 +369,6 @@ export interface ProcessInstanceDTO {
      * @memberof ProcessInstanceDTO
      */
     'error'?: ProcessInstanceErrorDTO;
-    /**
-     * 
-     * @type {object}
-     * @memberof ProcessInstanceDTO
-     */
-    'variables'?: object;
 }
 
 
