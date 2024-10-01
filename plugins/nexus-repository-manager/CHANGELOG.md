@@ -1,5 +1,9 @@
 ### Dependencies
 
+* **@janus-idp/cli:** upgraded to 1.15.1
+
+### Dependencies
+
 * **@janus-idp/shared-react:** upgraded to 2.11.1
 * **@janus-idp/cli:** upgraded to 1.15.0
 
