@@ -10,23 +10,60 @@ import { ModelsPlural } from '../../models';
 import { ModelsPlural as TektonModels } from '../../pipeline-models';
 import { TopologyWorkloadView } from './TopologyWorkloadView';
 
+import '@patternfly/react-core/dist/styles/base.css';
+import '@patternfly/patternfly/patternfly-theme-dark.css';
+import '@patternfly/patternfly/patternfly-charts-theme-dark.css';
+import '@patternfly/patternfly/utilities/Accessibility/accessibility.css';
 import './TopologyComponent.css';
 
 const THEME_DARK = 'dark';
 const THEME_DARK_CLASS = 'pf-v5-theme-dark';
 
+const savedStylesheets = new Set<HTMLLinkElement>();
+
 export const TopologyComponent = () => {
   const {
     palette: { type },
   } = useTheme();
+  const shadowRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     const htmlTagElement = document.documentElement;
+
+    const scalprumStyles = Array.from(
+      document.querySelectorAll('link[rel="stylesheet"]'),
+    ).filter(link =>
+      link.attributes
+        .getNamedItem('href')
+        ?.value?.includes('backstage-plugin-topology'),
+    );
+
+    scalprumStyles.forEach(link =>
+      savedStylesheets.add(link as HTMLLinkElement),
+    );
+
+    savedStylesheets.forEach(link => {
+      if (!document.head.contains(link)) {
+        document.head.appendChild(link);
+      }
+    });
+
     if (type === THEME_DARK) {
       htmlTagElement.classList.add(THEME_DARK_CLASS);
     } else {
       htmlTagElement.classList.remove(THEME_DARK_CLASS);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    return () => {
+      savedStylesheets.forEach(link => {
+        if (document.head.contains(link)) {
+          document.head.removeChild(link);
+        }
+      });
+
+      if (htmlTagElement.classList.contains(THEME_DARK_CLASS)) {
+        htmlTagElement.classList.remove(THEME_DARK_CLASS);
+      }
+    };
   }, [type]);
 
   const watchedResources = [
@@ -54,7 +91,7 @@ export const TopologyComponent = () => {
   return (
     <K8sResourcesContext.Provider value={k8sResourcesContextData}>
       <FilterContext.Provider value={filterContextData}>
-        <div className="pf-ri__topology">
+        <div className="pf-ri__topology" ref={shadowRef}>
           <TopologyWorkloadView />
         </div>
       </FilterContext.Provider>
