@@ -91,7 +91,7 @@ export class CSVFileWatcher extends AbstractFileWatcher<string[][]> {
    */
   async initialize(filePath: string): Promise<void> {
     let content: string[][] = [];
-    // If the file is set load the file contents
+    // Load the file contents
     content = this.parse(filePath);
 
     const tempEnforcer = await newEnforcer(
