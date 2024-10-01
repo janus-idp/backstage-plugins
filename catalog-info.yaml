@@ -38,20 +38,14 @@ metadata:
   name: janus-idp-backstage-plugins
 spec:
   targets:
-    - ./plugins/3scale-backend/catalog-info.yaml
     - ./plugins/aap-backend/catalog-info.yaml
-    - ./plugins/acr/catalog-info.yaml
     - ./plugins/analytics-module-matomo/catalog-info.yaml
     - ./plugins/analytics-provider-segment/catalog-info.yaml
-    - ./plugins/argocd/catalog-info.yaml
-    - ./plugins/argocd-common/catalog-info.yaml
     - ./plugins/audit-log-node/catalog-info.yaml
     - ./plugins/bulk-import/catalog-info.yaml
     - ./plugins/bulk-import-backend/catalog-info.yaml
     - ./plugins/bulk-import-common/catalog-info.yaml
-    - ./plugins/catalog-backend-module-scaffolder-relation-processor/catalog-info.yaml
-    - ./plugins/feedback/catalog-info.yaml
-    - ./plugins/feedback-backend/catalog-info.yaml
+    - ./plugins/dynamic-plugins-info/catalog-info.yaml
     - ./plugins/jfrog-artifactory/catalog-info.yaml
     - ./plugins/keycloak-backend/catalog-info.yaml
     - ./plugins/kiali/catalog-info.yaml
