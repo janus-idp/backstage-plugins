@@ -18,10 +18,11 @@ The Lightspeed plugin enables you to interact with any LLM server running a mode
 
    ```yaml title="app-config.yaml"
    proxy:
-     '/lightspeed/api':
-       target: http://localhost:11434/v1/
-       headers:
-         Authorization: Bearer <token>
+     endpoints:
+       '/lightspeed/api':
+         target: http://localhost:11434/v1/
+         headers:
+           Authorization: Bearer <token>
    ```
 
 2. Add a new nav item **Lightspeed** in App `packages/app/src/App.tsx`:
@@ -59,3 +60,102 @@ Lightspeed is a front-end plugin that enables you to interact with any LLM serve
 
 1. Open your Backstage application and select a Lightspeed nav item from the **Navigation**.
 2. Ask you questions to the Lightspeed chatbot.
+
+## Loading as Dynamic Plugin
+
+#### To install Lightspeed plugin into Red Hat Developer Hub or Janus IDP via Helm use this configuration:
+
+- Load the lightspeed plugin from the npm registry
+
+```
+global:
+  dynamic:
+    includes:
+      - dynamic-plugins.default.yaml
+    plugins:
+      - package: '@janus-idp/backstage-plugin-lightspeed@0.1.2'
+        integrity: >-
+          sha512-bCKETjVhjZFLx7ImSFcptA3yvwJhFLFTFhMo/LvdVc0K5E76/SpEEkYBPup4aEQMivZBJKn0iVQFBuduChCDpA==
+        disabled: false
+        pluginConfig:
+          dynamicPlugins:
+            frontend:
+              janus-idp.backstage-plugin-lightspeed:
+                appIcons:
+                  - name: LightspeedIcon
+                    module: LightspeedPlugin
+                    importName: LightspeedIcon
+                dynamicRoutes:
+                  - path: /lightspeed
+                    importName: LightspeedPage
+                    module: LightspeedPlugin
+                    menuItem:
+                      icon: LightspeedIcon
+                      text: Lightspeed
+```
+
+- add the proxy configuration in the `app-config.yaml`
+
+```
+proxy:
+ endpoints:
+  '/lightspeed/api':
+    target: http://localhost:11434/v1/
+    headers:
+      Authorization: Bearer <token>
+```
+
+---
+
+#### To install this plugin locally in [backstage-showcase](https://github.com/janus-idp/backstage-showcase) application as a dynamic plugin.
+
+Follow the below steps -
+
+- Export dynamic plugin assets. This will build and create the static assets for the plugin and put it inside dist-scalprum folder.
+
+`yarn install`
+
+`yarn tsc`
+
+`yarn build`
+
+`yarn export-dynamic`
+
+- Package and copy dist-scalprum folder assets to dynamic-plugins-root folder in [backstage-showcase](https://github.com/janus-idp/backstage-showcase) application.
+
+To Package the plugin, run the below commands.
+
+```
+pkg=../plugins/lightspeed
+archive=$(npm pack $pkg)
+tar -xzf "$archive" && rm "$archive"
+mv package $(echo $archive | sed -e 's:\.tgz$::')
+```
+
+- Add the extension point inside the `app-config.yaml` or `app-config.local.yaml` file.
+
+```
+
+proxy:
+  endpoints:
+     '/lightspeed/api':
+      target: http://localhost:11434/v1/
+      headers:
+         Authorization: Bearer <token>
+
+dynamicPlugins:
+  frontend:
+    janus-idp.backstage-plugin-lightspeed:
+      appIcons:
+        - name: LightspeedIcon
+          module: LightspeedPlugin
+          importName: LightspeedIcon
+      dynamicRoutes:
+        - path: /lightspeed
+          importName: LightspeedPage
+          module: LightspeedPlugin
+          menuItem:
+            icon: LightspeedIcon
+            text: Lightspeed
+
+```
