@@ -78,6 +78,12 @@ global:
           sha512-bCKETjVhjZFLx7ImSFcptA3yvwJhFLFTFhMo/LvdVc0K5E76/SpEEkYBPup4aEQMivZBJKn0iVQFBuduChCDpA==
         disabled: false
         pluginConfig:
+          proxy:
+            endpoints:
+              '/lightspeed/api':
+                target: http://localhost:11434/v1/
+                headers:
+                  Authorization: Bearer <token>
           dynamicPlugins:
             frontend:
               janus-idp.backstage-plugin-lightspeed:
@@ -94,16 +100,6 @@ global:
                       text: Lightspeed
 ```
 
-- add the proxy configuration in the `app-config.yaml`
-
-```
-proxy:
- endpoints:
-  '/lightspeed/api':
-    target: http://localhost:11434/v1/
-    headers:
-      Authorization: Bearer <token>
-```
 
 ---
 
