@@ -14,7 +14,7 @@ Run the following command to install the action package in your Backstage projec
 yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-kubernetes
 ```
 
-### Installing the action on the new backend
+### Installing the action on the backend
 
 Add the following to your `packages/backend/src/index.ts` file:
 
