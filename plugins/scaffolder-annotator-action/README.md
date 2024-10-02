@@ -20,9 +20,9 @@ To begin, install the module package into the backend workspace of your backstag
 yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-annotator
 ```
 
-### Registering the annotator action plugin with the new backend system
+### Registering the annotator action plugin with the backend system
 
-To install the module into the [new backend system](https://backstage.io/docs/backend-system/), add the following into the `packages/backend/src/index.ts` file:
+To install the module into the [backend system](https://backstage.io/docs/backend-system/), add the following into the `packages/backend/src/index.ts` file:
 
 ```ts title="packages/backend/src/index.ts
 const backend = createBackend();
