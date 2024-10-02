@@ -1,0 +1,37 @@
+[
+  {
+    "data": {
+      "id": "2",
+      "target": "https://github.com/octocat/my-awesome-repo/blob/dev/catalog-info.yaml",
+      "type": "url"
+    }
+  },
+  {
+    "data": {
+      "id": "3",
+      "target": "https://github.com/my-ent-org-2/A2/blob/main/catalog-info.yaml",
+      "type": "url"
+    }
+  },
+  {
+    "data": {
+      "id": "4",
+      "target": "https://github.com/my-ent-org-2/A2/blob/main/catalog-info.yaml",
+      "type": "url"
+    }
+  },
+  {
+    "data": {
+      "id": "5",
+      "target": "https://github.com/my-ent-org-2/A2/blob/feature/myAwesomeFeat/catalog-info.yaml",
+      "type": "url"
+    }
+  },
+  {
+    "data": {
+      "id": "7",
+      "target": "https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch/blob/main/plugins/my-plugin/examples/templates/01-some-template.yaml",
+      "type": "url"
+    }
+  }
+]

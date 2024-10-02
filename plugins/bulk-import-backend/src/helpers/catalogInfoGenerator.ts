@@ -13,31 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { LocationEntity } from '@backstage/catalog-model';
+import type {
+  AuthService,
+  DiscoveryService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import type { CatalogApi } from '@backstage/catalog-client';
+import type { LocationEntity } from '@backstage/catalog-model';
 import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
 import jsYaml from 'js-yaml';
 import fetch from 'node-fetch';
-import { Logger } from 'winston';
 
 import {
   DefaultPageNumber,
   DefaultPageSize,
 } from '../service/handlers/handlers';
 import { getTokenForPlugin } from './auth';
+import { logErrorIfNeeded } from './loggingUtils';
 
 export class CatalogInfoGenerator {
-  private readonly logger: Logger;
-  private readonly discovery: PluginEndpointDiscovery;
+  private readonly logger: LoggerService;
+  private readonly discovery: DiscoveryService;
   private readonly auth: AuthService;
   private readonly catalogApi: CatalogApi;
 
   constructor(
-    logger: Logger,
+    logger: LoggerService,
     discovery: DiscoveryService,
     auth: AuthService,
     catalogApi: CatalogApi,
@@ -87,10 +90,14 @@ spec:
           }),
         },
       );
-      generatedEntities = (await response.json()).generateEntities;
-    } catch (error) {
+      generatedEntities = (await response.json()).generateEntities ?? [];
+    } catch (error: any) {
       // fallback to the default catalog-info value
-      this.logger.debug(`could not analyze location ${repoUrl}`, error);
+      logErrorIfNeeded(
+        this.logger,
+        `Could not analyze location ${repoUrl}`,
+        error,
+      );
     }
 
     if (generatedEntities.length === 0) {
@@ -258,9 +265,11 @@ ${jsYaml.dump(generatedEntity.entity)}`,
         },
         method: 'DELETE',
       });
-    } catch (err: any) {
-      this.logger.debug(
-        `Could not delete location ${locationId}, cause: ${err}`,
+    } catch (error: any) {
+      logErrorIfNeeded(
+        this.logger,
+        `Could not delete location ${locationId}`,
+        error,
       );
     }
   }

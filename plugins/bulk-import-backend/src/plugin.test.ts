@@ -25,9 +25,9 @@ describe('bulkImportPlugin test', () => {
     const fakeConfig = { myPlugin: { value: 7 } };
     const { server } = await startTestBackend({
       features: [
-        bulkImportPlugin(),
+        bulkImportPlugin,
         mockServices.rootConfig.factory({ data: fakeConfig }),
-        mockServices.rootLogger.factory(),
+        mockServices.rootLogger.factory,
       ],
     });
 

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 
-import { Components } from '../../openapi.d';
-import { GithubApiService } from '../githubApiService';
+import type { Components } from '../../openapi.d';
+import type { GithubApiService } from '../githubApiService';
 import {
   DefaultPageNumber,
   DefaultPageSize,
-  HandlerResponse,
+  type HandlerResponse,
 } from './handlers';
 
 export async function findAllOrganizations(
-  logger: Logger,
+  logger: LoggerService,
   githubApiService: GithubApiService,
   search?: string,
   pageNumber: number = DefaultPageNumber,
