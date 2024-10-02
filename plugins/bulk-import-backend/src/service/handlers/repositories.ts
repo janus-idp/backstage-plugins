@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
+import type { LoggerService } from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
-import { Logger } from 'winston';
 
-import { CatalogInfoGenerator } from '../../helpers';
-import { Components } from '../../openapi.d';
-import { GithubRepositoryResponse } from '../../types';
-import { GithubApiService } from '../githubApiService';
+import type { CatalogInfoGenerator } from '../../helpers';
+import type { Components } from '../../openapi.d';
+import type { GithubRepositoryResponse } from '../../types';
+import type { GithubApiService } from '../githubApiService';
 import {
   DefaultPageNumber,
   DefaultPageSize,
-  HandlerResponse,
+  type HandlerResponse,
 } from './handlers';
 import { getImportStatusFromLocations } from './importStatus';
 
 export async function findAllRepositories(
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
@@ -65,7 +65,7 @@ export async function findAllRepositories(
 
 export async function findRepositoriesByOrganization(
   deps: {
-    logger: Logger;
+    logger: LoggerService;
     config: Config;
     githubApiService: GithubApiService;
     catalogInfoGenerator: CatalogInfoGenerator;
@@ -97,7 +97,7 @@ async function formatResponse(
   allReposAccessible: GithubRepositoryResponse,
   catalogInfoGenerator: CatalogInfoGenerator,
   checkStatus: boolean,
-  logger: Logger,
+  logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
 ) {

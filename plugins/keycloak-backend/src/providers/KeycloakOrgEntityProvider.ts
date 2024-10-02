@@ -271,6 +271,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
               logger.error('Error while syncing Keycloak users and groups', {
                 // Default Error properties:
                 name: error.name,
+                cause: error.cause,
                 message: error.message,
                 stack: error.stack,
                 // Additional status code if available:

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { NotAllowedError, NotFoundError } from '@backstage/errors';
+import { NotFoundError, type NotAllowedError } from '@backstage/errors';
 
 import express from 'express';
 
-import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+import type { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 
 const EVENT_PREFIX = 'BulkImport';
 const UNKNOWN_ENDPOINT_EVENT = `${EVENT_PREFIX}UnknownEndpoint`;

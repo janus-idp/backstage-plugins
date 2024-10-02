@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { CacheService } from '@backstage/backend-plugin-api';
-import { Config, ConfigReader } from '@backstage/config';
+import { mockServices } from '@backstage/backend-test-utils';
 
 import { CustomGithubCredentialsProvider } from '../helpers';
 import { GithubApiService } from './githubApiService';
@@ -61,22 +59,15 @@ const mockGetAllCredentials = jest.fn();
 CustomGithubCredentialsProvider.prototype.getAllCredentials =
   mockGetAllCredentials;
 
-const logger = getVoidLogger();
-const errorLog = jest.spyOn(logger, 'error');
-
-const mockCache: CacheService = {
-  delete: jest.fn(),
-  get: jest.fn(),
-  set: jest.fn(),
-  withOptions: jest.fn(),
-};
-
 describe('GithubApiService tests', () => {
-  let config: Config;
   let githubApiService: GithubApiService;
+  let errorLog: jest.SpyInstance;
 
   beforeEach(() => {
     jest.resetAllMocks();
+    const logger = mockServices.logger.mock();
+    errorLog = jest.spyOn(logger, 'error');
+    const mockCache = mockServices.cache.mock();
     mockGetAllCredentials.mockResolvedValue(
       Promise.resolve([
         {
@@ -98,30 +89,32 @@ describe('GithubApiService tests', () => {
         },
       ]),
     );
-    config = new ConfigReader({
-      integrations: {
-        github: [
-          {
-            host: 'github.com',
-            apps: [
-              {
-                appId: 1,
-                privateKey: 'privateKey',
-                webhookSecret: '123',
-                clientId: 'CLIENT_ID',
-                clientSecret: 'CLIENT_SECRET',
-              },
-              {
-                appId: 2,
-                privateKey: 'privateKey2',
-                webhookSecret: '456',
-                clientId: 'CLIENT_ID2',
-                clientSecret: 'CLIENT_SECRET2',
-              },
-            ],
-            token: 'hardcoded_token',
-          },
-        ],
+    const config = mockServices.rootConfig({
+      data: {
+        integrations: {
+          github: [
+            {
+              host: 'github.com',
+              apps: [
+                {
+                  appId: 1,
+                  privateKey: 'privateKey',
+                  webhookSecret: '123',
+                  clientId: 'CLIENT_ID',
+                  clientSecret: 'CLIENT_SECRET',
+                },
+                {
+                  appId: 2,
+                  privateKey: 'privateKey2',
+                  webhookSecret: '456',
+                  clientId: 'CLIENT_ID2',
+                  clientSecret: 'CLIENT_SECRET2',
+                },
+              ],
+              token: 'hardcoded_token',
+            },
+          ],
+        },
       },
     });
     githubApiService = new GithubApiService(logger, config, mockCache);
@@ -474,9 +467,9 @@ describe('GithubApiService tests', () => {
 
   it('does not throw an error if no integration in config because there is one added automatically', async () => {
     const repos = await new GithubApiService(
-      logger,
-      new ConfigReader({}),
-      mockCache,
+      mockServices.logger.mock(),
+      mockServices.rootConfig(),
+      mockServices.cache.mock(),
     ).getRepositoriesFromIntegrations();
     expect(repos).toEqual({
       errors: [],

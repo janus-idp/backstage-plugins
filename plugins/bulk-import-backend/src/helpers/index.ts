@@ -17,4 +17,5 @@
 export * from './auth';
 export * from './catalogInfoGenerator';
 export * from './GithubAppManager';
+export * from './loggingUtils';
 export * from './pagination';

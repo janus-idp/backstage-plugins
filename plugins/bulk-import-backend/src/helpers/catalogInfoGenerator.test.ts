@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  getVoidLogger,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
-import {
-  AuthService,
-  BackstageCredentials,
-  BackstagePrincipalTypes,
-} from '@backstage/backend-plugin-api';
-import { CatalogClient } from '@backstage/catalog-client';
-import { ConfigReader, type Config } from '@backstage/config';
+import type { DiscoveryService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
+import type { CatalogClient } from '@backstage/catalog-client';
 
 import fetch from 'node-fetch';
 
@@ -32,70 +24,53 @@ import { CatalogInfoGenerator } from './catalogInfoGenerator';
 
 jest.mock('node-fetch');
 
-const logger = getVoidLogger();
-
 const mockBaseUrl = 'http://127.0.0.1:65535';
-const mockExternalBaseUrl = 'https://127.0.0.127';
+
+const config = mockServices.rootConfig({
+  data: {
+    catalog: {
+      import: {
+        entityFilename: 'my-catalog-info.yaml',
+      },
+    },
+  },
+});
 
 describe('catalogInfoGenerator', () => {
-  let config: Config;
   let catalogInfoGenerator: CatalogInfoGenerator;
-  let mockDiscovery: PluginEndpointDiscovery;
-  let mockAuth: AuthService;
-  let mockCatalogClient: CatalogClient;
+  let mockDiscovery: DiscoveryService;
 
-  beforeAll(() => {
+  beforeEach(() => {
     (fetch as unknown as jest.Mock).mockReturnValue(
       Promise.resolve({
         json: () => Promise.resolve({}),
       }),
     );
-    mockDiscovery = {
-      getBaseUrl: (pluginId: string) =>
-        Promise.resolve(`${mockBaseUrl}/my-${pluginId}`),
-      getExternalBaseUrl: (pluginId: string) =>
-        Promise.resolve(`${mockExternalBaseUrl}/my-${pluginId}`),
-    };
-    mockCatalogClient = {
-      getEntities: jest.fn,
-    } as unknown as CatalogClient;
-    mockAuth = {
-      isPrincipal<TType extends keyof BackstagePrincipalTypes>(
-        _credentials: BackstageCredentials,
-        _type: TType,
-      ): _credentials is BackstageCredentials<BackstagePrincipalTypes[TType]> {
-        return false;
+    mockDiscovery = mockServices.discovery.mock({
+      getBaseUrl: async (pluginId: string) => {
+        return `${mockBaseUrl}/my-${pluginId}`;
       },
-      getPluginRequestToken: () =>
-        Promise.resolve({ token: 'ey123.abc.xyzzz' }),
-      authenticate: jest.fn(),
-      getNoneCredentials: jest.fn(),
-      getOwnServiceCredentials: jest.fn().mockResolvedValue({
-        principal: {
-          subject: 'my-sub',
-        },
+    });
+    // TODO(rm3l): Move to 'catalogServiceMock' from '@backstage/plugin-catalog-node/testUtils'
+    //  once '@backstage/plugin-catalog-node' is upgraded
+    const mockCatalogClient = {
+      getEntities: jest.fn(),
+    } as unknown as CatalogClient;
+    const mockAuth = mockServices.auth.mock({
+      getPluginRequestToken: jest.fn().mockResolvedValue({
+        token: 'ey123.abc.xyzzz', // notsecret
       }),
-      getLimitedUserToken: jest.fn(),
-      listPublicServiceKeys: jest.fn(),
-    };
+    });
     catalogInfoGenerator = new CatalogInfoGenerator(
-      logger,
+      mockServices.logger.mock(),
       mockDiscovery,
       mockAuth,
       mockCatalogClient,
     );
   });
 
-  beforeEach(() => {
+  afterEach(() => {
     jest.resetAllMocks();
-
-    config = new ConfigReader({
-      catalog: {
-        import: {
-          entityFilename: 'my-catalog-info.yaml',
-        },
-      },
-    });
   });
 
   it('should return a catalog url if no main branch is set', () => {
@@ -118,7 +93,7 @@ describe('catalogInfoGenerator', () => {
     const defaultBranch = 'dev';
     expect(
       catalogInfoGenerator.getCatalogUrl(
-        new ConfigReader({}),
+        mockServices.rootConfig(),
         repoUrl,
         defaultBranch,
       ),
@@ -150,6 +125,7 @@ describe('catalogInfoGenerator', () => {
     await expect(
       catalogInfoGenerator.generateDefaultCatalogInfoContent(repoUrl),
     ).resolves.toBe(getDefaultCatalogInfo('my-org-3', 'my-repo-3'));
+    expect(mockDiscovery.getBaseUrl).toHaveBeenCalledWith('catalog');
     expect(fetch).toHaveBeenCalledWith(
       `${mockBaseUrl}/my-catalog/analyze-location`,
       {
