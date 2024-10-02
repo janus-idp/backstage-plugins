@@ -19,6 +19,11 @@ import { OptionValues } from 'commander';
 import { findRoleFromCommand } from '../../lib/role';
 import { startFrontend } from './startFrontend';
 
+/**
+ * This version of the "package start" command is used to start the RHDH
+ * frontend in packages/app.  It is simplified from the "@backstage/cli package
+ * start" command to remove support for starting the backend package.
+ */
 export async function command(opts: OptionValues): Promise<void> {
   const role = await findRoleFromCommand(opts);
 

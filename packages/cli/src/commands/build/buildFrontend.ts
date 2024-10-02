@@ -30,6 +30,10 @@ interface BuildAppOptions {
   pluginMetadata?: PluginBuildMetadata;
 }
 
+/*
+ * A variant of buildFrontend that adds plugin metadata to support dynamic
+ * frontend plugins.
+ */
 export async function buildFrontend(options: BuildAppOptions) {
   const { targetDir, writeStats, configPaths, pluginMetadata } = options;
   const { name } = await fs.readJson(resolvePath(targetDir, 'package.json'));

@@ -89,6 +89,11 @@ async function readBuildInfo() {
   };
 }
 
+/**
+ * A version of createConfig that differs from the version in @backstage/cli
+ * from 1.18.0 by adding the scalprum plugin, cache settings and an alias to
+ * the webpack config.
+ */
 export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,

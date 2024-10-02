@@ -32,6 +32,10 @@ type Data = {
   }>;
 };
 
+/*
+ * This is referred to by lib/builder/embedPlugin but does not
+ * differ from the `@backstage/cli` implementation
+ */
 class DependenciesStep implements Step {
   constructor(private readonly data: Data) {}
 

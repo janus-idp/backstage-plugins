@@ -21,6 +21,12 @@ import { findRoleFromCommand } from '../../lib/role';
 import { isValidUrl } from '../../lib/urls';
 import { buildFrontend } from './buildFrontend';
 
+/**
+ * A simplified build command as compared to `@backstage/cli package build`
+ * that only builds frontend packages.  This command is used to build the
+ * RHDH frontend app in `packages/app` as it adds the build configuration for
+ * webpack module federation support via Scalprum.
+ */
 export async function command(opts: OptionValues): Promise<void> {
   const role = await findRoleFromCommand(opts);
 

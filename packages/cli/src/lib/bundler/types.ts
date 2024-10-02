@@ -31,6 +31,9 @@ export type BundlingOptions = {
   additionalEntryPoints?: string[];
 };
 
+/**
+ * This type is added to support dynamic plugins
+ */
 export type DynamicPluginOptions = {
   checksEnabled?: boolean;
   isDev?: boolean;
@@ -44,6 +47,10 @@ export type ServeOptions = BundlingPathsOptions & {
   verifyVersions?: boolean;
 };
 
+/**
+ * This version of BuildOptions adds the pluginMetadata field as compared to
+ * the type defined in @backstage/cli from 1.18.0
+ */
 export type BuildOptions = BundlingPathsOptions & {
   // Target directory, defaulting to paths.targetDir
   targetDir?: string;

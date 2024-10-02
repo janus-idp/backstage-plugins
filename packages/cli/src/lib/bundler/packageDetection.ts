@@ -54,6 +54,11 @@ function readPackageDetectionConfig(
   };
 }
 
+/**
+ * This version of detectPackages differs from the implementation in
+ * @backstage/cli from 1.18.0 by omitting a block of code that includes the
+ * alpha entry point if available for frontend plugins.
+ */
 async function detectPackages(
   targetPath: string,
   { include, exclude }: PackageDetectionConfig,
@@ -72,6 +77,7 @@ async function detectPackages(
           depPackageJson.backstage?.role ?? '',
         )
       ) {
+        // omitted block of code here
         return [depName];
       }
       return [];
