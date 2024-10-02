@@ -1,4 +1,4 @@
-import { ActionContext } from '@backstage/plugin-scaffolder-node';
+import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 
 import { get } from 'lodash';
 

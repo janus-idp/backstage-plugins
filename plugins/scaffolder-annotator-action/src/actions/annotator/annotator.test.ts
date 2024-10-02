@@ -1,4 +1,5 @@
-import { getVoidLogger, resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 
 import * as fs from 'fs-extra';
 import * as yaml from 'yaml';
@@ -27,7 +28,7 @@ describe('catalog annotator', () => {
       },
     );
 
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     jest.spyOn(logger, 'info');
 
     await action.handler({
@@ -76,7 +77,7 @@ describe('catalog annotator', () => {
       },
     );
 
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     jest.spyOn(logger, 'info');
 
     const mockContext = {
@@ -137,7 +138,7 @@ describe('catalog annotator', () => {
       },
     );
 
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     jest.spyOn(logger, 'info');
 
     const obj: { [key: string]: any } = {
@@ -212,7 +213,7 @@ describe('catalog annotator', () => {
       },
     );
 
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     jest.spyOn(logger, 'info');
 
     await action.handler({
@@ -262,7 +263,7 @@ describe('catalog annotator', () => {
       },
     );
 
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     jest.spyOn(logger, 'info');
 
     await action.handler({
