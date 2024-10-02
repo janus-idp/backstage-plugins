@@ -40,31 +40,21 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/backend-app-api": "^0.9.3",
-    "@backstage/backend-common": "^0.23.2",
-    "@backstage/backend-dynamic-feature-service": "^0.3.2",
+    "@backstage/backend-defaults": "^0.4.1",
     "@backstage/backend-plugin-api": "^0.6.21",
-    "@backstage/backend-plugin-manager": "npm:@janus-idp/backend-plugin-manager@0.0.2-janus.5",
-    "@backstage/backend-test-utils": "^0.5.1",
-    "@backstage/catalog-client": "^1.6.6",
-    "@backstage/config": "^1.2.0",
-    "@backstage/plugin-catalog-node": "^1.12.6",
     "@langchain/core": "^0.2.30",
     "@langchain/openai": "^0.2.8",
-    "@types/express": "^*",
     "express": "^4.17.1",
-    "express-promise-router": "^4.1.0",
-    "http-proxy-middleware": "^3.0.2",
-    "node-fetch": "^2.6.7",
-    "supertest": "6.3.4",
-    "yn": "^4.0.0"
+    "http-proxy-middleware": "^3.0.2"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "0.4.4",
     "@backstage/cli": "0.26.10",
-    "@backstage/test-utils": "^1.6.0",
+    "@backstage/config": "1.2.0",
+    "@backstage/test-utils": "1.6.0",
     "@janus-idp/cli": "1.12.0",
+    "@types/express": "^*",
     "@types/supertest": "2.0.12",
-    "msw": "1.0.0",
     "supertest": "6.3.4"
   },
   "files": [

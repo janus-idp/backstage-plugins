@@ -1,5 +1,4 @@
-import { getVoidLogger } from '@backstage/backend-common';
-// import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { mockServices } from '@backstage/backend-test-utils';
 import { MockConfigApi } from '@backstage/test-utils';
 
 import { AIMessageChunk } from '@langchain/core/messages';
@@ -92,7 +91,7 @@ describe('createRouter', () => {
 
   beforeAll(async () => {
     const router = await createRouter({
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       config: mockConfiguration,
 
       // TODO: for user authentication

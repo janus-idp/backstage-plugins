@@ -1,8 +1,8 @@
 import {
   AIMessage,
-  BaseMessage,
   HumanMessage,
   SystemMessage,
+  type BaseMessage,
 } from '@langchain/core/messages';
 import { InMemoryStore } from '@langchain/core/stores';
 

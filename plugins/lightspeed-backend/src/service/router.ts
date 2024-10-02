@@ -1,4 +1,4 @@
-import { errorHandler } from '@backstage/backend-common';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 
 import { HumanMessage } from '@langchain/core/messages';
 import {
@@ -6,8 +6,7 @@ import {
   MessagesPlaceholder,
 } from '@langchain/core/prompts';
 import { ChatOpenAI } from '@langchain/openai';
-import express from 'express';
-import Router from 'express-promise-router';
+import express, { Router } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
 import {
@@ -155,6 +154,8 @@ export async function createRouter(
     },
   );
 
-  router.use(errorHandler());
+  const middleware = MiddlewareFactory.create({ logger, config });
+
+  router.use(middleware.error());
   return router;
 }
