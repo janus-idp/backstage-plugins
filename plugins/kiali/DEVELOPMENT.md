@@ -47,7 +47,7 @@
 3. import the plugin to `packages/backend/src/index.ts`.
 
    ```typescript title="packages/backend/src/index.ts"
-   backend.add(import('@janus-idp/backstage-plugin-kiali-backend/alpha'));
+   backend.add(import('@janus-idp/backstage-plugin-kiali-backend'));
    ```
 
 4. Configure you `app-config.local.yaml` with kiali configuration
