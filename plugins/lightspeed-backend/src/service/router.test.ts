@@ -53,6 +53,7 @@ jest.mock('@langchain/core/prompts', () => {
 const mockConversationId = 'user1+1q2w3e4r-qwer1234';
 const mockServerURL = 'http://localhost:7007/api/proxy/lightspeed/api';
 const mockModel = 'test-model';
+const mockToken = 'dummy-token';
 
 const mockConfiguration = new MockConfigApi({
   lightspeed: {
@@ -60,11 +61,29 @@ const mockConfiguration = new MockConfigApi({
       {
         id: 'test-server',
         url: mockServerURL,
-        token: 'dummy-token',
+        token: mockToken,
       },
     ],
   },
 });
+
+const mockServerResponse = { data: 'redirect to v1/models' };
+// Mocking the actual request that the proxy would make
+jest.mock('http-proxy-middleware', () => ({
+  createProxyMiddleware: jest
+    .fn()
+    .mockImplementation(() => (req: express.Request, res: express.Response) => {
+      if (req.headers.authorization !== `Bearer ${mockToken}`) {
+        res.status(403).json({ error: 'unauthorized' }); // test if config.token has been added in authorization header
+        return;
+      }
+      if (req.path === '/models') {
+        res.status(200).json(mockServerResponse);
+        return;
+      }
+      res.status(404).json({ error: 'unknown path' });
+    }),
+}));
 
 (global.fetch as jest.Mock) = jest.fn();
 
@@ -98,6 +117,22 @@ describe('createRouter', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
+    });
+  });
+
+  describe('/v1/* proxy middleware', () => {
+    it('should proxy requests to /v1/models', async () => {
+      const response = await request(app).get('/v1/models');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockServerResponse);
+    });
+
+    it('unknown path', async () => {
+      const response = await request(app).get('/v1/unknown');
+
+      expect(response.status).toBe(404);
+      expect(String(response.error)).toContain('cannot GET /v1/unknown');
     });
   });
 
