@@ -58,7 +58,9 @@
     "@types/express": "^*",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "http-proxy-middleware": "^3.0.2",
     "node-fetch": "^2.6.7",
+    "supertest": "6.3.4",
     "yn": "^4.0.0"
   },
   "devDependencies": {
@@ -67,7 +69,7 @@
     "@janus-idp/cli": "1.12.0",
     "@types/supertest": "2.0.12",
     "msw": "1.0.0",
-    "supertest": "6.2.4"
+    "supertest": "6.3.4"
   },
   "files": [
     "dist",
