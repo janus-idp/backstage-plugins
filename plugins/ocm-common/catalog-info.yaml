@@ -2,9 +2,9 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: janus-idp-ocm-backend
-  title: '@janus-idp/backstage-plugin-ocm-backend'
-  description: Open Cluster Management backend plugin for Backstage
+  name: janus-idp-ocm-common
+  title: '@janus-idp/backstage-plugin-ocm-common'
+  description: Open Cluster Management common package for Backstage
   annotations:
     backstage.io/source-location: url:https://github.com/janus-idp/backstage-plugins/tree/main/plugins/ocm-backend
     backstage.io/view-url: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/ocm-backend/catalog-info.yaml
