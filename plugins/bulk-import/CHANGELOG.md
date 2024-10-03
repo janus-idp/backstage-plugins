@@ -1,5 +1,9 @@
 ### Dependencies
 
+* **@janus-idp/backstage-plugin-bulk-import-common:** upgraded to 1.1.1
+
+### Dependencies
+
 * **@janus-idp/cli:** upgraded to 1.15.1
 
 ### Dependencies
