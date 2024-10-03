@@ -1,6 +1,11 @@
-import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
+import type {
+  ErrorRequestHandler,
+  NextFunction,
+  Request,
+  Response,
+} from 'express';
 
-import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+import type { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 
 import {
   ConditionEvents,

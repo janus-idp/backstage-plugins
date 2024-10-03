@@ -1,5 +1,8 @@
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  TestDatabaseId,
+  TestDatabases,
+} from '@backstage/backend-test-utils';
 
 import * as Knex from 'knex';
 import { createTracker, MockClient } from 'knex-mock-client';
@@ -21,13 +24,12 @@ describe('role-metadata-db-table', () => {
 
   async function createDatabase(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
-    const databaseManagerMock: PluginDatabaseManager = {
-      getClient: jest.fn(() => {
-        return Promise.resolve(knex);
-      }),
+    const mockDatabaseService = mockServices.database.mock({
+      getClient: async () => knex,
       migrations: { skip: false },
-    };
-    await migrate(databaseManagerMock);
+    });
+
+    await migrate(mockDatabaseService);
     return {
       knex,
       db: new DataBaseRoleMetadataStorage(knex),

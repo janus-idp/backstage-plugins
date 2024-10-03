@@ -1,10 +1,10 @@
-import {
+import type {
   AuthService,
   BackstageUserInfo,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
-import { ConfigApi } from '@backstage/core-plugin-api';
+import type { Config } from '@backstage/config';
+import type { ConfigApi } from '@backstage/core-plugin-api';
 import {
   AuthorizeResult,
   ConditionalPolicyDecision,
@@ -16,15 +16,15 @@ import {
   PolicyDecision,
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
-import {
+import type {
   PermissionPolicy,
   PolicyQuery,
   PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 
-import { Knex } from 'knex';
+import type { Knex } from 'knex';
 
-import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+import type { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
   NonEmptyArray,
   toPermissionAction,
