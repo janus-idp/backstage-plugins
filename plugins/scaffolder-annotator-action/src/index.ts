@@ -6,4 +6,4 @@
  */
 
 export * from './actions';
-export * from './dynamic';
+export { scaffolderCustomActionsScaffolderModule as default } from './module';

@@ -1,13 +1,13 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core';
-import { VirtualMachineIcon } from '@patternfly/react-icons/dist/esm/icons/virtual-machine-icon';
 import {
   WithDragNodeProps,
   WithSelectionProps,
 } from '@patternfly/react-topology';
 
 import { RESOURCE_NAME_TRUNCATE_LENGTH } from '../../const';
+import VirtualMachineIcon from '../Icons/VirtualMachineIcon';
 import BaseNode from './BaseNode';
 
 const VM_STATUS_GAP = 7;
@@ -52,7 +52,7 @@ const VmNode = ({
   const imageComponent = osImage ? (
     <image {...imageProps} xlinkHref={osImage} />
   ) : (
-    <VirtualMachineIcon {...imageProps} />
+    <VirtualMachineIcon style={imageProps} x={imageProps.x} y={imageProps.y} />
   );
 
   const useStyles = makeStyles({

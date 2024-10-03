@@ -10,6 +10,7 @@ import {
   capitalize,
   ProcessInstanceDTO,
   ProcessInstanceStatusDTO,
+  WorkflowResultDTOCompletedWithEnum,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { VALUE_UNAVAILABLE } from '../constants';
@@ -20,6 +21,7 @@ import { WorkflowRunDetail } from './WorkflowRunDetail';
 type WorkflowDetailsCardProps = {
   assessedBy?: ProcessInstanceDTO;
   details: WorkflowRunDetail;
+  completedWith?: WorkflowResultDTOCompletedWithEnum;
 };
 
 const useStyles = makeStyles({
@@ -32,6 +34,7 @@ const useStyles = makeStyles({
 export const WorkflowRunDetails: React.FC<WorkflowDetailsCardProps> = ({
   assessedBy,
   details,
+  completedWith,
 }) => {
   const styles = useStyles();
   const workflowInstanceLink = useRouteRef(workflowInstanceRouteRef);
@@ -51,6 +54,7 @@ export const WorkflowRunDetails: React.FC<WorkflowDetailsCardProps> = ({
             <b>
               <WorkflowInstanceStatusIndicator
                 status={details.status as ProcessInstanceStatusDTO}
+                completedWith={completedWith}
               />
             </b>
           </Typography>

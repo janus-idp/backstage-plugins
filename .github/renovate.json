@@ -213,8 +213,7 @@
     {
       "matchFileNames": [
         "plugins/*matomo*/**",
-        "plugins/analytics-module-matomo*/**",
-        "plugins/feedback*/**"
+        "plugins/analytics-module-matomo*/**"
       ],
       "additionalBranchPrefix": "devex ",
       "addLabels": ["team/devex"],
@@ -225,8 +224,7 @@
     {
       "matchFileNames": [
         "plugins/*matomo*/**",
-        "plugins/analytics-module-matomo*/**",
-        "plugins/feedback*/**"
+        "plugins/analytics-module-matomo*/**"
       ],
       "additionalBranchPrefix": "devex ",
       "addLabels": ["team/devex"],
@@ -237,8 +235,7 @@
     {
       "matchFileNames": [
         "plugins/quay*/**",
-        "plugins/tekton*/**",
-        "plugins/argocd*/**"
+        "plugins/tekton*/**"
       ],
       "additionalBranchPrefix": "rhtap ",
       "addLabels": ["team/rhtap"],
@@ -249,8 +246,7 @@
     {
       "matchFileNames": [
         "plugins/quay*/**",
-        "plugins/tekton*/**",
-        "plugins/argocd*/**"
+        "plugins/tekton*/**"
       ],
       "additionalBranchPrefix": "rhtap ",
       "addLabels": ["team/rhtap"],
@@ -263,7 +259,6 @@
         "plugins/analytics-provider-segment*/**",
         "plugins/audit-log*/**",
         "plugins/bulk-import*/**",
-        "plugins/dynamic-plugins-info*/**",
         "plugins/keycloak*/**",
         "plugins/ocm*/**",
         "plugins/quay-actions*/**",
@@ -286,7 +281,6 @@
         "plugins/analytics-provider-segment*/**",
         "plugins/audit-log*/**",
         "plugins/bulk-import*/**",
-        "plugins/dynamic-plugins-info*/**",
         "plugins/keycloak*/**",
         "plugins/ocm*/**",
         "plugins/quay-actions*/**",
@@ -306,9 +300,7 @@
     },
     {
       "matchFileNames": [
-        "plugins/3scale-backend*/**",
         "plugins/aap-backend*/**",
-        "plugins/acr*/**",
         "plugins/jfrog-artifactory*/**",
         "plugins/kubernetes-actions*/**",
         "plugins/nexus-repository-manager*/**",
@@ -325,9 +317,7 @@
     },
     {
       "matchFileNames": [
-        "plugins/3scale-backend*/**",
         "plugins/aap-backend*/**",
-        "plugins/acr*/**",
         "plugins/jfrog-artifactory*/**",
         "plugins/kubernetes-actions*/**",
         "plugins/nexus-repository-manager*/**",

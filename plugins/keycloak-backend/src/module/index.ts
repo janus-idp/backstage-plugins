@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { catalogModuleKeycloakEntityProvider as default } from './catalogModuleKeycloakEntityProvider';
+export { catalogModuleKeycloakEntityProvider } from './catalogModuleKeycloakEntityProvider';

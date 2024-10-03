@@ -1049,9 +1049,6 @@ ul.nav-tabs {
     },
     "error" : {
       "$ref" : "#/components/schemas/ProcessInstanceErrorDTO"
-    },
-    "variables" : {
-      "$ref" : "#/components/schemas/ProcessInstanceVariablesDTO"
     }
   }
 };
@@ -1129,11 +1126,8 @@ ul.nav-tabs {
 };
     defs["WorkflowDataDTO"] = {
   "properties" : {
-    "workflowoptions" : {
-      "type" : "array",
-      "items" : {
-        "$ref" : "#/components/schemas/WorkflowOptionsDTO"
-      }
+    "result" : {
+      "$ref" : "#/components/schemas/WorkflowResultDTO"
     }
   },
   "additionalProperties" : false
@@ -1223,22 +1217,78 @@ ul.nav-tabs {
     }
   } ]
 };
+    defs["WorkflowResultDTO"] = {
+  "properties" : {
+    "completedWith" : {
+      "type" : "string",
+      "description" : "The state of workflow completion.",
+      "enum" : [ "error", "success" ]
+    },
+    "message" : {
+      "type" : "string",
+      "description" : "High-level summary of the current status, free-form text, human readable."
+    },
+    "nextWorkflows" : {
+      "type" : "array",
+      "description" : "List of workflows suggested to run next. Items at lower indexes are of higher priority.",
+      "items" : {
+        "$ref" : "#/components/schemas/WorkflowResultDTO_nextWorkflows_inner"
+      }
+    },
+    "outputs" : {
+      "type" : "array",
+      "description" : "Additional structured output of workflow processing. This can contain identifiers of created resources, links to resources, logs or other output.",
+      "items" : {
+        "$ref" : "#/components/schemas/WorkflowResultDTO_outputs_inner"
+      }
+    }
+  },
+  "description" : "Result of a workflow execution"
+};
+    defs["WorkflowResultDTO_nextWorkflows_inner"] = {
+  "required" : [ "id", "name" ],
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "description" : "Workflow identifier"
+    },
+    "name" : {
+      "type" : "string",
+      "description" : "Human readable title describing the workflow."
+    }
+  }
+};
+    defs["WorkflowResultDTO_outputs_inner"] = {
+  "required" : [ "key", "value" ],
+  "properties" : {
+    "key" : {
+      "type" : "string",
+      "description" : "Unique identifier of the option. Preferably human-readable."
+    },
+    "value" : {
+      "$ref" : "#/components/schemas/WorkflowResultDTO_outputs_inner_value"
+    },
+    "format" : {
+      "type" : "string",
+      "description" : "More detailed type of the 'value' property. Defaults to 'text'.",
+      "enum" : [ "text", "number", "link" ]
+    }
+  }
+};
+    defs["WorkflowResultDTO_outputs_inner_value"] = {
+  "description" : "Free form value of the option.",
+  "anyOf" : [ {
+    "type" : "string"
+  }, {
+    "type" : "number"
+  } ]
+};
     defs["WorkflowRunStatusDTO"] = {
   "properties" : {
     "key" : {
       "type" : "string"
     },
     "value" : {
-      "type" : "string"
-    }
-  }
-};
-    defs["WorkflowSuggestionDTO"] = {
-  "properties" : {
-    "id" : {
-      "type" : "string"
-    },
-    "name" : {
       "type" : "string"
     }
   }
@@ -1741,7 +1791,7 @@ The identifier of the workflow instance to abort.
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked"></p>
+                        <p class="marked">Execute a workflow</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/v2/workflows/{workflowId}/execute</span></code></pre>
@@ -2219,7 +2269,7 @@ $(document).ready(function() {
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked"></p>
+                        <p class="marked">Get a workflow execution/run (instance)</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/v2/workflows/instances/{instanceId}</span></code></pre>
@@ -2676,7 +2726,7 @@ Whether to include assessment
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Retrieve an array of instances</p>
+                        <p class="marked">Retrieve an array of workflow executions (instances)</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/v2/workflows/instances</span></code></pre>
@@ -3126,7 +3176,7 @@ $(document).ready(function() {
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Get a workflow by ID</p>
+                        <p class="marked">Get full workflow info</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/v2/workflows/{workflowId}</span></code></pre>
@@ -3540,7 +3590,7 @@ ID of the workflow to fetch
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Get a workflow input schema by ID</p>
+                        <p class="marked">Get the workflow input schema. It defines the input fields of the workflow</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/v2/workflows/{workflowId}/inputSchema</span></code></pre>
@@ -3994,7 +4044,7 @@ ID of instance
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Get a workflow overview by ID</p>
+                        <p class="marked">Returns the key fields of the workflow including data on the last run instance</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/v2/workflows/{workflowId}/overview</span></code></pre>
@@ -4408,7 +4458,7 @@ Unique identifier of the workflow
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Get a workflow source by ID</p>
+                        <p class="marked">Get the workflow&#39;s definition</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/v2/workflows/{workflowId}/source</span></code></pre>
@@ -4822,7 +4872,7 @@ ID of the workflow to fetch
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Retrieve an array of workflow statuses</p>
+                        <p class="marked">Retrieve array with the status of all instances</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/v2/workflows/instances/statuses</span></code></pre>
@@ -5198,7 +5248,7 @@ pub fn main() {
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Get a list of workflow overviews</p>
+                        <p class="marked">Returns the key fields of the workflow including data on the last run instance</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/v2/workflows/overview</span></code></pre>
@@ -5466,11 +5516,11 @@ pub fn main() {
                               </tr>
                                 <tr><td style="width:150px;">getOverviewsRequestParams </td>
 <td>
-<p class="marked">Parameters for retrieving of workflow overviews</p>
+<p class="marked">Pagination and filters</p>
 <script>
 $(document).ready(function() {
   var schemaWrapper = {
-  "description" : "Parameters for retrieving of workflow overviews",
+  "description" : "Pagination and filters",
   "content" : {
     "application/json" : {
       "schema" : {

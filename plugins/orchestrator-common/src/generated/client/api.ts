@@ -369,12 +369,6 @@ export interface ProcessInstanceDTO {
      * @memberof ProcessInstanceDTO
      */
     'error'?: ProcessInstanceErrorDTO;
-    /**
-     * 
-     * @type {object}
-     * @memberof ProcessInstanceDTO
-     */
-    'variables'?: object;
 }
 
 
@@ -507,10 +501,10 @@ export interface WorkflowDTO {
 export interface WorkflowDataDTO {
     /**
      * 
-     * @type {Array<Array<WorkflowSuggestionDTO>>}
+     * @type {WorkflowResultDTO}
      * @memberof WorkflowDataDTO
      */
-    'workflowoptions'?: Array<Array<WorkflowSuggestionDTO>>;
+    'result'?: WorkflowResultDTO;
 }
 /**
  * Format of the workflow definition
@@ -697,6 +691,105 @@ export interface WorkflowProgressDTO {
 
 
 /**
+ * Result of a workflow execution
+ * @export
+ * @interface WorkflowResultDTO
+ */
+export interface WorkflowResultDTO {
+    /**
+     * The state of workflow completion.
+     * @type {string}
+     * @memberof WorkflowResultDTO
+     */
+    'completedWith'?: WorkflowResultDTOCompletedWithEnum;
+    /**
+     * High-level summary of the current status, free-form text, human readable.
+     * @type {string}
+     * @memberof WorkflowResultDTO
+     */
+    'message'?: string;
+    /**
+     * List of workflows suggested to run next. Items at lower indexes are of higher priority.
+     * @type {Array<WorkflowResultDTONextWorkflowsInner>}
+     * @memberof WorkflowResultDTO
+     */
+    'nextWorkflows'?: Array<WorkflowResultDTONextWorkflowsInner>;
+    /**
+     * Additional structured output of workflow processing. This can contain identifiers of created resources, links to resources, logs or other output.
+     * @type {Array<WorkflowResultDTOOutputsInner>}
+     * @memberof WorkflowResultDTO
+     */
+    'outputs'?: Array<WorkflowResultDTOOutputsInner>;
+}
+
+export const WorkflowResultDTOCompletedWithEnum = {
+    Error: 'error',
+    Success: 'success'
+} as const;
+
+export type WorkflowResultDTOCompletedWithEnum = typeof WorkflowResultDTOCompletedWithEnum[keyof typeof WorkflowResultDTOCompletedWithEnum];
+
+/**
+ * 
+ * @export
+ * @interface WorkflowResultDTONextWorkflowsInner
+ */
+export interface WorkflowResultDTONextWorkflowsInner {
+    /**
+     * Workflow identifier
+     * @type {string}
+     * @memberof WorkflowResultDTONextWorkflowsInner
+     */
+    'id': string;
+    /**
+     * Human readable title describing the workflow.
+     * @type {string}
+     * @memberof WorkflowResultDTONextWorkflowsInner
+     */
+    'name': string;
+}
+/**
+ * 
+ * @export
+ * @interface WorkflowResultDTOOutputsInner
+ */
+export interface WorkflowResultDTOOutputsInner {
+    /**
+     * Unique identifier of the option. Preferably human-readable.
+     * @type {string}
+     * @memberof WorkflowResultDTOOutputsInner
+     */
+    'key': string;
+    /**
+     * 
+     * @type {WorkflowResultDTOOutputsInnerValue}
+     * @memberof WorkflowResultDTOOutputsInner
+     */
+    'value': WorkflowResultDTOOutputsInnerValue;
+    /**
+     * More detailed type of the \'value\' property. Defaults to \'text\'.
+     * @type {string}
+     * @memberof WorkflowResultDTOOutputsInner
+     */
+    'format'?: WorkflowResultDTOOutputsInnerFormatEnum;
+}
+
+export const WorkflowResultDTOOutputsInnerFormatEnum = {
+    Text: 'text',
+    Number: 'number',
+    Link: 'link'
+} as const;
+
+export type WorkflowResultDTOOutputsInnerFormatEnum = typeof WorkflowResultDTOOutputsInnerFormatEnum[keyof typeof WorkflowResultDTOOutputsInnerFormatEnum];
+
+/**
+ * Free form value of the option.
+ * @export
+ * @interface WorkflowResultDTOOutputsInnerValue
+ */
+export interface WorkflowResultDTOOutputsInnerValue {
+}
+/**
  * 
  * @export
  * @interface WorkflowRunStatusDTO
@@ -714,25 +807,6 @@ export interface WorkflowRunStatusDTO {
      * @memberof WorkflowRunStatusDTO
      */
     'value'?: string;
-}
-/**
- * 
- * @export
- * @interface WorkflowSuggestionDTO
- */
-export interface WorkflowSuggestionDTO {
-    /**
-     * 
-     * @type {string}
-     * @memberof WorkflowSuggestionDTO
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof WorkflowSuggestionDTO
-     */
-    'name'?: string;
 }
 
 /**
@@ -776,7 +850,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * 
+         * Execute a workflow
          * @summary Execute a workflow
          * @param {string} workflowId ID of the workflow to execute
          * @param {ExecuteWorkflowRequestDTO} executeWorkflowRequestDTO 
@@ -816,7 +890,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * 
+         * Get a workflow execution/run (instance)
          * @summary Get Workflow Instance by ID
          * @param {string} instanceId ID of the workflow instance
          * @param {boolean} [includeAssessment] Whether to include assessment
@@ -855,7 +929,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Retrieve an array of instances
+         * Retrieve an array of workflow executions (instances)
          * @summary Get instances
          * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving instances
          * @param {*} [options] Override http request option.
@@ -889,7 +963,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Get a workflow by ID
+         * Get full workflow info
          * @param {string} workflowId ID of the workflow to fetch
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -922,7 +996,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Get a workflow input schema by ID
+         * Get the workflow input schema. It defines the input fields of the workflow
          * @param {string} workflowId ID of the workflow to fetch
          * @param {string} [instanceId] ID of instance
          * @param {*} [options] Override http request option.
@@ -960,7 +1034,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Get a workflow overview by ID
+         * Returns the key fields of the workflow including data on the last run instance
          * @param {string} workflowId Unique identifier of the workflow
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -993,7 +1067,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Get a workflow source by ID
+         * Get the workflow\'s definition
          * @param {string} workflowId ID of the workflow to fetch
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1026,7 +1100,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Retrieve an array of workflow statuses
+         * Retrieve array with the status of all instances
          * @summary Get workflow status list
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1056,8 +1130,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Get a list of workflow overviews
-         * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Parameters for retrieving of workflow overviews
+         * Returns the key fields of the workflow including data on the last run instance
+         * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Pagination and filters
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1112,7 +1186,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * Execute a workflow
          * @summary Execute a workflow
          * @param {string} workflowId ID of the workflow to execute
          * @param {ExecuteWorkflowRequestDTO} executeWorkflowRequestDTO 
@@ -1126,7 +1200,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * Get a workflow execution/run (instance)
          * @summary Get Workflow Instance by ID
          * @param {string} instanceId ID of the workflow instance
          * @param {boolean} [includeAssessment] Whether to include assessment
@@ -1140,7 +1214,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Retrieve an array of instances
+         * Retrieve an array of workflow executions (instances)
          * @summary Get instances
          * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving instances
          * @param {*} [options] Override http request option.
@@ -1153,7 +1227,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Get a workflow by ID
+         * Get full workflow info
          * @param {string} workflowId ID of the workflow to fetch
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1165,7 +1239,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Get a workflow input schema by ID
+         * Get the workflow input schema. It defines the input fields of the workflow
          * @param {string} workflowId ID of the workflow to fetch
          * @param {string} [instanceId] ID of instance
          * @param {*} [options] Override http request option.
@@ -1178,7 +1252,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Get a workflow overview by ID
+         * Returns the key fields of the workflow including data on the last run instance
          * @param {string} workflowId Unique identifier of the workflow
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1190,7 +1264,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Get a workflow source by ID
+         * Get the workflow\'s definition
          * @param {string} workflowId ID of the workflow to fetch
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1202,7 +1276,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Retrieve an array of workflow statuses
+         * Retrieve array with the status of all instances
          * @summary Get workflow status list
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1214,8 +1288,8 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Get a list of workflow overviews
-         * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Parameters for retrieving of workflow overviews
+         * Returns the key fields of the workflow including data on the last run instance
+         * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Pagination and filters
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1246,7 +1320,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.abortWorkflow(instanceId, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Execute a workflow
          * @summary Execute a workflow
          * @param {string} workflowId ID of the workflow to execute
          * @param {ExecuteWorkflowRequestDTO} executeWorkflowRequestDTO 
@@ -1257,7 +1331,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.executeWorkflow(workflowId, executeWorkflowRequestDTO, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Get a workflow execution/run (instance)
          * @summary Get Workflow Instance by ID
          * @param {string} instanceId ID of the workflow instance
          * @param {boolean} [includeAssessment] Whether to include assessment
@@ -1268,7 +1342,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getInstanceById(instanceId, includeAssessment, options).then((request) => request(axios, basePath));
         },
         /**
-         * Retrieve an array of instances
+         * Retrieve an array of workflow executions (instances)
          * @summary Get instances
          * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving instances
          * @param {*} [options] Override http request option.
@@ -1278,7 +1352,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getInstances(getInstancesRequestParams, options).then((request) => request(axios, basePath));
         },
         /**
-         * Get a workflow by ID
+         * Get full workflow info
          * @param {string} workflowId ID of the workflow to fetch
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1287,7 +1361,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getWorkflowById(workflowId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Get a workflow input schema by ID
+         * Get the workflow input schema. It defines the input fields of the workflow
          * @param {string} workflowId ID of the workflow to fetch
          * @param {string} [instanceId] ID of instance
          * @param {*} [options] Override http request option.
@@ -1297,7 +1371,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getWorkflowInputSchemaById(workflowId, instanceId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Get a workflow overview by ID
+         * Returns the key fields of the workflow including data on the last run instance
          * @param {string} workflowId Unique identifier of the workflow
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1306,7 +1380,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getWorkflowOverviewById(workflowId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Get a workflow source by ID
+         * Get the workflow\'s definition
          * @param {string} workflowId ID of the workflow to fetch
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1315,7 +1389,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getWorkflowSourceById(workflowId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Retrieve an array of workflow statuses
+         * Retrieve array with the status of all instances
          * @summary Get workflow status list
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1324,8 +1398,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getWorkflowStatuses(options).then((request) => request(axios, basePath));
         },
         /**
-         * Get a list of workflow overviews
-         * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Parameters for retrieving of workflow overviews
+         * Returns the key fields of the workflow including data on the last run instance
+         * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Pagination and filters
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1355,7 +1429,7 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * 
+     * Execute a workflow
      * @summary Execute a workflow
      * @param {string} workflowId ID of the workflow to execute
      * @param {ExecuteWorkflowRequestDTO} executeWorkflowRequestDTO 
@@ -1368,7 +1442,7 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * 
+     * Get a workflow execution/run (instance)
      * @summary Get Workflow Instance by ID
      * @param {string} instanceId ID of the workflow instance
      * @param {boolean} [includeAssessment] Whether to include assessment
@@ -1381,7 +1455,7 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Retrieve an array of instances
+     * Retrieve an array of workflow executions (instances)
      * @summary Get instances
      * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving instances
      * @param {*} [options] Override http request option.
@@ -1393,7 +1467,7 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Get a workflow by ID
+     * Get full workflow info
      * @param {string} workflowId ID of the workflow to fetch
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1404,7 +1478,7 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Get a workflow input schema by ID
+     * Get the workflow input schema. It defines the input fields of the workflow
      * @param {string} workflowId ID of the workflow to fetch
      * @param {string} [instanceId] ID of instance
      * @param {*} [options] Override http request option.
@@ -1416,7 +1490,7 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Get a workflow overview by ID
+     * Returns the key fields of the workflow including data on the last run instance
      * @param {string} workflowId Unique identifier of the workflow
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1427,7 +1501,7 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Get a workflow source by ID
+     * Get the workflow\'s definition
      * @param {string} workflowId ID of the workflow to fetch
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1438,7 +1512,7 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Retrieve an array of workflow statuses
+     * Retrieve array with the status of all instances
      * @summary Get workflow status list
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1449,8 +1523,8 @@ export class DefaultApi extends BaseAPI {
     }
 
     /**
-     * Get a list of workflow overviews
-     * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Parameters for retrieving of workflow overviews
+     * Returns the key fields of the workflow including data on the last run instance
+     * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Pagination and filters
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi

@@ -2,17 +2,17 @@
   "name": "@janus-idp/backstage-plugin-rbac-backend-module-test-dynamic",
   "description": "The test backend module for the rbac plugin.",
   "version": "0.1.0",
-  "main": "dist/index.cjs.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs.js",
+  "types": "src/index.ts",
   "license": "Apache-2.0",
   "private": true,
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "rbac",
+    "pluginPackage": "@janus-idp/backstage-plugin-rbac-backend"
   },
   "exports": {
     ".": {
@@ -27,7 +27,7 @@
   },
   "scripts": {},
   "dependencies": {
-    "@janus-idp/backstage-plugin-rbac-node": "^1.5.0",
+    "@janus-idp/backstage-plugin-rbac-node": "^1.6.0",
     "csv-parse": "^5.5.6"
   },
   "devDependencies": {},

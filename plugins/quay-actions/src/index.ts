@@ -6,4 +6,4 @@
  */
 
 export * from './actions';
-export * from './dynamic/index';
+export { scaffolderModuleQuayAction as default } from './module';

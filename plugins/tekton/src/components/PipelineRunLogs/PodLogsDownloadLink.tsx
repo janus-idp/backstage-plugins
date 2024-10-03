@@ -4,7 +4,7 @@ import { useApi } from '@backstage/core-plugin-api';
 
 import { V1Pod } from '@kubernetes/client-node';
 import { createStyles, Link, makeStyles, Theme } from '@material-ui/core';
-import { DownloadIcon } from '@patternfly/react-icons';
+import DownloadIcon from '@mui/icons-material/FileDownloadOutlined';
 import classNames from 'classnames';
 
 import { downloadLogFile } from '@janus-idp/shared-react';
@@ -80,7 +80,8 @@ const PodLogsDownloadLink: React.FC<{
       })}
       {...props}
     >
-      <DownloadIcon title="Download logs" /> {downloadTitle || 'Download '}
+      <DownloadIcon style={{ verticalAlign: '-0.180em' }} />
+      {downloadTitle || 'Download '}
     </Link>
   );
 };

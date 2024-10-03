@@ -1,15 +1,15 @@
 import { CatalogClient } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
+import type { Entity } from '@backstage/catalog-model';
 import {
-  ActionContext,
   createTemplateAction,
+  type ActionContext,
 } from '@backstage/plugin-scaffolder-node';
 
 import {
   CoreV1Api,
-  HttpError,
   KubeConfig,
   V1Namespace,
+  type HttpError,
 } from '@kubernetes/client-node';
 
 const KUBERNETES_API_URL_ANNOTATION = 'kubernetes.io/api-server';

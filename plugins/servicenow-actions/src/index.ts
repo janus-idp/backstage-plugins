@@ -1,2 +1,2 @@
 export * from './actions';
-export * from './dynamic/index';
+export { scaffolderModuleServicenowActions } from './module';

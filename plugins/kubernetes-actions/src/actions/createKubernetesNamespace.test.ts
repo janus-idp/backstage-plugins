@@ -1,7 +1,7 @@
-import { CatalogClient } from '@backstage/catalog-client';
+import type { CatalogClient } from '@backstage/catalog-client';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
-import { V1Namespace } from '@kubernetes/client-node';
+import type { V1Namespace } from '@kubernetes/client-node';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 

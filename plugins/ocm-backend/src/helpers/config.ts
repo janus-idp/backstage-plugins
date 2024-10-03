@@ -1,5 +1,5 @@
-import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
-import { Config } from '@backstage/config';
+import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
 
 import { OcmConfig } from '../types';
 
@@ -86,9 +86,11 @@ export const getHubClusterFromConfig = (
     serviceAccountToken: hub.getOptionalString('serviceAccountToken'),
     skipTLSVerify: hub.getOptionalBoolean('skipTLSVerify') || false,
     caData: hub.getOptionalString('caData'),
-    owner: config.getOptionalString(OWNER_KEY) || 'unknown',
+    owner: config.getOptionalString(OWNER_KEY) ?? 'unknown',
     schedule: config.has('schedule')
-      ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+      ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+          config.getConfig('schedule'),
+        )
       : undefined,
   };
 };

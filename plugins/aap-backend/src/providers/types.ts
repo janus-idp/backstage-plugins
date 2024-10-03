@@ -1,4 +1,4 @@
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import type { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 
 export type AapConfig = {
   id: string;
@@ -6,5 +6,5 @@ export type AapConfig = {
   authorization: string;
   owner: string;
   system?: string;
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
 };

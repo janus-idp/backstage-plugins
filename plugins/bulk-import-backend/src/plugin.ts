@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -25,8 +24,6 @@ import { createRouter } from './service/router';
 
 /**
  * The bulk-import backend plugin.
- *
- * @alpha
  */
 export const bulkImportPlugin = createBackendPlugin({
   pluginId: 'bulk-import',
@@ -39,7 +36,6 @@ export const bulkImportPlugin = createBackendPlugin({
         cache: coreServices.cache,
         discovery: coreServices.discovery,
         permissions: coreServices.permissions,
-        identity: coreServices.identity,
         httpAuth: coreServices.httpAuth,
         auth: coreServices.auth,
         catalogApi: catalogServiceRef,
@@ -51,7 +47,6 @@ export const bulkImportPlugin = createBackendPlugin({
         cache,
         discovery,
         permissions,
-        identity,
         httpAuth,
         auth,
         catalogApi,
@@ -61,8 +56,7 @@ export const bulkImportPlugin = createBackendPlugin({
           cache,
           discovery,
           permissions,
-          identity,
-          logger: loggerToWinstonLogger(logger),
+          logger,
           httpAuth,
           auth,
           catalogApi,

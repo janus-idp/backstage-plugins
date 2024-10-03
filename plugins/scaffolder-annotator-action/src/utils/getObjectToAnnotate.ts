@@ -1,4 +1,4 @@
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 
 import * as fs from 'fs-extra';
 import * as yaml from 'yaml';

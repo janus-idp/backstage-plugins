@@ -6,4 +6,4 @@
  */
 
 export * from './actions';
-export * from './dynamic/index';
+export { scaffolderModuleKubernetesAction as default } from './module';

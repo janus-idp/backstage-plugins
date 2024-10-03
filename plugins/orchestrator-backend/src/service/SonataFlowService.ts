@@ -38,9 +38,8 @@ export class SonataFlowService {
         );
         return json;
       }
-      const responseStr = JSON.stringify(response);
-      this.logger.error(
-        `Response was NOT okay when fetch(${urlToFetch}). Received response: ${responseStr}`,
+      throw new Error(
+        await this.createPrefixFetchErrorMessage(urlToFetch, response),
       );
     } catch (error) {
       this.logger.error(`Error when fetching workflow info: ${error}`);
@@ -104,15 +103,20 @@ export class SonataFlowService {
         ? `${args.serviceUrl}/${args.definitionId}?businessKey=${args.businessKey}`
         : `${args.serviceUrl}/${args.definitionId}`;
 
-      const result = await fetch(urlToFetch, {
+      const response = await fetch(urlToFetch, {
         method: 'POST',
         body: JSON.stringify(args.inputData),
         headers: { 'content-type': 'application/json' },
       });
 
-      const json = await result.json();
-      this.logger.debug(`Execute workflow result: ${JSON.stringify(json)}`);
-      return json;
+      if (response.ok) {
+        const json = await response.json();
+        this.logger.debug(`Execute workflow result: ${JSON.stringify(json)}`);
+        return json;
+      }
+      throw new Error(
+        `${await this.createPrefixFetchErrorMessage(urlToFetch, response, 'POST')}`,
+      );
     } catch (error) {
       this.logger.error(`Error when executing workflow: ${error}`);
     }
@@ -218,5 +222,32 @@ export class SonataFlowService {
       this.logger.error(`Error when updating instance input data: ${error}`);
     }
     return false;
+  }
+
+  public async createPrefixFetchErrorMessage(
+    urlToFetch: string,
+    response: Response,
+    httpMethod = 'GET',
+  ): Promise<string> {
+    const res = await response.json();
+    const errorInfo = [];
+    let errorMsg = `Request ${httpMethod} ${urlToFetch} failed with: StatusCode: ${response.status}`;
+
+    if (response.statusText) {
+      errorInfo.push(`StatusText: ${response.statusText}`);
+    }
+    if (res?.details) {
+      errorInfo.push(`Details: ${res?.details}`);
+    }
+    if (res?.stack) {
+      errorInfo.push(`Stack: ${res?.stack}`);
+    }
+    if (errorInfo.length > 0) {
+      errorMsg += ` ${errorInfo.join(', ')}`;
+    } else {
+      errorMsg += ' Unexpected error';
+    }
+
+    return errorMsg;
   }
 }

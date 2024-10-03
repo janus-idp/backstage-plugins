@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 
-import { Paths } from '../../openapi.d';
-import { HandlerResponse } from './handlers';
+import type { Paths } from '../../openapi.d';
+import type { HandlerResponse } from './handlers';
 
 export async function ping(
-  logger: Logger,
+  logger: LoggerService,
 ): Promise<HandlerResponse<Paths.Ping.Responses.$200>> {
   logger.debug('PONG!');
   return {
