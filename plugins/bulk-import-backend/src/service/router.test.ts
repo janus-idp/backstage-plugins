@@ -596,76 +596,88 @@ describe('bulk-import router tests', () => {
   });
 
   describe('GET /imports', () => {
-    it('returns 200 with empty list when there is nothing in catalog yet and no open PR for each repo', async () => {
-      const backendServer = await startBackendServer(AuthorizeResult.ALLOW, {
-        catalog: { locations: [] },
-      });
-      server.use(
-        rest.get(
-          `http://localhost:${backendServer.port()}/api/catalog/locations`,
-          (_, res, ctx) => res(ctx.status(200), ctx.json([])),
-        ),
-      );
-      mockCatalogClient.queryEntities = jest
-        .fn()
-        .mockResolvedValue({ items: [] });
-
-      const response = await request(backendServer).get(
-        '/api/bulk-import/imports',
-      );
-
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({
-        imports: [],
-        page: 1,
-        size: 20,
-        totalCount: 0,
-      });
-    });
-
-    it('returns 200 with appropriate import status (with data coming from the repos and data coming from the app-config files)', async () => {
-      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
-      server.use(
-        rest.get(
-          `http://localhost:${backendServer.port()}/api/catalog/locations`,
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.json(loadTestFixture('catalog/locations.json')),
-            ),
-        ),
-      );
-      mockCatalogClient.queryEntities = jest
-        .fn()
-        .mockImplementation(
-          async (
-            _request?: QueryEntitiesRequest,
-            _options?: CatalogRequestOptions,
-          ): Promise<QueryEntitiesResponse> => {
-            return {
-              items: [
-                {
-                  apiVersion: 'backstage.io/v1alpha1',
-                  kind: 'Location',
-                  metadata: {
-                    name: `generated-from-tests-${Math.floor(Math.random() * 100 + 1)}`,
-                    namespace: 'default',
-                  },
-                },
-              ],
-              totalItems: 1,
-              pageInfo: {},
-            };
-          },
+    it.each([undefined, 'v1', 'v2'])(
+      'returns 200 with empty list when there is nothing in catalog yet and no open PR for each repo (API Version: %s)',
+      async apiVersion => {
+        const backendServer = await startBackendServer(AuthorizeResult.ALLOW, {
+          catalog: { locations: [] },
+        });
+        server.use(
+          rest.get(
+            `http://localhost:${backendServer.port()}/api/catalog/locations`,
+            (_, res, ctx) => res(ctx.status(200), ctx.json([])),
+          ),
         );
+        mockCatalogClient.queryEntities = jest
+          .fn()
+          .mockResolvedValue({ items: [] });
 
-      const response = await request(backendServer).get(
-        '/api/bulk-import/imports',
-      );
+        let req = request(backendServer).get('/api/bulk-import/imports');
+        if (apiVersion) {
+          req = req.set('api-version', apiVersion);
+        }
+        const response = await req;
 
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({
-        imports: [
+        expect(response.status).toEqual(200);
+        let expectedRespBody: any = [];
+        if (apiVersion === 'v2') {
+          expectedRespBody = {
+            imports: expectedRespBody,
+            page: 1,
+            size: 20,
+            totalCount: 0,
+          };
+        }
+        expect(response.body).toEqual(expectedRespBody);
+      },
+    );
+
+    it.each([undefined, 'v1', 'v2'])(
+      'returns 200 with appropriate import status (with data coming from the repos and data coming from the app-config files) (API Version: %s)',
+      async apiVersion => {
+        const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
+        server.use(
+          rest.get(
+            `http://localhost:${backendServer.port()}/api/catalog/locations`,
+            (_, res, ctx) =>
+              res(
+                ctx.status(200),
+                ctx.json(loadTestFixture('catalog/locations.json')),
+              ),
+          ),
+        );
+        mockCatalogClient.queryEntities = jest
+          .fn()
+          .mockImplementation(
+            async (
+              _request?: QueryEntitiesRequest,
+              _options?: CatalogRequestOptions,
+            ): Promise<QueryEntitiesResponse> => {
+              return {
+                items: [
+                  {
+                    apiVersion: 'backstage.io/v1alpha1',
+                    kind: 'Location',
+                    metadata: {
+                      name: `generated-from-tests-${Math.floor(Math.random() * 100 + 1)}`,
+                      namespace: 'default',
+                    },
+                  },
+                ],
+                totalItems: 1,
+                pageInfo: {},
+              };
+            },
+          );
+
+        let req = request(backendServer).get('/api/bulk-import/imports');
+        if (apiVersion) {
+          req = req.set('api-version', apiVersion);
+        }
+        const response = await req;
+
+        expect(response.status).toEqual(200);
+        let expectedRespBody: any = [
           {
             approvalTool: 'GIT',
             id: 'https://github.com/octocat/my-awesome-repo',
@@ -713,14 +725,20 @@ describe('bulk-import router tests', () => {
             },
             status: 'WAIT_PR_APPROVAL',
           },
-        ],
-        page: 1,
-        size: 20,
-        totalCount: 3,
-      });
-      // Location entity refresh triggered (on each 'ADDED' repo)
-      expect(mockCatalogClient.refreshEntity).toHaveBeenCalledTimes(1);
-    });
+        ];
+        if (apiVersion === 'v2') {
+          expectedRespBody = {
+            imports: expectedRespBody,
+            page: 1,
+            size: 20,
+            totalCount: 3,
+          };
+        }
+        expect(response.body).toEqual(expectedRespBody);
+        // Location entity refresh triggered (on each 'ADDED' repo)
+        expect(mockCatalogClient.refreshEntity).toHaveBeenCalledTimes(1);
+      },
+    );
   });
 
   describe('POST /imports', () => {

@@ -5,7 +5,7 @@ Apis/OrganizationApi.md
 Apis/RepositoryApi.md
 Models/ApprovalTool.md
 Models/Import.md
-Models/ImportJobList.md
+Models/ImportJobListV2.md
 Models/ImportRequest.md
 Models/ImportRequest_github.md
 Models/ImportRequest_github_pullRequest.md
@@ -17,5 +17,7 @@ Models/Organization.md
 Models/OrganizationList.md
 Models/Repository.md
 Models/RepositoryList.md
+Models/findAllImports_200_response.md
+Models/findAllImports_500_response.md
 Models/ping_200_response.md
 README.md

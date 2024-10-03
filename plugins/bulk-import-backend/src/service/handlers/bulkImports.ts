@@ -42,16 +42,32 @@ type CreateImportDryRunStatus =
   | 'CODEOWNERS_FILE_NOT_FOUND_IN_REPO'
   | 'REPO_EMPTY';
 
+type FindAllImportsResponse =
+  | Components.Schemas.Import[]
+  | Components.Schemas.ImportJobListV2;
+
 export async function findAllImports(
   logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
-  search?: string,
-  pageNumber: number = DefaultPageNumber,
-  pageSize: number = DefaultPageSize,
-): Promise<HandlerResponse<Components.Schemas.ImportJobList>> {
-  logger.debug('Getting all bulk import jobs..');
+  requestHeaders?: {
+    apiVersion?: Paths.FindAllImports.Parameters.ApiVersion;
+  },
+  queryParams?: {
+    search?: string;
+    pageNumber?: number;
+    pageSize?: number;
+  },
+): Promise<HandlerResponse<FindAllImportsResponse>> {
+  const apiVersion = requestHeaders?.apiVersion ?? 'v1';
+  const search = queryParams?.search;
+  const pageNumber = queryParams?.pageNumber ?? DefaultPageNumber;
+  const pageSize = queryParams?.pageSize ?? DefaultPageSize;
+
+  logger.debug(
+    `Getting all bulk import jobs (apiVersion=${apiVersion}, search=${search}, page=${pageNumber}, size=${pageSize})..`,
+  );
 
   const catalogFilename = getCatalogFilename(config);
 
@@ -129,6 +145,12 @@ export async function findAllImports(
     return a.repository.name.localeCompare(b.repository.name);
   });
   const paginated = paginateArray(imports, pageNumber, pageSize);
+  if (apiVersion === 'v1') {
+    return {
+      statusCode: 200,
+      responseBody: paginated.result,
+    };
+  }
   return {
     statusCode: 200,
     responseBody: {

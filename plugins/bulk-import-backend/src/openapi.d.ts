@@ -11,6 +11,24 @@ import type {
 } from 'openapi-client-axios';
 
 declare namespace Components {
+    export interface HeaderParameters {
+        apiVersionHeaderParam?: Parameters.ApiVersionHeaderParam;
+    }
+    namespace Parameters {
+        export type ApiVersionHeaderParam = "v1" | "v2";
+        export type PagePerIntegrationQueryParam = number;
+        export type PageQueryParam = number;
+        export type SearchQueryParam = string;
+        export type SizePerIntegrationQueryParam = number;
+        export type SizeQueryParam = number;
+    }
+    export interface QueryParameters {
+        pagePerIntegrationQueryParam?: Parameters.PagePerIntegrationQueryParam;
+        sizePerIntegrationQueryParam?: Parameters.SizePerIntegrationQueryParam;
+        searchQueryParam?: Parameters.SearchQueryParam;
+        pageQueryParam?: Parameters.PageQueryParam;
+        sizeQueryParam?: Parameters.SizeQueryParam;
+    }
     namespace Schemas {
         export type ApprovalTool = "GIT" | "SERVICENOW";
         /**
@@ -58,7 +76,7 @@ declare namespace Components {
         /**
          * Import Job List
          */
-        export interface ImportJobList {
+        export interface ImportJobListV2 {
             imports?: /* Import Job */ Import[];
             errors?: string[];
             totalCount?: number;
@@ -229,19 +247,27 @@ declare namespace Paths {
         }
     }
     namespace FindAllImports {
+        export interface HeaderParameters {
+            "api-version"?: Parameters.ApiVersion;
+        }
         namespace Parameters {
+            export type ApiVersion = "v1" | "v2";
             export type Page = number;
+            export type PagePerIntegration = number;
             export type Search = string;
             export type Size = number;
+            export type SizePerIntegration = number;
         }
         export interface QueryParameters {
+            pagePerIntegration?: Parameters.PagePerIntegration;
+            sizePerIntegration?: Parameters.SizePerIntegration;
             page?: Parameters.Page;
             size?: Parameters.Size;
             search?: Parameters.Search;
         }
         namespace Responses {
-            export type $200 = /* Import Job List */ Components.Schemas.ImportJobList;
-            export type $500 = /* Import Job List */ Components.Schemas.ImportJobList;
+            export type $200 = /* Import Job */ Components.Schemas.Import[] | /* Import Job List */ Components.Schemas.ImportJobListV2;
+            export type $500 = string | /* Import Job List */ Components.Schemas.ImportJobListV2;
         }
     }
     namespace FindAllOrganizations {
@@ -361,7 +387,7 @@ export interface OperationMethods {
    * findAllImports - Fetch Import Jobs
    */
   'findAllImports'(
-    parameters?: Parameters<Paths.FindAllImports.QueryParameters> | null,
+    parameters?: Parameters<Paths.FindAllImports.QueryParameters & Paths.FindAllImports.HeaderParameters> | null,
     data?: any,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.FindAllImports.Responses.$200>
@@ -437,7 +463,7 @@ export interface PathsDictionary {
      * findAllImports - Fetch Import Jobs
      */
     'get'(
-      parameters?: Parameters<Paths.FindAllImports.QueryParameters> | null,
+      parameters?: Parameters<Paths.FindAllImports.QueryParameters & Paths.FindAllImports.HeaderParameters> | null,
       data?: any,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.FindAllImports.Responses.$200>

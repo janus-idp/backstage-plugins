@@ -57,23 +57,9 @@ paths:
         - BearerAuth: []
       tags: [Organization]
       parameters:
-        - in: query
-          name: pagePerIntegration
-          description: the page number for each Integration
-          schema:
-            type: integer
-            default: 1
-        - in: query
-          name: sizePerIntegration
-          description: the number of items per Integration to return per page
-          schema:
-            type: integer
-            default: 20
-        - in: query
-          name: search
-          description: returns only organizations that match the search string, by name
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pagePerIntegrationQueryParam'
+        - $ref: '#/components/parameters/sizePerIntegrationQueryParam'
+        - $ref: '#/components/parameters/searchQueryParam'
       responses:
         200:
           description: Organization list was fetched successfully with no errors
@@ -114,23 +100,9 @@ paths:
           schema:
             type: boolean
             default: 'false'
-        - in: query
-          name: pagePerIntegration
-          description: the page number for each Integration
-          schema:
-            type: integer
-            default: 1
-        - in: query
-          name: sizePerIntegration
-          description: the number of items per Integration to return per page
-          schema:
-            type: integer
-            default: 20
-        - in: query
-          name: search
-          description: returns only organization repositories that contain the search string, by repository name
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pagePerIntegrationQueryParam'
+        - $ref: '#/components/parameters/sizePerIntegrationQueryParam'
+        - $ref: '#/components/parameters/searchQueryParam'
       responses:
         200:
           description: Org Repository list was fetched successfully with no errors
@@ -165,23 +137,9 @@ paths:
           schema:
             type: boolean
             default: 'false'
-        - in: query
-          name: pagePerIntegration
-          description: the page number for each Integration
-          schema:
-            type: integer
-            default: 1
-        - in: query
-          name: sizePerIntegration
-          description: the number of items per Integration to return per page
-          schema:
-            type: integer
-            default: 20
-        - in: query
-          name: search
-          description: returns only repositories that contain the search string, by name
-          schema:
-            type: string
+        - $ref: '#/components/parameters/pagePerIntegrationQueryParam'
+        - $ref: '#/components/parameters/sizePerIntegrationQueryParam'
+        - $ref: '#/components/parameters/searchQueryParam'
       responses:
         200:
           description: Repository list was fetched successfully with no errors
@@ -210,39 +168,50 @@ paths:
         - BearerAuth: []
       tags: [Import]
       parameters:
-        - in: query
-          name: page
-          description: the requested page number
-          schema:
-            type: integer
-            default: 1
-        - in: query
-          name: size
-          description: the maximum number of items to return per page
-          schema:
-            type: integer
-            default: 20
-        - in: query
-          name: search
-          description: returns only Imports that contain the search string, by repository name
-          schema:
-            type: string
+        - $ref: '#/components/parameters/apiVersionHeaderParam'
+
+        # The '*PerIntegration' query params are being kept for backward compatibility,
+        # but the behavior depends on the API Version specified in the headers.
+        # As of API version v2, 'page' and 'size' parameters will always take precedence
+        # over the `*PerIntegration' params.
+        - $ref: '#/components/parameters/pagePerIntegrationQueryParam'
+          # TODO(rm3l): Overriding properties does not seem to work
+        #          deprecated: true
+        #          description: Deprecated. Set the 'API-Version' request header to 'v2' and use the 'page' query parameter instead.
+        - $ref: '#/components/parameters/sizePerIntegrationQueryParam'
+          # TODO(rm3l): Overriding properties does not seem to work
+        #          deprecated: true
+        #          description: Deprecated. Set the 'API-Version' request header to 'v2' and use the 'size' query parameter instead.
+        - $ref: '#/components/parameters/pageQueryParam'
+        - $ref: '#/components/parameters/sizeQueryParam'
+
+        - $ref: '#/components/parameters/searchQueryParam'
+
       responses:
         200:
           description: Import Job list was fetched successfully with no errors
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImportJobList'
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/Import'
+                  - $ref: '#/components/schemas/ImportJobListV2'
               examples:
-                multipleImportJobs:
-                  $ref: '#/components/examples/multipleImportJobs'
+                twoImports:
+                  $ref: '#/components/examples/twoImports'
+                multipleImportJobsV2:
+                  $ref: '#/components/examples/multipleImportJobsV2'
         500:
           description: Generic error when there are errors and no Import Job is returned
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImportJobList'
+                oneOf:
+                  - type: string
+                    description: Generic error
+                  - $ref: '#/components/schemas/ImportJobListV2'
               examples:
                 repositoryListErrors:
                   $ref: '#/components/examples/importJobListErrors'
@@ -344,6 +313,64 @@ paths:
           description: Generic error
 
 components:
+  parameters:
+    pagePerIntegrationQueryParam:
+      in: query
+      name: pagePerIntegration
+      description: the page number for each Integration
+      schema:
+        type: integer
+        default: 1
+    sizePerIntegrationQueryParam:
+      in: query
+      name: sizePerIntegration
+      description: the number of items per Integration to return per page
+      schema:
+        type: integer
+        default: 20
+    searchQueryParam:
+      in: query
+      name: search
+      description: returns only the items that match the search string
+      schema:
+        type: string
+    pageQueryParam:
+      # used for endpoints where pagination does not depend on the Integrations configured
+      in: query
+      name: page
+      description: the requested page number
+      schema:
+        type: integer
+        default: 1
+    sizeQueryParam:
+      # used for endpoints where pagination does not depend on the Integrations configured
+      in: query
+      name: size
+      description: the number of items to return per page
+      schema:
+        type: integer
+        default: 20
+    apiVersionHeaderParam:
+      in: header
+      name: api-version
+      description: |
+        API version.
+
+        ## Changelog
+
+        ### v1
+        Initial version
+
+        ### v2
+        * GET /imports
+          * Response structure changed to include pagination info
+          * Deprecation of 'pagePerIntegration' and 'sizePerIntegration' query parameters
+          * New 'page' and 'size' query parameters
+      schema:
+        type: string
+        enum: ['v1', 'v2']
+        default: 'v1'
+
   schemas:
     OrganizationList:
       title: Organization List
@@ -459,7 +486,7 @@ components:
         #- SERVICENOW_TICKET_REJECTED
         - null
 
-    ImportJobList:
+    ImportJobListV2:
       title: Import Job List
       type: object
       properties:
@@ -637,10 +664,41 @@ components:
           - 'Github App with ID 2 failed spectacularly'
         repositories: []
 
-    multipleImportJobs:
-      summary: Two import job requests
+    twoImports:
+      summary: Two import job requests (V1)
+      value:
+        - id: 'bulk-import-id-1'
+          status: 'WAIT_PR_APPROVAL'
+          errors: []
+          approvalTool: GIT
+          repository:
+            name: 'pet-app'
+            url: 'https://github.com/my-org/pet-app'
+            organization: 'my-org'
+          github:
+            pullRequest:
+              url: 'https://github.com/my-org/pet-app/pull/1'
+              number: 1
+        - id: 'bulk-import-id-2'
+          status: 'PR_REJECTED'
+          errors: []
+          approvalTool: GIT
+          repository:
+            name: 'pet-app-test'
+            url: 'https://github.com/my-org/pet-app-test'
+            organization: 'my-org'
+          github:
+            pullRequest:
+              url: 'https://github.com/my-org/pet-app-test/pull/10'
+              number: 10
+
+    multipleImportJobsV2:
+      summary: Two import job requests (V2)
       value:
         errors: []
+        page: 1
+        size: 2
+        totalCount: 10
         imports:
           - id: 'bulk-import-id-1'
             status: 'WAIT_PR_APPROVAL'
