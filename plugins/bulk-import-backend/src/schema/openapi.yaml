@@ -171,17 +171,11 @@ paths:
         - $ref: '#/components/parameters/apiVersionHeaderParam'
 
         # The '*PerIntegration' query params are being kept for backward compatibility,
-        # but the behavior depends on the API Version specified in the headers.
+        # but the behavior depends on the API Version specified in the request headers.
         # As of API version v2, 'page' and 'size' parameters will always take precedence
         # over the `*PerIntegration' params.
-        - $ref: '#/components/parameters/pagePerIntegrationQueryParam'
-          # TODO(rm3l): Overriding properties does not seem to work
-        #          deprecated: true
-        #          description: Deprecated. Set the 'API-Version' request header to 'v2' and use the 'page' query parameter instead.
-        - $ref: '#/components/parameters/sizePerIntegrationQueryParam'
-          # TODO(rm3l): Overriding properties does not seem to work
-        #          deprecated: true
-        #          description: Deprecated. Set the 'API-Version' request header to 'v2' and use the 'size' query parameter instead.
+        - $ref: '#/components/parameters/pagePerIntegrationQueryParamDeprecated'
+        - $ref: '#/components/parameters/sizePerIntegrationQueryParamDeprecated'
         - $ref: '#/components/parameters/pageQueryParam'
         - $ref: '#/components/parameters/sizeQueryParam'
 
@@ -325,6 +319,22 @@ components:
       in: query
       name: sizePerIntegration
       description: the number of items per Integration to return per page
+      schema:
+        type: integer
+        default: 20
+    pagePerIntegrationQueryParamDeprecated:
+      in: query
+      name: pagePerIntegration
+      description: the page number for each Integration. **Deprecated**. Use the 'page' query parameter instead.
+      deprecated: true
+      schema:
+        type: integer
+        default: 1
+    sizePerIntegrationQueryParamDeprecated:
+      in: query
+      name: sizePerIntegration
+      description: the number of items per Integration to return per page. **Deprecated**. Use the 'size' query parameter instead.
+      deprecated: true
       schema:
         type: integer
         default: 20

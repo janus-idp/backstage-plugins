@@ -237,12 +237,14 @@ export async function createRouter(
       // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
       let page: number | undefined;
       let size: number | undefined;
-      if (apiVersion === 'v2') {
+      if (apiVersion === undefined || apiVersion === 'v1') {
+        // pagePerIntegration and sizePerIntegration deprecated in v1. 'page' and 'size' take precedence.
         page = stringToNumber(q.page || q.pagePerIntegration);
         size = stringToNumber(q.size || q.sizePerIntegration);
       } else {
-        page = stringToNumber(q.pagePerIntegration);
-        size = stringToNumber(q.sizePerIntegration);
+        // pagePerIntegration and sizePerIntegration removed in v2+ and replaced by 'page' and 'size'.
+        page = stringToNumber(q.page);
+        size = stringToNumber(q.size);
       }
       const response = await findAllImports(
         logger,

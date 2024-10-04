@@ -73,8 +73,8 @@ Fetch Import Jobs
 |Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **api-version** | **String**| API version.  ## Changelog  ### v1 Initial version  ### v2 * GET /imports   * Response structure changed to include pagination info   * Deprecation of &#39;pagePerIntegration&#39; and &#39;sizePerIntegration&#39; query parameters   * New &#39;page&#39; and &#39;size&#39; query parameters  | [optional] [default to v1] [enum: v1, v2] |
-| **pagePerIntegration** | **Integer**| the page number for each Integration | [optional] [default to 1] |
-| **sizePerIntegration** | **Integer**| the number of items per Integration to return per page | [optional] [default to 20] |
+| **pagePerIntegration** | **Integer**| the page number for each Integration. **Deprecated**. Use the &#39;page&#39; query parameter instead. | [optional] [default to 1] |
+| **sizePerIntegration** | **Integer**| the number of items per Integration to return per page. **Deprecated**. Use the &#39;size&#39; query parameter instead. | [optional] [default to 20] |
 | **page** | **Integer**| the requested page number | [optional] [default to 1] |
 | **size** | **Integer**| the number of items to return per page | [optional] [default to 20] |
 | **search** | **String**| returns only the items that match the search string | [optional] [default to null] |

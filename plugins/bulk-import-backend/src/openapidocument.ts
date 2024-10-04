@@ -280,10 +280,10 @@ const OPENAPI = `
             "$ref": "#/components/parameters/apiVersionHeaderParam"
           },
           {
-            "$ref": "#/components/parameters/pagePerIntegrationQueryParam"
+            "$ref": "#/components/parameters/pagePerIntegrationQueryParamDeprecated"
           },
           {
-            "$ref": "#/components/parameters/sizePerIntegrationQueryParam"
+            "$ref": "#/components/parameters/sizePerIntegrationQueryParamDeprecated"
           },
           {
             "$ref": "#/components/parameters/pageQueryParam"
@@ -520,6 +520,26 @@ const OPENAPI = `
         "in": "query",
         "name": "sizePerIntegration",
         "description": "the number of items per Integration to return per page",
+        "schema": {
+          "type": "integer",
+          "default": 20
+        }
+      },
+      "pagePerIntegrationQueryParamDeprecated": {
+        "in": "query",
+        "name": "pagePerIntegration",
+        "description": "the page number for each Integration. **Deprecated**. Use the 'page' query parameter instead.",
+        "deprecated": true,
+        "schema": {
+          "type": "integer",
+          "default": 1
+        }
+      },
+      "sizePerIntegrationQueryParamDeprecated": {
+        "in": "query",
+        "name": "sizePerIntegration",
+        "description": "the number of items per Integration to return per page. **Deprecated**. Use the 'size' query parameter instead.",
+        "deprecated": true,
         "schema": {
           "type": "integer",
           "default": 20

@@ -17,14 +17,18 @@ declare namespace Components {
     namespace Parameters {
         export type ApiVersionHeaderParam = "v1" | "v2";
         export type PagePerIntegrationQueryParam = number;
+        export type PagePerIntegrationQueryParamDeprecated = number;
         export type PageQueryParam = number;
         export type SearchQueryParam = string;
         export type SizePerIntegrationQueryParam = number;
+        export type SizePerIntegrationQueryParamDeprecated = number;
         export type SizeQueryParam = number;
     }
     export interface QueryParameters {
         pagePerIntegrationQueryParam?: Parameters.PagePerIntegrationQueryParam;
         sizePerIntegrationQueryParam?: Parameters.SizePerIntegrationQueryParam;
+        pagePerIntegrationQueryParamDeprecated?: Parameters.PagePerIntegrationQueryParamDeprecated;
+        sizePerIntegrationQueryParamDeprecated?: Parameters.SizePerIntegrationQueryParamDeprecated;
         searchQueryParam?: Parameters.SearchQueryParam;
         pageQueryParam?: Parameters.PageQueryParam;
         sizeQueryParam?: Parameters.SizeQueryParam;
