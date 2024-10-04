@@ -25,7 +25,7 @@ export const TopologyComponent = () => {
   const {
     palette: { type },
   } = useTheme();
-  const shadowRef = React.useRef<HTMLDivElement>(null);
+
   React.useEffect(() => {
     const htmlTagElement = document.documentElement;
 
@@ -91,7 +91,7 @@ export const TopologyComponent = () => {
   return (
     <K8sResourcesContext.Provider value={k8sResourcesContextData}>
       <FilterContext.Provider value={filterContextData}>
-        <div className="pf-ri__topology" ref={shadowRef}>
+        <div className="pf-ri__topology">
           <TopologyWorkloadView />
         </div>
       </FilterContext.Provider>
