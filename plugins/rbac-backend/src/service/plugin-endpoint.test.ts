@@ -19,12 +19,14 @@ describe('plugin-endpoint', () => {
 
   describe('Test list plugin policies', () => {
     it('should return empty plugin policies list', async () => {
-      const collector = new PluginPermissionMetadataCollector(
-        mockPluginEndpointDiscovery,
-        backendPluginIDsProviderMock,
-        mockServices.logger.mock(),
-        mockServices.rootConfig(),
-      );
+      const collector = new PluginPermissionMetadataCollector({
+        deps: {
+          discovery: mockPluginEndpointDiscovery,
+          pluginIdProvider: backendPluginIDsProviderMock,
+          logger: mockServices.logger.mock(),
+          config: mockServices.rootConfig(),
+        },
+      });
       const policiesMetadata = await collector.getPluginPolicies(
         mockServices.auth(),
       );
@@ -47,13 +49,15 @@ describe('plugin-endpoint', () => {
         },
       });
 
-      const collector = new PluginPermissionMetadataCollector(
-        mockPluginEndpointDiscovery,
-        backendPluginIDsProviderMock,
-        mockServices.logger.mock(),
-        mockServices.rootConfig(),
-        mockUrlReaderService,
-      );
+      const collector = new PluginPermissionMetadataCollector({
+        deps: {
+          discovery: mockPluginEndpointDiscovery,
+          pluginIdProvider: backendPluginIDsProviderMock,
+          logger: mockServices.logger.mock(),
+          config: mockServices.rootConfig(),
+        },
+        optional: { urlReader: mockUrlReaderService },
+      });
       const policiesMetadata = await collector.getPluginPolicies(
         mockServices.auth(),
       );
@@ -84,13 +88,15 @@ describe('plugin-endpoint', () => {
         },
       });
 
-      const collector = new PluginPermissionMetadataCollector(
-        mockPluginEndpointDiscovery,
-        backendPluginIDsProviderMock,
-        mockServices.logger.mock(),
-        mockServices.rootConfig(),
-        mockUrlReaderService,
-      );
+      const collector = new PluginPermissionMetadataCollector({
+        deps: {
+          discovery: mockPluginEndpointDiscovery,
+          pluginIdProvider: backendPluginIDsProviderMock,
+          logger: mockServices.logger.mock(),
+          config: mockServices.rootConfig(),
+        },
+        optional: { urlReader: mockUrlReaderService },
+      });
       const policiesMetadata = await collector.getPluginPolicies(
         mockServices.auth(),
       );
@@ -131,13 +137,15 @@ describe('plugin-endpoint', () => {
 
       const logger = mockServices.logger.mock();
       const errorSpy = jest.spyOn(logger, 'warn').mockClear();
-      const collector = new PluginPermissionMetadataCollector(
-        mockPluginEndpointDiscovery,
-        backendPluginIDsProviderMock,
-        logger,
-        mockServices.rootConfig(),
-        mockUrlReaderService,
-      );
+      const collector = new PluginPermissionMetadataCollector({
+        deps: {
+          discovery: mockPluginEndpointDiscovery,
+          pluginIdProvider: backendPluginIDsProviderMock,
+          logger,
+          config: mockServices.rootConfig(),
+        },
+        optional: { urlReader: mockUrlReaderService },
+      });
       const policiesMetadata = await collector.getPluginPolicies(
         mockServices.auth(),
       );
@@ -183,13 +191,15 @@ describe('plugin-endpoint', () => {
 
       const logger = mockServices.logger.mock();
       const errorSpy = jest.spyOn(logger, 'error').mockClear();
-      const collector = new PluginPermissionMetadataCollector(
-        mockPluginEndpointDiscovery,
-        backendPluginIDsProviderMock,
-        logger,
-        mockServices.rootConfig(),
-        mockUrlReaderService,
-      );
+      const collector = new PluginPermissionMetadataCollector({
+        deps: {
+          discovery: mockPluginEndpointDiscovery,
+          pluginIdProvider: backendPluginIDsProviderMock,
+          logger,
+          config: mockServices.rootConfig(),
+        },
+        optional: { urlReader: mockUrlReaderService },
+      });
 
       const policiesMetadata = await collector.getPluginPolicies(
         mockServices.auth(),
@@ -247,13 +257,15 @@ describe('plugin-endpoint', () => {
         .spyOn(mockServices.logger.mock(), 'error')
         .mockClear();
 
-      const collector = new PluginPermissionMetadataCollector(
-        mockPluginEndpointDiscovery,
-        backendPluginIDsProviderMock,
-        mockServices.logger.mock(),
-        mockServices.rootConfig(),
-        mockUrlReaderService,
-      );
+      const collector = new PluginPermissionMetadataCollector({
+        deps: {
+          discovery: mockPluginEndpointDiscovery,
+          pluginIdProvider: backendPluginIDsProviderMock,
+          logger: mockServices.logger.mock(),
+          config: mockServices.rootConfig(),
+        },
+        optional: { urlReader: mockUrlReaderService },
+      });
       const policiesMetadata = await collector.getPluginPolicies(
         mockServices.auth(),
       );
@@ -277,12 +289,14 @@ describe('plugin-endpoint', () => {
     it('should return empty condition rule list', async () => {
       backendPluginIDsProviderMock.getPluginIds.mockReturnValue([]);
 
-      const collector = new PluginPermissionMetadataCollector(
-        mockPluginEndpointDiscovery,
-        backendPluginIDsProviderMock,
-        mockServices.logger.mock(),
-        mockServices.rootConfig(),
-      );
+      const collector = new PluginPermissionMetadataCollector({
+        deps: {
+          discovery: mockPluginEndpointDiscovery,
+          pluginIdProvider: backendPluginIDsProviderMock,
+          logger: mockServices.logger.mock(),
+          config: mockServices.rootConfig(),
+        },
+      });
       const conditionRulesMetadata = await collector.getPluginConditionRules(
         mockServices.auth(),
       );
@@ -305,13 +319,15 @@ describe('plugin-endpoint', () => {
         },
       });
 
-      const collector = new PluginPermissionMetadataCollector(
-        mockPluginEndpointDiscovery,
-        backendPluginIDsProviderMock,
-        mockServices.logger.mock(),
-        mockServices.rootConfig(),
-        mockUrlReaderService,
-      );
+      const collector = new PluginPermissionMetadataCollector({
+        deps: {
+          discovery: mockPluginEndpointDiscovery,
+          pluginIdProvider: backendPluginIDsProviderMock,
+          logger: mockServices.logger.mock(),
+          config: mockServices.rootConfig(),
+        },
+        optional: { urlReader: mockUrlReaderService },
+      });
       const conditionRulesMetadata = await collector.getPluginConditionRules(
         mockServices.auth(),
       );
@@ -356,13 +372,15 @@ describe('plugin-endpoint', () => {
         },
       });
 
-      const collector = new PluginPermissionMetadataCollector(
-        mockPluginEndpointDiscovery,
-        backendPluginIDsProviderMock,
-        mockServices.logger.mock(),
-        mockServices.rootConfig(),
-        mockUrlReaderService,
-      );
+      const collector = new PluginPermissionMetadataCollector({
+        deps: {
+          discovery: mockPluginEndpointDiscovery,
+          pluginIdProvider: backendPluginIDsProviderMock,
+          logger: mockServices.logger.mock(),
+          config: mockServices.rootConfig(),
+        },
+        optional: { urlReader: mockUrlReaderService },
+      });
       const metadata = await collector.getMetadataByPluginId(
         'catalog',
         undefined,
