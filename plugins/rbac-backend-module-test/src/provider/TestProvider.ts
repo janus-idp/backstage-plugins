@@ -5,11 +5,12 @@ import {
   SchedulerServiceTaskRunner,
   SchedulerServiceTaskScheduleDefinition,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import type { Config } from '@backstage/config';
+import { InputError, isError, NotFoundError } from '@backstage/errors';
 
 import { parse } from 'csv-parse/sync';
 
-import {
+import type {
   RBACProvider,
   RBACProviderConnection,
 } from '@janus-idp/backstage-plugin-rbac-node';
@@ -28,27 +29,30 @@ export class TestProvider implements RBACProvider {
   private connection?: RBACProviderConnection;
 
   static fromConfig(
-    config: Config,
-    options: {
+    deps: {
+      config: Config;
       logger: LoggerService;
-      schedule?: SchedulerServiceTaskRunner;
-      scheduler?: SchedulerService;
     },
+    options:
+      | { schedule: SchedulerServiceTaskRunner }
+      | { scheduler: SchedulerService },
   ): TestProvider {
-    const providerConfig = readProviderConfig(config);
+    const providerConfig = readProviderConfig(deps.config);
     let schedulerServiceTaskRunner;
 
-    if (options.scheduler && providerConfig.schedule) {
+    if ('scheduler' in options && providerConfig.schedule) {
       schedulerServiceTaskRunner = options.scheduler.createScheduledTaskRunner(
         providerConfig.schedule,
       );
-    } else if (options.schedule) {
+    } else if ('schedule' in options) {
       schedulerServiceTaskRunner = options.schedule;
     } else {
-      throw new Error('Neither schedule nor scheduler is provided.');
+      throw new InputError(
+        `No schedule provided via config for RBACTestProvider.`,
+      );
     }
 
-    return new TestProvider(schedulerServiceTaskRunner, options.logger);
+    return new TestProvider(schedulerServiceTaskRunner, deps.logger);
   }
 
   private constructor(
@@ -89,8 +93,10 @@ export class TestProvider implements RBACProvider {
         fn: async () => {
           try {
             await this.run();
-          } catch (error: any) {
-            this.logger.error(`Error occurred, here is the error ${error}`);
+          } catch (error) {
+            if (isError(error)) {
+              this.logger.error(`Error occurred, here is the error ${error}`);
+            }
           }
         },
       });
@@ -99,7 +105,7 @@ export class TestProvider implements RBACProvider {
 
   private async run(): Promise<void> {
     if (!this.connection) {
-      throw new Error('Not initialized');
+      throw new NotFoundError('Not initialized');
     }
     const permissions: string[][] = [];
     const roles: string[][] = [];

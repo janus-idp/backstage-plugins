@@ -562,7 +562,7 @@ export const mockKubernetesPlrResponse = {
         name: 'pipeline-test-wbvtlk',
         namespace: 'deb-test',
         resourceVersion: '117337',
-        uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b24',
+        uid: '0a091bbf-3813-48d3-a6ce-fc43644a9a24',
         creationTimestamp: new Date('2023-04-11T12:31:56Z'),
       },
       spec: {
@@ -649,7 +649,7 @@ export const mockKubernetesPlrResponse = {
         name: 'pipelinerun-with-scanner-task',
         namespace: 'deb-test',
         resourceVersion: '117337',
-        uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b24',
+        uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b14',
         creationTimestamp: new Date('2023-04-11T12:31:56Z'),
       },
       spec: {
@@ -716,7 +716,7 @@ export const mockKubernetesPlrResponse = {
         name: 'pipelinerun-with-sbom-task',
         namespace: 'deb-test',
         resourceVersion: '117337',
-        uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b24',
+        uid: '0a091bbf-3813-48d3-a6ce-fc43644a8b24',
         creationTimestamp: new Date('2023-04-11T12:31:56Z'),
       },
       spec: {
@@ -776,7 +776,7 @@ export const mockKubernetesPlrResponse = {
         name: 'pipelinerun-with-external-sbom-task',
         namespace: 'deb-test',
         resourceVersion: '117337',
-        uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b24',
+        uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b26',
         creationTimestamp: new Date('2023-04-11T12:31:56Z'),
       },
       spec: {
@@ -1055,7 +1055,7 @@ export const mockKubernetesPlrResponse = {
             controller: true,
             kind: 'PipelineRun',
             name: 'pipelinerun-with-scanner-task',
-            uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b24',
+            uid: '0a091bbf-3813-48d3-a6ce-fc43644a9t24',
           },
         ],
         resourceVersion: '117189',

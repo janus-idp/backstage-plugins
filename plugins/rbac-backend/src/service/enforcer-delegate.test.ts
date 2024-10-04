@@ -1,6 +1,4 @@
-import { getVoidLogger } from '@backstage/backend-common';
 import { mockServices } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
 
 import { newEnforcer, newModelFromString } from 'casbin';
 import * as Knex from 'knex';
@@ -15,6 +13,8 @@ import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 
+// TODO: Move to 'catalogServiceMock' from '@backstage/plugin-catalog-node/testUtils'
+// once '@backstage/plugin-catalog-node' is upgraded
 const catalogApi = {
   getEntityAncestors: jest.fn().mockImplementation(),
   getLocationById: jest.fn().mockImplementation(),
@@ -44,15 +44,17 @@ const dbManagerMock = Knex.knex({ client: MockClient });
 
 const mockAuthService = mockServices.auth();
 
-const config = new ConfigReader({
-  backend: {
-    database: {
-      client: 'better-sqlite3',
-      connection: ':memory:',
+const config = mockServices.rootConfig({
+  data: {
+    backend: {
+      database: {
+        client: 'better-sqlite3',
+        connection: ':memory:',
+      },
     },
-  },
-  permission: {
-    rbac: {},
+    permission: {
+      rbac: {},
+    },
   },
 });
 const policy = ['user:default/tom', 'policy-entity', 'read', 'allow'];
@@ -120,7 +122,7 @@ describe('EnforcerDelegate', () => {
     groupingPolicies?: string[][],
   ): Promise<EnforcerDelegate> {
     const theModel = newModelFromString(MODEL);
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
 
     const sqliteInMemoryAdapter = await new CasbinDBAdapterFactory(
       config,

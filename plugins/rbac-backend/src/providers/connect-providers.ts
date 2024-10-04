@@ -1,4 +1,4 @@
-import { LoggerService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 
 import {
   Enforcer,
@@ -7,8 +7,8 @@ import {
   StringAdapter,
 } from 'casbin';
 
-import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
-import {
+import type { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+import type {
   RBACProvider,
   RBACProviderConnection,
 } from '@janus-idp/backstage-plugin-rbac-node';

@@ -1,6 +1,6 @@
 import Knex from 'knex';
 
-import {
+import type {
   RoleBasedPolicy,
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';

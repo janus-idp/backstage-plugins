@@ -145,18 +145,18 @@ const PipelineRunList = () => {
       page * rowsPerPage,
       page * rowsPerPage + rowsPerPage,
     );
-  }, [filteredPipelineRuns, page, rowsPerPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredPipelineRuns, page, rowsPerPage, order, orderById]);
 
-  const handleRequestSort = (
-    _event: React.MouseEvent<unknown>,
-    property: string,
-    id: string,
-  ) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-    setOrderById(id);
-  };
+  const handleRequestSort = React.useCallback(
+    (_event: React.MouseEvent<unknown>, property: string, id: string) => {
+      const isAsc = orderBy === property && order === 'asc';
+      setOrder(isAsc ? 'desc' : 'asc');
+      setOrderBy(property);
+      setOrderById(id);
+    },
+    [order, orderBy],
+  );
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);

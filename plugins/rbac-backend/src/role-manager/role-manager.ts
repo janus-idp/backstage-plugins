@@ -1,7 +1,7 @@
-import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
+import type { AuthService, LoggerService } from '@backstage/backend-plugin-api';
+import type { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
+import type { Config } from '@backstage/config';
 
 import { RoleManager } from 'casbin';
 import { Knex } from 'knex';

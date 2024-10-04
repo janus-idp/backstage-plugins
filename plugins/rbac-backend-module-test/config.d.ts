@@ -1,4 +1,4 @@
-import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
 
 export interface Config {
   permission?: {
@@ -7,7 +7,7 @@ export interface Config {
         test?: {
           baseUrl: string;
           accessToken: string;
-          schedule?: TaskScheduleDefinitionConfig;
+          schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
         };
       };
     };
