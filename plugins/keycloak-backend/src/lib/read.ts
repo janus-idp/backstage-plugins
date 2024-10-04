@@ -15,7 +15,7 @@
  */
 
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import type { GroupEntity, UserEntity } from '@backstage/catalog-model';
 
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import type GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
