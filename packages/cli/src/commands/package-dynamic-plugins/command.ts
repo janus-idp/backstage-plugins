@@ -1,7 +1,9 @@
 import { PackageRoles } from '@backstage/cli-node';
 
+import chalk from 'chalk';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
+import YAML from 'yaml';
 
 import os from 'os';
 import path from 'path';
@@ -73,6 +75,7 @@ export async function command(opts: OptionValues): Promise<void> {
     path.join(os.tmpdir(), 'package-dynamic-plugins'),
   );
   const pluginRegistryMetadata = [];
+  const pluginConfigs: Record<string, string> = {};
   try {
     // copy the dist-dynamic output folder for each plugin to some temp directory and generate the metadata entry for each plugin
     for (const pluginPkg of packages) {
@@ -121,6 +124,25 @@ export async function command(opts: OptionValues): Promise<void> {
             keywords,
           },
         });
+        // some plugins include configuration snippets in an app-config.janus-idp.yaml
+        const pluginConfigPath =
+          discoverPluginConfigurationFile(packageDirectory);
+        if (typeof pluginConfigPath !== 'undefined') {
+          try {
+            const pluginConfig = fs.readFileSync(pluginConfigPath);
+            pluginConfigs[packageName] = YAML.parse(
+              pluginConfig.toLocaleString(),
+            );
+          } catch (err) {
+            Task.log(
+              `Encountered an error parsing configuration at ${pluginConfigPath}, no example configuration will be displayed`,
+            );
+          }
+        } else {
+          Task.log(
+            `No plugin configuration found at ${pluginConfigPath} create this file as needed if this plugin requires configuration`,
+          );
+        }
       } catch (err) {
         Task.log(
           `Encountered an error copying static assets for plugin ${packageFilePath}, the plugin will not be packaged.  The error was ${err}`,
@@ -143,6 +165,31 @@ COPY . .
     `,
       { cwd: tmpDir },
     );
+    Task.log(`Successfully built image ${tag} with following plugins:`);
+    for (const plugin of pluginRegistryMetadata) {
+      Task.log(`  ${chalk.white(Object.keys(plugin)[0])}`);
+    }
+    // print out a configuration example based on available plugin data
+    try {
+      const configurationExample = YAML.stringify({
+        plugins: pluginRegistryMetadata.map(plugin => {
+          const packageName = Object.keys(plugin)[0];
+          const pluginConfig = pluginConfigs[packageName];
+          return {
+            package: `oci://${tag}!${packageName}`,
+            disabled: false,
+            ...(pluginConfig ? { pluginConfig } : {}),
+          };
+        }),
+      });
+      Task.log(
+        `\nHere is an example dynamic-plugins.yaml for these plugins: \n\n${chalk.white(configurationExample)}\n\n`,
+      );
+    } catch (err) {
+      Task.error(
+        `An error occurred while creating configuration example: ${err}`,
+      );
+    }
   } catch (e) {
     Task.error(`Error encountered while packaging dynamic plugins: ${e}`);
   } finally {
@@ -152,22 +199,6 @@ COPY . .
       }
       if (preserveTempDir) {
         Task.log(`Keeping temporary directory ${tmpDir}`);
-      }
-
-      Task.log(`Successfully built image ${tag} with following plugins:`);
-      for (const plugin of pluginRegistryMetadata) {
-        Task.log(`  ${Object.keys(plugin)[0]}`);
-      }
-      Task.log(`
-Configuration example for the dynamic-plugins.yaml:
-
-packages:`);
-      for (const plugin of pluginRegistryMetadata) {
-        Task.log(`- package: oci://${tag}!${Object.keys(plugin)[0]}
-  disabled: false
-  pluginConfig:
-    # add required plugin configuration here
-`);
       }
     } catch (err) {
       Task.error(
@@ -223,6 +254,34 @@ async function discoverPluginPackages() {
         return false;
     }
   });
+}
+
+/**
+ * Scans the specified directory for plugin configuration files that
+ * match known potential file names.
+ * @param directory
+ * @returns
+ */
+function discoverPluginConfigurationFile(
+  directory: string,
+): string | undefined {
+  // Possible file names, the first match will be used
+  const supportedFilenames = [
+    'app-config.janus-idp.yaml',
+    'app-config.backstage-community.yaml',
+    'app-config.yaml',
+  ];
+  return supportedFilenames
+    .map<boolean>((fileName: string) => {
+      const candidate = path.join(directory, fileName);
+      return fs.existsSync(candidate);
+    })
+    .reduce<string | undefined>((val, current, index) => {
+      if (typeof val === 'undefined' && current) {
+        return path.join(directory, supportedFilenames[index]);
+      }
+      return val;
+    }, undefined);
 }
 
 /**
