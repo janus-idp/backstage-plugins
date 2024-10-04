@@ -502,3 +502,11 @@ export interface PathsDictionary {
 
 export type Client = OpenAPIClient<OperationMethods, PathsDictionary>
 
+export type ApprovalTool = Components.Schemas.ApprovalTool;
+export type Import = Components.Schemas.Import;
+export type ImportRequest = Components.Schemas.ImportRequest;
+export type ImportStatus = Components.Schemas.ImportStatus;
+export type Organization = Components.Schemas.Organization;
+export type OrganizationList = Components.Schemas.OrganizationList;
+export type Repository = Components.Schemas.Repository;
+export type RepositoryList = Components.Schemas.RepositoryList;

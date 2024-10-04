@@ -1,10 +1,9 @@
-import { errorHandler, getVoidLogger } from '@backstage/backend-common';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
 import { InputError } from '@backstage/errors';
-import { RouterOptions } from '@backstage/plugin-permission-backend';
+import type { RouterOptions } from '@backstage/plugin-permission-backend';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { MetadataResponse } from '@backstage/plugin-permission-node';
+import type { MetadataResponse } from '@backstage/plugin-permission-node';
 
 import express from 'express';
 import * as Knex from 'knex';
@@ -23,7 +22,7 @@ import {
   RoleConditionalPolicyDecision,
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
-import { RBACProvider } from '@janus-idp/backstage-plugin-rbac-node';
+import type { RBACProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import {
   RoleMetadataDao,
@@ -195,23 +194,22 @@ describe('REST policies api', () => {
     })),
   };
 
-  const logger = getVoidLogger();
-  const mockDiscovery = {
-    getBaseUrl: jest.fn().mockImplementation(),
-    getExternalBaseUrl: jest.fn().mockImplementation(),
-  };
+  const logger = mockServices.logger.mock();
+  const mockDiscovery = mockServices.discovery.mock();
 
   const knex = Knex.knex({ client: MockClient });
 
-  let config = new ConfigReader({
-    backend: {
-      database: {
-        client: 'better-sqlite3',
-        connection: ':memory:',
+  let config = mockServices.rootConfig({
+    data: {
+      backend: {
+        database: {
+          client: 'better-sqlite3',
+          connection: ':memory:',
+        },
       },
-    },
-    permission: {
-      enabled: true,
+      permission: {
+        enabled: true,
+      },
     },
   });
 
@@ -306,7 +304,7 @@ describe('REST policies api', () => {
     );
     const router = await server.serve();
     app = express().use(router);
-    app.use(errorHandler());
+    app.use(MiddlewareFactory.create({ logger, config }).error());
     conditionalStorage.getCondition.mockReset();
     validateRoleConditionMock.mockReset();
     auditLoggerMock.auditLog.mockClear();
@@ -3513,7 +3511,7 @@ describe('REST policies api', () => {
       );
       const router = await server.serve();
       appWithProvider = express().use(router);
-      appWithProvider.use(errorHandler());
+      appWithProvider.use(MiddlewareFactory.create({ logger, config }).error());
     });
 
     it('should return a status of Unauthorized', async () => {
@@ -3678,15 +3676,17 @@ describe('REST policies api', () => {
 
   describe('test rest API when permission framework disabled', () => {
     beforeAll(() => {
-      config = new ConfigReader({
-        backend: {
-          database: {
-            client: 'better-sqlite3',
-            connection: ':memory:',
+      config = mockServices.rootConfig({
+        data: {
+          backend: {
+            database: {
+              client: 'better-sqlite3',
+              connection: ':memory:',
+            },
           },
-        },
-        permission: {
-          enabled: false,
+          permission: {
+            enabled: false,
+          },
         },
       });
     });

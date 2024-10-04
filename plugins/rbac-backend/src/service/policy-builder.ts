@@ -1,25 +1,23 @@
-import {
-  createLegacyAuthAdapters,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { DatabaseManager } from '@backstage/backend-defaults/database';
-import {
+import type {
   AuthService,
+  DiscoveryService,
   HttpAuthService,
   LoggerService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
-import { IdentityApi } from '@backstage/plugin-auth-node';
-import { RouterOptions } from '@backstage/plugin-permission-backend';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import type { Config } from '@backstage/config';
+import type { IdentityApi } from '@backstage/plugin-auth-node';
+import type { RouterOptions } from '@backstage/plugin-permission-backend';
+import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 import { newEnforcer, newModelFromString } from 'casbin';
-import { Router } from 'express';
+import type { Router } from 'express';
 
 import { DefaultAuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
-import {
+import type {
   PluginIdProvider,
   RBACProvider,
 } from '@janus-idp/backstage-plugin-rbac-node';
@@ -41,7 +39,7 @@ export class PolicyBuilder {
     env: {
       config: Config;
       logger: LoggerService;
-      discovery: PluginEndpointDiscovery;
+      discovery: DiscoveryService;
       identity: IdentityApi;
       permissions: PermissionEvaluator;
       auth?: AuthService;

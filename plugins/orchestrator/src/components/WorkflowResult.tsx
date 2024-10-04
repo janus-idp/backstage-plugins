@@ -27,7 +27,10 @@ import { orchestratorApiRef } from '../api';
 import { VALUE_UNAVAILABLE } from '../constants';
 import { executeWorkflowRouteRef } from '../routes';
 import { buildUrl } from '../utils/UrlUtils';
-import { WorkflowDescriptionModal } from './WorkflowDescriptionModal';
+import {
+  WorkflowDescriptionModal,
+  WorkflowDescriptionModalProps,
+} from './WorkflowDescriptionModal';
 
 const useStyles = makeStyles(theme => ({
   outputGrid: {
@@ -126,6 +129,8 @@ const NextWorkflows = ({
   const [currentWorkflow, setCurrentWorkflow] = React.useState(
     {} as WorkflowOverviewDTO,
   );
+  const [workflowError, setWorkflowError] =
+    React.useState<WorkflowDescriptionModalProps['workflowError']>();
 
   const runWorkflowLink = React.useMemo(
     () =>
@@ -145,16 +150,11 @@ const NextWorkflows = ({
       if (itemId) {
         orchestratorApi
           .getWorkflowOverview(itemId)
-          .then(
-            workflow => {
-              setCurrentWorkflow(workflow.data);
-            },
-            error => {
-              throw new Error(error);
-            },
-          )
+          .then(workflow => {
+            setCurrentWorkflow(workflow.data);
+          })
           .catch(error => {
-            throw new Error(error);
+            setWorkflowError({ itemId, error });
           });
         setCurrentOpenedWorkflowDescriptionModalID(itemId);
       }
@@ -197,6 +197,7 @@ const NextWorkflows = ({
       </AboutField>
       <WorkflowDescriptionModal
         workflow={currentWorkflow}
+        workflowError={workflowError}
         runWorkflowLink={runWorkflowLink}
         open={!!currentOpenedWorkflowDescriptionModalID}
         onClose={closeWorkflowDescriptionModal}
@@ -234,16 +235,15 @@ const WorkflowOutputs = ({
         <Grid item md={12} key="__links" className={styles.links}>
           <AboutField label="Links">
             <List dense disablePadding>
-              {links.map(item => {
-                return (
-                  <ListItem disableGutters key={item.key}>
-                    {item.value && (
+              {links
+                .filter(item => item.value && item.key)
+                .map(item => {
+                  return (
+                    <ListItem disableGutters key={item.key}>
                       <Link to={item.value as string}>{item.key}</Link>
-                    )}
-                    {!item.value && VALUE_UNAVAILABLE}
-                  </ListItem>
-                );
-              })}
+                    </ListItem>
+                  );
+                })}
             </List>
           </AboutField>
         </Grid>

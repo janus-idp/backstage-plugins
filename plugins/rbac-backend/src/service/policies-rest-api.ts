@@ -1,16 +1,16 @@
-import {
+import type {
   AuthService,
   HttpAuthService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import type { Config } from '@backstage/config';
 import {
   ConflictError,
   InputError,
   NotAllowedError,
   NotFoundError,
 } from '@backstage/errors';
-import { IdentityApi } from '@backstage/plugin-auth-node';
+import type { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   createRouter,
   RouterOptions,
@@ -23,11 +23,11 @@ import {
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
 import express from 'express';
-import { Request } from 'express-serve-static-core';
+import type { Request } from 'express-serve-static-core';
 import { isEmpty, isEqual } from 'lodash';
-import { ParsedQs } from 'qs';
+import type { ParsedQs } from 'qs';
 
-import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+import type { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
   PermissionAction,
   policyEntityCreatePermission,
@@ -40,7 +40,7 @@ import {
   RoleBasedPolicy,
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
-import { RBACProvider } from '@janus-idp/backstage-plugin-rbac-node';
+import type { RBACProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import {
   ConditionAuditInfo,

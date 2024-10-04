@@ -1,10 +1,10 @@
-import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
+import type { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 
 import yaml from 'js-yaml';
 import { omit } from 'lodash';
 
-import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
-import {
+import type { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+import type {
   PermissionAction,
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';

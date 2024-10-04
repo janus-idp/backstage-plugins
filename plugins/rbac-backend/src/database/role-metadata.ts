@@ -2,7 +2,10 @@ import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 
 import { Knex } from 'knex';
 
-import { RoleMetadata, Source } from '@janus-idp/backstage-plugin-rbac-common';
+import type {
+  RoleMetadata,
+  Source,
+} from '@janus-idp/backstage-plugin-rbac-common';
 
 import { deepSortedEqual } from '../helper';
 

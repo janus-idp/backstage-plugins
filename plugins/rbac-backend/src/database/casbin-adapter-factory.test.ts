@@ -1,4 +1,4 @@
-import { ConfigReader } from '@backstage/config';
+import { mockServices } from '@backstage/backend-test-utils';
 
 import knex, { Knex } from 'knex';
 import TypeORMAdapter from 'typeorm-adapter';
@@ -28,11 +28,13 @@ describe('CasbinAdapterFactory', () => {
       client: 'better-sqlite3',
       connection: ':memory',
     });
-    const config = new ConfigReader({
-      backend: {
-        database: {
-          client: 'better-sqlite3',
-          connection: ':memory:',
+    const config = mockServices.rootConfig({
+      data: {
+        backend: {
+          database: {
+            client: 'better-sqlite3',
+            connection: ':memory:',
+          },
         },
       },
     });
@@ -54,16 +56,18 @@ describe('CasbinAdapterFactory', () => {
     });
 
     it('test building an adapter using a PostgreSQL configuration.', async () => {
-      const config = new ConfigReader({
-        backend: {
-          database: {
-            client: 'pg',
-            connection: {
-              host: 'localhost',
-              port: '5432',
-              schema: 'public',
-              user: 'postgresUser',
-              password: process.env.TEST,
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                port: '5432',
+                schema: 'public',
+                user: 'postgresUser',
+                password: process.env.TEST,
+              },
             },
           },
         },
@@ -84,17 +88,19 @@ describe('CasbinAdapterFactory', () => {
     });
 
     it('test building an adapter using a PostgreSQL configuration with enabled ssl.', async () => {
-      const config = new ConfigReader({
-        backend: {
-          database: {
-            client: 'pg',
-            connection: {
-              host: 'localhost',
-              port: '5432',
-              schema: 'public',
-              user: 'postgresUser',
-              password: process.env.TEST,
-              ssl: true,
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                port: '5432',
+                schema: 'public',
+                user: 'postgresUser',
+                password: process.env.TEST,
+                ssl: true,
+              },
             },
           },
         },
@@ -115,17 +121,19 @@ describe('CasbinAdapterFactory', () => {
     });
 
     it('test building an adapter using a PostgreSQL configuration with intentionally disabled ssl.', async () => {
-      const config = new ConfigReader({
-        backend: {
-          database: {
-            client: 'pg',
-            connection: {
-              host: 'localhost',
-              port: '5432',
-              schema: 'public',
-              user: 'postgresUser',
-              password: process.env.TEST,
-              ssl: false,
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                port: '5432',
+                schema: 'public',
+                user: 'postgresUser',
+                password: process.env.TEST,
+                ssl: false,
+              },
             },
           },
         },
@@ -146,18 +154,20 @@ describe('CasbinAdapterFactory', () => {
     });
 
     it('test building an adapter using a PostgreSQL configuration with intentionally ssl and ca cert.', async () => {
-      const config = new ConfigReader({
-        backend: {
-          database: {
-            client: 'pg',
-            connection: {
-              host: 'localhost',
-              port: '5432',
-              schema: 'public',
-              user: 'postgresUser',
-              password: process.env.TEST,
-              ssl: {
-                ca: 'abc',
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                port: '5432',
+                schema: 'public',
+                user: 'postgresUser',
+                password: process.env.TEST,
+                ssl: {
+                  ca: 'abc',
+                },
               },
             },
           },
@@ -181,18 +191,20 @@ describe('CasbinAdapterFactory', () => {
     });
 
     it('test building an adapter using a PostgreSQL configuration with intentionally ssl and TLS options.', async () => {
-      const config = new ConfigReader({
-        backend: {
-          database: {
-            client: 'pg',
-            connection: {
-              host: 'localhost',
-              port: '5432',
-              user: 'postgresUser',
-              password: process.env.TEST,
-              ssl: {
-                ca: 'abc',
-                rejectUnauthorized: false,
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                port: '5432',
+                user: 'postgresUser',
+                password: process.env.TEST,
+                ssl: {
+                  ca: 'abc',
+                  rejectUnauthorized: false,
+                },
               },
             },
           },
@@ -217,17 +229,19 @@ describe('CasbinAdapterFactory', () => {
     });
 
     it('test building an adapter using a PostgreSQL configuration with intentionally ssl without CA.', async () => {
-      const config = new ConfigReader({
-        backend: {
-          database: {
-            client: 'pg',
-            connection: {
-              host: 'localhost',
-              port: '5432',
-              user: 'postgresUser',
-              password: process.env.TEST,
-              ssl: {
-                rejectUnauthorized: false,
+      const config = mockServices.rootConfig({
+        data: {
+          backend: {
+            database: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                port: '5432',
+                user: 'postgresUser',
+                password: process.env.TEST,
+                ssl: {
+                  rejectUnauthorized: false,
+                },
               },
             },
           },
@@ -254,10 +268,12 @@ describe('CasbinAdapterFactory', () => {
   it('ensure that building an adapter with an unknown configuration fails.', async () => {
     const client = 'unknown-db';
     const expectedError = new Error(`Unsupported database client ${client}`);
-    const config = new ConfigReader({
-      backend: {
-        database: {
-          client,
+    const config = mockServices.rootConfig({
+      data: {
+        backend: {
+          database: {
+            client,
+          },
         },
       },
     });

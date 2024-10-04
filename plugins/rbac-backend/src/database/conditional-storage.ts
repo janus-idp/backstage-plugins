@@ -3,7 +3,7 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import { Knex } from 'knex';
 
-import {
+import type {
   PermissionAction,
   PermissionInfo,
   RoleConditionalPolicyDecision,
