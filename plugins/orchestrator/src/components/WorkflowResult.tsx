@@ -234,16 +234,15 @@ const WorkflowOutputs = ({
         <Grid item md={12} key="__links" className={styles.links}>
           <AboutField label="Links">
             <List dense disablePadding>
-              {links.map(item => {
-                return (
-                  <ListItem disableGutters key={item.key}>
-                    {item.value && (
+              {links
+                .filter(item => item.value && item.key)
+                .map(item => {
+                  return (
+                    <ListItem disableGutters key={item.key}>
                       <Link to={item.value as string}>{item.key}</Link>
-                    )}
-                    {!item.value && VALUE_UNAVAILABLE}
-                  </ListItem>
-                );
-              })}
+                    </ListItem>
+                  );
+                })}
             </List>
           </AboutField>
         </Grid>
