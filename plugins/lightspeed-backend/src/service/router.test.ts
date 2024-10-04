@@ -1,5 +1,4 @@
 import { mockServices } from '@backstage/backend-test-utils';
-import { MockConfigApi } from '@backstage/test-utils';
 
 import { AIMessageChunk } from '@langchain/core/messages';
 import express from 'express';
@@ -54,15 +53,17 @@ const mockServerURL = 'http://localhost:7007/api/proxy/lightspeed/api';
 const mockModel = 'test-model';
 const mockToken = 'dummy-token';
 
-const mockConfiguration = new MockConfigApi({
-  lightspeed: {
-    servers: [
-      {
-        id: 'test-server',
-        url: mockServerURL,
-        token: mockToken,
-      },
-    ],
+const mockConfiguration = mockServices.rootConfig({
+  data: {
+    lightspeed: {
+      servers: [
+        {
+          id: 'test-server',
+          url: mockServerURL,
+          token: mockToken,
+        },
+      ],
+    },
   },
 });
 
