@@ -2,7 +2,7 @@ name: Playwright tests
 
 on:
   pull_request:
-    branches: 
+    branches:
       - release-1.3
 
 jobs:
