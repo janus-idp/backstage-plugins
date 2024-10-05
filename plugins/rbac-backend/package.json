@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-rbac-backend",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -42,7 +42,7 @@
     "@backstage/plugin-permission-common": "^0.8.0",
     "@backstage/plugin-permission-node": "^0.8.0",
     "@dagrejs/graphlib": "^2.1.13",
-    "@janus-idp/backstage-plugin-audit-log-node": "1.5.0",
+    "@janus-idp/backstage-plugin-audit-log-node": "1.5.1",
     "@janus-idp/backstage-plugin-rbac-common": "1.10.0",
     "@janus-idp/backstage-plugin-rbac-node": "1.6.0",
     "casbin": "^5.27.1",
