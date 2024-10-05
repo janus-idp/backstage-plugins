@@ -1,13 +1,12 @@
-import { getVoidLogger } from '@backstage/backend-common';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
-import { Request } from 'express';
+import type { Request } from 'express';
 import { Request as JestRequest } from 'jest-express/lib/request';
 
 import { DefaultAuditLogger } from './DefaultAuditLogger';
 
 describe('DefaultAuditLogger', () => {
-  const logger = getVoidLogger();
+  const logger = mockServices.logger.mock();
   const loggerSpy: jest.SpyInstance = jest.spyOn(logger, 'info');
   const loggerErrorSpy: jest.SpyInstance = jest.spyOn(logger, 'error');
 
