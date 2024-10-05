@@ -1,5 +1,9 @@
 ### Dependencies
 
+* **@janus-idp/backstage-plugin-audit-log-node:** upgraded to 1.5.1
+
+### Dependencies
+
 * **@janus-idp/backstage-plugin-bulk-import-common:** upgraded to 1.1.1
 
 ### Dependencies
