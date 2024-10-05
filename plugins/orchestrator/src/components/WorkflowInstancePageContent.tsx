@@ -16,6 +16,7 @@ import { WorkflowProgress } from './WorkflowProgress';
 import { WorkflowResult } from './WorkflowResult';
 import { WorkflowRunDetail } from './WorkflowRunDetail';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
+import { WorkflowVariablesViewer } from './WorkflowVariablesViewer';
 
 export const mapProcessInstanceToDetails = (
   instance: ProcessInstanceDTO,
@@ -48,9 +49,10 @@ const useStyles = makeStyles(_ => ({
     height: '20rem',
   },
   middleRowCard: {
-    height: 'calc(2 * 20rem)',
+    height: '20rem',
   },
   bottomRowCard: {
+    minHeight: '40rem',
     height: '100%',
   },
   autoOverflow: { overflow: 'auto' },
@@ -72,10 +74,22 @@ export const WorkflowInstancePageContent: React.FC<{
     [assessedInstance.instance],
   );
 
+  const workflowdata = assessedInstance.instance?.workflowdata;
+  let instanceVariables;
+  if (workflowdata) {
+    instanceVariables = {
+      /* Since we are about to remove just the top-level property, shallow copy of the object is sufficient */
+      ...workflowdata,
+    };
+    if (instanceVariables.hasOwnProperty('result')) {
+      delete instanceVariables.result;
+    }
+  }
+
   return (
     <Content noPadding>
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <InfoCard
             title="Details"
             divider={false}
@@ -84,16 +98,29 @@ export const WorkflowInstancePageContent: React.FC<{
             <WorkflowRunDetails
               details={details}
               assessedBy={assessedInstance.assessedBy}
-              completedWith={
-                assessedInstance.instance?.workflowdata?.result?.completedWith
-              }
+              completedWith={workflowdata?.result?.completedWith}
             />
+          </InfoCard>
+        </Grid>
+
+        <Grid item xs={6}>
+          <InfoCard
+            title="Variables"
+            divider={false}
+            className={styles.middleRowCard}
+          >
+            {instanceVariables && (
+              <WorkflowVariablesViewer variables={instanceVariables} />
+            )}
+            {!instanceVariables && (
+              <div>The workflow instance has no variables</div>
+            )}
           </InfoCard>
         </Grid>
         <Grid item xs={6}>
           <WorkflowResult
             assessedInstance={assessedInstance}
-            className={styles.topRowCard}
+            className={styles.middleRowCard}
             cardClassName={styles.autoOverflow}
           />
         </Grid>
@@ -102,7 +129,7 @@ export const WorkflowInstancePageContent: React.FC<{
           <InfoCard
             title="Workflow definition"
             divider={false}
-            className={styles.middleRowCard}
+            className={styles.bottomRowCard}
           >
             <WorkflowEditor
               workflowId={assessedInstance.instance.processId}
@@ -116,7 +143,7 @@ export const WorkflowInstancePageContent: React.FC<{
           <InfoCard
             title="Workflow progress"
             divider={false}
-            className={styles.middleRowCard}
+            className={styles.bottomRowCard}
             cardClassName={styles.autoOverflow}
           >
             <WorkflowProgress
