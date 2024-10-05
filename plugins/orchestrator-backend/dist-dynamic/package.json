@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-backend-dynamic",
-  "version": "1.22.15",
+  "version": "1.22.16",
   "license": "Apache-2.0",
   "main": "./dist/index.cjs.js",
   "types": "src/index.ts",
@@ -67,7 +67,7 @@
   },
   "devDependencies": {},
   "peerDependencies": {
-    "@janus-idp/backstage-plugin-audit-log-node": "1.5.0",
+    "@janus-idp/backstage-plugin-audit-log-node": "1.5.1",
     "@janus-idp/backstage-plugin-rbac-common": "1.10.0",
     "@backstage/backend-app-api": "^0.8.0",
     "@backstage/backend-common": "^0.23.3",
