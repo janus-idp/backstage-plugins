@@ -172,8 +172,6 @@ paths:
 
         # The '*PerIntegration' query params are being kept for backward compatibility,
         # but the behavior depends on the API Version specified in the request headers.
-        # As of API version v2, 'page' and 'size' parameters will always take precedence
-        # over the `*PerIntegration' params.
         - $ref: '#/components/parameters/pagePerIntegrationQueryParamDeprecated'
         - $ref: '#/components/parameters/sizePerIntegrationQueryParamDeprecated'
         - $ref: '#/components/parameters/pageQueryParam'
@@ -308,6 +306,38 @@ paths:
 
 components:
   parameters:
+    apiVersionHeaderParam:
+      in: header
+      name: api-version
+      description: |
+        API version.
+
+        ## Changelog
+
+        ### v1 (default)
+        Initial version
+        #### Deprecations
+        * GET /imports
+          * Deprecation of 'pagePerIntegration' and 'sizePerIntegration' query parameters and introduction of new 'page' and 'size' parameters
+            * 'page' takes precedence over 'pagePerIntegration' if both are passed
+            * 'size' takes precedence over 'sizePerIntegration' if both are passed
+
+        ### v2
+        #### Breaking changes
+        * GET /imports
+          * Query parameters:
+            * 'pagePerIntegration' is ignored in favor of 'page'
+            * 'sizePerIntegration' is ignored in favor of 'size'
+          * Response structure changed to include pagination info: instead of returning a simple list of Imports, the response is now an object containing the following fields:
+            * 'imports': the list of Imports
+            * 'page': the page requested
+            * 'size': the requested number of Imports requested per page
+            * 'totalCount': the total count of Imports
+      schema:
+        type: string
+        enum: ['v1', 'v2']
+        default: 'v1'
+
     pagePerIntegrationQueryParam:
       in: query
       name: pagePerIntegration
@@ -360,26 +390,6 @@ components:
       schema:
         type: integer
         default: 20
-    apiVersionHeaderParam:
-      in: header
-      name: api-version
-      description: |
-        API version.
-
-        ## Changelog
-
-        ### v1
-        Initial version
-
-        ### v2
-        * GET /imports
-          * Response structure changed to include pagination info
-          * Deprecation of 'pagePerIntegration' and 'sizePerIntegration' query parameters
-          * New 'page' and 'size' query parameters
-      schema:
-        type: string
-        enum: ['v1', 'v2']
-        default: 'v1'
 
   schemas:
     OrganizationList:

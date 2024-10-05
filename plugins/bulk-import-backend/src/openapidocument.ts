@@ -507,6 +507,19 @@ const OPENAPI = `
   },
   "components": {
     "parameters": {
+      "apiVersionHeaderParam": {
+        "in": "header",
+        "name": "api-version",
+        "description": "API version.\\n\\n## Changelog\\n\\n### v1 (default)\\nInitial version\\n#### Deprecations\\n* GET /imports\\n  * Deprecation of 'pagePerIntegration' and 'sizePerIntegration' query parameters and introduction of new 'page' and 'size' parameters\\n    * 'page' takes precedence over 'pagePerIntegration' if both are passed\\n    * 'size' takes precedence over 'sizePerIntegration' if both are passed\\n\\n### v2\\n#### Breaking changes\\n* GET /imports\\n  * Query parameters:\\n    * 'pagePerIntegration' is ignored in favor of 'page'\\n    * 'sizePerIntegration' is ignored in favor of 'size'\\n  * Response structure changed to include pagination info: instead of returning a simple list of Imports, the response is now an object containing the following fields:\\n    * 'imports': the list of Imports\\n    * 'page': the page requested\\n    * 'size': the requested number of Imports requested per page\\n    * 'totalCount': the total count of Imports\\n",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "v1",
+            "v2"
+          ],
+          "default": "v1"
+        }
+      },
       "pagePerIntegrationQueryParam": {
         "in": "query",
         "name": "pagePerIntegration",
@@ -569,19 +582,6 @@ const OPENAPI = `
         "schema": {
           "type": "integer",
           "default": 20
-        }
-      },
-      "apiVersionHeaderParam": {
-        "in": "header",
-        "name": "api-version",
-        "description": "API version.\\n\\n## Changelog\\n\\n### v1\\nInitial version\\n\\n### v2\\n* GET /imports\\n  * Response structure changed to include pagination info\\n  * Deprecation of 'pagePerIntegration' and 'sizePerIntegration' query parameters\\n  * New 'page' and 'size' query parameters\\n",
-        "schema": {
-          "type": "string",
-          "enum": [
-            "v1",
-            "v2"
-          ],
-          "default": "v1"
         }
       }
     },
