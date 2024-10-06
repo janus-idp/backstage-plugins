@@ -10,6 +10,7 @@ All URIs are relative to *http://localhost*
 | [**getInstances**](DefaultApi.md#getInstances) | **POST** /v2/workflows/instances | Get instances |
 | [**getWorkflowById**](DefaultApi.md#getWorkflowById) | **GET** /v2/workflows/{workflowId} |  |
 | [**getWorkflowInputSchemaById**](DefaultApi.md#getWorkflowInputSchemaById) | **GET** /v2/workflows/{workflowId}/inputSchema |  |
+| [**getWorkflowInstances**](DefaultApi.md#getWorkflowInstances) | **POST** /v2/workflows/{workflowId}/instances | Get instances for a specific workflow |
 | [**getWorkflowOverviewById**](DefaultApi.md#getWorkflowOverviewById) | **GET** /v2/workflows/{workflowId}/overview |  |
 | [**getWorkflowSourceById**](DefaultApi.md#getWorkflowSourceById) | **GET** /v2/workflows/{workflowId}/source |  |
 | [**getWorkflowStatuses**](DefaultApi.md#getWorkflowStatuses) | **GET** /v2/workflows/instances/statuses | Get workflow status list |
@@ -179,6 +180,34 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
+- **Accept**: application/json
+
+<a name="getWorkflowInstances"></a>
+# **getWorkflowInstances**
+> ProcessInstanceListResultDTO getWorkflowInstances(workflowId, GetInstancesRequestParams)
+
+Get instances for a specific workflow
+
+    Retrieve an array of workflow executions (instances) for the given workflow
+
+### Parameters
+
+|Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **workflowId** | **String**| ID of the workflow | [default to null] |
+| **GetInstancesRequestParams** | [**GetInstancesRequestParams**](../Models/GetInstancesRequestParams.md)| Parameters for retrieving workflow instances | [optional] |
+
+### Return type
+
+[**ProcessInstanceListResultDTO**](../Models/ProcessInstanceListResultDTO.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 <a name="getWorkflowOverviewById"></a>

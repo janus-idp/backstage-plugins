@@ -159,6 +159,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /v2/workflows/{workflowId}/instances:
+    post:
+      operationId: getWorkflowInstances
+      summary: Get instances for a specific workflow
+      description: Retrieve an array of workflow executions (instances) for the given workflow
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          description: ID of the workflow
+          schema:
+            type: string
+      requestBody:
+        required: false
+        description: Parameters for retrieving workflow instances
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetInstancesRequestParams'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessInstanceListResultDTO'
+        '500':
+          description: Error fetching instances
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/instances/{instanceId}:
     get:
       summary: Get Workflow Instance by ID
