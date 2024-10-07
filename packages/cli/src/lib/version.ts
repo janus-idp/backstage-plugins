@@ -31,7 +31,10 @@ This does not create an actual dependency on these packages and does not bring i
 Rollup will extract the value of the version field in each package at build time without
 leaving any imports in place.
 */
-
+/**
+ * In @backstage/cli from 1.18.0 these imports are a block of static imports of
+ * various core backstage packages
+ */
 import Manifest from '../../package.json';
 import { paths } from './paths';
 import { Lockfile } from './versioning';
@@ -43,6 +46,10 @@ export function findVersion() {
 
 export const version = findVersion();
 
+/**
+ * This packageVersions takes the place of the static imports used in
+ * @backstage/cli by building this list based on the @janus-idp/cli package.
+ */
 export const packageVersions: Record<string, string> = {
   ...Object.fromEntries(
     Object.entries(Manifest.devDependencies as Record<string, string>).filter(
@@ -85,6 +92,10 @@ export function createPackageVersionProvider(lockfile?: Lockfile) {
     );
     const highestRange = validRanges?.slice(-1)[0];
 
+    /**
+     * These return statements differ from @backstage/cli by locking the
+     * package dependencies to the exact version rather than accepting a range.
+     */
     if (highestRange?.range) {
       return highestRange?.range.replace(/^\^/, '');
     }

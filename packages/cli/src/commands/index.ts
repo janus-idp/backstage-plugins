@@ -27,6 +27,10 @@ const configOption = [
   Array<string>(),
 ] as const;
 
+/**
+ * A subset of commands as compared to @backstage/cli that focuses on what
+ * is needed to support dynamic plugins
+ */
 export function registerScriptCommand(program: Command) {
   const command = program
     .command('package [command]')

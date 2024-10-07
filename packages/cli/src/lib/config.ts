@@ -38,6 +38,11 @@ type Options = {
   watch?: (newFrontendAppConfigs: AppConfig[]) => void;
 };
 
+/**
+ * This version of loadCliConfig only differs from the implementation used in
+ * @backstage/cli from 1.18.0 by the package name check for the CLI package,
+ * indicated by a comment below
+ */
 export async function loadCliConfig(options: Options) {
   const configTargets: ConfigTarget[] = [];
   options.args.forEach(arg => {
@@ -56,6 +61,7 @@ export async function loadCliConfig(options: Options) {
       localPackageNames = Array.from(
         graph.collectPackageNames([options.fromPackage], node => {
           // Workaround for Backstage main repo only, since the CLI has some artificial devDependencies
+          // this is the only difference from @backstage/cli
           if (node.name === '@janus-idp/cli') {
             return undefined;
           }

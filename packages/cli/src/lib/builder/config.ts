@@ -51,6 +51,11 @@ function isFileImport(source: string) {
   return false;
 }
 
+/**
+ * A version of makeRollupConfigs that is identical to the original
+ * implementation in @backstage/cli released with 1.18.0 except that it
+ * adds named imports to the rollup configuration for commonjs modules
+ */
 export async function makeRollupConfigs(
   options: BuildOptions,
 ): Promise<RollupOptions[]> {

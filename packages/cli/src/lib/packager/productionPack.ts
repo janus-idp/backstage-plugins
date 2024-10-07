@@ -26,6 +26,7 @@ import { readEntryPoints } from '../entryPoints';
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
 
+// This list differs from @backstage/cli from 1.80.0
 const SKIPPED_KEYS = ['access', 'registry', 'tag'];
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
 
@@ -35,6 +36,13 @@ interface ProductionPackOptions {
   customizeManifest?: (pkg: BackstagePackageJson) => undefined | void;
 }
 
+/**
+ * This version of productionPack adjusts the implementation of the
+ * @backstage/cli equivalent from 1.18.0 by adding a hook to customize the
+ * package manifest during the packing process.  It also omits some blocks
+ * concerning alphaTypes and betaTypes as indicated by comments in the
+ * function body.
+ */
 export async function productionPack(options: ProductionPackOptions) {
   const { packageDir, targetDir } = options;
   const pkgPath = resolvePath(packageDir, PKG_PATH);
@@ -46,6 +54,7 @@ export async function productionPack(options: ProductionPackOptions) {
     await fs.writeFile(PKG_BACKUP_PATH, pkgContent);
   }
 
+  // removed block
   // This mutates pkg to fill in index exports, so call it before applying publishConfig
   const writeCompatibilityEntryPoints = await prepareExportsEntryPoints(
     pkg,
@@ -72,6 +81,7 @@ export async function productionPack(options: ProductionPackOptions) {
     delete pkg.optionalDependencies;
   }
 
+  // Added hook to allow customizing the package manifest
   if (options.customizeManifest !== undefined) {
     options.customizeManifest(pkg);
   }
@@ -99,10 +109,14 @@ export async function productionPack(options: ProductionPackOptions) {
     await fs.writeJson(pkgPath, pkg, { encoding: 'utf8', spaces: 2 });
   }
 
+  // removed block
   if (writeCompatibilityEntryPoints) {
     await writeCompatibilityEntryPoints(targetDir ?? packageDir);
   }
 }
+
+// revertProductionPack removed from here, after this point there is no
+// difference from @backstage/cli from 1.18.0
 
 const EXPORT_MAP = {
   import: '.esm.js',
