@@ -323,9 +323,9 @@ export class Git {
     });
   }
 
-  private onAuth: AuthCallback;
+  private readonly onAuth: AuthCallback;
 
-  private onProgressHandler = (): ProgressCallback => {
+  private readonly onProgressHandler = (): ProgressCallback => {
     let currentPhase = '';
 
     return event => {
@@ -340,7 +340,9 @@ export class Git {
     };
   };
 
-  static fromAuth = (options: StaticAuthOptions | AuthCallbackOptions) => {
+  static readonly fromAuth = (
+    options: StaticAuthOptions | AuthCallbackOptions,
+  ) => {
     if (isAuthCallbackOptions(options)) {
       const { onAuth, logger } = options;
       return new Git({ onAuth, logger });
