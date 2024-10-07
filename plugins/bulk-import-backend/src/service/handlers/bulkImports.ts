@@ -20,12 +20,11 @@ import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
 
+import {getCatalogFilename, getCatalogUrl} from '../../catalog/catalogUtils';
+import type { CatalogInfoGenerator } from '../../catalog/catalogInfoGenerator';
 import {
-  getCatalogFilename,
-  getTokenForPlugin,
   logErrorIfNeeded,
   paginateArray,
-  type CatalogInfoGenerator,
 } from '../../helpers';
 import type { Components, Paths } from '../../generated/openapi.d';
 import type { GithubApiService } from '../githubApiService';
@@ -34,7 +33,7 @@ import {
   DefaultPageSize,
   type HandlerResponse,
 } from './handlers';
-import { hasEntityInCatalog, verifyLocationExistence } from './importStatus';
+import {CatalogHttpClient} from "../../catalog/catalogHttpClient";
 
 type CreateImportDryRunStatus =
   | 'CATALOG_ENTITY_CONFLICT'
@@ -47,10 +46,12 @@ type FindAllImportsResponse =
   | Components.Schemas.ImportJobListV2;
 
 export async function findAllImports(
-  logger: LoggerService,
-  config: Config,
-  githubApiService: GithubApiService,
-  catalogInfoGenerator: CatalogInfoGenerator,
+    deps: {
+      logger: LoggerService,
+      config: Config,
+      githubApiService: GithubApiService,
+      catalogHttpClient: CatalogHttpClient,
+    },
   requestHeaders?: {
     apiVersion?: Paths.FindAllImports.Parameters.ApiVersion;
   },
@@ -65,16 +66,15 @@ export async function findAllImports(
   const pageNumber = queryParams?.pageNumber ?? DefaultPageNumber;
   const pageSize = queryParams?.pageSize ?? DefaultPageSize;
 
-  logger.debug(
+  deps.logger.debug(
     `Getting all bulk import jobs (apiVersion=${apiVersion}, search=${search}, page=${pageNumber}, size=${pageSize})..`,
   );
 
-  const catalogFilename = getCatalogFilename(config);
+  const catalogFilename = getCatalogFilename(deps.config);
 
   const allLocations = (
-    await catalogInfoGenerator.listCatalogUrlLocations(
-      config,
-      search,
+    await deps.catalogHttpClient.listCatalogUrlLocations(
+       search,
       pageNumber,
       pageSize,
     )
@@ -84,8 +84,8 @@ export async function findAllImports(
   // because we cannot easily determine that from the location target URL.
   // It can be 'main' or something more convoluted like 'our/awesome/main'.
   const defaultBranchByRepoUrl = await resolveReposDefaultBranches(
-    logger,
-    githubApiService,
+      deps.logger,
+      deps.githubApiService,
     allLocations,
     catalogFilename,
   );
@@ -100,7 +100,7 @@ export async function findAllImports(
 
   // Keep only repos that are accessible from the configured GH integrations
   const importsReachableFromGHIntegrations =
-    await githubApiService.filterLocationsAccessibleFromIntegrations(
+    await deps.githubApiService.filterLocationsAccessibleFromIntegrations(
       importCandidates,
     );
 
@@ -116,10 +116,7 @@ export async function findAllImports(
 
     importStatusPromises.push(
       findImportStatusByRepo(
-        logger,
-        config,
-        githubApiService,
-        catalogInfoGenerator,
+        deps,
         repoUrl,
         defaultBranchByRepoUrl.get(repoUrl),
         false,
@@ -285,36 +282,16 @@ For more information, read an [overview of the Backstage software catalog](https
   });
 }
 
-async function possiblyCreateLocation(
-  auth: AuthService,
-  catalogApi: CatalogApi,
-  repoCatalogUrl: string,
-) {
-  try {
-    await catalogApi.addLocation(
-      {
-        type: 'url',
-        target: repoCatalogUrl,
-      },
-      {
-        token: await getTokenForPlugin(auth, 'catalog'),
-      },
-    );
-  } catch (error: any) {
-    if (!error.message?.includes('ConflictError')) {
-      throw error;
-    }
-    // Location already exists, which is fine
-  }
-}
-
 export async function createImportJobs(
-  logger: LoggerService,
-  config: Config,
-  auth: AuthService,
-  catalogApi: CatalogApi,
-  githubApiService: GithubApiService,
-  catalogInfoGenerator: CatalogInfoGenerator,
+    deps: {
+      logger: LoggerService,
+      config: Config,
+      auth: AuthService,
+      catalogApi: CatalogApi,
+      githubApiService: GithubApiService,
+      catalogInfoGenerator: CatalogInfoGenerator,
+      catalogHttpClient: CatalogHttpClient,
+    },
   reqParams: {
     importRequests: Paths.CreateImportJobs.RequestBody;
     dryRun?: boolean;
@@ -324,12 +301,12 @@ export async function createImportJobs(
 > {
   const dryRun = reqParams.dryRun ?? false;
   const importRequests = reqParams.importRequests;
-  logger.debug(
+  deps.logger.debug(
     `Handling request to import ${importRequests?.length ?? 0} repo(s) (dryRun=${dryRun})..`,
   );
 
   if (!importRequests || importRequests.length === 0) {
-    logger.debug('Missing import requests from request body');
+    deps.logger.debug('Missing import requests from request body');
     return {
       statusCode: 400,
       responseBody: [],
@@ -342,14 +319,11 @@ export async function createImportJobs(
 
     if (dryRun) {
       const dryRunChecks = await performDryRunChecks(
-        logger,
-        auth,
-        catalogApi,
-        githubApiService,
+          deps,
         req,
       );
       if (dryRunChecks.errors && dryRunChecks.errors.length > 0) {
-        logger.warn(
+        deps.logger.warn(
           `Errors while performing dry-run checks: ${dryRunChecks.errors}`,
         );
       }
@@ -366,30 +340,27 @@ export async function createImportJobs(
     }
 
     // Check if repo is already imported
-    const repoCatalogUrl = catalogInfoGenerator.getCatalogUrl(
-      config,
+    const repoCatalogUrl = getCatalogUrl(
+        deps.config,
       req.repository.url,
       req.repository.defaultBranch,
     );
-    const hasLocation = await verifyLocationExistence(
-      auth,
-      catalogApi,
+    const hasLocation = await deps.catalogHttpClient.verifyLocationExistence(
       repoCatalogUrl,
     );
     if (
       hasLocation &&
-      (await githubApiService.doesCatalogInfoAlreadyExistInRepo(logger, {
+      (await deps.githubApiService.doesCatalogInfoAlreadyExistInRepo(deps.logger, {
         repoUrl: req.repository.url,
         defaultBranch: req.repository.defaultBranch,
       }))
     ) {
-      const ghRepo = await githubApiService.getRepositoryFromIntegrations(
+      const ghRepo = await deps.githubApiService.getRepositoryFromIntegrations(
         req.repository.url,
       );
       // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
-      await catalogInfoGenerator.refreshLocationByRepoUrl(
-        config,
-        req.repository.url,
+      await deps.catalogHttpClient.refreshLocationByRepoUrl(
+          req.repository.url,
         req.repository.defaultBranch,
       );
       result.push({
@@ -407,12 +378,12 @@ export async function createImportJobs(
     // Create PR
     try {
       const prToRepo = await createPR(
-        githubApiService,
-        logger,
+          deps.githubApiService,
+          deps.logger,
         req,
         gitUrl,
-        catalogInfoGenerator,
-        config,
+          deps.catalogInfoGenerator,
+          deps.config,
       );
       if (prToRepo.errors && prToRepo.errors.length > 0) {
         result.push({
@@ -423,20 +394,19 @@ export async function createImportJobs(
         continue;
       }
       if (prToRepo.prUrl) {
-        logger.debug(`Created new PR from request: ${prToRepo.prUrl}`);
+        deps.logger.debug(`Created new PR from request: ${prToRepo.prUrl}`);
       }
 
       // Create Location
-      await possiblyCreateLocation(auth, catalogApi, repoCatalogUrl);
+      await deps.catalogHttpClient.possiblyCreateLocation(repoCatalogUrl);
 
       if (prToRepo.hasChanges === false) {
-        logger.debug(
+        deps.logger.debug(
           `No bulk import PR created on ${req.repository.url} since its default branch (${req.repository.defaultBranch}) already contains a catalog-info file`,
         );
 
         // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
-        await catalogInfoGenerator.refreshLocationByRepoUrl(
-          config,
+        await deps.catalogHttpClient.refreshLocationByRepoUrl(
           req.repository.url,
           req.repository.defaultBranch,
         );
@@ -488,10 +458,13 @@ export async function createImportJobs(
 }
 
 async function performDryRunChecks(
-  logger: LoggerService,
-  auth: AuthService,
-  catalogApi: CatalogApi,
-  githubApiService: GithubApiService,
+    deps: {
+      logger: LoggerService,
+      auth: AuthService,
+      catalogApi: CatalogApi,
+      githubApiService: GithubApiService,
+      catalogHttpClient: CatalogHttpClient,
+    },
   req: Components.Schemas.ImportRequest,
 ): Promise<{ dryRunStatuses: CreateImportDryRunStatus[]; errors: string[] }> {
   const checkCatalog = async (
@@ -500,9 +473,7 @@ async function performDryRunChecks(
     dryRunStatuses?: CreateImportDryRunStatus[];
     errors?: string[];
   }> => {
-    const hasEntity = await hasEntityInCatalog(
-      auth,
-      catalogApi,
+    const hasEntity = await deps.catalogHttpClient.hasEntityInCatalog(
       catalogEntityName,
     );
     if (hasEntity) {
@@ -515,7 +486,7 @@ async function performDryRunChecks(
     dryRunStatuses?: CreateImportDryRunStatus[];
     errors?: string[];
   }> => {
-    const empty = await githubApiService.isRepoEmpty({
+    const empty = await deps.githubApiService.isRepoEmpty({
       repoUrl: req.repository.url,
     });
     if (empty) {
@@ -530,8 +501,8 @@ async function performDryRunChecks(
     dryRunStatuses?: CreateImportDryRunStatus[];
     errors?: string[];
   }> => {
-    const exists = await githubApiService.doesCatalogInfoAlreadyExistInRepo(
-      logger,
+    const exists = await deps.githubApiService.doesCatalogInfoAlreadyExistInRepo(
+        deps.logger,
       {
         repoUrl: req.repository.url,
         defaultBranch: req.repository.defaultBranch,
@@ -549,8 +520,8 @@ async function performDryRunChecks(
     dryRunStatuses?: CreateImportDryRunStatus[];
     errors?: string[];
   }> => {
-    const exists = await githubApiService.doesCodeOwnersAlreadyExistInRepo(
-      logger,
+    const exists = await deps.githubApiService.doesCodeOwnersAlreadyExistInRepo(
+        deps.logger,
       {
         repoUrl: req.repository.url,
         defaultBranch: req.repository.defaultBranch,
@@ -592,15 +563,17 @@ async function performDryRunChecks(
 }
 
 export async function findImportStatusByRepo(
-  logger: LoggerService,
-  config: Config,
-  githubApiService: GithubApiService,
-  catalogInfoGenerator: CatalogInfoGenerator,
+    deps: {
+      logger: LoggerService,
+      config: Config,
+      githubApiService: GithubApiService,
+      catalogHttpClient: CatalogHttpClient,
+    },
   repoUrl: string,
   defaultBranch?: string,
   includeCatalogInfoContent?: boolean,
 ): Promise<HandlerResponse<Components.Schemas.Import>> {
-  logger.debug(`Getting bulk import job status for ${repoUrl}..`);
+  deps.logger.debug(`Getting bulk import job status for ${repoUrl}..`);
 
   const gitUrl = gitUrlParse(repoUrl);
 
@@ -619,16 +592,16 @@ export async function findImportStatusByRepo(
   } as Components.Schemas.Import;
   try {
     // Check to see if there are any PR
-    const openImportPr = await githubApiService.findImportOpenPr(logger, {
+    const openImportPr = await deps.githubApiService.findImportOpenPr(deps.logger, {
       repoUrl: repoUrl,
       includeCatalogInfoContent,
     });
     if (!openImportPr.prUrl) {
       const catalogLocations = (
-        await catalogInfoGenerator.listCatalogUrlLocations(config)
+        await deps.catalogHttpClient.listCatalogUrlLocations()
       ).targetUrls;
-      const catalogUrl = catalogInfoGenerator.getCatalogUrl(
-        config,
+      const catalogUrl = getCatalogUrl(
+          deps.config,
         repoUrl,
         defaultBranch,
       );
@@ -641,22 +614,21 @@ export async function findImportStatusByRepo(
       }
       if (
         exists &&
-        (await githubApiService.doesCatalogInfoAlreadyExistInRepo(logger, {
+        (await deps.githubApiService.doesCatalogInfoAlreadyExistInRepo(deps.logger, {
           repoUrl,
           defaultBranch,
         }))
       ) {
         result.status = 'ADDED';
         // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
-        await catalogInfoGenerator.refreshLocationByRepoUrl(
-          config,
-          repoUrl,
+        await deps.catalogHttpClient.refreshLocationByRepoUrl(
+             repoUrl,
           defaultBranch,
         );
       }
       // No import PR => let's determine last update from the repository
       const ghRepo =
-        await githubApiService.getRepositoryFromIntegrations(repoUrl);
+        await deps.githubApiService.getRepositoryFromIntegrations(repoUrl);
       result.lastUpdate = ghRepo.repository?.updated_at ?? undefined;
       return {
         statusCode: 200,
@@ -693,39 +665,41 @@ export async function findImportStatusByRepo(
 }
 
 export async function deleteImportByRepo(
-  logger: LoggerService,
-  config: Config,
-  githubApiService: GithubApiService,
-  catalogInfoGenerator: CatalogInfoGenerator,
+    deps: {
+      logger: LoggerService,
+      config: Config,
+      githubApiService: GithubApiService,
+      catalogHttpClient: CatalogHttpClient,
+    },
   repoUrl: string,
   defaultBranch?: string,
 ): Promise<HandlerResponse<void>> {
-  logger.debug(`Deleting bulk import job status for ${repoUrl}..`);
+  deps.logger.debug(`Deleting bulk import job status for ${repoUrl}..`);
 
   // Check to see if there are any PR
-  const openImportPr = await githubApiService.findImportOpenPr(logger, {
+  const openImportPr = await deps.githubApiService.findImportOpenPr(deps.logger, {
     repoUrl: repoUrl,
   });
   const gitUrl = gitUrlParse(repoUrl);
   if (openImportPr.prUrl) {
     // Close PR
     const appTitle =
-      config.getOptionalString('app.title') ?? 'Red Hat Developer Hub';
-    const appBaseUrl = config.getString('app.baseUrl');
-    await githubApiService.closePR(logger, {
+        deps.config.getOptionalString('app.title') ?? 'Red Hat Developer Hub';
+    const appBaseUrl = deps.config.getString('app.baseUrl');
+    await deps.githubApiService.closePR(deps.logger, {
       repoUrl,
       gitUrl,
       comment: `Closing PR upon request for bulk import deletion. This request was created from [${appTitle}](${appBaseUrl}).`,
     });
   }
   // Also delete the import branch, so that it is not outdated if we try later to import the repo again
-  await githubApiService.deleteImportBranch(logger, {
+  await deps.githubApiService.deleteImportBranch(deps.logger, {
     repoUrl,
     gitUrl,
   });
   // Remove Location from catalog
-  const catalogUrl = catalogInfoGenerator.getCatalogUrl(
-    config,
+  const catalogUrl = getCatalogUrl(
+      deps.config,
     repoUrl,
     defaultBranch,
   );
@@ -740,11 +714,11 @@ export async function deleteImportByRepo(
 
   const locationId = findLocationFrom(
     (
-      await catalogInfoGenerator.listCatalogUrlLocationsByIdFromLocationsEndpoint()
+      await deps.catalogHttpClient.listCatalogUrlLocationsByIdFromLocationsEndpoint()
     ).locations,
   );
   if (locationId) {
-    await catalogInfoGenerator.deleteCatalogLocationById(locationId);
+    await deps.catalogHttpClient.deleteCatalogLocationById(locationId);
   }
 
   return {

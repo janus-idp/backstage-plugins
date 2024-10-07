@@ -19,7 +19,6 @@ import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
 
-import type { CatalogInfoGenerator } from '../../helpers';
 import type { Components } from '../../generated/openapi.d';
 import type { GithubRepositoryResponse } from '../../types';
 import type { GithubApiService } from '../githubApiService';
@@ -29,12 +28,15 @@ import {
   type HandlerResponse,
 } from './handlers';
 import { getImportStatusFromLocations } from './importStatus';
+import {CatalogHttpClient} from "../../catalog/catalogHttpClient";
 
 export async function findAllRepositories(
-  logger: LoggerService,
-  config: Config,
-  githubApiService: GithubApiService,
-  catalogInfoGenerator: CatalogInfoGenerator,
+    deps: {
+      logger: LoggerService,
+      config: Config,
+      githubApiService: GithubApiService,
+      catalogHttpClient: CatalogHttpClient,
+    },
   reqParams?: {
     search?: string;
     checkStatus?: boolean;
@@ -46,20 +48,17 @@ export async function findAllRepositories(
   const checkStatus = reqParams?.checkStatus ?? false;
   const pageNumber = reqParams?.pageNumber ?? DefaultPageNumber;
   const pageSize = reqParams?.pageSize ?? DefaultPageSize;
-  logger.debug(
+  deps.logger.debug(
     `Getting all repositories - (search,page,size)=('${search ?? ''}',${pageNumber},${pageSize})..`,
   );
-  return githubApiService
+  return deps.githubApiService
     .getRepositoriesFromIntegrations(search, pageNumber, pageSize)
     .then(response =>
       formatResponse(
+          deps,
         response,
-        catalogInfoGenerator,
         checkStatus,
-        logger,
-        config,
-        githubApiService,
-      ),
+        ),
     );
 }
 
@@ -68,7 +67,7 @@ export async function findRepositoriesByOrganization(
     logger: LoggerService;
     config: Config;
     githubApiService: GithubApiService;
-    catalogInfoGenerator: CatalogInfoGenerator;
+    catalogHttpClient: CatalogHttpClient;
   },
   orgName: string,
   search?: string,
@@ -83,23 +82,22 @@ export async function findRepositoriesByOrganization(
     .getOrgRepositoriesFromIntegrations(orgName, search, pageNumber, pageSize)
     .then(response =>
       formatResponse(
+          deps,
         response,
-        deps.catalogInfoGenerator,
         checkStatus,
-        deps.logger,
-        deps.config,
-        deps.githubApiService,
-      ),
+        ),
     );
 }
 
 async function formatResponse(
+    deps: {
+      logger: LoggerService;
+      config: Config;
+      githubApiService: GithubApiService;
+      catalogHttpClient: CatalogHttpClient;
+    },
   allReposAccessible: GithubRepositoryResponse,
-  catalogInfoGenerator: CatalogInfoGenerator,
   checkStatus: boolean,
-  logger: LoggerService,
-  config: Config,
-  githubApiService: GithubApiService,
 ) {
   const errorList: string[] = [];
   if (allReposAccessible.errors) {
@@ -119,7 +117,7 @@ async function formatResponse(
   }
 
   const catalogLocations = checkStatus
-    ? (await catalogInfoGenerator.listCatalogUrlLocations(config)).targetUrls
+    ? (await deps.catalogHttpClient.listCatalogUrlLocations()).targetUrls
     : [];
   const repoList: Components.Schemas.Repository[] = [];
   if (allReposAccessible.repositories) {
@@ -133,10 +131,7 @@ async function formatResponse(
       try {
         importStatus = checkStatus
           ? await getImportStatusFromLocations(
-              logger,
-              config,
-              githubApiService,
-              catalogInfoGenerator,
+              deps,
               repo.html_url,
               catalogLocations,
               repo.default_branch,

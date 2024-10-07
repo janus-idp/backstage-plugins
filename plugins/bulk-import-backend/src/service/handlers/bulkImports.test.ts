@@ -17,11 +17,10 @@
 import type { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import type { CatalogClient } from '@backstage/catalog-client';
-import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
 
-import { CatalogInfoGenerator } from '../../helpers';
+import { CatalogHttpClient } from '../../catalog/catalogHttpClient';
 import { Paths } from '../../generated/openapi.d';
 import { GithubApiService } from '../githubApiService';
 import { deleteImportByRepo, findAllImports } from './bulkImports';
@@ -53,7 +52,7 @@ const config = mockServices.rootConfig({
 
 describe('bulkimports.ts unit tests', () => {
   let logger: LoggerService;
-  let mockCatalogInfoGenerator: CatalogInfoGenerator;
+  let mockCatalogHttpClient: CatalogHttpClient;
   let mockGithubApiService: GithubApiService;
 
   beforeEach(() => {
@@ -76,11 +75,13 @@ describe('bulkimports.ts unit tests', () => {
       queryEntities: jest.fn(),
       refreshEntity: jest.fn(),
     } as unknown as CatalogClient;
-    mockCatalogInfoGenerator = new CatalogInfoGenerator(
-      logger,
-      mockDiscovery,
-      mockAuth,
-      mockCatalogClient,
+      mockCatalogHttpClient = new CatalogHttpClient({
+          logger,
+          config,
+          discovery: mockDiscovery,
+          auth: mockAuth,
+          catalogApi: mockCatalogClient,
+      }
     );
     mockGithubApiService = new GithubApiService(logger, config, mockCache);
     initializeGithubApiServiceMock();
@@ -184,7 +185,7 @@ describe('bulkimports.ts unit tests', () => {
       'should return only imports from repos that are accessible from the configured GH integrations (API Version: %s)',
       async apiVersionStr => {
         jest
-          .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
+          .spyOn(mockCatalogHttpClient, 'listCatalogUrlLocations')
           .mockResolvedValue({
             targetUrls: locationUrls,
             totalCount: locationUrls.length,
@@ -205,17 +206,18 @@ describe('bulkimports.ts unit tests', () => {
             'https://github.com/my-org-3/my-repo-32/blob/dev/catalog-info.yaml', // PR
           ]);
         jest
-          .spyOn(mockCatalogInfoGenerator, 'findLocationEntitiesByTargetUrl')
+          .spyOn(mockCatalogHttpClient, 'findLocationEntitiesByTargetUrl')
           .mockResolvedValue([]);
 
         const apiVersion = apiVersionStr as
           | Paths.FindAllImports.Parameters.ApiVersion
           | undefined;
-        let resp = await findAllImports(
-          logger,
-          config,
-          mockGithubApiService,
-          mockCatalogInfoGenerator,
+        let resp = await findAllImports({
+            logger,
+            config,
+            githubApiService: mockGithubApiService,
+            catalogHttpClient: mockCatalogHttpClient,
+        },
           {
             apiVersion,
           },
@@ -322,11 +324,12 @@ describe('bulkimports.ts unit tests', () => {
         expect(resp.responseBody).toEqual(expectedResponse);
 
         // Request different pages and sizes
-        resp = await findAllImports(
-          logger,
-          config,
-          mockGithubApiService,
-          mockCatalogInfoGenerator,
+        resp = await findAllImports({
+            logger,
+            config,
+            githubApiService: mockGithubApiService,
+            catalogHttpClient: mockCatalogHttpClient,
+        },
           {
             apiVersion,
           },
@@ -347,11 +350,12 @@ describe('bulkimports.ts unit tests', () => {
         }
         expect(resp.responseBody).toEqual(expectedResponse);
 
-        resp = await findAllImports(
-          logger,
-          config,
-          mockGithubApiService,
-          mockCatalogInfoGenerator,
+        resp = await findAllImports({
+            logger,
+            config,
+            githubApiService: mockGithubApiService,
+            catalogHttpClient: mockCatalogHttpClient,
+        },
           {
             apiVersion,
           },
@@ -373,11 +377,12 @@ describe('bulkimports.ts unit tests', () => {
         expect(resp.responseBody).toEqual(expectedResponse);
 
         // No data for this page
-        resp = await findAllImports(
-          logger,
-          config,
-          mockGithubApiService,
-          mockCatalogInfoGenerator,
+        resp = await findAllImports({
+            logger,
+            config,
+            githubApiService: mockGithubApiService,
+            catalogHttpClient: mockCatalogHttpClient,
+        },
           {
             apiVersion,
           },
@@ -404,10 +409,9 @@ describe('bulkimports.ts unit tests', () => {
       'should respect search and pagination when returning imports (API Version: %s)',
       async apiVersionStr => {
         jest
-          .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
+          .spyOn(mockCatalogHttpClient, 'listCatalogUrlLocations')
           .mockImplementation(
             async (
-              _config: Config,
               search?: string | undefined,
               _pageNumber?: number | undefined,
               _pageSize?: number | undefined,
@@ -440,17 +444,18 @@ describe('bulkimports.ts unit tests', () => {
             return locs.filter(loc => accessible.includes(loc));
           });
         jest
-          .spyOn(mockCatalogInfoGenerator, 'findLocationEntitiesByTargetUrl')
+          .spyOn(mockCatalogHttpClient, 'findLocationEntitiesByTargetUrl')
           .mockResolvedValue([]);
 
         const apiVersion = apiVersionStr as
           | Paths.FindAllImports.Parameters.ApiVersion
           | undefined;
-        let resp = await findAllImports(
-          logger,
-          config,
-          mockGithubApiService,
-          mockCatalogInfoGenerator,
+        let resp = await findAllImports({
+            logger,
+            config,
+            githubApiService: mockGithubApiService,
+            catalogHttpClient: mockCatalogHttpClient,
+        },
           {
             apiVersion,
           },
@@ -470,11 +475,12 @@ describe('bulkimports.ts unit tests', () => {
         }
         expect(resp.responseBody).toEqual(expectedResponse);
 
-        resp = await findAllImports(
-          logger,
-          config,
-          mockGithubApiService,
-          mockCatalogInfoGenerator,
+        resp = await findAllImports({
+            logger,
+            config,
+            githubApiService: mockGithubApiService,
+            catalogHttpClient: mockCatalogHttpClient,
+        },
           {
             apiVersion,
           },
@@ -521,11 +527,12 @@ describe('bulkimports.ts unit tests', () => {
         expect(resp.responseBody).toEqual(expectedResponse);
 
         // Request different pages and sizes
-        resp = await findAllImports(
-          logger,
-          config,
-          mockGithubApiService,
-          mockCatalogInfoGenerator,
+        resp = await findAllImports({
+            logger,
+            config,
+            githubApiService: mockGithubApiService,
+            catalogHttpClient: mockCatalogHttpClient,
+        },
           {
             apiVersion,
           },
@@ -547,11 +554,12 @@ describe('bulkimports.ts unit tests', () => {
         }
         expect(resp.responseBody).toEqual(expectedResponse);
 
-        resp = await findAllImports(
-          logger,
-          config,
-          mockGithubApiService,
-          mockCatalogInfoGenerator,
+        resp = await findAllImports({
+            logger,
+            config,
+            githubApiService: mockGithubApiService,
+            catalogHttpClient: mockCatalogHttpClient,
+        },
           {
             apiVersion,
           },
@@ -574,11 +582,12 @@ describe('bulkimports.ts unit tests', () => {
         expect(resp.responseBody).toEqual(expectedResponse);
 
         // No data for this page
-        resp = await findAllImports(
-          logger,
-          config,
-          mockGithubApiService,
-          mockCatalogInfoGenerator,
+        resp = await findAllImports({
+            logger,
+            config,
+            githubApiService: mockGithubApiService,
+            catalogHttpClient: mockCatalogHttpClient,
+        },
           {
             apiVersion,
           },
@@ -616,7 +625,7 @@ describe('bulkimports.ts unit tests', () => {
         .mockResolvedValue();
       jest
         .spyOn(
-          mockCatalogInfoGenerator,
+            mockCatalogHttpClient,
           'listCatalogUrlLocationsByIdFromLocationsEndpoint',
         )
         .mockResolvedValue({
@@ -629,13 +638,14 @@ describe('bulkimports.ts unit tests', () => {
           totalCount: 1,
         });
       jest
-        .spyOn(mockCatalogInfoGenerator, 'deleteCatalogLocationById')
+        .spyOn(mockCatalogHttpClient, 'deleteCatalogLocationById')
         .mockResolvedValue();
-      await deleteImportByRepo(
-        logger,
-        config,
-        mockGithubApiService,
-        mockCatalogInfoGenerator,
+      await deleteImportByRepo({
+          logger,
+          config,
+          githubApiService: mockGithubApiService,
+          catalogHttpClient: mockCatalogHttpClient,
+      },
         repoUrl,
         defaultBranch,
       );
@@ -650,10 +660,10 @@ describe('bulkimports.ts unit tests', () => {
         }),
       );
       expect(
-        mockCatalogInfoGenerator.deleteCatalogLocationById,
+          mockCatalogHttpClient.deleteCatalogLocationById,
       ).toHaveBeenCalledTimes(1);
       expect(
-        mockCatalogInfoGenerator.deleteCatalogLocationById,
+          mockCatalogHttpClient.deleteCatalogLocationById,
       ).toHaveBeenNthCalledWith(1, 'location-id-11');
     });
 
@@ -671,7 +681,7 @@ describe('bulkimports.ts unit tests', () => {
         .mockResolvedValue();
       jest
         .spyOn(
-          mockCatalogInfoGenerator,
+            mockCatalogHttpClient,
           'listCatalogUrlLocationsByIdFromLocationsEndpoint',
         )
         .mockResolvedValue({
@@ -684,13 +694,14 @@ describe('bulkimports.ts unit tests', () => {
           totalCount: 1,
         });
       jest
-        .spyOn(mockCatalogInfoGenerator, 'deleteCatalogLocationById')
+        .spyOn(mockCatalogHttpClient, 'deleteCatalogLocationById')
         .mockResolvedValue();
-      await deleteImportByRepo(
-        logger,
-        config,
-        mockGithubApiService,
-        mockCatalogInfoGenerator,
+      await deleteImportByRepo({
+          logger,
+          config,
+          githubApiService: mockGithubApiService,
+          catalogHttpClient: mockCatalogHttpClient,
+      },
         repoUrl,
         defaultBranch,
       );
@@ -712,10 +723,10 @@ describe('bulkimports.ts unit tests', () => {
         }),
       );
       expect(
-        mockCatalogInfoGenerator.deleteCatalogLocationById,
+          mockCatalogHttpClient.deleteCatalogLocationById,
       ).toHaveBeenCalledTimes(1);
       expect(
-        mockCatalogInfoGenerator.deleteCatalogLocationById,
+          mockCatalogHttpClient.deleteCatalogLocationById,
       ).toHaveBeenCalledWith('location-id-12');
     });
   });

@@ -29,9 +29,11 @@ import { Octokit } from '@octokit/rest';
 import gitUrlParse from 'git-url-parse';
 
 import {
-  CustomGithubCredentialsProvider,
   getBranchName,
   getCatalogFilename,
+} from '../catalog/catalogUtils';
+import {
+  CustomGithubCredentialsProvider,
   logErrorIfNeeded,
   paginateArray,
 } from '../helpers';

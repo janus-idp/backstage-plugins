@@ -21,20 +21,11 @@ import type { CatalogClient } from '@backstage/catalog-client';
 import fetch from 'node-fetch';
 
 import { CatalogInfoGenerator } from './catalogInfoGenerator';
+import {CatalogHttpClient} from "./catalogHttpClient";
 
 jest.mock('node-fetch');
 
 const mockBaseUrl = 'http://127.0.0.1:65535';
-
-const config = mockServices.rootConfig({
-  data: {
-    catalog: {
-      import: {
-        entityFilename: 'my-catalog-info.yaml',
-      },
-    },
-  },
-});
 
 describe('catalogInfoGenerator', () => {
   let catalogInfoGenerator: CatalogInfoGenerator;
@@ -61,43 +52,21 @@ describe('catalogInfoGenerator', () => {
         token: 'ey123.abc.xyzzz', // notsecret
       }),
     });
+    const logger = mockServices.logger.mock();
     catalogInfoGenerator = new CatalogInfoGenerator(
-      mockServices.logger.mock(),
-      mockDiscovery,
-      mockAuth,
-      mockCatalogClient,
+      logger,
+        new CatalogHttpClient({
+          logger,
+          config: mockServices.rootConfig({data: {}}),
+          discovery: mockDiscovery,
+          auth: mockAuth,
+          catalogApi: mockCatalogClient,
+        }),
     );
   });
 
   afterEach(() => {
     jest.resetAllMocks();
-  });
-
-  it('should return a catalog url if no main branch is set', () => {
-    const repoUrl = 'https://ghe.example.com/my-org/my-repo';
-    expect(catalogInfoGenerator.getCatalogUrl(config, repoUrl)).toBe(
-      `${repoUrl}/blob/main/my-catalog-info.yaml`,
-    );
-  });
-
-  it('should return appropriate catalog url for both repo and default branch', () => {
-    const repoUrl = 'https://ghe.example.com/my-org/my-repo';
-    const defaultBranch = 'dev';
-    expect(
-      catalogInfoGenerator.getCatalogUrl(config, repoUrl, defaultBranch),
-    ).toBe(`${repoUrl}/blob/${defaultBranch}/my-catalog-info.yaml`);
-  });
-
-  it('should return appropriate catalog url for both repo and default branch with default catalog-info YAML', () => {
-    const repoUrl = 'https://ghe.example.com/my-org/my-repo';
-    const defaultBranch = 'dev';
-    expect(
-      catalogInfoGenerator.getCatalogUrl(
-        mockServices.rootConfig(),
-        repoUrl,
-        defaultBranch,
-      ),
-    ).toBe(`${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`);
   });
 
   it('should fail to return a default catalog-info yaml string if a wrong repo URL is set', async () => {
