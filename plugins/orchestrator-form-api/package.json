@@ -24,11 +24,11 @@
   },
   "dependencies": {
     "@backstage/core-plugin-api": "^1.9.3",
-    "@backstage/types": "^1.1.1"
+    "@backstage/types": "^1.1.1",
+    "@rjsf/core": "5.18.5"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "@rjsf/core": "^5.17.1"
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "0.26.11",

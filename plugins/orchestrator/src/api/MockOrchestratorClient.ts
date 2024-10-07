@@ -5,10 +5,10 @@ import { AxiosResponse } from 'axios';
 import {
   AssessedProcessInstanceDTO,
   ExecuteWorkflowResponseDTO,
+  InputSchemaResponseDTO,
   ProcessInstanceListResultDTO,
   WorkflowDefinition,
   WorkflowExecutionResponse,
-  WorkflowInputSchemaResponse,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -109,11 +109,10 @@ export class MockOrchestratorClient implements OrchestratorApi {
     return Promise.resolve(this._mockData.getWorkflowDefinitionResponse);
   }
 
-  getWorkflowDataInputSchema(_args: {
-    workflowId: string;
-    instanceId?: string;
-    assessmentInstanceId?: string;
-  }): Promise<WorkflowInputSchemaResponse> {
+  getWorkflowDataInputSchema(
+    _workflowId: string,
+    _instanceId?: string,
+  ): Promise<AxiosResponse<InputSchemaResponseDTO>> {
     if (
       !hasOwnProp(this._mockData, 'getWorkflowDataInputSchemaResponse') ||
       !isNonNullable(this._mockData.getWorkflowDataInputSchemaResponse)

@@ -127,7 +127,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/InputSchemaResponseDTO'
         '500':
           description: Error fetching workflow input schema by id
           content:
@@ -705,3 +705,10 @@ components:
                   - type: string
                   - type: number
                   - type: boolean
+    InputSchemaResponseDTO:
+      type: object
+      properties:
+        inputSchema:
+          type: object
+        data:
+          type: object
