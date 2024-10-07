@@ -798,6 +798,39 @@ function setupInternalRoutes(
 
   // v2
   routerApi.openApiBackend.register(
+    'getWorkflowInstances',
+    async (c, req: express.Request, res: express.Response, next) => {
+      const endpointName = 'getWorkflowInstances';
+      const workflowId = c.request.params.workflowId as string;
+      const endpoint = `/v2/workflows/${workflowId}/instances`;
+
+      auditLogger.auditLog({
+        eventName: endpointName,
+        stage: 'start',
+        status: 'succeeded',
+        level: 'debug',
+        request: req,
+        message: `Received request to '${endpoint}' endpoint`,
+      });
+
+      const decision = await authorize(
+        req,
+        orchestratorWorkflowInstancesReadPermission,
+        permissions,
+        httpAuth,
+      );
+      if (decision.result === AuthorizeResult.DENY) {
+        manageDenyAuthorization(endpointName, endpoint, req);
+      }
+      await routerApi.v2
+        .getInstances(buildPagination(req), buildFilter(req), workflowId)
+        .then(result => res.json(result))
+        .catch(next);
+    },
+  );
+
+  // v2
+  routerApi.openApiBackend.register(
     'getInstances',
     async (_c, req: express.Request, res: express.Response, next) => {
       const endpointName = 'getInstances';

@@ -90,13 +90,15 @@ export class V2 {
   public async getInstances(
     pagination?: Pagination,
     filter?: FilterInfo,
+    workflowId?: string,
   ): Promise<ProcessInstanceListResultDTO> {
     const instances = await this.orchestratorService.fetchInstances({
       pagination,
       filter,
+      workflowId,
     });
     const totalCount =
-      await this.orchestratorService.fetchInstancesTotalCount();
+      await this.orchestratorService.fetchInstancesTotalCount(workflowId);
 
     const result: ProcessInstanceListResultDTO = {
       items: instances?.map(mapToProcessInstanceDTO),
