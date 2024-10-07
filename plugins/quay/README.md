@@ -25,7 +25,7 @@ The Quay plugin displays the information about your container images within the 
          headers:
            X-Requested-With: 'XMLHttpRequest'
            # Uncomment and use the Authorization header below to access a private Quay
-           # Repository using a token.  Refer to the "Applications and Tokens" section
+           # Repository using a token. Refer to the "Applications and Tokens" section
            # at https://docs.quay.io/api/ to find the instructions to generate a token
            # Authorization: 'Bearer <YOUR TOKEN>'
          changeOrigin: true
