@@ -20,7 +20,7 @@ import type { Config } from '@backstage/config';
 import gitUrlParse from 'git-url-parse';
 
 import type { CatalogInfoGenerator } from '../../helpers';
-import type { Components } from '../../openapi.d';
+import type { Components } from '../../generated/openapi.d';
 import type { GithubRepositoryResponse } from '../../types';
 import type { GithubApiService } from '../githubApiService';
 import {

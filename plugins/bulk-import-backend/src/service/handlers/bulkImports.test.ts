@@ -22,7 +22,7 @@ import type { Config } from '@backstage/config';
 import gitUrlParse from 'git-url-parse';
 
 import { CatalogInfoGenerator } from '../../helpers';
-import { Paths } from '../../openapi';
+import { Paths } from '../../generated/openapi.d';
 import { GithubApiService } from '../githubApiService';
 import { deleteImportByRepo, findAllImports } from './bulkImports';
 

@@ -27,7 +27,7 @@ import {
   paginateArray,
   type CatalogInfoGenerator,
 } from '../../helpers';
-import type { Components, Paths } from '../../openapi.d';
+import type { Components, Paths } from '../../generated/openapi.d';
 import type { GithubApiService } from '../githubApiService';
 import {
   DefaultPageNumber,

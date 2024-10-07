@@ -16,7 +16,7 @@
 
 import type { LoggerService } from '@backstage/backend-plugin-api';
 
-import type { Paths } from '../../openapi.d';
+import type { Paths } from '../../generated/openapi.d';
 import type { HandlerResponse } from './handlers';
 
 export async function ping(

@@ -47,8 +47,8 @@ import {
 } from '../helpers/auditLogUtils';
 import { permissionCheck } from '../helpers/auth';
 import { CatalogInfoGenerator } from '../helpers/catalogInfoGenerator';
-import type { Components, Paths } from '../openapi.d';
-import { openApiDocument } from '../openapidocument';
+import type { Components, Paths } from '../generated/openapi.d';
+import { openApiDocument } from '../generated/openapidocument';
 import { GithubApiService } from './githubApiService';
 import {
   createImportJobs,

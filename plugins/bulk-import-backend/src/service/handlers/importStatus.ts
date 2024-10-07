@@ -19,7 +19,7 @@ import type { CatalogApi } from '@backstage/catalog-client';
 import type { Config } from '@backstage/config';
 
 import { getTokenForPlugin, type CatalogInfoGenerator } from '../../helpers';
-import type { Components } from '../../openapi';
+import type { Components } from '../../generated/openapi.d';
 import type { GithubApiService } from '../githubApiService';
 
 export async function getImportStatusFromLocations(
