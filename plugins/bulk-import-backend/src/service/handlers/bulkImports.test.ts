@@ -51,7 +51,7 @@ const config = mockServices.rootConfig({
   },
 });
 
-describe('bulkimports.ts tests', () => {
+describe('bulkimports.ts unit tests', () => {
   let logger: LoggerService;
   let mockCatalogInfoGenerator: CatalogInfoGenerator;
   let mockGithubApiService: GithubApiService;
