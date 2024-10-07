@@ -596,121 +596,149 @@ describe('bulk-import router tests', () => {
   });
 
   describe('GET /imports', () => {
-    it('returns 200 with empty list when there is nothing in catalog yet and no open PR for each repo', async () => {
-      const backendServer = await startBackendServer(AuthorizeResult.ALLOW, {
-        catalog: { locations: [] },
-      });
-      server.use(
-        rest.get(
-          `http://localhost:${backendServer.port()}/api/catalog/locations`,
-          (_, res, ctx) => res(ctx.status(200), ctx.json([])),
-        ),
-      );
-      mockCatalogClient.queryEntities = jest
-        .fn()
-        .mockResolvedValue({ items: [] });
-
-      const response = await request(backendServer).get(
-        '/api/bulk-import/imports',
-      );
-
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual([]);
-    });
-
-    it('returns 200 with appropriate import status (with data coming from the repos and data coming from the app-config files)', async () => {
-      const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
-      server.use(
-        rest.get(
-          `http://localhost:${backendServer.port()}/api/catalog/locations`,
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.json(loadTestFixture('catalog/locations.json')),
-            ),
-        ),
-      );
-      mockCatalogClient.queryEntities = jest
-        .fn()
-        .mockImplementation(
-          async (
-            _request?: QueryEntitiesRequest,
-            _options?: CatalogRequestOptions,
-          ): Promise<QueryEntitiesResponse> => {
-            return {
-              items: [
-                {
-                  apiVersion: 'backstage.io/v1alpha1',
-                  kind: 'Location',
-                  metadata: {
-                    name: `generated-from-tests-${Math.floor(Math.random() * 100 + 1)}`,
-                    namespace: 'default',
-                  },
-                },
-              ],
-              totalItems: 1,
-              pageInfo: {},
-            };
-          },
+    it.each([undefined, 'v1', 'v2'])(
+      'returns 200 with empty list when there is nothing in catalog yet and no open PR for each repo (API Version: %s)',
+      async apiVersion => {
+        const backendServer = await startBackendServer(AuthorizeResult.ALLOW, {
+          catalog: { locations: [] },
+        });
+        server.use(
+          rest.get(
+            `http://localhost:${backendServer.port()}/api/catalog/locations`,
+            (_, res, ctx) => res(ctx.status(200), ctx.json([])),
+          ),
         );
+        mockCatalogClient.queryEntities = jest
+          .fn()
+          .mockResolvedValue({ items: [] });
 
-      const response = await request(backendServer).get(
-        '/api/bulk-import/imports',
-      );
+        let req = request(backendServer).get('/api/bulk-import/imports');
+        if (apiVersion) {
+          req = req.set('api-version', apiVersion);
+        }
+        const response = await req;
 
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual([
-        {
-          approvalTool: 'GIT',
-          id: 'https://github.com/octocat/my-awesome-repo',
-          lastUpdate: '2011-01-26T19:14:43Z',
-          repository: {
-            defaultBranch: 'dev',
-            id: 'octocat/my-awesome-repo',
-            name: 'my-awesome-repo',
-            organization: 'octocat',
-            url: 'https://github.com/octocat/my-awesome-repo',
-          },
-          status: null,
-        },
-        {
-          approvalTool: 'GIT',
-          id: 'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
-          lastUpdate: '2011-01-26T19:14:43Z',
-          repository: {
-            defaultBranch: 'main',
-            id: 'my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
-            name: 'my-repo-with-existing-catalog-info-in-default-branch',
-            organization: 'my-org-1',
-            url: 'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
-          },
-          status: 'ADDED',
-        },
-        {
-          approvalTool: 'GIT',
-          github: {
-            pullRequest: {
-              body: 'Onboarding this repository into Red Hat Developer Hub.',
-              number: 1347,
-              title: 'Add catalog-info.yaml',
-              url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/pull/1347',
+        expect(response.status).toEqual(200);
+        let expectedRespBody: any = [];
+        if (apiVersion === 'v2') {
+          expectedRespBody = {
+            imports: expectedRespBody,
+            page: 1,
+            size: 20,
+            totalCount: 0,
+          };
+        }
+        expect(response.body).toEqual(expectedRespBody);
+      },
+    );
+
+    it.each([undefined, 'v1', 'v2'])(
+      'returns 200 with appropriate import status (with data coming from the repos and data coming from the app-config files) (API Version: %s)',
+      async apiVersion => {
+        const backendServer = await startBackendServer(AuthorizeResult.ALLOW);
+        server.use(
+          rest.get(
+            `http://localhost:${backendServer.port()}/api/catalog/locations`,
+            (_, res, ctx) =>
+              res(
+                ctx.status(200),
+                ctx.json(loadTestFixture('catalog/locations.json')),
+              ),
+          ),
+        );
+        mockCatalogClient.queryEntities = jest
+          .fn()
+          .mockImplementation(
+            async (
+              _request?: QueryEntitiesRequest,
+              _options?: CatalogRequestOptions,
+            ): Promise<QueryEntitiesResponse> => {
+              return {
+                items: [
+                  {
+                    apiVersion: 'backstage.io/v1alpha1',
+                    kind: 'Location',
+                    metadata: {
+                      name: `generated-from-tests-${Math.floor(Math.random() * 100 + 1)}`,
+                      namespace: 'default',
+                    },
+                  },
+                ],
+                totalItems: 1,
+                pageInfo: {},
+              };
             },
+          );
+
+        let req = request(backendServer).get('/api/bulk-import/imports');
+        if (apiVersion) {
+          req = req.set('api-version', apiVersion);
+        }
+        const response = await req;
+
+        expect(response.status).toEqual(200);
+        let expectedRespBody: any = [
+          {
+            approvalTool: 'GIT',
+            id: 'https://github.com/octocat/my-awesome-repo',
+            lastUpdate: '2011-01-26T19:14:43Z',
+            repository: {
+              defaultBranch: 'dev',
+              id: 'octocat/my-awesome-repo',
+              name: 'my-awesome-repo',
+              organization: 'octocat',
+              url: 'https://github.com/octocat/my-awesome-repo',
+            },
+            status: null,
           },
-          id: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
-          lastUpdate: '2011-01-26T19:01:12Z',
-          repository: {
-            defaultBranch: 'main',
-            id: 'my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
-            name: 'my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
-            organization: 'my-org-1',
-            url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+          {
+            approvalTool: 'GIT',
+            id: 'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
+            lastUpdate: '2011-01-26T19:14:43Z',
+            repository: {
+              defaultBranch: 'main',
+              id: 'my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
+              name: 'my-repo-with-existing-catalog-info-in-default-branch',
+              organization: 'my-org-1',
+              url: 'https://github.com/my-org-1/my-repo-with-existing-catalog-info-in-default-branch',
+            },
+            status: 'ADDED',
           },
-          status: 'WAIT_PR_APPROVAL',
-        },
-      ]);
-      // Location entity refresh triggered (on each 'ADDED' repo)
-      expect(mockCatalogClient.refreshEntity).toHaveBeenCalledTimes(1);
-    });
+          {
+            approvalTool: 'GIT',
+            github: {
+              pullRequest: {
+                body: 'Onboarding this repository into Red Hat Developer Hub.',
+                number: 1347,
+                title: 'Add catalog-info.yaml',
+                url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr/pull/1347',
+              },
+            },
+            id: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+            lastUpdate: '2011-01-26T19:01:12Z',
+            repository: {
+              defaultBranch: 'main',
+              id: 'my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+              name: 'my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+              organization: 'my-org-1',
+              url: 'https://github.com/my-org-1/my-repo-with-no-catalog-info-in-default-branch-and-import-pr',
+            },
+            status: 'WAIT_PR_APPROVAL',
+          },
+        ];
+        if (apiVersion === 'v2') {
+          expectedRespBody = {
+            imports: expectedRespBody,
+            page: 1,
+            size: 20,
+            totalCount: 3,
+          };
+        }
+        expect(response.body).toEqual(expectedRespBody);
+        // Location entity refresh triggered (on each 'ADDED' repo)
+        expect(mockCatalogClient.refreshEntity).toHaveBeenCalledTimes(1);
+      },
+    );
   });
 
   describe('POST /imports', () => {

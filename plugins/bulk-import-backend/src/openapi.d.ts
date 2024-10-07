@@ -11,6 +11,28 @@ import type {
 } from 'openapi-client-axios';
 
 declare namespace Components {
+    export interface HeaderParameters {
+        apiVersionHeaderParam?: Parameters.ApiVersionHeaderParam;
+    }
+    namespace Parameters {
+        export type ApiVersionHeaderParam = "v1" | "v2";
+        export type PagePerIntegrationQueryParam = number;
+        export type PagePerIntegrationQueryParamDeprecated = number;
+        export type PageQueryParam = number;
+        export type SearchQueryParam = string;
+        export type SizePerIntegrationQueryParam = number;
+        export type SizePerIntegrationQueryParamDeprecated = number;
+        export type SizeQueryParam = number;
+    }
+    export interface QueryParameters {
+        pagePerIntegrationQueryParam?: Parameters.PagePerIntegrationQueryParam;
+        sizePerIntegrationQueryParam?: Parameters.SizePerIntegrationQueryParam;
+        pagePerIntegrationQueryParamDeprecated?: Parameters.PagePerIntegrationQueryParamDeprecated;
+        sizePerIntegrationQueryParamDeprecated?: Parameters.SizePerIntegrationQueryParamDeprecated;
+        searchQueryParam?: Parameters.SearchQueryParam;
+        pageQueryParam?: Parameters.PageQueryParam;
+        sizeQueryParam?: Parameters.SizeQueryParam;
+    }
     namespace Schemas {
         export type ApprovalTool = "GIT" | "SERVICENOW";
         /**
@@ -54,6 +76,16 @@ declare namespace Components {
                     catalogInfoContent?: string;
                 };
             };
+        }
+        /**
+         * Import Job List
+         */
+        export interface ImportJobListV2 {
+            imports?: /* Import Job */ Import[];
+            errors?: string[];
+            totalCount?: number;
+            page?: number;
+            size?: number;
         }
         /**
          * Import Job request
@@ -219,20 +251,27 @@ declare namespace Paths {
         }
     }
     namespace FindAllImports {
+        export interface HeaderParameters {
+            "api-version"?: Parameters.ApiVersion;
+        }
         namespace Parameters {
+            export type ApiVersion = "v1" | "v2";
+            export type Page = number;
             export type PagePerIntegration = number;
             export type Search = string;
+            export type Size = number;
             export type SizePerIntegration = number;
         }
         export interface QueryParameters {
             pagePerIntegration?: Parameters.PagePerIntegration;
             sizePerIntegration?: Parameters.SizePerIntegration;
+            page?: Parameters.Page;
+            size?: Parameters.Size;
             search?: Parameters.Search;
         }
         namespace Responses {
-            export type $200 = /* Import Job */ Components.Schemas.Import[];
-            export interface $500 {
-            }
+            export type $200 = /* Import Job */ Components.Schemas.Import[] | /* Import Job List */ Components.Schemas.ImportJobListV2;
+            export type $500 = string | /* Import Job List */ Components.Schemas.ImportJobListV2;
         }
     }
     namespace FindAllOrganizations {
@@ -352,7 +391,7 @@ export interface OperationMethods {
    * findAllImports - Fetch Import Jobs
    */
   'findAllImports'(
-    parameters?: Parameters<Paths.FindAllImports.QueryParameters> | null,
+    parameters?: Parameters<Paths.FindAllImports.QueryParameters & Paths.FindAllImports.HeaderParameters> | null,
     data?: any,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.FindAllImports.Responses.$200>
@@ -428,7 +467,7 @@ export interface PathsDictionary {
      * findAllImports - Fetch Import Jobs
      */
     'get'(
-      parameters?: Parameters<Paths.FindAllImports.QueryParameters> | null,
+      parameters?: Parameters<Paths.FindAllImports.QueryParameters & Paths.FindAllImports.HeaderParameters> | null,
       data?: any,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.FindAllImports.Responses.$200>
@@ -463,11 +502,3 @@ export interface PathsDictionary {
 
 export type Client = OpenAPIClient<OperationMethods, PathsDictionary>
 
-export type ApprovalTool = Components.Schemas.ApprovalTool;
-export type Import = Components.Schemas.Import;
-export type ImportRequest = Components.Schemas.ImportRequest;
-export type ImportStatus = Components.Schemas.ImportStatus;
-export type Organization = Components.Schemas.Organization;
-export type OrganizationList = Components.Schemas.OrganizationList;
-export type Repository = Components.Schemas.Repository;
-export type RepositoryList = Components.Schemas.RepositoryList;

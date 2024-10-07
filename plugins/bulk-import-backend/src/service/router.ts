@@ -227,20 +227,38 @@ export async function createRouter(
   api.register(
     'findAllImports',
     async (c: Context, _req: Request, res: Response) => {
+      const h: Paths.FindAllImports.HeaderParameters = {
+        ...c.request.headers,
+      };
+      const apiVersion = h['api-version'];
       const q: Paths.FindAllImports.QueryParameters = {
         ...c.request.query,
       };
       // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
-      q.pagePerIntegration = stringToNumber(q.pagePerIntegration);
-      q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
+      let page: number | undefined;
+      let size: number | undefined;
+      if (apiVersion === undefined || apiVersion === 'v1') {
+        // pagePerIntegration and sizePerIntegration deprecated in v1. 'page' and 'size' take precedence.
+        page = stringToNumber(q.page || q.pagePerIntegration);
+        size = stringToNumber(q.size || q.sizePerIntegration);
+      } else {
+        // pagePerIntegration and sizePerIntegration removed in v2+ and replaced by 'page' and 'size'.
+        page = stringToNumber(q.page);
+        size = stringToNumber(q.size);
+      }
       const response = await findAllImports(
         logger,
         config,
         githubApiService,
         catalogInfoGenerator,
-        q.search,
-        q.pagePerIntegration,
-        q.sizePerIntegration,
+        {
+          apiVersion,
+        },
+        {
+          search: q.search,
+          pageNumber: page,
+          pageSize: size,
+        },
       );
       return res.status(response.statusCode).json(response.responseBody);
     },

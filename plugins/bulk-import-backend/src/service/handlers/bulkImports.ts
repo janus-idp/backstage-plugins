@@ -42,25 +42,43 @@ type CreateImportDryRunStatus =
   | 'CODEOWNERS_FILE_NOT_FOUND_IN_REPO'
   | 'REPO_EMPTY';
 
+type FindAllImportsResponse =
+  | Components.Schemas.Import[]
+  | Components.Schemas.ImportJobListV2;
+
 export async function findAllImports(
   logger: LoggerService,
   config: Config,
   githubApiService: GithubApiService,
   catalogInfoGenerator: CatalogInfoGenerator,
-  search?: string,
-  pageNumber: number = DefaultPageNumber,
-  pageSize: number = DefaultPageSize,
-): Promise<HandlerResponse<Components.Schemas.Import[]>> {
-  logger.debug('Getting all bulk import jobs..');
+  requestHeaders?: {
+    apiVersion?: Paths.FindAllImports.Parameters.ApiVersion;
+  },
+  queryParams?: {
+    search?: string;
+    pageNumber?: number;
+    pageSize?: number;
+  },
+): Promise<HandlerResponse<FindAllImportsResponse>> {
+  const apiVersion = requestHeaders?.apiVersion ?? 'v1';
+  const search = queryParams?.search;
+  const pageNumber = queryParams?.pageNumber ?? DefaultPageNumber;
+  const pageSize = queryParams?.pageSize ?? DefaultPageSize;
+
+  logger.debug(
+    `Getting all bulk import jobs (apiVersion=${apiVersion}, search=${search}, page=${pageNumber}, size=${pageSize})..`,
+  );
 
   const catalogFilename = getCatalogFilename(config);
 
-  const allLocations = await catalogInfoGenerator.listCatalogUrlLocations(
-    config,
-    search,
-    pageNumber,
-    pageSize,
-  );
+  const allLocations = (
+    await catalogInfoGenerator.listCatalogUrlLocations(
+      config,
+      search,
+      pageNumber,
+      pageSize,
+    )
+  ).targetUrls;
 
   // resolve default branches for each unique repo URL from GH,
   // because we cannot easily determine that from the location target URL.
@@ -126,9 +144,21 @@ export async function findAllImports(
     }
     return a.repository.name.localeCompare(b.repository.name);
   });
+  const paginated = paginateArray(imports, pageNumber, pageSize);
+  if (apiVersion === 'v1') {
+    return {
+      statusCode: 200,
+      responseBody: paginated.result,
+    };
+  }
   return {
     statusCode: 200,
-    responseBody: paginateArray(imports, pageNumber, pageSize).result,
+    responseBody: {
+      imports: paginated.result,
+      totalCount: paginated.totalCount,
+      page: pageNumber,
+      size: pageSize,
+    },
   };
 }
 
@@ -594,8 +624,9 @@ export async function findImportStatusByRepo(
       includeCatalogInfoContent,
     });
     if (!openImportPr.prUrl) {
-      const catalogLocations =
-        await catalogInfoGenerator.listCatalogUrlLocations(config);
+      const catalogLocations = (
+        await catalogInfoGenerator.listCatalogUrlLocations(config)
+      ).targetUrls;
       const catalogUrl = catalogInfoGenerator.getCatalogUrl(
         config,
         repoUrl,
@@ -708,7 +739,9 @@ export async function deleteImportByRepo(
   };
 
   const locationId = findLocationFrom(
-    await catalogInfoGenerator.listCatalogUrlLocationsByIdFromLocationsEndpoint(),
+    (
+      await catalogInfoGenerator.listCatalogUrlLocationsByIdFromLocationsEndpoint()
+    ).locations,
   );
   if (locationId) {
     await catalogInfoGenerator.deleteCatalogLocationById(locationId);

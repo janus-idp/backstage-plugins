@@ -119,7 +119,7 @@ async function formatResponse(
   }
 
   const catalogLocations = checkStatus
-    ? await catalogInfoGenerator.listCatalogUrlLocations(config)
+    ? (await catalogInfoGenerator.listCatalogUrlLocations(config)).targetUrls
     : [];
   const repoList: Components.Schemas.Repository[] = [];
   if (allReposAccessible.repositories) {

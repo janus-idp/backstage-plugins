@@ -79,30 +79,13 @@ const OPENAPI = `
         ],
         "parameters": [
           {
-            "in": "query",
-            "name": "pagePerIntegration",
-            "description": "the page number for each Integration",
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
+            "$ref": "#/components/parameters/pagePerIntegrationQueryParam"
           },
           {
-            "in": "query",
-            "name": "sizePerIntegration",
-            "description": "the number of items per Integration to return per page",
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
+            "$ref": "#/components/parameters/sizePerIntegrationQueryParam"
           },
           {
-            "in": "query",
-            "name": "search",
-            "description": "returns only organizations that match the search string, by name",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/searchQueryParam"
           }
         ],
         "responses": {
@@ -171,30 +154,13 @@ const OPENAPI = `
             }
           },
           {
-            "in": "query",
-            "name": "pagePerIntegration",
-            "description": "the page number for each Integration",
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
+            "$ref": "#/components/parameters/pagePerIntegrationQueryParam"
           },
           {
-            "in": "query",
-            "name": "sizePerIntegration",
-            "description": "the number of items per Integration to return per page",
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
+            "$ref": "#/components/parameters/sizePerIntegrationQueryParam"
           },
           {
-            "in": "query",
-            "name": "search",
-            "description": "returns only organization repositories that contain the search string, by repository name",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/searchQueryParam"
           }
         ],
         "responses": {
@@ -254,30 +220,13 @@ const OPENAPI = `
             }
           },
           {
-            "in": "query",
-            "name": "pagePerIntegration",
-            "description": "the page number for each Integration",
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
+            "$ref": "#/components/parameters/pagePerIntegrationQueryParam"
           },
           {
-            "in": "query",
-            "name": "sizePerIntegration",
-            "description": "the number of items per Integration to return per page",
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
+            "$ref": "#/components/parameters/sizePerIntegrationQueryParam"
           },
           {
-            "in": "query",
-            "name": "search",
-            "description": "returns only repositories that contain the search string, by name",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/searchQueryParam"
           }
         ],
         "responses": {
@@ -328,53 +277,75 @@ const OPENAPI = `
         ],
         "parameters": [
           {
-            "in": "query",
-            "name": "pagePerIntegration",
-            "description": "the page number for each Integration",
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
+            "$ref": "#/components/parameters/apiVersionHeaderParam"
           },
           {
-            "in": "query",
-            "name": "sizePerIntegration",
-            "description": "the number of items per Integration to return per page",
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
+            "$ref": "#/components/parameters/pagePerIntegrationQueryParamDeprecated"
           },
           {
-            "in": "query",
-            "name": "search",
-            "description": "returns only Imports that contain the search string, by repository name",
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/sizePerIntegrationQueryParamDeprecated"
+          },
+          {
+            "$ref": "#/components/parameters/pageQueryParam"
+          },
+          {
+            "$ref": "#/components/parameters/sizeQueryParam"
+          },
+          {
+            "$ref": "#/components/parameters/searchQueryParam"
           }
         ],
         "responses": {
           "200": {
-            "description": "Import Jobs list was fetched successfully with no errors",
+            "description": "Import Job list was fetched successfully with no errors",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Import"
-                  }
+                  "oneOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Import"
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/ImportJobListV2"
+                    }
+                  ]
                 },
                 "examples": {
                   "twoImports": {
                     "$ref": "#/components/examples/twoImports"
+                  },
+                  "multipleImportJobsV2": {
+                    "$ref": "#/components/examples/multipleImportJobsV2"
                   }
                 }
               }
             }
           },
           "500": {
-            "description": "Generic error"
+            "description": "Generic error when there are errors and no Import Job is returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "description": "Generic error"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ImportJobListV2"
+                    }
+                  ]
+                },
+                "examples": {
+                  "repositoryListErrors": {
+                    "$ref": "#/components/examples/importJobListErrors"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -432,7 +403,7 @@ const OPENAPI = `
                 },
                 "examples": {
                   "twoImports": {
-                    "$ref": "#/components/examples/twoImports"
+                    "$ref": "#/components/examples/twoImportJobs"
                   }
                 }
               }
@@ -535,6 +506,85 @@ const OPENAPI = `
     }
   },
   "components": {
+    "parameters": {
+      "apiVersionHeaderParam": {
+        "in": "header",
+        "name": "api-version",
+        "description": "API version.\\n\\n## Changelog\\n\\n### v1 (default)\\nInitial version\\n#### Deprecations\\n* GET /imports\\n  * Deprecation of 'pagePerIntegration' and 'sizePerIntegration' query parameters and introduction of new 'page' and 'size' parameters\\n    * 'page' takes precedence over 'pagePerIntegration' if both are passed\\n    * 'size' takes precedence over 'sizePerIntegration' if both are passed\\n\\n### v2\\n#### Breaking changes\\n* GET /imports\\n  * Query parameters:\\n    * 'pagePerIntegration' is ignored in favor of 'page'\\n    * 'sizePerIntegration' is ignored in favor of 'size'\\n  * Response structure changed to include pagination info: instead of returning a simple list of Imports, the response is now an object containing the following fields:\\n    * 'imports': the list of Imports\\n    * 'page': the page requested\\n    * 'size': the requested number of Imports requested per page\\n    * 'totalCount': the total count of Imports\\n",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "v1",
+            "v2"
+          ],
+          "default": "v1"
+        }
+      },
+      "pagePerIntegrationQueryParam": {
+        "in": "query",
+        "name": "pagePerIntegration",
+        "description": "the page number for each Integration",
+        "schema": {
+          "type": "integer",
+          "default": 1
+        }
+      },
+      "sizePerIntegrationQueryParam": {
+        "in": "query",
+        "name": "sizePerIntegration",
+        "description": "the number of items per Integration to return per page",
+        "schema": {
+          "type": "integer",
+          "default": 20
+        }
+      },
+      "pagePerIntegrationQueryParamDeprecated": {
+        "in": "query",
+        "name": "pagePerIntegration",
+        "description": "the page number for each Integration. **Deprecated**. Use the 'page' query parameter instead.",
+        "deprecated": true,
+        "schema": {
+          "type": "integer",
+          "default": 1
+        }
+      },
+      "sizePerIntegrationQueryParamDeprecated": {
+        "in": "query",
+        "name": "sizePerIntegration",
+        "description": "the number of items per Integration to return per page. **Deprecated**. Use the 'size' query parameter instead.",
+        "deprecated": true,
+        "schema": {
+          "type": "integer",
+          "default": 20
+        }
+      },
+      "searchQueryParam": {
+        "in": "query",
+        "name": "search",
+        "description": "returns only the items that match the search string",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "pageQueryParam": {
+        "in": "query",
+        "name": "page",
+        "description": "the requested page number",
+        "schema": {
+          "type": "integer",
+          "default": 1
+        }
+      },
+      "sizeQueryParam": {
+        "in": "query",
+        "name": "size",
+        "description": "the number of items to return per page",
+        "schema": {
+          "type": "integer",
+          "default": 20
+        }
+      }
+    },
     "schemas": {
       "OrganizationList": {
         "title": "Organization List",
@@ -678,6 +728,33 @@ const OPENAPI = `
           "PR_ERROR",
           null
         ]
+      },
+      "ImportJobListV2": {
+        "title": "Import Job List",
+        "type": "object",
+        "properties": {
+          "imports": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Import"
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "totalCount": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "size": {
+            "type": "integer"
+          }
+        }
       },
       "Import": {
         "title": "Import Job",
@@ -898,7 +975,100 @@ const OPENAPI = `
         }
       },
       "twoImports": {
-        "summary": "Two import job requests",
+        "summary": "Two import job requests (V1)",
+        "value": [
+          {
+            "id": "bulk-import-id-1",
+            "status": "WAIT_PR_APPROVAL",
+            "errors": [],
+            "approvalTool": "GIT",
+            "repository": {
+              "name": "pet-app",
+              "url": "https://github.com/my-org/pet-app",
+              "organization": "my-org"
+            },
+            "github": {
+              "pullRequest": {
+                "url": "https://github.com/my-org/pet-app/pull/1",
+                "number": 1
+              }
+            }
+          },
+          {
+            "id": "bulk-import-id-2",
+            "status": "PR_REJECTED",
+            "errors": [],
+            "approvalTool": "GIT",
+            "repository": {
+              "name": "pet-app-test",
+              "url": "https://github.com/my-org/pet-app-test",
+              "organization": "my-org"
+            },
+            "github": {
+              "pullRequest": {
+                "url": "https://github.com/my-org/pet-app-test/pull/10",
+                "number": 10
+              }
+            }
+          }
+        ]
+      },
+      "multipleImportJobsV2": {
+        "summary": "Two import job requests (V2)",
+        "value": {
+          "errors": [],
+          "page": 1,
+          "size": 2,
+          "totalCount": 10,
+          "imports": [
+            {
+              "id": "bulk-import-id-1",
+              "status": "WAIT_PR_APPROVAL",
+              "errors": [],
+              "approvalTool": "GIT",
+              "repository": {
+                "name": "pet-app",
+                "url": "https://github.com/my-org/pet-app",
+                "organization": "my-org"
+              },
+              "github": {
+                "pullRequest": {
+                  "url": "https://github.com/my-org/pet-app/pull/1",
+                  "number": 1
+                }
+              }
+            },
+            {
+              "id": "bulk-import-id-2",
+              "status": "PR_REJECTED",
+              "errors": [],
+              "approvalTool": "GIT",
+              "repository": {
+                "name": "pet-app-test",
+                "url": "https://github.com/my-org/pet-app-test",
+                "organization": "my-org"
+              },
+              "github": {
+                "pullRequest": {
+                  "url": "https://github.com/my-org/pet-app-test/pull/10",
+                  "number": 10
+                }
+              }
+            }
+          ]
+        }
+      },
+      "importJobListErrors": {
+        "summary": "Errors when listing import jobs",
+        "value": {
+          "errors": [
+            "Github App with ID xyz-123 failed spectacularly"
+          ],
+          "imports": []
+        }
+      },
+      "twoImportJobs": {
+        "summary": "Two import jobs",
         "value": [
           {
             "id": "bulk-import-id-1",

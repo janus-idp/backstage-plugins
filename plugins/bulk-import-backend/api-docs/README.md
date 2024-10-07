@@ -22,6 +22,7 @@ All URIs are relative to *http://localhost:7007/api/bulk-import*
 
  - [ApprovalTool](./Models/ApprovalTool.md)
  - [Import](./Models/Import.md)
+ - [ImportJobListV2](./Models/ImportJobListV2.md)
  - [ImportRequest](./Models/ImportRequest.md)
  - [ImportRequest_github](./Models/ImportRequest_github.md)
  - [ImportRequest_github_pullRequest](./Models/ImportRequest_github_pullRequest.md)
@@ -33,6 +34,8 @@ All URIs are relative to *http://localhost:7007/api/bulk-import*
  - [OrganizationList](./Models/OrganizationList.md)
  - [Repository](./Models/Repository.md)
  - [RepositoryList](./Models/RepositoryList.md)
+ - [findAllImports_200_response](./Models/findAllImports_200_response.md)
+ - [findAllImports_500_response](./Models/findAllImports_500_response.md)
  - [ping_200_response](./Models/ping_200_response.md)
 
 

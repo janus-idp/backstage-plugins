@@ -17,10 +17,12 @@
 import type { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import type { CatalogClient } from '@backstage/catalog-client';
+import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
 
 import { CatalogInfoGenerator } from '../../helpers';
+import { Paths } from '../../openapi';
 import { GithubApiService } from '../githubApiService';
 import { deleteImportByRepo, findAllImports } from './bulkImports';
 
@@ -42,7 +44,7 @@ const config = mockServices.rootConfig({
               clientSecret: 'CLIENT_SECRET',
             },
           ],
-          token: 'hardcoded_token',
+          token: 'hardcoded_token', // notsecret
         },
       ],
     },
@@ -159,143 +161,446 @@ describe('bulkimports.ts tests', () => {
   }
 
   describe('findAllImports', () => {
-    it('should return only imports from repos that are accessible from the configured GH integrations', async () => {
-      jest
-        .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
-        .mockResolvedValue([
-          // from app-config
-          'https://github.com/my-org-1/my-repo-11/blob/main/catalog-info.yaml',
-          'https://github.com/my-org-1/my-repo-12/blob/main/some/path/to/catalog-info.yaml',
-          'https://github.com/my-user/my-repo-123/blob/main/catalog-info.yaml',
-          'https://github.com/some-public-org/some-public-repo/blob/main/catalog-info.yaml',
+    const locationUrls = [
+      // from app-config
+      'https://github.com/my-org-1/my-repo-11/blob/main/catalog-info.yaml',
+      'https://github.com/my-org-1/my-repo-12/blob/main/some/path/to/catalog-info.yaml',
+      'https://github.com/my-user/my-repo-123/blob/main/catalog-info.yaml',
+      'https://github.com/some-public-org/some-public-repo/blob/main/catalog-info.yaml',
 
-          // from some Locations
-          'https://github.com/my-org-2/my-repo-21/blob/master/catalog-info.yaml',
-          'https://github.com/my-org-2/my-repo-22/blob/master/catalog-info.yaml',
-          'https://github.com/my-org-21/my-repo-211/blob/another-branch/catalog-info.yaml',
+      // from some Locations
+      'https://github.com/my-org-2/my-repo-21/blob/master/catalog-info.yaml',
+      'https://github.com/my-org-2/my-repo-22/blob/master/catalog-info.yaml',
+      'https://github.com/my-org-21/my-repo-211/blob/another-branch/catalog-info.yaml',
 
-          // from some Location entities (simulating repos that could be auto-discovered by the discovery plugin)
-          'https://github.com/my-org-3/my-repo-31/blob/main/catalog-info.yaml',
-          'https://github.com/my-org-3/my-repo-32/blob/dev/catalog-info.yaml',
-          'https://github.com/my-org-3/my-repo-33/blob/dev/all.yaml',
-          'https://github.com/my-org-3/my-repo-34/blob/dev/path/to/catalog-info.yaml',
-        ]);
-      jest
-        .spyOn(
+      // from some Location entities (simulating repos that could be auto-discovered by the discovery plugin)
+      'https://github.com/my-org-3/my-repo-31/blob/main/catalog-info.yaml',
+      'https://github.com/my-org-3/my-repo-32/blob/dev/catalog-info.yaml',
+      'https://github.com/my-org-3/my-repo-33/blob/dev/all.yaml',
+      'https://github.com/my-org-3/my-repo-34/blob/dev/path/to/catalog-info.yaml',
+    ];
+
+    it.each([undefined, 'v1', 'v2'])(
+      'should return only imports from repos that are accessible from the configured GH integrations (API Version: %s)',
+      async apiVersionStr => {
+        jest
+          .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
+          .mockResolvedValue({
+            targetUrls: locationUrls,
+            totalCount: locationUrls.length,
+          });
+        jest
+          .spyOn(
+            mockGithubApiService,
+            'filterLocationsAccessibleFromIntegrations',
+          )
+          .mockResolvedValue([
+            // only repos that are accessible from the configured GH integrations
+            // are considered as valid Imports
+            'https://github.com/my-org-1/my-repo-11/blob/main/catalog-info.yaml', // PR
+            'https://github.com/my-user/my-repo-123/blob/main/catalog-info.yaml', // PR Error
+            'https://github.com/my-org-2/my-repo-21/blob/master/catalog-info.yaml', // ADDED
+            'https://github.com/my-org-2/my-repo-22/blob/master/catalog-info.yaml', // no PR => null status
+            'https://github.com/my-org-3/my-repo-31/blob/main/catalog-info.yaml', // ADDED
+            'https://github.com/my-org-3/my-repo-32/blob/dev/catalog-info.yaml', // PR
+          ]);
+        jest
+          .spyOn(mockCatalogInfoGenerator, 'findLocationEntitiesByTargetUrl')
+          .mockResolvedValue([]);
+
+        const apiVersion = apiVersionStr as
+          | Paths.FindAllImports.Parameters.ApiVersion
+          | undefined;
+        let resp = await findAllImports(
+          logger,
+          config,
           mockGithubApiService,
-          'filterLocationsAccessibleFromIntegrations',
-        )
-        .mockResolvedValue([
-          // only repos that are accessible from the configured GH integrations
-          // are considered as valid Imports
-          'https://github.com/my-org-1/my-repo-11/blob/main/catalog-info.yaml', // PR
-          'https://github.com/my-user/my-repo-123/blob/main/catalog-info.yaml', // PR Error
-          'https://github.com/my-org-2/my-repo-21/blob/master/catalog-info.yaml', // ADDED
-          'https://github.com/my-org-2/my-repo-22/blob/master/catalog-info.yaml', // no PR => null status
-          'https://github.com/my-org-3/my-repo-31/blob/main/catalog-info.yaml', // ADDED
-          'https://github.com/my-org-3/my-repo-32/blob/dev/catalog-info.yaml', // PR
-        ]);
-      jest
-        .spyOn(mockCatalogInfoGenerator, 'findLocationEntitiesByTargetUrl')
-        .mockResolvedValue([]);
+          mockCatalogInfoGenerator,
+          {
+            apiVersion,
+          },
+        );
+        expect(resp.statusCode).toEqual(200);
+        const allImportsExpected = [
+          {
+            id: 'https://github.com/my-org-1/my-repo-11',
+            repository: {
+              url: 'https://github.com/my-org-1/my-repo-11',
+              name: 'my-repo-11',
+              organization: 'my-org-1',
+              id: 'my-org-1/my-repo-11',
+              defaultBranch: 'main',
+            },
+            approvalTool: 'GIT',
+            status: 'WAIT_PR_APPROVAL',
+            github: {
+              pullRequest: {
+                number: 987,
+                url: 'https://github.com/my-org-1/my-repo-11/pull/987',
+              },
+            },
+          },
+          {
+            id: 'https://github.com/my-user/my-repo-123',
+            repository: {
+              url: 'https://github.com/my-user/my-repo-123',
+              name: 'my-repo-123',
+              organization: 'my-user',
+              id: 'my-user/my-repo-123',
+              defaultBranch: 'main',
+            },
+            approvalTool: 'GIT',
+            status: 'PR_ERROR',
+            errors: [
+              'could not find out if there is an import PR open on this repo',
+            ],
+          },
+          {
+            id: 'https://github.com/my-org-2/my-repo-21',
+            repository: {
+              url: 'https://github.com/my-org-2/my-repo-21',
+              name: 'my-repo-21',
+              organization: 'my-org-2',
+              id: 'my-org-2/my-repo-21',
+              defaultBranch: 'master',
+            },
+            approvalTool: 'GIT',
+            status: 'ADDED',
+          },
+          {
+            id: 'https://github.com/my-org-2/my-repo-22',
+            repository: {
+              url: 'https://github.com/my-org-2/my-repo-22',
+              name: 'my-repo-22',
+              organization: 'my-org-2',
+              id: 'my-org-2/my-repo-22',
+              defaultBranch: 'master',
+            },
+            approvalTool: 'GIT',
+            status: null,
+          },
+          {
+            id: 'https://github.com/my-org-3/my-repo-31',
+            repository: {
+              url: 'https://github.com/my-org-3/my-repo-31',
+              name: 'my-repo-31',
+              organization: 'my-org-3',
+              id: 'my-org-3/my-repo-31',
+              defaultBranch: 'main',
+            },
+            approvalTool: 'GIT',
+            status: 'ADDED',
+          },
+          {
+            id: 'https://github.com/my-org-3/my-repo-32',
+            repository: {
+              url: 'https://github.com/my-org-3/my-repo-32',
+              name: 'my-repo-32',
+              organization: 'my-org-3',
+              id: 'my-org-3/my-repo-32',
+              defaultBranch: 'dev',
+            },
+            approvalTool: 'GIT',
+            status: 'WAIT_PR_APPROVAL',
+            github: {
+              pullRequest: {
+                number: 100,
+                url: 'https://github.com/my-org-2/my-repo-21/pull/100',
+              },
+            },
+          },
+        ];
+        let expectedResponse: any = allImportsExpected;
+        if (apiVersion === 'v2') {
+          expectedResponse = {
+            imports: allImportsExpected,
+            page: 1,
+            size: 20,
+            totalCount: 6,
+          };
+        }
+        expect(resp.responseBody).toEqual(expectedResponse);
 
-      const resp = await findAllImports(
-        logger,
-        config,
-        mockGithubApiService,
-        mockCatalogInfoGenerator,
-      );
-      expect(resp.statusCode).toEqual(200);
-      expect(resp.responseBody).toEqual([
-        {
-          id: 'https://github.com/my-org-1/my-repo-11',
-          repository: {
-            url: 'https://github.com/my-org-1/my-repo-11',
-            name: 'my-repo-11',
-            organization: 'my-org-1',
-            id: 'my-org-1/my-repo-11',
-            defaultBranch: 'main',
+        // Request different pages and sizes
+        resp = await findAllImports(
+          logger,
+          config,
+          mockGithubApiService,
+          mockCatalogInfoGenerator,
+          {
+            apiVersion,
           },
-          approvalTool: 'GIT',
-          status: 'WAIT_PR_APPROVAL',
-          github: {
-            pullRequest: {
-              number: 987,
-              url: 'https://github.com/my-org-1/my-repo-11/pull/987',
+          {
+            pageNumber: 1,
+            pageSize: 4,
+          },
+        );
+        expect(resp.statusCode).toEqual(200);
+        expectedResponse = allImportsExpected.slice(0, 4);
+        if (apiVersion === 'v2') {
+          expectedResponse = {
+            imports: expectedResponse,
+            page: 1,
+            size: 4,
+            totalCount: 6,
+          };
+        }
+        expect(resp.responseBody).toEqual(expectedResponse);
+
+        resp = await findAllImports(
+          logger,
+          config,
+          mockGithubApiService,
+          mockCatalogInfoGenerator,
+          {
+            apiVersion,
+          },
+          {
+            pageNumber: 2,
+            pageSize: 4,
+          },
+        );
+        expect(resp.statusCode).toEqual(200);
+        expectedResponse = allImportsExpected.slice(4, 6);
+        if (apiVersion === 'v2') {
+          expectedResponse = {
+            imports: expectedResponse,
+            page: 2,
+            size: 4,
+            totalCount: 6,
+          };
+        }
+        expect(resp.responseBody).toEqual(expectedResponse);
+
+        // No data for this page
+        resp = await findAllImports(
+          logger,
+          config,
+          mockGithubApiService,
+          mockCatalogInfoGenerator,
+          {
+            apiVersion,
+          },
+          {
+            pageNumber: 3,
+            pageSize: 4,
+          },
+        );
+        expect(resp.statusCode).toEqual(200);
+        expectedResponse = [];
+        if (apiVersion === 'v2') {
+          expectedResponse = {
+            imports: expectedResponse,
+            page: 3,
+            size: 4,
+            totalCount: 6,
+          };
+        }
+        expect(resp.responseBody).toEqual(expectedResponse);
+      },
+    );
+
+    it.each([undefined, 'v1', 'v2'])(
+      'should respect search and pagination when returning imports (API Version: %s)',
+      async apiVersionStr => {
+        jest
+          .spyOn(mockCatalogInfoGenerator, 'listCatalogUrlLocations')
+          .mockImplementation(
+            async (
+              _config: Config,
+              search?: string | undefined,
+              _pageNumber?: number | undefined,
+              _pageSize?: number | undefined,
+            ) => {
+              const filteredLocations = search
+                ? locationUrls.filter(l => l.toLowerCase().includes(search))
+                : locationUrls;
+              return {
+                targetUrls: filteredLocations,
+                totalCount: filteredLocations.length,
+              };
             },
+          );
+        jest
+          .spyOn(
+            mockGithubApiService,
+            'filterLocationsAccessibleFromIntegrations',
+          )
+          .mockImplementation(async (locs: string[]) => {
+            const accessible = [
+              // only repos that are accessible from the configured GH integrations
+              // are considered as valid Imports
+              'https://github.com/my-org-1/my-repo-11/blob/main/catalog-info.yaml', // PR
+              'https://github.com/my-user/my-repo-123/blob/main/catalog-info.yaml', // PR Error
+              'https://github.com/my-org-2/my-repo-21/blob/master/catalog-info.yaml', // ADDED
+              'https://github.com/my-org-2/my-repo-22/blob/master/catalog-info.yaml', // no PR => null status
+              'https://github.com/my-org-3/my-repo-31/blob/main/catalog-info.yaml', // ADDED
+              'https://github.com/my-org-3/my-repo-32/blob/dev/catalog-info.yaml', // PR
+            ];
+            return locs.filter(loc => accessible.includes(loc));
+          });
+        jest
+          .spyOn(mockCatalogInfoGenerator, 'findLocationEntitiesByTargetUrl')
+          .mockResolvedValue([]);
+
+        const apiVersion = apiVersionStr as
+          | Paths.FindAllImports.Parameters.ApiVersion
+          | undefined;
+        let resp = await findAllImports(
+          logger,
+          config,
+          mockGithubApiService,
+          mockCatalogInfoGenerator,
+          {
+            apiVersion,
           },
-        },
-        {
-          id: 'https://github.com/my-user/my-repo-123',
-          repository: {
-            url: 'https://github.com/my-user/my-repo-123',
-            name: 'my-repo-123',
-            organization: 'my-user',
-            id: 'my-user/my-repo-123',
-            defaultBranch: 'main',
+          {
+            search: 'lorem ipsum dolor sit amet should not return any data',
           },
-          approvalTool: 'GIT',
-          status: 'PR_ERROR',
-          errors: [
-            'could not find out if there is an import PR open on this repo',
-          ],
-        },
-        {
-          id: 'https://github.com/my-org-2/my-repo-21',
-          repository: {
-            url: 'https://github.com/my-org-2/my-repo-21',
-            name: 'my-repo-21',
-            organization: 'my-org-2',
-            id: 'my-org-2/my-repo-21',
-            defaultBranch: 'master',
+        );
+        expect(resp.statusCode).toEqual(200);
+        let expectedResponse: any = [];
+        if (apiVersion === 'v2') {
+          expectedResponse = {
+            imports: expectedResponse,
+            page: 1,
+            size: 20,
+            totalCount: 0,
+          };
+        }
+        expect(resp.responseBody).toEqual(expectedResponse);
+
+        resp = await findAllImports(
+          logger,
+          config,
+          mockGithubApiService,
+          mockCatalogInfoGenerator,
+          {
+            apiVersion,
           },
-          approvalTool: 'GIT',
-          status: 'ADDED',
-        },
-        {
-          id: 'https://github.com/my-org-2/my-repo-22',
-          repository: {
-            url: 'https://github.com/my-org-2/my-repo-22',
-            name: 'my-repo-22',
-            organization: 'my-org-2',
-            id: 'my-org-2/my-repo-22',
-            defaultBranch: 'master',
+          {
+            search: 'my-repo-2',
           },
-          approvalTool: 'GIT',
-          status: null,
-        },
-        {
-          id: 'https://github.com/my-org-3/my-repo-31',
-          repository: {
-            url: 'https://github.com/my-org-3/my-repo-31',
-            name: 'my-repo-31',
-            organization: 'my-org-3',
-            id: 'my-org-3/my-repo-31',
-            defaultBranch: 'main',
-          },
-          approvalTool: 'GIT',
-          status: 'ADDED',
-        },
-        {
-          id: 'https://github.com/my-org-3/my-repo-32',
-          repository: {
-            url: 'https://github.com/my-org-3/my-repo-32',
-            name: 'my-repo-32',
-            organization: 'my-org-3',
-            id: 'my-org-3/my-repo-32',
-            defaultBranch: 'dev',
-          },
-          approvalTool: 'GIT',
-          status: 'WAIT_PR_APPROVAL',
-          github: {
-            pullRequest: {
-              number: 100,
-              url: 'https://github.com/my-org-2/my-repo-21/pull/100',
+        );
+        expect(resp.statusCode).toEqual(200);
+        const allImportsExpected = [
+          {
+            id: 'https://github.com/my-org-2/my-repo-21',
+            repository: {
+              url: 'https://github.com/my-org-2/my-repo-21',
+              name: 'my-repo-21',
+              organization: 'my-org-2',
+              id: 'my-org-2/my-repo-21',
+              defaultBranch: 'master',
             },
+            approvalTool: 'GIT',
+            status: 'ADDED',
           },
-        },
-      ]);
-    });
+          {
+            id: 'https://github.com/my-org-2/my-repo-22',
+            repository: {
+              url: 'https://github.com/my-org-2/my-repo-22',
+              name: 'my-repo-22',
+              organization: 'my-org-2',
+              id: 'my-org-2/my-repo-22',
+              defaultBranch: 'master',
+            },
+            approvalTool: 'GIT',
+            status: null,
+          },
+        ];
+        expectedResponse = allImportsExpected;
+        if (apiVersion === 'v2') {
+          expectedResponse = {
+            imports: expectedResponse,
+            page: 1,
+            size: 20,
+            totalCount: 2,
+          };
+        }
+        expect(resp.responseBody).toEqual(expectedResponse);
+
+        // Request different pages and sizes
+        resp = await findAllImports(
+          logger,
+          config,
+          mockGithubApiService,
+          mockCatalogInfoGenerator,
+          {
+            apiVersion,
+          },
+          {
+            search: 'my-repo-2',
+            pageNumber: 1,
+            pageSize: 1,
+          },
+        );
+        expect(resp.statusCode).toEqual(200);
+        expectedResponse = allImportsExpected.slice(0, 1);
+        if (apiVersion === 'v2') {
+          expectedResponse = {
+            imports: expectedResponse,
+            page: 1,
+            size: 1,
+            totalCount: 2,
+          };
+        }
+        expect(resp.responseBody).toEqual(expectedResponse);
+
+        resp = await findAllImports(
+          logger,
+          config,
+          mockGithubApiService,
+          mockCatalogInfoGenerator,
+          {
+            apiVersion,
+          },
+          {
+            search: 'my-repo-2',
+            pageNumber: 2,
+            pageSize: 1,
+          },
+        );
+        expect(resp.statusCode).toEqual(200);
+        expectedResponse = allImportsExpected.slice(1, 2);
+        if (apiVersion === 'v2') {
+          expectedResponse = {
+            imports: expectedResponse,
+            page: 2,
+            size: 1,
+            totalCount: 2,
+          };
+        }
+        expect(resp.responseBody).toEqual(expectedResponse);
+
+        // No data for this page
+        resp = await findAllImports(
+          logger,
+          config,
+          mockGithubApiService,
+          mockCatalogInfoGenerator,
+          {
+            apiVersion,
+          },
+          {
+            search: 'my-repo-2',
+            pageNumber: 3,
+            pageSize: 1,
+          },
+        );
+        expect(resp.statusCode).toEqual(200);
+        expectedResponse = [];
+        if (apiVersion === 'v2') {
+          expectedResponse = {
+            imports: expectedResponse,
+            page: 3,
+            size: 1,
+            totalCount: 2,
+          };
+        }
+        expect(resp.responseBody).toEqual(expectedResponse);
+      },
+    );
   });
 
   describe('deleteImportByRepo', () => {
@@ -314,12 +619,15 @@ describe('bulkimports.ts tests', () => {
           mockCatalogInfoGenerator,
           'listCatalogUrlLocationsByIdFromLocationsEndpoint',
         )
-        .mockResolvedValue([
-          {
-            id: 'location-id-11',
-            target: `${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`,
-          },
-        ]);
+        .mockResolvedValue({
+          locations: [
+            {
+              id: 'location-id-11',
+              target: `${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`,
+            },
+          ],
+          totalCount: 1,
+        });
       jest
         .spyOn(mockCatalogInfoGenerator, 'deleteCatalogLocationById')
         .mockResolvedValue();
@@ -366,12 +674,15 @@ describe('bulkimports.ts tests', () => {
           mockCatalogInfoGenerator,
           'listCatalogUrlLocationsByIdFromLocationsEndpoint',
         )
-        .mockResolvedValue([
-          {
-            id: 'location-id-12',
-            target: `${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`,
-          },
-        ]);
+        .mockResolvedValue({
+          locations: [
+            {
+              id: 'location-id-12',
+              target: `${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`,
+            },
+          ],
+          totalCount: 1,
+        });
       jest
         .spyOn(mockCatalogInfoGenerator, 'deleteCatalogLocationById')
         .mockResolvedValue();

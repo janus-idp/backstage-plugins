@@ -20,7 +20,7 @@ Fetch Organization Repositories accessible by Backstage Github Integrations
 | **checkImportStatus** | **Boolean**| whether to return import status. Note that this might incur a performance penalty because the import status is computed for each repository. | [optional] [default to false] |
 | **pagePerIntegration** | **Integer**| the page number for each Integration | [optional] [default to 1] |
 | **sizePerIntegration** | **Integer**| the number of items per Integration to return per page | [optional] [default to 20] |
-| **search** | **String**| returns only repositories that contain the search string, by name | [optional] [default to null] |
+| **search** | **String**| returns only the items that match the search string | [optional] [default to null] |
 
 ### Return type
 
