@@ -22,7 +22,7 @@
   "homepage": "https://red.ht/rhdh",
   "repository": {
     "type": "git",
-    "url": "https://github.com/janus-idp/backstage-plugins",
+    "url": "git+https://github.com/janus-idp/backstage-plugins.git",
     "directory": "plugins/orchestrator"
   },
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
