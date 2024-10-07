@@ -1,3 +1,9 @@
+# ❗DEPRECATED❗
+
+This package has been deprecated.
+
+Please use the **[@backstage-community/plugin-nexus-repository-manager](https://www.npmjs.com/package/@backstage-community/plugin-nexus-repository-manager)** package instead.
+
 # Nexus Repository Manager plugin for Backstage
 
 The Nexus Repository Manager plugin displays the information about your build artifacts that are available in the Nexus Repository Manager in your Backstage application.
