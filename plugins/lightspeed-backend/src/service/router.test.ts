@@ -282,8 +282,6 @@ describe('lightspeed router tests', () => {
               error: {
                 message: `model "${nonExistentModel}" not found, try pulling it first`,
                 type: 'api_error',
-                param: null,
-                code: null,
               },
             }),
             { status: 404 },
