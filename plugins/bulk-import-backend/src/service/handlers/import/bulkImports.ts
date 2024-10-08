@@ -45,6 +45,21 @@ type FindAllImportsResponse =
   | Components.Schemas.Import[]
   | Components.Schemas.ImportJobListV2;
 
+function sortImports(imports: Components.Schemas.Import[]) {
+  imports.sort((a, b) => {
+    if (a.repository?.name === undefined && b.repository?.name === undefined) {
+      return 0;
+    }
+    if (a.repository?.name === undefined) {
+      return -1;
+    }
+    if (b.repository?.name === undefined) {
+      return 1;
+    }
+    return a.repository.name.localeCompare(b.repository.name);
+  });
+}
+
 export async function findAllImports(
   deps: {
     logger: LoggerService;
@@ -128,19 +143,10 @@ export async function findAllImports(
   const imports = result
     .filter(res => res.responseBody)
     .map(res => res.responseBody!);
+
   // sorting the output to make it deterministic and easy to navigate in the UI
-  imports.sort((a, b) => {
-    if (a.repository?.name === undefined && b.repository?.name === undefined) {
-      return 0;
-    }
-    if (a.repository?.name === undefined) {
-      return -1;
-    }
-    if (b.repository?.name === undefined) {
-      return 1;
-    }
-    return a.repository.name.localeCompare(b.repository.name);
-  });
+  sortImports(imports);
+
   const paginated = paginateArray(imports, pageNumber, pageSize);
   if (apiVersion === 'v1') {
     return {
@@ -282,6 +288,144 @@ For more information, read an [overview of the Backstage software catalog](https
   });
 }
 
+async function handleAddedReposFromCreateImportJobs(
+  deps: {
+    logger: LoggerService;
+    config: Config;
+    auth: AuthService;
+    catalogApi: CatalogApi;
+    githubApiService: GithubApiService;
+    catalogInfoGenerator: CatalogInfoGenerator;
+    catalogHttpClient: CatalogHttpClient;
+  },
+  importRequests: Components.Schemas.ImportRequest[],
+) {
+  const result: Components.Schemas.Import[] = [];
+
+  for (const req of importRequests) {
+    // Check if repo is already imported
+    const repoCatalogUrl = getCatalogUrl(
+      deps.config,
+      req.repository.url,
+      req.repository.defaultBranch,
+    );
+    const hasLocation =
+      await deps.catalogHttpClient.verifyLocationExistence(repoCatalogUrl);
+    if (!hasLocation) {
+      continue;
+    }
+    const hasCatalogInfoFileInRepo = await deps.githubApiService.hasFileInRepo({
+      repoUrl: req.repository.url,
+      defaultBranch: req.repository.defaultBranch,
+      fileName: getCatalogFilename(deps.config),
+    });
+    if (!hasCatalogInfoFileInRepo) {
+      continue;
+    }
+
+    const ghRepo = await deps.githubApiService.getRepositoryFromIntegrations(
+      req.repository.url,
+    );
+
+    // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
+    await deps.catalogHttpClient.refreshLocationByRepoUrl(
+      req.repository.url,
+      req.repository.defaultBranch,
+    );
+
+    const gitUrl = gitUrlParse(req.repository.url);
+    result.push({
+      status: 'ADDED',
+      lastUpdate: ghRepo?.repository?.updated_at ?? undefined,
+      repository: {
+        url: req.repository.url,
+        name: gitUrl.name,
+        organization: gitUrl.organization,
+      },
+    });
+  }
+  return result;
+}
+
+async function handlePrCreationRequest(
+  deps: {
+    logger: LoggerService;
+    config: Config;
+    auth: AuthService;
+    catalogApi: CatalogApi;
+    githubApiService: GithubApiService;
+    catalogInfoGenerator: CatalogInfoGenerator;
+    catalogHttpClient: CatalogHttpClient;
+  },
+  req: Components.Schemas.ImportRequest,
+  gitUrl: gitUrlParse.GitUrl,
+): Promise<Components.Schemas.Import> {
+  const repoCatalogUrl = getCatalogUrl(
+    deps.config,
+    req.repository.url,
+    req.repository.defaultBranch,
+  );
+  const prToRepo = await createPR(
+    deps.githubApiService,
+    deps.logger,
+    req,
+    gitUrl,
+    deps.catalogInfoGenerator,
+    deps.config,
+  );
+  if (prToRepo.errors && prToRepo.errors.length > 0) {
+    return {
+      errors: prToRepo.errors,
+      status: 'PR_ERROR',
+      repository: req.repository,
+    };
+  }
+  if (prToRepo.prUrl) {
+    deps.logger.debug(`Created new PR from request: ${prToRepo.prUrl}`);
+  }
+
+  // Create Location
+  await deps.catalogHttpClient.possiblyCreateLocation(repoCatalogUrl);
+
+  if (prToRepo.hasChanges === false) {
+    deps.logger.debug(
+      `No bulk import PR created on ${req.repository.url} since its default branch (${req.repository.defaultBranch}) already contains a catalog-info file`,
+    );
+
+    // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
+    await deps.catalogHttpClient.refreshLocationByRepoUrl(
+      req.repository.url,
+      req.repository.defaultBranch,
+    );
+    return {
+      status: 'ADDED',
+      lastUpdate: prToRepo.lastUpdate,
+      repository: {
+        url: req.repository.url,
+        name: gitUrl.name,
+        organization: gitUrl.organization,
+      },
+    };
+  }
+
+  return {
+    errors: prToRepo.errors,
+    status: 'WAIT_PR_APPROVAL',
+    lastUpdate: prToRepo.lastUpdate,
+    repository: {
+      url: req.repository.url,
+      name: gitUrl.name,
+      organization: gitUrl.organization,
+    },
+    github: {
+      pullRequest: {
+        url: prToRepo.prUrl,
+        number: prToRepo.prNumber,
+      },
+    },
+  };
+}
+
 export async function createImportJobs(
   deps: {
     logger: LoggerService;
@@ -321,108 +465,25 @@ export async function createImportJobs(
   }
 
   const result: Components.Schemas.Import[] = [];
-  for (const req of importRequests) {
-    const gitUrl = gitUrlParse(req.repository.url);
 
-    // Check if repo is already imported
-    const repoCatalogUrl = getCatalogUrl(
-      deps.config,
-      req.repository.url,
-      req.repository.defaultBranch,
-    );
-    const hasLocation =
-      await deps.catalogHttpClient.verifyLocationExistence(repoCatalogUrl);
-    if (
-      hasLocation &&
-      (await deps.githubApiService.hasFileInRepo({
-        repoUrl: req.repository.url,
-        defaultBranch: req.repository.defaultBranch,
-        fileName: getCatalogFilename(deps.config),
-      }))
-    ) {
-      const ghRepo = await deps.githubApiService.getRepositoryFromIntegrations(
-        req.repository.url,
-      );
-      // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
-      await deps.catalogHttpClient.refreshLocationByRepoUrl(
-        req.repository.url,
-        req.repository.defaultBranch,
-      );
-      result.push({
-        status: 'ADDED',
-        lastUpdate: ghRepo?.repository?.updated_at ?? undefined,
-        repository: {
-          url: req.repository.url,
-          name: gitUrl.name,
-          organization: gitUrl.organization,
-        },
-      });
-      continue;
-    }
+  const addedRepos = await handleAddedReposFromCreateImportJobs(
+    deps,
+    importRequests,
+  );
+  result.push(...addedRepos);
+  const addedReposMap = new Map(
+    addedRepos.map(res => [res.repository?.url, res]),
+  );
+  const remainingRequests = importRequests.filter(
+    req => !addedReposMap.has(req.repository.url),
+  );
+
+  for (const req of remainingRequests) {
+    const gitUrl = gitUrlParse(req.repository.url);
 
     // Create PR
     try {
-      const prToRepo = await createPR(
-        deps.githubApiService,
-        deps.logger,
-        req,
-        gitUrl,
-        deps.catalogInfoGenerator,
-        deps.config,
-      );
-      if (prToRepo.errors && prToRepo.errors.length > 0) {
-        result.push({
-          errors: prToRepo.errors,
-          status: 'PR_ERROR',
-          repository: req.repository,
-        });
-        continue;
-      }
-      if (prToRepo.prUrl) {
-        deps.logger.debug(`Created new PR from request: ${prToRepo.prUrl}`);
-      }
-
-      // Create Location
-      await deps.catalogHttpClient.possiblyCreateLocation(repoCatalogUrl);
-
-      if (prToRepo.hasChanges === false) {
-        deps.logger.debug(
-          `No bulk import PR created on ${req.repository.url} since its default branch (${req.repository.defaultBranch}) already contains a catalog-info file`,
-        );
-
-        // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
-        await deps.catalogHttpClient.refreshLocationByRepoUrl(
-          req.repository.url,
-          req.repository.defaultBranch,
-        );
-        result.push({
-          status: 'ADDED',
-          lastUpdate: prToRepo.lastUpdate,
-          repository: {
-            url: req.repository.url,
-            name: gitUrl.name,
-            organization: gitUrl.organization,
-          },
-        });
-        continue;
-      }
-
-      result.push({
-        errors: prToRepo.errors,
-        status: 'WAIT_PR_APPROVAL',
-        lastUpdate: prToRepo.lastUpdate,
-        repository: {
-          url: req.repository.url,
-          name: gitUrl.name,
-          organization: gitUrl.organization,
-        },
-        github: {
-          pullRequest: {
-            url: prToRepo.prUrl,
-            number: prToRepo.prNumber,
-          },
-        },
-      });
+      result.push(await handlePrCreationRequest(deps, req, gitUrl));
     } catch (error: any) {
       result.push({
         errors: [error.message],
@@ -435,6 +496,8 @@ export async function createImportJobs(
       } as Components.Schemas.Import);
     }
   }
+
+  sortImports(result);
 
   return {
     statusCode: 202,

@@ -163,6 +163,10 @@ describe('bulkimports.ts unit tests', () => {
       });
   }
 
+  function intersect(target: string[], input: string[]) {
+    return input.filter(loc => target.includes(loc));
+  }
+
   describe('findAllImports', () => {
     const locationUrls = [
       // from app-config
@@ -182,6 +186,12 @@ describe('bulkimports.ts unit tests', () => {
       'https://github.com/my-org-3/my-repo-33/blob/dev/all.yaml',
       'https://github.com/my-org-3/my-repo-34/blob/dev/path/to/catalog-info.yaml',
     ];
+
+    function searchInLocationUrls(locations: string[], search?: string) {
+      return search
+        ? locations.filter(l => l.toLowerCase().includes(search))
+        : locations;
+    }
 
     it.each([undefined, 'v1', 'v2'])(
       'should return only imports from repos that are accessible from the configured GH integrations (API Version: %s)',
@@ -414,23 +424,20 @@ describe('bulkimports.ts unit tests', () => {
     it.each([undefined, 'v1', 'v2'])(
       'should respect search and pagination when returning imports (API Version: %s)',
       async apiVersionStr => {
+        const listCatalogUrlLocationsMockFn = async (
+          search?: string | undefined,
+          _pageNumber?: number | undefined,
+          _pageSize?: number | undefined,
+        ) => {
+          const filteredLocations = searchInLocationUrls(locationUrls, search);
+          return {
+            targetUrls: filteredLocations,
+            totalCount: filteredLocations.length,
+          };
+        };
         jest
           .spyOn(mockCatalogHttpClient, 'listCatalogUrlLocations')
-          .mockImplementation(
-            async (
-              search?: string | undefined,
-              _pageNumber?: number | undefined,
-              _pageSize?: number | undefined,
-            ) => {
-              const filteredLocations = search
-                ? locationUrls.filter(l => l.toLowerCase().includes(search))
-                : locationUrls;
-              return {
-                targetUrls: filteredLocations,
-                totalCount: filteredLocations.length,
-              };
-            },
-          );
+          .mockImplementation(listCatalogUrlLocationsMockFn);
         jest
           .spyOn(
             mockGithubApiService,
@@ -447,7 +454,7 @@ describe('bulkimports.ts unit tests', () => {
               'https://github.com/my-org-3/my-repo-31/blob/main/catalog-info.yaml', // ADDED
               'https://github.com/my-org-3/my-repo-32/blob/dev/catalog-info.yaml', // PR
             ];
-            return locs.filter(loc => accessible.includes(loc));
+            return intersect(accessible, locs);
           });
         jest
           .spyOn(mockCatalogHttpClient, 'findLocationEntitiesByTargetUrl')

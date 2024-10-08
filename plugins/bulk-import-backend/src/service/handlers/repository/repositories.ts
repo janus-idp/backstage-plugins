@@ -21,14 +21,16 @@ import gitUrlParse from 'git-url-parse';
 
 import { CatalogHttpClient } from '../../../catalog/catalogHttpClient';
 import type { Components } from '../../../generated/openapi';
-import type { GithubApiService } from '../../../github';
-import type { GithubRepositoryResponse } from '../../../github/types';
+import type {
+  GithubApiService,
+  GithubRepositoryResponse,
+} from '../../../github';
 import {
   DefaultPageNumber,
   DefaultPageSize,
   type HandlerResponse,
 } from '../handlers';
-import { getImportStatusFromLocations } from '../import/importStatus';
+import { getImportStatusFromLocations } from '../import';
 
 export async function findAllRepositories(
   deps: {
@@ -108,12 +110,10 @@ async function formatResponse(
   allReposAccessible: GithubRepositoryResponse,
   checkStatus: boolean,
 ) {
-  const errorList: string[] = [];
-  for (const err of allReposAccessible.errors ?? []) {
-    if (err.error?.message) {
-      errorList.push(err.error.message);
-    }
-  }
+  const errorList =
+    allReposAccessible.errors
+      ?.map(err => err.error?.message)
+      ?.filter(msg => msg) ?? [];
   if (allReposAccessible.repositories?.length === 0 && errorList.length > 0) {
     return {
       statusCode: 500,
@@ -129,21 +129,20 @@ async function formatResponse(
       .targetUrls;
   }
   const repoList: Components.Schemas.Repository[] = [];
-  for (const repo of allReposAccessible.repositories ?? []) {
+  for (const repo of allReposAccessible.repositories) {
     const gitUrl = gitUrlParse(repo.html_url);
     const errors: string[] = [];
     let importStatus: ImportStatus;
-    try {
-      if (checkStatus) {
-        importStatus = await getImportStatusFromLocations(
-          deps,
-          repo.html_url,
-          catalogLocations,
-          repo.default_branch,
-        );
-      }
-    } catch (error: any) {
-      errors.push(error.message);
+    if (checkStatus) {
+      importStatus = await getImportStatusFromLocations(
+        deps,
+        repo.html_url,
+        catalogLocations,
+        repo.default_branch,
+      ).catch((error: any) => {
+        errors.push(error.message);
+        return undefined;
+      });
     }
     const repoUpdatedAt = repo.updated_at ?? undefined;
     repoList.push({
@@ -153,7 +152,7 @@ async function formatResponse(
       url: repo.html_url,
       defaultBranch: repo.default_branch,
       importStatus: importStatus?.status,
-      lastUpdate: importStatus ? importStatus.lastUpdate : repoUpdatedAt,
+      lastUpdate: importStatus?.lastUpdate ?? repoUpdatedAt,
       errors: errors,
     });
   }
