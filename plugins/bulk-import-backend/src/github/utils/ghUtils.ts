@@ -164,7 +164,7 @@ function tryReplacingPlaceholdersInUrl(options: any) {
       break;
     }
 
-    const key = url.slice(openBraceIdx+1, closeBraceIdx);
+    const key = url.slice(openBraceIdx + 1, closeBraceIdx);
     result += options[key] ?? `{${key}}`;
 
     startIdx = closeBraceIdx + 1;
