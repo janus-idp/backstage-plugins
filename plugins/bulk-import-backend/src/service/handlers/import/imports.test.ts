@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {setupTest, startBackendServer} from "../../../__fixtures__/testUtils";
+import {setupTest, startBackendServer} from "../../../../__fixtures__/testUtils";
 import {AuthorizeResult} from "@backstage/plugin-permission-common";
 import {rest} from "msw";
 import request from "supertest";
-import {loadTestFixture, LOCAL_ADDR} from "../../../__fixtures__/handlers";
+import {loadTestFixture, LOCAL_ADDR} from "../../../../__fixtures__/handlers";
 import type {CatalogRequestOptions, QueryEntitiesRequest, QueryEntitiesResponse} from "@backstage/catalog-client";
 
 describe('imports', () => {

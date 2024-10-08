@@ -20,9 +20,9 @@ import type { CatalogClient } from '@backstage/catalog-client';
 
 import gitUrlParse from 'git-url-parse';
 
-import { CatalogHttpClient } from '../../catalog/catalogHttpClient';
-import { Paths } from '../../generated/openapi.d';
-import { GithubApiService } from '../githubApiService';
+import { CatalogHttpClient } from '../../../catalog/catalogHttpClient';
+import { Paths } from '../../../generated/openapi';
+import { GithubApiService } from '../../githubApiService';
 import { deleteImportByRepo, findAllImports } from './bulkImports';
 
 const config = mockServices.rootConfig({

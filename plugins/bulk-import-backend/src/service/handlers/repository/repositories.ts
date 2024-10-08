@@ -19,16 +19,16 @@ import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
 
-import type { Components } from '../../generated/openapi.d';
-import type { GithubRepositoryResponse } from '../../types';
-import type { GithubApiService } from '../githubApiService';
+import type { Components } from '../../../generated/openapi';
+import type { GithubRepositoryResponse } from '../../../types';
+import type { GithubApiService } from '../../githubApiService';
 import {
   DefaultPageNumber,
   DefaultPageSize,
   type HandlerResponse,
-} from './handlers';
-import { getImportStatusFromLocations } from './importStatus';
-import {CatalogHttpClient} from "../../catalog/catalogHttpClient";
+} from '../handlers';
+import { getImportStatusFromLocations } from '../import/importStatus';
+import {CatalogHttpClient} from "../../../catalog/catalogHttpClient";
 
 export async function findAllRepositories(
     deps: {

@@ -20,20 +20,20 @@ import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
 
-import {getCatalogFilename, getCatalogUrl} from '../../catalog/catalogUtils';
-import type { CatalogInfoGenerator } from '../../catalog/catalogInfoGenerator';
+import {getCatalogFilename, getCatalogUrl} from '../../../catalog/catalogUtils';
+import type { CatalogInfoGenerator } from '../../../catalog/catalogInfoGenerator';
 import {
   logErrorIfNeeded,
   paginateArray,
-} from '../../helpers';
-import type { Components, Paths } from '../../generated/openapi.d';
-import type { GithubApiService } from '../githubApiService';
+} from '../../../helpers';
+import type { Components, Paths } from '../../../generated/openapi';
+import type { GithubApiService } from '../../githubApiService';
 import {
   DefaultPageNumber,
   DefaultPageSize,
   type HandlerResponse,
-} from './handlers';
-import {CatalogHttpClient} from "../../catalog/catalogHttpClient";
+} from '../handlers';
+import {CatalogHttpClient} from "../../../catalog/catalogHttpClient";
 
 type CreateImportDryRunStatus =
   | 'CATALOG_ENTITY_CONFLICT'

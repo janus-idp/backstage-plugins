@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {addHandlersForGHTokenAppErrors, setupTest, startBackendServer} from "../../../__fixtures__/testUtils";
+import {addHandlersForGHTokenAppErrors, setupTest, startBackendServer} from "../../../../__fixtures__/testUtils";
 import {AuthorizeResult} from "@backstage/plugin-permission-common";
 import request from "supertest";
 import {rest} from "msw";
-import {LOCAL_ADDR} from "../../../__fixtures__/handlers";
+import {LOCAL_ADDR} from "../../../../__fixtures__/handlers";
 
 describe('repositories', () => {
     const useTestData = setupTest();

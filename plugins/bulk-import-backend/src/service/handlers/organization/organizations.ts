@@ -16,13 +16,13 @@
 
 import type { LoggerService } from '@backstage/backend-plugin-api';
 
-import type { Components } from '../../generated/openapi.d';
-import type { GithubApiService } from '../githubApiService';
+import type { Components } from '../../../generated/openapi';
+import type { GithubApiService } from '../../githubApiService';
 import {
   DefaultPageNumber,
   DefaultPageSize,
   type HandlerResponse,
-} from './handlers';
+} from '../handlers';
 
 export async function findAllOrganizations(
   logger: LoggerService,

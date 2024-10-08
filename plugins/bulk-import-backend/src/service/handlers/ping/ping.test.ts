@@ -16,7 +16,7 @@
 
 import {AuthorizeResult} from "@backstage/plugin-permission-common";
 import request from "supertest";
-import {setupTest, startBackendServer} from "../../../__fixtures__/testUtils";
+import {setupTest, startBackendServer} from "../../../../__fixtures__/testUtils";
 
 describe('ping', () => {
     const useTestData = setupTest();

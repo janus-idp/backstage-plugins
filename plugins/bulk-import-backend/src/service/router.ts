@@ -55,13 +55,13 @@ import {
   deleteImportByRepo,
   findAllImports,
   findImportStatusByRepo,
-} from './handlers/bulkImports';
-import { findAllOrganizations } from './handlers/organizations';
+} from './handlers/import';
+import { findAllOrganizations } from './handlers/organization';
 import { ping } from './handlers/ping';
 import {
   findAllRepositories,
   findRepositoriesByOrganization,
-} from './handlers/repositories';
+} from './handlers/repository';
 import {CatalogHttpClient} from "../catalog/catalogHttpClient";
 
 export interface RouterOptions {
@@ -248,7 +248,6 @@ export async function createRouter(
               logger,
               config,
               githubApiService,
-              catalogInfoGenerator,
               catalogHttpClient,
           },
         {

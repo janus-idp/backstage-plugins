@@ -17,10 +17,10 @@
 import type { LoggerService } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
 
-import type { Components } from '../../generated/openapi.d';
-import type { GithubApiService } from '../githubApiService';
-import { getCatalogUrl } from '../../catalog/catalogUtils';
-import {CatalogHttpClient} from "../../catalog/catalogHttpClient";
+import type { Components } from '../../../generated/openapi';
+import type { GithubApiService } from '../../githubApiService';
+import { getCatalogUrl } from '../../../catalog/catalogUtils';
+import {CatalogHttpClient} from "../../../catalog/catalogHttpClient";
 
 export async function getImportStatusFromLocations(
     deps: {
