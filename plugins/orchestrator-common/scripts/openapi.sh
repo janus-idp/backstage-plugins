@@ -11,6 +11,7 @@ CLIENT_FOLDER="${GENERATED_FOLDER}/client"
 
 openapi_generate() {
     # TypeScript Client generation
+    rm -rf ${CLIENT_FOLDER}
     npx --yes @openapitools/openapi-generator-cli@v2.13.4 generate -g typescript-axios -i ${OPENAPI_SPEC_FILE} -o ${CLIENT_FOLDER}
 
     # Docs generation
