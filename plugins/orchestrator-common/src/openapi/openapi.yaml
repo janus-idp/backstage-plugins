@@ -363,7 +363,7 @@ components:
           type: number
           minimum: 0
         lastRunStatus:
-          type: string
+          $ref: '#/components/schemas/ProcessInstanceStatusDTO'
         category:
           $ref: '#/components/schemas/WorkflowCategoryDTO'
         avgDurationMs:
