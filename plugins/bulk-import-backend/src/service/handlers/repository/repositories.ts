@@ -19,24 +19,24 @@ import type { Config } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
 
+import { CatalogHttpClient } from '../../../catalog/catalogHttpClient';
 import type { Components } from '../../../generated/openapi';
-import type { GithubRepositoryResponse } from '../../../github/types';
 import type { GithubApiService } from '../../../github';
+import type { GithubRepositoryResponse } from '../../../github/types';
 import {
   DefaultPageNumber,
   DefaultPageSize,
   type HandlerResponse,
 } from '../handlers';
 import { getImportStatusFromLocations } from '../import/importStatus';
-import {CatalogHttpClient} from "../../../catalog/catalogHttpClient";
 
 export async function findAllRepositories(
-    deps: {
-      logger: LoggerService,
-      config: Config,
-      githubApiService: GithubApiService,
-      catalogHttpClient: CatalogHttpClient,
-    },
+  deps: {
+    logger: LoggerService;
+    config: Config;
+    githubApiService: GithubApiService;
+    catalogHttpClient: CatalogHttpClient;
+  },
   reqParams?: {
     search?: string;
     checkStatus?: boolean;
@@ -53,13 +53,7 @@ export async function findAllRepositories(
   );
   return deps.githubApiService
     .getRepositoriesFromIntegrations(search, pageNumber, pageSize)
-    .then(response =>
-      formatResponse(
-          deps,
-        response,
-        checkStatus,
-        ),
-    );
+    .then(response => formatResponse(deps, response, checkStatus));
 }
 
 export async function findRepositoriesByOrganization(
@@ -80,22 +74,16 @@ export async function findRepositoriesByOrganization(
   );
   return deps.githubApiService
     .getOrgRepositoriesFromIntegrations(orgName, search, pageNumber, pageSize)
-    .then(response =>
-      formatResponse(
-          deps,
-        response,
-        checkStatus,
-        ),
-    );
+    .then(response => formatResponse(deps, response, checkStatus));
 }
 
 async function formatResponse(
-    deps: {
-      logger: LoggerService;
-      config: Config;
-      githubApiService: GithubApiService;
-      catalogHttpClient: CatalogHttpClient;
-    },
+  deps: {
+    logger: LoggerService;
+    config: Config;
+    githubApiService: GithubApiService;
+    catalogHttpClient: CatalogHttpClient;
+  },
   allReposAccessible: GithubRepositoryResponse,
   checkStatus: boolean,
 ) {

@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2024 The Janus IDP Authors
  *
@@ -15,178 +14,236 @@
  * limitations under the License.
  */
 
+import type {
+  CacheService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
 import {
-    isGithubAppCredential,
-    type ExtendedGithubCredentials,
-    type GithubFetchError,
-} from "../types";
-import type { LoggerService} from "@backstage/backend-plugin-api";
-import gitUrlParse from "git-url-parse";
-import {type GithubIntegrationConfig, ScmIntegrations} from "@backstage/integration";
-import {logErrorIfNeeded} from "../../helpers";
-import type {CustomGithubCredentialsProvider} from "../GithubAppManager";
+  ScmIntegrations,
+  type GithubIntegrationConfig,
+} from '@backstage/integration';
+
+import { Octokit } from '@octokit/rest';
+import gitUrlParse from 'git-url-parse';
+
+import { logErrorIfNeeded } from '../../helpers';
+import type { CustomGithubCredentialsProvider } from '../GithubAppManager';
+import {
+  isGithubAppCredential,
+  type ExtendedGithubCredentials,
+  type GithubFetchError,
+} from '../types';
+import { buildOcto } from './ghUtils';
+import { validateAndBuildRepoData, ValidatedRepo } from './repoUtils';
 
 /**
  * Creates the GithubFetchError to be stored in the returned errors array of the returned GithubRepositoryResponse object
  */
 export function createCredentialError(
-    credential: ExtendedGithubCredentials,
-    err?: Error,
+  credential: ExtendedGithubCredentials,
+  err?: Error,
 ): GithubFetchError | undefined {
-    if (err) {
-        if (isGithubAppCredential(credential)) {
-            return {
-                appId: credential.appId,
-                type: 'app',
-                error: {
-                    name: err.name,
-                    message: err.message,
-                },
-            };
-        }
-        return {
-            type: 'token',
-            error: {
-                name: err.name,
-                message: err.message,
-            },
-        };
+  if (err) {
+    if (isGithubAppCredential(credential)) {
+      return {
+        appId: credential.appId,
+        type: 'app',
+        error: {
+          name: err.name,
+          message: err.message,
+        },
+      };
     }
-    if ('error' in credential) {
-        return {
-            appId: credential.appId,
-            type: 'app',
-            error: {
-                name: credential.error.name,
-                message: credential.error.message,
-            },
-        };
-    }
-    return undefined;
+    return {
+      type: 'token',
+      error: {
+        name: err.name,
+        message: err.message,
+      },
+    };
+  }
+  if ('error' in credential) {
+    return {
+      appId: credential.appId,
+      type: 'app',
+      error: {
+        name: credential.error.name,
+        message: credential.error.message,
+      },
+    };
+  }
+  return undefined;
 }
 
+export function verifyAndGetIntegrations(
+  deps: {
+    logger: LoggerService;
+  },
 
-export function verifyAndGetIntegrations(deps: {
-    logger: LoggerService,
-},
-
-                                  integrations: ScmIntegrations,) {
-    const ghConfigs = integrations.github
-        .list()
-        .map(ghInt => ghInt.config);
-    if (ghConfigs.length === 0) {
-        deps.logger.debug(
-            'No GitHub Integration in config => returning an empty list of repositories.',
-        );
-        throw new Error(
-            "Looks like there is no GitHub Integration in config. Please add a configuration entry under 'integrations.github",
-        );
-    }
-    return ghConfigs;
+  integrations: ScmIntegrations,
+) {
+  const ghConfigs = integrations.github.list().map(ghInt => ghInt.config);
+  if (ghConfigs.length === 0) {
+    deps.logger.debug(
+      'No GitHub Integration in config => returning an empty list of repositories.',
+    );
+    throw new Error(
+      "Looks like there is no GitHub Integration in config. Please add a configuration entry under 'integrations.github",
+    );
+  }
+  return ghConfigs;
 }
 
 export async function getCredentialsFromIntegrations(
-    githubCredentialsProvider: CustomGithubCredentialsProvider,
-    ghConfigs: GithubIntegrationConfig[],
+  githubCredentialsProvider: CustomGithubCredentialsProvider,
+  ghConfigs: GithubIntegrationConfig[],
 ) {
-    const credentialsByConfig = new Map<
-        GithubIntegrationConfig,
-        ExtendedGithubCredentials[]
-    >();
-    for (const ghConfig of ghConfigs) {
-        const creds = await getCredentialsForConfig(githubCredentialsProvider, ghConfig);
-        credentialsByConfig.set(ghConfig, creds);
-    }
-    return credentialsByConfig;
+  const credentialsByConfig = new Map<
+    GithubIntegrationConfig,
+    ExtendedGithubCredentials[]
+  >();
+  for (const ghConfig of ghConfigs) {
+    const creds = await getCredentialsForConfig(
+      githubCredentialsProvider,
+      ghConfig,
+    );
+    credentialsByConfig.set(ghConfig, creds);
+  }
+  return credentialsByConfig;
 }
 
 export async function getCredentialsForConfig(
-    githubCredentialsProvider: CustomGithubCredentialsProvider, ghConfig: GithubIntegrationConfig) {
-    return await githubCredentialsProvider.getAllCredentials({
-        host: ghConfig.host,
-    });
+  githubCredentialsProvider: CustomGithubCredentialsProvider,
+  ghConfig: GithubIntegrationConfig,
+) {
+  return await githubCredentialsProvider.getAllCredentials({
+    host: ghConfig.host,
+  });
 }
 
-export async function extractConfigAndCreds(githubCredentialsProvider: CustomGithubCredentialsProvider,
-integrations: ScmIntegrations, input: {
+export async function extractConfigAndCreds(
+  githubCredentialsProvider: CustomGithubCredentialsProvider,
+  integrations: ScmIntegrations,
+  input: {
     repoUrl: string;
     defaultBranch?: string;
-}) {
-    const ghConfig = integrations.github.byUrl(input.repoUrl)?.config;
-    if (!ghConfig) {
-        throw new Error(`Could not find GH integration from ${input.repoUrl}`);
-    }
+  },
+) {
+  const ghConfig = integrations.github.byUrl(input.repoUrl)?.config;
+  if (!ghConfig) {
+    throw new Error(`Could not find GH integration from ${input.repoUrl}`);
+  }
 
-    const credentials = await githubCredentialsProvider.getAllCredentials({
-        host: ghConfig.host,
-    });
-    if (credentials.length === 0) {
-        throw new Error(`No credentials for GH integration`);
-    }
+  const credentials = await githubCredentialsProvider.getAllCredentials({
+    host: ghConfig.host,
+  });
+  if (credentials.length === 0) {
+    throw new Error(`No credentials for GH integration`);
+  }
 
-    const gitUrl = gitUrlParse(input.repoUrl);
-    return { ghConfig, credentials, gitUrl };
+  const gitUrl = gitUrlParse(input.repoUrl);
+  return { ghConfig, credentials, gitUrl };
 }
 
 export function handleError(
-    deps: {
-      logger: LoggerService,
-    },
-    desc: string,
-    credential: ExtendedGithubCredentials,
-    errors: Map<number, GithubFetchError>,
-    err: any,
+  deps: {
+    logger: LoggerService;
+  },
+  desc: string,
+  credential: ExtendedGithubCredentials,
+  errors: Map<number, GithubFetchError>,
+  err: any,
 ) {
-    logErrorIfNeeded(deps.logger, `${desc} failed`, err);
-    const credentialError = createCredentialError(
-        credential,
-        err as Error,
-    );
-    if (credentialError) {
-        errors.set(-1, credentialError);
-    }
+  logErrorIfNeeded(deps.logger, `${desc} failed`, err);
+  const credentialError = createCredentialError(credential, err as Error);
+  if (credentialError) {
+    errors.set(-1, credentialError);
+  }
 }
 
 export async function computeTotalCountFromGitHubToken(
-    deps: {
-        logger: LoggerService,
-    },
-    lastPageDataLengthProviderFn: (lastPageNumber: number) => Promise<number>,
-    ghApiName: string,
-    pageSize?: number,
-    linkHeader?: string,
+  deps: {
+    logger: LoggerService;
+  },
+  lastPageDataLengthProviderFn: (lastPageNumber: number) => Promise<number>,
+  ghApiName: string,
+  pageSize?: number,
+  linkHeader?: string,
 ): Promise<number | undefined> {
-    // There is no direct way to get the total count of repositories other than using octokit.paginate,
-    // but will make us retrieve all pages, thus increasing our response time.
-    // Workaround here is to analyze the headers, and get the link to the last page.
-    if (!linkHeader) {
+  // There is no direct way to get the total count of repositories other than using octokit.paginate,
+  // but will make us retrieve all pages, thus increasing our response time.
+  // Workaround here is to analyze the headers, and get the link to the last page.
+  if (!linkHeader) {
     deps.logger.debug(
-        `No link header found in response from ${ghApiName} GH endpoint => returning current page size`,
+      `No link header found in response from ${ghApiName} GH endpoint => returning current page size`,
     );
     return pageSize;
-}
-const lastPageLink = linkHeader
+  }
+  const lastPageLink = linkHeader
     .split(',')
     .find(s => s.includes('rel="last"'));
-if (!lastPageLink) {
+  if (!lastPageLink) {
     deps.logger.debug(
-        `No rel='last' link found in response headers from ${ghApiName} GH endpoint => returning current page size`,
+      `No rel='last' link found in response headers from ${ghApiName} GH endpoint => returning current page size`,
     );
     return pageSize;
-}
-const match = lastPageLink.match(/page=(\d+)/);
-if (!match || match.length < 2) {
+  }
+  const match = lastPageLink.match(/page=(\d+)/);
+  if (!match || match.length < 2) {
     deps.logger.debug(
-        `Unable to extract page number from rel='last' link found in response headers from ${ghApiName} GH endpoint => returning current page size`,
+      `Unable to extract page number from rel='last' link found in response headers from ${ghApiName} GH endpoint => returning current page size`,
     );
     return pageSize;
-}
+  }
 
-const lastPageNumber = parseInt(match[1], 10);
-// Fetch the last page to count its items, as it might contain fewer than the requested size
-const lastPageDataLength =
-    await lastPageDataLengthProviderFn(lastPageNumber);
-return pageSize
+  const lastPageNumber = parseInt(match[1], 10);
+  // Fetch the last page to count its items, as it might contain fewer than the requested size
+  const lastPageDataLength = await lastPageDataLengthProviderFn(lastPageNumber);
+  return pageSize
     ? (lastPageNumber - 1) * pageSize + lastPageDataLength
     : undefined;
+}
+
+export async function executeFunctionOnFirstSuccessfulIntegration<T>(
+  deps: {
+    logger: LoggerService;
+    cache: CacheService;
+    config: Config;
+    githubCredentialsProvider: CustomGithubCredentialsProvider;
+  },
+  integrations: ScmIntegrations,
+  params: {
+    repoUrl: string;
+    fn: (
+      validatedRepo: ValidatedRepo,
+      octo: Octokit,
+    ) => Promise<{ successful: boolean; result?: T }>;
+  },
+) {
+  const validatedRepo = await validateAndBuildRepoData(
+    deps.githubCredentialsProvider,
+    integrations,
+    deps.config,
+    params,
+  );
+  for (const credential of validatedRepo.credentials) {
+    const octo = buildOcto(
+      {
+        logger: deps.logger,
+        cache: deps.cache,
+      },
+      { credential, owner: validatedRepo.owner },
+      validatedRepo.ghConfig.apiBaseUrl,
+    );
+    if (!octo) {
+      continue;
+    }
+    const res = await params.fn(validatedRepo, octo);
+    if (!res.successful) {
+      continue;
+    }
+    return res.result;
+  }
+  return undefined;
 }

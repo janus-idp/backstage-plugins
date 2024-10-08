@@ -18,7 +18,7 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import request from 'supertest';
 
-import {setupTest, startBackendServer} from "../../__fixtures__/testUtils";
+import { setupTest, startBackendServer } from '../../__fixtures__/testUtils';
 
 describe('router tests', () => {
   const useTestData = setupTest();
@@ -50,16 +50,16 @@ describe('router tests', () => {
         async (req: request.SuperTest<request.Test>) =>
           req.post('/api/bulk-import/imports'),
       ],
-        [
-            'GET /import/by-repo',
-            async (req: request.SuperTest<request.Test>) =>
-                req.get('/api/bulk-import/import/by-repo'),
-        ],
-        [
-            'DELETE /import/by-repo',
-            async (req: request.SuperTest<request.Test>) =>
-                req.delete('/api/bulk-import/import/by-repo'),
-        ],
+      [
+        'GET /import/by-repo',
+        async (req: request.SuperTest<request.Test>) =>
+          req.get('/api/bulk-import/import/by-repo'),
+      ],
+      [
+        'DELETE /import/by-repo',
+        async (req: request.SuperTest<request.Test>) =>
+          req.delete('/api/bulk-import/import/by-repo'),
+      ],
     ])(
       '%s: returns 403 when denied by permission framework',
       async (
@@ -68,8 +68,11 @@ describe('router tests', () => {
           req: request.SuperTest<request.Test>,
         ) => Promise<request.Response>,
       ) => {
-        const { mockCatalogClient} = useTestData();
-        const backendServer = await startBackendServer(mockCatalogClient, AuthorizeResult.DENY);
+        const { mockCatalogClient } = useTestData();
+        const backendServer = await startBackendServer(
+          mockCatalogClient,
+          AuthorizeResult.DENY,
+        );
 
         const response = await reqHandler(request(backendServer));
 

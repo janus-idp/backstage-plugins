@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {
-  LoggerService,
-} from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 
 import gitUrlParse from 'git-url-parse';
 import jsYaml from 'js-yaml';
 
 import { logErrorIfNeeded } from '../helpers';
-import {CatalogHttpClient} from "./catalogHttpClient";
+import { CatalogHttpClient } from './catalogHttpClient';
 
 export class CatalogInfoGenerator {
   private readonly logger: LoggerService;
   private readonly catalogHttpClient: CatalogHttpClient;
 
-  constructor(
-    logger: LoggerService,
-    catalogHttpClient: CatalogHttpClient,
-  ) {
+  constructor(logger: LoggerService, catalogHttpClient: CatalogHttpClient) {
     this.logger = logger;
     this.catalogHttpClient = catalogHttpClient;
   }

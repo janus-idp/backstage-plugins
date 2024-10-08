@@ -19,20 +19,18 @@ import type {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
-import {
-  ScmIntegrations,
-} from '@backstage/integration';
+import { ScmIntegrations } from '@backstage/integration';
 
+import { Octokit } from '@octokit/rest';
 import gitUrlParse from 'git-url-parse';
 
+import { getBranchName, getCatalogFilename } from '../catalog/catalogUtils';
+import { logErrorIfNeeded } from '../helpers';
 import {
-  getBranchName,
-  getCatalogFilename,
-} from '../catalog/catalogUtils';
+  DefaultPageNumber,
+  DefaultPageSize,
+} from '../service/handlers/handlers';
 import { CustomGithubCredentialsProvider } from './GithubAppManager';
-import {
-  logErrorIfNeeded,
-} from '../helpers';
 import {
   isGithubAppCredential,
   type GithubFetchError,
@@ -41,22 +39,27 @@ import {
   type GithubRepository,
   type GithubRepositoryResponse,
 } from './types';
-import { DefaultPageNumber, DefaultPageSize } from '../service/handlers/handlers';
-import {closePRWithComment, findOpenPRForBranch} from "./utils/prUtils";
+import { buildOcto } from './utils/ghUtils';
 import {
-  extractConfigAndCreds,
-  getCredentialsForConfig,
-  getCredentialsFromIntegrations,
-  verifyAndGetIntegrations
-} from "./utils/utils";
-import {buildOcto} from "./utils/ghUtils";
-import {addGithubAppOrgs, addGithubTokenOrgs, getAllAppOrgs} from "./utils/orgUtils";
+  addGithubAppOrgs,
+  addGithubTokenOrgs,
+  getAllAppOrgs,
+} from './utils/orgUtils';
+import { closePRWithComment, findOpenPRForBranch } from './utils/prUtils';
 import {
   addGithubAppRepositories,
   addGithubTokenOrgRepositories,
-  addGithubTokenRepositories, createOrUpdateFileInBranch,
-  fileExistsInDefaultBranch, validateAndBuildRepoData
-} from "./utils/repoUtils";
+  addGithubTokenRepositories,
+  createOrUpdateFileInBranch,
+  fileExistsInDefaultBranch,
+  type ValidatedRepo,
+} from './utils/repoUtils';
+import {
+  executeFunctionOnFirstSuccessfulIntegration,
+  getCredentialsForConfig,
+  getCredentialsFromIntegrations,
+  verifyAndGetIntegrations,
+} from './utils/utils';
 
 export class GithubApiService {
   private readonly logger: LoggerService;
@@ -92,14 +95,18 @@ export class GithubApiService {
       );
     }
 
-    const credentials = await getCredentialsForConfig(this.githubCredentialsProvider, ghConfig);
+    const credentials = await getCredentialsForConfig(
+      this.githubCredentialsProvider,
+      ghConfig,
+    );
     const errors = new Map<number, GithubFetchError>();
     let repository: GithubRepository | undefined = undefined;
     for (const credential of credentials) {
-      const octokit = buildOcto({
-            logger: this.logger,
-            cache: this.cache,
-          },
+      const octokit = buildOcto(
+        {
+          logger: this.logger,
+          cache: this.cache,
+        },
         { credential, errors, owner: gitUrl.owner },
         ghConfig.apiBaseUrl,
       );
@@ -136,12 +143,17 @@ export class GithubApiService {
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
   ): Promise<GithubOrganizationResponse> {
-    const ghConfigs = verifyAndGetIntegrations({
-      logger: this.logger,
-    }, this.integrations);
+    const ghConfigs = verifyAndGetIntegrations(
+      {
+        logger: this.logger,
+      },
+      this.integrations,
+    );
 
-    const credentialsByConfig =
-      await getCredentialsFromIntegrations(this.githubCredentialsProvider, ghConfigs);
+    const credentialsByConfig = await getCredentialsFromIntegrations(
+      this.githubCredentialsProvider,
+      ghConfigs,
+    );
     const orgs = new Map<string, GithubOrganization>();
     const errors = new Map<number, GithubFetchError>();
     let totalCount = 0;
@@ -151,10 +163,10 @@ export class GithubApiService {
       );
       for (const credential of credentials) {
         const octokit = buildOcto(
-            {
-              logger: this.logger,
-              cache: this.cache,
-            },
+          {
+            logger: this.logger,
+            cache: this.cache,
+          },
           { credential, errors },
           ghConfig.apiBaseUrl,
         );
@@ -164,33 +176,33 @@ export class GithubApiService {
         let resp: { totalCount?: number } = {};
         if (isGithubAppCredential(credential)) {
           resp = await addGithubAppOrgs(
-              {
-                logger: this.logger,
-                githubCredentialsProvider: this.githubCredentialsProvider,
-              },
+            {
+              logger: this.logger,
+              githubCredentialsProvider: this.githubCredentialsProvider,
+            },
             octokit,
             ghConfig,
-              {
+            {
               credentialAccountLogin: credential.accountLogin,
-            search,
-            orgs,
-            errors,
-              },
+              search,
+              orgs,
+              errors,
+            },
           );
         } else {
           resp = await addGithubTokenOrgs(
-              {
-                logger: this.logger,
-              },
+            {
+              logger: this.logger,
+            },
             octokit,
             credential,
-              {
-                search,
-                orgs,
-                errors,
-                pageNumber,
-                pageSize,
-              },
+            {
+              search,
+              orgs,
+              errors,
+              pageNumber,
+              pageSize,
+            },
           );
         }
         this.logger.debug(`Got ${resp.totalCount} org(s) for ${ghConfig.host}`);
@@ -215,11 +227,16 @@ export class GithubApiService {
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
   ): Promise<GithubRepositoryResponse> {
-    const ghConfigs = verifyAndGetIntegrations({
-      logger: this.logger,
-    }, this.integrations);
-    const credentialsByConfig =
-      await getCredentialsFromIntegrations(this.githubCredentialsProvider, ghConfigs);
+    const ghConfigs = verifyAndGetIntegrations(
+      {
+        logger: this.logger,
+      },
+      this.integrations,
+    );
+    const credentialsByConfig = await getCredentialsFromIntegrations(
+      this.githubCredentialsProvider,
+      ghConfigs,
+    );
     const repositories = new Map<string, GithubRepository>();
     const errors = new Map<number, GithubFetchError>();
     let totalCount = 0;
@@ -232,10 +249,11 @@ export class GithubApiService {
         `Got ${credentials.length} credential(s) for ${ghConfig.host}`,
       );
       for (const credential of credentials) {
-        const octokit = buildOcto({
-              logger: this.logger,
-              cache: this.cache,
-            },
+        const octokit = buildOcto(
+          {
+            logger: this.logger,
+            cache: this.cache,
+          },
           { credential, errors },
           ghConfig.apiBaseUrl,
         );
@@ -248,10 +266,10 @@ export class GithubApiService {
             continue;
           }
           resp = await addGithubAppRepositories(
-              {
-                logger: this.logger,
-                githubCredentialsProvider: this.githubCredentialsProvider,
-              },
+            {
+              logger: this.logger,
+              githubCredentialsProvider: this.githubCredentialsProvider,
+            },
             octokit,
             credential,
             ghConfig,
@@ -265,9 +283,9 @@ export class GithubApiService {
           );
         } else {
           resp = await addGithubTokenOrgRepositories(
-              {
-                logger: this.logger,
-              },
+            {
+              logger: this.logger,
+            },
             octokit,
             credential,
             orgName,
@@ -306,12 +324,17 @@ export class GithubApiService {
     pageNumber: number = DefaultPageNumber,
     pageSize: number = DefaultPageSize,
   ): Promise<GithubRepositoryResponse> {
-    const ghConfigs = verifyAndGetIntegrations({
-      logger: this.logger,
-    }, this.integrations);
+    const ghConfigs = verifyAndGetIntegrations(
+      {
+        logger: this.logger,
+      },
+      this.integrations,
+    );
 
-    const credentialsByConfig =
-      await getCredentialsFromIntegrations(this.githubCredentialsProvider, ghConfigs);
+    const credentialsByConfig = await getCredentialsFromIntegrations(
+      this.githubCredentialsProvider,
+      ghConfigs,
+    );
     const repositories = new Map<string, GithubRepository>();
     const errors = new Map<number, GithubFetchError>();
     let totalCount = 0;
@@ -320,10 +343,11 @@ export class GithubApiService {
         `Got ${credentials.length} credential(s) for ${ghConfig.host}`,
       );
       for (const credential of credentials) {
-        const octokit = buildOcto({
-              logger: this.logger,
-              cache: this.cache,
-            },
+        const octokit = buildOcto(
+          {
+            logger: this.logger,
+            cache: this.cache,
+          },
           { credential, errors },
           ghConfig.apiBaseUrl,
         );
@@ -333,10 +357,10 @@ export class GithubApiService {
         let resp: { totalCount?: number };
         if (isGithubAppCredential(credential)) {
           resp = await addGithubAppRepositories(
-              {
-                logger: this.logger,
-                githubCredentialsProvider: this.githubCredentialsProvider,
-              },
+            {
+              logger: this.logger,
+              githubCredentialsProvider: this.githubCredentialsProvider,
+            },
             octokit,
             credential,
             ghConfig,
@@ -350,9 +374,9 @@ export class GithubApiService {
           );
         } else {
           resp = await addGithubTokenRepositories(
-              {
-                logger: this.logger,
-              },
+            {
+              logger: this.logger,
+            },
             octokit,
             credential,
             repositories,
@@ -379,7 +403,8 @@ export class GithubApiService {
     };
   }
 
-  async filterLocationsAccessibleFromIntegrations(locationUrls: string[],
+  async filterLocationsAccessibleFromIntegrations(
+    locationUrls: string[],
   ): Promise<string[]> {
     const locationGitOwnerMap = new Map<string, string>();
     for (const locationUrl of locationUrls) {
@@ -390,31 +415,37 @@ export class GithubApiService {
       locationGitOwnerMap.set(locationUrl, gitUrlParse(split[0]).owner);
     }
 
-    const ghConfigs = verifyAndGetIntegrations({
-      logger: this.logger,
-    }, this.integrations);
-    const credentialsByConfig =
-        await getCredentialsFromIntegrations(this.githubCredentialsProvider, ghConfigs);
+    const ghConfigs = verifyAndGetIntegrations(
+      {
+        logger: this.logger,
+      },
+      this.integrations,
+    );
+    const credentialsByConfig = await getCredentialsFromIntegrations(
+      this.githubCredentialsProvider,
+      ghConfigs,
+    );
     const allAccessibleAppOrgs = new Set<string>();
     const allAccessibleTokenOrgs = new Set<string>();
     const allAccessibleUsernames = new Set<string>();
     for (const [ghConfig, credentials] of credentialsByConfig) {
       for (const credential of credentials) {
-        const octokit = buildOcto({
-          logger: this.logger,
-          cache: this.cache,
-            },
-            { credential, errors: undefined },
-            ghConfig.apiBaseUrl,
+        const octokit = buildOcto(
+          {
+            logger: this.logger,
+            cache: this.cache,
+          },
+          { credential, errors: undefined },
+          ghConfig.apiBaseUrl,
         );
         if (!octokit) {
           continue;
         }
         if (isGithubAppCredential(credential)) {
           const appOrgMap = await getAllAppOrgs(
-              this.githubCredentialsProvider,
-              ghConfig,
-              credential.accountLogin,
+            this.githubCredentialsProvider,
+            ghConfig,
+            credential.accountLogin,
           );
           for (const [_, ghOrg] of appOrgMap) {
             allAccessibleAppOrgs.add(ghOrg.name);
@@ -422,14 +453,14 @@ export class GithubApiService {
         } else {
           // find authenticated GitHub owner...
           const username = (await octokit.rest.users.getAuthenticated())?.data
-              ?.login;
+            ?.login;
           if (username) {
             allAccessibleUsernames.add(username);
           }
           // ... along with orgs accessible from the token auth
           (await octokit.paginate(octokit.rest.orgs.listForAuthenticatedUser))
-              ?.map(org => org.login)
-              ?.forEach(orgName => allAccessibleTokenOrgs.add(orgName));
+            ?.map(org => org.login)
+            ?.forEach(orgName => allAccessibleTokenOrgs.add(orgName));
         }
       }
     }
@@ -440,13 +471,12 @@ export class GithubApiService {
       }
       const owner = locationGitOwnerMap.get(loc)!;
       return (
-          allAccessibleAppOrgs.has(owner) ||
-          allAccessibleTokenOrgs.has(owner) ||
-          allAccessibleUsernames.has(owner)
+        allAccessibleAppOrgs.has(owner) ||
+        allAccessibleTokenOrgs.has(owner) ||
+        allAccessibleUsernames.has(owner)
       );
     });
   }
-
 
   async findImportOpenPr(
     logger: LoggerService,
@@ -480,10 +510,14 @@ export class GithubApiService {
 
     const branchName = getBranchName(this.config);
     for (const credential of credentials) {
-      const octo = buildOcto({
-        logger: this.logger,
-        cache: this.cache,
-      },{ credential, owner }, ghConfig.apiBaseUrl);
+      const octo = buildOcto(
+        {
+          logger: this.logger,
+          cache: this.cache,
+        },
+        { credential, owner },
+        ghConfig.apiBaseUrl,
+      );
       if (!octo) {
         continue;
       }
@@ -521,148 +555,178 @@ export class GithubApiService {
     lastUpdate?: string;
     errors?: string[];
   }> {
-    const { ghConfig, owner, repo, credentials, branchName } =
-      await validateAndBuildRepoData(this.githubCredentialsProvider, this.integrations, this.config, input);
     const fileName = getCatalogFilename(this.config);
     const errors: any[] = [];
-    for (const credential of credentials) {
-      const octo = buildOcto({
+
+    const result = await executeFunctionOnFirstSuccessfulIntegration(
+      {
         logger: this.logger,
         cache: this.cache,
-      },{ credential, owner }, ghConfig.apiBaseUrl);
-      if (!octo) {
-        continue;
-      }
-      try {
-        // Check if there is already a catalogInfo in the default branch
-        const catalogInfoFileExists = await fileExistsInDefaultBranch(
-          logger,
-          octo,
-          owner,
-          repo,
-          fileName,
-          input.defaultBranch,
-        );
-        if (catalogInfoFileExists) {
-          // No need to create a PR => component will be imported as is
-          return {
-            hasChanges: false,
+        config: this.config,
+        githubCredentialsProvider: this.githubCredentialsProvider,
+      },
+      this.integrations,
+      {
+        repoUrl: input.repoUrl,
+        fn: async (
+          validatedRepo: ValidatedRepo,
+          octo: Octokit,
+        ): Promise<{
+          successful: boolean;
+          result?: {
+            prUrl?: string;
+            prNumber?: number;
+            hasChanges?: boolean;
+            lastUpdate?: string;
           };
-        }
-
-        const existingPrForBranch = await findOpenPRForBranch(
-          logger,
-          this.config,
-          octo,
-          owner,
-          repo,
-          branchName,
-        );
-
-        const repoData = await octo.rest.repos.get({
-          owner,
-          repo,
-        });
-        const parentRef = await octo.rest.git.getRef({
-          owner,
-          repo,
-          ref: `heads/${repoData.data.default_branch}`,
-        });
-        if (existingPrForBranch.prNum) {
-          await createOrUpdateFileInBranch(
-            octo,
-            owner,
-            repo,
-            branchName,
-            fileName,
-            input.catalogInfoContent,
-          );
-          const pullRequestResponse = await octo.rest.pulls.update({
-            owner,
-            repo,
-            pull_number: existingPrForBranch.prNum,
-            title: input.prTitle,
-            body: input.prBody,
-            head: branchName,
-            base: repoData.data.default_branch,
-          });
-          return {
-            prNumber: existingPrForBranch.prNum,
-            prUrl: pullRequestResponse.data.html_url,
-            lastUpdate: pullRequestResponse.data.updated_at,
-          };
-        }
-
-        let branchExists = false;
-        try {
-          await octo.rest.git.getRef({
-            owner,
-            repo,
-            ref: `heads/${branchName}`,
-          });
-          branchExists = true;
-        } catch (error: any) {
-          if (error.status === 404) {
-            await octo.rest.git.createRef({
+        }> => {
+          const { owner, repo, branchName } = validatedRepo;
+          try {
+            // Check if there is already a catalogInfo in the default branch
+            const catalogInfoFileExists = await fileExistsInDefaultBranch(
+              logger,
+              octo,
               owner,
               repo,
-              ref: `refs/heads/${branchName}`,
-              sha: parentRef.data.object.sha,
-            });
-          } else {
-            throw error;
-          }
-        }
+              fileName,
+              input.defaultBranch,
+            );
+            if (catalogInfoFileExists) {
+              // No need to create a PR => component will be imported as is
+              return {
+                successful: true,
+                result: {
+                  hasChanges: false,
+                },
+              };
+            }
 
-        if (branchExists) {
-          // update it in case it is outdated compared to the base branch
-          try {
-            await octo.repos.merge({
-              owner: owner,
-              repo: repo,
-              base: branchName,
-              head: repoData.data.default_branch,
+            const existingPrForBranch = await findOpenPRForBranch(
+              logger,
+              this.config,
+              octo,
+              owner,
+              repo,
+              branchName,
+            );
+
+            const repoData = await octo.rest.repos.get({
+              owner,
+              repo,
             });
-          } catch (error: any) {
+            const parentRef = await octo.rest.git.getRef({
+              owner,
+              repo,
+              ref: `heads/${repoData.data.default_branch}`,
+            });
+            if (existingPrForBranch.prNum) {
+              await createOrUpdateFileInBranch(
+                octo,
+                owner,
+                repo,
+                branchName,
+                fileName,
+                input.catalogInfoContent,
+              );
+              const pullRequestResponse = await octo.rest.pulls.update({
+                owner,
+                repo,
+                pull_number: existingPrForBranch.prNum,
+                title: input.prTitle,
+                body: input.prBody,
+                head: branchName,
+                base: repoData.data.default_branch,
+              });
+              return {
+                successful: true,
+                result: {
+                  prNumber: existingPrForBranch.prNum,
+                  prUrl: pullRequestResponse.data.html_url,
+                  lastUpdate: pullRequestResponse.data.updated_at,
+                },
+              };
+            }
+
+            let branchExists = false;
+            try {
+              await octo.rest.git.getRef({
+                owner,
+                repo,
+                ref: `heads/${branchName}`,
+              });
+              branchExists = true;
+            } catch (error: any) {
+              if (error.status === 404) {
+                await octo.rest.git.createRef({
+                  owner,
+                  repo,
+                  ref: `refs/heads/${branchName}`,
+                  sha: parentRef.data.object.sha,
+                });
+              } else {
+                throw error;
+              }
+            }
+
+            if (branchExists) {
+              // update it in case it is outdated compared to the base branch
+              try {
+                await octo.repos.merge({
+                  owner: owner,
+                  repo: repo,
+                  base: branchName,
+                  head: repoData.data.default_branch,
+                });
+              } catch (error: any) {
+                logErrorIfNeeded(
+                  this.logger,
+                  `Could not merge default branch ${repoData.data.default_branch} into import branch ${branchName}`,
+                  error,
+                );
+              }
+            }
+
+            await createOrUpdateFileInBranch(
+              octo,
+              owner,
+              repo,
+              branchName,
+              fileName,
+              input.catalogInfoContent,
+            );
+
+            const pullRequestResponse = await octo.rest.pulls.create({
+              owner,
+              repo,
+              title: input.prTitle,
+              body: input.prBody,
+              head: branchName,
+              base: repoData.data.default_branch,
+            });
+            return {
+              successful: true,
+              result: {
+                prNumber: pullRequestResponse.data.number,
+                prUrl: pullRequestResponse.data.html_url,
+                lastUpdate: pullRequestResponse.data.updated_at,
+                hasChanges: true,
+              },
+            };
+          } catch (e: any) {
             logErrorIfNeeded(
               this.logger,
-              `Could not merge default branch ${repoData.data.default_branch} into import branch ${branchName}`,
-              error,
+              `Couldn't create PR in ${input.repoUrl}`,
+              e,
             );
+            errors.push(e.message);
+            return { successful: false };
           }
-        }
+        },
+      },
+    );
 
-        await createOrUpdateFileInBranch(
-          octo,
-          owner,
-          repo,
-          branchName,
-          fileName,
-          input.catalogInfoContent,
-        );
-
-        const pullRequestResponse = await octo.rest.pulls.create({
-          owner,
-          repo,
-          title: input.prTitle,
-          body: input.prBody,
-          head: branchName,
-          base: repoData.data.default_branch,
-        });
-        return {
-          prNumber: pullRequestResponse.data.number,
-          prUrl: pullRequestResponse.data.html_url,
-          lastUpdate: pullRequestResponse.data.updated_at,
-          hasChanges: true,
-        };
-      } catch (e: any) {
-        logErrorIfNeeded(
-          this.logger,
-          `Couldn't create PR in ${input.repoUrl}`,
-          e,
-        );
-        errors.push(e.message);
-      }
+    if (result) {
+      return result;
     }
 
     logger.warn(
@@ -674,43 +738,46 @@ export class GithubApiService {
     };
   }
 
-  async hasFileInRepo(
-      input: {
-        repoUrl: string;
-        defaultBranch?: string;
-        fileName: string;
-      },
-  ) {
-    const { ghConfig, credentials, gitUrl } =
-        await extractConfigAndCreds(this.githubCredentialsProvider, this.integrations, input);
-
-    for (const credential of credentials) {
-      const octo = buildOcto({
+  async hasFileInRepo(input: {
+    repoUrl: string;
+    defaultBranch?: string;
+    fileName: string;
+  }) {
+    const fileExists = await executeFunctionOnFirstSuccessfulIntegration(
+      {
         logger: this.logger,
         cache: this.cache,
-          },
-          { credential, owner: gitUrl.owner },
-          ghConfig.apiBaseUrl,
-      );
-      if (!octo) {
-        continue;
-      }
-      const exists = await fileExistsInDefaultBranch(
-          this.logger,
-          octo,
-          gitUrl.owner,
-          gitUrl.name,
-          input.fileName,
-          input.defaultBranch,
-      );
-      if (exists === undefined) {
-        continue;
-      }
-      return exists;
-    }
-    throw new Error(
-        `Could not determine if repo at ${input.repoUrl} already has a file named ${input.fileName} in its default branch (${input.defaultBranch})`,
+        config: this.config,
+        githubCredentialsProvider: this.githubCredentialsProvider,
+      },
+      this.integrations,
+      {
+        repoUrl: input.repoUrl,
+        fn: async (validatedRepo: ValidatedRepo, octo: Octokit) => {
+          const { owner, repo } = validatedRepo;
+          const exists = await fileExistsInDefaultBranch(
+            this.logger,
+            octo,
+            owner,
+            repo,
+            input.fileName,
+            input.defaultBranch,
+          );
+          if (exists === undefined) {
+            return { successful: false };
+          }
+          return { successful: true, result: exists };
+        },
+      },
     );
+
+    if (fileExists === undefined) {
+      throw new Error(
+        `Could not determine if repo at ${input.repoUrl} already has a file named ${input.fileName} in its default branch (${input.defaultBranch})`,
+      );
+    }
+
+    return fileExists;
   }
 
   async closeImportPR(
@@ -721,103 +788,109 @@ export class GithubApiService {
       comment: string;
     },
   ) {
-    const { ghConfig, owner, repo, credentials, branchName } =
-      await validateAndBuildRepoData(this.githubCredentialsProvider, this.integrations, this.config, input);
-    for (const credential of credentials) {
-      const octo = buildOcto({
+    await executeFunctionOnFirstSuccessfulIntegration(
+      {
         logger: this.logger,
         cache: this.cache,
-      },{ credential, owner }, ghConfig.apiBaseUrl);
-      if (!octo) {
-        continue;
-      }
-      try {
-        const existingPrForBranch = await findOpenPRForBranch(
-          logger,
-          this.config,
-          octo,
-          owner,
-          repo,
-          branchName,
-        );
-        if (existingPrForBranch.prNum) {
-          await closePRWithComment(
-            octo,
-            owner,
-            repo,
-            existingPrForBranch.prNum,
-            input.comment,
-          );
-          return;
-        }
-      } catch (e: any) {
-        logErrorIfNeeded(
-          this.logger,
-          `Couldn't close PR in ${input.repoUrl}`,
-          e,
-        );
-      }
-    }
+        config: this.config,
+        githubCredentialsProvider: this.githubCredentialsProvider,
+      },
+      this.integrations,
+      {
+        repoUrl: input.repoUrl,
+        fn: async (validatedRepo: ValidatedRepo, octo: Octokit) => {
+          const { owner, repo, branchName } = validatedRepo;
+          try {
+            const existingPrForBranch = await findOpenPRForBranch(
+              logger,
+              this.config,
+              octo,
+              owner,
+              repo,
+              branchName,
+            );
+            if (existingPrForBranch.prNum) {
+              await closePRWithComment(
+                octo,
+                owner,
+                repo,
+                existingPrForBranch.prNum,
+                input.comment,
+              );
+            }
+            return { successful: true };
+          } catch (e: any) {
+            logErrorIfNeeded(
+              this.logger,
+              `Couldn't close PR in ${input.repoUrl}`,
+              e,
+            );
+            return { successful: false };
+          }
+        },
+      },
+    );
   }
 
-  async deleteImportBranch(
-    input: {
-      repoUrl: string;
-      gitUrl: gitUrlParse.GitUrl;
-    },
-  ) {
-    const { ghConfig, owner, repo, credentials, branchName } =
-      await validateAndBuildRepoData(this.githubCredentialsProvider, this.integrations, this.config, input);
-    for (const credential of credentials) {
-      const octo = buildOcto({
+  async deleteImportBranch(input: {
+    repoUrl: string;
+    gitUrl: gitUrlParse.GitUrl;
+  }) {
+    await executeFunctionOnFirstSuccessfulIntegration(
+      {
         logger: this.logger,
         cache: this.cache,
-      },{ credential, owner }, ghConfig.apiBaseUrl);
-      if (!octo) {
-        continue;
-      }
-      try {
-        await octo.git.deleteRef({
-          owner: owner,
-          repo: repo,
-          ref: `heads/${branchName}`,
-        });
-        return;
-      } catch (e: any) {
-        logErrorIfNeeded(
-          this.logger,
-          `Couldn't close import PR and/or delete import branch in ${input.repoUrl}`,
-          e,
-        );
-      }
-    }
+        config: this.config,
+        githubCredentialsProvider: this.githubCredentialsProvider,
+      },
+      this.integrations,
+      {
+        repoUrl: input.repoUrl,
+        fn: async (validatedRepo: ValidatedRepo, octo: Octokit) => {
+          const { owner, repo, branchName } = validatedRepo;
+          try {
+            await octo.git.deleteRef({
+              owner: owner,
+              repo: repo,
+              ref: `heads/${branchName}`,
+            });
+            return { successful: true };
+          } catch (e: any) {
+            logErrorIfNeeded(
+              this.logger,
+              `Couldn't close import PR and/or delete import branch in ${input.repoUrl}`,
+              e,
+            );
+            return { successful: false };
+          }
+        },
+      },
+    );
   }
 
   async isRepoEmpty(input: { repoUrl: string }) {
-    const { ghConfig, credentials, gitUrl } =
-      await extractConfigAndCreds(this.githubCredentialsProvider, this.integrations, input);
-    const owner = gitUrl.organization;
-    const repo = gitUrl.name;
-
-    for (const credential of credentials) {
-      const octo = buildOcto({
+    return await executeFunctionOnFirstSuccessfulIntegration(
+      {
         logger: this.logger,
         cache: this.cache,
-      },{ credential, owner }, ghConfig.apiBaseUrl);
-      if (!octo) {
-        continue;
-      }
-      const resp = await octo.rest.repos.listContributors({
-        owner,
-        repo,
-        page: 1,
-        per_page: 1,
-      });
-      const status = resp.status as 200 | 204;
-      if (status === 204) {
-        return true;
-      }
-    }
-    return false;
+        config: this.config,
+        githubCredentialsProvider: this.githubCredentialsProvider,
+      },
+      this.integrations,
+      {
+        repoUrl: input.repoUrl,
+        fn: async (validatedRepo: ValidatedRepo, octo: Octokit) => {
+          const { owner, repo } = validatedRepo;
+          const resp = await octo.rest.repos.listContributors({
+            owner: owner,
+            repo: repo,
+            page: 1,
+            per_page: 1,
+          });
+          const status = resp.status as 200 | 204;
+          return { successful: true, result: status === 204 };
+        },
+      },
+    );
   }
 }

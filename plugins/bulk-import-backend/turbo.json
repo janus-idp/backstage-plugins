@@ -9,7 +9,11 @@
       "dependsOn": ["^tsc", "openapi"]
     },
     "openapi": {
-      "outputs": ["src/generated/openapi.d.ts", "src/generated/openapidocument.ts", "api-docs/**"]
+      "outputs": [
+        "src/generated/openapi.d.ts",
+        "src/generated/openapidocument.ts",
+        "api-docs/**"
+      ]
     },
     "test": {
       "dependsOn": ["openapi"]

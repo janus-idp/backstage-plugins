@@ -41,15 +41,16 @@ import {
 } from '@janus-idp/backstage-plugin-audit-log-node';
 import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
 
-import { CatalogInfoGenerator} from '../catalog/catalogInfoGenerator';
+import { CatalogHttpClient } from '../catalog/catalogHttpClient';
+import { CatalogInfoGenerator } from '../catalog/catalogInfoGenerator';
+import type { Components, Paths } from '../generated/openapi.d';
+import { openApiDocument } from '../generated/openapidocument';
+import { GithubApiService } from '../github';
+import { permissionCheck } from '../helpers';
 import {
   auditLogRequestError,
   auditLogRequestSuccess,
 } from '../helpers/auditLogUtils';
-import { permissionCheck } from '../helpers';
-import type { Components, Paths } from '../generated/openapi.d';
-import { openApiDocument } from '../generated/openapidocument';
-import { GithubApiService } from '../github';
 import {
   createImportJobs,
   deleteImportByRepo,
@@ -62,7 +63,6 @@ import {
   findAllRepositories,
   findRepositoriesByOrganization,
 } from './handlers/repository';
-import {CatalogHttpClient} from "../catalog/catalogHttpClient";
 
 export interface RouterOptions {
   logger: LoggerService;
@@ -96,8 +96,17 @@ export async function createRouter(
   });
 
   const githubApiService = new GithubApiService(logger, config, cache);
-  const catalogHttpClient = new CatalogHttpClient({logger, config, discovery, auth, catalogApi});
-  const catalogInfoGenerator = new CatalogInfoGenerator(logger, catalogHttpClient);
+  const catalogHttpClient = new CatalogHttpClient({
+    logger,
+    config,
+    discovery,
+    auth,
+    catalogApi,
+  });
+  const catalogInfoGenerator = new CatalogInfoGenerator(
+    logger,
+    catalogHttpClient,
+  );
 
   // create openapi requests handler
   const api = new OpenAPIBackend({
@@ -163,12 +172,12 @@ export async function createRouter(
       q.sizePerIntegration = stringToNumber(q.sizePerIntegration);
       q.checkImportStatus = stringToBoolean(q.checkImportStatus);
       const response = await findAllRepositories(
-          {
-              logger,
-              config,
-              githubApiService,
-              catalogHttpClient,
-          },
+        {
+          logger,
+          config,
+          githubApiService,
+          catalogHttpClient,
+        },
         {
           search: q.search,
           checkStatus: q.checkImportStatus,
@@ -244,12 +253,12 @@ export async function createRouter(
         size = stringToNumber(q.size);
       }
       const response = await findAllImports(
-          {
-              logger,
-              config,
-              githubApiService,
-              catalogHttpClient,
-          },
+        {
+          logger,
+          config,
+          githubApiService,
+          catalogHttpClient,
+        },
         {
           apiVersion,
         },
@@ -275,15 +284,15 @@ export async function createRouter(
       };
       q.dryRun = stringToBoolean(q.dryRun);
       const response = await createImportJobs(
-          {
-              logger,
-              config,
-              auth,
-              catalogApi,
-              githubApiService,
-              catalogInfoGenerator,
-              catalogHttpClient,
-          },
+        {
+          logger,
+          config,
+          auth,
+          catalogApi,
+          githubApiService,
+          catalogInfoGenerator,
+          catalogHttpClient,
+        },
         {
           importRequests: c.request.requestBody,
           dryRun: q.dryRun,
@@ -303,12 +312,12 @@ export async function createRouter(
         throw new Error('missing or blank parameter');
       }
       const response = await findImportStatusByRepo(
-          {
-              logger,
-              config,
-              githubApiService,
-              catalogHttpClient,
-          },
+        {
+          logger,
+          config,
+          githubApiService,
+          catalogHttpClient,
+        },
         q.repo,
         q.defaultBranch,
         true,
@@ -326,12 +335,13 @@ export async function createRouter(
       if (!q.repo?.trim()) {
         throw new Error('missing or blank "repo" parameter');
       }
-      const response = await deleteImportByRepo({
+      const response = await deleteImportByRepo(
+        {
           logger,
           config,
           githubApiService,
           catalogHttpClient,
-      },
+        },
         q.repo,
         q.defaultBranch,
       );

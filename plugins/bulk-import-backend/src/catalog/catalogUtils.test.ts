@@ -14,54 +14,51 @@
  * limitations under the License.
  */
 
-import {mockServices} from "@backstage/backend-test-utils";
-import { getCatalogUrl } from "./catalogUtils";
+import { mockServices } from '@backstage/backend-test-utils';
+
+import { getCatalogUrl } from './catalogUtils';
 
 describe('catalogUtils', () => {
-    it('should return a catalog url if no main branch is set', () => {
-        const repoUrl = 'https://ghe.example.com/my-org/my-repo';
-        expect(getCatalogUrl(mockServices.rootConfig(), repoUrl)).toBe(
-            `${repoUrl}/blob/main/catalog-info.yaml`,
-        );
-    });
+  it('should return a catalog url if no main branch is set', () => {
+    const repoUrl = 'https://ghe.example.com/my-org/my-repo';
+    expect(getCatalogUrl(mockServices.rootConfig(), repoUrl)).toBe(
+      `${repoUrl}/blob/main/catalog-info.yaml`,
+    );
+  });
 
-    it('should return appropriate catalog url for both repo and default branch', () => {
-        const repoUrl = 'https://ghe.example.com/my-org/my-repo';
-        const defaultBranch = 'dev';
-        expect(
-            getCatalogUrl(mockServices.rootConfig(), repoUrl, defaultBranch),
-        ).toBe(`${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`);
-    });
+  it('should return appropriate catalog url for both repo and default branch', () => {
+    const repoUrl = 'https://ghe.example.com/my-org/my-repo';
+    const defaultBranch = 'dev';
+    expect(
+      getCatalogUrl(mockServices.rootConfig(), repoUrl, defaultBranch),
+    ).toBe(`${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`);
+  });
 
-    it('should return appropriate catalog url for both repo and default branch with default catalog-info YAML', () => {
-        const repoUrl = 'https://ghe.example.com/my-org/my-repo';
-        const defaultBranch = 'dev';
-        expect(
-            getCatalogUrl(
-                mockServices.rootConfig(),
-                repoUrl,
-                defaultBranch,
-            ),
-        ).toBe(`${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`);
-    });
+  it('should return appropriate catalog url for both repo and default branch with default catalog-info YAML', () => {
+    const repoUrl = 'https://ghe.example.com/my-org/my-repo';
+    const defaultBranch = 'dev';
+    expect(
+      getCatalogUrl(mockServices.rootConfig(), repoUrl, defaultBranch),
+    ).toBe(`${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`);
+  });
 
-    it('should return appropriate catalog url for both repo and default branch with custom catalog-info name in config', () => {
-        const repoUrl = 'https://ghe.example.com/my-org/my-repo';
-        const defaultBranch = 'dev';
-        expect(
-            getCatalogUrl(
-                mockServices.rootConfig({
-                    data: {
-                        catalog: {
-                            import: {
-                                entityFilename: 'my-catalog-info.yaml',
-                            },
-                        },
-                    },
-                }),
-                repoUrl,
-                defaultBranch,
-            ),
-        ).toBe(`${repoUrl}/blob/${defaultBranch}/my-catalog-info.yaml`);
-    });
+  it('should return appropriate catalog url for both repo and default branch with custom catalog-info name in config', () => {
+    const repoUrl = 'https://ghe.example.com/my-org/my-repo';
+    const defaultBranch = 'dev';
+    expect(
+      getCatalogUrl(
+        mockServices.rootConfig({
+          data: {
+            catalog: {
+              import: {
+                entityFilename: 'my-catalog-info.yaml',
+              },
+            },
+          },
+        }),
+        repoUrl,
+        defaultBranch,
+      ),
+    ).toBe(`${repoUrl}/blob/${defaultBranch}/my-catalog-info.yaml`);
+  });
 });

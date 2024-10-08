@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-import type {CacheService, LoggerService} from "@backstage/backend-plugin-api";
-import {type ExtendedGithubCredentials, type GithubFetchError, isGithubAppCredential} from "../types";
-import {Octokit} from "@octokit/rest";
-import {createCredentialError} from "./utils";
+import type {
+  CacheService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+
+import { Octokit } from '@octokit/rest';
+
+import {
+  isGithubAppCredential,
+  type ExtendedGithubCredentials,
+  type GithubFetchError,
+} from '../types';
+import { createCredentialError } from './utils';
 
 const GITHUB_DEFAULT_API_ENDPOINT = 'https://api.github.com';
 
@@ -28,105 +37,108 @@ const GITHUB_DEFAULT_API_ENDPOINT = 'https://api.github.com';
 const RESPONSE_CACHE_TTL_MILLIS = 60 * 60 * 1000;
 
 export function buildOcto(
-    deps : {
-        logger: LoggerService,
-        cache: CacheService,
-    },
-    input: {
-        credential: ExtendedGithubCredentials;
-        owner?: string;
-        errors?: Map<number, GithubFetchError>;
-    },
-    apiBaseUrl: string = GITHUB_DEFAULT_API_ENDPOINT,
+  deps: {
+    logger: LoggerService;
+    cache: CacheService;
+  },
+  input: {
+    credential: ExtendedGithubCredentials;
+    owner?: string;
+    errors?: Map<number, GithubFetchError>;
+  },
+  apiBaseUrl: string = GITHUB_DEFAULT_API_ENDPOINT,
 ): Octokit | undefined {
-    if ('error' in input.credential) {
-        if (input.credential.error?.name !== 'NotFoundError') {
-            deps.logger.error(
-                `Obtaining the Access Token Github App with appId: ${input.credential.appId} failed with ${input.credential.error}`,
-            );
-            const credentialError = createCredentialError(input.credential);
-            if (credentialError) {
-                deps.logger.debug(`${input.credential.appId}: ${credentialError}`);
-                if (input.errors) {
-                    input.errors.set(input.credential.appId, credentialError);
-                }
-            }
+  if ('error' in input.credential) {
+    if (input.credential.error?.name !== 'NotFoundError') {
+      deps.logger.error(
+        `Obtaining the Access Token Github App with appId: ${input.credential.appId} failed with ${input.credential.error}`,
+      );
+      const credentialError = createCredentialError(input.credential);
+      if (credentialError) {
+        deps.logger.debug(`${input.credential.appId}: ${credentialError}`);
+        if (input.errors) {
+          input.errors.set(input.credential.appId, credentialError);
         }
-        return undefined;
+      }
     }
-    if (
-        isGithubAppCredential(input.credential) &&
-        input.owner &&
-        input.credential.accountLogin !== input.owner
-    ) {
-        return undefined;
-    }
-    const octokit = new Octokit({
-        baseUrl: apiBaseUrl,
-        auth: input.credential.token,
-    });
-    registerHooks(deps, octokit);
-    return octokit;
+    return undefined;
+  }
+  if (
+    isGithubAppCredential(input.credential) &&
+    input.owner &&
+    input.credential.accountLogin !== input.owner
+  ) {
+    return undefined;
+  }
+  const octokit = new Octokit({
+    baseUrl: apiBaseUrl,
+    auth: input.credential.token,
+  });
+  registerHooks(deps, octokit);
+  return octokit;
 }
 
 function toFinalUrl(options: any) {
-    // options.url might contain placeholders => need to replace them with their actual values to not get colliding keys
-    return options.url.replace(/{([^}]+)}/g, (_: any, key: any) => {
-        return options[key] ?? `{${key}}`; // Replace with actual value, or leave unchanged if not found
-    });
+  // options.url might contain placeholders => need to replace them with their actual values to not get colliding keys
+  return options.url.replace(/{([^}]+)}/g, (_: any, key: any) => {
+    return options[key] ?? `{${key}}`; // Replace with actual value, or leave unchanged if not found
+  });
 }
 
-function registerHooks(deps: {
-    logger: LoggerService,
-    cache: CacheService,
-}, octokit: Octokit) {
-    const extractCacheKey = (options: any) =>
-        `${options.method}--${toFinalUrl(options)}`;
+function registerHooks(
+  deps: {
+    logger: LoggerService;
+    cache: CacheService;
+  },
+  octokit: Octokit,
+) {
+  const extractCacheKey = (options: any) =>
+    `${options.method}--${toFinalUrl(options)}`;
 
-    octokit.hook.before('request', async options => {
-        if (!options.headers) {
-            options.headers = {
-                accept: 'application/json',
-                'user-agent': 'rhdh/bulk-import',
-            };
-        }
-        // Use ETag from in-memory cache if available
-        const cacheKey = extractCacheKey(options);
-        const existingEtag = await deps.cache
-            .get(cacheKey)
-            ?.then(val => (val as any)?.etag);
-        if (existingEtag) {
-            options.headers['If-None-Match'] = existingEtag;
-        } else {
-            deps.logger.debug(`cache miss for key "${cacheKey}"`);
-        }
-    });
+  octokit.hook.before('request', async options => {
+    if (!options.headers) {
+      options.headers = {
+        accept: 'application/json',
+        'user-agent': 'rhdh/bulk-import',
+      };
+    }
+    // Use ETag from in-memory cache if available
+    const cacheKey = extractCacheKey(options);
+    const existingEtag = await deps.cache
+      .get(cacheKey)
+      ?.then(val => (val as any)?.etag);
+    if (existingEtag) {
+      options.headers['If-None-Match'] = existingEtag;
+    } else {
+      deps.logger.debug(`cache miss for key "${cacheKey}"`);
+    }
+  });
 
-    octokit.hook.after('request', async (response, options) => {
-        deps.logger.debug(
-            `[GH API] ${options.method} ${toFinalUrl(options)}: ${response.status}`,
-        );
-        // If we get a successful response, the resource has changed, so update the in-memory cache
-        const cacheKey = extractCacheKey(options);
-        await deps.cache.set(
-            cacheKey,
-            {
-                etag: response.headers.etag,
-                ...response,
-            },
-            { ttl: RESPONSE_CACHE_TTL_MILLIS },
-        );
-    });
+  octokit.hook.after('request', async (response, options) => {
+    deps.logger.debug(
+      `[GH API] ${options.method} ${toFinalUrl(options)}: ${response.status}`,
+    );
+    // If we get a successful response, the resource has changed, so update the in-memory cache
+    const cacheKey = extractCacheKey(options);
+    await deps.cache.set(
+      cacheKey,
+      {
+        etag: response.headers.etag,
+        ...response,
+      },
+      { ttl: RESPONSE_CACHE_TTL_MILLIS },
+    );
+  });
 
-    octokit.hook.error('request', async (error: any, options) => {
-        deps.logger.debug(
-            `[GH API] ${options.method} ${toFinalUrl(options)}: ${error.status}`,
-        );
-        if (error.status !== 304) {
-            throw error;
-        }
-        // "304 Not Modified" means that the resource hasn't changed,
-        // and we should have a version of it in the cache
-        return await deps.cache.get(extractCacheKey(options));
-    });
+  octokit.hook.error('request', async (error: any, options) => {
+    deps.logger.debug(
+      `[GH API] ${options.method} ${toFinalUrl(options)}: ${error.status}`,
+    );
+    if (error.status !== 304) {
+      throw error;
+    }
+    // "304 Not Modified" means that the resource hasn't changed,
+    // and we should have a version of it in the cache
+    return await deps.cache.get(extractCacheKey(options));
+  });
 }

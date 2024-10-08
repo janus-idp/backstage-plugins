@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2024 The Janus IDP Authors
  *

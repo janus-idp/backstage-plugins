@@ -17,18 +17,21 @@
 import type { LoggerService } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
 
+import { CatalogHttpClient } from '../../../catalog/catalogHttpClient';
+import {
+  getCatalogFilename,
+  getCatalogUrl,
+} from '../../../catalog/catalogUtils';
 import type { Components } from '../../../generated/openapi';
 import type { GithubApiService } from '../../../github';
-import {getCatalogFilename, getCatalogUrl} from '../../../catalog/catalogUtils';
-import {CatalogHttpClient} from "../../../catalog/catalogHttpClient";
 
 export async function getImportStatusFromLocations(
-    deps: {
-        logger: LoggerService,
-        config: Config,
-        githubApiService: GithubApiService,
-        catalogHttpClient: CatalogHttpClient,
-    },
+  deps: {
+    logger: LoggerService;
+    config: Config;
+    githubApiService: GithubApiService;
+    catalogHttpClient: CatalogHttpClient;
+  },
   repoUrl: string,
   catalogUrlLocations: string[],
   defaultBranch?: string,
@@ -53,10 +56,10 @@ export async function getImportStatusFromLocations(
 
 async function getImportStatusWithCheckerFn(
   deps: {
-      logger: LoggerService,
-      config: Config,
-      githubApiService: GithubApiService,
-      catalogHttpClient: CatalogHttpClient,
+    logger: LoggerService;
+    config: Config;
+    githubApiService: GithubApiService;
+    catalogHttpClient: CatalogHttpClient;
   },
   repoUrl: string,
   catalogExistenceCheckFn: (catalogUrl: string) => Promise<boolean>,
@@ -66,19 +69,21 @@ async function getImportStatusWithCheckerFn(
   lastUpdate?: string;
 } | null> {
   // Check to see if there are any PR
-  const openImportPr = await deps.githubApiService.findImportOpenPr(deps.logger, {
-    repoUrl,
-  });
+  const openImportPr = await deps.githubApiService.findImportOpenPr(
+    deps.logger,
+    {
+      repoUrl,
+    },
+  );
   if (!openImportPr.prUrl) {
     const existsInCatalog = await catalogExistenceCheckFn(
       getCatalogUrl(deps.config, repoUrl, defaultBranch),
     );
-    const existsInRepo =
-      await deps.githubApiService.hasFileInRepo({
-        repoUrl,
-        defaultBranch,
-          fileName: getCatalogFilename(deps.config),
-      });
+    const existsInRepo = await deps.githubApiService.hasFileInRepo({
+      repoUrl,
+      defaultBranch,
+      fileName: getCatalogFilename(deps.config),
+    });
     if (existsInCatalog && existsInRepo) {
       // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).
       await deps.catalogHttpClient.refreshLocationByRepoUrl(

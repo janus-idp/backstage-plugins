@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2024 The Janus IDP Authors
  *
@@ -15,38 +14,45 @@
  * limitations under the License.
  */
 
-import type {Config} from "@backstage/config";
-import gitUrlParse from "git-url-parse";
+import type { Config } from '@backstage/config';
+
+import gitUrlParse from 'git-url-parse';
 
 export function getCatalogFilename(config: Config): string {
-    return config.getOptionalString('catalog.import.entityFilename') ?? 'catalog-info.yaml';
+  return (
+    config.getOptionalString('catalog.import.entityFilename') ??
+    'catalog-info.yaml'
+  );
 }
 
 export function getBranchName(config: Config): string {
-    return config.getOptionalString('catalog.import.pullRequestBranchName') ?? 'backstage-integration';
+  return (
+    config.getOptionalString('catalog.import.pullRequestBranchName') ??
+    'backstage-integration'
+  );
 }
 
 export function getCatalogUrl(
-    config: Config,
-    repoUrl: string,
-    defaultBranch: string = 'main',
+  config: Config,
+  repoUrl: string,
+  defaultBranch: string = 'main',
 ): string {
-    return `${repoUrl}/blob/${defaultBranch}/${getCatalogFilename(config)}`;
+  return `${repoUrl}/blob/${defaultBranch}/${getCatalogFilename(config)}`;
 }
 
 export function filterLocations(
-    res: { id: string | undefined; target: string }[],
-    search: string | undefined,
+  res: { id: string | undefined; target: string }[],
+  search: string | undefined,
 ) {
-    return search
-        ? res.filter(loc => {
-            const split = loc.target.split('/blob/');
-            if (split.length < 2) {
-                return false;
-            }
-            const repoUrl = split[0];
-            const gitUrl = gitUrlParse(repoUrl);
-            return gitUrl.name.toLowerCase().includes(search.toLowerCase());
-        })
-        : res;
+  return search
+    ? res.filter(loc => {
+        const split = loc.target.split('/blob/');
+        if (split.length < 2) {
+          return false;
+        }
+        const repoUrl = split[0];
+        const gitUrl = gitUrlParse(repoUrl);
+        return gitUrl.name.toLowerCase().includes(search.toLowerCase());
+      })
+    : res;
 }

@@ -14,146 +14,163 @@
  * limitations under the License.
  */
 
-import {addHandlersForGHTokenAppErrors, setupTest, startBackendServer} from "../../../../__fixtures__/testUtils";
-import {AuthorizeResult} from "@backstage/plugin-permission-common";
-import request from "supertest";
-import {rest} from "msw";
-import {LOCAL_ADDR} from "../../../../__fixtures__/handlers";
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+
+import { rest } from 'msw';
+import request from 'supertest';
+
+import { LOCAL_ADDR } from '../../../../__fixtures__/handlers';
+import {
+  addHandlersForGHTokenAppErrors,
+  setupTest,
+  startBackendServer,
+} from '../../../../__fixtures__/testUtils';
 
 describe('organizations', () => {
-    const useTestData = setupTest();
+  const useTestData = setupTest();
 
-    describe('GET /organizations', () => {
+  describe('GET /organizations', () => {
+    it('returns 200 when organizations are fetched without errors', async () => {
+      const { mockCatalogClient } = useTestData();
+      const backendServer = await startBackendServer(
+        mockCatalogClient,
+        AuthorizeResult.ALLOW,
+      );
 
-        it('returns 200 when organizations are fetched without errors', async () => {
-            const {mockCatalogClient} = useTestData();
-            const backendServer = await startBackendServer(mockCatalogClient, AuthorizeResult.ALLOW);
+      const response = await request(backendServer).get(
+        '/api/bulk-import/organizations',
+      );
 
-            const response = await request(backendServer).get(
-                '/api/bulk-import/organizations',
-            );
-
-            expect(response.status).toEqual(200);
-            expect(response.body).toEqual({
-                errors: [],
-                organizations: [
-                    {
-                        description: 'A great organization',
-                        errors: [],
-                        id: '1',
-                        name: 'github',
-                        totalRepoCount: 913,
-                        url: 'http://localhost:8765/my-org-1',
-                    },
-                    {
-                        description: 'A great organization',
-                        errors: [],
-                        id: '111',
-                        name: 'my-org-1',
-                        totalRepoCount: 913,
-                        url: 'http://localhost:8765/my-org-1',
-                    },
-                    {
-                        description: 'A second great organization',
-                        errors: [],
-                        id: '222',
-                        name: 'my-org-2',
-                        totalRepoCount: 913,
-                        url: 'http://localhost:8765/my-org-2',
-                    },
-                    {
-                        errors: [],
-                        id: '1',
-                        name: 'octocat',
-                        totalRepoCount: 3134,
-                        url: 'http://localhost:8765/octocat',
-                    },
-                ],
-                pagePerIntegration: 1,
-                sizePerIntegration: 20,
-                totalCount: 4,
-            });
-        });
-
-        it('filters out organizations when a search query parameter is provided', async () => {
-            const {mockCatalogClient} = useTestData();
-            const backendServer = await startBackendServer(mockCatalogClient, AuthorizeResult.ALLOW);
-
-            const response = await request(backendServer).get(
-                '/api/bulk-import/organizations?search=octo',
-            );
-
-            expect(response.status).toEqual(200);
-            expect(response.body).toEqual({
-                errors: [],
-                organizations: [
-                    {
-                        errors: [],
-                        id: '1',
-                        name: 'octocat',
-                        totalRepoCount: 3134,
-                        url: 'http://localhost:8765/octocat',
-                    },
-                ],
-                pagePerIntegration: 1,
-                sizePerIntegration: 20,
-                totalCount: 1,
-            });
-        });
-
-        it('returns 200 with the errors in the body when organizations are fetched, but errors have occurred', async () => {
-            const {server, mockCatalogClient} = useTestData();
-            const backendServer = await startBackendServer(mockCatalogClient, AuthorizeResult.ALLOW);
-            // change the response to 'GET /user/orgs'
-            // to simulate an error retrieving list of orgs from GH Token.
-            server.use(
-                rest.get(`${LOCAL_ADDR}/user/orgs`, (_, res, ctx) => {
-                    return res(
-                        ctx.status(403),
-                        ctx.json({message: 'Github Token auth did not succeed'}),
-                    );
-                }),
-            );
-
-            const response = await request(backendServer).get(
-                '/api/bulk-import/organizations',
-            );
-
-            expect(response.status).toEqual(200);
-            expect(response.body).toEqual({
-                errors: ['Github Token auth did not succeed'],
-                organizations: [
-                    {
-                        errors: [],
-                        id: '1',
-                        name: 'octocat',
-                        totalRepoCount: 3134,
-                        url: 'http://localhost:8765/octocat',
-                    },
-                ],
-                pagePerIntegration: 1,
-                sizePerIntegration: 20,
-                totalCount: 1,
-            });
-        });
-
-        it('returns 500 when one or more errors are returned with no successful organization fetched', async () => {
-            const {server, mockCatalogClient} = useTestData();
-            const backendServer = await startBackendServer(mockCatalogClient, AuthorizeResult.ALLOW);
-            // change the responses to simulate error retrieving list of orgs from all GH integrations.
-            addHandlersForGHTokenAppErrors(server);
-
-            const orgResp = await request(backendServer).get(
-                '/api/bulk-import/organizations',
-            );
-
-            expect(orgResp.status).toEqual(500);
-            expect(orgResp.body).toEqual({
-                errors: [
-                    'Github Token auth did not succeed',
-                    'Github App auth returned an error',
-                ],
-            });
-        });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        errors: [],
+        organizations: [
+          {
+            description: 'A great organization',
+            errors: [],
+            id: '1',
+            name: 'github',
+            totalRepoCount: 913,
+            url: 'http://localhost:8765/my-org-1',
+          },
+          {
+            description: 'A great organization',
+            errors: [],
+            id: '111',
+            name: 'my-org-1',
+            totalRepoCount: 913,
+            url: 'http://localhost:8765/my-org-1',
+          },
+          {
+            description: 'A second great organization',
+            errors: [],
+            id: '222',
+            name: 'my-org-2',
+            totalRepoCount: 913,
+            url: 'http://localhost:8765/my-org-2',
+          },
+          {
+            errors: [],
+            id: '1',
+            name: 'octocat',
+            totalRepoCount: 3134,
+            url: 'http://localhost:8765/octocat',
+          },
+        ],
+        pagePerIntegration: 1,
+        sizePerIntegration: 20,
+        totalCount: 4,
+      });
     });
+
+    it('filters out organizations when a search query parameter is provided', async () => {
+      const { mockCatalogClient } = useTestData();
+      const backendServer = await startBackendServer(
+        mockCatalogClient,
+        AuthorizeResult.ALLOW,
+      );
+
+      const response = await request(backendServer).get(
+        '/api/bulk-import/organizations?search=octo',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        errors: [],
+        organizations: [
+          {
+            errors: [],
+            id: '1',
+            name: 'octocat',
+            totalRepoCount: 3134,
+            url: 'http://localhost:8765/octocat',
+          },
+        ],
+        pagePerIntegration: 1,
+        sizePerIntegration: 20,
+        totalCount: 1,
+      });
+    });
+
+    it('returns 200 with the errors in the body when organizations are fetched, but errors have occurred', async () => {
+      const { server, mockCatalogClient } = useTestData();
+      const backendServer = await startBackendServer(
+        mockCatalogClient,
+        AuthorizeResult.ALLOW,
+      );
+      // change the response to 'GET /user/orgs'
+      // to simulate an error retrieving list of orgs from GH Token.
+      server.use(
+        rest.get(`${LOCAL_ADDR}/user/orgs`, (_, res, ctx) => {
+          return res(
+            ctx.status(403),
+            ctx.json({ message: 'Github Token auth did not succeed' }),
+          );
+        }),
+      );
+
+      const response = await request(backendServer).get(
+        '/api/bulk-import/organizations',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        errors: ['Github Token auth did not succeed'],
+        organizations: [
+          {
+            errors: [],
+            id: '1',
+            name: 'octocat',
+            totalRepoCount: 3134,
+            url: 'http://localhost:8765/octocat',
+          },
+        ],
+        pagePerIntegration: 1,
+        sizePerIntegration: 20,
+        totalCount: 1,
+      });
+    });
+
+    it('returns 500 when one or more errors are returned with no successful organization fetched', async () => {
+      const { server, mockCatalogClient } = useTestData();
+      const backendServer = await startBackendServer(
+        mockCatalogClient,
+        AuthorizeResult.ALLOW,
+      );
+      // change the responses to simulate error retrieving list of orgs from all GH integrations.
+      addHandlersForGHTokenAppErrors(server);
+
+      const orgResp = await request(backendServer).get(
+        '/api/bulk-import/organizations',
+      );
+
+      expect(orgResp.status).toEqual(500);
+      expect(orgResp.body).toEqual({
+        errors: [
+          'Github Token auth did not succeed',
+          'Github App auth returned an error',
+        ],
+      });
+    });
+  });
 });

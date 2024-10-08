@@ -20,11 +20,11 @@ import { ScmIntegrations } from '@backstage/integration';
 import type { RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
 
-import type { ExtendedGithubCredentialsProvider } from './types';
 import {
   CustomGithubCredentialsProvider,
   CustomSingleInstanceGithubCredentialsProvider,
 } from './GithubAppManager';
+import type { ExtendedGithubCredentialsProvider } from './types';
 
 const octokit = {
   paginate: async (fn: any) => (await fn()).data,

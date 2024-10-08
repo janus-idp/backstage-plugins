@@ -16,8 +16,8 @@
 
 import { mockServices } from '@backstage/backend-test-utils';
 
-import { CustomGithubCredentialsProvider } from './GithubAppManager';
 import { GithubApiService } from './githubApiService';
+import { CustomGithubCredentialsProvider } from './GithubAppManager';
 
 const octokit = {
   paginate: async (fn: any) => {

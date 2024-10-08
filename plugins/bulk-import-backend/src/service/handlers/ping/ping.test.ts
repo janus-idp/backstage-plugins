@@ -14,37 +14,42 @@
  * limitations under the License.
  */
 
-import {AuthorizeResult} from "@backstage/plugin-permission-common";
-import request from "supertest";
-import {setupTest, startBackendServer} from "../../../../__fixtures__/testUtils";
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+
+import request from 'supertest';
+
+import {
+  setupTest,
+  startBackendServer,
+} from '../../../../__fixtures__/testUtils';
 
 describe('ping', () => {
-    const useTestData = setupTest();
+  const useTestData = setupTest();
 
-    describe('GET /ping', () => {
-        it.each([
-            ['anonymous', undefined],
-            ['allowed', AuthorizeResult.ALLOW],
-            ['denied', AuthorizeResult.DENY],
-        ])(
-            'should return ok when %s (auth result=%s)',
-            async (_desc, authorizeResult?) => {
-                const {mockCatalogClient} = useTestData();
-                const backendServer = await startBackendServer(
-                    mockCatalogClient,
-                    authorizeResult as
-                        | AuthorizeResult.DENY
-                        | AuthorizeResult.ALLOW
-                        | undefined,
-                );
-
-                const response = await request(backendServer).get(
-                    '/api/bulk-import/ping',
-                );
-
-                expect(response.status).toEqual(200);
-                expect(response.body).toEqual({status: 'ok'});
-            },
+  describe('GET /ping', () => {
+    it.each([
+      ['anonymous', undefined],
+      ['allowed', AuthorizeResult.ALLOW],
+      ['denied', AuthorizeResult.DENY],
+    ])(
+      'should return ok when %s (auth result=%s)',
+      async (_desc, authorizeResult?) => {
+        const { mockCatalogClient } = useTestData();
+        const backendServer = await startBackendServer(
+          mockCatalogClient,
+          authorizeResult as
+            | AuthorizeResult.DENY
+            | AuthorizeResult.ALLOW
+            | undefined,
         );
-    });
+
+        const response = await request(backendServer).get(
+          '/api/bulk-import/ping',
+        );
+
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({ status: 'ok' });
+      },
+    );
+  });
 });

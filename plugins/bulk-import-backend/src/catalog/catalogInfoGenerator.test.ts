@@ -20,8 +20,8 @@ import type { CatalogClient } from '@backstage/catalog-client';
 
 import fetch from 'node-fetch';
 
+import { CatalogHttpClient } from './catalogHttpClient';
 import { CatalogInfoGenerator } from './catalogInfoGenerator';
-import {CatalogHttpClient} from "./catalogHttpClient";
 
 jest.mock('node-fetch');
 
@@ -55,13 +55,13 @@ describe('catalogInfoGenerator', () => {
     const logger = mockServices.logger.mock();
     catalogInfoGenerator = new CatalogInfoGenerator(
       logger,
-        new CatalogHttpClient({
-          logger,
-          config: mockServices.rootConfig({data: {}}),
-          discovery: mockDiscovery,
-          auth: mockAuth,
-          catalogApi: mockCatalogClient,
-        }),
+      new CatalogHttpClient({
+        logger,
+        config: mockServices.rootConfig({ data: {} }),
+        discovery: mockDiscovery,
+        auth: mockAuth,
+        catalogApi: mockCatalogClient,
+      }),
     );
   });
 
