@@ -135,6 +135,39 @@ export async function getEntities<T extends Users | Groups>(
   return entityResults;
 }
 
+async function getAllGroupMembers<T extends Groups>(
+  groups: T,
+  groupId: string,
+  config: KeycloakProviderConfig,
+  options?: { userQuerySize?: number },
+): Promise<string[]> {
+  const querySize = options?.userQuerySize || 100;
+
+  let allMembers: string[] = [];
+  let page = 0;
+  let totalMembers = 0;
+
+  do {
+    const members = await groups.listMembers({
+      id: groupId,
+      max: querySize,
+      realm: config.realm,
+      first: page * querySize,
+    });
+
+    if (members.length > 0) {
+      allMembers = allMembers.concat(members.map(m => m.username!));
+      totalMembers = members.length; // Get the number of members retrieved
+    } else {
+      totalMembers = 0; // No members retrieved
+    }
+
+    page++;
+  } while (totalMembers > 0);
+
+  return allMembers;
+}
+
 export async function processGroupsRecursively(
   topLevelGroups: GroupRepresentationWithParent[],
   entities: Groups,
@@ -225,13 +258,12 @@ export const readKeycloakRealm = async (
   }
   const kGroups = await Promise.all(
     rawKGroups.map(async g => {
-      g.members = (
-        await client.groups.listMembers({
-          id: g.id!,
-          max: options?.userQuerySize,
-          realm: config.realm,
-        })
-      )?.map(m => m.username!);
+      g.members = await getAllGroupMembers(
+        client.groups as Groups,
+        g.id!,
+        config,
+        options,
+      );
 
       if (isVersion23orHigher) {
         if (g.subGroupCount! > 0) {
