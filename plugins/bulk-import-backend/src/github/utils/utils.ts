@@ -247,3 +247,93 @@ export async function executeFunctionOnFirstSuccessfulIntegration<T>(
   }
   return undefined;
 }
+
+export async function fetchFromAllIntegrations<T>(
+  deps: {
+    logger: LoggerService;
+    cache: CacheService;
+    githubCredentialsProvider: CustomGithubCredentialsProvider;
+  },
+  integrations: ScmIntegrations,
+  params: {
+    dataFetcher: (
+      octo: Octokit,
+      credential: ExtendedGithubCredentials,
+      ghConfig: GithubIntegrationConfig,
+    ) => Promise<{
+      stopFetchingData?: boolean;
+      result?: T;
+      errors?: GithubFetchError[];
+    }>;
+  },
+) {
+  const ghConfigs = verifyAndGetIntegrations(deps, integrations);
+
+  const credentialsByConfig = await getCredentialsFromIntegrations(
+    deps.githubCredentialsProvider,
+    ghConfigs,
+  );
+  const errors = new Map<number, GithubFetchError>();
+  const data: T[] = [];
+  const dataErrs: GithubFetchError[] = [];
+  let stopFetchingData: boolean | undefined = false;
+  for (const [ghConfig, credentials] of credentialsByConfig) {
+    if (stopFetchingData) {
+      break;
+    }
+    deps.logger.debug(
+      `Got ${credentials.length} credential(s) for ${ghConfig.host}`,
+    );
+    for (const credential of credentials) {
+      const octokit = buildOcto(
+        deps,
+        { credential, errors },
+        ghConfig.apiBaseUrl,
+      );
+      if (!octokit) {
+        continue;
+      }
+      const res = await params.dataFetcher(octokit, credential, ghConfig);
+      res.errors?.forEach(err => dataErrs.push(err));
+
+      if (res.result) {
+        data.push(res.result);
+      }
+
+      stopFetchingData = res.stopFetchingData;
+    }
+  }
+
+  const aggregatedErrors = new Map<number, GithubFetchError>();
+  errors.forEach((err, num) => aggregatedErrors.set(num, err));
+  dataErrs.forEach((err, idx) => aggregatedErrors.set(idx, err));
+
+  return { data, errors: aggregatedErrors };
+}
+
+export function computeTotalCount<T>(
+  data: T[],
+  countList: number[],
+  pageSize: number,
+) {
+  let totalCount = countList.reduce(
+    (accumulator, currentValue) => accumulator + currentValue,
+    0,
+  );
+  if (totalCount < pageSize) {
+    totalCount = data.length;
+  }
+  return totalCount;
+}
+
+export function extractLocationOwnerMap(locationUrls: string[]) {
+  const locationGitOwnerMap = new Map<string, string>();
+  for (const locationUrl of locationUrls) {
+    const split = locationUrl.split('/blob/');
+    if (split.length < 2) {
+      continue;
+    }
+    locationGitOwnerMap.set(locationUrl, gitUrlParse(split[0]).owner);
+  }
+  return locationGitOwnerMap;
+}

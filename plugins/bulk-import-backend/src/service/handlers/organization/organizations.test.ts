@@ -167,8 +167,8 @@ describe('organizations', () => {
       expect(orgResp.status).toEqual(500);
       expect(orgResp.body).toEqual({
         errors: [
-          'Github Token auth did not succeed',
           'Github App auth returned an error',
+          'Github Token auth did not succeed',
         ],
       });
     });

@@ -230,7 +230,7 @@ describe('GithubApiService tests', () => {
           appId: 2,
         },
       ],
-      totalCount: 0,
+      totalCount: 2,
     };
     expect(result).toEqual(expected_response);
     expect(errorLog).toHaveBeenCalledTimes(1);
@@ -290,7 +290,7 @@ describe('GithubApiService tests', () => {
         },
       ],
       errors: [],
-      totalCount: 0,
+      totalCount: 3,
     };
     expect(errorLog).not.toHaveBeenCalled();
     expect(result).toEqual(expected_response);
@@ -342,7 +342,7 @@ describe('GithubApiService tests', () => {
           appId: 1,
         },
       ],
-      totalCount: 0,
+      totalCount: 2,
     };
     expect(result).toEqual(expected_response);
   });
