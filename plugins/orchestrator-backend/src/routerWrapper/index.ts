@@ -1,5 +1,4 @@
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
-import {
+import type {
   AuthService,
   DiscoveryService,
   HttpAuthService,
@@ -8,8 +7,8 @@ import {
   SchedulerService,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
+import type { CatalogApi } from '@backstage/catalog-client';
+import type { Config } from '@backstage/config';
 
 import express from 'express';
 
@@ -24,8 +23,8 @@ export interface RouterOptions {
   urlReader: UrlReaderService;
   scheduler: SchedulerService;
   permissions: PermissionsService;
-  httpAuth?: HttpAuthService;
-  auth?: AuthService;
+  httpAuth: HttpAuthService;
+  auth: AuthService;
 }
 
 export async function createRouter(
@@ -46,11 +45,6 @@ export async function createRouter(
     }
   }
 
-  const { auth, httpAuth } = createLegacyAuthAdapters({
-    httpAuth: args.httpAuth,
-    discovery: args.discovery,
-    auth: args.auth,
-  });
   return await createBackendRouter({
     config: args.config,
     logger: args.logger,
@@ -59,7 +53,7 @@ export async function createRouter(
     urlReader: args.urlReader,
     scheduler: args.scheduler,
     permissions: args.permissions,
-    httpAuth: httpAuth,
-    auth: auth,
+    httpAuth: args.httpAuth,
+    auth: args.auth,
   });
 }
