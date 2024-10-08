@@ -141,6 +141,11 @@ export function registerScriptCommand(program: Command) {
       '--scalprum-config <file>',
       'Allows retrieving scalprum configuration from an external JSON file, instead of using a `scalprum` field of the `package.json`. Frontend plugins only.',
     )
+    .option(
+      '--track-dynamic-manifest-and-lock-file',
+      'Adds the `package.json` and `yarn.lock` files, generated in the `dist-dynamic` folder of backend plugins, to source control. By default the whole `dist-dynamic` folder id git-ignored.',
+      false,
+    )
     .action(lazy(() => import('./export-dynamic-plugin').then(m => m.command)));
 
   command
