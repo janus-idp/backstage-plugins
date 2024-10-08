@@ -178,7 +178,7 @@ describe('lightspeed router tests', () => {
       const response = await request(backendServer)
         .post('/api/lightspeed/v1/query')
         .send({
-          model: 'test-model',
+          model: mockModel,
           conversation_id: mockConversationId,
           query: 'Hello',
           serverURL: LOCAL_AI_ADDR,
@@ -274,12 +274,13 @@ describe('lightspeed router tests', () => {
 
     it('returns 500 if unexpected error', async () => {
       const backendServer = await startBackendServer();
+      const nonExistentModel = 'nonexistent-model';
       server.use(
         http.post(`${LOCAL_AI_ADDR}/chat/completions`, () => {
           return new HttpResponse(
             JSON.stringify({
               error: {
-                message: 'model "test-model" not found, try pulling it first',
+                message: `model "${nonExistentModel}" not found, try pulling it first`,
                 type: 'api_error',
                 param: null,
                 code: null,
@@ -292,7 +293,7 @@ describe('lightspeed router tests', () => {
       const response = await request(backendServer)
         .post('/api/lightspeed/v1/query')
         .send({
-          model: 'nonexistent-model',
+          model: nonExistentModel,
           conversation_id: mockConversationId,
           serverURL: LOCAL_AI_ADDR,
           query: 'Hello',
