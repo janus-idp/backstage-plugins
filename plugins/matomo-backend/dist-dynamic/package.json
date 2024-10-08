@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-matomo-backend-dynamic",
-  "version": "1.8.2",
+  "version": "1.9.0",
   "main": "./dist/index.cjs.js",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -28,7 +28,6 @@
   "dependencies": {
     "@types/express": "4.17.20",
     "express": "^4.18.2",
-    "express-promise-router": "^4.1.1",
     "http-proxy-middleware": "^2.0.6",
     "node-fetch": "^3.3.2",
     "yn": "^4.0.0"
