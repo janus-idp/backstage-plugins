@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw';
 
-const localHostAndPort = 'localhost:443/v1';
-export const LOCAL_AI_ADDR = `http://${localHostAndPort}`;
+const localHostAndPort = 'localhost:443';
+export const LOCAL_AI_ADDR = `http://${localHostAndPort}/v1`;
 
 function loadTestFixture(filePathFromFixturesDir: string) {
   return require(`${__dirname}/${filePathFromFixturesDir}`);
