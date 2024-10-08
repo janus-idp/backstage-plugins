@@ -93,7 +93,7 @@
        dangerouslyDisableDefaultAuthPolicy: true
    ```
 
-7. Run `yarn start:backstage` from the project root.
+7. Run `yarn dev` from the project root.
 8. After create a new component, the Kiali tab should be enabled:
 
 ![catalog-list](./images/kiali-tab-backstage.png)
