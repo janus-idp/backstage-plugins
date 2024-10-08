@@ -25,6 +25,7 @@ import {
   DefaultAuditLogger,
 } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
+  Filter,
   openApiDocument,
   orchestratorPermissions,
   orchestratorWorkflowExecutePermission,
@@ -42,7 +43,6 @@ import { UnauthorizedError } from '@janus-idp/backstage-plugin-rbac-common';
 
 import * as pkg from '../../package.json';
 import { RouterOptions } from '../routerWrapper';
-import { buildFilter } from '../types/filters';
 import { buildPagination } from '../types/pagination';
 import { V1 } from './api/v1';
 import { V2 } from './api/v2';
@@ -316,7 +316,7 @@ function setupInternalRoutes(
         manageDenyAuthorization(endpointName, endpoint, req);
       }
       await routerApi.v2
-        .getWorkflowsOverview(buildPagination(req), buildFilter(req))
+        .getWorkflowsOverview(buildPagination(req), getRequestFilters(req))
         .then(result => res.json(result))
         .catch(error => {
           auditLogRequestError(error, endpointName, endpoint, req);
@@ -818,7 +818,7 @@ function setupInternalRoutes(
         manageDenyAuthorization(endpointName, endpoint, req);
       }
       await routerApi.v2
-        .getInstances(buildPagination(req), buildFilter(req), workflowId)
+        .getInstances(buildPagination(req), getRequestFilters(req), workflowId)
         .then(result => res.json(result))
         .catch(next);
     },
@@ -850,7 +850,7 @@ function setupInternalRoutes(
         manageDenyAuthorization(endpointName, endpoint, req);
       }
       await routerApi.v2
-        .getInstances(buildPagination(req), buildFilter(req))
+        .getInstances(buildPagination(req), getRequestFilters(req))
         .then(result => res.json(result))
         .catch(next);
     },
@@ -989,4 +989,8 @@ function setupExternalRoutes(
     });
     res.status(200).json(result);
   });
+}
+
+function getRequestFilters(req: HttpRequest): Filter | undefined {
+  return req.body.filters ? (req.body.filters as Filter) : undefined;
 }
