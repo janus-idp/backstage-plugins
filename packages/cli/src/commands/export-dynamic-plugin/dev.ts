@@ -91,6 +91,14 @@ export async function applyDevOptions(
           path.dirname(destFolderPath),
         )}`,
       );
+
+      if (!fs.existsSync(dynamicPluginsRootPath)) {
+        await fs.mkdirs(dynamicPluginsRootPath);
+        await fs.writeFile(
+          path.resolve(dynamicPluginsRootPath, '.gitignore'),
+          '*',
+        );
+      }
       fs.rmSync(destFolderPath, { force: true, recursive: true });
       fs.cpSync(target, destFolderPath, { recursive: true });
     }
