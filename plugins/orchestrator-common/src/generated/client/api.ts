@@ -161,7 +161,7 @@ export interface GetInstancesRequest {
      * @type {SearchRequest}
      * @memberof GetInstancesRequest
      */
-    'filterInfo'?: SearchRequest;
+    'filters'?: SearchRequest;
 }
 /**
  * 
@@ -180,7 +180,7 @@ export interface GetOverviewsRequestParams {
      * @type {SearchRequest}
      * @memberof GetOverviewsRequestParams
      */
-    'filterInfo'?: SearchRequest;
+    'filters'?: SearchRequest;
 }
 /**
  * 

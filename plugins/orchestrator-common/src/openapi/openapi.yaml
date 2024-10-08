@@ -325,14 +325,14 @@ components:
       properties:
         paginationInfo:
           $ref: '#/components/schemas/PaginationInfoDTO'
-        filterInfo:
+        filters:
           $ref: '#/components/schemas/SearchRequest'
     GetOverviewsRequestParams:
       type: object
       properties:
         paginationInfo:
           $ref: '#/components/schemas/PaginationInfoDTO'
-        filterInfo:
+        filters:
           $ref: '#/components/schemas/SearchRequest'
     WorkflowOverviewListResultDTO:
       type: object
