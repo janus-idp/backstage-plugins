@@ -631,12 +631,10 @@ describe('bulkimports.ts unit tests', () => {
   });
 
   describe('deleteImportByRepo', () => {
-    it('should not try to delete PR is there is no open import PR, but still try to delete import branch if any', async () => {
-      const repoUrl = 'https://github.com/my-org-1/my-repo-11';
-      const defaultBranch = 'main';
-      jest
-        .spyOn(mockGithubApiService, 'findImportOpenPr')
-        .mockResolvedValue({});
+    const repoUrl = 'https://github.com/my-org-1/my-repo-11';
+    const defaultBranch = 'main';
+
+    beforeEach(() => {
       jest.spyOn(mockGithubApiService, 'closeImportPR').mockResolvedValue();
       jest
         .spyOn(mockGithubApiService, 'deleteImportBranch')
@@ -658,6 +656,13 @@ describe('bulkimports.ts unit tests', () => {
       jest
         .spyOn(mockCatalogHttpClient, 'deleteCatalogLocationById')
         .mockResolvedValue();
+    });
+
+    it('should not try to delete PR is there is no open import PR, but still try to delete import branch if any', async () => {
+      jest
+        .spyOn(mockGithubApiService, 'findImportOpenPr')
+        .mockResolvedValue({});
+
       await deleteImportByRepo(
         {
           logger,
@@ -686,34 +691,12 @@ describe('bulkimports.ts unit tests', () => {
     });
 
     it('should try to delete both PR and branch is there is an open import PR', async () => {
-      const repoUrl = 'https://github.com/my-org-1/my-repo-12';
-      const defaultBranch = 'dev';
       const prNum = 123456789;
       jest.spyOn(mockGithubApiService, 'findImportOpenPr').mockResolvedValue({
         prNum,
         prUrl: `${repoUrl}/pull/${prNum}`,
       });
-      jest.spyOn(mockGithubApiService, 'closeImportPR').mockResolvedValue();
-      jest
-        .spyOn(mockGithubApiService, 'deleteImportBranch')
-        .mockResolvedValue();
-      jest
-        .spyOn(
-          mockCatalogHttpClient,
-          'listCatalogUrlLocationsByIdFromLocationsEndpoint',
-        )
-        .mockResolvedValue({
-          locations: [
-            {
-              id: 'location-id-12',
-              target: `${repoUrl}/blob/${defaultBranch}/catalog-info.yaml`,
-            },
-          ],
-          totalCount: 1,
-        });
-      jest
-        .spyOn(mockCatalogHttpClient, 'deleteCatalogLocationById')
-        .mockResolvedValue();
+
       await deleteImportByRepo(
         {
           logger,
@@ -745,7 +728,7 @@ describe('bulkimports.ts unit tests', () => {
       ).toHaveBeenCalledTimes(1);
       expect(
         mockCatalogHttpClient.deleteCatalogLocationById,
-      ).toHaveBeenCalledWith('location-id-12');
+      ).toHaveBeenCalledWith('location-id-11');
     });
   });
 });
