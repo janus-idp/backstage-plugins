@@ -72,7 +72,7 @@ describe('lightspeed router tests', () => {
     server.resetHandlers();
   });
 
-  async function startBackendServer(config?: any) {
+  async function startBackendServer(config?: Record<PropertyKey, unknown>) {
     const features: (BackendFeature | Promise<{ default: BackendFeature }>)[] =
       [
         lightspeedPlugin,
