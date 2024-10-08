@@ -6235,38 +6235,6 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@janus-idp/backstage-plugin-orchestrator-common@1.16.0":
-  version "1.16.0"
-  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-orchestrator-common/-/backstage-plugin-orchestrator-common-1.16.0.tgz#457b6da3b381f6877d0cb6948ece7b98a83f4c99"
-  integrity sha512-wZNAYxCfVTjUv2v9NiIj38JOB4vG1Z1HAmnW7X1vxwbrIbz2igzHkfbN27UZB9QXeuB0dJJMv5MpEE4IJACN3A==
-  dependencies:
-    "@backstage/plugin-permission-common" "^0.8.0"
-    "@backstage/types" "^1.1.1"
-    "@severlessworkflow/sdk-typescript" "^3.0.3"
-    axios "^1.7.4"
-    js-yaml "^4.1.0"
-    json-schema "^0.4.0"
-
-"@janus-idp/backstage-plugin-orchestrator-form-api@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-orchestrator-form-api/-/backstage-plugin-orchestrator-form-api-1.0.1.tgz#6077d0fa0fbf20511d34409be0c5c01cf8256efd"
-  integrity sha512-OfMIHfXjkmIz4YIisj5J5gGKqqhYfKIQAq/yoaCKaht2IpsnWtouXI3li/Npyub5YJKOz+Vq5YGIrP8nH6iE2w==
-  dependencies:
-    "@backstage/core-plugin-api" "^1.9.3"
-    "@backstage/types" "^1.1.1"
-
-"@janus-idp/backstage-plugin-orchestrator-form-react@1.0.100":
-  version "1.0.100"
-  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-orchestrator-form-react/-/backstage-plugin-orchestrator-form-react-1.0.100.tgz#1e7e13622ace645e221213bf83acef0e251dc197"
-  integrity sha512-/NVC8tMc2ekr9AZwmhgcwvJVVMk/JaxGr0pgVAh0zm62DpIaSrw2pslu6tGScg/MRJCcSCcufyo9227pD1ZfBA==
-  dependencies:
-    "@backstage/core-components" "^0.14.9"
-    "@backstage/core-plugin-api" "^1.9.3"
-    "@backstage/types" "^1.1.1"
-    "@janus-idp/backstage-plugin-orchestrator-common" "1.16.100"
-    "@janus-idp/backstage-plugin-orchestrator-form-api" "1.0.100"
-    json-schema "^0.4.0"
-
 "@janus-idp/cli@1.13.2":
   version "1.13.2"
   resolved "https://registry.yarnpkg.com/@janus-idp/cli/-/cli-1.13.2.tgz#ff63fc07442999ea45286ee4a16a79e271d8a6bc"
