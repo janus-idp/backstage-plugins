@@ -80,7 +80,6 @@ describe('lightspeed router tests', () => {
         mockServices.rootConfig.factory({
           data: { ...BASE_CONFIG, ...(config || {}) },
         }),
-        mockServices.cache.factory,
       ];
     return (await startTestBackend({ features })).server;
   }
