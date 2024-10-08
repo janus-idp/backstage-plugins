@@ -109,9 +109,14 @@ export async function backend(opts: OptionValues): Promise<string> {
     path.join(target, '.gitignore'),
     `
 *
+${
+  opts.trackDynamicManifestAndLockFile
+    ? `
 !package.json
 !yarn.lock
-`,
+`
+    : ''
+}`,
   );
 
   const embeddedPeerDependencies: {
