@@ -1,4 +1,3 @@
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import {
   HttpAuthService,
@@ -7,18 +6,17 @@ import {
   resolvePackagePath,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import type { Config } from '@backstage/config';
+import type { DiscoveryApi } from '@backstage/core-plugin-api';
 import {
   AuthorizeResult,
   BasicPermission,
 } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
-import { JsonObject, JsonValue } from '@backstage/types';
+import type { JsonObject, JsonValue } from '@backstage/types';
 
 import { fullFormats } from 'ajv-formats/dist/formats';
-import express from 'express';
-import Router from 'express-promise-router';
+import express, { Router } from 'express';
 import { Request as HttpRequest } from 'express-serve-static-core';
 import { OpenAPIBackend, Request } from 'openapi-backend';
 
@@ -84,7 +82,7 @@ const authorize = async (
 
 export async function createBackendRouter(
   options: RouterOptions,
-): Promise<express.Router> {
+): Promise<Router> {
   const {
     config,
     logger,
@@ -93,12 +91,9 @@ export async function createBackendRouter(
     urlReader,
     scheduler,
     permissions,
+    auth,
+    httpAuth,
   } = options;
-  const { auth, httpAuth } = createLegacyAuthAdapters({
-    httpAuth: options.httpAuth,
-    discovery: options.discovery,
-    auth: options.auth,
-  });
   const publicServices = initPublicServices(logger, config, scheduler);
 
   const routerApi = await initRouterApi(publicServices.orchestratorService);

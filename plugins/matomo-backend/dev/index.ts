@@ -1,9 +1,9 @@
 import { createBackend } from '@backstage/backend-defaults';
 
-import { orchestratorPlugin } from '../src/plugin';
+import matomoBackendPlugin from '../src';
 
 const backend = createBackend();
 
-backend.add(orchestratorPlugin);
+backend.add(matomoBackendPlugin);
 
 backend.start();

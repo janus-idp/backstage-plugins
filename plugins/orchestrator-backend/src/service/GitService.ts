@@ -1,7 +1,8 @@
-import { Git } from '@backstage/backend-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import type { LoggerService } from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
+
+import { Git } from './GitWrapper';
 
 export class GitService {
   private readonly git: Git;

@@ -22,10 +22,6 @@
       "require": "./dist/index.cjs.js",
       "default": "./dist/index.cjs.js"
     },
-    "./alpha": {
-      "require": "./dist/alpha.cjs.js",
-      "default": "./dist/alpha.cjs.js"
-    },
     "./package.json": "./package.json"
   },
   "scripts": {},
@@ -41,8 +37,7 @@
   "files": [
     "dist",
     "config.d.ts",
-    "app-config.janus-idp.yaml",
-    "alpha"
+    "app-config.janus-idp.yaml"
   ],
   "repository": {
     "type": "git",
@@ -64,9 +59,7 @@
   "author": "The Backstage Community",
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-common": "^0.23.3",
     "@backstage/backend-defaults": "^0.4.1",
-    "@backstage/backend-dynamic-feature-service": "^0.2.15",
     "@backstage/backend-plugin-api": "^0.7.0",
     "@backstage/config": "^1.2.0"
   },
