@@ -1,71 +1,32 @@
-import { mockServices } from '@backstage/backend-test-utils';
+import { type BackendFeature } from '@backstage/backend-plugin-api';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 
-import { AIMessageChunk } from '@langchain/core/messages';
+import { ChatPromptTemplate } from '@langchain/core/prompts';
 import express from 'express';
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
 import request from 'supertest';
 
-import { saveHistory } from '../handlers/chatHistory';
+import { handlers, LOCAL_AI_ADDR } from '../../__fixtures__/handlers';
+import { deleteHistory, saveHistory } from '../handlers/chatHistory';
+import { lightspeedPlugin } from '../plugin';
 import { Roles } from '../service/types';
-import { createRouter } from './router';
-
-const mockChunks = [
-  new AIMessageChunk({
-    content: 'Mockup',
-  }),
-  new AIMessageChunk({
-    content: 'AI',
-  }),
-  new AIMessageChunk({
-    content: 'Message',
-  }),
-  new AIMessageChunk({
-    content: '',
-    response_metadata: {
-      finish_reason: 'stop',
-    },
-  }),
-];
-
-const mockStream = jest.fn().mockImplementation(async function* stream() {
-  for (const chunk of mockChunks) {
-    yield chunk;
-  }
-});
-
-jest.mock('@langchain/core/prompts', () => {
-  // Import the actual module to ensure other exports are available
-  const actualModule = jest.requireActual('@langchain/core/prompts');
-
-  return {
-    ...actualModule,
-    ChatPromptTemplate: {
-      fromMessages: jest.fn().mockImplementation(() => ({
-        pipe: jest.fn().mockReturnValue({
-          stream: mockStream,
-        }),
-      })),
-    },
-  };
-});
 
 const mockConversationId = 'user1+1q2w3e4r-qwer1234';
-const mockServerURL = 'http://localhost:7007/api/proxy/lightspeed/api';
 const mockModel = 'test-model';
 const mockToken = 'dummy-token';
 
-const mockConfiguration = mockServices.rootConfig({
-  data: {
-    lightspeed: {
-      servers: [
-        {
-          id: 'test-server',
-          url: mockServerURL,
-          token: mockToken,
-        },
-      ],
-    },
+const BASE_CONFIG = {
+  lightspeed: {
+    servers: [
+      {
+        id: 'test-server',
+        url: LOCAL_AI_ADDR,
+        token: mockToken,
+      },
+    ],
   },
-});
+};
 
 const mockServerResponse = { data: 'redirect to v1/models' };
 // Mocking the actual request that the proxy would make
@@ -85,35 +46,51 @@ jest.mock('http-proxy-middleware', () => ({
     }),
 }));
 
-(global.fetch as jest.Mock) = jest.fn();
+describe('lightspeed router tests', () => {
+  const server = setupServer(...handlers);
 
-describe('createRouter', () => {
-  let app: express.Express;
+  beforeAll(() =>
+    server.listen({
+      /*
+       *  This is required so that msw doesn't throw
+       *  warnings when the backend is requesting an endpoint
+       */
+      onUnhandledRequest: (req, print) => {
+        if (req.url.includes('/api/lightspeed')) {
+          // bypass
+          return;
+        }
+        print.warning();
+      },
+    }),
+  );
 
-  beforeAll(async () => {
-    const router = await createRouter({
-      logger: mockServices.logger.mock(),
-      config: mockConfiguration,
+  afterAll(() => server.close());
 
-      // TODO: for user authentication
-      // httpAuth: mockServices.httpAuth({
-      //   pluginId: 'lightspeed',
-      //   defaultCredentials: mockCredentials.user(),
-      // }),
-      // userInfo: mockServices.userInfo({
-      //   userEntityRef: 'user1',
-      // }),
-    });
-    app = express().use(router);
-  });
-
-  beforeEach(() => {
+  afterEach(() => {
     jest.clearAllMocks();
+    server.resetHandlers();
   });
+
+  async function startBackendServer(config?: any) {
+    const features: (BackendFeature | Promise<{ default: BackendFeature }>)[] =
+      [
+        lightspeedPlugin,
+        mockServices.rootLogger.factory,
+        mockServices.rootConfig.factory({
+          data: { ...BASE_CONFIG, ...(config || {}) },
+        }),
+        mockServices.cache.factory,
+      ];
+    return (await startTestBackend({ features })).server;
+  }
 
   describe('GET /health', () => {
     it('returns ok', async () => {
-      const response = await request(app).get('/health');
+      const backendServer = await startBackendServer();
+      const response = await request(backendServer).get(
+        '/api/lightspeed/health',
+      );
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
@@ -122,29 +99,41 @@ describe('createRouter', () => {
 
   describe('/v1/* proxy middleware', () => {
     it('should proxy requests to /v1/models', async () => {
-      const response = await request(app).get('/v1/models');
+      const backendServer = await startBackendServer();
+      const response = await request(backendServer).get(
+        '/api/lightspeed/v1/models',
+      );
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockServerResponse);
     });
 
     it('unknown path', async () => {
-      const response = await request(app).get('/v1/unknown');
+      const backendServer = await startBackendServer();
+      const response = await request(backendServer).get(
+        '/api/lightspeed/v1/unknown',
+      );
 
       expect(response.status).toBe(404);
-      expect(String(response.error)).toContain('cannot GET /v1/unknown');
+      expect(String(response.error)).toContain(
+        'Error: cannot GET /api/lightspeed/v1/unknown (404)',
+      );
     });
   });
 
   describe('GET and DELETE /conversations/:conversation_id', () => {
-    it('load history', async () => {
-      const humanMessage = 'Hello';
-      const aiMessage = 'Hi! How can I help you today?';
+    const humanMessage = 'Hello';
+    const aiMessage = 'Hi! How can I help you today?';
+
+    beforeEach(async () => {
       await saveHistory(mockConversationId, Roles.HumanRole, humanMessage);
       await saveHistory(mockConversationId, Roles.AIRole, aiMessage);
+    });
 
-      const response = await request(app).get(
-        `/conversations/${mockConversationId}`,
+    it('load history', async () => {
+      const backendServer = await startBackendServer();
+      const response = await request(backendServer).get(
+        `/api/lightspeed/conversations/${mockConversationId}`,
       );
       expect(response.statusCode).toEqual(200);
       // Parse response body
@@ -163,15 +152,18 @@ describe('createRouter', () => {
 
     it('delete history', async () => {
       // delete request
-      const deleteResponse = await request(app).delete(
-        `/conversations/${mockConversationId}`,
+      const backendServer = await startBackendServer();
+      const deleteResponse = await request(backendServer).delete(
+        `/api/lightspeed/conversations/${mockConversationId}`,
       );
       expect(deleteResponse.statusCode).toEqual(200);
     });
 
     it('load history with deleted conversation_id', async () => {
-      const response = await request(app).get(
-        `/conversations/${mockConversationId}`,
+      await deleteHistory(mockConversationId);
+      const backendServer = await startBackendServer();
+      const response = await request(backendServer).get(
+        `/api/lightspeed/conversations/${mockConversationId}`,
       );
       expect(response.statusCode).toEqual(500);
       expect(response.body.error).toContain('unknown conversation_id');
@@ -179,13 +171,19 @@ describe('createRouter', () => {
   });
 
   describe('POST /v1/query', () => {
+    const chatOpenAISpy = jest.spyOn(ChatPromptTemplate, 'fromMessages');
+
     it('chat completions', async () => {
-      const response = await request(app).post('/v1/query').send({
-        model: mockModel,
-        conversation_id: mockConversationId,
-        query: 'Hello',
-        serverURL: mockServerURL,
-      });
+      const backendServer = await startBackendServer();
+
+      const response = await request(backendServer)
+        .post('/api/lightspeed/v1/query')
+        .send({
+          model: 'test-model',
+          conversation_id: mockConversationId,
+          query: 'Hello',
+          serverURL: LOCAL_AI_ADDR,
+        });
 
       expect(response.statusCode).toEqual(200);
       const expectedData = 'Mockup AI Message';
@@ -216,63 +214,90 @@ describe('createRouter', () => {
     });
 
     it('returns 400 if conversation_id is missing', async () => {
-      const response = await request(app).post('/v1/query').send({
-        model: mockModel,
-      });
+      const backendServer = await startBackendServer();
+      const response = await request(backendServer)
+        .post('/api/lightspeed/v1/query')
+        .send({
+          model: mockModel,
+        });
       expect(response.statusCode).toEqual(400);
       expect(response.body.error).toBe(
         'conversation_id is required and must be a non-empty string',
       );
-      expect(mockStream).not.toHaveBeenCalled();
+      expect(chatOpenAISpy).not.toHaveBeenCalled();
     });
 
     it('returns 400 if serverURL is missing', async () => {
-      const response = await request(app).post('/v1/query').send({
-        model: mockModel,
-        conversation_id: mockConversationId,
-      });
+      const backendServer = await startBackendServer();
+      const response = await request(backendServer)
+        .post('/api/lightspeed/v1/query')
+        .send({
+          model: mockModel,
+          conversation_id: mockConversationId,
+        });
       expect(response.statusCode).toEqual(400);
       expect(response.body.error).toBe(
         'serverURL is required and must be a non-empty string',
       );
-      expect(mockStream).not.toHaveBeenCalled();
+      expect(chatOpenAISpy).not.toHaveBeenCalled();
     });
 
     it('returns 400 if model is missing', async () => {
-      const response = await request(app).post('/v1/query').send({
-        conversation_id: mockConversationId,
-        serverURL: mockServerURL,
-      });
+      const backendServer = await startBackendServer();
+      const response = await request(backendServer)
+        .post('/api/lightspeed/v1/query')
+        .send({
+          conversation_id: mockConversationId,
+          serverURL: LOCAL_AI_ADDR,
+        });
       expect(response.statusCode).toEqual(400);
       expect(response.body.error).toBe(
         'model is required and must be a non-empty string',
       );
-      expect(mockStream).not.toHaveBeenCalled();
+      expect(chatOpenAISpy).not.toHaveBeenCalled();
     });
 
     it('returns 400 if query is missing', async () => {
-      const response = await request(app).post('/v1/query').send({
-        model: mockModel,
-        conversation_id: mockConversationId,
-        serverURL: mockServerURL,
-      });
+      const backendServer = await startBackendServer();
+      const response = await request(backendServer)
+        .post('/api/lightspeed/v1/query')
+        .send({
+          model: mockModel,
+          conversation_id: mockConversationId,
+          serverURL: LOCAL_AI_ADDR,
+        });
       expect(response.statusCode).toEqual(400);
       expect(response.body.error).toBe(
         'query is required and must be a non-empty string',
       );
-      expect(mockStream).not.toHaveBeenCalled();
+      expect(chatOpenAISpy).not.toHaveBeenCalled();
     });
 
     it('returns 500 if unexpected error', async () => {
-      mockStream.mockImplementationOnce(async () => {
-        throw new Error();
-      });
-      const response = await request(app).post('/v1/query').send({
-        model: 'nonexistent-model',
-        conversation_id: mockConversationId,
-        serverURL: mockServerURL,
-        query: 'Hello',
-      });
+      const backendServer = await startBackendServer();
+      server.use(
+        http.post(`${LOCAL_AI_ADDR}/chat/completions`, () => {
+          return new HttpResponse(
+            JSON.stringify({
+              error: {
+                message: 'model "test-model" not found, try pulling it first',
+                type: 'api_error',
+                param: null,
+                code: null,
+              },
+            }),
+            { status: 404 },
+          );
+        }),
+      );
+      const response = await request(backendServer)
+        .post('/api/lightspeed/v1/query')
+        .send({
+          model: 'nonexistent-model',
+          conversation_id: mockConversationId,
+          serverURL: LOCAL_AI_ADDR,
+          query: 'Hello',
+        });
       expect(response.statusCode).toEqual(500);
     });
   });
