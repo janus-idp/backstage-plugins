@@ -78,13 +78,6 @@ export function buildOcto(
   return octokit;
 }
 
-function toFinalUrl(options: any) {
-  // options.url might contain placeholders => need to replace them with their actual values to not get colliding keys
-  return options.url.replace(/{([^}]+)}/g, (_: any, key: any) => {
-    return options[key] ?? `{${key}}`; // Replace with actual value, or leave unchanged if not found
-  });
-}
-
 function registerHooks(
   deps: {
     logger: LoggerService;
@@ -93,7 +86,7 @@ function registerHooks(
   octokit: Octokit,
 ) {
   const extractCacheKey = (options: any) =>
-    `${options.method}--${toFinalUrl(options)}`;
+    `${options.method}--${tryReplacingPlaceholdersInUrl(options)}`;
 
   octokit.hook.before('request', async options => {
     if (!options.headers) {
@@ -116,7 +109,7 @@ function registerHooks(
 
   octokit.hook.after('request', async (response, options) => {
     deps.logger.debug(
-      `[GH API] ${options.method} ${toFinalUrl(options)}: ${response.status}`,
+      `[GH API] ${options.method} ${tryReplacingPlaceholdersInUrl(options)}: ${response.status}`,
     );
     // If we get a successful response, the resource has changed, so update the in-memory cache
     const cacheKey = extractCacheKey(options);
@@ -132,7 +125,7 @@ function registerHooks(
 
   octokit.hook.error('request', async (error: any, options) => {
     deps.logger.debug(
-      `[GH API] ${options.method} ${toFinalUrl(options)}: ${error.status}`,
+      `[GH API] ${options.method} ${tryReplacingPlaceholdersInUrl(options)}: ${error.status}`,
     );
     if (error.status !== 304) {
       throw error;
@@ -141,4 +134,41 @@ function registerHooks(
     // and we should have a version of it in the cache
     return await deps.cache.get(extractCacheKey(options));
   });
+}
+
+function tryReplacingPlaceholdersInUrl(options: any) {
+  // options.url might contain placeholders => need to replace them with their actual values to not get colliding keys
+
+  let result = '';
+  let startIdx = 0;
+
+  const url = options.url as string | undefined;
+  if (!url) {
+    return undefined;
+  }
+  while (startIdx < url.length) {
+    const openBraceIdx = url.indexOf('{', startIdx);
+    if (openBraceIdx === -1) {
+      // no '{' => append the rest of the string
+      result += url.slice(startIdx);
+      break;
+    }
+
+    // append part of the string before '{'
+    result += url.slice(startIdx, openBraceIdx);
+
+    const closeBraceIdx = url.indexOf('}', openBraceIdx);
+    if (closeBraceIdx === -1) {
+      // no '}' => append the rest of the string
+      result += url.slice(openBraceIdx);
+      break;
+    }
+
+    const key = url.slice(openBraceIdx+1, closeBraceIdx);
+    result += options[key] ?? `{${key}}`;
+
+    startIdx = closeBraceIdx + 1;
+  }
+
+  return result;
 }
