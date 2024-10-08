@@ -99,7 +99,7 @@ function registerHooks(
     const cacheKey = extractCacheKey(options);
     const existingEtag = await deps.cache
       .get(cacheKey)
-      ?.then(val => (val as any)?.etag);
+      ?.then((val?: any) => val?.etag);
     if (existingEtag) {
       options.headers['If-None-Match'] = existingEtag;
     } else {

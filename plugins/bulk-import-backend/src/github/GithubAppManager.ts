@@ -57,7 +57,10 @@ type InstallationTokenData = {
 };
 class Cache {
   private readonly tokenCache = new Map<string, InstallationTokenData>();
-  private readonly isExpired = (date: DateTime) => DateTime.local() > date;
+
+  private isExpired(date: DateTime) {
+    return DateTime.local() > date;
+  }
 
   async getOrCreateToken(
     key: string,

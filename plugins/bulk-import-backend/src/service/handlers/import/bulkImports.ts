@@ -302,10 +302,10 @@ export async function createImportJobs(
   const dryRun = reqParams.dryRun ?? false;
   const importRequests = reqParams.importRequests;
   deps.logger.debug(
-    `Handling request to import ${importRequests?.length ?? 0} repo(s) (dryRun=${dryRun})..`,
+    `Handling request to import ${importRequests?.length} repo(s) (dryRun=${dryRun})..`,
   );
 
-  if (!importRequests || importRequests.length === 0) {
+  if (importRequests.length === 0) {
     deps.logger.debug('Missing import requests from request body');
     return {
       statusCode: 400,
@@ -313,28 +313,16 @@ export async function createImportJobs(
     };
   }
 
+  if (dryRun) {
+    return {
+      statusCode: 202,
+      responseBody: await dryRunCreateImportJobs(deps, importRequests),
+    };
+  }
+
   const result: Components.Schemas.Import[] = [];
   for (const req of importRequests) {
     const gitUrl = gitUrlParse(req.repository.url);
-
-    if (dryRun) {
-      const dryRunChecks = await performDryRunChecks(deps, req);
-      if (dryRunChecks.errors && dryRunChecks.errors.length > 0) {
-        deps.logger.warn(
-          `Errors while performing dry-run checks: ${dryRunChecks.errors}`,
-        );
-      }
-      result.push({
-        errors: dryRunChecks.dryRunStatuses,
-        catalogEntityName: req.catalogEntityName,
-        repository: {
-          url: req.repository.url,
-          name: gitUrl.name,
-          organization: gitUrl.organization,
-        },
-      });
-      continue;
-    }
 
     // Check if repo is already imported
     const repoCatalogUrl = getCatalogUrl(
@@ -452,6 +440,41 @@ export async function createImportJobs(
     statusCode: 202,
     responseBody: result,
   };
+}
+
+async function dryRunCreateImportJobs(
+  deps: {
+    logger: LoggerService;
+    config: Config;
+    auth: AuthService;
+    catalogApi: CatalogApi;
+    githubApiService: GithubApiService;
+    catalogInfoGenerator: CatalogInfoGenerator;
+    catalogHttpClient: CatalogHttpClient;
+  },
+  importRequests: Paths.CreateImportJobs.RequestBody,
+) {
+  const result: Components.Schemas.Import[] = [];
+  for (const req of importRequests) {
+    const gitUrl = gitUrlParse(req.repository.url);
+
+    const dryRunChecks = await performDryRunChecks(deps, req);
+    if (dryRunChecks.errors?.length > 0) {
+      deps.logger.warn(
+        `Errors while performing dry-run checks: ${dryRunChecks.errors}`,
+      );
+    }
+    result.push({
+      errors: dryRunChecks.dryRunStatuses,
+      catalogEntityName: req.catalogEntityName,
+      repository: {
+        url: req.repository.url,
+        name: gitUrl.name,
+        organization: gitUrl.organization,
+      },
+    });
+  }
+  return result;
 }
 
 async function performDryRunChecks(

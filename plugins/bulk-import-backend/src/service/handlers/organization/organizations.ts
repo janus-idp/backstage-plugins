@@ -17,7 +17,10 @@
 import type { LoggerService } from '@backstage/backend-plugin-api';
 
 import type { Components } from '../../../generated/openapi';
-import type { GithubApiService } from '../../../github';
+import type {
+  GithubApiService,
+  GithubOrganizationResponse,
+} from '../../../github';
 import {
   DefaultPageNumber,
   DefaultPageSize,
@@ -41,11 +44,9 @@ export async function findAllOrganizations(
       pageSize,
     );
   const errorList: string[] = [];
-  if (allOrgsAccessible.errors) {
-    for (const err of allOrgsAccessible.errors) {
-      if (err.error?.message) {
-        errorList.push(err.error.message);
-      }
+  for (const err of allOrgsAccessible.errors ?? []) {
+    if (err.error?.message) {
+      errorList.push(err.error.message);
     }
   }
   if (allOrgsAccessible.organizations?.length === 0 && errorList.length > 0) {
@@ -57,31 +58,49 @@ export async function findAllOrganizations(
     };
   }
 
-  const orgMap = new Map<string, Components.Schemas.Organization>();
-  if (allOrgsAccessible.organizations) {
-    for (const org of allOrgsAccessible.organizations) {
-      let totalRepoCount: number | undefined;
-      if (
-        org.public_repos !== undefined ||
-        org.total_private_repos !== undefined ||
-        org.owned_private_repos !== undefined
-      ) {
-        totalRepoCount =
-          (org.public_repos ?? 0) +
-          (org.owned_private_repos ?? org.total_private_repos ?? 0);
-      }
-      orgMap.set(org.name, {
-        id: `${org.id}`,
-        name: org.name,
-        description: org.description,
-        url: org.url,
-        totalRepoCount,
-        errors: [],
-      });
-    }
-  }
+  const orgMap = extractOrgMap(allOrgsAccessible);
 
   // sorting the output to make it deterministic and easy to navigate in the UI
+  const organizations = sortOrgs(orgMap);
+
+  return {
+    statusCode: 200,
+    responseBody: {
+      errors: errorList,
+      organizations,
+      totalCount: allOrgsAccessible.totalCount,
+      pagePerIntegration: pageNumber,
+      sizePerIntegration: pageSize,
+    },
+  };
+}
+
+function extractOrgMap(allOrgsAccessible: GithubOrganizationResponse) {
+  const orgMap = new Map<string, Components.Schemas.Organization>();
+  for (const org of allOrgsAccessible.organizations ?? []) {
+    let totalRepoCount: number | undefined;
+    if (
+      org.public_repos !== undefined ||
+      org.total_private_repos !== undefined ||
+      org.owned_private_repos !== undefined
+    ) {
+      totalRepoCount =
+        (org.public_repos ?? 0) +
+        (org.owned_private_repos ?? org.total_private_repos ?? 0);
+    }
+    orgMap.set(org.name, {
+      id: `${org.id}`,
+      name: org.name,
+      description: org.description,
+      url: org.url,
+      totalRepoCount,
+      errors: [],
+    });
+  }
+  return orgMap;
+}
+
+function sortOrgs(orgMap: Map<string, Components.Schemas.Organization>) {
   const organizations = Array.from(orgMap.values());
   organizations.sort((a, b) => {
     if (a.name === undefined && b.name === undefined) {
@@ -95,15 +114,5 @@ export async function findAllOrganizations(
     }
     return a.name.localeCompare(b.name);
   });
-
-  return {
-    statusCode: 200,
-    responseBody: {
-      errors: errorList,
-      organizations,
-      totalCount: allOrgsAccessible.totalCount,
-      pagePerIntegration: pageNumber,
-      sizePerIntegration: pageSize,
-    },
-  };
+  return organizations;
 }
