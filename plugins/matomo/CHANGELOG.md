@@ -1,5 +1,9 @@
 ### Dependencies
 
+* **@janus-idp/cli:** upgraded to 1.15.2
+
+### Dependencies
+
 * **@janus-idp/cli:** upgraded to 1.15.1
 
 ### Dependencies
