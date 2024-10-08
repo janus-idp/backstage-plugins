@@ -49,7 +49,7 @@ import {
 import { permissionCheck } from '../helpers';
 import type { Components, Paths } from '../generated/openapi.d';
 import { openApiDocument } from '../generated/openapidocument';
-import { GithubApiService } from './githubApiService';
+import { GithubApiService } from '../github';
 import {
   createImportJobs,
   deleteImportByRepo,

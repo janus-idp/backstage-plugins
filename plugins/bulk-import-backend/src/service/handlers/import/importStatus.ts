@@ -18,8 +18,8 @@ import type { LoggerService } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
 
 import type { Components } from '../../../generated/openapi';
-import type { GithubApiService } from '../../githubApiService';
-import { getCatalogUrl } from '../../../catalog/catalogUtils';
+import type { GithubApiService } from '../../../github';
+import {getCatalogFilename, getCatalogUrl} from '../../../catalog/catalogUtils';
 import {CatalogHttpClient} from "../../../catalog/catalogHttpClient";
 
 export async function getImportStatusFromLocations(
@@ -74,9 +74,10 @@ async function getImportStatusWithCheckerFn(
       getCatalogUrl(deps.config, repoUrl, defaultBranch),
     );
     const existsInRepo =
-      await deps.githubApiService.doesCatalogInfoAlreadyExistInRepo(deps.logger, {
+      await deps.githubApiService.hasFileInRepo({
         repoUrl,
         defaultBranch,
+          fileName: getCatalogFilename(deps.config),
       });
     if (existsInCatalog && existsInRepo) {
       // Force a refresh of the Location, so that the entities from the catalog-info.yaml can show up quickly (not guaranteed however).

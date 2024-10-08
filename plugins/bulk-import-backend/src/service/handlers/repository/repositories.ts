@@ -20,8 +20,8 @@ import type { Config } from '@backstage/config';
 import gitUrlParse from 'git-url-parse';
 
 import type { Components } from '../../../generated/openapi';
-import type { GithubRepositoryResponse } from '../../../types';
-import type { GithubApiService } from '../../githubApiService';
+import type { GithubRepositoryResponse } from '../../../github/types';
+import type { GithubApiService } from '../../../github';
 import {
   DefaultPageNumber,
   DefaultPageSize,

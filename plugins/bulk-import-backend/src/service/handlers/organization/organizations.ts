@@ -17,7 +17,7 @@
 import type { LoggerService } from '@backstage/backend-plugin-api';
 
 import type { Components } from '../../../generated/openapi';
-import type { GithubApiService } from '../../githubApiService';
+import type { GithubApiService } from '../../../github';
 import {
   DefaultPageNumber,
   DefaultPageSize,

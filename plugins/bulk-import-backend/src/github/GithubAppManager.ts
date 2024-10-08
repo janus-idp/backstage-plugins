@@ -35,7 +35,7 @@ import type {
   AppCredentialFetchResult,
   ExtendedGithubCredentials,
   ExtendedGithubCredentialsProvider,
-} from '../types';
+} from './types';
 
 /**
  * The Cache and GithubAppManager classes in this file were directly taken from the

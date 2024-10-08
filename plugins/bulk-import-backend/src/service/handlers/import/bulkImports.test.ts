@@ -22,7 +22,7 @@ import gitUrlParse from 'git-url-parse';
 
 import { CatalogHttpClient } from '../../../catalog/catalogHttpClient';
 import { Paths } from '../../../generated/openapi';
-import { GithubApiService } from '../../githubApiService';
+import { GithubApiService } from '../../../github';
 import { deleteImportByRepo, findAllImports } from './bulkImports';
 
 const config = mockServices.rootConfig({
@@ -150,14 +150,15 @@ describe('bulkimports.ts unit tests', () => {
       });
 
     jest
-      .spyOn(mockGithubApiService, 'doesCatalogInfoAlreadyExistInRepo')
-      .mockImplementation((_logger, input) => {
-        return Promise.resolve(
-          [
-            'https://github.com/my-org-2/my-repo-21',
-            'https://github.com/my-org-3/my-repo-31',
-          ].includes(input.repoUrl),
-        );
+      .spyOn(mockGithubApiService, 'hasFileInRepo')
+      .mockImplementation(async (input) => {
+          if (input.fileName === 'catalog-info.yaml') {
+              return [
+                      'https://github.com/my-org-2/my-repo-21',
+                      'https://github.com/my-org-3/my-repo-31',
+                  ].includes(input.repoUrl);
+          }
+          throw new Error(`searching for presence of a file named ${input.fileName} has to be implemented in this test`);
       });
   }
 
@@ -619,7 +620,7 @@ describe('bulkimports.ts unit tests', () => {
       jest
         .spyOn(mockGithubApiService, 'findImportOpenPr')
         .mockResolvedValue({});
-      jest.spyOn(mockGithubApiService, 'closePR').mockResolvedValue();
+      jest.spyOn(mockGithubApiService, 'closeImportPR').mockResolvedValue();
       jest
         .spyOn(mockGithubApiService, 'deleteImportBranch')
         .mockResolvedValue();
@@ -650,11 +651,10 @@ describe('bulkimports.ts unit tests', () => {
         defaultBranch,
       );
 
-      expect(mockGithubApiService.closePR).not.toHaveBeenCalled();
+      expect(mockGithubApiService.closeImportPR).not.toHaveBeenCalled();
       expect(mockGithubApiService.deleteImportBranch).toHaveBeenCalledTimes(1);
       expect(mockGithubApiService.deleteImportBranch).toHaveBeenNthCalledWith(
         1,
-        logger,
         expect.objectContaining({
           repoUrl,
         }),
@@ -675,7 +675,7 @@ describe('bulkimports.ts unit tests', () => {
         prNum,
         prUrl: `${repoUrl}/pull/${prNum}`,
       });
-      jest.spyOn(mockGithubApiService, 'closePR').mockResolvedValue();
+      jest.spyOn(mockGithubApiService, 'closeImportPR').mockResolvedValue();
       jest
         .spyOn(mockGithubApiService, 'deleteImportBranch')
         .mockResolvedValue();
@@ -706,8 +706,8 @@ describe('bulkimports.ts unit tests', () => {
         defaultBranch,
       );
 
-      expect(mockGithubApiService.closePR).toHaveBeenCalledTimes(1);
-      expect(mockGithubApiService.closePR).toHaveBeenCalledWith(
+      expect(mockGithubApiService.closeImportPR).toHaveBeenCalledTimes(1);
+      expect(mockGithubApiService.closeImportPR).toHaveBeenCalledWith(
         logger,
         expect.objectContaining({
           repoUrl,
@@ -717,7 +717,6 @@ describe('bulkimports.ts unit tests', () => {
       );
       expect(mockGithubApiService.deleteImportBranch).toHaveBeenCalledTimes(1);
       expect(mockGithubApiService.deleteImportBranch).toHaveBeenCalledWith(
-        logger,
         expect.objectContaining({
           repoUrl,
         }),

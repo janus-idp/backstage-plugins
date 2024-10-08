@@ -16,7 +16,7 @@
 
 import { mockServices } from '@backstage/backend-test-utils';
 
-import { CustomGithubCredentialsProvider } from '../helpers';
+import { CustomGithubCredentialsProvider } from './GithubAppManager';
 import { GithubApiService } from './githubApiService';
 
 const octokit = {

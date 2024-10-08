@@ -27,7 +27,7 @@ import {
   paginateArray,
 } from '../../../helpers';
 import type { Components, Paths } from '../../../generated/openapi';
-import type { GithubApiService } from '../../githubApiService';
+import type { GithubApiService } from '../../../github';
 import {
   DefaultPageNumber,
   DefaultPageSize,
@@ -350,9 +350,10 @@ export async function createImportJobs(
     );
     if (
       hasLocation &&
-      (await deps.githubApiService.doesCatalogInfoAlreadyExistInRepo(deps.logger, {
+      (await deps.githubApiService.hasFileInRepo({
         repoUrl: req.repository.url,
         defaultBranch: req.repository.defaultBranch,
+        fileName: getCatalogFilename(deps.config),
       }))
     ) {
       const ghRepo = await deps.githubApiService.getRepositoryFromIntegrations(
@@ -462,6 +463,7 @@ async function performDryRunChecks(
       logger: LoggerService,
       auth: AuthService,
       catalogApi: CatalogApi,
+      config: Config,
       githubApiService: GithubApiService,
       catalogHttpClient: CatalogHttpClient,
     },
@@ -501,11 +503,11 @@ async function performDryRunChecks(
     dryRunStatuses?: CreateImportDryRunStatus[];
     errors?: string[];
   }> => {
-    const exists = await deps.githubApiService.doesCatalogInfoAlreadyExistInRepo(
-        deps.logger,
+    const exists = await deps.githubApiService.hasFileInRepo(
       {
         repoUrl: req.repository.url,
         defaultBranch: req.repository.defaultBranch,
+        fileName: getCatalogFilename(deps.config),
       },
     );
     if (exists) {
@@ -520,11 +522,11 @@ async function performDryRunChecks(
     dryRunStatuses?: CreateImportDryRunStatus[];
     errors?: string[];
   }> => {
-    const exists = await deps.githubApiService.doesCodeOwnersAlreadyExistInRepo(
-        deps.logger,
-      {
+    const exists = await deps.githubApiService.hasFileInRepo(
+        {
         repoUrl: req.repository.url,
         defaultBranch: req.repository.defaultBranch,
+          fileName: '.github/CODEOWNERS',
       },
     );
     if (!exists) {
@@ -614,9 +616,10 @@ export async function findImportStatusByRepo(
       }
       if (
         exists &&
-        (await deps.githubApiService.doesCatalogInfoAlreadyExistInRepo(deps.logger, {
+        (await deps.githubApiService.hasFileInRepo({
           repoUrl,
           defaultBranch,
+          fileName: getCatalogFilename(deps.config),
         }))
       ) {
         result.status = 'ADDED';
@@ -686,14 +689,14 @@ export async function deleteImportByRepo(
     const appTitle =
         deps.config.getOptionalString('app.title') ?? 'Red Hat Developer Hub';
     const appBaseUrl = deps.config.getString('app.baseUrl');
-    await deps.githubApiService.closePR(deps.logger, {
+    await deps.githubApiService.closeImportPR(deps.logger, {
       repoUrl,
       gitUrl,
       comment: `Closing PR upon request for bulk import deletion. This request was created from [${appTitle}](${appBaseUrl}).`,
     });
   }
   // Also delete the import branch, so that it is not outdated if we try later to import the repo again
-  await deps.githubApiService.deleteImportBranch(deps.logger, {
+  await deps.githubApiService.deleteImportBranch({
     repoUrl,
     gitUrl,
   });
