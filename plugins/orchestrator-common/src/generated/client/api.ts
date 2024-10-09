@@ -652,10 +652,10 @@ export interface WorkflowOverviewDTO {
     'lastTriggeredMs'?: number;
     /**
      * 
-     * @type {string}
+     * @type {ProcessInstanceStatusDTO}
      * @memberof WorkflowOverviewDTO
      */
-    'lastRunStatus'?: string;
+    'lastRunStatus'?: ProcessInstanceStatusDTO;
     /**
      * 
      * @type {WorkflowCategoryDTO}
