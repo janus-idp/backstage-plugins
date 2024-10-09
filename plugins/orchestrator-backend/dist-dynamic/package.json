@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-backend-dynamic",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "license": "Apache-2.0",
   "main": "./dist/index.cjs.js",
   "types": "./dist/index.d.ts",
@@ -62,8 +62,8 @@
   },
   "devDependencies": {},
   "peerDependencies": {
-    "@janus-idp/backstage-plugin-audit-log-node": "*",
-    "@janus-idp/backstage-plugin-rbac-common": "*",
+    "@janus-idp/backstage-plugin-audit-log-node": "1.5.1",
+    "@janus-idp/backstage-plugin-rbac-common": "1.10.0",
     "@backstage/backend-common": "^0.23.3",
     "@backstage/backend-defaults": "^0.4.1",
     "@backstage/backend-plugin-api": "^0.7.0",
@@ -91,6 +91,6 @@
   },
   "resolutions": {
     "@aws-sdk/util-utf8-browser": "npm:@smithy/util-utf8@~2",
-    "@janus-idp/backstage-plugin-orchestrator-common": "file:./embedded\\janus-idp-backstage-plugin-orchestrator-common"
+    "@janus-idp/backstage-plugin-orchestrator-common": "file:./embedded/janus-idp-backstage-plugin-orchestrator-common"
   }
 }
