@@ -18,8 +18,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Test yarn.lock
+  regen-yarn-lock:
+    name: Regen yarn.lock
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,6 +29,9 @@ jobs:
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
         with:
           node-version: ${{ inputs.node-version }}
+          # This is to pick the right version when executed upon pushes to the main branch.
+          # If node-version and node-version-file are both provided, the action will use the version from node-version.
+          node-version-file: '.nvmrc'
           cache: 'yarn'
 
       - name: Setup local Turbo cache
