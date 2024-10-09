@@ -34,7 +34,9 @@ export function mapToWorkflowOverviewDTO(
     avgDurationMs: overview.avgDurationMs,
     description: overview.description,
     lastRunId: overview.lastRunId,
-    lastRunStatus: overview.lastRunStatus,
+    lastRunStatus: overview.lastRunStatus
+      ? getProcessInstancesDTOFromString(overview.lastRunStatus)
+      : undefined,
     lastTriggeredMs: overview.lastTriggeredMs,
     category: mapWorkflowCategoryDTOFromString(overview.category),
   };
@@ -97,7 +99,7 @@ export function getProcessInstancesDTOFromString(
       return 'Pending';
     default:
       throw new Error(
-        'state is not one of the values of type ProcessInstanceStatusDTO',
+        `state ${state} is not one of the values of type ProcessInstanceStatusDTO`,
       );
   }
 }
