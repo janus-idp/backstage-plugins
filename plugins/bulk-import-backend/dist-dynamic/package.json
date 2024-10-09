@@ -38,7 +38,7 @@
   },
   "devDependencies": {},
   "peerDependencies": {
-    "@janus-idp/backstage-plugin-audit-log-node": "1.5.1",
+    "@janus-idp/backstage-plugin-audit-log-node": "*",
     "@backstage/backend-defaults": "^0.4.1",
     "@backstage/backend-plugin-api": "^0.7.0",
     "@backstage/errors": "^1.2.4",

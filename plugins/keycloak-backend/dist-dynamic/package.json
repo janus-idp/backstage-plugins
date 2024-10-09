@@ -70,6 +70,6 @@
   },
   "resolutions": {
     "@aws-sdk/util-utf8-browser": "npm:@smithy/util-utf8@~2",
-    "@keycloak/keycloak-admin-client": "file:./embedded/keycloak-keycloak-admin-client"
+    "@keycloak/keycloak-admin-client": "file:./embedded\\keycloak-keycloak-admin-client"
   }
 }

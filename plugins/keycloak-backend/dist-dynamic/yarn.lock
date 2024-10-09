@@ -10,7 +10,7 @@
     "@smithy/util-buffer-from" "^2.2.0"
     tslib "^2.6.2"
 
-"@keycloak/keycloak-admin-client@24.0.5", "@keycloak/keycloak-admin-client@file:./embedded/keycloak-keycloak-admin-client":
+"@keycloak/keycloak-admin-client@24.0.5", "@keycloak/keycloak-admin-client@file:./embedded\\keycloak-keycloak-admin-client":
   version "24.0.5"
   dependencies:
     camelize-ts "^3.0.0"
