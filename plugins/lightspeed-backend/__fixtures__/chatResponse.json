@@ -1,0 +1,70 @@
+[
+  {
+    "id": "chatcmpl-303",
+    "object": "chat.completion.chunk",
+    "created": 1728388569,
+    "model": "test-model",
+    "system_fingerprint": "dummy_fingerprint",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": "Mockup"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-303",
+    "object": "chat.completion.chunk",
+    "created": 1728388569,
+    "model": "test-model",
+    "system_fingerprint": "dummy_fingerprint",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": "AI"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-303",
+    "object": "chat.completion.chunk",
+    "created": 1728388569,
+    "model": "test-model",
+    "system_fingerprint": "dummy_fingerprint",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": "Message"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-303",
+    "object": "chat.completion.chunk",
+    "created": 1728388569,
+    "model": "test-model",
+    "system_fingerprint": "dummy_fingerprint",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": ""
+        },
+        "finish_reason": "stop"
+      }
+    ]
+  }
+]
