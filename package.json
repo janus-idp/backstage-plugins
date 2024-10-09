@@ -67,14 +67,7 @@
     "@typescript-eslint/typescript-estree": "^7.3.1",
     "@babel/core": "7.24.6",
     "@babel/traverse": "7.24.6",
-    "@babel/generator": "7.24.6",
-    "**/@graphql-tools/executor-graphql-ws/ws": "8.17.1",
-    "**/@graphql-tools/executor-legacy-ws/ws": "8.17.1",
-    "**/@graphql-tools/url-loader/ws": "8.17.1",
-    "**/@storybook/core-server/ws": "8.17.1",
-    "**/webpack-dev-server/**/ws": "8.17.1",
-    "**/jest-environment-jsdom/jsdom/ws": "8.17.1",
-    "**/@kubernetes/client-node/ws": "8.17.1"
+    "@babel/generator": "7.24.6"
   },
   "lint-staged": {
     "*": "turbo run prettier:fix --",
