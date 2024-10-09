@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import logo from '../../images/logo.svg';
+import logo from '../images/logo.svg';
 
 export const LightspeedIcon = () => {
   return (
