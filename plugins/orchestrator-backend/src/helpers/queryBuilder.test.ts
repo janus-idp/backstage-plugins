@@ -117,51 +117,198 @@ describe('column filters', () => {
     filter: Filter | undefined;
     expectedResult: string;
   };
-
-  const testCases: FilterTestCase[] = [
-    {
-      name: 'returns empty string when filters are null or undefined',
-      introspectionFields: [],
-      filter: undefined,
-      expectedResult: '',
-    },
-    {
-      name: 'one string field',
-      introspectionFields: [createStringIntrospectionField('name')],
-      filter: createFieldFilter(
-        'name',
-        FieldFilterOperatorEnum.Eq,
-        'Hello World Workflow',
-      ),
-      expectedResult: 'name: {equal: "Hello World Workflow"}',
-    },
-    {
-      name: 'two string field with or',
-      introspectionFields: [
-        createStringIntrospectionField('name'),
-        createStringIntrospectionField('id'),
-      ],
-      filter: {
-        operator: 'OR',
-        filters: [
-          createFieldFilter(
-            'name',
-            FieldFilterOperatorEnum.Eq,
-            'Hello World Workflow',
-          ),
-          createFieldFilter('id', FieldFilterOperatorEnum.Eq, 'yamlgreet'),
-        ],
+  describe('empty filter testcases', () => {
+    const emptyFilterTestCases: FilterTestCase[] = [
+      {
+        name: 'returns empty string when filters are null or undefined',
+        introspectionFields: [],
+        filter: undefined,
+        expectedResult: '',
       },
-      expectedResult:
-        'or: {name: {equal: "Hello World Workflow"}, id: {equal: "yamlgreet"}}',
-    },
-    // Add remaining test cases here
-  ];
-
-  testCases.forEach(({ name, introspectionFields, filter, expectedResult }) => {
-    it(`${name}`, () => {
-      const result = buildFilterCondition(introspectionFields, filter);
-      expect(result).toBe(expectedResult);
-    });
+    ];
+    emptyFilterTestCases.forEach(
+      ({ name, introspectionFields, filter, expectedResult }) => {
+        it(`${name}`, () => {
+          const result = buildFilterCondition(introspectionFields, filter);
+          expect(result).toBe(expectedResult);
+        });
+      },
+    );
+  });
+  describe('stringArgument testcases', () => {
+    const stringTestCases: FilterTestCase[] = [
+      {
+        name: 'returns correct filter for single string field with equal operator',
+        introspectionFields: [createStringIntrospectionField('name')],
+        filter: createFieldFilter(
+          'name',
+          FieldFilterOperatorEnum.Eq,
+          'Hello World Workflow',
+        ),
+        expectedResult: 'name: {equal: "Hello World Workflow"}',
+      },
+      {
+        name: 'returns correct filter for single string field with like operator',
+        introspectionFields: [createStringIntrospectionField('name')],
+        filter: createFieldFilter(
+          'name',
+          FieldFilterOperatorEnum.Like,
+          'Hello%',
+        ),
+        expectedResult: 'name: {like: "Hello%"}',
+      },
+      {
+        name: 'returns correct filter for string field with isNull operator (true)',
+        introspectionFields: [createStringIntrospectionField('name')],
+        filter: createFieldFilter('name', FieldFilterOperatorEnum.IsNull, true),
+        expectedResult: 'name: {isNull: true}',
+      },
+      {
+        name: 'returns correct filter for string field with isNull operator (false)',
+        introspectionFields: [createStringIntrospectionField('name')],
+        filter: createFieldFilter(
+          'name',
+          FieldFilterOperatorEnum.IsNull,
+          false,
+        ),
+        expectedResult: 'name: {isNull: false}',
+      },
+      {
+        name: 'returns correct filter for string field with isNull operator ("true" as string)',
+        introspectionFields: [createStringIntrospectionField('name')],
+        filter: createFieldFilter(
+          'name',
+          FieldFilterOperatorEnum.IsNull,
+          'True',
+        ),
+        expectedResult: 'name: {isNull: true}',
+      },
+      {
+        name: 'returns correct filter for string field with isNull operator ("false" as string)',
+        introspectionFields: [createStringIntrospectionField('name')],
+        filter: createFieldFilter(
+          'name',
+          FieldFilterOperatorEnum.IsNull,
+          'FALSE',
+        ),
+        expectedResult: 'name: {isNull: false}',
+      },
+      {
+        name: 'returns correct filter for string field with in operator (single value)',
+        introspectionFields: [createStringIntrospectionField('name')],
+        filter: createFieldFilter('name', FieldFilterOperatorEnum.In, [
+          'Test String',
+        ]),
+        expectedResult: 'name: {in: ["Test String"]}',
+      },
+      {
+        name: 'returns correct filter for string field with in operator (multiple values)',
+        introspectionFields: [createStringIntrospectionField('name')],
+        filter: createFieldFilter('name', FieldFilterOperatorEnum.In, [
+          'Test String 1',
+          'Test String 2',
+          'Test String 3',
+        ]),
+        expectedResult:
+          'name: {in: ["Test String 1", "Test String 2", "Test String 3"]}',
+      },
+      {
+        name: 'returns correct OR filter for two string fields with equal operator',
+        introspectionFields: [
+          createStringIntrospectionField('name'),
+          createStringIntrospectionField('processName'),
+        ],
+        filter: {
+          operator: 'OR',
+          filters: [
+            createFieldFilter(
+              'name',
+              FieldFilterOperatorEnum.Eq,
+              'Hello World Workflow',
+            ),
+            createFieldFilter(
+              'processName',
+              FieldFilterOperatorEnum.Eq,
+              'Greeting workflow',
+            ),
+          ],
+        },
+        expectedResult:
+          'or: {name: {equal: "Hello World Workflow"}, processName: {equal: "Greeting workflow"}}',
+      },
+      {
+        name: 'returns correct filter for string field with like and isNull operators',
+        introspectionFields: [createStringIntrospectionField('description')],
+        filter: {
+          operator: 'OR',
+          filters: [
+            createFieldFilter(
+              'description',
+              FieldFilterOperatorEnum.Like,
+              '%Test%',
+            ),
+            createFieldFilter(
+              'description',
+              FieldFilterOperatorEnum.IsNull,
+              true,
+            ),
+          ],
+        },
+        expectedResult:
+          'or: {description: {like: "%Test%"}, description: {isNull: true}}',
+      },
+      {
+        name: 'returns correct filter for string field with in, like, equal, and isNull operators',
+        introspectionFields: [createStringIntrospectionField('name')],
+        filter: {
+          operator: 'OR',
+          filters: [
+            createFieldFilter('name', FieldFilterOperatorEnum.In, [
+              'Test String 1',
+              'Test String 2',
+            ]),
+            createFieldFilter('name', FieldFilterOperatorEnum.Like, '%Test%'),
+            createFieldFilter(
+              'name',
+              FieldFilterOperatorEnum.Eq,
+              'Exact Match',
+            ),
+            createFieldFilter('name', FieldFilterOperatorEnum.IsNull, false),
+          ],
+        },
+        expectedResult:
+          'or: {name: {in: ["Test String 1", "Test String 2"]}, name: {like: "%Test%"}, name: {equal: "Exact Match"}, name: {isNull: false}}',
+      },
+      {
+        name: 'returns correct filter for string field with in, like, equal, and isNull operators',
+        introspectionFields: [createStringIntrospectionField('name')],
+        filter: {
+          operator: 'AND',
+          filters: [
+            createFieldFilter('name', FieldFilterOperatorEnum.In, [
+              'Test String 1',
+              'Test String 2',
+            ]),
+            createFieldFilter('name', FieldFilterOperatorEnum.Like, '%Test%'),
+            createFieldFilter(
+              'name',
+              FieldFilterOperatorEnum.Eq,
+              'Exact Match',
+            ),
+            createFieldFilter('name', FieldFilterOperatorEnum.IsNull, false),
+          ],
+        },
+        expectedResult:
+          'and: {name: {in: ["Test String 1", "Test String 2"]}, name: {like: "%Test%"}, name: {equal: "Exact Match"}, name: {isNull: false}}',
+      },
+    ];
+    stringTestCases.forEach(
+      ({ name, introspectionFields, filter, expectedResult }) => {
+        it(`${name}`, () => {
+          const result = buildFilterCondition(introspectionFields, filter);
+          expect(result).toBe(expectedResult);
+        });
+      },
+    );
   });
 });
