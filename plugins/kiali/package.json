@@ -84,8 +84,8 @@
     "@testing-library/jest-dom": "6.4.8",
     "@types/node": "20.14.2",
     "@types/react-copy-to-clipboard": "5.0.7",
-    "@types/regression": "^2.0.6",
-    "cross-fetch": "^4.0.0",
+    "@types/regression": "2.0.6",
+    "cross-fetch": "4.0.0",
     "jest-canvas-mock": "2.5.2"
   },
   "files": [
