@@ -185,6 +185,25 @@ export interface GetOverviewsRequestParams {
 /**
  * 
  * @export
+ * @interface InputSchemaResponseDTO
+ */
+export interface InputSchemaResponseDTO {
+    /**
+     * 
+     * @type {object}
+     * @memberof InputSchemaResponseDTO
+     */
+    'inputSchema'?: object;
+    /**
+     * 
+     * @type {object}
+     * @memberof InputSchemaResponseDTO
+     */
+    'data'?: object;
+}
+/**
+ * 
+ * @export
  * @interface LogicalFilter
  */
 export interface LogicalFilter {
@@ -1339,7 +1358,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getWorkflowInputSchemaById(workflowId: string, instanceId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>> {
+        async getWorkflowInputSchemaById(workflowId: string, instanceId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InputSchemaResponseDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getWorkflowInputSchemaById(workflowId, instanceId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.getWorkflowInputSchemaById']?.[localVarOperationServerIndex]?.url;
@@ -1475,7 +1494,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWorkflowInputSchemaById(workflowId: string, instanceId?: string, options?: any): AxiosPromise<object> {
+        getWorkflowInputSchemaById(workflowId: string, instanceId?: string, options?: any): AxiosPromise<InputSchemaResponseDTO> {
             return localVarFp.getWorkflowInputSchemaById(workflowId, instanceId, options).then((request) => request(axios, basePath));
         },
         /**

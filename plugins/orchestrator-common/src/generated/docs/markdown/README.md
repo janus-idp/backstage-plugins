@@ -32,6 +32,7 @@ All URIs are relative to *http://localhost*
  - [Filter](./Models/Filter.md)
  - [GetInstancesRequest](./Models/GetInstancesRequest.md)
  - [GetOverviewsRequestParams](./Models/GetOverviewsRequestParams.md)
+ - [InputSchemaResponseDTO](./Models/InputSchemaResponseDTO.md)
  - [LogicalFilter](./Models/LogicalFilter.md)
  - [NodeInstanceDTO](./Models/NodeInstanceDTO.md)
  - [PaginationInfoDTO](./Models/PaginationInfoDTO.md)

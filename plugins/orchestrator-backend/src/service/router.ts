@@ -33,18 +33,14 @@ import {
   orchestratorWorkflowInstanceReadPermission,
   orchestratorWorkflowInstancesReadPermission,
   orchestratorWorkflowReadPermission,
-  QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_BUSINESS_KEY,
   QUERY_PARAM_INCLUDE_ASSESSMENT,
-  QUERY_PARAM_INSTANCE_ID,
-  WorkflowInputSchemaResponse,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 import { UnauthorizedError } from '@janus-idp/backstage-plugin-rbac-common';
 
 import * as pkg from '../../package.json';
 import { RouterOptions } from '../routerWrapper';
 import { buildPagination } from '../types/pagination';
-import { V1 } from './api/v1';
 import { V2 } from './api/v2';
 import { INTERNAL_SERVER_ERROR_MESSAGE } from './constants';
 import { DataIndexService } from './DataIndexService';
@@ -61,7 +57,6 @@ interface PublicServices {
 
 interface RouterApi {
   openApiBackend: OpenAPIBackend;
-  v1: V1;
   v2: V2;
 }
 
@@ -135,7 +130,6 @@ export async function createBackendRouter(
   );
 
   setupInternalRoutes(
-    router,
     publicServices,
     routerApi,
     permissions,
@@ -218,16 +212,14 @@ async function initRouterApi(
     },
   });
   await openApiBackend.init();
-  const v1 = new V1();
   const v2 = new V2(orchestratorService);
-  return { v1, v2, openApiBackend };
+  return { v2, openApiBackend };
 }
 
 // ======================================================
 // Internal Backstage API calls to delegate to SonataFlow
 // ======================================================
 function setupInternalRoutes(
-  router: express.Router,
   services: PublicServices,
   routerApi: RouterApi,
   permissions: PermissionsService,
@@ -406,7 +398,7 @@ function setupInternalRoutes(
       await routerApi.v2
         .executeWorkflow(executeWorkflowRequestDTO, workflowId, businessKey)
         .then(result => res.status(200).json(result))
-        .catch((error: { message: string }) => {
+        .catch(error => {
           auditLogRequestError(error, endpointName, endpoint, req);
           res
             .status(500)
@@ -448,173 +440,6 @@ function setupInternalRoutes(
         .catch(next);
     },
   );
-
-  // v1
-  router.get('/workflows/:workflowId/inputSchema', async (req, res) => {
-    const {
-      params: { workflowId },
-    } = req;
-    const endpointName = 'WorkflowsWorkflowIdInputSchema';
-    const endpoint = `/v1/workflows/${workflowId}/inputSchema`;
-
-    auditLogger.auditLog({
-      eventName: endpointName,
-      stage: 'start',
-      status: 'succeeded',
-      level: 'debug',
-      request: req,
-      message: `Received request to '${endpoint}' endpoint`,
-    });
-
-    const decision = await authorize(
-      req,
-      orchestratorWorkflowReadPermission,
-      permissions,
-      httpAuth,
-    );
-    if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint, req);
-    }
-
-    const instanceId = routerApi.v1.extractQueryParam(
-      req,
-      QUERY_PARAM_INSTANCE_ID,
-    );
-    const assessmentInstanceId = routerApi.v1.extractQueryParam(
-      req,
-      QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
-    );
-
-    const workflowDefinition =
-      await services.orchestratorService.fetchWorkflowInfo({
-        definitionId: workflowId,
-        cacheHandler: 'throw',
-      });
-
-    if (!workflowDefinition) {
-      auditLogRequestError(
-        new Error(`Couldn't fetch workflow definition ${workflowId}`),
-        endpointName,
-        endpoint,
-        req,
-      );
-      res.status(500).send(`Couldn't fetch workflow definition ${workflowId}`);
-      return;
-    }
-    const serviceUrl = workflowDefinition.serviceUrl;
-    if (!serviceUrl) {
-      auditLogRequestError(
-        new Error(`Service URL is not defined for workflow ${workflowId}`),
-        endpointName,
-        endpoint,
-        req,
-      );
-      res
-        .status(500)
-        .send(`Service URL is not defined for workflow ${workflowId}`);
-      return;
-    }
-
-    // workflow source
-    const definition =
-      await services.orchestratorService.fetchWorkflowDefinition({
-        definitionId: workflowId,
-        cacheHandler: 'throw',
-      });
-
-    if (!definition) {
-      auditLogRequestError(
-        new Error(
-          `Couldn't fetch workflow definition of workflow source ${workflowId}`,
-        ),
-        endpointName,
-        endpoint,
-        req,
-      );
-      res
-        .status(500)
-        .send(
-          `Couldn't fetch workflow definition of workflow source ${workflowId}`,
-        );
-      return;
-    }
-
-    const response: WorkflowInputSchemaResponse = {
-      definition,
-      schemaSteps: [],
-      isComposedSchema: false,
-    };
-
-    if (!definition.dataInputSchema) {
-      res.status(200).json(response);
-      return;
-    }
-
-    const workflowInfo =
-      await services.orchestratorService.fetchWorkflowInfoOnService({
-        definitionId: workflowId,
-        serviceUrl,
-        cacheHandler: 'throw',
-      });
-
-    if (!workflowInfo) {
-      auditLogRequestError(
-        new Error(`couldn't fetch workflow info ${workflowId}`),
-        endpointName,
-        endpoint,
-        req,
-      );
-      res.status(500).send(`couldn't fetch workflow info ${workflowId}`);
-      return;
-    }
-
-    if (!workflowInfo.inputSchema) {
-      auditLogRequestError(
-        new Error(
-          `failed to retreive schema ${JSON.stringify(
-            definition.dataInputSchema,
-          )}`,
-        ),
-        endpointName,
-        endpoint,
-        req,
-      );
-
-      res
-        .status(500)
-        .send(
-          `failed to retreive schema ${JSON.stringify(
-            definition.dataInputSchema,
-          )}`,
-        );
-      return;
-    }
-
-    const instanceVariables = instanceId
-      ? await services.orchestratorService.fetchInstanceVariables({
-          instanceId,
-          cacheHandler: 'throw',
-        })
-      : undefined;
-
-    const assessmentInstanceVariables = assessmentInstanceId
-      ? await services.orchestratorService.fetchInstanceVariables({
-          instanceId: assessmentInstanceId,
-          cacheHandler: 'throw',
-        })
-      : undefined;
-
-    res
-      .status(200)
-      .json(
-        services.dataInputSchemaService.getWorkflowInputSchemaResponse(
-          definition,
-          workflowInfo.inputSchema,
-          instanceVariables,
-          assessmentInstanceVariables,
-        ),
-      );
-  });
 
   // v2
   routerApi.openApiBackend.register(
