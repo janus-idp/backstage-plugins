@@ -2657,7 +2657,7 @@
   resolved "https://registry.yarnpkg.com/@backstage/backend-dev-utils/-/backend-dev-utils-0.1.5.tgz#bee1540167df263ac82bce5a838d0387d94372d4"
   integrity sha512-OMCoDN2m2otZfK1nOdW4+BbPVuAY7g+IYyzfkXmVGTb8M3yi5vGxsUpfJv24K25vaz54m65xBB29bOPSjxfzag==
 
-"@backstage/backend-dynamic-feature-service@0.4.1", "@backstage/backend-dynamic-feature-service@^0.4.1":
+"@backstage/backend-dynamic-feature-service@^0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@backstage/backend-dynamic-feature-service/-/backend-dynamic-feature-service-0.4.1.tgz#e988bf020958978e7378350c41a42359d616e50c"
   integrity sha512-Ygt8o37Eb5xHcX3i1a6PZyfuWkIMIY0FUfRgcW0aUDN9YSim5TQ8kbBTbNH3XCRhlg8eUzSZEol8WWb+X4qLDw==
