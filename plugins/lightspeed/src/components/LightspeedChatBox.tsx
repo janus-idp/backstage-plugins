@@ -16,8 +16,8 @@ import {
   MessageProps,
 } from '@patternfly/virtual-assistant';
 
-import logo from '../../images/logo.svg';
 import { lightspeedApiRef } from '../api/LightspeedProxyClient';
+import logo from '../images/logo.svg';
 import { Conversations } from '../types';
 import {
   getFootnoteProps,

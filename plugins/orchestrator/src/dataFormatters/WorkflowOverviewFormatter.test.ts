@@ -1,4 +1,5 @@
 import {
+  ProcessInstanceStatusDTO,
   WorkflowCategoryDTO,
   WorkflowOverviewDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -14,7 +15,7 @@ describe('WorkflowOverviewAdapter', () => {
       workflowId: '123',
       name: 'Sample Workflow',
       lastTriggeredMs: 1697276096000,
-      lastRunStatus: 'COMPLETED',
+      lastRunStatus: ProcessInstanceStatusDTO.Completed,
       category: WorkflowCategoryDTO.Infrastructure,
       avgDurationMs: 150000,
       description: 'Sample description',
