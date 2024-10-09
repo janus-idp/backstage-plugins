@@ -49,14 +49,14 @@ export const mockProcessInstanceArguments = {
           ofType: null,
         },
       },
-      // {
-      //   name: 'id',
-      //   type: {
-      //     kind: 'INPUT_OBJECT',
-      //     name: 'IdArgument',
-      //     ofType: null,
-      //   },
-      // },
+      {
+        name: 'id',
+        type: {
+          kind: 'INPUT_OBJECT',
+          name: 'IdArgument',
+          ofType: null,
+        },
+      },
       {
         name: 'processId',
         type: {
@@ -73,22 +73,22 @@ export const mockProcessInstanceArguments = {
           ofType: null,
         },
       },
-      // {
-      //   name: 'parentProcessInstanceId',
-      //   type: {
-      //     kind: 'INPUT_OBJECT',
-      //     name: 'IdArgument',
-      //     ofType: null,
-      //   },
-      // },
-      // {
-      //   name: 'rootProcessInstanceId',
-      //   type: {
-      //     kind: 'INPUT_OBJECT',
-      //     name: 'IdArgument',
-      //     ofType: null,
-      //   },
-      // },
+      {
+        name: 'parentProcessInstanceId',
+        type: {
+          kind: 'INPUT_OBJECT',
+          name: 'IdArgument',
+          ofType: null,
+        },
+      },
+      {
+        name: 'rootProcessInstanceId',
+        type: {
+          kind: 'INPUT_OBJECT',
+          name: 'IdArgument',
+          ofType: null,
+        },
+      },
       {
         name: 'rootProcessId',
         type: {
@@ -206,14 +206,14 @@ export const mockProcessInstanceArguments = {
 };
 
 export const mockProcessInstanceIntrospection: IntrospectionField[] = [
-  // {
-  //   name: 'id',
-  //   type: {
-  //     kind: TypeKind.InputObject,
-  //     name: TypeName.Id,
-  //     ofType: null,
-  //   },
-  // },
+  {
+    name: 'id',
+    type: {
+      kind: TypeKind.InputObject,
+      name: TypeName.Id,
+      ofType: null,
+    },
+  },
   {
     name: 'processId',
     type: {
@@ -230,22 +230,22 @@ export const mockProcessInstanceIntrospection: IntrospectionField[] = [
       ofType: null,
     },
   },
-  // {
-  //   name: 'parentProcessInstanceId',
-  //   type: {
-  //     kind: TypeKind.InputObject,
-  //     name: TypeName.Id,
-  //     ofType: null,
-  //   },
-  // },
-  // {
-  //   name: 'rootProcessInstanceId',
-  //   type: {
-  //     kind: TypeKind.InputObject,
-  //     name: TypeName.Id,
-  //     ofType: null,
-  //   },
-  // },
+  {
+    name: 'parentProcessInstanceId',
+    type: {
+      kind: TypeKind.InputObject,
+      name: TypeName.Id,
+      ofType: null,
+    },
+  },
+  {
+    name: 'rootProcessInstanceId',
+    type: {
+      kind: TypeKind.InputObject,
+      name: TypeName.Id,
+      ofType: null,
+    },
+  },
   {
     name: 'rootProcessId',
     type: {

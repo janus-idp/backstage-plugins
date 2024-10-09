@@ -101,6 +101,15 @@ describe('column filters', () => {
     },
   });
 
+  const createIdIntrospectionField = (name: string): IntrospectionField => ({
+    name,
+    type: {
+      name: TypeName.Id,
+      kind: TypeKind.InputObject,
+      ofType: null,
+    },
+  });
+
   const createFieldFilter = (
     field: string,
     operator: FieldFilterOperatorEnum,
@@ -303,6 +312,94 @@ describe('column filters', () => {
       },
     ];
     stringTestCases.forEach(
+      ({ name, introspectionFields, filter, expectedResult }) => {
+        it(`${name}`, () => {
+          const result = buildFilterCondition(introspectionFields, filter);
+          expect(result).toBe(expectedResult);
+        });
+      },
+    );
+  });
+
+  describe('idArgument testcases', () => {
+    const idTestCases: FilterTestCase[] = [
+      {
+        name: 'returns correct filter for single id field with equal operator',
+        introspectionFields: [createIdIntrospectionField('id')],
+        filter: createFieldFilter('id', FieldFilterOperatorEnum.Eq, 'idA'),
+        expectedResult: 'id: {equal: "idA"}',
+      },
+      {
+        name: 'returns correct filter for single id field with isNull operator (false as boolean)',
+        introspectionFields: [createIdIntrospectionField('id')],
+        filter: createFieldFilter('id', FieldFilterOperatorEnum.IsNull, false),
+        expectedResult: 'id: {isNull: false}',
+      },
+      {
+        name: 'returns correct filter for single id field with isNull operator (false as string)',
+        introspectionFields: [createIdIntrospectionField('id')],
+        filter: createFieldFilter(
+          'id',
+          FieldFilterOperatorEnum.IsNull,
+          'false',
+        ),
+        expectedResult: 'id: {isNull: false}',
+      },
+      {
+        name: 'returns correct filter for single id field with IN operator',
+        introspectionFields: [createIdIntrospectionField('id')],
+        filter: createFieldFilter('id', FieldFilterOperatorEnum.In, [
+          'idA',
+          'idB',
+          'idC',
+        ]),
+        expectedResult: 'id: {in: ["idA", "idB", "idC"]}',
+      },
+      {
+        name: 'returns correct OR filter for multiple id fields with equal, isNull, and IN operators',
+        introspectionFields: [
+          createIdIntrospectionField('processId'),
+          createIdIntrospectionField('id'),
+        ],
+        filter: {
+          operator: 'OR',
+          filters: [
+            createFieldFilter('id', FieldFilterOperatorEnum.Eq, 'idA'),
+            createFieldFilter(
+              'processId',
+              FieldFilterOperatorEnum.IsNull,
+              'True',
+            ),
+            createFieldFilter('id', 'IN', ['idA', 'idB', 'idC']),
+          ],
+        },
+        expectedResult:
+          'or: {id: {equal: "idA"}, processId: {isNull: true}, id: {in: ["idA", "idB", "idC"]}}',
+      },
+      {
+        name: 'returns correct AND filter for multiple id fields with equal, isNull, and IN operators',
+        introspectionFields: [
+          createIdIntrospectionField('processId'),
+          createIdIntrospectionField('id'),
+        ],
+        filter: {
+          operator: 'AND',
+          filters: [
+            createFieldFilter('id', FieldFilterOperatorEnum.Eq, 'idA'),
+            createFieldFilter(
+              'processId',
+              FieldFilterOperatorEnum.IsNull,
+              'True',
+            ),
+            createFieldFilter('id', 'IN', ['idA', 'idB', 'idC']),
+          ],
+        },
+        expectedResult:
+          'and: {id: {equal: "idA"}, processId: {isNull: true}, id: {in: ["idA", "idB", "idC"]}}',
+      },
+    ];
+
+    idTestCases.forEach(
       ({ name, introspectionFields, filter, expectedResult }) => {
         it(`${name}`, () => {
           const result = buildFilterCondition(introspectionFields, filter);

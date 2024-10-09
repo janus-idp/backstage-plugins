@@ -84,24 +84,25 @@ export function buildFilterCondition(
     throw new Error(`Unsopported operator ${filters.operator}`);
   }
 
+  const fieldDef = introspection.find(f => f.name === filters.field);
+  if (!fieldDef) {
+    throw new Error(`Can't find field "${filters.field}" definition`);
+  }
+
+  if (!isOperatorAllowedForField(filters.operator, fieldDef)) {
+    throw new Error(`Unsupported field type ${fieldDef.type.name}`);
+  }
+
   let value = filters.value;
 
   if (filters.operator === FieldFilterOperatorEnum.IsNull) {
-    let booleanValue = false;
-    if (typeof value === 'boolean') {
-      booleanValue = value;
-    } else if (typeof value === 'string') {
-      booleanValue = value.toLowerCase() === 'true';
-    } else if (typeof value === 'number') {
-      booleanValue = value === 1;
-    }
-    return `${filters.field}: {${getGraphQLOperator(filters.operator)}: ${booleanValue}}`;
+    return `${filters.field}: {${getGraphQLOperator(filters.operator)}: ${convertToBoolean(value)}}`;
   }
 
   if (Array.isArray(value)) {
-    value = `[${value.map(v => formatValue(filters.field, v, introspection)).join(', ')}]`;
+    value = `[${value.map(v => formatValue(filters.field, v, fieldDef)).join(', ')}]`;
   } else {
-    value = formatValue(filters.field, value, introspection);
+    value = formatValue(filters.field, value, fieldDef);
   }
 
   if (
@@ -128,21 +129,55 @@ function isFieldFilterSupported(fieldDef: IntrospectionField): boolean {
   return fieldDef?.type.name === TypeName.String;
 }
 
+function isOperatorAllowedForField(
+  operator: FieldFilterOperatorEnum,
+  fieldDef: IntrospectionField,
+): boolean {
+  const allowedOperators: Record<TypeName, FieldFilterOperatorEnum[]> = {
+    [TypeName.String]: [
+      FieldFilterOperatorEnum.In,
+      FieldFilterOperatorEnum.Like,
+      FieldFilterOperatorEnum.IsNull,
+      FieldFilterOperatorEnum.Eq,
+    ],
+    [TypeName.Id]: [
+      FieldFilterOperatorEnum.In,
+      FieldFilterOperatorEnum.IsNull,
+      FieldFilterOperatorEnum.Eq,
+    ],
+    [TypeName.Date]: [],
+    [TypeName.StringArray]: [],
+  };
+  const allowedForType = allowedOperators[fieldDef.type.name];
+  return allowedForType ? allowedForType.includes(operator) : false;
+}
+
+function convertToBoolean(value: any): boolean {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (typeof value === 'string') {
+    return value.toLowerCase() === 'true';
+  }
+  if (typeof value === 'number') {
+    return value === 1;
+  }
+  return false; // Default to false for unsupported types
+}
+
 function formatValue(
   fieldName: string,
   fieldValue: any,
-  introspection: IntrospectionField[],
+  fieldDef: IntrospectionField,
 ): string {
-  const fieldDef = introspection.find(f => f.name === fieldName);
-  if (!fieldDef) {
-    throw new Error(`Can't find field "${fieldName}" definition`);
-  }
-
   if (!isFieldFilterSupported) {
     throw new Error(`Unsupported field type ${fieldDef.type.name}`);
   }
 
-  if (fieldDef.type.name === TypeName.String) {
+  if (
+    fieldDef.type.name === TypeName.String ||
+    fieldDef.type.name === TypeName.Id
+  ) {
     return `"${fieldValue}"`;
   }
   throw new Error(

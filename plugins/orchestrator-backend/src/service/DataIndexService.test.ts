@@ -472,22 +472,22 @@ describe('fetchInstances', () => {
   ];
 
   const filterString =
-    'or: {processId: {equal: "processId1"}, processId: {equal: "processId2"}}';
+    'or: {processId: {equal: "processId1"}, processName: {like: "processName%"}}';
 
+  const procName1Filter = {
+    field: 'processName',
+    operator: FieldFilterOperatorEnum.Like,
+    value: 'processName%',
+  };
   const procId1Filter = {
     field: 'processId',
     operator: FieldFilterOperatorEnum.Eq,
     value: 'processId1',
   };
-  const procId2Filter = {
-    field: 'processId',
-    operator: FieldFilterOperatorEnum.Eq,
-    value: 'processId2',
-  };
 
   const logicalFilter: LogicalFilter = {
     operator: 'OR',
-    filters: [procId1Filter, procId2Filter],
+    filters: [procId1Filter, procName1Filter],
   };
   const mockQueryResult = { ProcessInstances: mockProcessInstances };
 
