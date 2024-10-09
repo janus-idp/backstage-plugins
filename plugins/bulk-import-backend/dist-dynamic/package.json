@@ -9,7 +9,7 @@
   },
   "backstage": {
     "role": "backend-plugin",
-    "supported-versions": "1.28.4",
+    "supported-versions": "1.31.3",
     "pluginId": "bulk-import",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-bulk-import",
@@ -39,13 +39,13 @@
   "devDependencies": {},
   "peerDependencies": {
     "@janus-idp/backstage-plugin-audit-log-node": "*",
-    "@backstage/backend-defaults": "^0.4.1",
-    "@backstage/backend-plugin-api": "^0.7.0",
+    "@backstage/backend-defaults": "^0.5.0",
+    "@backstage/backend-plugin-api": "^1.0.0",
     "@backstage/errors": "^1.2.4",
-    "@backstage/integration": "^1.13.0",
-    "@backstage/plugin-catalog-node": "^1.12.4",
-    "@backstage/plugin-permission-common": "^0.8.0",
-    "@backstage/plugin-permission-node": "^0.8.0"
+    "@backstage/integration": "^1.15.0",
+    "@backstage/plugin-catalog-node": "^1.13.0",
+    "@backstage/plugin-permission-common": "^0.8.1",
+    "@backstage/plugin-permission-node": "^0.8.3"
   },
   "files": [
     "dist",

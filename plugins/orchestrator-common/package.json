@@ -12,7 +12,7 @@
   },
   "backstage": {
     "role": "common-library",
-    "supported-versions": "1.28.4",
+    "supported-versions": "1.31.3",
     "pluginId": "orchestrator",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-orchestrator",
@@ -56,14 +56,14 @@
   },
   "dependencies": {
     "@backstage/types": "^1.1.1",
-    "@backstage/plugin-permission-common": "^0.8.0",
+    "@backstage/plugin-permission-common": "^0.8.1",
     "@severlessworkflow/sdk-typescript": "^3.0.3",
     "js-yaml": "^4.1.0",
     "json-schema": "^0.4.0",
     "axios": "^1.7.4"
   },
   "devDependencies": {
-    "@backstage/cli": "0.26.11",
+    "@backstage/cli": "0.27.1",
     "@openapitools/openapi-generator-cli": "2.13.4",
     "js-yaml-cli": "0.6.0"
   },

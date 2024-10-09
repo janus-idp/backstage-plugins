@@ -29,16 +29,16 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.14.9",
-    "@backstage/core-plugin-api": "^1.9.3",
+    "@backstage/core-components": "^0.15.0",
+    "@backstage/core-plugin-api": "^1.9.4",
     "@backstage/types": "^1.1.1",
     "@janus-idp/backstage-plugin-orchestrator-common": "*",
     "@janus-idp/backstage-plugin-orchestrator-form-api": "*",
     "@material-ui/core": "^4.12.4",
-    "@rjsf/core": "5.18.5",
-    "@rjsf/material-ui": "5.18.5",
-    "@rjsf/utils": "5.18.5",
-    "@rjsf/validator-ajv8": "5.18.5",
+    "@rjsf/core": "^5.21.2",
+    "@rjsf/material-ui": "^5.21.2",
+    "@rjsf/utils": "^5.21.2",
+    "@rjsf/validator-ajv8": "^5.21.2",
     "json-schema": "^0.4.0",
     "json-schema-library": "^9.0.0",
     "lodash": "^4.17.21"
@@ -47,8 +47,8 @@
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.26.11",
-    "@types/json-schema": "^7.0.15"
+    "@backstage/cli": "0.27.1",
+    "@types/json-schema": "7.0.15"
   },
   "files": [
     "dist"

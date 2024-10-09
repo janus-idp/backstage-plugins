@@ -27,7 +27,7 @@ describe('bulkImportPlugin test', () => {
       features: [
         bulkImportPlugin,
         mockServices.rootConfig.factory({ data: fakeConfig }),
-        mockServices.rootLogger.factory,
+        mockServices.rootLogger.factory(),
       ],
     });
 

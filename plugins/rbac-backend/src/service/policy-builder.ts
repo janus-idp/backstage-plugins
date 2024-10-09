@@ -1,15 +1,14 @@
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { DatabaseManager } from '@backstage/backend-defaults/database';
 import type {
   AuthService,
   DiscoveryService,
   HttpAuthService,
+  LifecycleService,
   LoggerService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import type { Config } from '@backstage/config';
-import type { IdentityApi } from '@backstage/plugin-auth-node';
 import type { RouterOptions } from '@backstage/plugin-permission-backend';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
@@ -40,11 +39,11 @@ export class PolicyBuilder {
       config: Config;
       logger: LoggerService;
       discovery: DiscoveryService;
-      identity: IdentityApi;
       permissions: PermissionEvaluator;
-      auth?: AuthService;
-      httpAuth?: HttpAuthService;
+      auth: AuthService;
+      httpAuth: HttpAuthService;
       userInfo: UserInfoService;
+      lifecycle: LifecycleService;
     },
     pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
     rbacProviders?: Array<RBACProvider>,
@@ -60,11 +59,10 @@ export class PolicyBuilder {
 
     const databaseManager = DatabaseManager.fromConfig(env.config).forPlugin(
       'permission',
+      { logger: env.logger, lifecycle: env.lifecycle },
     );
 
     const databaseClient = await databaseManager.getClient();
-
-    const { auth, httpAuth } = createLegacyAuthAdapters(env);
 
     const adapter = await new CasbinDBAdapterFactory(
       env.config,
@@ -77,7 +75,7 @@ export class PolicyBuilder {
 
     const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
     const catalogDBClient = await DatabaseManager.fromConfig(env.config)
-      .forPlugin('catalog')
+      .forPlugin('catalog', { logger: env.logger, lifecycle: env.lifecycle })
       .getClient();
 
     const rm = new BackstageRoleManager(
@@ -86,7 +84,7 @@ export class PolicyBuilder {
       catalogDBClient,
       databaseClient,
       env.config,
-      auth,
+      env.auth,
     );
     enf.setRoleManager(rm);
     enf.enableAutoBuildRoleLinks(false);
@@ -105,8 +103,8 @@ export class PolicyBuilder {
 
     const defAuditLog = new DefaultAuditLogger({
       logger: env.logger,
-      authService: auth,
-      httpAuthService: httpAuth,
+      authService: env.auth,
+      httpAuthService: env.httpAuth,
     });
 
     if (rbacProviders) {
@@ -143,7 +141,6 @@ export class PolicyBuilder {
       config: env.config,
       logger: env.logger,
       discovery: env.discovery,
-      identity: env.identity,
       policy: await RBACPermissionPolicy.build(
         env.logger,
         defAuditLog,
@@ -153,10 +150,10 @@ export class PolicyBuilder {
         roleMetadataStorage,
         databaseClient,
         pluginPermMetaData,
-        auth,
+        env.auth,
       ),
-      auth: auth,
-      httpAuth: httpAuth,
+      auth: env.auth,
+      httpAuth: env.httpAuth,
       userInfo: env.userInfo,
     };
 
@@ -165,8 +162,8 @@ export class PolicyBuilder {
       options,
       enforcerDelegate,
       env.config,
-      httpAuth,
-      auth,
+      env.httpAuth,
+      env.auth,
       conditionStorage,
       pluginPermMetaData,
       roleMetadataStorage,
