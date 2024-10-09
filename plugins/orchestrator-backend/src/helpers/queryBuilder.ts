@@ -88,7 +88,9 @@ export function buildFilterCondition(
 
   if (filters.operator === FieldFilterOperatorEnum.IsNull) {
     let booleanValue = false;
-    if (typeof value === 'string') {
+    if (typeof value === 'boolean') {
+      booleanValue = value;
+    } else if (typeof value === 'string') {
       booleanValue = value.toLowerCase() === 'true';
     } else if (typeof value === 'number') {
       booleanValue = value === 1;
