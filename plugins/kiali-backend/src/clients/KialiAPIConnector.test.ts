@@ -1,9 +1,9 @@
-import { getVoidLogger } from '@backstage/backend-common';
+import { mockServices } from '@backstage/backend-test-utils';
 
 import supported from '../kiali_supported.json';
 import { KIALI_CORE_VERSION, KialiApiImpl } from './KialiAPIConnector';
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 const kialiApi = new KialiApiImpl({
   logger,
