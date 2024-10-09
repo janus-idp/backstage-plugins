@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
-export * from './auth';
-export * from './loggingUtils';
-export * from './pagination';
+import type { LoggerService } from '@backstage/backend-plugin-api';
+
+import type { Paths } from '../../../generated/openapi';
+import type { HandlerResponse } from '../handlers';
+
+export async function ping(
+  logger: LoggerService,
+): Promise<HandlerResponse<Paths.Ping.Responses.$200>> {
+  logger.debug('PONG!');
+  return {
+    statusCode: 200,
+    responseBody: { status: 'ok' },
+  };
+}
