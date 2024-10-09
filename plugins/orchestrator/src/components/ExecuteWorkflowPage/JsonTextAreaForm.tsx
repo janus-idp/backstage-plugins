@@ -15,7 +15,7 @@ const JsonTextAreaForm = ({
   handleExecute,
 }: {
   isExecuting: boolean;
-  handleExecute: (getParameters: () => JsonObject) => Promise<void>;
+  handleExecute: (parameters: JsonObject) => Promise<void>;
 }) => {
   const [jsonText, setJsonText] = React.useState(DEFAULT_VALUE);
   const theme = useTheme();
@@ -56,7 +56,7 @@ const JsonTextAreaForm = ({
       <Grid item xs={12}>
         <SubmitButton
           submitting={isExecuting}
-          handleClick={() => handleExecute(getParameters)}
+          handleClick={() => handleExecute(getParameters())}
         >
           Run
         </SubmitButton>

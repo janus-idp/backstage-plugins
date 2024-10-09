@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-rbac",
-  "version": "1.30.3",
+  "version": "1.30.4",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -68,7 +68,7 @@
     "@backstage/core-app-api": "1.14.1",
     "@backstage/dev-utils": "1.0.36",
     "@backstage/test-utils": "1.5.9",
-    "@janus-idp/cli": "1.15.1",
+    "@janus-idp/cli": "1.15.2",
     "@playwright/test": "1.45.3",
     "@redhat-developer/red-hat-developer-hub-theme": "0.4.0",
     "@testing-library/jest-dom": "6.4.8",

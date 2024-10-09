@@ -4,7 +4,7 @@ import {
   AssessedProcessInstanceDTO,
   ExecuteWorkflowRequestDTO,
   ExecuteWorkflowResponseDTO,
-  FilterInfo,
+  Filter,
   ProcessInstance,
   ProcessInstanceListResultDTO,
   ProcessInstanceState,
@@ -35,7 +35,7 @@ export class V2 {
 
   public async getWorkflowsOverview(
     pagination: Pagination,
-    filter?: FilterInfo,
+    filter?: Filter,
   ): Promise<WorkflowOverviewListResultDTO> {
     const overviews = await this.orchestratorService.fetchWorkflowOverviews({
       pagination,
@@ -89,7 +89,7 @@ export class V2 {
 
   public async getInstances(
     pagination?: Pagination,
-    filter?: FilterInfo,
+    filter?: Filter,
     workflowId?: string,
   ): Promise<ProcessInstanceListResultDTO> {
     const instances = await this.orchestratorService.fetchInstances({
@@ -97,8 +97,10 @@ export class V2 {
       filter,
       workflowId,
     });
-    const totalCount =
-      await this.orchestratorService.fetchInstancesTotalCount(workflowId);
+    const totalCount = await this.orchestratorService.fetchInstancesTotalCount(
+      workflowId,
+      filter,
+    );
 
     const result: ProcessInstanceListResultDTO = {
       items: instances?.map(mapToProcessInstanceDTO),

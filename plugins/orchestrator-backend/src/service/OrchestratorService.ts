@@ -1,5 +1,5 @@
 import {
-  FilterInfo,
+  Filter,
   ProcessInstance,
   ProcessInstanceVariables,
   WorkflowDefinition,
@@ -54,7 +54,7 @@ export class OrchestratorService {
 
   public async fetchInstances(args: {
     pagination?: Pagination;
-    filter?: FilterInfo;
+    filter?: Filter;
     workflowId?: string;
   }): Promise<ProcessInstance[]> {
     const definitionIds = args.workflowId
@@ -67,11 +67,17 @@ export class OrchestratorService {
     });
   }
 
-  public async fetchInstancesTotalCount(workflowId?: string): Promise<number> {
+  public async fetchInstancesTotalCount(
+    workflowId?: string,
+    filter?: Filter,
+  ): Promise<number> {
     const definitionIds = workflowId
       ? [workflowId]
       : this.workflowCacheService.definitionIds;
-    return await this.dataIndexService.fetchInstancesTotalCount(definitionIds);
+    return await this.dataIndexService.fetchInstancesTotalCount(
+      definitionIds,
+      filter,
+    );
   }
 
   public async fetchWorkflowSource(args: {
@@ -150,7 +156,7 @@ export class OrchestratorService {
 
   public async fetchWorkflowOverviews(args: {
     pagination?: Pagination;
-    filter?: FilterInfo;
+    filter?: Filter;
   }): Promise<WorkflowOverview[] | undefined> {
     return await this.sonataFlowService.fetchWorkflowOverviews({
       definitionIds: this.workflowCacheService.definitionIds,

@@ -1,4 +1,3 @@
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import {
   HttpAuthService,
@@ -7,18 +6,17 @@ import {
   resolvePackagePath,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import type { Config } from '@backstage/config';
+import type { DiscoveryApi } from '@backstage/core-plugin-api';
 import {
   AuthorizeResult,
   BasicPermission,
 } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
-import { JsonObject, JsonValue } from '@backstage/types';
+import type { JsonObject, JsonValue } from '@backstage/types';
 
 import { fullFormats } from 'ajv-formats/dist/formats';
-import express from 'express';
-import Router from 'express-promise-router';
+import express, { Router } from 'express';
 import { Request as HttpRequest } from 'express-serve-static-core';
 import { OpenAPIBackend, Request } from 'openapi-backend';
 
@@ -27,6 +25,7 @@ import {
   DefaultAuditLogger,
 } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
+  Filter,
   openApiDocument,
   orchestratorPermissions,
   orchestratorWorkflowExecutePermission,
@@ -34,19 +33,14 @@ import {
   orchestratorWorkflowInstanceReadPermission,
   orchestratorWorkflowInstancesReadPermission,
   orchestratorWorkflowReadPermission,
-  QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_BUSINESS_KEY,
   QUERY_PARAM_INCLUDE_ASSESSMENT,
-  QUERY_PARAM_INSTANCE_ID,
-  WorkflowInputSchemaResponse,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 import { UnauthorizedError } from '@janus-idp/backstage-plugin-rbac-common';
 
 import * as pkg from '../../package.json';
 import { RouterOptions } from '../routerWrapper';
-import { buildFilter } from '../types/filters';
 import { buildPagination } from '../types/pagination';
-import { V1 } from './api/v1';
 import { V2 } from './api/v2';
 import { INTERNAL_SERVER_ERROR_MESSAGE } from './constants';
 import { DataIndexService } from './DataIndexService';
@@ -63,7 +57,6 @@ interface PublicServices {
 
 interface RouterApi {
   openApiBackend: OpenAPIBackend;
-  v1: V1;
   v2: V2;
 }
 
@@ -84,7 +77,7 @@ const authorize = async (
 
 export async function createBackendRouter(
   options: RouterOptions,
-): Promise<express.Router> {
+): Promise<Router> {
   const {
     config,
     logger,
@@ -93,12 +86,9 @@ export async function createBackendRouter(
     urlReader,
     scheduler,
     permissions,
+    auth,
+    httpAuth,
   } = options;
-  const { auth, httpAuth } = createLegacyAuthAdapters({
-    httpAuth: options.httpAuth,
-    discovery: options.discovery,
-    auth: options.auth,
-  });
   const publicServices = initPublicServices(logger, config, scheduler);
 
   const routerApi = await initRouterApi(publicServices.orchestratorService);
@@ -140,7 +130,6 @@ export async function createBackendRouter(
   );
 
   setupInternalRoutes(
-    router,
     publicServices,
     routerApi,
     permissions,
@@ -223,16 +212,14 @@ async function initRouterApi(
     },
   });
   await openApiBackend.init();
-  const v1 = new V1();
   const v2 = new V2(orchestratorService);
-  return { v1, v2, openApiBackend };
+  return { v2, openApiBackend };
 }
 
 // ======================================================
 // Internal Backstage API calls to delegate to SonataFlow
 // ======================================================
 function setupInternalRoutes(
-  router: express.Router,
   services: PublicServices,
   routerApi: RouterApi,
   permissions: PermissionsService,
@@ -321,7 +308,7 @@ function setupInternalRoutes(
         manageDenyAuthorization(endpointName, endpoint, req);
       }
       await routerApi.v2
-        .getWorkflowsOverview(buildPagination(req), buildFilter(req))
+        .getWorkflowsOverview(buildPagination(req), getRequestFilters(req))
         .then(result => res.json(result))
         .catch(error => {
           auditLogRequestError(error, endpointName, endpoint, req);
@@ -411,7 +398,7 @@ function setupInternalRoutes(
       await routerApi.v2
         .executeWorkflow(executeWorkflowRequestDTO, workflowId, businessKey)
         .then(result => res.status(200).json(result))
-        .catch((error: { message: string }) => {
+        .catch(error => {
           auditLogRequestError(error, endpointName, endpoint, req);
           res
             .status(500)
@@ -453,173 +440,6 @@ function setupInternalRoutes(
         .catch(next);
     },
   );
-
-  // v1
-  router.get('/workflows/:workflowId/inputSchema', async (req, res) => {
-    const {
-      params: { workflowId },
-    } = req;
-    const endpointName = 'WorkflowsWorkflowIdInputSchema';
-    const endpoint = `/v1/workflows/${workflowId}/inputSchema`;
-
-    auditLogger.auditLog({
-      eventName: endpointName,
-      stage: 'start',
-      status: 'succeeded',
-      level: 'debug',
-      request: req,
-      message: `Received request to '${endpoint}' endpoint`,
-    });
-
-    const decision = await authorize(
-      req,
-      orchestratorWorkflowReadPermission,
-      permissions,
-      httpAuth,
-    );
-    if (decision.result === AuthorizeResult.DENY) {
-      manageDenyAuthorization(endpointName, endpoint, req);
-    }
-
-    const instanceId = routerApi.v1.extractQueryParam(
-      req,
-      QUERY_PARAM_INSTANCE_ID,
-    );
-    const assessmentInstanceId = routerApi.v1.extractQueryParam(
-      req,
-      QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
-    );
-
-    const workflowDefinition =
-      await services.orchestratorService.fetchWorkflowInfo({
-        definitionId: workflowId,
-        cacheHandler: 'throw',
-      });
-
-    if (!workflowDefinition) {
-      auditLogRequestError(
-        new Error(`Couldn't fetch workflow definition ${workflowId}`),
-        endpointName,
-        endpoint,
-        req,
-      );
-      res.status(500).send(`Couldn't fetch workflow definition ${workflowId}`);
-      return;
-    }
-    const serviceUrl = workflowDefinition.serviceUrl;
-    if (!serviceUrl) {
-      auditLogRequestError(
-        new Error(`Service URL is not defined for workflow ${workflowId}`),
-        endpointName,
-        endpoint,
-        req,
-      );
-      res
-        .status(500)
-        .send(`Service URL is not defined for workflow ${workflowId}`);
-      return;
-    }
-
-    // workflow source
-    const definition =
-      await services.orchestratorService.fetchWorkflowDefinition({
-        definitionId: workflowId,
-        cacheHandler: 'throw',
-      });
-
-    if (!definition) {
-      auditLogRequestError(
-        new Error(
-          `Couldn't fetch workflow definition of workflow source ${workflowId}`,
-        ),
-        endpointName,
-        endpoint,
-        req,
-      );
-      res
-        .status(500)
-        .send(
-          `Couldn't fetch workflow definition of workflow source ${workflowId}`,
-        );
-      return;
-    }
-
-    const response: WorkflowInputSchemaResponse = {
-      definition,
-      schemaSteps: [],
-      isComposedSchema: false,
-    };
-
-    if (!definition.dataInputSchema) {
-      res.status(200).json(response);
-      return;
-    }
-
-    const workflowInfo =
-      await services.orchestratorService.fetchWorkflowInfoOnService({
-        definitionId: workflowId,
-        serviceUrl,
-        cacheHandler: 'throw',
-      });
-
-    if (!workflowInfo) {
-      auditLogRequestError(
-        new Error(`couldn't fetch workflow info ${workflowId}`),
-        endpointName,
-        endpoint,
-        req,
-      );
-      res.status(500).send(`couldn't fetch workflow info ${workflowId}`);
-      return;
-    }
-
-    if (!workflowInfo.inputSchema) {
-      auditLogRequestError(
-        new Error(
-          `failed to retreive schema ${JSON.stringify(
-            definition.dataInputSchema,
-          )}`,
-        ),
-        endpointName,
-        endpoint,
-        req,
-      );
-
-      res
-        .status(500)
-        .send(
-          `failed to retreive schema ${JSON.stringify(
-            definition.dataInputSchema,
-          )}`,
-        );
-      return;
-    }
-
-    const instanceVariables = instanceId
-      ? await services.orchestratorService.fetchInstanceVariables({
-          instanceId,
-          cacheHandler: 'throw',
-        })
-      : undefined;
-
-    const assessmentInstanceVariables = assessmentInstanceId
-      ? await services.orchestratorService.fetchInstanceVariables({
-          instanceId: assessmentInstanceId,
-          cacheHandler: 'throw',
-        })
-      : undefined;
-
-    res
-      .status(200)
-      .json(
-        services.dataInputSchemaService.getWorkflowInputSchemaResponse(
-          definition,
-          workflowInfo.inputSchema,
-          instanceVariables,
-          assessmentInstanceVariables,
-        ),
-      );
-  });
 
   // v2
   routerApi.openApiBackend.register(
@@ -823,7 +643,7 @@ function setupInternalRoutes(
         manageDenyAuthorization(endpointName, endpoint, req);
       }
       await routerApi.v2
-        .getInstances(buildPagination(req), buildFilter(req), workflowId)
+        .getInstances(buildPagination(req), getRequestFilters(req), workflowId)
         .then(result => res.json(result))
         .catch(next);
     },
@@ -855,7 +675,7 @@ function setupInternalRoutes(
         manageDenyAuthorization(endpointName, endpoint, req);
       }
       await routerApi.v2
-        .getInstances(buildPagination(req), buildFilter(req))
+        .getInstances(buildPagination(req), getRequestFilters(req))
         .then(result => res.json(result))
         .catch(next);
     },
@@ -994,4 +814,8 @@ function setupExternalRoutes(
     });
     res.status(200).json(result);
   });
+}
+
+function getRequestFilters(req: HttpRequest): Filter | undefined {
+  return req.body.filters ? (req.body.filters as Filter) : undefined;
 }

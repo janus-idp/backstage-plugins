@@ -102,7 +102,7 @@ No authorization required
 
 <a name="getInstances"></a>
 # **getInstances**
-> ProcessInstanceListResultDTO getInstances(GetInstancesRequestParams)
+> ProcessInstanceListResultDTO getInstances(GetInstancesRequest)
 
 Get instances
 
@@ -112,7 +112,7 @@ Get instances
 
 |Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **GetInstancesRequestParams** | [**GetInstancesRequestParams**](../Models/GetInstancesRequestParams.md)| Parameters for retrieving instances | [optional] |
+| **GetInstancesRequest** | [**GetInstancesRequest**](../Models/GetInstancesRequest.md)| Parameters for retrieving instances | [optional] |
 
 ### Return type
 
@@ -156,7 +156,7 @@ No authorization required
 
 <a name="getWorkflowInputSchemaById"></a>
 # **getWorkflowInputSchemaById**
-> Object getWorkflowInputSchemaById(workflowId, instanceId)
+> InputSchemaResponseDTO getWorkflowInputSchemaById(workflowId, instanceId)
 
 
 
@@ -171,7 +171,7 @@ No authorization required
 
 ### Return type
 
-**Object**
+[**InputSchemaResponseDTO**](../Models/InputSchemaResponseDTO.md)
 
 ### Authorization
 
@@ -184,7 +184,7 @@ No authorization required
 
 <a name="getWorkflowInstances"></a>
 # **getWorkflowInstances**
-> ProcessInstanceListResultDTO getWorkflowInstances(workflowId, GetInstancesRequestParams)
+> ProcessInstanceListResultDTO getWorkflowInstances(workflowId, SearchRequest)
 
 Get instances for a specific workflow
 
@@ -195,7 +195,7 @@ Get instances for a specific workflow
 |Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **workflowId** | **String**| ID of the workflow | [default to null] |
-| **GetInstancesRequestParams** | [**GetInstancesRequestParams**](../Models/GetInstancesRequestParams.md)| Parameters for retrieving workflow instances | [optional] |
+| **SearchRequest** | [**SearchRequest**](../Models/SearchRequest.md)| Parameters for retrieving workflow instances | [optional] |
 
 ### Return type
 
@@ -290,7 +290,7 @@ No authorization required
 
 <a name="getWorkflowsOverview"></a>
 # **getWorkflowsOverview**
-> WorkflowOverviewListResultDTO getWorkflowsOverview(GetOverviewsRequestParams)
+> WorkflowOverviewListResultDTO getWorkflowsOverview(SearchRequest)
 
 
 
@@ -300,7 +300,7 @@ No authorization required
 
 |Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **GetOverviewsRequestParams** | [**GetOverviewsRequestParams**](../Models/GetOverviewsRequestParams.md)| Pagination and filters | [optional] |
+| **SearchRequest** | [**SearchRequest**](../Models/SearchRequest.md)| Pagination and filters | [optional] |
 
 ### Return type
 

@@ -1,9 +1,9 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-backend-dynamic",
-  "version": "1.23.0",
+  "version": "2.0.0",
   "license": "Apache-2.0",
   "main": "./dist/index.cjs.js",
-  "types": "src/index.ts",
+  "types": "./dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -20,11 +20,8 @@
   "exports": {
     ".": {
       "require": "./dist/index.cjs.js",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.cjs.js"
-    },
-    "./alpha": {
-      "require": "./dist/alpha.cjs.js",
-      "default": "./dist/alpha.cjs.js"
     },
     "./package.json": "./package.json"
   },
@@ -46,44 +43,35 @@
   "files": [
     "app-config.janus-idp.yaml",
     "dist",
-    "static",
-    "alpha"
+    "static"
   ],
   "scripts": {},
   "dependencies": {
+    "@janus-idp/backstage-plugin-orchestrator-common": "1.19.0",
     "@urql/core": "^4.1.4",
     "ajv-formats": "^2.1.1",
     "cloudevents": "^8.0.0",
     "express": "^4.18.2",
     "express-promise-router": "^4.1.1",
     "fs-extra": "^10.1.0",
+    "isomorphic-git": "^1.23.0",
     "json-schema": "^0.4.0",
     "moment": "^2.29.4",
     "openapi-backend": "^5.10.5",
-    "yn": "^5.0.0",
-    "@severlessworkflow/sdk-typescript": "^3.0.3",
-    "js-yaml": "^4.1.0",
-    "axios": "^1.7.4"
+    "yn": "^5.0.0"
   },
   "devDependencies": {},
   "peerDependencies": {
     "@janus-idp/backstage-plugin-audit-log-node": "1.5.1",
     "@janus-idp/backstage-plugin-rbac-common": "1.10.0",
-    "@backstage/backend-app-api": "^0.8.0",
     "@backstage/backend-common": "^0.23.3",
     "@backstage/backend-defaults": "^0.4.1",
-    "@backstage/backend-dynamic-feature-service": "^0.2.15",
     "@backstage/backend-plugin-api": "^0.7.0",
     "@backstage/backend-tasks": "^0.5.27",
     "@backstage/catalog-client": "^1.6.5",
-    "@backstage/config": "^1.2.0",
-    "@backstage/core-plugin-api": "^1.9.3",
     "@backstage/errors": "^1.2.4",
     "@backstage/integration": "^1.13.0",
-    "@backstage/plugin-auth-node": "^0.4.17",
     "@backstage/plugin-catalog-node": "^1.12.4",
-    "@backstage/plugin-events-backend": "^0.3.9",
-    "@backstage/plugin-events-node": "^0.3.8",
     "@backstage/plugin-permission-common": "^0.8.0",
     "@backstage/plugin-permission-node": "^0.8.0",
     "@backstage/plugin-scaffolder-backend": "^1.23.0",
@@ -102,6 +90,7 @@
     }
   },
   "resolutions": {
-    "@aws-sdk/util-utf8-browser": "npm:@smithy/util-utf8@~2"
+    "@aws-sdk/util-utf8-browser": "npm:@smithy/util-utf8@~2",
+    "@janus-idp/backstage-plugin-orchestrator-common": "file:./embedded/janus-idp-backstage-plugin-orchestrator-common"
   }
 }

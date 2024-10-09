@@ -14,19 +14,17 @@ import {
   Configuration,
   DefaultApi,
   ExecuteWorkflowResponseDTO,
-  FilterInfo,
+  Filter,
+  GetInstancesRequest,
+  InputSchemaResponseDTO,
   PaginationInfoDTO,
   ProcessInstanceListResultDTO,
-  QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
-  QUERY_PARAM_INSTANCE_ID,
   WorkflowDefinition,
   WorkflowExecutionResponse,
-  WorkflowInputSchemaResponse,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { buildUrl } from '../utils/UrlUtils';
 import { OrchestratorApi } from './api';
 
 export interface OrchestratorClientOptions {
@@ -115,21 +113,20 @@ export class OrchestratorClient implements OrchestratorApi {
 
   async listWorkflowOverviews(
     paginationInfo?: PaginationInfoDTO,
-    filterInfo?: FilterInfo,
+    filters?: Filter,
   ): Promise<AxiosResponse<WorkflowOverviewListResultDTO>> {
     const defaultApi = await this.getDefaultAPI();
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
     return await defaultApi.getWorkflowsOverview(
-      { paginationInfo, filterInfo },
+      { paginationInfo, filters },
       reqConfigOption,
     );
   }
 
-  async listInstances(args: {
-    paginationInfo?: PaginationInfoDTO;
-    filterInfo?: FilterInfo;
-  }): Promise<AxiosResponse<ProcessInstanceListResultDTO>> {
+  async listInstances(
+    args: GetInstancesRequest,
+  ): Promise<AxiosResponse<ProcessInstanceListResultDTO>> {
     const defaultApi = await this.getDefaultAPI();
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
@@ -154,18 +151,18 @@ export class OrchestratorClient implements OrchestratorApi {
     }
   }
 
-  async getWorkflowDataInputSchema(args: {
-    workflowId: string;
-    instanceId?: string;
-    assessmentInstanceId?: string;
-  }): Promise<WorkflowInputSchemaResponse> {
-    const baseUrl = await this.getBaseUrl();
-    const endpoint = `${baseUrl}/workflows/${args.workflowId}/inputSchema`;
-    const urlToFetch = buildUrl(endpoint, {
-      [QUERY_PARAM_INSTANCE_ID]: args.instanceId,
-      [QUERY_PARAM_ASSESSMENT_INSTANCE_ID]: args.assessmentInstanceId,
-    });
-    return await this.fetcher(urlToFetch).then(r => r.json());
+  async getWorkflowDataInputSchema(
+    workflowId: string,
+    instanceId?: string,
+  ): Promise<AxiosResponse<InputSchemaResponseDTO>> {
+    const defaultApi = await this.getDefaultAPI();
+    const reqConfigOption: AxiosRequestConfig =
+      await this.getDefaultReqConfig();
+    return await defaultApi.getWorkflowInputSchemaById(
+      workflowId,
+      instanceId,
+      reqConfigOption,
+    );
   }
 
   async getWorkflowOverview(

@@ -19,7 +19,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GetOverviewsRequestParams'
+              $ref: '#/components/schemas/SearchRequest'
       responses:
         '200':
           description: Success
@@ -127,7 +127,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/InputSchemaResponseDTO'
         '500':
           description: Error fetching workflow input schema by id
           content:
@@ -145,7 +145,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GetInstancesRequestParams'
+              $ref: '#/components/schemas/GetInstancesRequest'
       responses:
         '200':
           description: Success
@@ -177,7 +177,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GetInstancesRequestParams'
+              $ref: '#/components/schemas/SearchRequest'
       responses:
         '200':
           description: Success
@@ -320,20 +320,20 @@ components:
           type: string
       required:
         - message
-    GetInstancesRequestParams:
+    GetInstancesRequest:
       type: object
       properties:
         paginationInfo:
           $ref: '#/components/schemas/PaginationInfoDTO'
-        filterInfo:
-          $ref: '#/components/schemas/FilterInfo'
+        filters:
+          $ref: '#/components/schemas/SearchRequest'
     GetOverviewsRequestParams:
       type: object
       properties:
         paginationInfo:
           $ref: '#/components/schemas/PaginationInfoDTO'
-        filterInfo:
-          $ref: '#/components/schemas/FilterInfo'
+        filters:
+          $ref: '#/components/schemas/SearchRequest'
     WorkflowOverviewListResultDTO:
       type: object
       properties:
@@ -390,31 +390,6 @@ components:
         orderBy:
           type: string
       additionalProperties: false
-    FilterInfo:
-      type: object
-      properties:
-        fieldName:
-          description: The name of the field to filter on
-          type: string
-        operator:
-          $ref: '#/components/schemas/Operator'
-        fieldValue:
-          title: FilterValue
-          oneOf:
-            - type: string
-            - type: number
-            - type: boolean
-          description: The value to filter by, which can be a string, number, boolean, or ProcessInstanceStatusDTO
-      required:
-        - fieldName
-        - operator
-        - fieldValue
-    Operator:
-      type: string
-      description: The operator to use for filtering, such as equality or inclusion
-      enum:
-        - equal
-        - in
     WorkflowFormatDTO:
       type: string
       description: Format of the workflow definition
@@ -666,3 +641,74 @@ components:
           description: Error message (optional)
       required:
         - nodeDefinitionId
+    SearchRequest:
+      type: object
+      properties:
+        filters:
+          $ref: '#/components/schemas/Filter'
+        paginationInfo:
+          $ref: '#/components/schemas/PaginationInfoDTO'
+    Filter:
+      oneOf:
+        - $ref: '#/components/schemas/LogicalFilter'
+        - $ref: '#/components/schemas/FieldFilter'
+    LogicalFilter:
+      type: object
+      required:
+        - operator
+        - filters
+      properties:
+        operator:
+          type: string
+          enum: [AND, OR, NOT]
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Filter'
+
+    FieldFilter:
+      type: object
+      required:
+        - field
+        - operator
+        - value
+      properties:
+        field:
+          type: string
+        operator:
+          type: string
+          enum:
+            [
+              EQ,
+              GT,
+              GTE,
+              LT,
+              LTE,
+              IN,
+              IS_NULL,
+              CONTAINS,
+              CONTAINS_ALL,
+              CONTAINS_ANY,
+              LIKE,
+              BETWEEN,
+              FROM,
+              TO,
+            ]
+        value:
+          oneOf:
+            - type: string
+            - type: number
+            - type: boolean
+            - type: array
+              items:
+                oneOf:
+                  - type: string
+                  - type: number
+                  - type: boolean
+    InputSchemaResponseDTO:
+      type: object
+      properties:
+        inputSchema:
+          type: object
+        data:
+          type: object

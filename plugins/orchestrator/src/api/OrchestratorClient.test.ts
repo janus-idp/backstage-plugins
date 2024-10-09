@@ -536,56 +536,6 @@ describe('OrchestratorClient', () => {
       await expect(promise).rejects.toThrow();
     });
   });
-  describe('getWorkflowDataInputSchema', () => {
-    it('should return workflow input schema when successful', async () => {
-      // Given
-      const workflowId = 'workflow123';
-      const instanceId = 'instance123';
-      const assessmentInstanceId = 'assessment123';
-      const mockInputSchema = { id: 'schemaId', name: 'schemaName' };
-
-      // Mock fetch to simulate a successful response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValue(mockInputSchema),
-      });
-
-      // When
-      const result = await orchestratorClient.getWorkflowDataInputSchema({
-        workflowId,
-        instanceId,
-        assessmentInstanceId,
-      });
-
-      // Then
-      const expectedEndpoint = `${baseUrl}/workflows/${workflowId}/inputSchema?instanceId=${instanceId}&assessmentInstanceId=${assessmentInstanceId}`;
-
-      expect(fetch).toHaveBeenCalledWith(expectedEndpoint, {
-        headers: defaultAuthHeaders,
-      });
-      expect(result).toEqual(mockInputSchema);
-    });
-
-    it('should throw a ResponseError when fetching the workflow input schema fails', async () => {
-      // Given
-      const workflowId = 'workflow123';
-
-      // Mock fetch to simulate a failed response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error',
-      });
-
-      // When
-      const promise = orchestratorClient.getWorkflowDataInputSchema({
-        workflowId,
-      });
-
-      // Then
-      await expect(promise).rejects.toThrow();
-    });
-  });
   describe('getWorkflowOverview', () => {
     it('should return workflow overview when successful', async () => {
       // Given

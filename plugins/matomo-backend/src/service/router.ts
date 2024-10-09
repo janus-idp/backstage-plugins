@@ -1,9 +1,8 @@
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
-import express from 'express';
-import Router from 'express-promise-router';
+import express, { Router } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
 export interface RouterOptions {
@@ -11,9 +10,7 @@ export interface RouterOptions {
   config: Config;
 }
 
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
+export async function createRouter(options: RouterOptions): Promise<Router> {
   const { logger, config } = options;
 
   const matomoToken = config.getString('matomo.apiToken');

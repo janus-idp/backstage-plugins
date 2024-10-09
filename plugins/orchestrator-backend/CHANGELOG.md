@@ -1,5 +1,10 @@
 ### Dependencies
 
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.20.0
+* **@janus-idp/cli:** upgraded to 1.15.2
+
+### Dependencies
+
 * **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.19.0
 
 ### Dependencies

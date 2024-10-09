@@ -90,55 +90,78 @@ export interface ExecuteWorkflowResponseDTO {
 /**
  * 
  * @export
- * @interface FilterInfo
+ * @interface FieldFilter
  */
-export interface FilterInfo {
+export interface FieldFilter {
     /**
-     * The name of the field to filter on
+     * 
      * @type {string}
-     * @memberof FilterInfo
+     * @memberof FieldFilter
      */
-    'fieldName': string;
+    'field': string;
     /**
      * 
-     * @type {Operator}
-     * @memberof FilterInfo
+     * @type {string}
+     * @memberof FieldFilter
      */
-    'operator': Operator;
+    'operator': FieldFilterOperatorEnum;
     /**
      * 
-     * @type {FilterValue}
-     * @memberof FilterInfo
+     * @type {FieldFilterValue}
+     * @memberof FieldFilter
      */
-    'fieldValue': FilterValue;
+    'value': FieldFilterValue;
 }
 
+export const FieldFilterOperatorEnum = {
+    Eq: 'EQ',
+    Gt: 'GT',
+    Gte: 'GTE',
+    Lt: 'LT',
+    Lte: 'LTE',
+    In: 'IN',
+    IsNull: 'IS_NULL',
+    Contains: 'CONTAINS',
+    ContainsAll: 'CONTAINS_ALL',
+    ContainsAny: 'CONTAINS_ANY',
+    Like: 'LIKE',
+    Between: 'BETWEEN',
+    From: 'FROM',
+    To: 'TO'
+} as const;
+
+export type FieldFilterOperatorEnum = typeof FieldFilterOperatorEnum[keyof typeof FieldFilterOperatorEnum];
 
 /**
- * @type FilterValue
- * The value to filter by, which can be a string, number, boolean, or ProcessInstanceStatusDTO
+ * @type FieldFilterValue
  * @export
  */
-export type FilterValue = boolean | number | string;
+export type FieldFilterValue = any | boolean | number | string;
+
+/**
+ * @type Filter
+ * @export
+ */
+export type Filter = FieldFilter | LogicalFilter;
 
 /**
  * 
  * @export
- * @interface GetInstancesRequestParams
+ * @interface GetInstancesRequest
  */
-export interface GetInstancesRequestParams {
+export interface GetInstancesRequest {
     /**
      * 
      * @type {PaginationInfoDTO}
-     * @memberof GetInstancesRequestParams
+     * @memberof GetInstancesRequest
      */
     'paginationInfo'?: PaginationInfoDTO;
     /**
      * 
-     * @type {FilterInfo}
-     * @memberof GetInstancesRequestParams
+     * @type {SearchRequest}
+     * @memberof GetInstancesRequest
      */
-    'filterInfo'?: FilterInfo;
+    'filters'?: SearchRequest;
 }
 /**
  * 
@@ -154,11 +177,58 @@ export interface GetOverviewsRequestParams {
     'paginationInfo'?: PaginationInfoDTO;
     /**
      * 
-     * @type {FilterInfo}
+     * @type {SearchRequest}
      * @memberof GetOverviewsRequestParams
      */
-    'filterInfo'?: FilterInfo;
+    'filters'?: SearchRequest;
 }
+/**
+ * 
+ * @export
+ * @interface InputSchemaResponseDTO
+ */
+export interface InputSchemaResponseDTO {
+    /**
+     * 
+     * @type {object}
+     * @memberof InputSchemaResponseDTO
+     */
+    'inputSchema'?: object;
+    /**
+     * 
+     * @type {object}
+     * @memberof InputSchemaResponseDTO
+     */
+    'data'?: object;
+}
+/**
+ * 
+ * @export
+ * @interface LogicalFilter
+ */
+export interface LogicalFilter {
+    /**
+     * 
+     * @type {string}
+     * @memberof LogicalFilter
+     */
+    'operator': LogicalFilterOperatorEnum;
+    /**
+     * 
+     * @type {Array<Filter>}
+     * @memberof LogicalFilter
+     */
+    'filters': Array<Filter>;
+}
+
+export const LogicalFilterOperatorEnum = {
+    And: 'AND',
+    Or: 'OR',
+    Not: 'NOT'
+} as const;
+
+export type LogicalFilterOperatorEnum = typeof LogicalFilterOperatorEnum[keyof typeof LogicalFilterOperatorEnum];
+
 /**
  * 
  * @export
@@ -214,20 +284,6 @@ export interface NodeInstanceDTO {
      */
     'nodeId'?: string;
 }
-/**
- * The operator to use for filtering, such as equality or inclusion
- * @export
- * @enum {string}
- */
-
-export const Operator = {
-    Equal: 'equal',
-    In: 'in'
-} as const;
-
-export type Operator = typeof Operator[keyof typeof Operator];
-
-
 /**
  * 
  * @export
@@ -434,6 +490,25 @@ export const ProcessInstanceStatusDTO = {
 export type ProcessInstanceStatusDTO = typeof ProcessInstanceStatusDTO[keyof typeof ProcessInstanceStatusDTO];
 
 
+/**
+ * 
+ * @export
+ * @interface SearchRequest
+ */
+export interface SearchRequest {
+    /**
+     * 
+     * @type {Filter}
+     * @memberof SearchRequest
+     */
+    'filters'?: Filter;
+    /**
+     * 
+     * @type {PaginationInfoDTO}
+     * @memberof SearchRequest
+     */
+    'paginationInfo'?: PaginationInfoDTO;
+}
 /**
  * Category of the workflow
  * @export
@@ -931,11 +1006,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Retrieve an array of workflow executions (instances)
          * @summary Get instances
-         * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving instances
+         * @param {GetInstancesRequest} [getInstancesRequest] Parameters for retrieving instances
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getInstances: async (getInstancesRequestParams?: GetInstancesRequestParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getInstances: async (getInstancesRequest?: GetInstancesRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v2/workflows/instances`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -955,7 +1030,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(getInstancesRequestParams, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(getInstancesRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1037,11 +1112,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * Retrieve an array of workflow executions (instances) for the given workflow
          * @summary Get instances for a specific workflow
          * @param {string} workflowId ID of the workflow
-         * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving workflow instances
+         * @param {SearchRequest} [searchRequest] Parameters for retrieving workflow instances
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWorkflowInstances: async (workflowId: string, getInstancesRequestParams?: GetInstancesRequestParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getWorkflowInstances: async (workflowId: string, searchRequest?: SearchRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'workflowId' is not null or undefined
             assertParamExists('getWorkflowInstances', 'workflowId', workflowId)
             const localVarPath = `/v2/workflows/{workflowId}/instances`
@@ -1064,7 +1139,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(getInstancesRequestParams, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(searchRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1169,11 +1244,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * Returns the key fields of the workflow including data on the last run instance
-         * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Pagination and filters
+         * @param {SearchRequest} [searchRequest] Pagination and filters
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWorkflowsOverview: async (getOverviewsRequestParams?: GetOverviewsRequestParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getWorkflowsOverview: async (searchRequest?: SearchRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v2/workflows/overview`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1193,7 +1268,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(getOverviewsRequestParams, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(searchRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1254,12 +1329,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * Retrieve an array of workflow executions (instances)
          * @summary Get instances
-         * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving instances
+         * @param {GetInstancesRequest} [getInstancesRequest] Parameters for retrieving instances
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getInstances(getInstancesRequestParams?: GetInstancesRequestParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProcessInstanceListResultDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getInstances(getInstancesRequestParams, options);
+        async getInstances(getInstancesRequest?: GetInstancesRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProcessInstanceListResultDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getInstances(getInstancesRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.getInstances']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1283,7 +1358,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getWorkflowInputSchemaById(workflowId: string, instanceId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>> {
+        async getWorkflowInputSchemaById(workflowId: string, instanceId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InputSchemaResponseDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getWorkflowInputSchemaById(workflowId, instanceId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.getWorkflowInputSchemaById']?.[localVarOperationServerIndex]?.url;
@@ -1293,12 +1368,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * Retrieve an array of workflow executions (instances) for the given workflow
          * @summary Get instances for a specific workflow
          * @param {string} workflowId ID of the workflow
-         * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving workflow instances
+         * @param {SearchRequest} [searchRequest] Parameters for retrieving workflow instances
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getWorkflowInstances(workflowId: string, getInstancesRequestParams?: GetInstancesRequestParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProcessInstanceListResultDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getWorkflowInstances(workflowId, getInstancesRequestParams, options);
+        async getWorkflowInstances(workflowId: string, searchRequest?: SearchRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProcessInstanceListResultDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getWorkflowInstances(workflowId, searchRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.getWorkflowInstances']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1341,12 +1416,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * Returns the key fields of the workflow including data on the last run instance
-         * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Pagination and filters
+         * @param {SearchRequest} [searchRequest] Pagination and filters
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getWorkflowsOverview(getOverviewsRequestParams?: GetOverviewsRequestParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WorkflowOverviewListResultDTO>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getWorkflowsOverview(getOverviewsRequestParams, options);
+        async getWorkflowsOverview(searchRequest?: SearchRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WorkflowOverviewListResultDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getWorkflowsOverview(searchRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.getWorkflowsOverview']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1396,12 +1471,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * Retrieve an array of workflow executions (instances)
          * @summary Get instances
-         * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving instances
+         * @param {GetInstancesRequest} [getInstancesRequest] Parameters for retrieving instances
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getInstances(getInstancesRequestParams?: GetInstancesRequestParams, options?: any): AxiosPromise<ProcessInstanceListResultDTO> {
-            return localVarFp.getInstances(getInstancesRequestParams, options).then((request) => request(axios, basePath));
+        getInstances(getInstancesRequest?: GetInstancesRequest, options?: any): AxiosPromise<ProcessInstanceListResultDTO> {
+            return localVarFp.getInstances(getInstancesRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Get full workflow info
@@ -1419,19 +1494,19 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWorkflowInputSchemaById(workflowId: string, instanceId?: string, options?: any): AxiosPromise<object> {
+        getWorkflowInputSchemaById(workflowId: string, instanceId?: string, options?: any): AxiosPromise<InputSchemaResponseDTO> {
             return localVarFp.getWorkflowInputSchemaById(workflowId, instanceId, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieve an array of workflow executions (instances) for the given workflow
          * @summary Get instances for a specific workflow
          * @param {string} workflowId ID of the workflow
-         * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving workflow instances
+         * @param {SearchRequest} [searchRequest] Parameters for retrieving workflow instances
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWorkflowInstances(workflowId: string, getInstancesRequestParams?: GetInstancesRequestParams, options?: any): AxiosPromise<ProcessInstanceListResultDTO> {
-            return localVarFp.getWorkflowInstances(workflowId, getInstancesRequestParams, options).then((request) => request(axios, basePath));
+        getWorkflowInstances(workflowId: string, searchRequest?: SearchRequest, options?: any): AxiosPromise<ProcessInstanceListResultDTO> {
+            return localVarFp.getWorkflowInstances(workflowId, searchRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Returns the key fields of the workflow including data on the last run instance
@@ -1462,12 +1537,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * Returns the key fields of the workflow including data on the last run instance
-         * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Pagination and filters
+         * @param {SearchRequest} [searchRequest] Pagination and filters
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWorkflowsOverview(getOverviewsRequestParams?: GetOverviewsRequestParams, options?: any): AxiosPromise<WorkflowOverviewListResultDTO> {
-            return localVarFp.getWorkflowsOverview(getOverviewsRequestParams, options).then((request) => request(axios, basePath));
+        getWorkflowsOverview(searchRequest?: SearchRequest, options?: any): AxiosPromise<WorkflowOverviewListResultDTO> {
+            return localVarFp.getWorkflowsOverview(searchRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1520,13 +1595,13 @@ export class DefaultApi extends BaseAPI {
     /**
      * Retrieve an array of workflow executions (instances)
      * @summary Get instances
-     * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving instances
+     * @param {GetInstancesRequest} [getInstancesRequest] Parameters for retrieving instances
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getInstances(getInstancesRequestParams?: GetInstancesRequestParams, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getInstances(getInstancesRequestParams, options).then((request) => request(this.axios, this.basePath));
+    public getInstances(getInstancesRequest?: GetInstancesRequest, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getInstances(getInstancesRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1556,13 +1631,13 @@ export class DefaultApi extends BaseAPI {
      * Retrieve an array of workflow executions (instances) for the given workflow
      * @summary Get instances for a specific workflow
      * @param {string} workflowId ID of the workflow
-     * @param {GetInstancesRequestParams} [getInstancesRequestParams] Parameters for retrieving workflow instances
+     * @param {SearchRequest} [searchRequest] Parameters for retrieving workflow instances
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getWorkflowInstances(workflowId: string, getInstancesRequestParams?: GetInstancesRequestParams, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getWorkflowInstances(workflowId, getInstancesRequestParams, options).then((request) => request(this.axios, this.basePath));
+    public getWorkflowInstances(workflowId: string, searchRequest?: SearchRequest, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getWorkflowInstances(workflowId, searchRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1600,13 +1675,13 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * Returns the key fields of the workflow including data on the last run instance
-     * @param {GetOverviewsRequestParams} [getOverviewsRequestParams] Pagination and filters
+     * @param {SearchRequest} [searchRequest] Pagination and filters
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getWorkflowsOverview(getOverviewsRequestParams?: GetOverviewsRequestParams, options?: RawAxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getWorkflowsOverview(getOverviewsRequestParams, options).then((request) => request(this.axios, this.basePath));
+    public getWorkflowsOverview(searchRequest?: SearchRequest, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getWorkflowsOverview(searchRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
