@@ -1,4 +1,4 @@
-import { LoggerService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 
 import supported from '../kiali_supported.json';
 import { KialiDetails } from '../service/config';

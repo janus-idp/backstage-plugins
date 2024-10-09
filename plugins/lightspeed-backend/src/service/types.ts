@@ -1,18 +1,9 @@
-import {
-  // DiscoveryService,
-  // HttpAuthService,
-  // UserInfoService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
-// import { CatalogApi } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
+import type { LoggerService } from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
 
 export type RouterOptions = {
   logger: LoggerService;
   config: Config;
-  // httpAuth: HttpAuthService;
-  // userInfo: UserInfoService;
-  // catalogApi: CatalogApi;
 };
 
 /**

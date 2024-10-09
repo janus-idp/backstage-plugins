@@ -47,7 +47,7 @@
   ],
   "scripts": {},
   "dependencies": {
-    "@janus-idp/backstage-plugin-orchestrator-common": "1.19.0",
+    "@janus-idp/backstage-plugin-orchestrator-common": "1.20.0",
     "@urql/core": "^4.1.4",
     "ajv-formats": "^2.1.1",
     "cloudevents": "^8.0.0",

@@ -1,11 +1,11 @@
-import { getVoidLogger } from '@backstage/backend-common';
+import { mockServices } from '@backstage/backend-test-utils';
 
 import { AxiosError } from 'axios';
 
 import { AuthStrategy } from './Auth';
 import { KialiFetcher, ValidationCategory } from './fetch';
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('kiali Fetch', () => {
   describe('Kiali configuration validation', () => {
