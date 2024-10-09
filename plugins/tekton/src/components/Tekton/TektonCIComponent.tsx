@@ -18,9 +18,7 @@ const savedStylesheets = new Set<HTMLLinkElement>();
 export const TektonCIComponent = () => {
   useDarkTheme();
 
-  const shadowRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const scalprumStyles = Array.from(
       document.querySelectorAll('link[rel="stylesheet"]'),
     ).filter(link =>
@@ -60,9 +58,7 @@ export const TektonCIComponent = () => {
   }
   return (
     <TektonResourcesContext.Provider value={tektonResourcesContextData}>
-      <div ref={shadowRef}>
-        <PipelineRunList />
-      </div>
+      <PipelineRunList />
     </TektonResourcesContext.Provider>
   );
 };
