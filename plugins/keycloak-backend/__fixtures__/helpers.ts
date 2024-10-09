@@ -2,7 +2,8 @@ import type { LoggerService } from '@backstage/backend-plugin-api';
 import type { ServiceMock } from '@backstage/backend-test-utils';
 
 import {
-  groupMembers,
+  groupMembers1,
+  groupMembers2,
   topLevelGroups23orHigher,
   topLevelGroupsLowerThan23,
   users,
@@ -82,10 +83,14 @@ export class KeycloakAdminClientMockServerv18 {
     count: jest.fn().mockResolvedValue(3),
     listMembers: jest
       .fn()
-      .mockResolvedValueOnce(groupMembers[0].map(username => ({ username })))
-      .mockResolvedValueOnce(groupMembers[1].map(username => ({ username })))
-      .mockResolvedValueOnce(groupMembers[2].map(username => ({ username })))
-      .mockResolvedValueOnce(groupMembers[3].map(username => ({ username }))),
+      .mockResolvedValueOnce(groupMembers1.map(username => ({ username })))
+      // stop second pagination fetch for groupMembers1
+      .mockResolvedValueOnce([])
+      // return empty list members
+      .mockResolvedValueOnce([])
+      // return empty list members
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce(groupMembers2.map(username => ({ username }))),
   };
 
   auth = authMock;
@@ -145,10 +150,14 @@ export class KeycloakAdminClientMockServerv24 {
     ]),
     listMembers: jest
       .fn()
-      .mockResolvedValueOnce(groupMembers[0].map(username => ({ username })))
-      .mockResolvedValueOnce(groupMembers[1].map(username => ({ username })))
-      .mockResolvedValueOnce(groupMembers[2].map(username => ({ username })))
-      .mockResolvedValueOnce(groupMembers[3].map(username => ({ username }))),
+      .mockResolvedValueOnce(groupMembers1.map(username => ({ username })))
+      // return empty list for second pagination page of the groupMembers1.
+      .mockResolvedValueOnce([])
+      // return empty list members
+      .mockResolvedValueOnce([])
+      // return empty list members
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce(groupMembers2.map(username => ({ username }))),
   };
 
   auth = authMock;
