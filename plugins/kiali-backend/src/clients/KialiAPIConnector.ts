@@ -1,11 +1,11 @@
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 import supported from '../kiali_supported.json';
 import { KialiDetails } from '../service/config';
 import { KialiFetcher, KialiValidations, ValidationCategory } from './fetch';
 
 export type Options = {
-  logger: Logger;
+  logger: LoggerService;
   kiali: KialiDetails;
 };
 
@@ -22,7 +22,7 @@ export interface KialiApi {
 }
 export class KialiApiImpl implements KialiApi {
   private kialiFetcher: KialiFetcher;
-  private logger: Logger;
+  private logger: LoggerService;
 
   constructor(options: Options) {
     this.logger = options.logger;

@@ -1,19 +1,19 @@
 import { errorHandler } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
 import express from 'express';
-import { Logger } from 'winston';
 
 import { KialiApiImpl } from '../clients/KialiAPIConnector';
 import { readKialiConfigs } from './config';
 
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
 }
 
 export const makeRouter = (
-  logger: Logger,
+  logger: LoggerService,
   kialiAPI: KialiApiImpl,
 ): express.Router => {
   const router = express.Router();

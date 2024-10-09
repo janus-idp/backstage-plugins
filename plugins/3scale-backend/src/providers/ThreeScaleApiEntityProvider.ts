@@ -1,3 +1,4 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
@@ -10,8 +11,6 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-
-import { Logger } from 'winston';
 
 import {
   getProxyConfig,
@@ -33,14 +32,14 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
   private readonly env: string;
   private readonly baseUrl: string;
   private readonly accessToken: string;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
 
   static fromConfig(
     configRoot: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -83,7 +82,7 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
 
   private constructor(
     config: ThreeScaleConfig,
-    logger: Logger,
+    logger: LoggerService,
     taskRunner: TaskRunner,
   ) {
     this.env = config.id;
@@ -171,7 +170,7 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
           service.service.id,
         );
         if (apiDoc !== undefined) {
-          this.logger.info(apiDoc);
+          this.logger.info(JSON.stringify(apiDoc));
           const apiEntity: ApiEntity = this.buildApiEntityFromService(
             service,
             apiDoc,

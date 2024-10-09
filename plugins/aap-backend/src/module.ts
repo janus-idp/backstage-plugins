@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
@@ -36,7 +35,7 @@ export const catalogModuleAapResourceEntityProvider = createBackendModule({
       async init({ catalog, config, logger, scheduler }) {
         catalog.addEntityProvider(
           AapResourceEntityProvider.fromConfig(config, {
-            logger: loggerToWinstonLogger(logger),
+            logger,
             schedule: scheduler.createScheduledTaskRunner({
               frequency: { minutes: 30 },
               timeout: { minutes: 3 },

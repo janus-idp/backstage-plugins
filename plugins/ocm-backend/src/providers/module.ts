@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
@@ -37,7 +36,7 @@ export const catalogModuleOCMEntityProvider = createBackendModule({
       async init({ catalog, config, logger, scheduler }) {
         catalog.addEntityProvider(
           ManagedClusterProvider.fromConfig(config, {
-            logger: loggerToWinstonLogger(logger),
+            logger,
             schedule: scheduler.createScheduledTaskRunner({
               frequency: { hours: 1 },
               timeout: { minutes: 15 },

@@ -1,3 +1,18 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.9.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.9.7...@janus-idp/backstage-plugin-orchestrator-backend@1.9.8) (2024-06-13)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.10.1
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.9.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.9.6...@janus-idp/backstage-plugin-orchestrator-backend@1.9.7) (2024-06-11)
+
+
+### Bug Fixes
+
+* **orchestrator:** fix error handling in case data index failed to start ([#1804](https://github.com/janus-idp/backstage-plugins/issues/1804)) ([27affb7](https://github.com/janus-idp/backstage-plugins/commit/27affb7815e02127721fd854f7903dca3525dede))
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.9.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.9.5...@janus-idp/backstage-plugin-orchestrator-backend@1.9.6) (2024-06-05)
 
 

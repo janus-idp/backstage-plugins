@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-keycloak-backend",
-  "version": "1.9.10",
+  "version": "1.9.13",
   "description": "A Backend backend plugin for Keycloak",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -53,8 +53,7 @@
     "@backstage/backend-dynamic-feature-service": "^0.2.9",
     "@keycloak/keycloak-admin-client": "<19.0.0",
     "lodash": "^4.17.21",
-    "uuid": "^9.0.1",
-    "winston": "^3.11.0"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@backstage/backend-app-api": "0.7.2",
@@ -64,7 +63,7 @@
     "@backstage/plugin-catalog-backend": "1.21.1",
     "@backstage/plugin-permission-common": "0.7.13",
     "@backstage/plugin-permission-node": "0.7.28",
-    "@janus-idp/cli": "1.9.0",
+    "@janus-idp/cli": "1.10.1",
     "@types/lodash": "4.17.4",
     "@types/supertest": "2.0.16",
     "@types/uuid": "9.0.8",

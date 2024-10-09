@@ -3,13 +3,11 @@ import {
   ServerTokenManager,
   UrlReader,
 } from '@backstage/backend-common';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
-
-import { Logger } from 'winston';
 
 import { Server } from 'http';
 
@@ -18,7 +16,7 @@ import { createRouter } from '../src/routerWrapper';
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   discovery: DiscoveryService;
   catalogApi: CatalogApi;
@@ -38,7 +36,7 @@ export async function startStandaloneServer(
   });
 
   const router = await createRouter({
-    logger: logger,
+    logger,
     config: options.config,
     discovery: options.discovery,
     catalogApi: options.catalogApi,
