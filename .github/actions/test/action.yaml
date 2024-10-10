@@ -3,7 +3,7 @@ description: Test Node.js package
 inputs:
   args:
     description: Backstage CLI repo build arguments
-    default: '@janus-idp/*'
+    default: --filter=@janus-idp/*
   node-version:
     description: Node.js version
     required: true
@@ -38,12 +38,12 @@ runs:
 
     - name: Run prettier
       shell: bash
-      run: yarn prettier:check --filter=${{ inputs.args }}
+      run: yarn prettier:check ${{ inputs.args }}
 
     - name: Run lint
       shell: bash
-      run: yarn run lint:check --filter=${{ inputs.args }}
+      run: yarn run lint:check ${{ inputs.args }}
 
     - name: Run tests
       shell: bash
-      run: yarn run test --filter=${{ inputs.args }}
+      run: yarn run test ${{ inputs.args }}

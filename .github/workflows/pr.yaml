@@ -18,11 +18,11 @@ jobs:
       - name: Test
         uses: ./.github/actions/test
         with:
-          args: '[HEAD^1]'
+          args: --affected
           node-version: ${{ matrix.node-version }}
 
       - name: Build all packages
         uses: ./.github/actions/build
         with:
-          args: '[HEAD^1]'
+          args: --affected
           node-version: ${{ matrix.node-version }}

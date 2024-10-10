@@ -3,7 +3,7 @@ description: Build all packages
 inputs:
   args:
     description: Backstage CLI repo build arguments
-    default: '@janus-idp/*'
+    default: --filter=@janus-idp/*
   node-version:
     description: Node.js version
     required: true
@@ -19,4 +19,4 @@ runs:
 
     - name: Build all packages
       shell: bash
-      run: yarn run build --filter=${{ inputs.args }}
+      run: yarn run build ${{ inputs.args }}
