@@ -24,6 +24,8 @@
   "scripts": {
     "build": "backstage-cli package build",
     "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write .",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
@@ -31,6 +33,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/cli": "0.26.11"
   },
   "files": [

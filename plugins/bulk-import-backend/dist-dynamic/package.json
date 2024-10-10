@@ -36,7 +36,9 @@
     "node-fetch": "^2.6.7",
     "openapi-backend": "^5.10.6"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "prettier": "3.3.3"
+  },
   "peerDependencies": {
     "@janus-idp/backstage-plugin-audit-log-node": "*",
     "@backstage/backend-defaults": "^0.4.1",

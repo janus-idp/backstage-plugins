@@ -40,7 +40,9 @@
     "postpack": "backstage-cli package postpack",
     "prepack": "backstage-cli package prepack",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "repository": {
     "type": "git",
@@ -57,6 +59,7 @@
     "react": "16.13.1 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/cli": "0.26.11"
   }
 }

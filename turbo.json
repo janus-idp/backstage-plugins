@@ -26,11 +26,11 @@
       "dependsOn": ["tsc"]
     },
     "lint": {},
-    "lint:fix": {},
-    "prettier:fix": {
+    "lint:fix": {
       "cache": false
     },
-    "//#prettier:fix": {
+    "prettier:check": {},
+    "prettier:fix": {
       "cache": false
     },
     "tsc": {

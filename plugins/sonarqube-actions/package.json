@@ -35,7 +35,9 @@
     "prepack": "backstage-cli package prepack",
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "^0.7.0",
@@ -43,6 +45,7 @@
     "yaml": "^2.3.3"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/cli": "0.26.11",
     "@backstage/plugin-scaffolder-node-test-utils": "0.1.9",
     "@janus-idp/cli": "*"

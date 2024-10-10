@@ -39,6 +39,8 @@
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write .",
     "build:api-docs": "./scripts/openapi-doc.sh",
     "build:api-server": "yarn backstage-repo-tools package schema openapi generate --server"
   },
@@ -59,6 +61,7 @@
     "semver": "^7.5.4"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/backend-test-utils": "0.4.4",
     "@backstage/backend-dynamic-feature-service": "0.2.15",
     "@backstage/config": "1.2.0",

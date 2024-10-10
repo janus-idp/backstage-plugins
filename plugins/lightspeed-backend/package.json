@@ -37,7 +37,9 @@
     "prepack": "backstage-cli package prepack",
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
     "@backstage/backend-defaults": "^0.4.1",
@@ -48,6 +50,7 @@
     "http-proxy-middleware": "^3.0.2"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/backend-test-utils": "0.4.4",
     "@backstage/cli": "0.26.11",
     "@backstage/config": "1.2.0",

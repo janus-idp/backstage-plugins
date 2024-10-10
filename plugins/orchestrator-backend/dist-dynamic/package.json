@@ -60,7 +60,9 @@
     "openapi-backend": "^5.10.5",
     "yn": "^5.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "prettier": "3.3.3"
+  },
   "peerDependencies": {
     "@janus-idp/backstage-plugin-audit-log-node": "*",
     "@janus-idp/backstage-plugin-rbac-common": "*",

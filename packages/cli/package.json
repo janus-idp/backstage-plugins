@@ -19,6 +19,8 @@
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write .",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "start": "nodemon --"
@@ -86,6 +88,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/cli": "0.26.11",
     "@backstage/core-plugin-api": "1.9.3",
     "@types/fs-extra": "9.0.13",

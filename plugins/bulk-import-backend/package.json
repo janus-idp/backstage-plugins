@@ -39,6 +39,8 @@
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage --detectOpenHandles",
     "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write .",
     "openapi": "./scripts/openapi.sh"
   },
   "dependencies": {
@@ -61,6 +63,7 @@
     "openapi-backend": "^5.10.6"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/backend-test-utils": "0.4.4",
     "@backstage/catalog-client": "^1.6.5",
     "@backstage/catalog-model": "^1.5.0",

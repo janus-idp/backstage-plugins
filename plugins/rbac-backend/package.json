@@ -24,6 +24,8 @@
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write .",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
@@ -55,6 +57,7 @@
     "typeorm-adapter": "^1.6.1"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/backend-test-utils": "0.4.4",
     "@backstage/cli": "0.26.11",
     "@types/express": "4.17.21",

@@ -30,6 +30,8 @@
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write .",
     "ui-test": "yarn playwright test"
   },
   "dependencies": {
@@ -75,6 +77,7 @@
     "react-router-dom": "^6.0.0"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/cli": "0.26.11",
     "@backstage/dev-utils": "1.0.36",
     "@backstage/test-utils": "1.5.9",
