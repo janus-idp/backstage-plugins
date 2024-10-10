@@ -6,7 +6,7 @@
     "tsconfig.json",
     "yarn.lock"
   ],
-  "pipeline": {
+  "tasks": {
     "start": {
       "cache": false,
       "persistent": true
