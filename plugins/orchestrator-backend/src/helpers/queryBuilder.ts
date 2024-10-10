@@ -99,6 +99,13 @@ export function buildFilterCondition(
     return `${filters.field}: {${getGraphQLOperator(filters.operator)}: ${convertToBoolean(value)}}`;
   }
 
+  if (filters.operator === FieldFilterOperatorEnum.Between) {
+    if (!Array.isArray(value) || value.length !== 2) {
+      throw new Error('Between operator requires an erray of two elements');
+    }
+    return `${filters.field}: {${getGraphQLOperator(filters.operator)}: {from: "${value[0]}", to: "${value[1]}"}}`;
+  }
+
   if (Array.isArray(value)) {
     value = `[${value.map(v => formatValue(filters.field, v, fieldDef)).join(', ')}]`;
   } else {
@@ -129,7 +136,8 @@ function isOperatorSupported(operator: FieldFilterOperatorEnum): boolean {
     operator === FieldFilterOperatorEnum.Gt ||
     operator === FieldFilterOperatorEnum.Gte ||
     operator === FieldFilterOperatorEnum.Lt ||
-    operator === FieldFilterOperatorEnum.Lte
+    operator === FieldFilterOperatorEnum.Lte ||
+    operator === FieldFilterOperatorEnum.Between
   );
 }
 
@@ -160,9 +168,7 @@ function isOperatorAllowedForField(
       FieldFilterOperatorEnum.Gte,
       FieldFilterOperatorEnum.Lt,
       FieldFilterOperatorEnum.Lte,
-      // FieldFilterOperatorEnum.between,
-      // FieldFilterOperatorEnum.from,
-      // FieldFilterOperatorEnum.to,
+      FieldFilterOperatorEnum.Between,
     ],
     [TypeName.StringArray]: [],
   };
@@ -226,9 +232,8 @@ function getGraphQLOperator(operator: FieldFilterOperatorEnum): string {
     //  return "contains"
     // case 'CONTAINS_ALL':
     // case 'CONTAINS_ANY':
-    // case 'BETWEEN':
-    // case 'FROM':
-    // case 'TO':
+    case 'BETWEEN':
+      return 'between';
     default:
       throw new Error(`Operation "${operator}" not supported`);
   }
