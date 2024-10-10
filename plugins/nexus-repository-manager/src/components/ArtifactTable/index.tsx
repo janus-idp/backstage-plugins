@@ -1,1 +1,0 @@
-export { ArtifactTable } from './ArtifactTable';

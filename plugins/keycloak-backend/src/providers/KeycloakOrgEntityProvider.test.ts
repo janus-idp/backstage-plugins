@@ -6,7 +6,7 @@ import type {
 } from '@backstage/backend-plugin-api';
 import { mockServices, ServiceMock } from '@backstage/backend-test-utils';
 import { ErrorLike } from '@backstage/errors';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import type { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import type { JsonObject } from '@backstage/types';
 
 // @ts-ignore

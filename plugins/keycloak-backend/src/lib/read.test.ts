@@ -1,6 +1,6 @@
 import { mockServices } from '@backstage/backend-test-utils';
 
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import type KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 
 import {
   kGroups23orHigher,
@@ -22,7 +22,7 @@ import {
   readKeycloakRealm,
   traverseGroups,
 } from './read';
-import { GroupTransformer, UserTransformer } from './types';
+import type { GroupTransformer, UserTransformer } from './types';
 
 const config: KeycloakProviderConfig = {
   realm: 'myrealm',

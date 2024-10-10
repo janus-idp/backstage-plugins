@@ -1,6 +1,6 @@
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 
-import { GroupTransformer, UserTransformer } from './lib/types';
+import type { GroupTransformer, UserTransformer } from './lib/types';
 
 /**
  * An extension point that exposes the ability to implement user and group transformer functions for keycloak.

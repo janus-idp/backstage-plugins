@@ -1,4 +1,4 @@
-import { ConfigReader } from '@backstage/config';
+import { mockServices } from '@backstage/backend-test-utils';
 
 import deepmerge from 'deepmerge';
 
@@ -7,7 +7,7 @@ import { readProviderConfigs } from './config';
 
 describe('readProviderConfigs', () => {
   it('should return an empty array if no providers are configured', () => {
-    const config = new ConfigReader({});
+    const config = mockServices.rootConfig({ data: {} });
 
     const result = readProviderConfigs(config);
 
@@ -15,7 +15,7 @@ describe('readProviderConfigs', () => {
   });
 
   it('should return an array of provider configs', () => {
-    const config = new ConfigReader(CONFIG);
+    const config = mockServices.rootConfig({ data: CONFIG });
 
     const result = readProviderConfigs(config);
 
@@ -37,8 +37,8 @@ describe('readProviderConfigs', () => {
   });
 
   it('should return an array of provider configs with optional values', () => {
-    const config = new ConfigReader(
-      deepmerge(CONFIG, {
+    const config = mockServices.rootConfig({
+      data: deepmerge(CONFIG, {
         catalog: {
           providers: {
             keycloakOrg: {
@@ -61,7 +61,7 @@ describe('readProviderConfigs', () => {
           },
         },
       }),
-    );
+    });
 
     const result = readProviderConfigs(config);
 
@@ -88,8 +88,8 @@ describe('readProviderConfigs', () => {
   });
 
   it('should throw an error if clientId is provided without clientSecret', () => {
-    const config = new ConfigReader(
-      deepmerge(CONFIG, {
+    const config = mockServices.rootConfig({
+      data: deepmerge(CONFIG, {
         catalog: {
           providers: {
             keycloakOrg: {
@@ -100,7 +100,7 @@ describe('readProviderConfigs', () => {
           },
         },
       }),
-    );
+    });
 
     expect(() => readProviderConfigs(config)).toThrow(
       `clientSecret must be provided when clientId is defined.`,
@@ -108,8 +108,8 @@ describe('readProviderConfigs', () => {
   });
 
   it('should throw an error if clientSecret is provided without clientId', () => {
-    const config = new ConfigReader(
-      deepmerge(CONFIG, {
+    const config = mockServices.rootConfig({
+      data: deepmerge(CONFIG, {
         catalog: {
           providers: {
             keycloakOrg: {
@@ -120,7 +120,7 @@ describe('readProviderConfigs', () => {
           },
         },
       }),
-    );
+    });
 
     expect(() => readProviderConfigs(config)).toThrow(
       `clientId must be provided when clientSecret is defined.`,
@@ -128,8 +128,8 @@ describe('readProviderConfigs', () => {
   });
 
   it('should throw an error if username is provided without password', () => {
-    const config = new ConfigReader(
-      deepmerge(CONFIG, {
+    const config = mockServices.rootConfig({
+      data: deepmerge(CONFIG, {
         catalog: {
           providers: {
             keycloakOrg: {
@@ -140,7 +140,7 @@ describe('readProviderConfigs', () => {
           },
         },
       }),
-    );
+    });
 
     expect(() => readProviderConfigs(config)).toThrow(
       `password must be provided when username is defined.`,
@@ -148,8 +148,8 @@ describe('readProviderConfigs', () => {
   });
 
   it('should throw an error if password is provided without username', () => {
-    const config = new ConfigReader(
-      deepmerge(CONFIG, {
+    const config = mockServices.rootConfig({
+      data: deepmerge(CONFIG, {
         catalog: {
           providers: {
             keycloakOrg: {
@@ -160,7 +160,7 @@ describe('readProviderConfigs', () => {
           },
         },
       }),
-    );
+    });
 
     expect(() => readProviderConfigs(config)).toThrow(
       `username must be provided when password is defined.`,

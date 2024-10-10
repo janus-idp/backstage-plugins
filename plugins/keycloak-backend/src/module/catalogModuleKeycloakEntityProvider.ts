@@ -22,7 +22,7 @@ import { InputError } from '@backstage/errors';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 
 import { keycloakTransformerExtensionPoint } from '../extensions';
-import { GroupTransformer, UserTransformer } from '../lib/types';
+import type { GroupTransformer, UserTransformer } from '../lib/types';
 import { KeycloakOrgEntityProvider } from '../providers';
 
 /**

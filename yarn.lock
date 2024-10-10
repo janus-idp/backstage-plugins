@@ -2397,7 +2397,7 @@
     "@material-ui/core" "^4.12.2"
     "@material-ui/icons" "^4.9.1"
 
-"@backstage/backend-app-api@1.0.0", "@backstage/backend-app-api@^1.0.0":
+"@backstage/backend-app-api@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@backstage/backend-app-api/-/backend-app-api-1.0.0.tgz#d4a8565f911d0d5b366897a4dd0372e2cae14216"
   integrity sha512-JqGnm0FfB9GASmJC6SXAbFdgOcYulOVnRLmCCQc0moqydnLOcweBBs5h+YVbGobqx3E+KdCd0Xfv2/AzipOJJA==
@@ -3487,7 +3487,7 @@
     winston "^3.2.1"
     yn "^4.0.0"
 
-"@backstage/plugin-auth-node@0.5.2", "@backstage/plugin-auth-node@^0.5.1", "@backstage/plugin-auth-node@^0.5.2":
+"@backstage/plugin-auth-node@^0.5.1", "@backstage/plugin-auth-node@^0.5.2":
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-auth-node/-/plugin-auth-node-0.5.2.tgz#dc93bb95223099dba487fc18b7b457b77736d62b"
   integrity sha512-cDjPzSLiT8S99ljZ/z75Qmo8gatthwr6xTqUmHJjs6f1P1V8NhUPRav7AJDwVMleca2Dhay0TF28vUl1KLvwJw==
@@ -3905,7 +3905,7 @@
     yn "^4.0.0"
     zod "^3.22.4"
 
-"@backstage/plugin-permission-common@0.8.1", "@backstage/plugin-permission-common@^0.8.1":
+"@backstage/plugin-permission-common@^0.8.1":
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-permission-common/-/plugin-permission-common-0.8.1.tgz#797a2e9c26076cf52d69556acdd8e50bc02d522c"
   integrity sha512-evmQeRdnbGafaU3levBu5znEn9BoZFE/bNSI3B7VtgjTIfGPzECmc31SVF5VD9arY6652zTHS9wWhXKe16YDiQ==
@@ -3918,7 +3918,7 @@
     zod "^3.22.4"
     zod-to-json-schema "^3.20.4"
 
-"@backstage/plugin-permission-node@0.8.3", "@backstage/plugin-permission-node@^0.8.3":
+"@backstage/plugin-permission-node@^0.8.3":
   version "0.8.3"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-permission-node/-/plugin-permission-node-0.8.3.tgz#3ae1b89dc21fba69541ede123ee025b34c691378"
   integrity sha512-YT9dD4pgfRJl98xxr8Ma83hEjQDf09kTulBuguosaPYl12X2hAEjx0s7Kupk+jIYm5VaF93WjrG+80dNsayqnQ==
@@ -20064,43 +20064,6 @@ express@4.19.2:
     utils-merge "1.0.1"
     vary "~1.1.2"
 
-express@4.20.0:
-  version "4.20.0"
-  resolved "https://registry.yarnpkg.com/express/-/express-4.20.0.tgz#f1d08e591fcec770c07be4767af8eb9bcfd67c48"
-  integrity sha512-pLdae7I6QqShF5PnNTCVn4hI91Dx0Grkn2+IAsMTgMIKuQVte2dN9PeGSSAME2FR8anOhVA62QDIUaWVfEXVLw==
-  dependencies:
-    accepts "~1.3.8"
-    array-flatten "1.1.1"
-    body-parser "1.20.3"
-    content-disposition "0.5.4"
-    content-type "~1.0.4"
-    cookie "0.6.0"
-    cookie-signature "1.0.6"
-    debug "2.6.9"
-    depd "2.0.0"
-    encodeurl "~2.0.0"
-    escape-html "~1.0.3"
-    etag "~1.8.1"
-    finalhandler "1.2.0"
-    fresh "0.5.2"
-    http-errors "2.0.0"
-    merge-descriptors "1.0.3"
-    methods "~1.1.2"
-    on-finished "2.4.1"
-    parseurl "~1.3.3"
-    path-to-regexp "0.1.10"
-    proxy-addr "~2.0.7"
-    qs "6.11.0"
-    range-parser "~1.2.1"
-    safe-buffer "5.2.1"
-    send "0.19.0"
-    serve-static "1.16.0"
-    setprototypeof "1.2.0"
-    statuses "2.0.1"
-    type-is "~1.6.18"
-    utils-merge "1.0.1"
-    vary "~1.1.2"
-
 express@^4.17.1, express@^4.17.3, express@^4.18.2, express@^4.19.2:
   version "4.21.0"
   resolved "https://registry.yarnpkg.com/express/-/express-4.21.0.tgz#d57cb706d49623d4ac27833f1cbc466b668eb915"
@@ -24972,7 +24935,7 @@ lunr@^2.3.9:
   resolved "https://registry.yarnpkg.com/lunr/-/lunr-2.3.9.tgz#18b123142832337dd6e964df1a5a7707b25d35e1"
   integrity sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==
 
-luxon@3.4.4, luxon@^3.0.0, luxon@^3.2.1, luxon@^3.4.3, luxon@^3.4.4, luxon@~3.4.0:
+luxon@^3.0.0, luxon@^3.2.1, luxon@^3.4.3, luxon@^3.4.4, luxon@~3.4.0:
   version "3.4.4"
   resolved "https://registry.yarnpkg.com/luxon/-/luxon-3.4.4.tgz#cf20dc27dc532ba41a169c43fdcc0063601577af"
   integrity sha512-zobTr7akeGHnv7eBOXcRgMeCP6+uyYsczwmeRCauvpvaAltgNyTbLH/+VaEAPUeWBT+1GuNmz4wC/6jtQzbbVA==
@@ -27686,7 +27649,7 @@ openapi3-ts@^3.1.2:
   dependencies:
     yaml "^2.2.1"
 
-opener@1.5.2, opener@^1.5.2:
+opener@^1.5.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.2.tgz#5d37e1f35077b9dcac4301372271afdeb2a13598"
   integrity sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==
@@ -31240,16 +31203,6 @@ serve-static@1.15.0:
   version "1.15.0"
   resolved "https://registry.yarnpkg.com/serve-static/-/serve-static-1.15.0.tgz#faaef08cffe0a1a62f60cad0c4e513cff0ac9540"
   integrity sha512-XGuRDNjXUijsUL0vl6nSD7cwURuzEgglbOaFuZM9g3kwDXOWVTck0jLzjPzGD+TazWbboZYu52/9/XPdUgne9g==
-  dependencies:
-    encodeurl "~1.0.2"
-    escape-html "~1.0.3"
-    parseurl "~1.3.3"
-    send "0.18.0"
-
-serve-static@1.16.0:
-  version "1.16.0"
-  resolved "https://registry.yarnpkg.com/serve-static/-/serve-static-1.16.0.tgz#2bf4ed49f8af311b519c46f272bf6ac3baf38a92"
-  integrity sha512-pDLK8zwl2eKaYrs8mrPZBJua4hMplRWJ1tIFksVC3FtBEBnl8dxgeHtsaMS8DhS9i4fLObaon6ABoc4/hQGdPA==
   dependencies:
     encodeurl "~1.0.2"
     escape-html "~1.0.3"
