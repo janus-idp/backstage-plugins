@@ -353,7 +353,7 @@ describe('PolicyBuilder', () => {
     expect(logger.info).toHaveBeenCalledWith('RBAC backend plugin was enabled');
     const pIdProvider = (
       PluginPermissionMetadataCollector as unknown as jest.Mock
-    ).mock.calls[0][1];
+    ).mock.calls[0][0].deps.pluginIdProvider;
     expect(pIdProvider.getPluginIds()).toEqual(['catalog']);
   });
 });

@@ -18,7 +18,7 @@
 pwd
 set -ex
 
-TYPES_FILE=./src/openapi.d.ts
+TYPES_FILE=./src/generated/openapi.d.ts
 cat <<EOF > "${TYPES_FILE}"
 // GENERATED FILE. DO NOT EDIT.
 
@@ -28,7 +28,7 @@ EOF
 npx --yes --package=openapicmd@2.3.2 -- openapi typegen ./src/schema/openapi.yaml >> "${TYPES_FILE}"
 
 npx --yes --package=js-yaml-cli@0.6.0 -- yaml2json -f ./src/schema/openapi.yaml
-OPENAPI_DOC_JS_FILE=./src/openapidocument.ts
+OPENAPI_DOC_JS_FILE=./src/generated/openapidocument.ts
 cat <<EOF > "${OPENAPI_DOC_JS_FILE}"
 // GENERATED FILE. DO NOT EDIT.
 

@@ -25,6 +25,13 @@ export function paginateArray<T>(
   page: number,
   size: number,
 ): { result: T[]; totalCount: number } {
+  if (page <= 0) {
+    throw new Error(`page must be >0. Got page=${page}`);
+  }
+  if (size < 0) {
+    throw new Error(`size must be >=0. Got size=${size}`);
+  }
+
   const startIndex = (page - 1) * size;
   const endIndex = startIndex + size;
 

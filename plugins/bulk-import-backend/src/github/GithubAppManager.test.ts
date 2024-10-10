@@ -20,11 +20,11 @@ import { ScmIntegrations } from '@backstage/integration';
 import type { RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
 
-import type { ExtendedGithubCredentialsProvider } from '../types';
 import {
   CustomGithubCredentialsProvider,
   CustomSingleInstanceGithubCredentialsProvider,
 } from './GithubAppManager';
+import type { ExtendedGithubCredentialsProvider } from './types';
 
 const octokit = {
   paginate: async (fn: any) => (await fn()).data,
@@ -42,6 +42,27 @@ function createOctokit() {
 jest.mock('@octokit/rest', () => {
   return { Octokit: createOctokit };
 });
+
+const appListInstallationsSuccessfulResponse = {
+  headers: {
+    etag: '123',
+  },
+  data: [
+    {
+      id: 1,
+      repository_selection: 'all',
+      account: {
+        login: 'backstage',
+      },
+    },
+  ],
+} as RestEndpointMethodTypes['apps']['listInstallations']['response'];
+
+const appListInstallationsErrProvider = () => {
+  const err = new Error('Some error occurred');
+  err.name = 'SomeError';
+  throw err;
+};
 
 describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
   let github: ExtendedGithubCredentialsProvider;
@@ -64,24 +85,13 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
   });
 
   it('create repository specific tokens', async () => {
-    octokit.apps.listInstallations.mockResolvedValue({
-      headers: {
-        etag: '123',
-      },
-      data: [
-        {
-          id: 1,
-          repository_selection: 'selected',
-          account: {
-            login: 'backstage',
-          },
-        },
-      ],
-    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+    octokit.apps.listInstallations.mockResolvedValue(
+      appListInstallationsSuccessfulResponse,
+    );
 
     octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
       data: {
-        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+        expires_at: DateTime.local().plus({ hours: 12 }).toString(),
         token: 'secret_token',
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
@@ -108,24 +118,13 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
   });
 
   it('creates tokens for an organization', async () => {
-    octokit.apps.listInstallations.mockResolvedValue({
-      headers: {
-        etag: '123',
-      },
-      data: [
-        {
-          id: 1,
-          repository_selection: 'all',
-          account: {
-            login: 'backstage',
-          },
-        },
-      ],
-    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+    octokit.apps.listInstallations.mockResolvedValue(
+      appListInstallationsSuccessfulResponse,
+    );
 
     octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
       data: {
-        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+        expires_at: DateTime.local().plus({ hours: 13 }).toString(),
         token: 'secret_token',
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
@@ -214,20 +213,9 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
       ],
     });
 
-    octokit.apps.listInstallations.mockResolvedValue({
-      headers: {
-        etag: '123',
-      },
-      data: [
-        {
-          id: 1,
-          repository_selection: 'all',
-          account: {
-            login: 'backstage',
-          },
-        },
-      ],
-    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+    octokit.apps.listInstallations.mockResolvedValue(
+      appListInstallationsSuccessfulResponse,
+    );
 
     const { token, headers } = await github.getCredentials({
       url: 'https://github.com/RoadiehHQ',
@@ -238,20 +226,9 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
   });
 
   it('should not fail to issue tokens for an organization when the app is installed for a single repo', async () => {
-    octokit.apps.listInstallations.mockResolvedValue({
-      headers: {
-        etag: '123',
-      },
-      data: [
-        {
-          id: 1,
-          repository_selection: 'selected',
-          account: {
-            login: 'backstage',
-          },
-        },
-      ],
-    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+    octokit.apps.listInstallations.mockResolvedValue(
+      appListInstallationsSuccessfulResponse,
+    );
 
     octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
       data: {
@@ -329,27 +306,12 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
   });
 
   it('should return the configured token if there are no installations', async () => {
-    const githubProvider = CustomSingleInstanceGithubCredentialsProvider.create(
-      {
-        host: 'github.com',
-        apps: [
-          {
-            appId: 1,
-            privateKey: 'privateKey',
-            webhookSecret: '123',
-            clientId: 'CLIENT_ID',
-            clientSecret: 'CLIENT_SECRET',
-          },
-        ],
-        token: 'hardcoded_token',
-      },
-    );
     octokit.apps.listInstallations.mockResolvedValue({
       data: [],
     } as unknown as RestEndpointMethodTypes['apps']['listInstallations']['response']);
 
     await expect(
-      githubProvider.getCredentials({
+      github.getCredentials({
         url: 'https://github.com/backstage',
       }),
     ).resolves.toEqual(expect.objectContaining({ token: 'hardcoded_token' }));
@@ -387,7 +349,7 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
 
     octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
       data: {
-        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+        expires_at: DateTime.local().plus({ hours: 14 }).toString(),
         token: 'secret_token',
       },
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
@@ -400,95 +362,48 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
     expect(token).toEqual('secret_token');
   });
 
-  it('should not throw when paginate response is an array of repositories', async () => {
-    const repoName = 'foobar';
-    octokit.apps.listInstallations.mockResolvedValue({
-      headers: {
-        etag: '123',
+  it.each([
+    ['an array of repositories', (repoName: string) => [{ name: repoName }]],
+    [
+      'an object with a property containing an array of repositories',
+      (repoName: string) => {
+        return {
+          repositories: [{ name: repoName }],
+        };
       },
-      data: [
-        {
-          id: 1,
-          repository_selection: 'all',
-          account: {
-            login: 'backstage',
-          },
+    ],
+  ])(
+    'should not throw when paginate response is %s',
+    async (_desc: string, dataProviderFn: (repoName: string) => any) => {
+      const repoName = 'foobar';
+      octokit.apps.listInstallations.mockResolvedValue(
+        appListInstallationsSuccessfulResponse,
+      );
+
+      octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 3 }).toString(),
+          token: 'secret_token',
+          repository_selection: 'selected',
         },
-      ],
-    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
 
-    octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
-      data: {
-        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
-        token: 'secret_token',
-        repository_selection: 'selected',
-      },
-    } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+      octokit.apps.listReposAccessibleToInstallation.mockReturnValue({
+        data: dataProviderFn(repoName),
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
 
-    octokit.apps.listReposAccessibleToInstallation.mockReturnValue({
-      data: [{ name: repoName }],
-    } as unknown as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
-
-    await expect(
-      github.getCredentials({
-        url: `https://github.com/backstage/${repoName}`,
-      }),
-    ).resolves.not.toThrow();
-  });
-
-  it('should not throw when paginate response is an object with a property containing an array of repositories', async () => {
-    const repoName = 'foobar';
-    octokit.apps.listInstallations.mockResolvedValue({
-      headers: {
-        etag: '123',
-      },
-      data: [
-        {
-          id: 1,
-          repository_selection: 'all',
-          account: {
-            login: 'backstage',
-          },
-        },
-      ],
-    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
-
-    octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
-      data: {
-        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
-        token: 'secret_token',
-        repository_selection: 'selected',
-      },
-    } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
-
-    octokit.apps.listReposAccessibleToInstallation.mockReturnValue({
-      data: {
-        repositories: [{ name: repoName }],
-      },
-    } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
-
-    await expect(
-      github.getCredentials({
-        url: `https://github.com/backstage/${repoName}`,
-      }),
-    ).resolves.not.toThrow();
-  });
+      await expect(
+        github.getCredentials({
+          url: `https://github.com/backstage/${repoName}`,
+        }),
+      ).resolves.not.toThrow();
+    },
+  );
 
   it('should expire access token cache when less than 10 mins before token expires', async () => {
-    octokit.apps.listInstallations.mockReturnValue({
-      headers: {
-        etag: '123',
-      },
-      data: [
-        {
-          id: 1,
-          repository_selection: 'all',
-          account: {
-            login: 'backstage',
-          },
-        },
-      ],
-    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+    octokit.apps.listInstallations.mockReturnValue(
+      appListInstallationsSuccessfulResponse,
+    );
 
     octokit.apps.createInstallationAccessToken.mockReturnValue({
       data: {
@@ -531,24 +446,13 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
             },
           ],
         });
-      octokit.apps.listInstallations.mockReturnValue({
-        headers: {
-          etag: '123',
-        },
-        data: [
-          {
-            id: 1,
-            repository_selection: 'all',
-            account: {
-              login: 'backstage',
-            },
-          },
-        ],
-      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+      octokit.apps.listInstallations.mockReturnValue(
+        appListInstallationsSuccessfulResponse,
+      );
 
       octokit.apps.createInstallationAccessToken.mockReturnValue({
         data: {
-          expires_at: DateTime.local().plus({ minutes: 15 }).toString(),
+          expires_at: DateTime.local().plus({ minutes: 5 }).toString(),
           token: 'secret_token',
         },
       } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
@@ -585,21 +489,21 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
           host: 'github.com',
           apps: [
             {
-              appId: 1,
+              appId: 111,
               privateKey: 'privateKey',
               webhookSecret: '123',
               clientId: 'CLIENT_ID',
               clientSecret: 'CLIENT_SECRET',
             },
             {
-              appId: 2,
+              appId: 222,
               privateKey: 'privateKey_2',
               webhookSecret: '456',
               clientId: 'CLIENT_ID_2',
               clientSecret: 'CLIENT_SECRET_2',
             },
             {
-              appId: 3,
+              appId: 333,
               privateKey: 'privateKey_3',
               webhookSecret: '789',
               clientId: 'CLIENT_ID_3',
@@ -608,25 +512,8 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
           ],
         });
       octokit.apps.listInstallations
-        .mockReturnValueOnce({
-          headers: {
-            etag: '123',
-          },
-          data: [
-            {
-              id: 1,
-              repository_selection: 'all',
-              account: {
-                login: 'backstage',
-              },
-            },
-          ],
-        } as RestEndpointMethodTypes['apps']['listInstallations']['response'])
-        .mockImplementationOnce(() => {
-          const err = new Error('Some error occurred');
-          err.name = 'SomeError';
-          throw err;
-        })
+        .mockReturnValueOnce(appListInstallationsSuccessfulResponse)
+        .mockImplementationOnce(appListInstallationsErrProvider)
         .mockImplementationOnce(() => {
           const err = new Error('No app installation found for backstage in 3');
           err.name = 'NotFoundError';
@@ -635,7 +522,7 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
 
       octokit.apps.createInstallationAccessToken.mockReturnValue({
         data: {
-          expires_at: DateTime.local().plus({ minutes: 15 }).toString(),
+          expires_at: DateTime.local().plus({ minutes: 10 }).toString(),
           token: 'secret_token',
         },
       } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
@@ -658,17 +545,17 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
           headers: { Authorization: `Bearer secret_token` },
           token: 'secret_token',
           type: 'app',
-          appId: 1,
+          appId: 111,
         },
         {
           type: 'app',
           error: someError,
-          appId: 2,
+          appId: 222,
         },
         {
           type: 'app',
           error: notFoundError,
-          appId: 3,
+          appId: 333,
         },
       ];
 
@@ -738,23 +625,12 @@ describe('CustomGithubCredentialsProvider tests', () => {
 
   describe('#getCredentials', () => {
     it('returns the access tokens from the credential provider', async () => {
-      octokit.apps.listInstallations.mockResolvedValue({
-        headers: {
-          etag: '123',
-        },
-        data: [
-          {
-            id: 1,
-            repository_selection: 'selected',
-            account: {
-              login: 'backstage',
-            },
-          },
-        ],
-      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+      octokit.apps.listInstallations.mockResolvedValue(
+        appListInstallationsSuccessfulResponse,
+      );
       octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
         data: {
-          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          expires_at: DateTime.local().plus({ hours: 15 }).toString(),
           token: 'secret_token',
         },
       } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
@@ -818,21 +694,21 @@ describe('CustomGithubCredentialsProvider tests', () => {
                   host: 'github.com',
                   apps: [
                     {
-                      appId: 1,
+                      appId: 11,
                       privateKey: 'privateKey',
                       webhookSecret: '123',
                       clientId: 'CLIENT_ID',
                       clientSecret: 'CLIENT_SECRET',
                     },
                     {
-                      appId: 2,
+                      appId: 22,
                       privateKey: 'privateKey_2',
                       webhookSecret: '456',
                       clientId: 'CLIENT_ID_2',
                       clientSecret: 'CLIENT_SECRET_2',
                     },
                     {
-                      appId: 3,
+                      appId: 33,
                       privateKey: 'privateKey_3',
                       webhookSecret: '789',
                       clientId: 'CLIENT_ID_3',
@@ -847,25 +723,8 @@ describe('CustomGithubCredentialsProvider tests', () => {
         }),
       );
       octokit.apps.listInstallations
-        .mockReturnValueOnce({
-          headers: {
-            etag: '123',
-          },
-          data: [
-            {
-              id: 1,
-              repository_selection: 'all',
-              account: {
-                login: 'backstage',
-              },
-            },
-          ],
-        } as RestEndpointMethodTypes['apps']['listInstallations']['response'])
-        .mockImplementationOnce(() => {
-          const err = new Error('Some error occurred');
-          err.name = 'SomeError';
-          throw err;
-        })
+        .mockReturnValueOnce(appListInstallationsSuccessfulResponse)
+        .mockImplementationOnce(appListInstallationsErrProvider)
         .mockReturnValue({
           headers: {
             etag: '123',
@@ -912,12 +771,12 @@ describe('CustomGithubCredentialsProvider tests', () => {
           headers: { Authorization: 'Bearer secret_token' },
           token: 'secret_token',
           type: 'app',
-          appId: 1,
+          appId: 11,
         },
         {
           type: 'app',
           error: someError,
-          appId: 2,
+          appId: 22,
         },
         {
           accountLogin: 'not-backstage',
@@ -926,7 +785,7 @@ describe('CustomGithubCredentialsProvider tests', () => {
             Authorization: 'Bearer secret_token',
           },
           token: 'secret_token',
-          appId: 3,
+          appId: 33,
         },
       ];
       expect(githubAccessTokens).toEqual(expected_response);
