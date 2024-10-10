@@ -50,8 +50,8 @@
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-defaults": "^0.4.1",
-    "@backstage/backend-plugin-api": "^0.7.0"
+    "@backstage/backend-defaults": "^0.5.0",
+    "@backstage/backend-plugin-api": "^1.0.0"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {

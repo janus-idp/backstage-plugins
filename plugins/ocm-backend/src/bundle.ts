@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import type { BackendDynamicPluginInstaller } from '@backstage/backend-dynamic-feature-service';
+import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
 
 import { catalogModuleOCMEntityProvider } from './providers';
 import { ocmPlugin } from './service/router';
 
-// TODO: In 1.30 switch to `createBackendFeatureLoader` from `@backstage/backend-plugin-api`
-// and remove `@backstage/backend-dynamic-feature-service` dependency
-export const bundle: BackendDynamicPluginInstaller = {
-  kind: 'new',
-  install: () => [catalogModuleOCMEntityProvider, ocmPlugin],
-};
+export const bundle = createBackendFeatureLoader({
+  async loader() {
+    return [catalogModuleOCMEntityProvider, ocmPlugin];
+  },
+});

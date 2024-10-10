@@ -9,7 +9,7 @@
   },
   "backstage": {
     "role": "backend-plugin",
-    "supported-versions": "1.28.4",
+    "supported-versions": "1.31.3",
     "pluginId": "kiali",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-kiali",
@@ -55,13 +55,13 @@
   ],
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-defaults": "^0.4.1",
-    "@backstage/backend-plugin-api": "^0.7.0",
-    "@backstage/catalog-client": "^1.6.5",
-    "@backstage/catalog-model": "^1.5.0",
+    "@backstage/backend-defaults": "^0.5.0",
+    "@backstage/backend-plugin-api": "^1.0.0",
+    "@backstage/catalog-client": "^1.7.0",
+    "@backstage/catalog-model": "^1.7.0",
     "@backstage/config": "^1.2.0",
     "@backstage/errors": "^1.2.4",
-    "@backstage/plugin-auth-node": "^0.4.17"
+    "@backstage/plugin-auth-node": "^0.5.2"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {

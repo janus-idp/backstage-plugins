@@ -12,7 +12,7 @@
   },
   "backstage": {
     "role": "common-library",
-    "supported-versions": "1.28.4",
+    "supported-versions": "1.31.3",
     "pluginId": "tekton",
     "pluginPackage": "@janus-idp/backstage-plugin-tekton-common",
     "pluginPackages": [
@@ -31,10 +31,10 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/plugin-permission-common": "^0.8.0"
+    "@backstage/plugin-permission-common": "^0.8.1"
   },
   "devDependencies": {
-    "@backstage/cli": "0.26.11"
+    "@backstage/cli": "0.27.1"
   },
   "files": [
     "dist"

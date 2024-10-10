@@ -1,6 +1,4 @@
-import type { UserInfoService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import type { Adapter, Enforcer } from 'casbin';
 import type { Router } from 'express';
@@ -90,8 +88,6 @@ jest.mock('./permission-policy', () => {
   };
 });
 
-const userInfoServiceMock: UserInfoService = mockServices.userInfo();
-
 const providerMock: RBACProvider = {
   getProviderName: jest.fn().mockImplementation(),
   connect: jest.fn().mockImplementation(),
@@ -99,37 +95,6 @@ const providerMock: RBACProvider = {
 };
 
 describe('PolicyBuilder', () => {
-  const mockedAuthorize = jest.fn().mockImplementation(async () => [
-    {
-      result: AuthorizeResult.ALLOW,
-    },
-  ]);
-
-  const mockedAuthorizeConditional = jest.fn().mockImplementation(async () => [
-    {
-      result: AuthorizeResult.ALLOW,
-    },
-  ]);
-
-  const mockPermissionEvaluator = {
-    authorize: mockedAuthorize,
-    authorizeConditional: mockedAuthorizeConditional,
-  };
-
-  const mockUser = {
-    type: 'User',
-    userEntityRef: 'user:default/guest',
-    ownershipEntityRefs: ['guest'],
-  };
-
-  const mockIdentityClient = {
-    getIdentity: jest.fn().mockImplementation(async () => ({
-      identity: mockUser,
-    })),
-  };
-
-  const mockDiscovery = mockServices.discovery.mock();
-
   const backendPluginIDsProviderMock = {
     getPluginIds: jest.fn().mockImplementation(() => {
       return [];
@@ -160,10 +125,12 @@ describe('PolicyBuilder', () => {
           },
         }),
         logger,
-        discovery: mockDiscovery,
-        identity: mockIdentityClient,
-        permissions: mockPermissionEvaluator,
-        userInfo: userInfoServiceMock,
+        discovery: mockServices.discovery.mock(),
+        permissions: mockServices.permissions.mock(),
+        userInfo: mockServices.userInfo.mock(),
+        auth: mockServices.auth.mock(),
+        httpAuth: mockServices.httpAuth.mock(),
+        lifecycle: mockServices.lifecycle.mock(),
       },
       backendPluginIDsProviderMock,
     );
@@ -197,10 +164,12 @@ describe('PolicyBuilder', () => {
           },
         }),
         logger,
-        discovery: mockDiscovery,
-        identity: mockIdentityClient,
-        permissions: mockPermissionEvaluator,
-        userInfo: userInfoServiceMock,
+        discovery: mockServices.discovery.mock(),
+        permissions: mockServices.permissions.mock(),
+        userInfo: mockServices.userInfo.mock(),
+        auth: mockServices.auth.mock(),
+        httpAuth: mockServices.httpAuth.mock(),
+        lifecycle: mockServices.lifecycle.mock(),
       },
       backendPluginIDsProviderMock,
       [providerMock],
@@ -236,10 +205,12 @@ describe('PolicyBuilder', () => {
           },
         }),
         logger,
-        discovery: mockDiscovery,
-        identity: mockIdentityClient,
-        permissions: mockPermissionEvaluator,
-        userInfo: userInfoServiceMock,
+        discovery: mockServices.discovery.mock(),
+        permissions: mockServices.permissions.mock(),
+        userInfo: mockServices.userInfo.mock(),
+        auth: mockServices.auth.mock(),
+        httpAuth: mockServices.httpAuth.mock(),
+        lifecycle: mockServices.lifecycle.mock(),
       },
       backendPluginIDsProviderMock,
     );
@@ -278,10 +249,12 @@ describe('PolicyBuilder', () => {
           },
         }),
         logger,
-        discovery: mockDiscovery,
-        identity: mockIdentityClient,
-        permissions: mockPermissionEvaluator,
-        userInfo: userInfoServiceMock,
+        discovery: mockServices.discovery.mock(),
+        permissions: mockServices.permissions.mock(),
+        userInfo: mockServices.userInfo.mock(),
+        auth: mockServices.auth.mock(),
+        httpAuth: mockServices.httpAuth.mock(),
+        lifecycle: mockServices.lifecycle.mock(),
       },
       pluginIdProvider,
     );
@@ -320,10 +293,12 @@ describe('PolicyBuilder', () => {
           },
         }),
         logger,
-        discovery: mockDiscovery,
-        identity: mockIdentityClient,
-        permissions: mockPermissionEvaluator,
-        userInfo: userInfoServiceMock,
+        discovery: mockServices.discovery.mock(),
+        permissions: mockServices.permissions.mock(),
+        userInfo: mockServices.userInfo.mock(),
+        auth: mockServices.auth.mock(),
+        httpAuth: mockServices.httpAuth.mock(),
+        lifecycle: mockServices.lifecycle.mock(),
       },
       pluginIdProvider,
     );
@@ -360,10 +335,12 @@ describe('PolicyBuilder', () => {
         },
       }),
       logger,
-      discovery: mockDiscovery,
-      identity: mockIdentityClient,
-      permissions: mockPermissionEvaluator,
-      userInfo: userInfoServiceMock,
+      discovery: mockServices.discovery.mock(),
+      permissions: mockServices.permissions.mock(),
+      userInfo: mockServices.userInfo.mock(),
+      auth: mockServices.auth.mock(),
+      httpAuth: mockServices.httpAuth.mock(),
+      lifecycle: mockServices.lifecycle.mock(),
     });
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
     expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
