@@ -417,7 +417,9 @@ describe('column filters', () => {
     );
   });
   describe('dateArgument testcases', () => {
-    const startDate = '2024-10-10T09:54:40.759Z';
+    const testDate1 = '2024-10-10T09:54:40.759Z';
+    const testDate2 = '2025-10-10T09:54:40.759Z';
+
     const idTestCases: FilterTestCase[] = [
       {
         name: 'returns correct filter for single date field with equal operator',
@@ -425,9 +427,9 @@ describe('column filters', () => {
         filter: createFieldFilter(
           'start',
           FieldFilterOperatorEnum.Eq,
-          startDate,
+          testDate1,
         ),
-        expectedResult: `start: {equal: "${startDate}"}`,
+        expectedResult: `start: {equal: "${testDate1}"}`,
       },
       {
         name: 'returns correct filter for single date field with isNull operator (false as boolean)',
@@ -455,9 +457,9 @@ describe('column filters', () => {
         filter: createFieldFilter(
           'start',
           FieldFilterOperatorEnum.Gt,
-          startDate,
+          testDate1,
         ),
-        expectedResult: `start: {greaterThan: "${startDate}"}`,
+        expectedResult: `start: {greaterThan: "${testDate1}"}`,
       },
       {
         name: 'returns correct filter for single date field with GTE operator',
@@ -465,9 +467,9 @@ describe('column filters', () => {
         filter: createFieldFilter(
           'start',
           FieldFilterOperatorEnum.Gte,
-          startDate,
+          testDate1,
         ),
-        expectedResult: `start: {greaterThanEqual: "${startDate}"}`,
+        expectedResult: `start: {greaterThanEqual: "${testDate1}"}`,
       },
       {
         name: 'returns correct filter for single date field with LT operator',
@@ -475,9 +477,9 @@ describe('column filters', () => {
         filter: createFieldFilter(
           'start',
           FieldFilterOperatorEnum.Lt,
-          startDate,
+          testDate1,
         ),
-        expectedResult: `start: {lessThan: "${startDate}"}`,
+        expectedResult: `start: {lessThan: "${testDate1}"}`,
       },
       {
         name: 'returns correct filter for single date field with LTE operator',
@@ -485,9 +487,18 @@ describe('column filters', () => {
         filter: createFieldFilter(
           'start',
           FieldFilterOperatorEnum.Lte,
-          startDate,
+          testDate1,
         ),
-        expectedResult: `start: {lessThanEqual: "${startDate}"}`,
+        expectedResult: `start: {lessThanEqual: "${testDate1}"}`,
+      },
+      {
+        name: 'returns correct filter for single date field with BETWEEN operator',
+        introspectionFields: [createDateIntrospectionField('start')],
+        filter: createFieldFilter('start', FieldFilterOperatorEnum.Between, [
+          testDate1,
+          testDate2,
+        ]),
+        expectedResult: `start: {between: {from: "${testDate1}", to: "${testDate2}"}}`,
       },
       {
         name: 'returns correct OR filter for multiple id fields with equal, isNull, and GT operators',
@@ -498,12 +509,12 @@ describe('column filters', () => {
         filter: {
           operator: 'OR',
           filters: [
-            createFieldFilter('start', FieldFilterOperatorEnum.Eq, startDate),
+            createFieldFilter('start', FieldFilterOperatorEnum.Eq, testDate1),
             createFieldFilter('end', FieldFilterOperatorEnum.IsNull, 'False'),
-            createFieldFilter('end', FieldFilterOperatorEnum.Gt, startDate),
+            createFieldFilter('end', FieldFilterOperatorEnum.Gt, testDate1),
           ],
         },
-        expectedResult: `or: {start: {equal: "${startDate}"}, end: {isNull: false}, end: {greaterThan: "${startDate}"}}`,
+        expectedResult: `or: {start: {equal: "${testDate1}"}, end: {isNull: false}, end: {greaterThan: "${testDate1}"}}`,
       },
       {
         name: 'returns correct OR filter for multiple id fields with equal, isNull, and GTE operators',
@@ -514,12 +525,12 @@ describe('column filters', () => {
         filter: {
           operator: 'OR',
           filters: [
-            createFieldFilter('start', FieldFilterOperatorEnum.Eq, startDate),
+            createFieldFilter('start', FieldFilterOperatorEnum.Eq, testDate1),
             createFieldFilter('end', FieldFilterOperatorEnum.IsNull, 'False'),
-            createFieldFilter('end', FieldFilterOperatorEnum.Gte, startDate),
+            createFieldFilter('end', FieldFilterOperatorEnum.Gte, testDate1),
           ],
         },
-        expectedResult: `or: {start: {equal: "${startDate}"}, end: {isNull: false}, end: {greaterThanEqual: "${startDate}"}}`,
+        expectedResult: `or: {start: {equal: "${testDate1}"}, end: {isNull: false}, end: {greaterThanEqual: "${testDate1}"}}`,
       },
       {
         name: 'returns correct AND filter for multiple id fields with equal, isNull, and LTE operators',
@@ -530,12 +541,32 @@ describe('column filters', () => {
         filter: {
           operator: 'AND',
           filters: [
-            createFieldFilter('start', FieldFilterOperatorEnum.Eq, startDate),
+            createFieldFilter('start', FieldFilterOperatorEnum.Eq, testDate1),
             createFieldFilter('end', FieldFilterOperatorEnum.IsNull, 'False'),
-            createFieldFilter('end', FieldFilterOperatorEnum.Lte, startDate),
+            createFieldFilter('end', FieldFilterOperatorEnum.Lte, testDate1),
           ],
         },
-        expectedResult: `or: {start: {equal: "${startDate}"}, end: {isNull: false}, end: {lessThanEqual: "${startDate}"}}`,
+        expectedResult: `and: {start: {equal: "${testDate1}"}, end: {isNull: false}, end: {lessThanEqual: "${testDate1}"}}`,
+      },
+      {
+        name: 'returns correct AND filter for multiple id fields with equal, isNull, LTE, and between operators',
+        introspectionFields: [
+          createDateIntrospectionField('start'),
+          createDateIntrospectionField('end'),
+        ],
+        filter: {
+          operator: 'AND',
+          filters: [
+            createFieldFilter('start', FieldFilterOperatorEnum.Eq, testDate1),
+            createFieldFilter('end', FieldFilterOperatorEnum.IsNull, 'False'),
+            createFieldFilter('end', FieldFilterOperatorEnum.Lte, testDate1),
+            createFieldFilter('start', FieldFilterOperatorEnum.Between, [
+              testDate1,
+              testDate2,
+            ]),
+          ],
+        },
+        expectedResult: `and: {start: {equal: "${testDate1}"}, end: {isNull: false}, end: {lessThanEqual: "${testDate1}"}, start: {between: {from: "${testDate1}", to: "${testDate2}"}}}`,
       },
     ];
 
