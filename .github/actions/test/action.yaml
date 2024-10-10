@@ -23,6 +23,8 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
+        echo ${{ github.base_ref }}
+
         yarn install
         changed_files="$(git diff --name-only . || true)"
         if [[ $changed_files ]]; then
