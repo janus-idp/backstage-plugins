@@ -3,7 +3,7 @@
   "version": "2.2.0",
   "license": "Apache-2.0",
   "main": "./dist/index.cjs.js",
-  "types": "./dist/index.d.ts",
+  "types": "src/index.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -20,7 +20,6 @@
   "exports": {
     ".": {
       "require": "./dist/index.cjs.js",
-      "types": "./dist/index.d.ts",
       "default": "./dist/index.cjs.js"
     },
     "./package.json": "./package.json"
@@ -47,7 +46,6 @@
   ],
   "scripts": {},
   "dependencies": {
-    "@janus-idp/backstage-plugin-orchestrator-common": "*",
     "@urql/core": "^4.1.4",
     "ajv-formats": "^2.1.1",
     "cloudevents": "^8.0.0",
@@ -58,7 +56,10 @@
     "json-schema": "^0.4.0",
     "moment": "^2.29.4",
     "openapi-backend": "^5.10.5",
-    "yn": "^5.0.0"
+    "yn": "^5.0.0",
+    "@severlessworkflow/sdk-typescript": "^3.0.3",
+    "js-yaml": "^4.1.0",
+    "axios": "^1.7.4"
   },
   "devDependencies": {},
   "peerDependencies": {
@@ -90,7 +91,6 @@
     }
   },
   "resolutions": {
-    "@aws-sdk/util-utf8-browser": "npm:@smithy/util-utf8@~2",
-    "@janus-idp/backstage-plugin-orchestrator-common": "file:./embedded/janus-idp-backstage-plugin-orchestrator-common"
+    "@aws-sdk/util-utf8-browser": "npm:@smithy/util-utf8@~2"
   }
 }
