@@ -38,12 +38,12 @@ runs:
 
     - name: Run prettier
       shell: bash
-      run: yarn prettier:check
+      run: yarn prettier:check --filter=${{ inputs.args }}
 
     - name: Run lint
       shell: bash
-      run: yarn lint --filter=${{ inputs.args }}
+      run: yarn run lint:check --filter=${{ inputs.args }}
 
     - name: Run tests
       shell: bash
-      run: yarn test --filter=${{ inputs.args }}
+      run: yarn run test --filter=${{ inputs.args }}
