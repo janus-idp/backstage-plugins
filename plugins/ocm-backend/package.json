@@ -63,7 +63,7 @@
     "@backstage/backend-dynamic-feature-service": "0.2.15",
     "@backstage/config": "1.2.0",
     "@backstage/cli": "0.26.11",
-    "@backstage/plugin-catalog-backend": "1.24.0",
+    "@backstage/plugin-catalog-backend": "1.26.0",
     "@janus-idp/cli": "1.15.2",
     "@types/express": "4.17.21",
     "@types/supertest": "2.0.16",
