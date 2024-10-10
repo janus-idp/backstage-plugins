@@ -110,7 +110,9 @@ export function buildFilterCondition(
     filters.operator === FieldFilterOperatorEnum.Like ||
     filters.operator === FieldFilterOperatorEnum.In ||
     filters.operator === FieldFilterOperatorEnum.Gt ||
-    filters.operator === FieldFilterOperatorEnum.Gte
+    filters.operator === FieldFilterOperatorEnum.Gte ||
+    filters.operator === FieldFilterOperatorEnum.Lt ||
+    filters.operator === FieldFilterOperatorEnum.Lte
   ) {
     return `${filters.field}: {${getGraphQLOperator(filters.operator)}: ${value}}`;
   }
@@ -125,7 +127,9 @@ function isOperatorSupported(operator: FieldFilterOperatorEnum): boolean {
     operator === FieldFilterOperatorEnum.In ||
     operator === FieldFilterOperatorEnum.IsNull ||
     operator === FieldFilterOperatorEnum.Gt ||
-    operator === FieldFilterOperatorEnum.Gte
+    operator === FieldFilterOperatorEnum.Gte ||
+    operator === FieldFilterOperatorEnum.Lt ||
+    operator === FieldFilterOperatorEnum.Lte
   );
 }
 
@@ -154,8 +158,8 @@ function isOperatorAllowedForField(
       FieldFilterOperatorEnum.Eq,
       FieldFilterOperatorEnum.Gt,
       FieldFilterOperatorEnum.Gte,
-      // FieldFilterOperatorEnum.lessThan,
-      // FieldFilterOperatorEnum.lessThanEqual,
+      FieldFilterOperatorEnum.Lt,
+      FieldFilterOperatorEnum.Lte,
       // FieldFilterOperatorEnum.between,
       // FieldFilterOperatorEnum.from,
       // FieldFilterOperatorEnum.to,
@@ -214,10 +218,10 @@ function getGraphQLOperator(operator: FieldFilterOperatorEnum): string {
       return 'greaterThan';
     case 'GTE':
       return 'greaterThanEqual';
-    // case 'LT':
-    //   return "lessThan"
-    // case 'LTE':
-    //  return "lessThanEqual"
+    case 'LT':
+      return 'lessThan';
+    case 'LTE':
+      return 'lessThanEqual';
     // case 'CONTAINS':
     //  return "contains"
     // case 'CONTAINS_ALL':
