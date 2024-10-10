@@ -41,6 +41,11 @@ jobs:
           node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Install dependencies
+        shell: bash
+        run: |
+          yarn install
+
       - name: Build all packages
         # We are required to build every plugin for MSR
         uses: ./.github/actions/build
