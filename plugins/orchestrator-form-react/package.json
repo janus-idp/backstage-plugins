@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "0.26.11",
-    "@types/json-schema": "^7.0.15"
+    "@types/json-schema": "7.0.15"
   },
   "files": [
     "dist"
