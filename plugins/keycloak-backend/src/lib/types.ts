@@ -16,8 +16,8 @@
 
 import type { GroupEntity, UserEntity } from '@backstage/catalog-model';
 
-import GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
-import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
+import type GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
+import type UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 
 export interface GroupRepresentationWithParent extends GroupRepresentation {
   parentId?: string;

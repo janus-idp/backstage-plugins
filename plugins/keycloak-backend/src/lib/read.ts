@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import type { GroupEntity, UserEntity } from '@backstage/catalog-model';
 
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import type KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import type GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
 import type UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { Groups } from '@keycloak/keycloak-admin-client/lib/resources/groups';
-import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
+import type { Groups } from '@keycloak/keycloak-admin-client/lib/resources/groups';
+import type { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 
 import { KeycloakProviderConfig } from './config';
 import {
