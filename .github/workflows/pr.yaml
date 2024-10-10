@@ -3,8 +3,8 @@ name: Pull request
 on: pull_request
 
 env:
-  TURBO_SCM_BASE: ${{ github.base_ref }}
-  TURBO_SCM_HEAD: ${{ github.head_ref }}
+  TURBO_SCM_BASE: ${{ github.sha }}
+  TURBO_SCM_HEAD: ${{ github.event.pull_request.base.sha }}
 
 jobs:
   test:
