@@ -125,9 +125,7 @@ export const FieldFilterOperatorEnum = {
     ContainsAll: 'CONTAINS_ALL',
     ContainsAny: 'CONTAINS_ANY',
     Like: 'LIKE',
-    Between: 'BETWEEN',
-    From: 'FROM',
-    To: 'TO'
+    Between: 'BETWEEN'
 } as const;
 
 export type FieldFilterOperatorEnum = typeof FieldFilterOperatorEnum[keyof typeof FieldFilterOperatorEnum];
