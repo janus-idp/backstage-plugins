@@ -145,22 +145,22 @@ export const mockProcessInstanceArguments = {
       //     ofType: null,
       //   },
       // },
-      // {
-      //   name: 'start',
-      //   type: {
-      //     kind: 'INPUT_OBJECT',
-      //     name: 'DateArgument',
-      //     ofType: null,
-      //   },
-      // },
-      // {
-      //   name: 'end',
-      //   type: {
-      //     kind: 'INPUT_OBJECT',
-      //     name: 'DateArgument',
-      //     ofType: null,
-      //   },
-      // },
+      {
+        name: 'start',
+        type: {
+          kind: 'INPUT_OBJECT',
+          name: 'DateArgument',
+          ofType: null,
+        },
+      },
+      {
+        name: 'end',
+        type: {
+          kind: 'INPUT_OBJECT',
+          name: 'DateArgument',
+          ofType: null,
+        },
+      },
       // {
       //   name: 'addons',
       //   type: {
@@ -169,14 +169,14 @@ export const mockProcessInstanceArguments = {
       //     ofType: null,
       //   },
       // },
-      // {
-      //   name: 'lastUpdate',
-      //   type: {
-      //     kind: 'INPUT_OBJECT',
-      //     name: 'DateArgument',
-      //     ofType: null,
-      //   },
-      // },
+      {
+        name: 'lastUpdate',
+        type: {
+          kind: 'INPUT_OBJECT',
+          name: 'DateArgument',
+          ofType: null,
+        },
+      },
       {
         name: 'businessKey',
         type: {
@@ -295,22 +295,22 @@ export const mockProcessInstanceIntrospection: IntrospectionField[] = [
   //     ofType: null,
   //   },
   // },
-  // {
-  //   name: 'start',
-  //   type: {
-  //     kind: TypeKind.InputObject,
-  //     name: TypeName.Date,
-  //     ofType: null,
-  //   },
-  // },
-  // {
-  //   name: 'end',
-  //   type: {
-  //     kind: TypeKind.InputObject,
-  //     name: TypeName.Date,
-  //     ofType: null,
-  //   },
-  // },
+  {
+    name: 'start',
+    type: {
+      kind: TypeKind.InputObject,
+      name: TypeName.Date,
+      ofType: null,
+    },
+  },
+  {
+    name: 'end',
+    type: {
+      kind: TypeKind.InputObject,
+      name: TypeName.Date,
+      ofType: null,
+    },
+  },
   // {
   //   name: 'addons',
   //   type: {
@@ -319,14 +319,14 @@ export const mockProcessInstanceIntrospection: IntrospectionField[] = [
   //     ofType: null,
   //   },
   // },
-  // {
-  //   name: 'lastUpdate',
-  //   type: {
-  //     kind: TypeKind.InputObject,
-  //     name: TypeName.Date,
-  //     ofType: null,
-  //   },
-  // },
+  {
+    name: 'lastUpdate',
+    type: {
+      kind: TypeKind.InputObject,
+      name: TypeName.Date,
+      ofType: null,
+    },
+  },
   {
     name: 'businessKey',
     type: {
