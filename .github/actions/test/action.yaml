@@ -25,7 +25,6 @@ runs:
       run: |
         echo ${{ github.base_ref }}
         echo ${{ github.event.merge_group.base_ref }}
-        echo ${{ pull_request.base.ref }}
 
         yarn install
         changed_files="$(git diff --name-only . || true)"
