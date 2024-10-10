@@ -11,5 +11,5 @@
 **/openapitools.json linguist-generated=true
 
 plugins/bulk-import-backend/api-docs/**/* linguist-generated=true
-plugins/bulk-import-backend/src/openapi.d.ts linguist-generated=true
-plugins/bulk-import-backend/src/openapidocument.ts linguist-generated=true
+plugins/bulk-import-backend/src/generated/openapi.d.ts linguist-generated=true
+plugins/bulk-import-backend/src/generated/openapidocument.ts linguist-generated=true

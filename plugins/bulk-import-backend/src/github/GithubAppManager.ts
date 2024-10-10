@@ -35,7 +35,7 @@ import type {
   AppCredentialFetchResult,
   ExtendedGithubCredentials,
   ExtendedGithubCredentialsProvider,
-} from '../types';
+} from './types';
 
 /**
  * The Cache and GithubAppManager classes in this file were directly taken from the
@@ -57,6 +57,10 @@ type InstallationTokenData = {
 };
 class Cache {
   private readonly tokenCache = new Map<string, InstallationTokenData>();
+
+  private isExpired(date: DateTime) {
+    return DateTime.local() > date;
+  }
 
   async getOrCreateToken(
     key: string,
@@ -81,8 +85,6 @@ class Cache {
         existingInstallationData.installationAccountLogin,
     };
   }
-
-  private isExpired = (date: DateTime) => DateTime.local() > date;
 }
 
 /**

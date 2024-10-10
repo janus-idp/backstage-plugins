@@ -21,7 +21,7 @@ import type {
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
-  Entity,
+  type Entity,
 } from '@backstage/catalog-model';
 import type { Config } from '@backstage/config';
 import { InputError, isError, NotFoundError } from '@backstage/errors';
@@ -231,12 +231,17 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
 
     await kcAdminClient.auth(credentials);
 
-    const { users, groups } = await readKeycloakRealm(kcAdminClient, provider, {
-      userQuerySize: provider.userQuerySize,
-      groupQuerySize: provider.groupQuerySize,
-      userTransformer: this.options.userTransformer,
-      groupTransformer: this.options.groupTransformer,
-    });
+    const { users, groups } = await readKeycloakRealm(
+      kcAdminClient,
+      provider,
+      logger,
+      {
+        userQuerySize: provider.userQuerySize,
+        groupQuerySize: provider.groupQuerySize,
+        userTransformer: this.options.userTransformer,
+        groupTransformer: this.options.groupTransformer,
+      },
+    );
 
     const { markCommitComplete } = markReadComplete({ users, groups });
 

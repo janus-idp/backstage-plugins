@@ -108,6 +108,7 @@ export const WorkflowInstancePageContent: React.FC<{
             title="Variables"
             divider={false}
             className={styles.middleRowCard}
+            cardClassName={styles.autoOverflow}
           >
             {instanceVariables && (
               <WorkflowVariablesViewer variables={instanceVariables} />

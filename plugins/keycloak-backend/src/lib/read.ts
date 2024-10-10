@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import type { LoggerService } from '@backstage/backend-plugin-api';
+import type { GroupEntity, UserEntity } from '@backstage/catalog-model';
 
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import type KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import type GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
 import type UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { Groups } from '@keycloak/keycloak-admin-client/lib/resources/groups';
-import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
+import type { Groups } from '@keycloak/keycloak-admin-client/lib/resources/groups';
+import type { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 
 import { KeycloakProviderConfig } from './config';
 import {
@@ -109,6 +110,7 @@ export const parseUser = async (
 export async function getEntities<T extends Users | Groups>(
   entities: T,
   config: KeycloakProviderConfig,
+  logger: LoggerService,
   entityQuerySize: number = KEYCLOAK_ENTITY_QUERY_SIZE,
 ): Promise<Awaited<ReturnType<T['find']>>> {
   const rawEntityCount = await entities.count({ realm: config.realm });
@@ -121,11 +123,15 @@ export async function getEntities<T extends Users | Groups>(
   const entityPromises = Array.from(
     { length: pageCount },
     (_, i) =>
-      entities.find({
-        realm: config.realm,
-        max: entityQuerySize,
-        first: i * entityQuerySize,
-      }) as ReturnType<T['find']>,
+      entities
+        .find({
+          realm: config.realm,
+          max: entityQuerySize,
+          first: i * entityQuerySize,
+        })
+        .catch(err =>
+          logger.warn('Failed to retieve Keycloak entities.', err),
+        ) as ReturnType<T['find']>,
   );
 
   const entityResults = (await Promise.all(entityPromises)).flat() as Awaited<
@@ -135,9 +141,43 @@ export async function getEntities<T extends Users | Groups>(
   return entityResults;
 }
 
+async function getAllGroupMembers<T extends Groups>(
+  groups: T,
+  groupId: string,
+  config: KeycloakProviderConfig,
+  options?: { userQuerySize?: number },
+): Promise<string[]> {
+  const querySize = options?.userQuerySize || 100;
+
+  let allMembers: string[] = [];
+  let page = 0;
+  let totalMembers = 0;
+
+  do {
+    const members = await groups.listMembers({
+      id: groupId,
+      max: querySize,
+      realm: config.realm,
+      first: page * querySize,
+    });
+
+    if (members.length > 0) {
+      allMembers = allMembers.concat(members.map(m => m.username!));
+      totalMembers = members.length; // Get the number of members retrieved
+    } else {
+      totalMembers = 0; // No members retrieved
+    }
+
+    page++;
+  } while (totalMembers > 0);
+
+  return allMembers;
+}
+
 export async function processGroupsRecursively(
   topLevelGroups: GroupRepresentationWithParent[],
   entities: Groups,
+  realm: string,
 ) {
   const allGroups: GroupRepresentationWithParent[] = [];
   for (const group of topLevelGroups) {
@@ -149,10 +189,12 @@ export async function processGroupsRecursively(
         first: 0,
         max: group.subGroupCount,
         briefRepresentation: true,
+        realm,
       });
       const subGroupResults = await processGroupsRecursively(
         subgroups,
         entities,
+        realm,
       );
       allGroups.push(...subGroupResults);
     }
@@ -174,6 +216,7 @@ export function* traverseGroups(
 export const readKeycloakRealm = async (
   client: KeycloakAdminClient,
   config: KeycloakProviderConfig,
+  logger: LoggerService,
   options?: {
     userQuerySize?: number;
     groupQuerySize?: number;
@@ -187,12 +230,14 @@ export const readKeycloakRealm = async (
   const kUsers = await getEntities(
     client.users,
     config,
+    logger,
     options?.userQuerySize,
   );
 
   const topLevelKGroups = (await getEntities(
     client.groups,
     config,
+    logger,
     options?.groupQuerySize,
   )) as GroupRepresentationWithParent[];
 
@@ -216,6 +261,7 @@ export const readKeycloakRealm = async (
     rawKGroups = await processGroupsRecursively(
       topLevelKGroups,
       client.groups as Groups,
+      config.realm,
     );
   } else {
     rawKGroups = topLevelKGroups.reduce(
@@ -225,13 +271,12 @@ export const readKeycloakRealm = async (
   }
   const kGroups = await Promise.all(
     rawKGroups.map(async g => {
-      g.members = (
-        await client.groups.listMembers({
-          id: g.id!,
-          max: options?.userQuerySize,
-          realm: config.realm,
-        })
-      )?.map(m => m.username!);
+      g.members = await getAllGroupMembers(
+        client.groups as Groups,
+        g.id!,
+        config,
+        options,
+      );
 
       if (isVersion23orHigher) {
         if (g.subGroupCount! > 0) {
@@ -240,6 +285,7 @@ export const readKeycloakRealm = async (
             first: 0,
             max: g.subGroupCount,
             briefRepresentation: false,
+            realm: config.realm,
           });
         }
         if (g.parentId) {
@@ -296,13 +342,17 @@ export const readKeycloakRealm = async (
   const groups = parsedGroups.map(g => {
     const entity = g.entity;
     entity.spec.members =
-      g.entity.spec.members?.map(
-        m => parsedUsers.find(p => p.username === m)?.entity.metadata.name!,
-      ) ?? [];
+      g.entity.spec.members?.flatMap(m => {
+        const name = parsedUsers.find(p => p.username === m)?.entity.metadata
+          .name;
+        return name ? [name] : [];
+      }) ?? [];
     entity.spec.children =
-      g.entity.spec.children?.map(
-        c => parsedGroups.find(p => p.name === c)?.entity.metadata.name!,
-      ) ?? [];
+      g.entity.spec.children?.flatMap(c => {
+        const child = parsedGroups.find(p => p.name === c)?.entity.metadata
+          .name;
+        return child ? [child] : [];
+      }) ?? [];
     entity.spec.parent = parsedGroups.find(
       p => p.name === entity.spec.parent,
     )?.entity.metadata.name;

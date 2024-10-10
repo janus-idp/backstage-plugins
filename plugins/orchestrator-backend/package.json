@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-backend",
-  "version": "2.0.0",
+  "version": "2.2.1",
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -62,7 +62,7 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "postversion": "yarn run export-dynamic",
-    "export-dynamic": "janus-cli package export-dynamic-plugin"
+    "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies"
   },
   "dependencies": {
     "@backstage/backend-common": "^0.23.3",
@@ -94,7 +94,7 @@
     "prettier": "3.3.3",
     "@backstage/backend-test-utils": "0.4.4",
     "@backstage/cli": "0.26.11",
-    "@janus-idp/cli": "*",
+    "@janus-idp/cli": "1.15.2",
     "@backstage/config": "^1.2.0",
     "@backstage/core-plugin-api": "^1.9.3",
     "@backstage/types": "^1.1.1",
@@ -103,8 +103,8 @@
     "@types/json-schema": "7.0.15"
   },
   "peerDependencies": {
-    "@janus-idp/backstage-plugin-audit-log-node": "*",
-    "@janus-idp/backstage-plugin-rbac-common": "*"
+    "@janus-idp/backstage-plugin-audit-log-node": "1.5.1",
+    "@janus-idp/backstage-plugin-rbac-common": "1.10.0"
   },
   "maintainers": [
     "@janus-idp/maintainers-plugins",

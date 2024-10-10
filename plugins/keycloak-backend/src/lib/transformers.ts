@@ -1,4 +1,4 @@
-import { GroupTransformer, UserTransformer } from './types';
+import type { GroupTransformer, UserTransformer } from './types';
 
 export const noopGroupTransformer: GroupTransformer = async (
   entity,

@@ -16,8 +16,8 @@
 
 import { mockServices } from '@backstage/backend-test-utils';
 
-import { CustomGithubCredentialsProvider } from '../helpers';
 import { GithubApiService } from './githubApiService';
+import { CustomGithubCredentialsProvider } from './GithubAppManager';
 
 const octokit = {
   paginate: async (fn: any) => {
@@ -58,6 +58,23 @@ const mockGetAllCredentials = jest.fn();
 // We want to just mock the credentials provider's getAllCredentials method and nothing else
 CustomGithubCredentialsProvider.prototype.getAllCredentials =
   mockGetAllCredentials;
+
+const ghRepos = [
+  {
+    name: 'A',
+    full_name: 'backstage/A',
+    url: 'https://api.github.com/repos/backstage/A',
+    html_url: 'https://github.com/backstage/A',
+    default_branch: 'master',
+  },
+  {
+    name: 'B',
+    full_name: 'backstage/B',
+    url: 'https://api.github.com/repos/backstage/B',
+    html_url: 'https://github.com/backstage/B',
+    default_branch: 'main',
+  },
+];
 
 describe('GithubApiService tests', () => {
   let githubApiService: GithubApiService;
@@ -117,6 +134,12 @@ describe('GithubApiService tests', () => {
         },
       },
     });
+    octokit.rest.repos.listForOrg.mockReturnValue({ data: [] });
+    octokit.rest.users.getByUsername.mockReturnValue({
+      data: {
+        type: 'Organization',
+      },
+    });
     githubApiService = new GithubApiService(logger, config, mockCache);
   });
 
@@ -148,12 +171,6 @@ describe('GithubApiService tests', () => {
         },
       ]),
     );
-    octokit.rest.users.getByUsername.mockReturnValue({
-      data: {
-        type: 'Organization',
-      },
-    });
-    octokit.rest.repos.listForOrg.mockReturnValue({ data: [] });
 
     const result = await githubApiService.getRepositoriesFromIntegrations();
 
@@ -196,43 +213,13 @@ describe('GithubApiService tests', () => {
     });
     octokit.rest.repos.listForAuthenticatedUser.mockReturnValue({ data: [] });
     octokit.apps.listReposAccessibleToInstallation.mockReturnValue({
-      data: [
-        {
-          name: 'A',
-          full_name: 'backstage/A',
-          url: 'https://api.github.com/repos/backstage/A',
-          html_url: 'https://github.com/backstage/A',
-          default_branch: 'master',
-        },
-        {
-          name: 'B',
-          full_name: 'backstage/B',
-          url: 'https://api.github.com/repos/backstage/B',
-          html_url: 'https://github.com/backstage/B',
-          default_branch: 'main',
-        },
-      ],
+      data: ghRepos,
     });
 
     const result = await githubApiService.getRepositoriesFromIntegrations();
 
     const expected_response = {
-      repositories: [
-        {
-          name: 'A',
-          full_name: 'backstage/A',
-          url: 'https://api.github.com/repos/backstage/A',
-          html_url: 'https://github.com/backstage/A',
-          default_branch: 'master',
-        },
-        {
-          name: 'B',
-          full_name: 'backstage/B',
-          url: 'https://api.github.com/repos/backstage/B',
-          html_url: 'https://github.com/backstage/B',
-          default_branch: 'main',
-        },
-      ],
+      repositories: ghRepos,
       errors: [
         {
           error: {
@@ -243,7 +230,7 @@ describe('GithubApiService tests', () => {
           appId: 2,
         },
       ],
-      totalCount: 0,
+      totalCount: 2,
     };
     expect(result).toEqual(expected_response);
     expect(errorLog).toHaveBeenCalledTimes(1);
@@ -253,30 +240,9 @@ describe('GithubApiService tests', () => {
   });
 
   it('returns an a list of unique repositories and no errors', async () => {
-    octokit.rest.users.getByUsername.mockReturnValue({
-      data: {
-        type: 'Organization',
-      },
-    });
-    octokit.rest.repos.listForOrg.mockReturnValue({ data: [] });
     octokit.apps.listReposAccessibleToInstallation
       .mockReturnValueOnce({
-        data: [
-          {
-            name: 'A',
-            full_name: 'backstage/A',
-            url: 'https://api.github.com/repos/backstage/A',
-            html_url: 'https://github.com/backstage/A',
-            default_branch: 'master',
-          },
-          {
-            name: 'B',
-            full_name: 'backstage/B',
-            url: 'https://api.github.com/repos/backstage/B',
-            html_url: 'https://github.com/backstage/B',
-            default_branch: 'main',
-          },
-        ],
+        data: ghRepos,
       })
       .mockReturnValue({
         data: [
@@ -324,7 +290,7 @@ describe('GithubApiService tests', () => {
         },
       ],
       errors: [],
-      totalCount: 0,
+      totalCount: 3,
     };
     expect(errorLog).not.toHaveBeenCalled();
     expect(result).toEqual(expected_response);
@@ -352,43 +318,13 @@ describe('GithubApiService tests', () => {
         throw unauthorizedError;
       })
       .mockReturnValue({
-        data: [
-          {
-            name: 'A',
-            full_name: 'backstage/A',
-            url: 'https://api.github.com/repos/backstage/A',
-            html_url: 'https://github.com/backstage/A',
-            default_branch: 'master',
-          },
-          {
-            name: 'B',
-            full_name: 'backstage/B',
-            url: 'https://api.github.com/repos/backstage/B',
-            html_url: 'https://github.com/backstage/B',
-            default_branch: 'main',
-          },
-        ],
+        data: ghRepos,
       });
 
     const result = await githubApiService.getRepositoriesFromIntegrations();
 
     const expected_response = {
-      repositories: [
-        {
-          name: 'A',
-          full_name: 'backstage/A',
-          url: 'https://api.github.com/repos/backstage/A',
-          html_url: 'https://github.com/backstage/A',
-          default_branch: 'master',
-        },
-        {
-          name: 'B',
-          full_name: 'backstage/B',
-          url: 'https://api.github.com/repos/backstage/B',
-          html_url: 'https://github.com/backstage/B',
-          default_branch: 'main',
-        },
-      ],
+      repositories: ghRepos,
       errors: [
         {
           error: {
@@ -406,34 +342,14 @@ describe('GithubApiService tests', () => {
           appId: 1,
         },
       ],
-      totalCount: 0,
+      totalCount: 2,
     };
     expect(result).toEqual(expected_response);
   });
 
   it('returns list of repositories if we have a user token with access to an org', async () => {
-    octokit.rest.users.getByUsername.mockReturnValue({
-      data: {
-        type: 'Organization',
-      },
-    });
     octokit.rest.repos.listForAuthenticatedUser.mockReturnValue({
-      data: [
-        {
-          name: 'A',
-          full_name: 'backstage/A',
-          url: 'https://api.github.com/repos/backstage/A',
-          html_url: 'https://github.com/backstage/A',
-          default_branch: 'master',
-        },
-        {
-          name: 'B',
-          full_name: 'backstage/B',
-          url: 'https://api.github.com/repos/backstage/B',
-          html_url: 'https://github.com/backstage/B',
-          default_branch: 'main',
-        },
-      ],
+      data: ghRepos,
     });
     octokit.apps.listReposAccessibleToInstallation.mockReturnValue({
       data: [],
@@ -442,22 +358,7 @@ describe('GithubApiService tests', () => {
     const result = await githubApiService.getRepositoriesFromIntegrations();
 
     const expected_response = {
-      repositories: [
-        {
-          name: 'A',
-          full_name: 'backstage/A',
-          url: 'https://api.github.com/repos/backstage/A',
-          html_url: 'https://github.com/backstage/A',
-          default_branch: 'master',
-        },
-        {
-          name: 'B',
-          full_name: 'backstage/B',
-          url: 'https://api.github.com/repos/backstage/B',
-          html_url: 'https://github.com/backstage/B',
-          default_branch: 'main',
-        },
-      ],
+      repositories: ghRepos,
       errors: [],
       totalCount: 2,
     };

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import type {
   AuthService,
   DiscoveryService,
@@ -22,112 +23,60 @@ import type { CatalogApi } from '@backstage/catalog-client';
 import type { LocationEntity } from '@backstage/catalog-model';
 import type { Config } from '@backstage/config';
 
-import gitUrlParse from 'git-url-parse';
-import jsYaml from 'js-yaml';
 import fetch from 'node-fetch';
 
-import {
-  DefaultPageNumber,
-  DefaultPageSize,
-} from '../service/handlers/handlers';
-import { getTokenForPlugin } from './auth';
-import { logErrorIfNeeded } from './loggingUtils';
+import { getTokenForPlugin, logErrorIfNeeded } from '../helpers';
+import { filterLocations, getCatalogUrl } from './catalogUtils';
 
-export class CatalogInfoGenerator {
+export class CatalogHttpClient {
   private readonly logger: LoggerService;
+  private readonly config: Config;
   private readonly discovery: DiscoveryService;
   private readonly auth: AuthService;
   private readonly catalogApi: CatalogApi;
 
-  constructor(
-    logger: LoggerService,
-    discovery: DiscoveryService,
-    auth: AuthService,
-    catalogApi: CatalogApi,
-  ) {
-    this.logger = logger;
-    this.discovery = discovery;
-    this.auth = auth;
-    this.catalogApi = catalogApi;
+  constructor(deps: {
+    logger: LoggerService;
+    config: Config;
+    discovery: DiscoveryService;
+    auth: AuthService;
+    catalogApi: CatalogApi;
+  }) {
+    this.logger = deps.logger;
+    this.config = deps.config;
+    this.discovery = deps.discovery;
+    this.auth = deps.auth;
+    this.catalogApi = deps.catalogApi;
   }
 
-  async generateDefaultCatalogInfoContent(
-    repoUrl: string,
-    analyzeLocation: boolean = true,
-  ): Promise<string> {
-    const gitUrl = gitUrlParse(repoUrl);
-    const defaultCatalogInfo = `---
-apiVersion: backstage.io/v1alpha1
-kind: Component
-metadata:
-  name: ${gitUrl.name}
-  annotations:
-    github.com/project-slug: ${gitUrl.organization}/${gitUrl.name}
-spec:
-  type: other
-  lifecycle: unknown
-  owner: ${gitUrl.organization}
----`;
-    if (!analyzeLocation) {
-      return defaultCatalogInfo;
-    }
-
-    let generatedEntities: any[] = [];
-    try {
-      const response = await fetch(
-        `${await this.discovery.getBaseUrl('catalog')}/analyze-location`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${await getTokenForPlugin(this.auth, 'catalog')}`,
-          },
-          method: 'POST',
-          body: JSON.stringify({
-            location: {
-              type: 'github',
-              target: repoUrl,
-            },
-          }),
+  // Wrapper for https://backstage.io/docs/features/software-catalog/software-catalog-api/#post-analyze-location
+  async analyzeLocation(repoUrl: string): Promise<any[]> {
+    this.logger.debug(`Forwarding request to analyze location: ${repoUrl}`);
+    const response = await fetch(
+      `${await this.discovery.getBaseUrl('catalog')}/analyze-location`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${await getTokenForPlugin(this.auth, 'catalog')}`,
         },
-      );
-      generatedEntities = (await response.json()).generateEntities ?? [];
-    } catch (error: any) {
-      // fallback to the default catalog-info value
-      logErrorIfNeeded(
-        this.logger,
-        `Could not analyze location ${repoUrl}`,
-        error,
-      );
-    }
-
-    if (generatedEntities.length === 0) {
-      return defaultCatalogInfo;
-    }
-
-    return generatedEntities
-      .map(
-        generatedEntity => `---
-${jsYaml.dump(generatedEntity.entity)}`,
-      )
-      .join('\n');
-  }
-
-  getCatalogUrl(
-    config: Config,
-    repoUrl: string,
-    defaultBranch: string = 'main',
-  ): string {
-    return `${repoUrl}/blob/${defaultBranch}/${getCatalogFilename(config)}`;
+        method: 'POST',
+        body: JSON.stringify({
+          location: {
+            type: 'github',
+            target: repoUrl,
+          },
+        }),
+      },
+    );
+    return (await response.json()).generateEntities ?? [];
   }
 
   async listCatalogUrlLocations(
-    config: Config,
     search?: string,
-    pageNumber: number = DefaultPageNumber,
-    pageSize: number = DefaultPageSize,
+    pageNumber?: number,
+    pageSize?: number,
   ): Promise<{ targetUrls: string[]; totalCount?: number }> {
     const byId = await this.listCatalogUrlLocationsById(
-      config,
       search,
       pageNumber,
       pageSize,
@@ -143,16 +92,15 @@ ${jsYaml.dump(generatedEntity.entity)}`,
   }
 
   async listCatalogUrlLocationsById(
-    config: Config,
     search?: string,
-    pageNumber: number = DefaultPageNumber,
-    pageSize: number = DefaultPageSize,
+    pageNumber?: number,
+    pageSize?: number,
   ): Promise<{
     locations: { id?: string; target: string }[];
     totalCount?: number;
   }> {
     const result = await Promise.all([
-      this.listCatalogUrlLocationsFromConfig(config, search),
+      this.listCatalogUrlLocationsFromConfig(search),
       this.listCatalogUrlLocationsByIdFromLocationsEndpoint(search),
       this.listCatalogUrlLocationEntitiesById(search, pageNumber, pageSize),
     ]);
@@ -197,16 +145,16 @@ ${jsYaml.dump(generatedEntity.entity)}`,
           target: location.data.target,
         };
       });
-    const filtered = this.filterLocations(res, search);
+    const filtered = filterLocations(res, search);
     return { locations: filtered, totalCount: filtered.length };
   }
 
-  listCatalogUrlLocationsFromConfig(
-    config: Config,
-    search?: string,
-  ): { locations: { id?: string; target: string }[]; totalCount?: number } {
+  listCatalogUrlLocationsFromConfig(search?: string): {
+    locations: { id?: string; target: string }[];
+    totalCount?: number;
+  } {
     const locationConfigs =
-      config.getOptionalConfigArray('catalog.locations') ?? [];
+      this.config.getOptionalConfigArray('catalog.locations') ?? [];
     const res = locationConfigs
       .filter(
         location =>
@@ -220,14 +168,14 @@ ${jsYaml.dump(generatedEntity.entity)}`,
           target,
         };
       });
-    const filtered = this.filterLocations(res, search);
+    const filtered = filterLocations(res, search);
     return { locations: filtered, totalCount: filtered.length };
   }
 
   async listCatalogUrlLocationEntitiesById(
     search?: string,
-    _pageNumber: number = DefaultPageNumber,
-    _pageSize: number = DefaultPageSize,
+    _pageNumber?: number,
+    _pageSize?: number,
   ): Promise<{
     locations: { id?: string; target: string }[];
     totalCount?: number;
@@ -258,25 +206,71 @@ ${jsYaml.dump(generatedEntity.entity)}`,
           target: location.spec.target!,
         };
       });
-    const filtered = this.filterLocations(res, search);
+    const filtered = filterLocations(res, search);
     return { locations: filtered, totalCount: filtered.length };
   }
 
-  private filterLocations(
-    res: { id: string | undefined; target: string }[],
-    search: string | undefined,
-  ) {
-    return search
-      ? res.filter(loc => {
-          const split = loc.target.split('/blob/');
-          if (split.length < 2) {
-            return false;
-          }
-          const repoUrl = split[0];
-          const gitUrl = gitUrlParse(repoUrl);
-          return gitUrl.name.toLowerCase().includes(search.toLowerCase());
-        })
-      : res;
+  /**
+   * verifyLocationExistence checks for the existence of the Location target.
+   * Under the hood, it attempts to read the target URL and will return false if the target could not be found
+   * and even if there is already a Location row in the database.
+   * @param repoCatalogUrl
+   */
+  async verifyLocationExistence(repoCatalogUrl: string): Promise<boolean> {
+    try {
+      const result = await this.catalogApi.addLocation(
+        {
+          type: 'url',
+          target: repoCatalogUrl,
+          dryRun: true,
+        },
+        {
+          token: await getTokenForPlugin(this.auth, 'catalog'),
+        },
+      );
+      // The `result.exists` field is only filled in dryRun mode
+      return result.exists as boolean;
+    } catch (error: any) {
+      if (error.message?.includes('NotFoundError')) {
+        return false;
+      }
+      throw error;
+    }
+  }
+
+  async hasEntityInCatalog(entityName: string) {
+    return this.catalogApi
+      .queryEntities(
+        {
+          filter: {
+            'metadata.name': entityName,
+          },
+          limit: 1,
+        },
+        {
+          token: await getTokenForPlugin(this.auth, 'catalog'),
+        },
+      )
+      .then(resp => resp.items?.length > 0);
+  }
+
+  async possiblyCreateLocation(repoCatalogUrl: string) {
+    try {
+      await this.catalogApi.addLocation(
+        {
+          type: 'url',
+          target: repoCatalogUrl,
+        },
+        {
+          token: await getTokenForPlugin(this.auth, 'catalog'),
+        },
+      );
+    } catch (error: any) {
+      if (!error.message?.includes('ConflictError')) {
+        throw error;
+      }
+      // Location already exists, which is fine
+    }
   }
 
   async deleteCatalogLocationById(locationId: string): Promise<void> {
@@ -304,13 +298,9 @@ ${jsYaml.dump(generatedEntity.entity)}`,
     });
   }
 
-  async findLocationEntitiesByRepoUrl(
-    config: Config,
-    repoUrl: string,
-    defaultBranch?: string,
-  ) {
+  async findLocationEntitiesByRepoUrl(repoUrl: string, defaultBranch?: string) {
     return this.findLocationEntitiesByTargetUrl(
-      this.getCatalogUrl(config, repoUrl, defaultBranch),
+      getCatalogUrl(this.config, repoUrl, defaultBranch),
     );
   }
 
@@ -331,13 +321,9 @@ ${jsYaml.dump(generatedEntity.entity)}`,
       .then(resp => resp.items);
   }
 
-  async refreshLocationByRepoUrl(
-    config: Config,
-    repoUrl: string,
-    defaultBranch?: string,
-  ) {
+  async refreshLocationByRepoUrl(repoUrl: string, defaultBranch?: string) {
     const promises: Promise<void>[] = [];
-    this.findLocationEntitiesByRepoUrl(config, repoUrl, defaultBranch).then(
+    this.findLocationEntitiesByRepoUrl(repoUrl, defaultBranch).then(
       entities => {
         const nbEntities = entities.length;
         if (nbEntities === 0) {
@@ -372,18 +358,4 @@ ${jsYaml.dump(generatedEntity.entity)}`,
       token: await getTokenForPlugin(this.auth, 'catalog'),
     });
   }
-}
-
-export function getCatalogFilename(config: Config): string {
-  return (
-    config.getOptionalString('catalog.import.entityFilename') ??
-    'catalog-info.yaml'
-  );
-}
-
-export function getBranchName(config: Config): string {
-  return (
-    config.getOptionalString('catalog.import.pullRequestBranchName') ??
-    'backstage-integration'
-  );
 }

@@ -1,4 +1,6 @@
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import { mockServices } from '@backstage/backend-test-utils';
+
+import type KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 
 import {
   kGroups23orHigher,
@@ -20,7 +22,7 @@ import {
   readKeycloakRealm,
   traverseGroups,
 } from './read';
-import { GroupTransformer, UserTransformer } from './types';
+import type { GroupTransformer, UserTransformer } from './types';
 
 const config: KeycloakProviderConfig = {
   realm: 'myrealm',
@@ -28,11 +30,13 @@ const config: KeycloakProviderConfig = {
   baseUrl: 'http://mock-url',
 };
 
+const logger = mockServices.logger.mock();
+
 describe('readKeycloakRealm', () => {
   it('should return the correct number of users and groups (Version 23 or Higher)', async () => {
     const client =
       new KeycloakAdminClientMockServerv24() as unknown as KeycloakAdminClient;
-    const { users, groups } = await readKeycloakRealm(client, config);
+    const { users, groups } = await readKeycloakRealm(client, config, logger);
     expect(users).toHaveLength(3);
     expect(groups).toHaveLength(3);
   });
@@ -40,9 +44,25 @@ describe('readKeycloakRealm', () => {
   it('should return the correct number of users and groups (Version Less than 23)', async () => {
     const client =
       new KeycloakAdminClientMockServerv18() as unknown as KeycloakAdminClient;
-    const { users, groups } = await readKeycloakRealm(client, config);
+    const { users, groups } = await readKeycloakRealm(client, config, logger);
     expect(users).toHaveLength(3);
     expect(groups).toHaveLength(3);
+  });
+
+  it(`should not contain undefined members when a group member is not found in the fetched user list`, async () => {
+    const client =
+      new KeycloakAdminClientMockServerv24() as unknown as KeycloakAdminClient;
+    client.users.find = jest
+      .fn()
+      .mockResolvedValue([usersFixture[1], usersFixture[2]]);
+    client.users.count = jest.fn().mockResolvedValue(2);
+
+    const { groups } = await readKeycloakRealm(client, config, logger);
+
+    for (const group of groups) {
+      console.log(group.spec.members);
+      expect(group.spec.members).not.toContain(undefined);
+    }
   });
 
   it('should propagate transformer changes to entities (version 23 or Higher)', async () => {
@@ -57,7 +77,7 @@ describe('readKeycloakRealm', () => {
 
     const client =
       new KeycloakAdminClientMockServerv24() as unknown as KeycloakAdminClient;
-    const { users, groups } = await readKeycloakRealm(client, config, {
+    const { users, groups } = await readKeycloakRealm(client, config, logger, {
       userTransformer,
       groupTransformer,
     });
@@ -81,7 +101,7 @@ describe('readKeycloakRealm', () => {
 
     const client =
       new KeycloakAdminClientMockServerv18() as unknown as KeycloakAdminClient;
-    const { users, groups } = await readKeycloakRealm(client, config, {
+    const { users, groups } = await readKeycloakRealm(client, config, logger, {
       userTransformer,
       groupTransformer,
     });
@@ -218,11 +238,15 @@ describe('getEntitiesUser', () => {
     const client =
       new KeycloakAdminClientMockServerv24() as unknown as KeycloakAdminClient;
 
-    const users = await getEntities(client.users, {
-      id: '',
-      baseUrl: '',
-      realm: '',
-    });
+    const users = await getEntities(
+      client.users,
+      {
+        id: '',
+        baseUrl: '',
+        realm: '',
+      },
+      logger,
+    );
 
     expect(users).toHaveLength(3);
   });
@@ -231,11 +255,15 @@ describe('getEntitiesUser', () => {
     const client =
       new KeycloakAdminClientMockServerv18() as unknown as KeycloakAdminClient;
 
-    const users = await getEntities(client.users, {
-      id: '',
-      baseUrl: '',
-      realm: '',
-    });
+    const users = await getEntities(
+      client.users,
+      {
+        id: '',
+        baseUrl: '',
+        realm: '',
+      },
+      logger,
+    );
 
     expect(users).toHaveLength(3);
   });
@@ -251,6 +279,7 @@ describe('getEntitiesUser', () => {
         baseUrl: '',
         realm: '',
       },
+      logger,
       1,
     );
 
@@ -268,6 +297,7 @@ describe('getEntitiesUser', () => {
         baseUrl: '',
         realm: '',
       },
+      logger,
       1,
     );
 
@@ -282,6 +312,7 @@ describe('fetch subgroups', () => {
     const groups = await processGroupsRecursively(
       topLevelGroups23orHigher,
       client.groups,
+      config.realm,
     );
 
     expect(groups).toHaveLength(3);
