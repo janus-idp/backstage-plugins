@@ -17,7 +17,7 @@ export const RepositoriesColumnHeader: TableColumn[] = [
     field: 'organizationUrl',
   },
   {
-    id: 'catalogInfoYaml',
+    id: 'cataloginfoyaml',
     title: 'catalog-info.yaml',
     field: 'catalogInfoYaml.status',
   },

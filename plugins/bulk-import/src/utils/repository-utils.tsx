@@ -16,6 +16,7 @@ import {
   CreateImportJobRepository,
   ErrorType,
   ImportJobResponse,
+  ImportJobs,
   ImportJobStatus,
   ImportStatus,
   JobErrors,
@@ -551,4 +552,49 @@ export const evaluatePRTemplate = (
       isInvalidEntity: true,
     };
   }
+};
+
+export const prepareDataForAddedRepositories = (
+  addedRepositories: ImportJobs | Response | undefined,
+  user: string,
+  baseUrl: string,
+) => {
+  if (!Array.isArray((addedRepositories as ImportJobs)?.imports)) {
+    return {};
+  }
+  const importJobs = addedRepositories as ImportJobs;
+  const repoData: { [id: string]: AddRepositoryData } =
+    importJobs.imports?.reduce((acc, val: ImportJobStatus) => {
+      const id = `${val.repository.organization}/${val.repository.name}`;
+      return {
+        ...acc,
+        [id]: {
+          id,
+          repoName: val.repository.name,
+          defaultBranch: val.repository.defaultBranch,
+          orgName: val.repository.organization,
+          repoUrl: val.repository.url,
+          organizationUrl: val?.repository?.url?.substring(
+            0,
+            val.repository.url.indexOf(val?.repository?.name || '') - 1,
+          ),
+          catalogInfoYaml: {
+            status: val.status
+              ? RepositoryStatus[val.status as RepositoryStatus]
+              : RepositoryStatus.NotGenerated,
+            prTemplate: getPRTemplate(
+              val.repository.name || '',
+              val.repository.organization || '',
+              user,
+              baseUrl,
+              val.repository.url || '',
+              val.repository.defaultBranch || 'main',
+            ),
+            pullRequest: val?.github?.pullRequest?.url || '',
+            lastUpdated: val.lastUpdate,
+          },
+        },
+      };
+    }, {});
+  return repoData;
 };

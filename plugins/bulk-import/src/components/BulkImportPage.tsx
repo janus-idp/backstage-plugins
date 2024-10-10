@@ -5,6 +5,7 @@ import { usePermission } from '@backstage/plugin-permission-react';
 
 import { Alert, AlertTitle } from '@material-ui/lab';
 import FormControl from '@mui/material/FormControl';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Formik } from 'formik';
 
 import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
@@ -27,6 +28,7 @@ export const BulkImportPage = () => {
     excludedRepositories: {},
     approvalTool: ApprovalTool.Git,
   };
+  const queryClient = new QueryClient();
 
   const bulkImportViewPermissionResult = usePermission({
     permission: bulkImportPermission,
@@ -39,15 +41,17 @@ export const BulkImportPage = () => {
     }
     if (bulkImportViewPermissionResult.allowed) {
       return (
-        <Formik
-          initialValues={initialValues}
-          enableReinitialize
-          onSubmit={async (_values: AddRepositoriesFormValues) => {}}
-        >
-          <FormControl fullWidth>
-            <RepositoriesList />
-          </FormControl>
-        </Formik>
+        <QueryClientProvider client={queryClient}>
+          <Formik
+            initialValues={initialValues}
+            enableReinitialize
+            onSubmit={async (_values: AddRepositoriesFormValues) => {}}
+          >
+            <FormControl fullWidth>
+              <RepositoriesList />
+            </FormControl>
+          </Formik>
+        </QueryClientProvider>
       );
     }
     return (

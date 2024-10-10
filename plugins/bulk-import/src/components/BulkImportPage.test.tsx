@@ -38,12 +38,12 @@ describe('BulkImport Page', () => {
     mockUsePermission.mockReturnValue({ loading: false, allowed: true });
     mockUseAddedRepositories.mockReturnValue({
       loaded: true,
-      data: [],
-      retry: jest.fn(),
+      data: { addedRepositories: [], totalJobs: 0 },
+      refetch: jest.fn(),
       error: undefined,
     });
     await renderInTestApp(<BulkImportPage />);
-    expect(screen.getByText('Added repositories (0)')).toBeInTheDocument();
+    expect(screen.getByText('Added repositories')).toBeInTheDocument();
   });
 
   it('should not render if user is not authorized to access the bulk import plugin', async () => {

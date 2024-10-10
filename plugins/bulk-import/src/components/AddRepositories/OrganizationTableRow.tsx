@@ -31,7 +31,7 @@ export const OrganizationTableRow = ({
   ).length;
 
   return (
-    <TableRow hover>
+    <TableRow hover key={data.id}>
       <TableCell component="th" scope="row" padding="none" sx={tableCellStyle}>
         {data.orgName}
       </TableCell>

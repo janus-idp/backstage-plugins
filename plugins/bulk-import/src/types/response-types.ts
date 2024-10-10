@@ -35,6 +35,13 @@ export type ImportJobStatus = {
   repository: Repository;
 };
 
+export type ImportJobs = {
+  imports: ImportJobStatus[];
+  page: number;
+  size: number;
+  totalCount: number;
+};
+
 export type OrgAndRepoResponse = {
   errors?: string[];
   repositories?: Repository[];

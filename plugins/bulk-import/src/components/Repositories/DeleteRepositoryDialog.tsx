@@ -15,10 +15,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import { useMutation } from '@tanstack/react-query';
 import { get } from 'lodash';
 
 import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
-import { AddRepositoryData } from '../../types';
+import { AddRepositoryData, ImportJobStatus } from '../../types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -69,27 +70,33 @@ const DeleteRepositoryDialog = ({
   closeDialog: () => void;
 }) => {
   const classes = useStyles();
-  const [error, setError] = React.useState<string>('');
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [deleteError, setDeleteError] = React.useState<string>('');
   const bulkImportApi = useApi(bulkImportApiRef);
-  const handleClickRemove = async () => {
-    setIsSubmitting(true);
-    if (!repository.repoUrl || !repository?.defaultBranch) {
-      setIsSubmitting(false);
-      setError(
-        `Unable to remove repository. ${!repository?.repoUrl ? 'Repository URL missing' : 'Repository default branch is missing'}`,
-      );
-    } else {
-      const value = await bulkImportApi.deleteImportAction(
-        repository.repoUrl,
-        repository.defaultBranch,
-      );
-      setIsSubmitting(false);
-      if (get(value, 'error')) {
-        setError(`Unable to remove repository. ${get(value, 'error.message')}`);
+  const deleteRepository = async (deleteRepo: AddRepositoryData) => {
+    return await bulkImportApi.deleteImportAction(
+      deleteRepo.repoUrl || '',
+      deleteRepo.defaultBranch || 'main',
+    );
+  };
+  const mutationDelete = useMutation(deleteRepository, {
+    onSuccess: (data: ImportJobStatus | Response) => {
+      if (get(data, 'err')) {
+        setDeleteError(`Unable to remove repository. ${get(data, 'err')}`);
       } else {
         closeDialog();
       }
+    },
+    onError: (error: Error) => {
+      setDeleteError(`Unable to remove repository. ${error.message}`);
+    },
+  });
+  const handleClickRemove = async () => {
+    if (!repository.repoUrl || !repository?.defaultBranch) {
+      setDeleteError(
+        `Unable to remove repository. ${!repository?.repoUrl ? 'Repository URL missing.' : 'Repository default branch is missing.'}`,
+      );
+    } else {
+      mutationDelete.mutate(repository);
     }
   };
 
@@ -127,9 +134,9 @@ const DeleteRepositoryDialog = ({
           Catalog page.
         </Typography>
       </DialogContent>
-      {error && (
+      {deleteError && (
         <Box maxWidth="650px" marginLeft="20px">
-          <Alert severity="error">{error}</Alert>
+          <Alert severity="error">{deleteError}</Alert>
         </Box>
       )}
       <DialogActions style={{ justifyContent: 'left', padding: '20px' }}>
@@ -137,9 +144,11 @@ const DeleteRepositoryDialog = ({
           variant="contained"
           className={`${classes.deleteButton} ${classes.button}`}
           onClick={() => handleClickRemove()}
-          disabled={isSubmitting}
+          disabled={mutationDelete.isLoading || !!deleteError}
           startIcon={
-            isSubmitting && <CircularProgress size="20px" color="inherit" />
+            mutationDelete.isLoading && (
+              <CircularProgress size="20px" color="inherit" />
+            )
           }
         >
           Remove

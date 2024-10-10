@@ -2,17 +2,19 @@ import React from 'react';
 
 import { LinkButton } from '@backstage/core-components';
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Toolbar } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
+import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
 
 import { AddRepositoriesFormValues } from '../../types';
+import { RepositoriesSearchBar } from '../AddRepositories/AddRepositoriesSearchBar';
 
 const useStyles = makeStyles(theme => ({
   toolbar: {
     display: 'flex',
     justifyContent: 'end',
-    marginBottom: '24px',
+    padding: '14px',
   },
   rbacPreReqLink: {
     color: theme.palette.link,
@@ -22,15 +24,28 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const RepositoriesListToolbar = () => {
+export const RepositoriesListToolbar = ({
+  jobs,
+  setSearchString,
+}: {
+  jobs: number;
+  setSearchString: (str: string) => void;
+}) => {
   const { status, setStatus } = useFormikContext<AddRepositoriesFormValues>();
+  const [search, setSearch] = React.useState<string>('');
   const classes = useStyles();
 
   const handleCloseAlert = () => {
     setStatus(null);
   };
+
+  const handleSearch = (filter: string) => {
+    setSearchString(filter);
+    setSearch(filter);
+  };
+
   return (
-    <div>
+    <>
       {(status?.title || status?.url) && (
         <>
           <Alert severity="error" onClose={() => handleCloseAlert()}>
@@ -42,16 +57,27 @@ export const RepositoriesListToolbar = () => {
           <br />
         </>
       )}
-      <span className={classes.toolbar}>
-        <LinkButton
-          to="add"
-          color="primary"
-          variant="contained"
-          data-testid="add-repository"
+      <Toolbar className={classes.toolbar}>
+        <Typography
+          sx={{ flex: '1 1 100%' }}
+          variant="h5"
+          id="added-repositories"
         >
-          Add
-        </LinkButton>
-      </span>
-    </div>
+          {jobs ? `Added repositories (${jobs})` : 'Added repositories'}
+        </Typography>
+
+        <span className={classes.toolbar}>
+          <LinkButton
+            to="add"
+            color="primary"
+            variant="contained"
+            data-testid="add-repository"
+          >
+            Add
+          </LinkButton>
+        </span>
+        <RepositoriesSearchBar value={search} onChange={handleSearch} />
+      </Toolbar>
+    </>
   );
 };

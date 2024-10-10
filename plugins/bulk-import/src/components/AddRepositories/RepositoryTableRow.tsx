@@ -72,23 +72,17 @@ export const RepositoryTableRow = ({
       </TableCell>
       <TableCell align="left" className={classes.tableCellStyle}>
         <Link to={data.repoUrl || ''}>
-          <>
-            {urlHelper(data?.repoUrl || '')}
-            <OpenInNewIcon
-              style={{ verticalAlign: 'sub', paddingTop: '7px' }}
-            />
-          </>
+          {urlHelper(data?.repoUrl || '')}
+          <OpenInNewIcon style={{ verticalAlign: 'sub', paddingTop: '7px' }} />
         </Link>
       </TableCell>
       {!isDrawer && (
         <TableCell align="left" className={classes.tableCellStyle}>
           <Link to={data?.organizationUrl || ''}>
-            <>
-              {urlHelper(data?.organizationUrl || '')}
-              <OpenInNewIcon
-                style={{ verticalAlign: 'sub', paddingTop: '7px' }}
-              />
-            </>
+            {urlHelper(data?.organizationUrl || '')}
+            <OpenInNewIcon
+              style={{ verticalAlign: 'sub', paddingTop: '7px' }}
+            />
           </Link>
         </TableCell>
       )}

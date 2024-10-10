@@ -8,6 +8,7 @@ import {
   APITypes,
   CreateImportJobRepository,
   ImportJobResponse,
+  ImportJobs,
   ImportJobStatus,
   OrgAndRepoResponse,
 } from '../types';
@@ -25,7 +26,7 @@ export type BulkImportAPI = {
     page: number,
     size: number,
     searchString: string,
-  ) => Promise<ImportJobStatus[] | Response>;
+  ) => Promise<ImportJobs | Response>;
   createImportJobs: (
     importRepositories: CreateImportJobRepository[],
     dryRun?: boolean,
@@ -87,11 +88,12 @@ export class BulkImportBackendClient implements BulkImportAPI {
     const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
     const jsonResponse = await fetch(
-      `${backendUrl}/api/bulk-import/imports?pagePerIntegration=${page}&sizePerIntegration=${size}&search=${searchString}`,
+      `${backendUrl}/api/bulk-import/imports?page=${page}&size=${size}&search=${searchString}`,
       {
         headers: {
           'Content-Type': 'application/json',
           ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          'api-version': 'v2',
         },
       },
     );
