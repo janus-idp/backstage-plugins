@@ -108,7 +108,9 @@ export function buildFilterCondition(
   if (
     filters.operator === FieldFilterOperatorEnum.Eq ||
     filters.operator === FieldFilterOperatorEnum.Like ||
-    filters.operator === FieldFilterOperatorEnum.In
+    filters.operator === FieldFilterOperatorEnum.In ||
+    filters.operator === FieldFilterOperatorEnum.Gt ||
+    filters.operator === FieldFilterOperatorEnum.Gte
   ) {
     return `${filters.field}: {${getGraphQLOperator(filters.operator)}: ${value}}`;
   }
@@ -121,7 +123,9 @@ function isOperatorSupported(operator: FieldFilterOperatorEnum): boolean {
     operator === FieldFilterOperatorEnum.Eq ||
     operator === FieldFilterOperatorEnum.Like ||
     operator === FieldFilterOperatorEnum.In ||
-    operator === FieldFilterOperatorEnum.IsNull
+    operator === FieldFilterOperatorEnum.IsNull ||
+    operator === FieldFilterOperatorEnum.Gt ||
+    operator === FieldFilterOperatorEnum.Gte
   );
 }
 
@@ -145,7 +149,17 @@ function isOperatorAllowedForField(
       FieldFilterOperatorEnum.IsNull,
       FieldFilterOperatorEnum.Eq,
     ],
-    [TypeName.Date]: [],
+    [TypeName.Date]: [
+      FieldFilterOperatorEnum.IsNull,
+      FieldFilterOperatorEnum.Eq,
+      FieldFilterOperatorEnum.Gt,
+      FieldFilterOperatorEnum.Gte,
+      // FieldFilterOperatorEnum.lessThan,
+      // FieldFilterOperatorEnum.lessThanEqual,
+      // FieldFilterOperatorEnum.between,
+      // FieldFilterOperatorEnum.from,
+      // FieldFilterOperatorEnum.to,
+    ],
     [TypeName.StringArray]: [],
   };
   const allowedForType = allowedOperators[fieldDef.type.name];
@@ -176,7 +190,8 @@ function formatValue(
 
   if (
     fieldDef.type.name === TypeName.String ||
-    fieldDef.type.name === TypeName.Id
+    fieldDef.type.name === TypeName.Id ||
+    fieldDef.type.name === TypeName.Date
   ) {
     return `"${fieldValue}"`;
   }
@@ -195,10 +210,10 @@ function getGraphQLOperator(operator: FieldFilterOperatorEnum): string {
       return 'in';
     case 'IS_NULL':
       return 'isNull';
-    // case 'GT':
-    //   // return "greaterThan"
-    // case 'GTE':
-    //   return "greaterThanEqual"
+    case 'GT':
+      return 'greaterThan';
+    case 'GTE':
+      return 'greaterThanEqual';
     // case 'LT':
     //   return "lessThan"
     // case 'LTE':
