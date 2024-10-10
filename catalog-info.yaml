@@ -52,7 +52,6 @@ spec:
     - ./plugins/kubernetes-actions/catalog-info.yaml
     - ./plugins/matomo/catalog-info.yaml
     - ./plugins/matomo-backend/catalog-info.yaml
-    - ./plugins/nexus-repository-manager/catalog-info.yaml
     - ./plugins/ocm/catalog-info.yaml
     - ./plugins/ocm-backend/catalog-info.yaml
     - ./plugins/ocm-common/catalog-info.yaml
