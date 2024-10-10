@@ -1,6 +1,6 @@
 {
   "extends": ["//"],
-  "pipeline": {
+  "tasks": {
     "tsc": {
       "outputs": ["../../dist-types/plugins/ocm-common/**"],
       "dependsOn": ["^tsc"]

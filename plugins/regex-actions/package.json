@@ -29,13 +29,16 @@
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
     "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies",
-    "lint": "backstage-cli package lint",
+    "lint:check": "backstage-cli package lint",
+    "lint:fix": "backstage-cli package lint --fix",
     "postpack": "backstage-cli package postpack",
     "postversion": "yarn run export-dynamic",
     "prepack": "backstage-cli package prepack",
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "^0.7.0",
@@ -44,6 +47,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/cli": "0.26.11",
     "@backstage/plugin-scaffolder-node-test-utils": "0.1.9",
     "@janus-idp/cli": "1.15.2"

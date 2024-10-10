@@ -34,7 +34,9 @@
     "lodash": "^4.17.21",
     "luxon": "^3.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "prettier": "3.3.3"
+  },
   "files": [
     "dist",
     "config.d.ts",

@@ -29,7 +29,9 @@
     "yaml": "^2.3.3",
     "zod": "^3.22.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "prettier": "3.3.3"
+  },
   "files": [
     "dist",
     "config.d.ts",

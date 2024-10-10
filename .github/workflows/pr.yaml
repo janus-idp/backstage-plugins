@@ -2,6 +2,10 @@ name: Pull request
 
 on: pull_request
 
+env:
+  TURBO_SCM_BASE: ${{ github.event.pull_request.base.sha }}
+  TURBO_SCM_HEAD: ${{ github.sha }}
+
 jobs:
   test:
     name: Test-build with Node.js ${{ matrix.node-version }}
@@ -15,14 +19,27 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'yarn'
+
+      - name: Setup local Turbo cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@cc723b4600e40a6b8815b65701d8614b91e2669e # v1
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          yarn install
+
       - name: Test
         uses: ./.github/actions/test
         with:
-          args: '[HEAD^1]'
-          node-version: ${{ matrix.node-version }}
+          args: --affected
 
       - name: Build all packages
         uses: ./.github/actions/build
         with:
-          args: '[HEAD^1]'
-          node-version: ${{ matrix.node-version }}
+          args: --affected

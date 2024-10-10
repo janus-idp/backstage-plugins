@@ -25,7 +25,9 @@
   "dependencies": {
     "yaml": "^2.3.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "prettier": "3.3.3"
+  },
   "files": [
     "dist"
   ],

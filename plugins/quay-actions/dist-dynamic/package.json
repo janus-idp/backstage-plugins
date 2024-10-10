@@ -23,7 +23,9 @@
   },
   "scripts": {},
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "prettier": "3.3.3"
+  },
   "files": [
     "dist"
   ],

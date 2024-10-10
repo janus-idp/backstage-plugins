@@ -3,27 +3,14 @@ description: Test Node.js package
 inputs:
   args:
     description: Backstage CLI repo build arguments
-    default: '@janus-idp/*'
-  node-version:
-    description: Node.js version
-    required: true
-    default: '20'
+    default: --filter=@janus-idp/*
+
 runs:
   using: 'composite'
   steps:
-    - name: Setup Node.js
-      uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
-      with:
-        node-version: ${{ inputs.node-version }}
-        cache: 'yarn'
-
-    - name: Setup local Turbo cache
-      uses: dtinth/setup-github-actions-caching-for-turbo@cc723b4600e40a6b8815b65701d8614b91e2669e # v1
-
-    - name: Install dependencies
+    - name: Check if workspace is dirty
       shell: bash
       run: |
-        yarn install
         changed_files="$(git diff --name-only . || true)"
         if [[ $changed_files ]]; then
           echo "After 'yarn install', workspace is dirty! The following files have changed:"
@@ -38,12 +25,12 @@ runs:
 
     - name: Run prettier
       shell: bash
-      run: yarn prettier:check
+      run: yarn prettier:check ${{ inputs.args }}
 
     - name: Run lint
       shell: bash
-      run: yarn lint --filter=${{ inputs.args }}
+      run: yarn run lint:check ${{ inputs.args }}
 
     - name: Run tests
       shell: bash
-      run: yarn test --filter=${{ inputs.args }}
+      run: yarn run test ${{ inputs.args }}
