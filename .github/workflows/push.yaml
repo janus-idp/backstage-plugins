@@ -35,15 +35,15 @@ jobs:
           app-id: ${{ vars.JANUS_IDP_GITHUB_APP_ID }}
           private-key: ${{ secrets.JANUS_IDP_GITHUB_APP_PRIVATE_KEY }}
 
-      - name: Build all packages
-        # We are required to build every plugin for MSR
-        uses: ./.github/actions/build
-
       - name: Setup Node.js
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
         with:
           node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Build all packages
+        # We are required to build every plugin for MSR
+        uses: ./.github/actions/build
 
       - name: Release via semantic-release
         run: |

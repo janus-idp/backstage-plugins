@@ -4,19 +4,10 @@ inputs:
   args:
     description: Backstage CLI repo build arguments
     default: --filter=@janus-idp/*
-  node-version:
-    description: Node.js version
-    required: true
-    default: '20'
+
 runs:
   using: 'composite'
   steps:
-    - name: Setup Node.js
-      uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
-      with:
-        node-version: ${{ inputs.node-version }}
-        cache: 'yarn'
-
     - name: Build all packages
       shell: bash
       run: yarn run build ${{ inputs.args }}
