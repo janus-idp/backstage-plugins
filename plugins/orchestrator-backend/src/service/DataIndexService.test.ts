@@ -12,7 +12,8 @@ import {
   WorkflowInfo,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import * as graphqlUtils from '../helpers/queryBuilder';
+import * as buildGrahQLFilterUtils from '../helpers/filterBuilder';
+import * as buildGrahQLQueryUtils from '../helpers/queryBuilder';
 import { Pagination } from '../types/pagination';
 import {
   mockProcessDefinitionArguments,
@@ -28,6 +29,13 @@ jest.mock('../helpers/queryBuilder', () => {
   return {
     __esModule: true,
     ...jest.requireActual('../helpers/queryBuilder'),
+  };
+});
+
+jest.mock('../helpers/filterBuilder', () => {
+  return {
+    __esModule: true,
+    ...jest.requireActual('../helpers/filterBuilder'),
   };
 });
 
@@ -193,8 +201,14 @@ describe('fetchWorkflowInfos', () => {
     dataIndexService = new DataIndexService('fakeUrl', loggerMock);
 
     // Set up spies on the graphql utility functions
-    buildGraphQlQuerySpy = jest.spyOn(graphqlUtils, 'buildGraphQlQuery');
-    buildFilterConditionSpy = jest.spyOn(graphqlUtils, 'buildFilterCondition');
+    buildGraphQlQuerySpy = jest.spyOn(
+      buildGrahQLQueryUtils,
+      'buildGraphQlQuery',
+    );
+    buildFilterConditionSpy = jest.spyOn(
+      buildGrahQLFilterUtils,
+      'buildFilterCondition',
+    );
   });
   it('should fetch workflow infos with no parameters', async () => {
     // Given
@@ -219,7 +233,7 @@ describe('fetchWorkflowInfos', () => {
     });
     expect(mockClient.query).toHaveBeenCalled();
     expect(mockClient.query).toHaveBeenCalledWith(
-      graphqlUtils.buildGraphQlQuery(expectedQueryArgs),
+      buildGrahQLQueryUtils.buildGraphQlQuery(expectedQueryArgs),
       {},
     );
   });
@@ -256,7 +270,7 @@ describe('fetchWorkflowInfos', () => {
     expect(buildFilterConditionSpy).not.toHaveBeenCalled();
     expect(mockClient.query).toHaveBeenCalled();
     expect(mockClient.query).toHaveBeenCalledWith(
-      graphqlUtils.buildGraphQlQuery(expectedQueryArgs),
+      buildGrahQLQueryUtils.buildGraphQlQuery(expectedQueryArgs),
       {},
     );
   });
@@ -294,7 +308,7 @@ describe('fetchWorkflowInfos', () => {
     });
     expect(mockClient.query).toHaveBeenCalledTimes(1);
     expect(mockClient.query).toHaveBeenCalledWith(
-      graphqlUtils.buildGraphQlQuery(expectedQueryArgs),
+      buildGrahQLQueryUtils.buildGraphQlQuery(expectedQueryArgs),
       {},
     );
     expect(buildFilterConditionSpy).not.toHaveBeenCalled();
@@ -339,7 +353,7 @@ describe('fetchWorkflowInfos', () => {
     );
     expect(mockClient.query).toHaveBeenCalledTimes(2);
     expect(mockClient.query).toHaveBeenCalledWith(
-      graphqlUtils.buildGraphQlQuery(expectedQueryArgs),
+      buildGrahQLQueryUtils.buildGraphQlQuery(expectedQueryArgs),
       {},
     );
   });
@@ -384,7 +398,7 @@ describe('fetchWorkflowInfos', () => {
     );
     expect(mockClient.query).toHaveBeenCalledTimes(2);
     expect(mockClient.query).toHaveBeenCalledWith(
-      graphqlUtils.buildGraphQlQuery(expectedQueryArgs),
+      buildGrahQLQueryUtils.buildGraphQlQuery(expectedQueryArgs),
       {},
     );
     expect(result).toBeDefined();
@@ -421,7 +435,7 @@ describe('fetchWorkflowInfos', () => {
 
     expect(mockClient.query).toHaveBeenCalledTimes(2);
     expect(mockClient.query).toHaveBeenCalledWith(
-      graphqlUtils.buildGraphQlQuery(expectedQueryArgs),
+      buildGrahQLQueryUtils.buildGraphQlQuery(expectedQueryArgs),
       {},
     );
     expect(buildGraphQlQuerySpy).toHaveBeenCalledTimes(2);
@@ -514,8 +528,14 @@ describe('fetchInstances', () => {
     // Create a spy for method1
     jest.spyOn(dataIndexService, 'fetchWorkflowInfo').mockResolvedValue(wfInfo);
     // Set up spies on the graphql utility functions
-    buildGraphQlQuerySpy = jest.spyOn(graphqlUtils, 'buildGraphQlQuery');
-    buildFilterConditionSpy = jest.spyOn(graphqlUtils, 'buildFilterCondition');
+    buildGraphQlQuerySpy = jest.spyOn(
+      buildGrahQLQueryUtils,
+      'buildGraphQlQuery',
+    );
+    buildFilterConditionSpy = jest.spyOn(
+      buildGrahQLFilterUtils,
+      'buildFilterCondition',
+    );
 
     // Clear mocks before each test
     jest.clearAllMocks();
@@ -549,7 +569,7 @@ describe('fetchInstances', () => {
     expect(buildFilterConditionSpy).not.toHaveBeenCalled();
     expect(mockClient.query).toHaveBeenCalled();
     expect(mockClient.query).toHaveBeenCalledWith(
-      graphqlUtils.buildGraphQlQuery(expectedQueryArgs),
+      buildGrahQLQueryUtils.buildGraphQlQuery(expectedQueryArgs),
       {},
     );
   });
@@ -583,7 +603,7 @@ describe('fetchInstances', () => {
     expect(buildFilterConditionSpy).not.toHaveBeenCalled();
     expect(mockClient.query).toHaveBeenCalled();
     expect(mockClient.query).toHaveBeenCalledWith(
-      graphqlUtils.buildGraphQlQuery(expectedQueryArgs),
+      buildGrahQLQueryUtils.buildGraphQlQuery(expectedQueryArgs),
       {},
     );
     expect(result).toBeDefined();
@@ -624,7 +644,7 @@ describe('fetchInstances', () => {
     expect(buildFilterConditionSpy).not.toHaveBeenCalled();
     expect(mockClient.query).toHaveBeenCalledTimes(1);
     expect(mockClient.query).toHaveBeenCalledWith(
-      graphqlUtils.buildGraphQlQuery(expectedQueryArgs),
+      buildGrahQLQueryUtils.buildGraphQlQuery(expectedQueryArgs),
       {},
     );
   });
@@ -662,7 +682,7 @@ describe('fetchInstances', () => {
     );
     expect(mockClient.query).toHaveBeenCalledTimes(2);
     expect(mockClient.query).toHaveBeenCalledWith(
-      graphqlUtils.buildGraphQlQuery(expectedQueryArgs),
+      buildGrahQLQueryUtils.buildGraphQlQuery(expectedQueryArgs),
       {},
     );
   });
@@ -698,7 +718,7 @@ describe('fetchInstances', () => {
     );
     expect(mockClient.query).toHaveBeenCalledTimes(2);
     expect(mockClient.query).toHaveBeenCalledWith(
-      graphqlUtils.buildGraphQlQuery(expectedQueryArgs),
+      buildGrahQLQueryUtils.buildGraphQlQuery(expectedQueryArgs),
       {},
     );
     expect(result).toBeDefined();
@@ -739,7 +759,7 @@ describe('fetchInstances', () => {
     );
     expect(mockClient.query).toHaveBeenCalledTimes(2);
     expect(mockClient.query).toHaveBeenCalledWith(
-      graphqlUtils.buildGraphQlQuery(expectedQueryArgs),
+      buildGrahQLQueryUtils.buildGraphQlQuery(expectedQueryArgs),
       {},
     );
     expect(result).toBeDefined();
