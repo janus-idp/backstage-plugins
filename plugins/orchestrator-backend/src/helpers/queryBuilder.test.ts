@@ -110,6 +110,15 @@ describe('column filters', () => {
     },
   });
 
+  const createDateIntrospectionField = (name: string): IntrospectionField => ({
+    name,
+    type: {
+      name: TypeName.Date,
+      kind: TypeKind.InputObject,
+      ofType: null,
+    },
+  });
+
   const createFieldFilter = (
     field: string,
     operator: FieldFilterOperatorEnum,
@@ -320,7 +329,6 @@ describe('column filters', () => {
       },
     );
   });
-
   describe('idArgument testcases', () => {
     const idTestCases: FilterTestCase[] = [
       {
@@ -396,6 +404,102 @@ describe('column filters', () => {
         },
         expectedResult:
           'and: {id: {equal: "idA"}, processId: {isNull: true}, id: {in: ["idA", "idB", "idC"]}}',
+      },
+    ];
+
+    idTestCases.forEach(
+      ({ name, introspectionFields, filter, expectedResult }) => {
+        it(`${name}`, () => {
+          const result = buildFilterCondition(introspectionFields, filter);
+          expect(result).toBe(expectedResult);
+        });
+      },
+    );
+  });
+  describe('dateArgument testcases', () => {
+    const startDate = '2024-10-10T09:54:40.759Z';
+    const idTestCases: FilterTestCase[] = [
+      {
+        name: 'returns correct filter for single date field with equal operator',
+        introspectionFields: [createDateIntrospectionField('start')],
+        filter: createFieldFilter(
+          'start',
+          FieldFilterOperatorEnum.Eq,
+          startDate,
+        ),
+        expectedResult: `start: {equal: "${startDate}"}`,
+      },
+      {
+        name: 'returns correct filter for single date field with isNull operator (false as boolean)',
+        introspectionFields: [createDateIntrospectionField('start')],
+        filter: createFieldFilter(
+          'start',
+          FieldFilterOperatorEnum.IsNull,
+          false,
+        ),
+        expectedResult: 'start: {isNull: false}',
+      },
+      {
+        name: 'returns correct filter for single date field with isNull operator (false as string)',
+        introspectionFields: [createDateIntrospectionField('start')],
+        filter: createFieldFilter(
+          'start',
+          FieldFilterOperatorEnum.IsNull,
+          'false',
+        ),
+        expectedResult: 'start: {isNull: false}',
+      },
+      {
+        name: 'returns correct filter for single date field with GT operator',
+        introspectionFields: [createDateIntrospectionField('start')],
+        filter: createFieldFilter(
+          'start',
+          FieldFilterOperatorEnum.Gt,
+          startDate,
+        ),
+        expectedResult: `start: {greaterThan: "${startDate}"}`,
+      },
+      {
+        name: 'returns correct filter for single date field with GTE operator',
+        introspectionFields: [createDateIntrospectionField('start')],
+        filter: createFieldFilter(
+          'start',
+          FieldFilterOperatorEnum.Gte,
+          startDate,
+        ),
+        expectedResult: `start: {greaterThanEqual: "${startDate}"}`,
+      },
+      {
+        name: 'returns correct OR filter for multiple id fields with equal, isNull, and GT operators',
+        introspectionFields: [
+          createDateIntrospectionField('start'),
+          createDateIntrospectionField('end'),
+        ],
+        filter: {
+          operator: 'OR',
+          filters: [
+            createFieldFilter('start', FieldFilterOperatorEnum.Eq, startDate),
+            createFieldFilter('end', FieldFilterOperatorEnum.IsNull, 'False'),
+            createFieldFilter('end', FieldFilterOperatorEnum.Gt, startDate),
+          ],
+        },
+        expectedResult: `or: {start: {equal: "${startDate}"}, end: {isNull: false}, end: {greaterThan: "${startDate}"}}`,
+      },
+      {
+        name: 'returns correct OR filter for multiple id fields with equal, isNull, and GTE operators',
+        introspectionFields: [
+          createDateIntrospectionField('start'),
+          createDateIntrospectionField('end'),
+        ],
+        filter: {
+          operator: 'OR',
+          filters: [
+            createFieldFilter('start', FieldFilterOperatorEnum.Eq, startDate),
+            createFieldFilter('end', FieldFilterOperatorEnum.IsNull, 'False'),
+            createFieldFilter('end', 'GTE', startDate),
+          ],
+        },
+        expectedResult: `or: {start: {equal: "${startDate}"}, end: {isNull: false}, end: {greaterThanEqual: "${startDate}"}}`,
       },
     ];
 
