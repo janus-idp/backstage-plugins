@@ -132,12 +132,14 @@ export class PolicyBuilder {
       };
     }
 
-    const pluginPermMetaData = new PluginPermissionMetadataCollector(
-      env.discovery,
-      pluginIdProvider,
-      env.logger,
-      env.config,
-    );
+    const pluginPermMetaData = new PluginPermissionMetadataCollector({
+      deps: {
+        discovery: env.discovery,
+        pluginIdProvider: pluginIdProvider,
+        logger: env.logger,
+        config: env.config,
+      },
+    });
 
     const options: RouterOptions = {
       config: env.config,
