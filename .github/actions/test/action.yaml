@@ -25,12 +25,12 @@ runs:
 
     - name: Run prettier
       shell: bash
-      run: yarn prettier:check ${{ inputs.args }}
+      run: yarn prettier:check --concurrency=75% ${{ inputs.args }}
 
     - name: Run lint
       shell: bash
-      run: yarn run lint:check ${{ inputs.args }}
+      run: yarn run lint:check --concurrency=75% ${{ inputs.args }}
 
     - name: Run tests
       shell: bash
-      run: yarn run test ${{ inputs.args }}
+      run: yarn run test --concurrency=75% ${{ inputs.args }}
