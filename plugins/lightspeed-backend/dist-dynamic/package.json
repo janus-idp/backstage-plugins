@@ -30,9 +30,7 @@
     "express": "^4.18.2",
     "http-proxy-middleware": "^3.0.2"
   },
-  "devDependencies": {
-    "prettier": "3.3.3"
-  },
+  "devDependencies": {},
   "files": [
     "dist",
     "config.d.ts",

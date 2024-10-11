@@ -32,9 +32,7 @@
     "node-fetch": "^3.3.2",
     "yn": "^4.0.0"
   },
-  "devDependencies": {
-    "prettier": "3.3.3"
-  },
+  "devDependencies": {},
   "files": [
     "dist",
     "config.d.ts",

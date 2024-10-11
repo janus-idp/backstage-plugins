@@ -61,9 +61,7 @@
     "js-yaml": "^4.1.0",
     "axios": "^1.7.4"
   },
-  "devDependencies": {
-    "prettier": "3.3.3"
-  },
+  "devDependencies": {},
   "peerDependencies": {
     "@janus-idp/backstage-plugin-audit-log-node": "1.5.1",
     "@janus-idp/backstage-plugin-rbac-common": "1.10.0",

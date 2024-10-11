@@ -25,9 +25,7 @@
   "dependencies": {
     "@kubernetes/client-node": "^0.20.0"
   },
-  "devDependencies": {
-    "prettier": "3.3.3"
-  },
+  "devDependencies": {},
   "files": [
     "dist"
   ],

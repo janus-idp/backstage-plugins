@@ -27,9 +27,7 @@
     "lodash": "^4.17.21",
     "yaml": "^2.0.0"
   },
-  "devDependencies": {
-    "prettier": "3.3.3"
-  },
+  "devDependencies": {},
   "files": [
     "dist",
     "config.d.ts",
