@@ -26,7 +26,7 @@ import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
 import { Connection, connectRBACProviders } from './connect-providers';
 
-const loggerMock = mockServices.logger.mock();
+const mockLoggerService = mockServices.logger.mock();
 
 const roleMetadataStorageMock: RoleMetadataStorage = {
   filterRoleMetadata: jest
@@ -92,7 +92,7 @@ const auditLoggerMock = {
 
 // TODO: Move to 'catalogServiceMock' from '@backstage/plugin-catalog-node/testUtils'
 // once '@backstage/plugin-catalog-node' is upgraded
-const catalogApi = {
+const catalogApiMock = {
   getEntityAncestors: jest.fn().mockImplementation(),
   getLocationById: jest.fn().mockImplementation(),
   getEntities: jest.fn().mockImplementation(),
@@ -111,7 +111,7 @@ const catalogApi = {
 
 const mockAuthService = mockServices.auth();
 
-const dbManagerMock = Knex.knex({ client: MockClient });
+const mockClientKnex = Knex.knex({ client: MockClient });
 
 const providerMock: RBACProvider = {
   getProviderName: jest.fn().mockImplementation(),
@@ -161,11 +161,11 @@ describe('Connection', () => {
     const id = 'test';
     const adapter = await new CasbinDBAdapterFactory(
       config,
-      dbManagerMock,
+      mockClientKnex,
     ).createAdapter();
 
     const stringModel = newModelFromString(MODEL);
-    const enf = await createEnforcer(stringModel, adapter, loggerMock);
+    const enf = await createEnforcer(stringModel, adapter, mockLoggerService);
 
     const knex = Knex.knex({ client: MockClient });
 
@@ -187,7 +187,7 @@ describe('Connection', () => {
       id,
       enforcerDelegate,
       roleMetadataStorageMock,
-      loggerMock,
+      mockLoggerService,
       auditLoggerMock,
     );
   });
@@ -218,7 +218,7 @@ describe('Connection', () => {
     >;
 
     afterEach(() => {
-      (loggerMock.warn as jest.Mock).mockReset();
+      (mockLoggerService.warn as jest.Mock).mockReset();
     });
 
     it('should add the new roles', async () => {
@@ -325,7 +325,7 @@ describe('Connection', () => {
       const roleToAdd = `user:default/test,role:default/`;
 
       await provider.applyRoles(roles);
-      expect(loggerMock.warn).toHaveBeenCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenCalledWith(
         `Failed to validate group policy ${roleToAdd}. Cause: Entity reference "role:default/" was not on the form [<kind>:][<namespace>/]<name>`,
       );
     });
@@ -354,7 +354,7 @@ describe('Connection', () => {
       };
 
       await provider.applyRoles(roles);
-      expect(loggerMock.warn).toHaveBeenCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenCalledWith(
         `Failed to validate group policy ${failingRoleToAdd}. Cause: Entity reference "role:default/" was not on the form [<kind>:][<namespace>/]<name>`,
       );
       expect(enfAddGroupingPolicySpy).toHaveBeenCalledWith(
@@ -383,7 +383,7 @@ describe('Connection', () => {
     >;
 
     afterEach(() => {
-      (loggerMock.warn as jest.Mock).mockReset();
+      (mockLoggerService.warn as jest.Mock).mockReset();
     });
 
     it('should add new permissions', async () => {
@@ -416,7 +416,7 @@ describe('Connection', () => {
       ];
 
       await provider.applyPermissions(policies);
-      expect(loggerMock.warn).toHaveBeenCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenCalledWith(
         `Invalid permission policy, Error: 'effect' has invalid value: 'temp'. It should be: 'allow' or 'deny'`,
       );
     });
@@ -429,7 +429,7 @@ describe('Connection', () => {
       ];
 
       await provider.applyPermissions(policies);
-      expect(loggerMock.warn).toHaveBeenCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenCalledWith(
         `Unable to add policy ${policies[0].toString()}. Cause: source does not match originating role ${policies[0][0]}, consider making changes to the 'CSV-FILE'`,
       );
     });
@@ -451,11 +451,11 @@ describe('connectRBACProviders', () => {
 
     const adapter = await new CasbinDBAdapterFactory(
       config,
-      dbManagerMock,
+      mockClientKnex,
     ).createAdapter();
 
     const stringModel = newModelFromString(MODEL);
-    const enf = await createEnforcer(stringModel, adapter, loggerMock);
+    const enf = await createEnforcer(stringModel, adapter, mockLoggerService);
 
     const knex = Knex.knex({ client: MockClient });
 
@@ -469,7 +469,7 @@ describe('connectRBACProviders', () => {
       [providerMock],
       enforcerDelegate,
       roleMetadataStorageMock,
-      loggerMock,
+      mockLoggerService,
       auditLoggerMock,
     );
 
@@ -487,7 +487,7 @@ async function createEnforcer(
   const enf = await newEnforcer(theModel, adapter);
 
   const rm = new BackstageRoleManager(
-    catalogApi,
+    catalogApiMock,
     logger,
     catalogDBClient,
     rbacDBClient,
