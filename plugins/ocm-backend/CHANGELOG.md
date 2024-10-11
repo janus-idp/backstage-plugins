@@ -1,3 +1,19 @@
+## @janus-idp/backstage-plugin-ocm-backend [4.0.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@4.0.9...@janus-idp/backstage-plugin-ocm-backend@4.0.10) (2024-10-10)
+
+
+
+### Dependencies
+
+* **ws:**  upgraded to 8.18.0
+  * Fixes CVE-2024-37890
+* **express** upgraded to 4.21.1
+  * Fixes:
+    * CVE-2024-45296
+    * CVE-2024-43799
+    * CVE-2024-45590
+    * CVE-2024-47764
+    * CVE-2024-43800
+
 ## @janus-idp/backstage-plugin-ocm-backend [4.0.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@4.0.8...@janus-idp/backstage-plugin-ocm-backend@4.0.9) (2024-06-13)
 
 
