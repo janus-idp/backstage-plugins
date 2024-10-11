@@ -1,4 +1,16 @@
-## @janus-idp/backstage-plugin-orchestrator-backend [1.9.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.9.7...@janus-idp/backstage-plugin-orchestrator-backend@1.9.8) (2024-06-13)
+## @janus-idp/backstage-plugin-orchestrator-backend [1.9.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.9.8...@janus-idp/backstage-plugin-orchestrator-backend@1.9.9) (2024-10-10)
+
+
+
+### Dependencies
+* **express** upgraded to 4.21.1
+  * Fixes:
+    * CVE-2024-45296
+    * CVE-2024-43799
+    * CVE-2024-45590
+    * CVE-2024-47764
+    * CVE-2024-43800
+
 
 
 

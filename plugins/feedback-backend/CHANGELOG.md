@@ -1,3 +1,15 @@
+## @janus-idp/backstage-plugin-feedback-backend [1.3.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.10...@janus-idp/backstage-plugin-feedback-backend@1.3.11) (2024-10-10)
+
+
+### Dependencies
+* **express** upgraded to 4.21.1
+  * Fixes:
+    * CVE-2024-45296
+    * CVE-2024-43799
+    * CVE-2024-45590
+    * CVE-2024-47764
+    * CVE-2024-43800
+
 ## @janus-idp/backstage-plugin-feedback-backend [1.3.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.3.9...@janus-idp/backstage-plugin-feedback-backend@1.3.10) (2024-06-13)
 
 
