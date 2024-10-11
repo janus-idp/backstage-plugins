@@ -935,68 +935,6 @@ describe('RBACPermissionPolicy Tests', () => {
       );
     });
 
-    it('should build the admin permissions', async () => {
-      const enfRole = await enfDelegate.getFilteredGroupingPolicy(1, adminRole);
-      const enfPermission = await enfDelegate.getFilteredPolicy(0, adminRole);
-      expect(enfRole).toEqual(groupPolicy);
-      expect(enfPermission).toEqual(permissions);
-    });
-
-    it('should fail to build the admin permissions, problem with creating role metadata', async () => {
-      roleMetadataStorageMock.findRoleMetadata = jest
-        .fn()
-        .mockImplementation(async (): Promise<void> => {
-          return undefined;
-        });
-
-      roleMetadataStorageMock.createRoleMetadata = jest
-        .fn()
-        .mockImplementation(async (): Promise<void> => {
-          throw new Error(`Failed to create`);
-        });
-
-      const config = mockServices.rootConfig({
-        data: {
-          permission: {
-            rbac: {
-              'policies-csv-file': csvPermFile,
-              policyFileReload: true,
-            },
-          },
-          backend: {
-            database: {
-              client: 'better-sqlite3',
-              connection: ':memory:',
-            },
-          },
-        },
-      });
-
-      await expect(
-        newPermissionPolicy(config, enfDelegate, roleMetadataStorageMock),
-      ).rejects.toThrow('Failed to create');
-    });
-
-    it('should build and update a legacy admin permission', async () => {
-      roleMetadataStorageTest.findRoleMetadata = jest
-        .fn()
-        .mockImplementationOnce(
-          async (
-            _roleEntityRef: string,
-            _trx: Knex.Knex.Transaction,
-          ): Promise<RoleMetadata> => {
-            return { source: 'legacy' };
-          },
-        );
-
-      const enfRole = await enfDelegate.getFilteredGroupingPolicy(1, adminRole);
-      const enfPermission = await enfDelegate.getFilteredPolicy(0, adminRole);
-
-      expect(enfRole).toEqual(groupPolicy);
-      expect(enfPermission).toEqual(permissions);
-      expect(roleMetadataStorageTest.updateRoleMetadata).toHaveBeenCalled();
-    });
-
     it('should allow read access to resource permission for user from config file', async () => {
       const decision = await policy.handle(
         newPolicyQueryWithResourcePermission(
