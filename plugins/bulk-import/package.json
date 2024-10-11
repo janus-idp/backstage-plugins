@@ -34,7 +34,7 @@
     "tsc": "tsc",
     "prettier:check": "prettier --ignore-unknown --check .",
     "prettier:fix": "prettier --ignore-unknown --write .",
-    "ui-test": "yarn playwright test"
+    "ui-test": "start-server-and-test start localhost:3000 'yarn --cwd ../../packages/backend run start' 7007 'playwright test'"
   },
   "dependencies": {
     "@backstage/catalog-model": "^1.5.0",
@@ -73,7 +73,8 @@
     "@testing-library/jest-dom": "6.4.8",
     "@testing-library/react": "14.3.1",
     "@testing-library/user-event": "14.5.2",
-    "msw": "1.3.3"
+    "msw": "1.3.3",
+    "start-server-and-test": "2.0.3"
   },
   "scalprum": {
     "name": "janus-idp.backstage-plugin-bulk-import",

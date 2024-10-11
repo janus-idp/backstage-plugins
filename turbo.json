@@ -16,6 +16,9 @@
     "test": {
       "outputs": ["coverage/**"]
     },
+    "ui-test": {
+      "outputs": ["test-results/**"]
+    },
     "export-dynamic": {
       "cache": false,
       "dependsOn": ["tsc"]
