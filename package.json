@@ -18,7 +18,7 @@
     "build:storybook": "yarn --cwd packages/storybook build",
     "tsc": "turbo run tsc",
     "clean": "turbo run clean",
-    "test": "turbo run test --concurrency=1",
+    "test": "turbo run test",
     "lint:check": "turbo run lint:check",
     "lint:fix": "turbo run lint:fix",
     "lint-staged": "lint-staged -p 10",

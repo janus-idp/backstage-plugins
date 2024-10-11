@@ -22,8 +22,8 @@
   },
   "sideEffects": false,
   "scripts": {
-    "build": "scripts/build",
-    "postbuild": "scripts/postbuild copy",
+    "build": "scripts/build.sh",
+    "postbuild": "node scripts/postbuild.js copy",
     "clean": "backstage-cli package clean",
     "lint:check": "backstage-cli package lint",
     "lint:fix": "backstage-cli package lint --fix",

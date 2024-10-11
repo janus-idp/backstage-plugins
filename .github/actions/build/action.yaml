@@ -10,4 +10,4 @@ runs:
   steps:
     - name: Build all packages
       shell: bash
-      run: yarn run build ${{ inputs.args }}
+      run: yarn run build --concurrency=75% ${{ inputs.args }}
