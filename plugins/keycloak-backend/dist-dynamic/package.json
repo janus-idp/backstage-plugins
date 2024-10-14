@@ -33,6 +33,7 @@
   "devDependencies": {},
   "files": [
     "dist",
+    "embedded",
     "config.d.ts",
     "app-config.janus-idp.yaml"
   ],
