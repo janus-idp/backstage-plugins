@@ -2,7 +2,6 @@ import type {
   AuthService,
   HttpAuthService,
   PermissionsService,
-  UserInfoService,
 } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
 import {
@@ -113,9 +112,7 @@ export class PoliciesServer {
     const decision = (
       await this.permissions.authorize(
         [{ permission: permission, resourceRef: permission.resourceType }],
-        {
-          credentials: await this.httpAuth.credentials(request),
-        },
+        { credentials },
       )
     )[0];
 
