@@ -18,12 +18,12 @@
     "build:storybook": "yarn --cwd packages/storybook build",
     "tsc": "turbo run tsc",
     "clean": "turbo run clean",
-    "test": "turbo run test --concurrency=1",
-    "lint": "turbo run lint",
-    "lint:fix": "turbo run lint -- --fix",
-    "lint-staged": "lint-staged",
-    "prettier:check": "prettier --ignore-unknown --check .",
-    "prettier:fix": "prettier --ignore-unknown --write .",
+    "test": "turbo run test",
+    "lint:check": "turbo run lint:check",
+    "lint:fix": "turbo run lint:fix",
+    "lint-staged": "lint-staged -p 10",
+    "prettier:check": "turbo run prettier:check",
+    "prettier:fix": "turbo run prettier:check",
     "new": "janus-cli new --do-not-edit-packages",
     "release": "multi-semantic-release",
     "prepare": "husky install",
@@ -55,8 +55,7 @@
     "husky": "8.0.3",
     "lint-staged": "15.2.7",
     "multi-semantic-release": "3.0.2",
-    "prettier": "3.3.3",
-    "turbo": "1.13.4",
+    "turbo": "2.1.3",
     "typescript": "5.4.5"
   },
   "resolutions": {
@@ -70,10 +69,6 @@
     "@babel/traverse": "7.24.8",
     "@babel/generator": "7.24.10",
     "dset": "^3.1.4"
-  },
-  "lint-staged": {
-    "*": "turbo run prettier:fix --",
-    "*.{js,jsx,ts,tsx,mjs,cjs}": "turbo run lint:fix --"
   },
   "jest": {
     "testTimeout": 15000
@@ -137,5 +132,6 @@
         }
       ]
     ]
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }

@@ -18,9 +18,12 @@
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write .",
     "clean": "backstage-cli package clean",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "lint": "backstage-cli package lint"
+    "lint:check": "backstage-cli package lint",
+    "lint:fix": "backstage-cli package lint --fix"
   },
   "dependencies": {
     "@backstage/app-defaults": "^1.5.11",
@@ -56,6 +59,7 @@
     "tss-react": "^4.9.10"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/cli": "0.27.1",
     "@backstage/test-utils": "1.6.0",
     "@testing-library/dom": "9.3.4",

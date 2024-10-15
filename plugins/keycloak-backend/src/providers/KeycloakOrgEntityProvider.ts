@@ -21,7 +21,7 @@ import type {
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
-  Entity,
+  type Entity,
 } from '@backstage/catalog-model';
 import type { Config } from '@backstage/config';
 import { InputError, isError, NotFoundError } from '@backstage/errors';

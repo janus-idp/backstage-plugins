@@ -1,6 +1,6 @@
 {
   "extends": ["//"],
-  "pipeline": {
+  "tasks": {
     "tsc": {
       "outputs": ["../../dist-types/plugins/orchestrator-form-react/**"],
       "dependsOn": ["^tsc"]

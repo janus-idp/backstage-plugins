@@ -28,9 +28,6 @@ jobs:
           # so that semantic-release can use use the generated token
           persist-credentials: false
 
-      - name: Test
-        uses: ./.github/actions/test
-
       - name: Generate token
         id: generate-token
         uses: actions/create-github-app-token@31c86eb3b33c9b601a1f60f98dcbfd1d70f379b4 # v1.10.3
@@ -38,14 +35,20 @@ jobs:
           app-id: ${{ vars.JANUS_IDP_GITHUB_APP_ID }}
           private-key: ${{ secrets.JANUS_IDP_GITHUB_APP_PRIVATE_KEY }}
 
-      - name: Build all packages
-        uses: ./.github/actions/build
-
       - name: Setup Node.js
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
         with:
           node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          yarn install
+
+      - name: Build all packages
+        # We are required to build every plugin for MSR
+        uses: ./.github/actions/build
 
       - name: Release via semantic-release
         run: |
