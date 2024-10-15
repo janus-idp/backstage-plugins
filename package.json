@@ -23,7 +23,7 @@
     "lint:fix": "turbo run lint:fix",
     "lint-staged": "lint-staged -p 10",
     "prettier:check": "turbo run prettier:check",
-    "prettier:fix": "turbo run prettier:check",
+    "prettier:fix": "turbo run prettier:fix",
     "new": "janus-cli new --do-not-edit-packages",
     "prepare": "husky install",
     "export-dynamic": "turbo run export-dynamic",
