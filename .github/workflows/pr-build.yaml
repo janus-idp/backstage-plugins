@@ -1,4 +1,4 @@
-name: Pull request
+name: Pull Request - Builds
 
 on: pull_request
 
@@ -7,8 +7,8 @@ env:
   TURBO_SCM_HEAD: ${{ github.sha }}
 
 jobs:
-  test:
-    name: Test-build with Node.js ${{ matrix.node-version }}
+  build:
+    name: Build with Node.js ${{ matrix.node-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -34,12 +34,7 @@ jobs:
         run: |
           yarn install
 
-      - name: Test
-        uses: ./.github/actions/test
-        with:
-          args: --affected
-
-      - name: Build all packages
+      - name: Build packages
         uses: ./.github/actions/build
         with:
           args: --affected
