@@ -691,8 +691,6 @@ components:
               CONTAINS_ANY,
               LIKE,
               BETWEEN,
-              FROM,
-              TO,
             ]
         value:
           oneOf:
