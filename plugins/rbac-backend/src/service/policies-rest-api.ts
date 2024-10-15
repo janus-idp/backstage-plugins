@@ -2,6 +2,7 @@ import type {
   AuthService,
   HttpAuthService,
   PermissionsService,
+  UserInfoService,
 } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
 import {
@@ -10,7 +11,6 @@ import {
   NotAllowedError,
   NotFoundError,
 } from '@backstage/errors';
-import type { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   createRouter,
   RouterOptions,
@@ -94,14 +94,20 @@ export class PoliciesServer {
 
   private async authorize(
     request: Request,
-    identity: IdentityApi,
     permission: ResourcePermission,
   ): Promise<PolicyDecision> {
-    if (permission !== policyEntityReadPermission) {
-      const userIdentity = await identity.getIdentity({ request });
-      if (!userIdentity) {
-        throw new NotAllowedError('User identity not found');
-      }
+    const credentials = await this.httpAuth.credentials(request, {
+      allow: ['user', 'service'],
+    });
+
+    // allow service to service communication, but only with read permission
+    if (
+      this.auth.isPrincipal(credentials, 'service') &&
+      permission !== policyEntityReadPermission
+    ) {
+      throw new NotAllowedError(
+        `Only creadential principal with type 'user' permitted to modify permissions`,
+      );
     }
 
     const decision = (
@@ -119,11 +125,11 @@ export class PoliciesServer {
   async serve(): Promise<express.Router> {
     const router = await createRouter(this.options);
 
-    const { identity } = this.options;
+    const { httpAuth } = this.options;
 
-    if (!identity) {
+    if (!httpAuth) {
       throw new NotAllowedError(
-        'Identity api not found, ensure the correct configuration for the RBAC plugin',
+        'httpAuth not found, ensure the correct configuration for the RBAC plugin',
       );
     }
 
@@ -142,7 +148,6 @@ export class PoliciesServer {
     router.get('/', async (request, response) => {
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityReadPermission,
       );
 
@@ -157,7 +162,6 @@ export class PoliciesServer {
     router.get('/policies', async (request, response) => {
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityReadPermission,
       );
 
@@ -197,7 +201,6 @@ export class PoliciesServer {
       async (request, response) => {
         const decision = await this.authorize(
           request,
-          identity,
           policyEntityReadPermission,
         );
 
@@ -232,7 +235,6 @@ export class PoliciesServer {
       async (request, response) => {
         const decision = await this.authorize(
           request,
-          identity,
           policyEntityDeletePermission,
         );
 
@@ -272,7 +274,6 @@ export class PoliciesServer {
     router.post('/policies', async (request, response) => {
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityCreatePermission,
       );
 
@@ -314,7 +315,6 @@ export class PoliciesServer {
       async (request, response) => {
         const decision = await this.authorize(
           request,
-          identity,
           policyEntityUpdatePermission,
         );
 
@@ -402,7 +402,6 @@ export class PoliciesServer {
     router.get('/roles', async (request, response) => {
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityReadPermission,
       );
 
@@ -429,7 +428,6 @@ export class PoliciesServer {
     router.get('/roles/:kind/:namespace/:name', async (request, response) => {
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityReadPermission,
       );
 
@@ -465,7 +463,6 @@ export class PoliciesServer {
       const uniqueItems = new Set<string>();
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityCreatePermission,
       );
 
@@ -506,8 +503,10 @@ export class PoliciesServer {
         }
       }
 
-      const user = await identity.getIdentity({ request });
-      const modifiedBy = user?.identity.userEntityRef!;
+      const credentials = await httpAuth.credentials(request, {
+        allow: ['user'],
+      });
+      const modifiedBy = credentials.principal.userEntityRef;
       const metadata: RoleMetadataDao = {
         roleEntityRef: roleRaw.name,
         source: 'rest',
@@ -538,7 +537,6 @@ export class PoliciesServer {
       const uniqueItems = new Set<string>();
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityUpdatePermission,
       );
 
@@ -575,12 +573,15 @@ export class PoliciesServer {
       const newRole = this.transformRoleToArray(newRoleRaw);
       // todo shell we allow newRole with an empty array?...
 
-      const user = await identity.getIdentity({ request });
+      const credentials = await httpAuth.credentials(request, {
+        allow: ['user'],
+      });
+
       const newMetadata: RoleMetadataDao = {
         ...newRoleRaw.metadata,
         source: newRoleRaw.metadata?.source ?? 'rest',
         roleEntityRef: newRoleRaw.name,
-        modifiedBy: user?.identity.userEntityRef!,
+        modifiedBy: credentials.principal.userEntityRef,
       };
 
       const oldMetadata =
@@ -679,7 +680,6 @@ export class PoliciesServer {
       async (request, response) => {
         const decision = await this.authorize(
           request,
-          identity,
           policyEntityDeletePermission,
         );
 
@@ -726,11 +726,14 @@ export class PoliciesServer {
           throw new NotAllowedError(`Unable to delete role: ${err.message}`);
         }
 
-        const user = await identity.getIdentity({ request });
+        const credentials = await httpAuth.credentials(request, {
+          allow: ['user'],
+        });
+
         const metadata: RoleMetadataDao = {
           roleEntityRef,
           source: 'rest',
-          modifiedBy: user?.identity.userEntityRef!,
+          modifiedBy: credentials.principal.userEntityRef,
         };
 
         await this.enforcer.removeGroupingPolicies(
@@ -759,7 +762,6 @@ export class PoliciesServer {
     router.get('/plugins/policies', async (request, response) => {
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityReadPermission,
       );
 
@@ -784,7 +786,6 @@ export class PoliciesServer {
     router.get('/plugins/condition-rules', async (request, response) => {
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityReadPermission,
       );
 
@@ -811,7 +812,6 @@ export class PoliciesServer {
     router.get('/roles/conditions', async (request, response) => {
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityReadPermission,
       );
 
@@ -849,7 +849,6 @@ export class PoliciesServer {
     router.post('/roles/conditions', async (request, response) => {
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityCreatePermission,
       );
 
@@ -888,7 +887,6 @@ export class PoliciesServer {
     router.get('/roles/conditions/:id', async (request, response) => {
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityReadPermission,
       );
 
@@ -926,7 +924,6 @@ export class PoliciesServer {
     router.delete('/roles/conditions/:id', async (request, response) => {
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityDeletePermission,
       );
 
@@ -967,7 +964,6 @@ export class PoliciesServer {
     router.put('/roles/conditions/:id', async (request, response) => {
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityUpdatePermission,
       );
 
@@ -1009,7 +1005,6 @@ export class PoliciesServer {
     router.post('/refresh/:id', async (request, response) => {
       const decision = await this.authorize(
         request,
-        identity,
         policyEntityCreatePermission,
       );
 
