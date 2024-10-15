@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -62,7 +62,7 @@
     "@backstage/plugin-permission-react": "^0.4.26",
     "@janus-idp/backstage-plugin-orchestrator-common": "1.21.0",
     "@janus-idp/backstage-plugin-orchestrator-form-api": "1.2.0",
-    "@janus-idp/backstage-plugin-orchestrator-form-react": "1.2.0",
+    "@janus-idp/backstage-plugin-orchestrator-form-react": "1.2.1",
     "@kie-tools-core/editor": "^0.32.0",
     "@kie-tools-core/notifications": "^0.32.0",
     "@kie-tools-core/react-hooks": "^0.32.0",
