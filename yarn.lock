@@ -6235,6 +6235,13 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
+"@janus-idp/backstage-plugin-bulk-import-common@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-bulk-import-common/-/backstage-plugin-bulk-import-common-0.2.0.tgz#b1a3c12ef4e7e21c34feaab2d0808d0b39ce14be"
+  integrity sha512-Y1m0Ev/U9SLIBma3Ypx5JW0C+kc3R6tB8bE4uPqjsrJCq9tdbvXwsifY3nB8p+A+Y9ZSOK/kJLzqJBRUdG3WHA==
+  dependencies:
+    "@backstage/plugin-permission-common" "^0.8.0"
+
 "@janus-idp/cli@1.13.2":
   version "1.13.2"
   resolved "https://registry.yarnpkg.com/@janus-idp/cli/-/cli-1.13.2.tgz#ff63fc07442999ea45286ee4a16a79e271d8a6bc"
