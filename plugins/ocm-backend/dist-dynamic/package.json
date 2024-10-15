@@ -27,7 +27,7 @@
   "scripts": {},
   "configSchema": "config.d.ts",
   "dependencies": {
-    "@kubernetes/client-node": "^0.20.0",
+    "@kubernetes/client-node": "^0.22.1",
     "express": "^4.18.2",
     "semver": "^7.5.4",
     "kubernetes-models": "^4.3.1",
