@@ -42,14 +42,11 @@ jobs:
           node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
 
-<<<<<<< HEAD:.github/workflows/push.yaml
-=======
       - name: Install dependencies
         shell: bash
         run: |
           yarn install --frozen-lockfile
 
->>>>>>> a39d9f069 (chore(release): switch from msr to changesets (#2362)):.github/workflows/release.yaml
       - name: Build all packages
         uses: ./.github/actions/build
 
