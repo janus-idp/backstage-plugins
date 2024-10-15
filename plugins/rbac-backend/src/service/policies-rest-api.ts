@@ -9,6 +9,7 @@ import {
   InputError,
   NotAllowedError,
   NotFoundError,
+  ServiceUnavailableError,
 } from '@backstage/errors';
 import {
   createRouter,
@@ -125,7 +126,7 @@ export class PoliciesServer {
     const { httpAuth } = this.options;
 
     if (!httpAuth) {
-      throw new NotAllowedError(
+      throw new ServiceUnavailableError(
         'httpAuth not found, ensure the correct configuration for the RBAC plugin',
       );
     }
