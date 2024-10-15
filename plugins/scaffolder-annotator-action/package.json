@@ -32,7 +32,8 @@
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
+    "lint:check": "backstage-cli package lint",
+    "lint:fix": "backstage-cli package lint --fix",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
@@ -40,7 +41,9 @@
     "postversion": "yarn run export-dynamic",
     "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies",
     "lodash": "^4.17.21",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
     "@backstage/backend-common": "^0.23.3",
@@ -54,6 +57,7 @@
   },
   "devDependencies": {
     "@backstage/backend-common": "0.23.3",
+    "prettier": "3.3.3",
     "@backstage/cli": "0.26.11"
   },
   "files": [

@@ -32,8 +32,9 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "export-dynamic": "janus-cli package export-dynamic-plugin --embed-package @keycloak/keycloak-admin-client --no-embed-as-dependencies",
-    "lint": "backstage-cli package lint",
+    "export-dynamic": "janus-cli package export-dynamic-plugin --embed-package @keycloak/keycloak-admin-client",
+    "lint:check": "backstage-cli package lint",
+    "lint:fix": "backstage-cli package lint --fix",
     "postpack": "backstage-cli package postpack",
     "postversion": "yarn run export-dynamic",
     "prepack": "backstage-cli package prepack",
@@ -41,7 +42,9 @@
     "start:keycloak": "podman run -p 8080:8080 -e 'KEYCLOAK_ADMIN=admin' -e 'KEYCLOAK_ADMIN_PASSWORD=admin' -v ./__fixtures__/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json$([[ $OSTYPE = linux* ]] && echo ':z') quay.io/keycloak/keycloak:22.0.1 start-dev --import-realm",
     "start:plugin": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
     "@backstage/backend-common": "^0.23.3",
@@ -57,6 +60,7 @@
   },
   "devDependencies": {
     "@backstage/backend-app-api": "0.8.0",
+    "prettier": "3.3.3",
     "@backstage/backend-test-utils": "0.4.4",
     "@backstage/cli": "0.26.11",
     "@backstage/plugin-auth-node": "0.4.17",
