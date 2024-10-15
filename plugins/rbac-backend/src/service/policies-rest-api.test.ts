@@ -370,10 +370,9 @@ describe('REST policies api', () => {
     });
 
     it('should return a status of Unauthorized - non user request', async () => {
-      const credentials = mockCredentials.service();
       mockHttpAuth.credentials = jest
         .fn()
-        .mockImplementationOnce(() => credentials);
+        .mockImplementationOnce(() => mockCredentials.service());
       const result = await request(app).post('/policies').send();
 
       expect(result.statusCode).toBe(403);
