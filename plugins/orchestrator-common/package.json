@@ -4,7 +4,6 @@
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "private": true,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
@@ -46,7 +45,10 @@
   "scripts": {
     "build": "yarn openapi:check && backstage-cli package build",
     "tsc": "tsc",
-    "lint": "backstage-cli package lint",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write .",
+    "lint:check": "backstage-cli package lint",
+    "lint:fix": "backstage-cli package lint --fix",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
@@ -64,6 +66,7 @@
     "axios": "^1.7.4"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/cli": "0.26.11",
     "@openapitools/openapi-generator-cli": "2.13.4",
     "js-yaml-cli": "0.6.0"

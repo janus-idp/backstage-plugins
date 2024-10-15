@@ -38,18 +38,30 @@ export type PluginMetadataResponseSerializedRule = {
 
 export class PluginPermissionMetadataCollector {
   private readonly pluginIds: string[];
+  private readonly discovery: DiscoveryService;
+  private readonly logger: LoggerService;
   private readonly urlReader: UrlReaderService;
 
-  constructor(
-    private readonly discovery: DiscoveryService,
-    private readonly pluginIdProvider: PluginIdProvider,
-    private readonly logger: LoggerService,
-    config: Config,
-    urlReader?: UrlReaderService,
-  ) {
-    this.pluginIds = this.pluginIdProvider.getPluginIds();
+  constructor({
+    deps,
+    optional,
+  }: {
+    deps: {
+      discovery: DiscoveryService;
+      pluginIdProvider: PluginIdProvider;
+      logger: LoggerService;
+      config: Config;
+    };
+    optional?: {
+      urlReader?: UrlReaderService;
+    };
+  }) {
+    const { discovery, pluginIdProvider, logger, config } = deps;
+    this.pluginIds = pluginIdProvider.getPluginIds();
+    this.discovery = discovery;
+    this.logger = logger;
     this.urlReader =
-      urlReader ??
+      optional?.urlReader ??
       UrlReaders.default({
         config,
         logger,

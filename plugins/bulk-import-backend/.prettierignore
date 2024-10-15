@@ -1,0 +1,17 @@
+dist
+dist-types
+coverage
+.vscode
+CHANGELOG.md
+generated
+templates
+*.hbs
+renovate.json
+dist-dynamic
+dist-scalprum
+playwright-report
+
+# Generated
+api-docs
+src/generated/openapi.d.ts
+src/generated/openapidocument.ts
