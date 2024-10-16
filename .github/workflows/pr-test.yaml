@@ -6,9 +6,11 @@ env:
   TURBO_SCM_BASE: ${{ github.event.pull_request.base.sha }}
   TURBO_SCM_HEAD: ${{ github.sha }}
 
+# enforce only one action can run at a time for a given PR, and
+# when updating a PR, actions in progress will be cancelled to start a fresh one
 concurrency:
-  group: push
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
