@@ -2,25 +2,23 @@ import React from 'react';
 
 import { LinkButton } from '@backstage/core-components';
 
-import { makeStyles } from '@material-ui/core';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import { makeStyles } from '@mui/styles';
 import { useFormikContext } from 'formik';
 
 import { AddRepositoriesFormValues } from '../../types';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   toolbar: {
     display: 'flex',
     justifyContent: 'end',
     marginBottom: '24px',
   },
-  rbacPreReqLink: {
-    color: theme.palette.link,
-  },
   alertTitle: {
     fontWeight: 'bold',
   },
-}));
+});
 
 export const RepositoriesListToolbar = () => {
   const { status, setStatus } = useFormikContext<AddRepositoriesFormValues>();

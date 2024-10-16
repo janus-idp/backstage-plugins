@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { ErrorPage, Table } from '@backstage/core-components';
 
-import { makeStyles } from '@material-ui/core';
+import Box from '@mui/material/Box';
 
 import { useDeleteDialog, useDrawer } from '@janus-idp/shared-react';
 
@@ -14,14 +14,6 @@ import EditCatalogInfo from './EditCatalogInfo';
 import { columns } from './RepositoriesListColumns';
 import { RepositoriesListToolbar } from './RepositoriesListToolbar';
 
-const useStyles = makeStyles(theme => ({
-  empty: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    justifyContent: 'center',
-  },
-}));
-
 export const RepositoriesList = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,7 +23,6 @@ export const RepositoriesList = () => {
   const [pageNumber, setPageNumber] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [searchString, setSearchString] = React.useState('');
-  const classes = useStyles();
 
   const {
     data: importJobs,
@@ -83,12 +74,16 @@ export const RepositoriesList = () => {
         isLoading={!jobsLoaded}
         columns={columns}
         emptyContent={
-          <div
+          <Box
             data-testid="added-repositories-table-empty"
-            className={classes.empty}
+            sx={{
+              padding: 2,
+              display: 'flex',
+              justifyContent: 'center',
+            }}
           >
             No records found
-          </div>
+          </Box>
         }
       />
       {openDrawer && (
