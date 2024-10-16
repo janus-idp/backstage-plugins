@@ -15,10 +15,8 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { ErrorBuilder } from '../helpers/errorBuilder';
-import {
-  buildFilterCondition,
-  buildGraphQlQuery,
-} from '../helpers/queryBuilder';
+import { buildFilterCondition } from '../helpers/filterBuilder';
+import { buildGraphQlQuery } from '../helpers/queryBuilder';
 import { Pagination } from '../types/pagination';
 import { FETCH_PROCESS_INSTANCES_SORT_FIELD } from './constants';
 
