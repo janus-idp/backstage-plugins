@@ -120,9 +120,12 @@ const auditLoggerMock = {
   auditLog: jest.fn().mockImplementation(() => Promise.resolve()),
 };
 
-const mockHttpAuth = mockServices.httpAuth();
+const mockHttpAuth = mockServices.httpAuth({
+  pluginId: 'permission',
+  defaultCredentials: mockCredentials.user('user:default/guest'),
+});
 const mockAuth = mockServices.auth();
-const credentials = mockCredentials.user();
+const credentials = mockCredentials.user('user:default/guest');
 
 const conditions: RoleConditionalPolicyDecision<PermissionInfo>[] = [
   {
@@ -182,16 +185,6 @@ describe('REST policies api', () => {
   const mockPermissionEvaluator = {
     authorize: mockedAuthorize,
     authorizeConditional: mockedAuthorizeConditional,
-  };
-
-  const mockIdentityClient = {
-    getIdentity: jest.fn().mockImplementation(async () => ({
-      identity: {
-        type: 'User',
-        userEntityRef: 'user:default/guest',
-        ownershipEntityRefs: ['guest'],
-      },
-    })),
   };
 
   const logger = mockServices.logger.mock();
@@ -272,11 +265,14 @@ describe('REST policies api', () => {
         },
       );
 
+    mockHttpAuth.credentials = jest.fn().mockImplementation(() => credentials);
+
     const options: RouterOptions = {
       config: config,
       logger,
       discovery: mockDiscovery,
-      identity: mockIdentityClient,
+      httpAuth: mockHttpAuth,
+      auth: mockAuth,
       policy: await RBACPermissionPolicy.build(
         logger,
         auditLoggerMock,
@@ -373,14 +369,16 @@ describe('REST policies api', () => {
       });
     });
 
-    it('should return a status of Unauthorized - no user', async () => {
-      mockIdentityClient.getIdentity.mockImplementationOnce(() => undefined);
+    it('should return a status of Unauthorized - non user request', async () => {
+      mockHttpAuth.credentials = jest
+        .fn()
+        .mockImplementationOnce(() => mockCredentials.service());
       const result = await request(app).post('/policies').send();
 
       expect(result.statusCode).toBe(403);
       expect(result.body.error).toEqual({
         name: 'NotAllowedError',
-        message: 'User identity not found',
+        message: `Only creadential principal with type 'user' permitted to modify permissions`,
       });
     });
 
@@ -3095,7 +3093,7 @@ describe('REST policies api', () => {
       const result = await request(app).get('/roles/conditions').send();
       expect(result.statusCode).toBe(200);
       expect(result.body).toEqual(expectedConditions);
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
+      expect(mockHttpAuth.credentials).toHaveBeenCalledTimes(1);
     });
 
     it('should be returned condition decision by pluginId', async () => {
@@ -3204,7 +3202,7 @@ describe('REST policies api', () => {
       const result = await request(app).delete('/roles/conditions/1').send();
 
       expect(result.statusCode).toEqual(204);
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
+      expect(mockHttpAuth.credentials).toHaveBeenCalledTimes(1);
       expect(conditionalStorage.deleteCondition).toHaveBeenCalled();
     });
 
@@ -3274,7 +3272,7 @@ describe('REST policies api', () => {
       const result = await request(app).get('/roles/conditions/1').send();
       expect(result.statusCode).toBe(200);
       expect(result.body).toEqual(expectedConditions[0]);
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
+      expect(mockHttpAuth.credentials).toHaveBeenCalledTimes(1);
     });
 
     it('should return return 404', async () => {
@@ -3369,7 +3367,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(201);
       expect(validateRoleConditionMock).toHaveBeenCalledWith(roleCondition);
       expect(result.body).toEqual({ id: 1 });
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
+      expect(mockHttpAuth.credentials).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -3466,7 +3464,7 @@ describe('REST policies api', () => {
           params: { claims: ['group:default/team-a'] },
         },
       });
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
+      expect(mockHttpAuth.credentials).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -3482,7 +3480,8 @@ describe('REST policies api', () => {
         config: config,
         logger,
         discovery: mockDiscovery,
-        identity: mockIdentityClient,
+        httpAuth: mockHttpAuth,
+        auth: mockAuth,
         policy: await RBACPermissionPolicy.build(
           logger,
           auditLoggerMock,
