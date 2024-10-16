@@ -6,9 +6,10 @@ env:
   TURBO_SCM_BASE: ${{ github.event.pull_request.base.sha }}
   TURBO_SCM_HEAD: ${{ github.sha }}
 
-concurrency:
-  group: push
-  cancel-in-progress: false
+# uncommment this to enforce only one action can run at a time
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: false
 
 jobs:
   test:
