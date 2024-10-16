@@ -18,13 +18,16 @@
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "export-dynamic": "janus-cli package export-dynamic-plugin --in-place",
-    "lint": "backstage-cli package lint",
+    "lint:check": "backstage-cli package lint",
+    "lint:fix": "backstage-cli package lint --fix",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "tsc": "tsc",
-    "openapi:generate": "openapi-generator-cli generate -i ../notifications-backend/src/openapi.yaml --enable-post-process-file -g typescript-fetch -o ./src/openapi && find ./src/openapi -name '*.ts' -exec sed -i '1i // @ts-nocheck' {} \\;"
+    "openapi:generate": "openapi-generator-cli generate -i ../notifications-backend/src/openapi.yaml --enable-post-process-file -g typescript-fetch -o ./src/openapi && find ./src/openapi -name '*.ts' -exec sed -i '1i // @ts-nocheck' {} \\;",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
     "@backstage/core-components": "^0.14.6",
@@ -44,6 +47,7 @@
     "react-router-dom": "^6.0.0"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/cli": "0.26.4",
     "@backstage/core-app-api": "1.12.4",
     "@backstage/dev-utils": "1.0.31",

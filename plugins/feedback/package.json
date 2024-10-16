@@ -17,13 +17,16 @@
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
+    "lint:check": "backstage-cli package lint",
+    "lint:fix": "backstage-cli package lint --fix",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "tsc": "tsc",
-    "export-dynamic": "janus-cli package export-dynamic-plugin --in-place"
+    "export-dynamic": "janus-cli package export-dynamic-plugin --in-place",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
     "@backstage/catalog-model": "^1.4.5",
@@ -51,7 +54,8 @@
     "@testing-library/jest-dom": "6.4.2",
     "@testing-library/react": "14.2.1",
     "@testing-library/user-event": "14.0.0",
-    "msw": "1.0.0"
+    "msw": "1.0.0",
+    "prettier": "3.3.3"
   },
   "files": [
     "app-config.janus-idp.yaml",

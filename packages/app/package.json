@@ -18,9 +18,12 @@
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write .",
     "clean": "backstage-cli package clean",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "lint": "backstage-cli package lint"
+    "lint:check": "backstage-cli package lint",
+    "lint:fix": "backstage-cli package lint --fix"
   },
   "dependencies": {
     "@backstage-community/plugin-github-actions": "^0.6.16",
@@ -60,6 +63,7 @@
   "devDependencies": {
     "@backstage/cli": "0.26.4",
     "@backstage/test-utils": "1.5.4",
+    "prettier": "3.3.3",
     "@testing-library/dom": "9.3.4",
     "@testing-library/jest-dom": "6.4.5",
     "@testing-library/react": "14.3.1",
