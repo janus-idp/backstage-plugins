@@ -3,7 +3,6 @@ import type {
   BackstageUserInfo,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import type { Config } from '@backstage/config';
 import type { ConfigApi } from '@backstage/core-plugin-api';
 import {
   AuthorizeResult,
@@ -34,171 +33,18 @@ import {
   createPermissionEvaluationOptions,
   EVALUATE_PERMISSION_ACCESS_STAGE,
   EvaluationEvents,
-  HANDLE_RBAC_DATA_STAGE,
-  PermissionAuditInfo,
-  PermissionEvents,
-  RBAC_BACKEND,
-  RoleAuditInfo,
-  RoleEvents,
 } from '../audit-log/audit-logger';
 import { replaceAliases } from '../conditional-aliases/alias-resolver';
 import { ConditionalStorage } from '../database/conditional-storage';
+import { RoleMetadataStorage } from '../database/role-metadata';
 import {
-  RoleMetadataDao,
-  RoleMetadataStorage,
-} from '../database/role-metadata';
+  setAdminPermissions,
+  useAdminsFromConfig,
+} from '../file-permissions/admin-creation';
 import { CSVFileWatcher } from '../file-permissions/csv-file-watcher';
 import { YamlConditinalPoliciesFileWatcher } from '../file-permissions/yaml-conditional-file-watcher';
-import { removeTheDifference } from '../helper';
-import { validateEntityReference } from '../validation/policies-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
-
-export const ADMIN_ROLE_NAME = 'role:default/rbac_admin';
-export const ADMIN_ROLE_AUTHOR = 'application configuration';
-const DEF_ADMIN_ROLE_DESCRIPTION =
-  'The default permission policy for the admin role allows for the creation, deletion, updating, and reading of roles and permission policies.';
-
-const getAdminRoleMetadata = (): RoleMetadataDao => {
-  const currentDate: Date = new Date();
-  return {
-    source: 'configuration',
-    roleEntityRef: ADMIN_ROLE_NAME,
-    description: DEF_ADMIN_ROLE_DESCRIPTION,
-    author: ADMIN_ROLE_AUTHOR,
-    modifiedBy: ADMIN_ROLE_AUTHOR,
-    lastModified: currentDate.toUTCString(),
-    createdAt: currentDate.toUTCString(),
-  };
-};
-
-const useAdminsFromConfig = async (
-  admins: Config[],
-  enf: EnforcerDelegate,
-  auditLogger: AuditLogger,
-  roleMetadataStorage: RoleMetadataStorage,
-  knex: Knex,
-) => {
-  const addedGroupPolicies = new Map<string, string>();
-  const newGroupPolicies = new Map<string, string>();
-
-  for (const admin of admins) {
-    const entityRef = admin.getString('name');
-    validateEntityReference(entityRef);
-
-    addedGroupPolicies.set(entityRef, ADMIN_ROLE_NAME);
-
-    if (!(await enf.hasGroupingPolicy(...[entityRef, ADMIN_ROLE_NAME]))) {
-      newGroupPolicies.set(entityRef, ADMIN_ROLE_NAME);
-    }
-  }
-
-  const adminRoleMeta =
-    await roleMetadataStorage.findRoleMetadata(ADMIN_ROLE_NAME);
-
-  const trx = await knex.transaction();
-  let addedRoleMembers;
-  try {
-    if (!adminRoleMeta) {
-      // even if there are no user, we still create default role metadata for admins
-      await roleMetadataStorage.createRoleMetadata(getAdminRoleMetadata(), trx);
-    } else if (adminRoleMeta.source === 'legacy') {
-      await roleMetadataStorage.updateRoleMetadata(
-        getAdminRoleMetadata(),
-        ADMIN_ROLE_NAME,
-        trx,
-      );
-    }
-
-    addedRoleMembers = Array.from<string[]>(newGroupPolicies.entries());
-    await enf.addGroupingPolicies(
-      addedRoleMembers,
-      getAdminRoleMetadata(),
-      trx,
-    );
-
-    await trx.commit();
-  } catch (error) {
-    await trx.rollback(error);
-    throw error;
-  }
-
-  await auditLogger.auditLog<RoleAuditInfo>({
-    actorId: RBAC_BACKEND,
-    message: `Created or updated role`,
-    eventName: RoleEvents.CREATE_OR_UPDATE_ROLE,
-    metadata: {
-      ...getAdminRoleMetadata(),
-      members: addedRoleMembers.map(gp => gp[0]),
-    },
-    stage: HANDLE_RBAC_DATA_STAGE,
-    status: 'succeeded',
-  });
-
-  const configGroupPolicies = await enf.getFilteredGroupingPolicy(
-    1,
-    ADMIN_ROLE_NAME,
-  );
-
-  await removeTheDifference(
-    configGroupPolicies.map(gp => gp[0]),
-    Array.from<string>(addedGroupPolicies.keys()),
-    'configuration',
-    ADMIN_ROLE_NAME,
-    enf,
-    auditLogger,
-    ADMIN_ROLE_AUTHOR,
-  );
-};
-
-const addAdminPermission = async (
-  policy: string[],
-  enf: EnforcerDelegate,
-  auditLogger: AuditLogger,
-) => {
-  await enf.addPolicy(policy);
-
-  await auditLogger.auditLog<PermissionAuditInfo>({
-    actorId: RBAC_BACKEND,
-    message: `Created policy`,
-    eventName: PermissionEvents.CREATE_POLICY,
-    metadata: { policies: [policy], source: 'configuration' },
-    stage: HANDLE_RBAC_DATA_STAGE,
-    status: 'succeeded',
-  });
-};
-
-const setAdminPermissions = async (
-  enf: EnforcerDelegate,
-  auditLogger: AuditLogger,
-) => {
-  await addAdminPermission(
-    [ADMIN_ROLE_NAME, 'policy-entity', 'read', 'allow'],
-    enf,
-    auditLogger,
-  );
-  await addAdminPermission(
-    [ADMIN_ROLE_NAME, 'policy-entity', 'create', 'allow'],
-    enf,
-    auditLogger,
-  );
-  await addAdminPermission(
-    [ADMIN_ROLE_NAME, 'policy-entity', 'delete', 'allow'],
-    enf,
-    auditLogger,
-  );
-  await addAdminPermission(
-    [ADMIN_ROLE_NAME, 'policy-entity', 'update', 'allow'],
-    enf,
-    auditLogger,
-  );
-  // needed for rbac frontend.
-  await addAdminPermission(
-    [ADMIN_ROLE_NAME, 'catalog-entity', 'read', 'allow'],
-    enf,
-    auditLogger,
-  );
-};
 
 const evaluatePermMsg = (
   userEntityRef: string | undefined,
