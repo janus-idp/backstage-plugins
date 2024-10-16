@@ -2,8 +2,9 @@ import React from 'react';
 
 import { useApi } from '@backstage/core-plugin-api';
 
-import { IconButton, Tooltip } from '@material-ui/core';
 import SyncIcon from '@mui/icons-material/Sync';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import { useFormikContext } from 'formik';
 
 import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
@@ -43,6 +44,7 @@ const SyncRepository = ({ data }: SyncRepositoryProps) => {
           color="inherit"
           onClick={() => handleClick()}
           aria-label="Refresh"
+          size="large"
         >
           <SyncIcon />
         </IconButton>

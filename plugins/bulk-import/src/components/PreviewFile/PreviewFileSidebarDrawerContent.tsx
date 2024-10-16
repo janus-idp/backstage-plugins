@@ -2,13 +2,13 @@ import * as React from 'react';
 
 import { Link } from '@backstage/core-components';
 
-import { Button, makeStyles } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
 import CloseIcon from '@mui/icons-material/Close';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
+import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
@@ -20,52 +20,6 @@ import {
 import { urlHelper } from '../../utils/repository-utils';
 import { PreviewPullRequest } from './PreviewPullRequest';
 import { PreviewPullRequests } from './PreviewPullRequests';
-
-const useDrawerStyles = makeStyles(theme => ({
-  paper: {
-    width: '40%',
-    gap: '3%',
-  },
-  body: {
-    padding: theme.spacing(2.5),
-  },
-}));
-
-const useDrawerContentStyles = makeStyles(theme => ({
-  createButton: {
-    marginRight: theme.spacing(1),
-  },
-  header: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
-    padding: theme.spacing(2.5),
-  },
-  body: {
-    padding: theme.spacing(2.5),
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-    marginBottom: '100px',
-    flexGrow: 1,
-  },
-  footer: {
-    flexDirection: 'row',
-    gap: '14px',
-    paddingTop: theme.spacing(2.5),
-    display: 'flex',
-    justifyContent: 'left',
-    position: 'fixed',
-    bottom: 0,
-    paddingLeft: '24px',
-    paddingBottom: '24px',
-    backgroundColor: theme.palette.type === 'light' ? '#fff' : '#1b1d21',
-    width: '100%',
-    borderTopStyle: 'groove',
-    border: theme.palette.divider,
-    zIndex: 1,
-  },
-}));
 
 export const PreviewFileSidebarDrawerContent = ({
   repositoryType,
@@ -88,32 +42,39 @@ export const PreviewFileSidebarDrawerContent = ({
   setPullRequest: (pullRequest: PullRequestPreviewData) => void;
 }) => {
   const [formErrors, setFormErrors] = React.useState<PullRequestPreviewData>();
-  const classes = useDrawerStyles();
-  const contentClasses = useDrawerContentStyles();
 
   if (isLoading) {
     return (
-      <Stack spacing={5} className={classes.body}>
+      <Stack spacing={5} sx={{ p: 2.5 }}>
         <span style={{ display: 'flex', height: '10%' }}>
-          <Skeleton variant="rect" width="100%" height="100%" />
+          <Skeleton variant="rectangular" width="100%" height="100%" />
           <IconButton
             key="dismiss"
             title="Close the drawer"
             onClick={onCancel}
             color="inherit"
+            size="large"
           >
             <CloseIcon fontSize="small" />
           </IconButton>
         </span>
-        <Skeleton variant="rect" width="100%" height={750} />
-        <Skeleton variant="rect" width="100%" height="10%" />
+        <Skeleton variant="rectangular" width="100%" height={750} />
+        <Skeleton variant="rectangular" width="100%" height="10%" />
       </Stack>
     );
   }
   return (
     <>
       <Box>
-        <Box className={contentClasses.header}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            p: 2.5, // padding: theme.spacing(2.5)
+          }}
+        >
           <div>
             {repositoryType === RepositorySelection.Repository ? (
               <>
@@ -145,12 +106,21 @@ export const PreviewFileSidebarDrawerContent = ({
             title="Close the drawer"
             onClick={onCancel}
             color="inherit"
+            size="large"
           >
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
 
-        <Box className={contentClasses.body}>
+        <Box
+          sx={{
+            p: 2.5, // padding: theme.spacing(2.5)
+            pt: 1, // paddingTop: theme.spacing(1)
+            pb: 1, // paddingBottom: theme.spacing(1)
+            mb: '100px', // marginBottom: '100px'
+            flexGrow: 1, // flex-grow: 1
+          }}
+        >
           {repositoryType === RepositorySelection.Repository && (
             <PreviewPullRequest
               repoId={data.id}
@@ -175,12 +145,30 @@ export const PreviewFileSidebarDrawerContent = ({
           )}
         </Box>
       </Box>
-      <div className={contentClasses.footer}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: '14px',
+          pt: 2.5, // paddingTop: theme.spacing(2.5)
+          justifyContent: 'left',
+          position: 'fixed',
+          bottom: 0,
+          pl: '24px', // paddingLeft: '24px'
+          pb: '24px', // paddingBottom: '24px'
+          backgroundColor: theme =>
+            theme.palette.mode === 'light' ? '#fff' : '#1b1d21',
+          width: '100%',
+          borderTopStyle: 'groove',
+          borderColor: 'divider', // using theme.palette.divider for border
+          zIndex: 1,
+        }}
+      >
         <Button
           variant="contained"
           color="primary"
           onClick={e => onSave(pullRequest, e)}
-          className={contentClasses.createButton}
+          sx={{ mr: 1 }}
           disabled={
             isSubmitting ||
             (!!formErrors &&
@@ -198,7 +186,7 @@ export const PreviewFileSidebarDrawerContent = ({
         <Link to="" variant="button" onClick={onCancel}>
           <Button variant="outlined">Cancel</Button>
         </Link>
-      </div>
+      </Box>
     </>
   );
 };

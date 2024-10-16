@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
-import { FormHelperText, TextField } from '@material-ui/core';
+import FormHelperText from '@mui/material/FormHelperText';
+import TextField from '@mui/material/TextField';
 
 import { PullRequestPreview, PullRequestPreviewData } from '../../types';
 

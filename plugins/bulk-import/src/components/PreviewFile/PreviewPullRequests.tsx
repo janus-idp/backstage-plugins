@@ -1,9 +1,10 @@
 import * as React from 'react';
 
-import { Tab, Tabs } from '@material-ui/core';
 import ErrorOutline from '@mui/icons-material/ErrorOutline';
 import InfoOutlined from '@mui/icons-material/InfoOutlined';
 import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import { useFormikContext } from 'formik';
 
 import {

@@ -2,8 +2,9 @@ import React from 'react';
 
 import { LinkButton } from '@backstage/core-components';
 
-import { makeStyles } from '@material-ui/core';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import { makeStyles } from '@mui/styles';
 import { useFormikContext } from 'formik';
 
 import { AddRepositoriesFormValues } from '../../types';

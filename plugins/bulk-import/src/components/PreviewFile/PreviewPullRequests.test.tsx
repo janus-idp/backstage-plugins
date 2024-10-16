@@ -19,8 +19,8 @@ jest.mock('react', () => ({
   useState: jest.fn(),
 }));
 
-jest.mock('@material-ui/core', () => ({
-  ...jest.requireActual('@material-ui/core'),
+jest.mock('@mui/material', () => ({
+  ...jest.requireActual('@mui/material'),
   makeStyles: () => () => {
     return {
       previewCard: 'previewcard',
