@@ -1,12 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [
-    ".prettierrc.js",
-    ".eslintrc.js",
-    "tsconfig.json",
-    "yarn.lock"
-  ],
-  "pipeline": {
+  "globalDependencies": [".prettierrc.js", ".eslintrc.js", "tsconfig.json", "yarn.lock"],
+  "tasks": {
     "start": {
       "cache": false,
       "persistent": true
@@ -25,12 +20,12 @@
       "cache": false,
       "dependsOn": ["tsc"]
     },
-    "lint": {},
-    "lint:fix": {},
-    "prettier:fix": {
+    "lint:check": {},
+    "lint:fix": {
       "cache": false
     },
-    "//#prettier:fix": {
+    "prettier:check": {},
+    "prettier:fix": {
       "cache": false
     },
     "tsc": {

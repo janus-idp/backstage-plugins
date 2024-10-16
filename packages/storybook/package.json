@@ -11,10 +11,14 @@
     "start": "storybook dev -p 6006",
     "start:debug": "yarn start:storybook --debug-webpack",
     "build": "storybook build",
-    "lint": "backstage-cli package lint",
-    "clean": "backstage-cli package clean"
+    "lint:check": "backstage-cli package lint",
+    "lint:fix": "backstage-cli package lint --fix",
+    "clean": "backstage-cli package clean",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@storybook/react-webpack5": "7.5.3",
     "@storybook/testing-library": "0.2.2",
     "@testing-library/jest-dom": "6.4.5",

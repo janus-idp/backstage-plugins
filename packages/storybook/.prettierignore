@@ -7,3 +7,7 @@ generated
 templates
 *.hbs
 renovate.json
+dist-dynamic
+dist-scalprum
+playwright-report
+storybook-static

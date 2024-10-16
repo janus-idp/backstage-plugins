@@ -38,7 +38,10 @@
     "build": "backstage-cli package build",
     "export-dynamic": "janus-cli package export-dynamic-plugin --in-place",
     "tsc": "tsc",
-    "lint": "backstage-cli package lint",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write .",
+    "lint:check": "backstage-cli package lint",
+    "lint:fix": "backstage-cli package lint --fix",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
@@ -76,7 +79,8 @@
     "@redhat-developer/red-hat-developer-hub-theme": "0.0.54",
     "@storybook/preview-api": "7.6.19",
     "@storybook/react": "7.6.19",
-    "@testing-library/react": "14.2.1"
+    "@testing-library/react": "14.2.1",
+    "prettier": "3.3.3"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
