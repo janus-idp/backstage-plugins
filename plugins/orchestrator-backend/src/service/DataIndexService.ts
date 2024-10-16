@@ -7,7 +7,6 @@ import {
   fromWorkflowSource,
   getWorkflowCategory,
   IntrospectionField,
-  IntrospectionQuery,
   parseWorkflowVariables,
   ProcessInstance,
   WorkflowDefinition,
@@ -111,42 +110,6 @@ export class DataIndexService {
       }
     }
     return pairs;
-  }
-
-  public async getSchemaTypes(type: string): Promise<IntrospectionQuery> {
-    const graphQlQuery = `query IntrospectionQuery {
-  __type(name: "${type}") {
-    name
-    kind
-    description
-    fields {
-      name
-      type {
-        kind
-        name
-        ofType {
-          kind
-          name
-          ofType {
-            kind
-            name
-          }
-        }
-      }
-    }
-  }
-}
-`;
-
-    const result = await this.client.query(graphQlQuery, {});
-
-    this.logger.debug(`Introspection query result: ${JSON.stringify(result)}`);
-
-    if (result.error) {
-      this.logger.error(`Error executing introspection query ${result.error}`);
-      throw result.error;
-    }
-    return result as unknown as IntrospectionQuery;
   }
 
   public async abortWorkflowInstance(instanceId: string): Promise<void> {
