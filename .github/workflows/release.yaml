@@ -59,12 +59,14 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish to NPM
+      - name: Create Release PR or Publish to NPM
         id: changesets
         uses: changesets/action@v1
         with:
           title: 'chore(release): version packages'
           commit: 'chore(release): version packages'
+          # We want to make sure an update-to-date yarn lockfile is committed
+          version: yarn changeset version && yarn install
           publish: yarn changeset publish
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
