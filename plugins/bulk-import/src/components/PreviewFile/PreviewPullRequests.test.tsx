@@ -44,7 +44,7 @@ class MockBulkImportApi {
     repo: string,
     _defaultBranch: string,
   ): Promise<ImportJobStatus | Response> {
-    return mockGetImportJobs.find(
+    return mockGetImportJobs.imports.find(
       i => i.repository.url === repo,
     ) as ImportJobStatus;
   }

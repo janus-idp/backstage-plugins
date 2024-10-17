@@ -8,21 +8,15 @@ import { useFormikContext } from 'formik';
 
 import { AddRepositoriesFormValues } from '../../types';
 
-const useStyles = makeStyles(theme => ({
-  toolbar: {
+const useStyles = makeStyles(() => ({
+  addLink: {
     display: 'flex',
     justifyContent: 'end',
     marginBottom: '24px',
   },
-  rbacPreReqLink: {
-    color: theme.palette.link,
-  },
-  alertTitle: {
-    fontWeight: 'bold',
-  },
 }));
 
-export const RepositoriesListToolbar = () => {
+export const RepositoriesAddLink = () => {
   const { status, setStatus } = useFormikContext<AddRepositoriesFormValues>();
   const classes = useStyles();
 
@@ -30,7 +24,7 @@ export const RepositoriesListToolbar = () => {
     setStatus(null);
   };
   return (
-    <div>
+    <>
       {(status?.title || status?.url) && (
         <>
           <Alert severity="error" onClose={() => handleCloseAlert()}>
@@ -42,7 +36,7 @@ export const RepositoriesListToolbar = () => {
           <br />
         </>
       )}
-      <span className={classes.toolbar}>
+      <span className={classes.addLink}>
         <LinkButton
           to="add"
           color="primary"
@@ -52,6 +46,6 @@ export const RepositoriesListToolbar = () => {
           Add
         </LinkButton>
       </span>
-    </div>
+    </>
   );
 };

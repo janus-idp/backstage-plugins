@@ -8,12 +8,12 @@ export const OrganizationsColumnHeader: TableColumn[] = [
   },
   { id: 'url', title: 'URL', field: 'organizationUrl' },
   {
-    id: 'selectedRepositories',
+    id: 'selected-repositories',
     title: 'Selected repositories',
     field: 'selectedRepositories',
   },
   {
-    id: 'catalogInfoYaml',
+    id: 'cataloginfoyaml',
     title: 'catalog-info.yaml',
     field: 'catalogInfoYaml.status',
   },

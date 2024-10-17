@@ -10,6 +10,16 @@ jest.mock('@backstage/core-plugin-api', () => ({
   }),
 }));
 
+jest.mock('@tanstack/react-query', () => ({
+  ...jest.requireActual('@tanstack/react-query'),
+  useQuery: jest.fn().mockReturnValue({
+    data: mockGetImportJobs,
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
+  }),
+}));
+
 jest.mock('formik', () => ({
   ...jest.requireActual('formik'),
   useFormikContext: jest.fn().mockReturnValue({
@@ -22,7 +32,7 @@ describe('useAddedRepositories', () => {
     const { result } = renderHook(() => useAddedRepositories(1, 5, ''));
     await waitFor(() => {
       expect(result.current.loaded).toBeTruthy();
-      expect(result.current.data).toHaveLength(4);
+      expect(result.current.data.totalJobs).toBe(4);
     });
   });
 });
