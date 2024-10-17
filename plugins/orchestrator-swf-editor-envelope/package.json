@@ -1,7 +1,7 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-swf-editor-envelope",
   "description": "Serverless workflow editor envelope for the Orchestrator plugin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public"
