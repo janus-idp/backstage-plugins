@@ -18,13 +18,17 @@
   "scripts": {
     "build": "backstage-cli package build",
     "tsc": "tsc",
-    "lint": "backstage-cli package lint",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write .",
+    "lint:check": "backstage-cli package lint",
+    "lint:fix": "backstage-cli package lint --fix",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "@backstage/cli": "0.26.4"
   },
   "files": [

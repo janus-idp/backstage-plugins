@@ -1,3 +1,10 @@
+## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.4.15](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.4.14...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.4.15) (2024-10-10)
+
+### Dependencies
+
+* **ws:**  upgraded to 8.18.0
+  * Fixes CVE-2024-37890
+
 ## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.4.14](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.4.13...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.4.14) (2024-06-13)
 
 

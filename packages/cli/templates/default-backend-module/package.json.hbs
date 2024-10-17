@@ -44,7 +44,9 @@
     "prepack": "backstage-cli package prepack",
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
     "@backstage/backend-common": "^{{versionQuery '@backstage/backend-common'}}",

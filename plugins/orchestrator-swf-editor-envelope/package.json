@@ -20,10 +20,14 @@
     "build": "scripts/build",
     "postbuild": "scripts/postbuild copy",
     "clean": "backstage-cli package clean",
-    "lint": "backstage-cli package lint",
+    "lint:check": "backstage-cli package lint",
+    "lint:fix": "backstage-cli package lint --fix",
     "postpack": "backstage-cli package postpack",
     "prepack": "backstage-cli package prepack",
-    "test": "backstage-cli package test --passWithNoTests --coverage"
+    "test": "backstage-cli package test --passWithNoTests --coverage",
+    "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
     "@kie-tools-core/editor": "^0.32.0",
@@ -35,6 +39,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "0.26.4",
+    "prettier": "3.3.3",
     "clean-webpack-plugin": "4.0.0",
     "css-loader": "6.11.0",
     "filemanager-webpack-plugin": "8.0.0",

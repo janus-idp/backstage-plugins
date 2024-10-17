@@ -3,34 +3,11 @@ description: Build all packages
 inputs:
   args:
     description: Backstage CLI repo build arguments
-    default: '@janus-idp/*'
-  node-version:
-    description: Node.js version
-    required: true
-    default: 20
+    default: --filter=@janus-idp/*
+
 runs:
   using: 'composite'
   steps:
-    - name: Setup Node.js
-      uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
-      with:
-        node-version: ${{ inputs.node-version }}
-        cache: 'yarn'
-
-    - name: Setup local Turbo cache
-      uses: dtinth/setup-github-actions-caching-for-turbo@a0e976d970c2a94366a26984efcef3030e2c0115 # v1
-
-    - name: Install dependencies
-      shell: bash
-      run: |
-        yarn install
-        if [[ $(git diff --name-only . || true) ]]; then
-          echo "After 'yarn install', workspace is dirty! The following files have changed:"
-          echo
-          git diff --name-only . || true
-          exit 42
-        fi
-
     - name: Build all packages
       shell: bash
-      run: yarn build --filter=${{ inputs.args }} --concurrency=1
+      run: yarn run build --concurrency=75% ${{ inputs.args }}
