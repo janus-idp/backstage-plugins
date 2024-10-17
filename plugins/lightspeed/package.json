@@ -46,7 +46,7 @@
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@mui/icons-material": "^5.15.18",
-    "@patternfly/react-core": "6.0.0-alpha.101",
+    "@patternfly/react-core": "6.0.0-prerelease.21",
     "@patternfly/virtual-assistant": "2.0.0-alpha.14",
     "openai": "^4.52.6",
     "react-markdown": "^9.0.1",
