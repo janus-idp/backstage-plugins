@@ -1,7 +1,7 @@
 {
   "name": "@janus-idp/backstage-plugin-audit-log-node",
   "description": "Node.js library for the audit-log plugin",
-  "version": "1.4.1",
+  "version": "1.5.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -33,10 +33,14 @@
     "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "devDependencies": {
-    "@backstage/backend-common": "0.23.3",
     "prettier": "3.3.3",
+    "@backstage/backend-plugin-api": "^0.7.0",
     "@backstage/backend-test-utils": "0.4.4",
     "@backstage/cli": "0.26.11",
+    "@backstage/errors": "^1.2.4",
+    "@backstage/types": "^1.1.1",
+    "@types/lodash": "4.17.5",
+    "express": "^4.19.2",
     "jest-express": "1.12.0"
   },
   "files": [
@@ -56,10 +60,6 @@
   "homepage": "https://red.ht/rhdh",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "dependencies": {
-    "@backstage/backend-plugin-api": "^0.7.0",
-    "@backstage/errors": "^1.2.4",
-    "@backstage/types": "^1.1.1",
-    "express": "^4.19.2",
     "lodash": "^4.17.21"
   },
   "maintainers": [
