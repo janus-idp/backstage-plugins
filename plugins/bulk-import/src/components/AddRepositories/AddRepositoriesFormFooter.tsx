@@ -2,9 +2,11 @@ import React from 'react';
 
 import { Link } from '@backstage/core-components';
 
-import { Button, makeStyles } from '@material-ui/core';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
+import { makeStyles } from '@mui/styles';
 import { useFormikContext } from 'formik';
 
 import {
@@ -13,10 +15,7 @@ import {
   ApprovalTool,
 } from '../../types';
 
-const useStyles = makeStyles(theme => ({
-  createButton: {
-    marginRight: theme.spacing(1),
-  },
+const useStyles = makeStyles({
   illustration: {
     flexDirection: 'row',
     display: 'flex',
@@ -26,25 +25,7 @@ const useStyles = makeStyles(theme => ({
   tooltip: {
     maxWidth: 'none',
   },
-  footer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'left',
-    position: 'fixed',
-    bottom: 0,
-    paddingTop: '24px',
-    paddingBottom: '24px',
-    paddingLeft: '24px',
-    backgroundColor:
-      theme.palette.type === 'light'
-        ? '#fff'
-        : theme.palette.navigation.background,
-    width: '100%',
-    borderTopStyle: 'groove',
-    border: theme.palette.divider,
-    zIndex: 1,
-  },
-}));
+});
 
 const sPad = (repositories: AddedRepositories) =>
   Object.keys(repositories || []).length > 1 ? 's' : '';
@@ -73,7 +54,7 @@ export const AddRepositoriesFormFooter = () => {
       variant="contained"
       color="primary"
       onClick={handleSubmit as any}
-      className={styles.createButton}
+      sx={{ mr: 1 }}
       disabled={disableCreate || isSubmitting}
       startIcon={
         isSubmitting && <CircularProgress size="20px" color="inherit" />
@@ -84,7 +65,27 @@ export const AddRepositoriesFormFooter = () => {
   );
 
   return (
-    <div className={styles.footer} data-testid="add-repository-footer">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'left',
+        position: 'fixed',
+        bottom: 0,
+        pt: 3,
+        pb: 3,
+        pl: 3,
+        backgroundColor: theme =>
+          theme.palette.mode === 'light'
+            ? '#fff'
+            : theme.palette.navigation.background,
+        width: '100%',
+        borderTopStyle: 'groove',
+        borderColor: 'divider',
+        zIndex: 1,
+      }}
+      data-testid="add-repository-footer"
+    >
       {toolTipTitle ? (
         <Tooltip classes={{ tooltip: styles.tooltip }} title={toolTipTitle}>
           <span>{submitButton}</span>
@@ -95,6 +96,6 @@ export const AddRepositoriesFormFooter = () => {
       <Link to="/bulk-import/repositories">
         <Button variant="outlined">Cancel</Button>
       </Link>
-    </div>
+    </Box>
   );
 };

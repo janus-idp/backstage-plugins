@@ -2,7 +2,6 @@ import React from 'react';
 
 import { useApi } from '@backstage/core-plugin-api';
 
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import CloseIcon from '@mui/icons-material/Close';
 import WarningIcon from '@mui/icons-material/Warning';
 import Alert from '@mui/material/Alert';
@@ -14,7 +13,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
+import { Theme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
+import createStyles from '@mui/styles/createStyles';
 import { get } from 'lodash';
 
 import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
@@ -116,6 +118,7 @@ const DeleteRepositoryDialog = ({
             className={classes.closeButton}
             onClick={closeDialog}
             title="Close"
+            size="large"
           >
             <CloseIcon />
           </IconButton>
