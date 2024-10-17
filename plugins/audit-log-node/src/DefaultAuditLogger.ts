@@ -1,12 +1,12 @@
-import {
+import type {
   AuthService,
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { ErrorLike } from '@backstage/errors';
-import { JsonObject, JsonValue } from '@backstage/types';
+import type { ErrorLike } from '@backstage/errors';
+import type { JsonObject, JsonValue } from '@backstage/types';
 
-import { Request } from 'express';
+import type { Request } from 'express';
 import { cloneDeep } from 'lodash';
 
 import {
