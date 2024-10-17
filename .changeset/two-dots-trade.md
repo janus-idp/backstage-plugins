@@ -1,9 +1,7 @@
 ---
-"@janus-idp/backstage-plugin-orchestrator-swf-editor-envelope": minor
 "@janus-idp/backstage-scaffolder-backend-module-annotator": minor
 "@janus-idp/backstage-plugin-analytics-provider-segment": minor
 "@janus-idp/backstage-plugin-openshift-image-registry": minor
-"@janus-idp/backstage-plugin-rbac-backend-module-test": minor
 "@janus-idp/backstage-plugin-analytics-module-matomo": minor
 "@janus-idp/backstage-plugin-orchestrator-form-react": minor
 "@janus-idp/backstage-plugin-orchestrator-form-api": minor
@@ -12,7 +10,6 @@
 "@janus-idp/backstage-plugin-orchestrator-common": minor
 "@janus-idp/backstage-plugin-bulk-import-common": minor
 "@janus-idp/backstage-scaffolder-backend-module-kubernetes": minor
-"@janus-idp/backstage-plugin-lightspeed-backend": minor
 "@janus-idp/backstage-scaffolder-backend-module-servicenow": minor
 "@janus-idp/backstage-plugin-jfrog-artifactory": minor
 "@janus-idp/backstage-scaffolder-backend-module-sonarqube": minor
@@ -33,7 +30,6 @@
 "@janus-idp/backstage-plugin-ocm-backend": minor
 "@janus-idp/backstage-plugin-quay-common": minor
 "@janus-idp/backstage-plugin-rbac-common": minor
-"@janus-idp/backstage-plugin-lightspeed": minor
 "@janus-idp/backstage-plugin-ocm-common": minor
 "@janus-idp/backstage-plugin-rbac-node": minor
 "@janus-idp/backstage-plugin-topology": minor
