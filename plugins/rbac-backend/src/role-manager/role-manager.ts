@@ -23,9 +23,9 @@ export class BackstageRoleManager implements RoleManager {
     this.allRoles = new Map<string, RoleMemberList>();
     const rbacConfig = this.config.getOptionalConfig('permission.rbac');
     this.maxDepth = rbacConfig?.getOptionalNumber('maxDepth');
-    if (this.maxDepth !== undefined && this.maxDepth! <= 0) {
+    if (this.maxDepth !== undefined && this.maxDepth! < 0) {
       throw new Error(
-        'Max Depth for RBAC group hierarchy must be greater than zero',
+        'Max Depth for RBAC group hierarchy must be greater than or equal to zero',
       );
     }
   }

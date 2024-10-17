@@ -135,8 +135,10 @@ permission:
     maxDepth: 1
 ```
 
-The `maxDepth` must be greater than 0 to ensure that the graphs are built correctly. Also the graph
+The `maxDepth` must be greater than or equal to 0 to ensure that the graphs are built correctly. Also the graph
 will be built with a hierarchy of 1 + maxDepth.
+
+A value of 0 for maxDepth disables the group inheritance feature.
 
 ## Non-Existent Groups in the Hierarchy
 
