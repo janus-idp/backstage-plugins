@@ -10,7 +10,7 @@
   "configSchema": "config.d.ts",
   "backstage": {
     "role": "backend-plugin",
-    "supported-versions": "1.28.4",
+    "supported-versions": "1.31.3",
     "pluginId": "matomo",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-matomo",
@@ -58,8 +58,8 @@
   "author": "The Backstage Community",
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-defaults": "^0.4.1",
-    "@backstage/backend-plugin-api": "^0.7.0",
+    "@backstage/backend-defaults": "^0.5.0",
+    "@backstage/backend-plugin-api": "^1.0.0",
     "@backstage/config": "^1.2.0"
   },
   "overrides": {

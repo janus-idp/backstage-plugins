@@ -42,17 +42,17 @@
   },
   "dependencies": {
     "@janus-idp/backstage-plugin-rbac-node": "*",
-    "@backstage/backend-plugin-api": "^0.7.0",
+    "@backstage/backend-plugin-api": "^1.0.0",
     "@backstage/errors": "^1.2.4",
     "csv-parse": "^5.5.6"
   },
   "devDependencies": {
     "prettier": "3.3.3",
-    "@backstage/config": "^1.2.0",
-    "@backstage/backend-test-utils": "0.4.4",
-    "@backstage/cli": "0.26.11",
+    "@backstage/config": "1.2.0",
+    "@backstage/backend-test-utils": "1.0.0",
+    "@backstage/cli": "0.27.1",
     "@janus-idp/cli": "*",
-    "@backstage/backend-dynamic-feature-service": "^0.2.15"
+    "@backstage/backend-dynamic-feature-service": "0.4.1"
   },
   "files": [
     "dist",

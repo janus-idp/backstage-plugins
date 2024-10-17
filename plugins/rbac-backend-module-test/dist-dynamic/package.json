@@ -46,7 +46,7 @@
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-plugin-api": "^0.7.0",
+    "@backstage/backend-plugin-api": "^1.0.0",
     "@backstage/errors": "^1.2.4"
   },
   "overrides": {

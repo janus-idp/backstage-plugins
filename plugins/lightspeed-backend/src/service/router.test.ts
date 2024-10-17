@@ -76,7 +76,7 @@ describe('lightspeed router tests', () => {
     const features: (BackendFeature | Promise<{ default: BackendFeature }>)[] =
       [
         lightspeedPlugin,
-        mockServices.rootLogger.factory,
+        mockServices.rootLogger.factory(),
         mockServices.rootConfig.factory({
           data: { ...BASE_CONFIG, ...(config || {}) },
         }),

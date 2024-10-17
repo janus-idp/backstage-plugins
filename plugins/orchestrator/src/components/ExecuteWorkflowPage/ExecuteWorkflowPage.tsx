@@ -13,7 +13,7 @@ import {
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import { JsonObject } from '@backstage/types';
+import type { JsonObject } from '@backstage/types';
 
 import { Grid } from '@material-ui/core';
 
