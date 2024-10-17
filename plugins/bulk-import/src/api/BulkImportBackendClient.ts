@@ -120,7 +120,11 @@ export class BulkImportBackendClient implements BulkImportAPI {
         body: JSON.stringify(importRepositories),
       },
     );
-    return jsonResponse.json();
+    if (!jsonResponse.ok) {
+      const errorResponse = await jsonResponse.json();
+      throw errorResponse;
+    }
+    return jsonResponse.status === 204 ? null : await jsonResponse.json();
   }
 
   async deleteImportAction(repo: string, defaultBranch: string) {

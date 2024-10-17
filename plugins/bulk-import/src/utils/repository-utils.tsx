@@ -317,7 +317,7 @@ export const areAllRowsSelected = (
 export const getJobErrors = (
   createJobResponse: ImportJobResponse[],
 ): JobErrors => {
-  return createJobResponse.reduce(
+  return createJobResponse?.reduce(
     (acc: JobErrors, res: ImportJobResponse) => {
       if (res.errors?.length > 0) {
         const errs =

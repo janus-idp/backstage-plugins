@@ -126,8 +126,11 @@ const handlers = [
         )
       ) {
         return res(
-          ctx.status(400),
-          ctx.json({ message: 'Dry run for creating import jobs failed' }),
+          ctx.json({
+            message: 'Dry run for creating import jobs failed',
+            ok: false,
+            status: 404,
+          }),
         );
       }
       return res(ctx.json(jobs));
@@ -340,9 +343,10 @@ describe('BulkImportBackendClient', () => {
         ),
         true,
       );
-
       expect(response).toEqual({
         message: 'Dry run for creating import jobs failed',
+        ok: false,
+        status: 404,
       });
     });
   });
