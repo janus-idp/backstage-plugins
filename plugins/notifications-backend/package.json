@@ -41,6 +41,7 @@
     "tsc": "tsc",
     "openapi": "./scripts/openapi.sh",
     "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies",
+    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies --clean",
     "prettier:check": "prettier --ignore-unknown --check .",
     "prettier:fix": "prettier --ignore-unknown --write ."
   },
