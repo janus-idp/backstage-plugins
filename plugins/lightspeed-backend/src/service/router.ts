@@ -14,6 +14,7 @@ import {
   loadHistory,
   saveHistory,
 } from '../handlers/chatHistory';
+import { validateUserRequest } from '../handlers/conversationId';
 import {
   DEFAULT_HISTORY_LENGTH,
   QueryRequestBody,
@@ -28,7 +29,7 @@ import {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, config } = options;
+  const { logger, config, httpAuth, userInfo } = options;
 
   const router = Router();
   router.use(express.json());
@@ -38,12 +39,16 @@ export async function createRouter(
   });
 
   // Middleware proxy to exclude /v1/query
-  router.use('/v1', (req, res, next) => {
+  router.use('/v1', async (req, res, next) => {
     if (req.path === '/query') {
       return next(); // This will skip proxying and go to /v1/query endpoint
     }
 
     // TODO: parse server_id from req.body and get URL and token when multi-server is supported
+    const user = await userInfo.getUserInfo(await httpAuth.credentials(req));
+    const userEntity = user.userEntityRef;
+
+    logger.info(`/v1 receives call from user: ${userEntity}`);
 
     // Proxy middleware configuration
     const apiProxy = createProxyMiddleware({
@@ -67,6 +72,16 @@ export async function createRouter(
 
       const loadhistoryLength: number = historyLength || DEFAULT_HISTORY_LENGTH;
       try {
+        const userEntity = await userInfo.getUserInfo(
+          await httpAuth.credentials(request),
+        );
+        const user_id = userEntity.userEntityRef;
+        logger.info(
+          `GET /conversations/:conversation_id receives call from user: ${user_id}`,
+        );
+
+        validateUserRequest(conversation_id, user_id); // will throw error and return 500 with error message if user_id does not match
+
         const history = await loadHistory(conversation_id, loadhistoryLength);
         response.status(200).json(history);
         response.end();
@@ -83,6 +98,17 @@ export async function createRouter(
     async (request, response) => {
       const conversation_id = request.params.conversation_id;
       try {
+        const userEntity = await userInfo.getUserInfo(
+          await httpAuth.credentials(request),
+        );
+        const user_id = userEntity.userEntityRef;
+
+        logger.info(
+          `DELETE /conversations/:conversation_id receives call from user: ${user_id}`,
+        );
+
+        validateUserRequest(conversation_id, user_id); // will throw error and return 500 with error message if user_id does not match
+
         response.status(200).json(await deleteHistory(conversation_id));
         response.end();
       } catch (error) {
@@ -100,6 +126,14 @@ export async function createRouter(
       const { conversation_id, model, query, serverURL }: QueryRequestBody =
         request.body;
       try {
+        const userEntity = await userInfo.getUserInfo(
+          await httpAuth.credentials(request),
+        );
+        const user_id = userEntity.userEntityRef;
+
+        logger.info(`/v1/query receives call from user: ${user_id}`);
+        validateUserRequest(conversation_id, user_id); // will throw error and return 500 with error message if user_id does not match
+
         // currently only supports single server
         const apiToken = config
           .getConfigArray('lightspeed.servers')[0]

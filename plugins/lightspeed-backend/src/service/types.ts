@@ -1,9 +1,15 @@
-import type { LoggerService } from '@backstage/backend-plugin-api';
+import type {
+  HttpAuthService,
+  LoggerService,
+  UserInfoService,
+} from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
 
 export type RouterOptions = {
   logger: LoggerService;
   config: Config;
+  httpAuth: HttpAuthService;
+  userInfo: UserInfoService;
 };
 
 /**
