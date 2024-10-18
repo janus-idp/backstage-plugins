@@ -40,6 +40,7 @@ jobs:
           yarn install
 
       - name: Verify changesets
+        if: github.actor != 'janus-idp[bot]'
         run: |
           yarn changeset status --since=${{ github.event.pull_request.base.sha }}
 
