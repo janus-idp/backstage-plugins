@@ -57,19 +57,20 @@
     "openapi:check": "./scripts/openapi.sh check",
     "openapi:prettier:fix": "prettier --ignore-unknown --write ./src/generated/api"
   },
-  "dependencies": {
-    "@backstage/types": "^1.1.1",
+  "peerDependencies": {
     "@backstage/plugin-permission-common": "^0.8.1",
     "@severlessworkflow/sdk-typescript": "^3.0.3",
     "js-yaml": "^4.1.0",
-    "json-schema": "^0.4.0",
     "axios": "^1.7.4"
   },
   "devDependencies": {
     "prettier": "3.3.3",
     "@backstage/cli": "0.27.1",
+    "@backstage/types": "1.1.1",
+    "json-schema": "0.4.0",
     "@openapitools/openapi-generator-cli": "2.13.4",
-    "js-yaml-cli": "0.6.0"
+    "js-yaml-cli": "0.6.0",
+    "@severlessworkflow/sdk-typescript": "3.0.3"
   },
   "maintainers": [
     "@janus-idp/maintainers-plugins",

@@ -35,7 +35,7 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@backstage/plugin-permission-common": "^0.8.1",
     "@backstage/errors": "^1.2.4"
   },

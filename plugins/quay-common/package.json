@@ -53,10 +53,8 @@
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "@backstage/plugin-permission-common": "^0.8.1"
-  },
   "peerDependencies": {
+    "@backstage/plugin-permission-common": "^0.8.1",
     "react": "16.13.1 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {

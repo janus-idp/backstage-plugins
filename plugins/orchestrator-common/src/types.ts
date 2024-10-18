@@ -1,9 +1,9 @@
-import { JsonObject } from '@backstage/types';
+import type { JsonObject } from '@backstage/types';
 
-import { Specification } from '@severlessworkflow/sdk-typescript';
-import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
+import type { Specification } from '@severlessworkflow/sdk-typescript';
+import type { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 
-import { ProcessInstance, ProcessInstanceStateValues } from './models';
+import type { ProcessInstance, ProcessInstanceStateValues } from './models';
 
 type Id<T> = { [P in keyof T]: T[P] };
 
