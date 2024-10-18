@@ -271,17 +271,17 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     }
 
     const csvFile = new CSVFileWatcher(
-      policiesFile,
       allowReload,
       logger,
       enforcerDelegate,
       roleMetadataStorage,
       auditLogger,
     );
-    await csvFile.initialize();
+    if (policiesFile) {
+      await csvFile.initialize(policiesFile);
+    }
 
     const conditionalFile = new YamlConditinalPoliciesFileWatcher(
-      conditionalPoliciesFile,
       allowReload,
       logger,
       conditionalStorage,
@@ -291,7 +291,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       roleMetadataStorage,
       enforcerDelegate,
     );
-    await conditionalFile.initialize();
+    if (conditionalPoliciesFile) {
+      await conditionalFile.initialize(conditionalPoliciesFile);
+    }
 
     if (!conditionalPoliciesFile) {
       // clean up conditional policies corresponding to roles from csv file
