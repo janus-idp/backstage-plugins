@@ -161,9 +161,13 @@ export function registerScriptCommand(program: Command) {
       '--preserve-temp-dir',
       'Leave the temporary staging directory on the filesystem instead of deleting it',
     )
-    .requiredOption(
+    .option(
+      '--export-to <directory>',
+      'Export the plugins to the specified directory, skips building the container image',
+    )
+    .option(
       '-t, --tag <tag>',
-      'Tag name to use when building the plugin registry image',
+      'Tag name to use when building the plugin registry image.  Required if "--export-to" is not specified',
     )
     .option(
       '--use-docker',
