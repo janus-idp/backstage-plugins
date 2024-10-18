@@ -33,7 +33,7 @@
     "prettier:check": "prettier --ignore-unknown --check .",
     "prettier:fix": "prettier --ignore-unknown --write ."
   },
-  "dependencies": {
+  "peerDependencies": {
     "@backstage/plugin-permission-common": "^0.8.1"
   },
   "devDependencies": {

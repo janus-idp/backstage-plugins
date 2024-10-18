@@ -53,7 +53,7 @@
   ],
   "homepage": "https://red.ht/rhdh",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
-  "dependencies": {
+  "peerDependencies": {
     "@backstage/plugin-permission-common": "^0.8.1"
   },
   "maintainers": [
