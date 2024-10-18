@@ -8757,6 +8757,7 @@ __metadata:
     "@severlessworkflow/sdk-typescript": 3.0.3
     js-yaml-cli: 0.6.0
     json-schema: 0.4.0
+    prettier: 3.3.3
   peerDependencies:
     "@backstage/plugin-permission-common": ^0.8.1
     "@backstage/types": ^1.1.1
