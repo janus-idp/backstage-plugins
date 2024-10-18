@@ -6,14 +6,6 @@ import CamelCaseWrap from './CamelCaseWrap';
 
 import './StatusIconAndText.css';
 
-type StatusIconAndTextProps = {
-  title: string;
-  iconOnly?: boolean;
-  className?: string;
-  icon: React.ReactElement;
-  spin?: boolean;
-};
-
 const DASH = '-';
 
 export const StatusIconAndText = ({
@@ -22,7 +14,15 @@ export const StatusIconAndText = ({
   spin,
   iconOnly,
   className,
-}: StatusIconAndTextProps): React.ReactElement => {
+  dataTestId,
+}: {
+  title: string;
+  iconOnly?: boolean;
+  className?: string;
+  icon: React.ReactElement;
+  spin?: boolean;
+  dataTestId?: string;
+}): React.ReactElement => {
   if (!title) {
     return <>{DASH}</>;
   }
@@ -31,7 +31,7 @@ export const StatusIconAndText = ({
     return (
       <>
         {React.cloneElement(icon, {
-          'data-testid': `icon-only-${title}`,
+          'data-testid': dataTestId ?? `icon-only-${title}`,
           className: icon.props.className,
         })}
       </>
@@ -41,7 +41,7 @@ export const StatusIconAndText = ({
   return (
     <span
       className={classNames('bs-shared-icon-and-text', className)}
-      data-testid={`icon-with-title-${title}`}
+      data-testid={dataTestId ?? `icon-with-title-${title}`}
       title={title}
     >
       {React.cloneElement(icon, {
