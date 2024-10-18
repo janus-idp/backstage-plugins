@@ -31,8 +31,8 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies",
-    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies --clean",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --clean",
     "lint:check": "backstage-cli package lint",
     "lint:fix": "backstage-cli package lint --fix",
     "postpack": "backstage-cli package postpack",
@@ -53,7 +53,7 @@
     "@backstage/plugin-catalog-node": "^1.13.0",
     "@backstage/plugin-permission-common": "^0.8.1",
     "@backstage/plugin-permission-node": "^0.8.3",
-    "@janus-idp/backstage-plugin-bulk-import-common": "1.1.1",
+    "@janus-idp/backstage-plugin-bulk-import-common": "*",
     "@octokit/auth-app": "^6.0.3",
     "@octokit/rest": "^20.0.2",
     "ajv-formats": "^3.0.1",
@@ -79,7 +79,7 @@
     "supertest": "6.3.4"
   },
   "peerDependencies": {
-    "@janus-idp/backstage-plugin-audit-log-node": "1.5.1"
+    "@janus-idp/backstage-plugin-audit-log-node": "*"
   },
   "files": [
     "dist",

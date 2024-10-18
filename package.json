@@ -28,8 +28,8 @@
     "prepare": "husky install",
     "export-dynamic": "turbo run export-dynamic",
     "export-dynamic:clean": "turbo run export-dynamic:clean",
-    "versions:bump": "backstage-cli versions:bump && find . -name 'package.json' ! -path '*/node_modules/*' -exec sed -i -e '/devDependencies/,/\\\\}/{ s/\\\"\\\\^/\\\"/; }' {} ; && yarn install && turbo run export-dynamic:clean",
-    "packages:version": "changeset version && yarn install && turbo run export-dynamic:clean --concurrency=75% --affected && git add .\\*package.json .\\*yarn.lock",
+    "versions:bump": "backstage-cli versions:bump && find . -name 'package.json' ! -path '*/node_modules/*' -exec sed -i -e '/devDependencies/,/\\\\}/{ s/\\\"\\\\^/\\\"/; }' {} ; && yarn install",
+    "packages:version": "changeset version",
     "packages:publish": "turbo run build --concurrency=75% --filter=@janus-idp/* && changeset publish"
   },
   "workspaces": {
@@ -45,7 +45,7 @@
   "devDependencies": {
     "@backstage/cli": "0.27.1",
     "@ianvs/prettier-plugin-sort-imports": "4.2.1",
-    "@janus-idp/cli": "*",
+    "@janus-idp/cli": "1.15.2",
     "@spotify/prettier-config": "15.0.0",
     "eslint-plugin-jest": "27.9.0",
     "husky": "8.0.3",

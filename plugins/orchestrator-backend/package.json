@@ -63,8 +63,8 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "postversion": "yarn run export-dynamic",
-    "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies",
-    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies --clean"
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --clean"
   },
   "dependencies": {
     "@backstage/backend-common": "^0.25.0",
@@ -79,7 +79,7 @@
     "@backstage/plugin-permission-node": "^0.8.3",
     "@backstage/plugin-scaffolder-backend": "^1.25.0",
     "@backstage/plugin-scaffolder-node": "^0.4.11",
-    "@janus-idp/backstage-plugin-orchestrator-common": "1.21.0",
+    "@janus-idp/backstage-plugin-orchestrator-common": "*",
     "@urql/core": "^4.1.4",
     "ajv-formats": "^2.1.1",
     "cloudevents": "^8.0.0",
@@ -102,8 +102,8 @@
     "@types/json-schema": "7.0.15"
   },
   "peerDependencies": {
-    "@janus-idp/backstage-plugin-audit-log-node": "1.5.1",
-    "@janus-idp/backstage-plugin-rbac-common": "1.10.0"
+    "@janus-idp/backstage-plugin-audit-log-node": "*",
+    "@janus-idp/backstage-plugin-rbac-common": "*"
   },
   "maintainers": [
     "@janus-idp/maintainers-plugins",

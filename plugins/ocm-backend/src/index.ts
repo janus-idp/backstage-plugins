@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// TODO: In 1.30, export bundle as export
-export { bundle as dynamicPluginInstaller } from './bundle';
+export { bundle as default } from './bundle';
 export * from './providers';
 export * from './service/router';
