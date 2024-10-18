@@ -60,7 +60,6 @@ jobs:
         with:
           title: 'chore(release): version packages on ${{ github.ref_name }} branch'
           commit: 'chore(release): version packages on ${{ github.ref_name }} branch'
-          # We want to make sure an update-to-date yarn lockfile is committed
           version: yarn run packages:version
           publish: yarn run packages:publish
         env:

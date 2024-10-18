@@ -29,7 +29,7 @@
     "export-dynamic": "turbo run export-dynamic",
     "export-dynamic:clean": "turbo run export-dynamic:clean",
     "versions:bump": "backstage-cli versions:bump && find . -name 'package.json' ! -path '*/node_modules/*' -exec sed -i -e '/devDependencies/,/\\\\}/{ s/\\\"\\\\^/\\\"/; }' {} ; && yarn install",
-    "packages:version": "changeset version && yarn install && git add yarn.lock",
+    "packages:version": "changeset version",
     "packages:publish": "turbo run build --concurrency=75% --filter=@janus-idp/* && changeset publish"
   },
   "workspaces": {

@@ -35,7 +35,7 @@
     "@backstage/core-components": "^0.15.0",
     "@backstage/core-plugin-api": "^1.9.4",
     "@backstage/types": "^1.1.1",
-    "@janus-idp/backstage-plugin-orchestrator-form-api": "1.2.0",
+    "@janus-idp/backstage-plugin-orchestrator-form-api": "*",
     "@material-ui/core": "^4.12.4",
     "@rjsf/core": "^5.21.2",
     "@rjsf/material-ui": "^5.21.2",
