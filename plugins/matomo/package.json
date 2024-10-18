@@ -58,7 +58,7 @@
     "@backstage/core-app-api": "1.15.0",
     "@backstage/dev-utils": "1.1.1",
     "@backstage/test-utils": "1.6.0",
-    "@janus-idp/cli": "1.15.2",
+    "@janus-idp/cli": "*",
     "@redhat-developer/red-hat-developer-hub-theme": "0.4.0",
     "@testing-library/jest-dom": "6.4.8",
     "@testing-library/react": "14.3.1",
