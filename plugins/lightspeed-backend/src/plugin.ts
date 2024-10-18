@@ -16,8 +16,6 @@ export const lightspeedPlugin = createBackendPlugin({
         logger: coreServices.logger,
         config: coreServices.rootConfig,
         http: coreServices.httpRouter,
-
-        // TODO: for user authentication
         httpAuth: coreServices.httpAuth,
         userInfo: coreServices.userInfo,
       },
