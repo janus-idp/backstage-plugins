@@ -45,7 +45,7 @@
   "devDependencies": {
     "@backstage/cli": "0.27.1",
     "@ianvs/prettier-plugin-sort-imports": "4.2.1",
-    "@janus-idp/cli": "*",
+    "@janus-idp/cli": "1.15.2",
     "@spotify/prettier-config": "15.0.0",
     "eslint-plugin-jest": "27.9.0",
     "husky": "8.0.3",

@@ -66,7 +66,7 @@
     "@backstage/dev-utils": "1.1.1",
     "@backstage/plugin-catalog": "1.23.1",
     "@backstage/test-utils": "1.6.0",
-    "@janus-idp/cli": "*",
+    "@janus-idp/cli": "1.15.2",
     "@redhat-developer/red-hat-developer-hub-theme": "0.4.0",
     "@testing-library/jest-dom": "6.4.8",
     "@testing-library/react": "14.3.1",

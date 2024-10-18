@@ -96,7 +96,7 @@
     "prettier": "3.3.3",
     "@backstage/backend-test-utils": "1.0.0",
     "@backstage/cli": "0.27.1",
-    "@janus-idp/cli": "*",
+    "@janus-idp/cli": "1.15.2",
     "@types/express": "4.17.21",
     "@types/fs-extra": "11.0.4",
     "@types/json-schema": "7.0.15"
