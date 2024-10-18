@@ -23,6 +23,7 @@
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "export-dynamic": "janus-cli package export-dynamic-plugin --in-place",
+    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --in-place --clean",
     "tsc": "tsc",
     "prettier:check": "prettier --ignore-unknown --check .",
     "prettier:fix": "prettier --ignore-unknown --write .",
