@@ -1,5 +1,9 @@
 import { type BackendFeature } from '@backstage/backend-plugin-api';
-import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  mockServices,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
 
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import express from 'express';
@@ -12,9 +16,17 @@ import { deleteHistory, saveHistory } from '../handlers/chatHistory';
 import { lightspeedPlugin } from '../plugin';
 import { Roles } from '../service/types';
 
-const mockConversationId = 'user1+1q2w3e4r-qwer1234';
+const mockUserId = `user: default/user1`;
+const mockConversationId = `${mockUserId}+1q2w3e4r-qwer1234`;
+const encoded_conversation_id = encodeURIComponent(mockConversationId);
 const mockModel = 'test-model';
 const mockToken = 'dummy-token';
+
+// const mockHttpAuth = mockServices.httpAuth({
+//   pluginId: 'permission',
+//   defaultCredentials: mockCredentials.user('user:default/user1'),
+// });
+// const credentials = mockCredentials.user('user:default/guest');
 
 const BASE_CONFIG = {
   lightspeed: {
@@ -44,6 +56,17 @@ jest.mock('http-proxy-middleware', () => ({
       }
       res.status(404).json({ error: 'unknown path' });
     }),
+}));
+
+jest.mock('@backstage/backend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/backend-plugin-api'),
+  UserInfoService: jest.fn().mockImplementation(() => ({
+    getUserInfo: jest.fn().mockResolvedValue({
+      BackstageUserInfo: {
+        userEntity: mockUserId,
+      },
+    }),
+  })),
 }));
 
 describe('lightspeed router tests', () => {
@@ -80,6 +103,10 @@ describe('lightspeed router tests', () => {
         mockServices.rootConfig.factory({
           data: { ...BASE_CONFIG, ...(config || {}) },
         }),
+        mockServices.httpAuth.factory({
+          defaultCredentials: mockCredentials.user(mockUserId),
+        }),
+        mockServices.userInfo.factory(),
       ];
     return (await startTestBackend({ features })).server;
   }
@@ -132,7 +159,7 @@ describe('lightspeed router tests', () => {
     it('load history', async () => {
       const backendServer = await startBackendServer();
       const response = await request(backendServer).get(
-        `/api/lightspeed/conversations/${mockConversationId}`,
+        `/api/lightspeed/conversations/${encoded_conversation_id}`,
       );
       expect(response.statusCode).toEqual(200);
       // Parse response body
@@ -153,7 +180,7 @@ describe('lightspeed router tests', () => {
       // delete request
       const backendServer = await startBackendServer();
       const deleteResponse = await request(backendServer).delete(
-        `/api/lightspeed/conversations/${mockConversationId}`,
+        `/api/lightspeed/conversations/${encoded_conversation_id}`,
       );
       expect(deleteResponse.statusCode).toEqual(200);
     });
@@ -162,7 +189,7 @@ describe('lightspeed router tests', () => {
       await deleteHistory(mockConversationId);
       const backendServer = await startBackendServer();
       const response = await request(backendServer).get(
-        `/api/lightspeed/conversations/${mockConversationId}`,
+        `/api/lightspeed/conversations/${encoded_conversation_id}`,
       );
       expect(response.statusCode).toEqual(500);
       expect(response.body.error).toContain('unknown conversation_id');
