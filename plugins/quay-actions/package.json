@@ -10,7 +10,7 @@
   },
   "backstage": {
     "role": "backend-plugin-module",
-    "supported-versions": "1.28.4",
+    "supported-versions": "1.31.3",
     "pluginId": "scaffolder",
     "pluginPackage": "@backstage/plugin-scaffolder-backend"
   },
@@ -29,6 +29,7 @@
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
     "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies",
+    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies --clean",
     "lint:check": "backstage-cli package lint",
     "lint:fix": "backstage-cli package lint --fix",
     "postpack": "backstage-cli package postpack",
@@ -41,13 +42,13 @@
     "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
-    "@backstage/backend-plugin-api": "^0.7.0",
-    "@backstage/plugin-scaffolder-node": "^0.4.8"
+    "@backstage/backend-plugin-api": "^1.0.0",
+    "@backstage/plugin-scaffolder-node": "^0.4.11"
   },
   "devDependencies": {
     "prettier": "3.3.3",
-    "@backstage/cli": "0.26.11",
-    "@backstage/plugin-scaffolder-node-test-utils": "0.1.9",
+    "@backstage/cli": "0.27.1",
+    "@backstage/plugin-scaffolder-node-test-utils": "0.1.12",
     "@janus-idp/cli": "1.15.2"
   },
   "files": [

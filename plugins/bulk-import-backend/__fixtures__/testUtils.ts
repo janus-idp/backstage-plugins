@@ -135,11 +135,11 @@ export async function startBackendServer(
 ): Promise<any> {
   const features: (BackendFeature | Promise<{ default: BackendFeature }>)[] = [
     bulkImportPlugin,
-    mockServices.rootLogger.factory,
+    mockServices.rootLogger.factory(),
     mockServices.rootConfig.factory({
       data: { ...BASE_CONFIG, ...(config || {}) },
     }),
-    mockServices.cache.factory,
+    mockServices.cache.factory(),
     createServiceFactory({
       service: catalogServiceRef,
       deps: {},

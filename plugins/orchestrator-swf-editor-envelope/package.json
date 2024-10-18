@@ -14,7 +14,7 @@
   },
   "backstage": {
     "role": "web-library",
-    "supported-versions": "1.28.4",
+    "supported-versions": "1.31.3",
     "pluginId": "orchestrator-swf-editor-envelope",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-orchestrator-swf-editor-envelope"
@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "prettier": "3.3.3",
-    "@backstage/cli": "0.26.11",
+    "@backstage/cli": "0.27.1",
     "clean-webpack-plugin": "4.0.0",
     "css-loader": "6.11.0",
     "filemanager-webpack-plugin": "8.0.0",

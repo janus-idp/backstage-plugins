@@ -531,9 +531,9 @@ js-tiktoken@^1.0.12:
     base64-js "^1.5.1"
 
 langsmith@^0.1.56-rc.1:
-  version "0.1.63"
-  resolved "https://registry.yarnpkg.com/langsmith/-/langsmith-0.1.63.tgz#083293b1c6b992040b6dd39adb865aaae4fc6bb1"
-  integrity sha512-9YEwBxc0B0P3BUUYnPYfrr64daWQkjfSqq+7otT+05zc72su493egRlzhALd38AQeHJAKVgyGqwKWiJC4JQWtQ==
+  version "0.1.65"
+  resolved "https://registry.yarnpkg.com/langsmith/-/langsmith-0.1.65.tgz#11bc9cd033f0ce763da42266516354a096b8a74a"
+  integrity sha512-+aBft8/jUQbVPv3MWVwFwW/rMxyyA8xSRIsjWl773Nc7LDniczuf2rxZEUslV02RB36EIBgCJPNX7jz2L5YsIQ==
   dependencies:
     "@types/uuid" "^10.0.0"
     commander "^10.0.1"

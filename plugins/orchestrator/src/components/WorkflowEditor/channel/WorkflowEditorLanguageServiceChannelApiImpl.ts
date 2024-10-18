@@ -1,9 +1,9 @@
 import { SwfLanguageServiceChannelApi } from '@kie-tools/serverless-workflow-language-service/dist/api';
-import {
+import type {
   SwfJsonLanguageService,
   SwfYamlLanguageService,
 } from '@kie-tools/serverless-workflow-language-service/dist/channel';
-import {
+import type {
   CodeLens,
   CompletionItem,
   Position,

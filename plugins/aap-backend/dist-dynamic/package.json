@@ -9,7 +9,7 @@
   },
   "backstage": {
     "role": "backend-plugin-module",
-    "supported-versions": "1.28.4",
+    "supported-versions": "1.31.3",
     "pluginId": "catalog",
     "pluginPackage": "@backstage/plugin-catalog-backend"
   },
@@ -48,10 +48,10 @@
   "author": "Red Hat",
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-plugin-api": "^0.7.0",
-    "@backstage/catalog-model": "^1.5.0",
+    "@backstage/backend-plugin-api": "^1.0.0",
+    "@backstage/catalog-model": "^1.7.0",
     "@backstage/errors": "^1.2.4",
-    "@backstage/plugin-catalog-node": "^1.12.4"
+    "@backstage/plugin-catalog-node": "^1.13.0"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {

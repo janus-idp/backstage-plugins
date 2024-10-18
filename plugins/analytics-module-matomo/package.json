@@ -11,7 +11,7 @@
   },
   "backstage": {
     "role": "frontend-plugin",
-    "supported-versions": "1.28.4",
+    "supported-versions": "1.31.3",
     "pluginId": "analytics-module-matomo",
     "pluginPackage": "@janus-idp/backstage-plugin-analytics-module-matomo",
     "pluginPackages": [
@@ -23,6 +23,7 @@
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "export-dynamic": "janus-cli package export-dynamic-plugin --in-place",
+    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --in-place --clean",
     "tsc": "tsc",
     "prettier:check": "prettier --ignore-unknown --check .",
     "prettier:fix": "prettier --ignore-unknown --write .",
@@ -34,17 +35,17 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/core-plugin-api": "^1.9.3"
+    "@backstage/core-plugin-api": "^1.9.4"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
     "prettier": "3.3.3",
-    "@backstage/cli": "0.26.11",
-    "@backstage/core-app-api": "1.14.1",
-    "@backstage/dev-utils": "1.0.36",
-    "@backstage/test-utils": "1.5.9",
+    "@backstage/cli": "0.27.1",
+    "@backstage/core-app-api": "1.15.0",
+    "@backstage/dev-utils": "1.1.1",
+    "@backstage/test-utils": "1.6.0",
     "@janus-idp/cli": "1.15.2",
     "@redhat-developer/red-hat-developer-hub-theme": "0.4.0",
     "@testing-library/jest-dom": "6.4.8",

@@ -10,7 +10,7 @@
   },
   "backstage": {
     "role": "backend-plugin-module",
-    "supported-versions": "1.28.4",
+    "supported-versions": "1.31.3",
     "pluginId": "scaffolder",
     "pluginPackage": "@backstage/plugin-scaffolder-backend"
   },
@@ -36,22 +36,23 @@
     "postpack": "backstage-cli package postpack",
     "postversion": "yarn run export-dynamic",
     "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies",
+    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies --clean",
     "lodash": "^4.17.21",
     "tsc": "tsc",
     "prettier:check": "prettier --ignore-unknown --check .",
     "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
-    "@backstage/backend-plugin-api": "^0.7.0",
-    "@backstage/plugin-scaffolder-node": "^0.4.8",
+    "@backstage/backend-plugin-api": "^1.0.0",
+    "@backstage/plugin-scaffolder-node": "^0.4.11",
     "fs-extra": "^11.2.0",
     "lodash": "^4.17.21",
     "yaml": "^2.0.0"
   },
   "devDependencies": {
     "prettier": "3.3.3",
-    "@backstage/backend-test-utils": "0.4.4",
-    "@backstage/cli": "0.26.11"
+    "@backstage/backend-test-utils": "1.0.0",
+    "@backstage/cli": "0.27.1"
   },
   "files": [
     "dist",

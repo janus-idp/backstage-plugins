@@ -20,6 +20,10 @@
       "cache": false,
       "dependsOn": ["tsc"]
     },
+    "export-dynamic:clean": {
+      "cache": false,
+      "dependsOn": ["tsc"]
+    },
     "lint:check": {},
     "lint:fix": {
       "cache": false
