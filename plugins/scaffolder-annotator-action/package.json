@@ -36,6 +36,7 @@
     "postpack": "backstage-cli package postpack",
     "postversion": "yarn run export-dynamic",
     "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies",
+    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies --clean",
     "lodash": "^4.17.21",
     "tsc": "tsc",
     "prettier:check": "prettier --ignore-unknown --check .",

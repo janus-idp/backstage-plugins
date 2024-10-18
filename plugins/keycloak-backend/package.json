@@ -29,6 +29,7 @@
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
     "export-dynamic": "janus-cli package export-dynamic-plugin --embed-package @keycloak/keycloak-admin-client",
+    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --embed-package @keycloak/keycloak-admin-client --clean",
     "lint:check": "backstage-cli package lint",
     "lint:fix": "backstage-cli package lint --fix",
     "postpack": "backstage-cli package postpack",
