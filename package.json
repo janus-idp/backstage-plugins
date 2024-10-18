@@ -26,9 +26,10 @@
     "new": "janus-cli new --do-not-edit-packages",
     "prepare": "husky install",
     "export-dynamic": "turbo run export-dynamic",
-    "versions:bump": "backstage-cli versions:bump && find . -name 'package.json' ! -path '*/node_modules/*' -exec sed -i -e '/devDependencies/,/\\\\}/{ s/\\\"\\\\^/\\\"/; }' {} ; && yarn install && yarn run export-dynamic --no-cache -- -- --clean",
-    "packages:version": "changeset version && yarn install",
-    "packages:publish": "turbo build --concurrency=75% --filter=@janus-idp/* && changeset publish"
+    "export-dynamic:clean": "turbo run export-dynamic -- -- --clean",
+    "versions:bump": "backstage-cli versions:bump && find . -name 'package.json' ! -path '*/node_modules/*' -exec sed -i -e '/devDependencies/,/\\\\}/{ s/\\\"\\\\^/\\\"/; }' {} ; && yarn install && turbo run export-dynamic:clean",
+    "packages:version": "changeset version && yarn install && turbo run export-dynamic:clean --concurrency=75% --affected && git add .\\*package.json .\\*yarn.lock",
+    "packages:publish": "turbo run build --concurrency=75% --filter=@janus-idp/* && changeset publish"
   },
   "workspaces": {
     "packages": [
