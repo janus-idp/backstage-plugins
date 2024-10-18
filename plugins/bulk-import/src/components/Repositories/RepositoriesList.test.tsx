@@ -8,7 +8,7 @@ import { render, screen } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 
 import { useAddedRepositories } from '../../hooks';
-import { mockGetImportJobs } from '../../mocks/mockData';
+import { mockGetImportJobs, mockGetRepositories } from '../../mocks/mockData';
 import { RepositoriesList } from './RepositoriesList';
 
 jest.mock('react', () => ({
@@ -49,47 +49,15 @@ const mockIdentityApi = {
     .mockResolvedValue({ userEntityRef: 'user:default/testuser' }),
 };
 
-jest.mock('./RepositoriesListColumns', () => ({
-  columns: [
-    {
-      title: 'Name',
-      field: 'repoName',
-      type: 'string',
-    },
-    {
-      title: 'Repo URL',
-      field: 'repoUrl',
-      type: 'string',
-    },
-    {
-      title: 'Organization',
-      field: 'orgName',
-      type: 'string',
-    },
-    {
-      title: 'Status',
-      field: 'catalogInfoYaml.status',
-      type: 'string',
-    },
-    {
-      title: 'Last updated',
-      field: 'lastUpdated',
-      type: 'string',
-    },
-    {
-      title: 'Actions',
-      field: 'actions',
-      type: 'string',
-    },
-  ],
-}));
-
 const mockAsyncData = {
   loaded: true,
-  data: mockGetImportJobs,
+  data: {
+    addedRepositories: mockGetImportJobs.imports,
+    totalJobs: mockGetImportJobs.imports.length,
+  },
   totalCount: 1,
   error: undefined,
-  retry: jest.fn(),
+  refetch: jest.fn(),
 };
 
 const mockUseAddedRepositories = useAddedRepositories as jest.MockedFunction<
@@ -105,6 +73,7 @@ describe('RepositoriesList', () => {
     (useFormikContext as jest.Mock).mockReturnValue({
       status: null,
       setFieldValue: jest.fn(),
+      values: mockGetRepositories.repositories,
     });
     mockUseAddedRepositories.mockReturnValue(mockAsyncData);
     render(
@@ -119,12 +88,7 @@ describe('RepositoriesList', () => {
     expect(
       screen.getByText('Added repositories (4)', { exact: false }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Name')).toBeInTheDocument();
-    expect(screen.getByText('Repo URL')).toBeInTheDocument();
-    expect(screen.getByText('Organization')).toBeInTheDocument();
-    expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(screen.getByText('Last updated')).toBeInTheDocument();
-    expect(screen.getByText('Actions')).toBeInTheDocument();
+    expect(screen.getByTestId('import-jobs')).toBeInTheDocument();
   });
 
   it('should render the component and display empty content when no data', async () => {
@@ -132,7 +96,10 @@ describe('RepositoriesList', () => {
       status: null,
       setFieldValue: jest.fn(),
     });
-    mockUseAddedRepositories.mockReturnValue({ ...mockAsyncData, data: [] });
+    mockUseAddedRepositories.mockReturnValue({
+      ...mockAsyncData,
+      data: { addedRepositories: [], totalJobs: 0 },
+    });
     render(
       <Router>
         <TestApiProvider apis={[[identityApiRef, mockIdentityApi]]}>
@@ -142,14 +109,14 @@ describe('RepositoriesList', () => {
     );
 
     expect(
-      screen.getByText('Added repositories (0)', { exact: false }),
+      screen.getByText('Added repositories', { exact: false }),
     ).toBeInTheDocument();
-    const emptyMessage = screen.getByTestId('added-repositories-table-empty');
+    const emptyMessage = screen.getByTestId('no-import-jobs-found');
     expect(emptyMessage).toBeInTheDocument();
     expect(emptyMessage).toHaveTextContent('No records found');
   });
 
-  it('should display an alert if get import job api fails', async () => {
+  it('should display an alert in case of any errors', async () => {
     (useFormikContext as jest.Mock).mockReturnValue({
       status: {
         title: 'Not found',
@@ -157,7 +124,10 @@ describe('RepositoriesList', () => {
       },
       setFieldValue: jest.fn(),
     });
-    mockUseAddedRepositories.mockReturnValue({ ...mockAsyncData, data: [] });
+    mockUseAddedRepositories.mockReturnValue({
+      ...mockAsyncData,
+      data: { addedRepositories: [], totalJobs: 0 },
+    });
     render(
       <Router>
         <TestApiProvider apis={[[identityApiRef, mockIdentityApi]]}>
@@ -165,9 +135,8 @@ describe('RepositoriesList', () => {
         </TestApiProvider>
       </Router>,
     );
-
-    expect(
-      screen.getByText('Not found https://xyz', { exact: false }),
-    ).toBeInTheDocument();
+    const addRepoButton = screen.getByText('Add');
+    expect(addRepoButton).toBeInTheDocument();
+    expect(screen.getByText('Not found https://xyz')).toBeInTheDocument();
   });
 });

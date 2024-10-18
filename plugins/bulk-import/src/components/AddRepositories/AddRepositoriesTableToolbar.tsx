@@ -10,7 +10,7 @@ import {
   AddRepositoriesFormValues,
   RepositorySelection,
 } from '../../types';
-import { RepositoriesSearchBar } from './AddRepositoriesSearchBar';
+import { RepositoriesSearchBar } from './RepositoriesSearchBar';
 
 const useStyles = makeStyles(() => ({
   toolbar: {
@@ -73,7 +73,11 @@ export const AddRepositoriesTableToolbar = ({
 
   return (
     <Toolbar className={classes.toolbar}>
-      <Typography sx={{ flex: '1 1 100%' }} variant="h5" id={title}>
+      <Typography
+        sx={{ flex: '1 1 100%', fontWeight: 'bold' }}
+        variant="h5"
+        id={title}
+      >
         {`${title} (${selectedReposNumber})`}
       </Typography>
       {!activeOrganization && (

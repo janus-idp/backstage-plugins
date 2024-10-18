@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 
 import { Order } from '../../types';
+import { RepositoriesListColumns } from '../Repositories/RepositoriesListColumns';
 import { OrganizationsColumnHeader } from './OrganizationsColumnHeader';
 import { RepositoriesColumnHeader } from './RepositoriesColumnHeader';
 import { ReposSelectDrawerColumnHeader } from './ReposSelectDrawerColumnHeader';
@@ -22,15 +23,17 @@ export const RepositoriesHeader = ({
   onRequestSort,
   isDataLoading,
   showOrganizations,
+  showImportJobs,
   isRepoSelectDrawer = false,
 }: {
-  numSelected: number;
+  numSelected?: number;
   onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
   order: Order;
   orderBy: string | undefined;
-  rowCount: number;
+  rowCount?: number;
   isDataLoading?: boolean;
   showOrganizations?: boolean;
+  showImportJobs?: boolean;
   isRepoSelectDrawer?: boolean;
   onSelectAllClick?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
@@ -43,16 +46,29 @@ export const RepositoriesHeader = ({
     if (showOrganizations) {
       return OrganizationsColumnHeader;
     }
+    if (showImportJobs) {
+      return RepositoriesListColumns;
+    }
     if (isRepoSelectDrawer) {
       return ReposSelectDrawerColumnHeader;
     }
     return RepositoriesColumnHeader;
   };
 
+  const tableCellStyle = () => {
+    if (showImportJobs) {
+      return undefined;
+    }
+    if (showOrganizations) {
+      return '15px 16px 15px 24px';
+    }
+    return '15px 16px 15px 6px';
+  };
+
   return (
     <TableHead>
       <TableRow>
-        {getColumnHeader().map((headCell, index) => (
+        {getColumnHeader()?.map((headCell, index) => (
           <TableCell
             key={headCell.id as string}
             align="left"
@@ -60,20 +76,26 @@ export const RepositoriesHeader = ({
             style={{
               lineHeight: '1.5rem',
               fontSize: '0.875rem',
-              padding: showOrganizations
-                ? '15px 16px 15px 24px'
-                : '15px 16px 15px 6px',
+              padding: tableCellStyle(),
               fontWeight: '700',
             }}
             sortDirection={orderBy === headCell.field ? order : 'asc'}
           >
-            {index === 0 && !showOrganizations && (
+            {index === 0 && !showOrganizations && !showImportJobs && (
               <Checkbox
                 disableRipple
                 color="primary"
                 style={{ padding: '0 12px' }}
-                indeterminate={numSelected > 0 && numSelected < rowCount}
-                checked={rowCount > 0 && numSelected === rowCount}
+                indeterminate={
+                  (numSelected &&
+                    rowCount &&
+                    numSelected > 0 &&
+                    numSelected < rowCount) ||
+                  false
+                }
+                checked={
+                  ((rowCount ?? 0) > 0 && numSelected === rowCount) || false
+                }
                 onChange={onSelectAllClick}
                 inputProps={{
                   'aria-label': 'select all repositories',
@@ -85,6 +107,7 @@ export const RepositoriesHeader = ({
               active={orderBy === headCell.field}
               direction={orderBy === headCell.field ? order : 'asc'}
               onClick={createSortHandler(headCell.field)}
+              disabled={headCell.sorting === false}
             >
               {headCell.title}
             </TableSortLabel>
