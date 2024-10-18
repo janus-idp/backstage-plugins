@@ -70,21 +70,6 @@ jest.mock('@backstage/backend-plugin-api', () => ({
   })),
 }));
 
-// const userInfoMock = mock<UserInfoService>();
-// jest.mock('@backstage/backend-plugin-api', () => {
-//   return {
-//     ...jest.requireActual('@backstage/backend-plugin-api'),
-//     UserInfoService: jest.fn(() => userInfoMock),
-//   };
-// });
-// userInfoMock.getUserInfo.mockResolvedValue({
-//     BackstageUserInfo: {
-//       userEntityRef: mockUserId,
-//     },
-// });
-
-// userInfo.
-
 describe('lightspeed router tests', () => {
   const server = setupServer(...handlers);
 
