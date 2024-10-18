@@ -159,6 +159,7 @@ export class PolicyBuilder {
       ),
       auth: auth,
       httpAuth: httpAuth,
+      userInfo: env.userInfo,
     };
 
     const server = new PoliciesServer(
