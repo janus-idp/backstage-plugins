@@ -57,8 +57,8 @@ jobs:
           title: 'chore(release): version packages on ${{ github.ref_name }} branch'
           commit: 'chore(release): version packages on ${{ github.ref_name }} branch'
           # We want to make sure an update-to-date yarn lockfile is committed
-          version: yarn changeset version && yarn install
-          publish: yarn run build --concurrency=75% --filter=@janus-idp/* && yarn changeset publish
+          version: yarn run packages:version
+          publish: yarn run packages:publish
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
