@@ -12,18 +12,25 @@ import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
 
 export async function command(opts: OptionValues): Promise<void> {
-  const { forceExport, preserveTempDir, tag, useDocker } = opts;
-  const containerTool = useDocker ? 'docker' : 'podman';
-  // check if the container tool is available
-  try {
-    await Task.forCommand(`${containerTool} --version`);
-  } catch (e) {
+  const { exportTo, forceExport, preserveTempDir, tag, useDocker } = opts;
+  if (!exportTo && !tag) {
     Task.error(
-      `Unable to find ${containerTool} command: ${e}\nMake sure that ${containerTool} is installed and available in your PATH.`,
+      `Neither ${chalk.white('--export-to')} or ${chalk.white('--tag')} was specified, either specify ${chalk.white('--export-to')} to export plugins to a directory or ${chalk.white('--tag')} to export plugins to a container image`,
     );
     return;
   }
-
+  const containerTool = useDocker ? 'docker' : 'podman';
+  // check if the container tool is available, skip if just exporting the plugins to a directory
+  if (!exportTo) {
+    try {
+      await Task.forCommand(`${containerTool} --version`);
+    } catch (e) {
+      Task.error(
+        `Unable to find ${containerTool} command: ${e}\nMake sure that ${containerTool} is installed and available in your PATH.`,
+      );
+      return;
+    }
+  }
   const workspacePackage = await fs.readJson(
     paths.resolveTarget('package.json'),
   );
@@ -95,7 +102,12 @@ export async function command(opts: OptionValues): Promise<void> {
       const targetDirectory = path.join(tmpDir, packageName);
       Task.log(`Copying '${distDirectory}' to '${targetDirectory}`);
       try {
-        fs.cpSync(distDirectory, targetDirectory, { recursive: true });
+        // Copy the exported package to the staging area and ensure symlinks
+        // are copied as normal folders
+        fs.cpSync(distDirectory, targetDirectory, {
+          recursive: true,
+          dereference: true,
+        });
         const {
           name,
           version,
@@ -156,18 +168,29 @@ export async function command(opts: OptionValues): Promise<void> {
       metadataFile,
       JSON.stringify(pluginRegistryMetadata, undefined, 2),
     );
-    // run the command to generate the image
-    Task.log(`Creating image using ${containerTool}`);
-    await Task.forCommand(
-      `echo "from scratch
+    if (exportTo) {
+      // copy the temporary directory contents to the target directory
+      fs.mkdirSync(exportTo, { recursive: true });
+      Task.log(`Writing exported plugins to ${exportTo}`);
+      fs.readdirSync(tmpDir).forEach(entry => {
+        const source = path.join(tmpDir, entry);
+        const destination = path.join(exportTo, entry);
+        fs.copySync(source, destination, { recursive: true, overwrite: true });
+      });
+    } else {
+      // run the command to generate the image
+      Task.log(`Creating image using ${containerTool}`);
+      await Task.forCommand(
+        `echo "from scratch
 COPY . .
 " | ${containerTool} build --annotation com.redhat.rhdh.plugins='${JSON.stringify(pluginRegistryMetadata)}' -t '${tag}' -f - .
     `,
-      { cwd: tmpDir },
-    );
-    Task.log(`Successfully built image ${tag} with following plugins:`);
-    for (const plugin of pluginRegistryMetadata) {
-      Task.log(`  ${chalk.white(Object.keys(plugin)[0])}`);
+        { cwd: tmpDir },
+      );
+      Task.log(`Successfully built image ${tag} with following plugins:`);
+      for (const plugin of pluginRegistryMetadata) {
+        Task.log(`  ${chalk.white(Object.keys(plugin)[0])}`);
+      }
     }
     // print out a configuration example based on available plugin data
     try {
@@ -175,8 +198,11 @@ COPY . .
         plugins: pluginRegistryMetadata.map(plugin => {
           const packageName = Object.keys(plugin)[0];
           const pluginConfig = pluginConfigs[packageName];
+          const packageString = exportTo
+            ? `./local-plugins/${packageName}`
+            : `oci://${tag}!${packageName}`;
           return {
-            package: `oci://${tag}!${packageName}`,
+            package: packageString,
             disabled: false,
             ...(pluginConfig ? { pluginConfig } : {}),
           };
