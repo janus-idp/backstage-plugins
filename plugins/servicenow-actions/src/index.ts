@@ -1,2 +1,2 @@
 export * from './actions';
-export { scaffolderModuleServicenowActions } from './module';
+export { scaffolderModuleServicenowActions as default } from './module';
