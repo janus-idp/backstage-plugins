@@ -9229,7 +9229,7 @@
     dset "^3.1.1"
     tiny-hashes "^1.0.1"
 
-"@severlessworkflow/sdk-typescript@^3.0.3":
+"@severlessworkflow/sdk-typescript@3.0.3", "@severlessworkflow/sdk-typescript@^3.0.3":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@severlessworkflow/sdk-typescript/-/sdk-typescript-3.0.3.tgz#6fcec70e5651db77e0145697c91b8c40808d0526"
   integrity sha512-lrIyDa5jI+nfMZg2Q2u70cRJBRGu2FtASVgzci7/MW5YxtTFYGYfc4rRxuMEf3EHVSFCVTKrtCYp4v2rHeLQYw==

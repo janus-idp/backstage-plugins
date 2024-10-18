@@ -69,7 +69,8 @@
     "@backstage/types": "1.1.1",
     "json-schema": "0.4.0",
     "@openapitools/openapi-generator-cli": "2.13.4",
-    "js-yaml-cli": "0.6.0"
+    "js-yaml-cli": "0.6.0",
+    "@severlessworkflow/sdk-typescript": "3.0.3"
   },
   "maintainers": [
     "@janus-idp/maintainers-plugins",
