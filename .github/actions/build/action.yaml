@@ -8,10 +8,18 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Export dynamic
+      shell: bash
+      run: |
+        echo "disable env var 'CI' to ensure 'yarn install' is not called with '--immutable'"
+        echo CI=$CI
+        ls -al ./plugins/bulk-import-backend
+        yarn run export-dynamic:clean --concurrency=75% ${{ inputs.args }}
+
     - name: Build all packages
       shell: bash
       run: |
+        echo "disable env var 'CI' to ensure 'yarn install' is not called with '--immutable'"
         echo CI=$CI
         ls -al ./plugins/bulk-import-backend
-        ls -al ./plugins/bulk-import-backend/dist-dynamic || true
         yarn run build --concurrency=75% ${{ inputs.args }}
