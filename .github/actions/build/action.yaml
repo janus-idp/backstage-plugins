@@ -10,4 +10,8 @@ runs:
   steps:
     - name: Build all packages
       shell: bash
-      run: yarn run build --concurrency=75% ${{ inputs.args }}
+      run: |
+        echo CI=$CI
+        ls -al ./plugins/bulk-import-backend
+        ls -al ./plugins/bulk-import-backend/dist-dynamic || true
+        yarn run build --concurrency=75% ${{ inputs.args }}
