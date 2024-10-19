@@ -55,7 +55,7 @@ jobs:
       - name: Install dependencies
         run: yarn
       - name: Install playwright
-        run: yarn playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium
       - name: Run tests
         env:
           PLUGINS: ${{ needs.changes.outputs.plugins }}
@@ -97,7 +97,7 @@ jobs:
 
             # Run UI tests
             yarn run ui-test
-            
+
             # Kill the plugin
             pid=$(lsof -i :3000 -Fp | grep p | sed s/p//)
             kill -9 $pid
