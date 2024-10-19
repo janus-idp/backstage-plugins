@@ -1,5 +1,5 @@
-name: Build packages
-description: Build packages
+name: Build all packages
+description: Build all packages
 inputs:
   args:
     description: Backstage CLI repo build arguments
@@ -8,10 +8,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Export dynamic data
-      shell: bash
-      run: yarn run export-dynamic:clean --concurrency=75% ${{ inputs.args }}
-
-    - name: Build packages
+    - name: Build all packages
       shell: bash
       run: yarn run build --concurrency=75% ${{ inputs.args }}
