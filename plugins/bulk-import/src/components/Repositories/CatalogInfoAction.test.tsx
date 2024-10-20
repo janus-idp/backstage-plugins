@@ -51,7 +51,7 @@ describe('CatalogInfoAction', () => {
   it('should allow users to edit the catalog-info.yaml PR if the PR is waiting to be approved', async () => {
     mockUseAsync.mockReturnValue({
       loading: false,
-      value: mockGetImportJobs[0],
+      value: mockGetImportJobs.imports[0],
     });
     mockUsePermission.mockReturnValue({ loading: false, allowed: true });
 
@@ -62,7 +62,7 @@ describe('CatalogInfoAction', () => {
       values: {
         repositories: {
           ['org/dessert/cupcake']: {
-            ...mockGetImportJobs[0],
+            ...mockGetImportJobs.imports[0],
             catalogInfoYaml: {
               status: RepositoryStatus.WAIT_PR_APPROVAL,
             },
@@ -90,7 +90,10 @@ describe('CatalogInfoAction', () => {
   it('should allow users to view the catalog-info.yaml if the entity is registered', async () => {
     mockUseAsync.mockReturnValue({
       loading: false,
-      value: { ...mockGetImportJobs[0], status: RepositoryStatus.ADDED },
+      value: {
+        ...mockGetImportJobs.imports[0],
+        status: RepositoryStatus.ADDED,
+      },
     });
     mockUsePermission.mockReturnValue({ loading: false, allowed: true });
 
@@ -101,7 +104,7 @@ describe('CatalogInfoAction', () => {
       values: {
         repositories: {
           ['org/dessert/cupcake']: {
-            ...mockGetImportJobs[0],
+            ...mockGetImportJobs.imports[0],
             catalogInfoYaml: {
               status: RepositoryStatus.ADDED,
             },
