@@ -1,14 +1,12 @@
 import React from 'react';
 
-import {
-  FormControl,
-  IconButton,
-  Input,
-  InputAdornment,
-  makeStyles,
-} from '@material-ui/core';
-import Clear from '@material-ui/icons/Clear';
-import Search from '@material-ui/icons/Search';
+import Clear from '@mui/icons-material/Clear';
+import Search from '@mui/icons-material/Search';
+import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
+import Input from '@mui/material/Input';
+import InputAdornment from '@mui/material/InputAdornment';
+import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles({
   formControl: {
@@ -52,6 +50,7 @@ export const RepositoriesSearchBar = ({
               edge="end"
               disabled={!value}
               data-testid="clear-search"
+              size="large"
             >
               <Clear />
             </IconButton>

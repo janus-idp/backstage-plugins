@@ -4,8 +4,11 @@ import { useAsync } from 'react-use';
 import { Link } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-import { Checkbox, makeStyles, TableCell, TableRow } from '@material-ui/core';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import Checkbox from '@mui/material/Checkbox';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import { makeStyles } from '@mui/styles';
 
 import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
 import { AddRepositoryData, RepositoryStatus } from '../../types';

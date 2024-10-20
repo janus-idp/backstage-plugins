@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-import { Box, Paper } from '@material-ui/core';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import { useFormikContext } from 'formik';
 
 import { AddRepositoriesFormValues, RepositorySelection } from '../../types';
