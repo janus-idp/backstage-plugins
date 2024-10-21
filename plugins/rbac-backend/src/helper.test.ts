@@ -1,3 +1,4 @@
+import { ADMIN_ROLE_AUTHOR } from './admin-permissions/admin-creation';
 import { RoleMetadataDao } from './database/role-metadata';
 import {
   deepSortedEqual,
@@ -13,7 +14,6 @@ import {
 } from './helper';
 // Import the function to test
 import { EnforcerDelegate } from './service/enforcer-delegate';
-import { ADMIN_ROLE_AUTHOR } from './service/permission-policy';
 
 const modifiedBy = 'user:default/some-user';
 
