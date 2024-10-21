@@ -48,10 +48,10 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "prettier": "3.3.3",
     "@backstage/cli": "0.27.1",
     "@backstage/plugin-scaffolder-node-test-utils": "0.1.12",
-    "@janus-idp/cli": "1.15.2"
+    "@janus-idp/cli": "1.15.2",
+    "prettier": "3.3.3"
   },
   "files": [
     "dist",

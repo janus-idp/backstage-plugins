@@ -50,9 +50,10 @@
     "yaml": "^2.0.0"
   },
   "devDependencies": {
-    "prettier": "3.3.3",
     "@backstage/backend-test-utils": "1.0.0",
-    "@backstage/cli": "0.27.1"
+    "@backstage/cli": "0.27.1",
+    "@janus-idp/cli": "*",
+    "prettier": "3.3.3"
   },
   "files": [
     "dist",

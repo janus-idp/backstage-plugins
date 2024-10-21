@@ -18,14 +18,14 @@
     "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "devDependencies": {
-    "prettier": "3.3.3",
     "@storybook/react-webpack5": "7.5.3",
     "@storybook/testing-library": "0.2.2",
+    "@swc/core": "1.6.1",
     "@testing-library/jest-dom": "6.4.8",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
-    "@swc/core": "1.6.1",
     "eslint-plugin-storybook": "0.8.0",
+    "prettier": "3.3.3",
     "prop-types": "15.8.1",
     "swc-loader": "0.2.6"
   },
