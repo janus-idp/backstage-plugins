@@ -176,9 +176,8 @@ describe('CSVFileWatcher', () => {
     (roleMetadataStorageMock.removeRoleMetadata as jest.Mock).mockReset();
   });
 
-  function createCSVFileWatcher(fileName?: string): CSVFileWatcher {
+  function createCSVFileWatcher(): CSVFileWatcher {
     return new CSVFileWatcher(
-      fileName,
       false,
       mockLoggerService,
       enforcerDelegate,
@@ -189,8 +188,8 @@ describe('CSVFileWatcher', () => {
 
   describe('initialize', () => {
     it('should be able to add permission policies during initialization', async () => {
-      const csvFileWatcher = createCSVFileWatcher(csvFileName);
-      await csvFileWatcher.initialize();
+      const csvFileWatcher = createCSVFileWatcher();
+      await csvFileWatcher.initialize(csvFileName);
 
       const enfPolicies = await enforcerDelegate.getPolicy();
 
@@ -198,8 +197,8 @@ describe('CSVFileWatcher', () => {
     });
 
     it('should be able to add roles during initialization', async () => {
-      const csvFileWatcher = createCSVFileWatcher(csvFileName);
-      await csvFileWatcher.initialize();
+      const csvFileWatcher = createCSVFileWatcher();
+      await csvFileWatcher.initialize(csvFileName);
 
       const enfRoles = await enforcerDelegate.getGroupingPolicy();
 
@@ -236,8 +235,8 @@ describe('CSVFileWatcher', () => {
         });
       (roleMetadataStorageMock.updateRoleMetadata as jest.Mock).mockReset();
 
-      const csvFileWatcher = createCSVFileWatcher(csvFileName);
-      await csvFileWatcher.initialize();
+      const csvFileWatcher = createCSVFileWatcher();
+      await csvFileWatcher.initialize(csvFileName);
 
       const enfPolicies = await enforcerDelegate.getPolicy();
 
@@ -272,8 +271,8 @@ describe('CSVFileWatcher', () => {
         });
       (roleMetadataStorageMock.updateRoleMetadata as jest.Mock).mockReset();
 
-      const csvFileWatcher = createCSVFileWatcher(csvFileName);
-      await csvFileWatcher.initialize();
+      const csvFileWatcher = createCSVFileWatcher();
+      await csvFileWatcher.initialize(csvFileName);
 
       const enfPolicies = await enforcerDelegate.getGroupingPolicy();
 
@@ -295,7 +294,7 @@ describe('CSVFileWatcher', () => {
         __dirname,
         '../../__fixtures__/data/invalid-csv/duplicate-policy.csv',
       );
-      const csvFileWatcher = createCSVFileWatcher(csvFileName);
+      const csvFileWatcher = createCSVFileWatcher();
 
       const duplicatePolicy = [
         'role:default/catalog-writer',
@@ -314,7 +313,7 @@ describe('CSVFileWatcher', () => {
         'update',
       ];
 
-      await csvFileWatcher.initialize();
+      await csvFileWatcher.initialize(csvFileName);
 
       expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         1,
@@ -347,7 +346,7 @@ describe('CSVFileWatcher', () => {
         __dirname,
         '../../__fixtures__/data/invalid-csv/error-policy.csv',
       );
-      const csvFileWatcher = createCSVFileWatcher(csvFileName);
+      const csvFileWatcher = createCSVFileWatcher();
 
       const entityRoleError = ['user:default/', 'role:default/catalog-deleter'];
       const roleError = ['user:default/test', 'role:default/'];
@@ -365,7 +364,7 @@ describe('CSVFileWatcher', () => {
         'temp',
       ];
 
-      await csvFileWatcher.initialize();
+      await csvFileWatcher.initialize(csvFileName);
 
       expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         1,
@@ -410,8 +409,8 @@ describe('CSVFileWatcher', () => {
         __dirname,
         '../../__fixtures__/data/valid-csv/simple-policy.csv',
       );
-      csvFileWatcher = createCSVFileWatcher(csvFileName);
-      await csvFileWatcher.initialize();
+      csvFileWatcher = createCSVFileWatcher();
+      await csvFileWatcher.initialize(csvFileName);
     });
 
     it('should add new permission policies on change', async () => {
@@ -442,7 +441,7 @@ describe('CSVFileWatcher', () => {
         return addContents;
       });
 
-      await csvFileWatcher.onChange();
+      await csvFileWatcher.onChange(csvFileName);
 
       const enfPolicies = await enforcerDelegate.getPolicy();
 
@@ -471,7 +470,7 @@ describe('CSVFileWatcher', () => {
         return addContents;
       });
 
-      await csvFileWatcher.onChange();
+      await csvFileWatcher.onChange(csvFileName);
 
       const enfRoles = await enforcerDelegate.getGroupingPolicy();
 
@@ -505,7 +504,7 @@ describe('CSVFileWatcher', () => {
         return addContents;
       });
 
-      await csvFileWatcher.onChange();
+      await csvFileWatcher.onChange(csvFileName);
 
       const enfPolicies = await enforcerDelegate.getPolicy();
 
@@ -549,7 +548,7 @@ describe('CSVFileWatcher', () => {
         return addContents;
       });
 
-      await csvFileWatcher.onChange();
+      await csvFileWatcher.onChange(csvFileName);
 
       const enfRoles = await enforcerDelegate.getGroupingPolicy();
 
@@ -574,7 +573,7 @@ describe('CSVFileWatcher', () => {
         return addContents;
       });
 
-      await csvFileWatcher.onChange();
+      await csvFileWatcher.onChange(csvFileName);
 
       const enfPolicies = await enforcerDelegate.getPolicy();
 
@@ -596,7 +595,7 @@ describe('CSVFileWatcher', () => {
         return addContents;
       });
 
-      await csvFileWatcher.onChange();
+      await csvFileWatcher.onChange(csvFileName);
 
       const enfRoles = await enforcerDelegate.getGroupingPolicy();
 
@@ -619,7 +618,7 @@ describe('CSVFileWatcher', () => {
         return addContents;
       });
 
-      await csvFileWatcher.onChange();
+      await csvFileWatcher.onChange(csvFileName);
 
       const enfRoles = await enforcerDelegate.getGroupingPolicy();
       const enfPolicies = await enforcerDelegate.getPolicy();
@@ -644,7 +643,6 @@ describe('CSVFileWatcher', () => {
 
     beforeEach(async () => {
       csvFileWatcher = createCSVFileWatcher();
-      await csvFileWatcher.initialize();
     });
 
     it('should remove all roles and policies', async () => {
