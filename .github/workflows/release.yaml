@@ -1,12 +1,6 @@
 name: Release Packages
 
 on:
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
   push:
     branches:
       - main
@@ -14,9 +8,13 @@ on:
       - 1.2.x
       - release-[0-9].[0-9]*
 
-# enforce only one release action at a time
+env:
+  TURBO_SCM_BASE: ${{ github.event.before }}
+  TURBO_SCM_HEAD: ${{ github.sha }}
+
+# enforce only one release action per release branch at a time
 concurrency:
-  group: ${{ github.workflow }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -48,9 +46,6 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
-      - name: Build all packages
-        uses: ./.github/actions/build
-
       - name: Creating .npmrc
         run: |
           cat << EOF > "$HOME/.npmrc"
@@ -59,11 +54,15 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish to NPM
+      - name: Create Release PR or Publish to NPM
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: yarn changeset publish
+          title: 'chore(release): version packages on ${{ github.ref_name }} branch'
+          commit: 'chore(release): version packages on ${{ github.ref_name }} branch'
+          # We want to make sure an update-to-date yarn lockfile is committed
+          version: yarn run packages:version
+          publish: yarn run packages:publish
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
