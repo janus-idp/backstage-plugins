@@ -82,7 +82,6 @@
     "vscode-languageserver-types": "3.17.5"
   },
   "devDependencies": {
-    "prettier": "3.3.3",
     "@backstage/cli": "0.27.1",
     "@backstage/dev-utils": "1.1.1",
     "@backstage/test-utils": "1.6.0",
@@ -92,7 +91,8 @@
     "@storybook/preview-api": "7.6.20",
     "@storybook/react": "7.6.20",
     "@testing-library/react": "14.3.1",
-    "@types/json-schema": "7.0.15"
+    "@types/json-schema": "7.0.15",
+    "prettier": "3.3.3"
   },
   "peerDependencies": {
     "@material-ui/core": "^4.12.4",

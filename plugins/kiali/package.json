@@ -79,7 +79,6 @@
     "react-router-dom": "^6.0.0"
   },
   "devDependencies": {
-    "prettier": "3.3.3",
     "@backstage/cli": "0.27.1",
     "@backstage/dev-utils": "1.1.1",
     "@backstage/test-utils": "1.6.0",
@@ -91,7 +90,8 @@
     "@types/react-copy-to-clipboard": "5.0.7",
     "@types/regression": "2.0.6",
     "cross-fetch": "4.0.0",
-    "jest-canvas-mock": "2.5.2"
+    "jest-canvas-mock": "2.5.2",
+    "prettier": "3.3.3"
   },
   "files": [
     "dist",

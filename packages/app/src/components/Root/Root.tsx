@@ -10,7 +10,6 @@ import {
   SidebarSpace,
   useSidebarOpenState,
 } from '@backstage/core-components';
-import { IconComponent } from '@backstage/core-plugin-api';
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import { SidebarSearchModal } from '@backstage/plugin-search';
 import {
@@ -70,31 +69,15 @@ export const Root = ({
       <SidebarDivider />
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
         {/* Global nav, not org-specific */}
-        <SidebarItem
-          icon={HomeIcon as IconComponent}
-          to="catalog"
-          text="Home"
-        />
+        <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
         <MyGroupsSidebarItem
-          icon={GroupIcon as IconComponent}
+          icon={GroupIcon}
           singularTitle="My Group"
           pluralTitle="My Groups"
         />
-        <SidebarItem
-          icon={ExtensionIcon as IconComponent}
-          to="api-docs"
-          text="APIs"
-        />
-        <SidebarItem
-          icon={LibraryBooks as IconComponent}
-          to="docs"
-          text="Docs"
-        />
-        <SidebarItem
-          icon={CreateComponentIcon as IconComponent}
-          to="create"
-          text="Create..."
-        />
+        <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+        <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
+        <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
         {/* End global nav */}
         <SidebarDivider />
         <SidebarScrollWrapper>

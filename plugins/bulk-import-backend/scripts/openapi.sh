@@ -25,9 +25,9 @@ cat <<EOF > "${TYPES_FILE}"
 // eslint-disable
 // prettier-ignore
 EOF
-npx --yes --package=openapicmd@2.3.2 -- openapi typegen ./src/schema/openapi.yaml >> "${TYPES_FILE}"
+openapi typegen ./src/schema/openapi.yaml >> "${TYPES_FILE}"
 
-npx --yes --package=js-yaml-cli@0.6.0 -- yaml2json -f ./src/schema/openapi.yaml
+yaml2json -f ./src/schema/openapi.yaml
 OPENAPI_DOC_JS_FILE=./src/generated/openapidocument.ts
 cat <<EOF > "${OPENAPI_DOC_JS_FILE}"
 // GENERATED FILE. DO NOT EDIT.
@@ -43,5 +43,4 @@ rm -f ./src/schema/openapi.json
 
 # Re-generate doc
 rm -rf ./api-docs/
-npx --yes --package=@openapitools/openapi-generator-cli@2.13.4 -- \
-  openapi-generator-cli generate -i ./src/schema/openapi.yaml -g markdown -o ./api-docs/
+openapi-generator-cli generate -i ./src/schema/openapi.yaml -g markdown -o ./api-docs/
