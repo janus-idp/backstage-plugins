@@ -32,11 +32,14 @@ import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
+import {
+  ADMIN_ROLE_NAME,
+  RBACPermissionPolicy,
+} from '../policies/permission-policy';
 import { BackstageRoleManager } from '../role-manager/role-manager';
-import { EnforcerDelegate } from './enforcer-delegate';
-import { MODEL } from './permission-model';
-import { ADMIN_ROLE_NAME, RBACPermissionPolicy } from './permission-policy';
-import { PluginPermissionMetadataCollector } from './plugin-endpoints';
+import { EnforcerDelegate } from '../service/enforcer-delegate';
+import { MODEL } from '../service/permission-model';
+import { PluginPermissionMetadataCollector } from '../service/plugin-endpoints';
 
 type PermissionAction = 'create' | 'read' | 'update' | 'delete';
 

@@ -27,11 +27,11 @@ import { DataBaseConditionalStorage } from '../database/conditional-storage';
 import { migrate } from '../database/migration';
 import { DataBaseRoleMetadataStorage } from '../database/role-metadata';
 import { AllowAllPolicy } from '../policies/allow-all-policy';
+import { RBACPermissionPolicy } from '../policies/permission-policy';
 import { connectRBACProviders } from '../providers/connect-providers';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
-import { RBACPermissionPolicy } from './permission-policy';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import { PoliciesServer } from './policies-rest-api';
 

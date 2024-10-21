@@ -50,9 +50,9 @@ import {
 import { CSVFileWatcher } from '../file-permissions/csv-file-watcher';
 import { YamlConditinalPoliciesFileWatcher } from '../file-permissions/yaml-conditional-file-watcher';
 import { removeTheDifference } from '../helper';
+import { EnforcerDelegate } from '../service/enforcer-delegate';
+import { PluginPermissionMetadataCollector } from '../service/plugin-endpoints';
 import { validateEntityReference } from '../validation/policies-validation';
-import { EnforcerDelegate } from './enforcer-delegate';
-import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 
 export const ADMIN_ROLE_NAME = 'role:default/rbac_admin';
 export const ADMIN_ROLE_AUTHOR = 'application configuration';
