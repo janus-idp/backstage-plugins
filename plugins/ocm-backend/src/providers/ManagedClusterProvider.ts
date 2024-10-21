@@ -30,7 +30,6 @@ import type {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { ANNOTATION_KUBERNETES_API_SERVER } from '@backstage/plugin-kubernetes-common';
 
 import { CustomObjectsApi } from '@kubernetes/client-node';
 
@@ -39,7 +38,11 @@ import {
   ANNOTATION_PROVIDER_ID,
 } from '@janus-idp/backstage-plugin-ocm-common';
 
-import { CONSOLE_CLAIM, HUB_CLUSTER_NAME_IN_OCM } from '../constants';
+import {
+  ANNOTATION_KUBERNETES_API_SERVER,
+  CONSOLE_CLAIM,
+  HUB_CLUSTER_NAME_IN_OCM,
+} from '../constants';
 import { readOcmConfigs } from '../helpers/config';
 import {
   getManagedCluster,

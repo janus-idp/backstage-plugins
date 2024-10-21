@@ -45,7 +45,7 @@
     "@backstage/backend-plugin-api": "^1.0.0",
     "@backstage/catalog-client": "^1.7.0",
     "@backstage/plugin-scaffolder-node": "^0.4.11",
-    "@kubernetes/client-node": "^0.20.0"
+    "@kubernetes/client-node": "^0.22.1"
   },
   "devDependencies": {
     "prettier": "3.3.3",

@@ -40,7 +40,7 @@
     "@backstage/plugin-kubernetes-common": "^0.8.3",
     "@backstage/plugin-kubernetes-react": "^0.4.3",
     "@backstage/core-components": "^0.15.0",
-    "@kubernetes/client-node": "^0.20.0",
+    "@kubernetes/client-node": "^0.22.1",
     "@material-ui/core": "^4.12.4",
     "@mui/icons-material": "5.15.17",
     "classnames": "^2.3.2",
