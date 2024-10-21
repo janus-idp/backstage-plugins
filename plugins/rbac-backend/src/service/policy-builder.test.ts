@@ -10,7 +10,7 @@ import type {
 } from '@janus-idp/backstage-plugin-rbac-node';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
-import { RBACPermissionPolicy } from './permission-policy';
+import { RBACPermissionPolicy } from '../policies/permission-policy';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import { PoliciesServer } from './policies-rest-api';
 import { PolicyBuilder } from './policy-builder';
@@ -78,7 +78,7 @@ jest.mock('./policies-rest-api', () => {
   };
 });
 
-jest.mock('./permission-policy', () => {
+jest.mock('../policies/permission-policy', () => {
   return {
     RBACPermissionPolicy: {
       build: jest.fn((): Promise<RBACPermissionPolicy> => {

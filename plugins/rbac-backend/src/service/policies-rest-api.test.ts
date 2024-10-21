@@ -28,8 +28,8 @@ import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
+import { RBACPermissionPolicy } from '../policies/permission-policy';
 import { EnforcerDelegate } from './enforcer-delegate';
-import { RBACPermissionPolicy } from './permission-policy';
 import {
   PluginMetadataResponseSerializedRule,
   PluginPermissionMetadataCollector,
