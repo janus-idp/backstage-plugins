@@ -8772,6 +8772,7 @@ __metadata:
     "@mui/material": ^5.12.2
     "@playwright/test": 1.45.3
     "@redhat-developer/red-hat-developer-hub-theme": 0.4.0
+    "@tanstack/react-query": ^4.29.21
     "@testing-library/jest-dom": 6.4.8
     "@testing-library/react": 14.3.1
     "@testing-library/user-event": 14.5.2
@@ -9106,8 +9107,8 @@ __metadata:
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.11.3
     "@material-ui/lab": ^4.0.0-alpha.45
+    "@mui/icons-material": ^5.16.4
     "@patternfly/patternfly": ^5.1.0
-    "@patternfly/react-icons": ^5.1.1
     "@redhat-developer/red-hat-developer-hub-theme": 0.4.0
     "@testing-library/jest-dom": 6.4.8
     "@testing-library/react": 14.3.1
@@ -11461,7 +11462,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/icons-material@npm:^5.15.18, @mui/icons-material@npm:^5.15.8":
+"@mui/icons-material@npm:^5.15.18, @mui/icons-material@npm:^5.15.8, @mui/icons-material@npm:^5.16.4":
   version: 5.16.7
   resolution: "@mui/icons-material@npm:5.16.7"
   dependencies:
@@ -18164,7 +18165,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^4.36.1":
+"@tanstack/react-query@npm:^4.29.21, @tanstack/react-query@npm:^4.36.1":
   version: 4.36.1
   resolution: "@tanstack/react-query@npm:4.36.1"
   dependencies:

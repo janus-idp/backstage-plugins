@@ -27,6 +27,7 @@ import { BulkImportPage, bulkImportPlugin } from '../src/plugin';
 import {
   APITypes,
   ImportJobResponse,
+  ImportJobs,
   ImportJobStatus,
   OrgAndRepoResponse,
   RepositoryStatus,
@@ -78,7 +79,7 @@ class MockBulkImportApi implements BulkImportAPI {
     _page: number,
     _size: number,
     _seachString: string,
-  ): Promise<ImportJobStatus[]> {
+  ): Promise<ImportJobs> {
     return mockGetImportJobs;
   }
 
@@ -112,7 +113,7 @@ class MockBulkImportApi implements BulkImportAPI {
     repo: string,
     _defaultBranch: string,
   ): Promise<ImportJobStatus | Response> {
-    return mockGetImportJobs.find(
+    return mockGetImportJobs.imports.find(
       i => i.repository.url === repo,
     ) as ImportJobStatus;
   }

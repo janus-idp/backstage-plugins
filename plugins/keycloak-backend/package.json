@@ -68,6 +68,7 @@
   },
   "files": [
     "dist",
+    "embedded",
     "config.d.ts",
     "dist-dynamic/*.*",
     "dist-dynamic/dist/**",

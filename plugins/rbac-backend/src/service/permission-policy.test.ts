@@ -17,7 +17,6 @@ import {
   Model,
   newEnforcer,
   newModelFromString,
-  StringAdapter,
 } from 'casbin';
 import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
@@ -26,6 +25,7 @@ import type { RoleMetadata } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { resolve } from 'path';
 
+import { ADMIN_ROLE_NAME } from '../admin-permissions/admin-creation';
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { ConditionalStorage } from '../database/conditional-storage';
 import {
@@ -35,14 +35,14 @@ import {
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
-import { ADMIN_ROLE_NAME, RBACPermissionPolicy } from './permission-policy';
+import { RBACPermissionPolicy } from './permission-policy';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 
 type PermissionAction = 'create' | 'read' | 'update' | 'delete';
 
 // TODO: Move to 'catalogServiceMock' from '@backstage/plugin-catalog-node/testUtils'
 // once '@backstage/plugin-catalog-node' is upgraded
-const catalogApi = {
+const catalogApiMock = {
   getEntityAncestors: jest.fn().mockImplementation(),
   getLocationById: jest.fn().mockImplementation(),
   getEntities: jest.fn().mockImplementation(),
@@ -59,7 +59,7 @@ const catalogApi = {
   getLocationByEntity: jest.fn().mockImplementation(),
 };
 
-const conditionalStorage: ConditionalStorage = {
+const conditionalStorageMock: ConditionalStorage = {
   filterConditions: jest.fn().mockImplementation(() => []),
   createCondition: jest.fn().mockImplementation(),
   checkConflictedConditions: jest.fn().mockImplementation(),
@@ -85,14 +85,12 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
   removeRoleMetadata: jest.fn().mockImplementation(),
 };
 
-const dbManagerMock = Knex.knex({ client: MockClient });
-
 const csvPermFile = resolve(
   __dirname,
-  './../__fixtures__/data/valid-csv/rbac-policy.csv',
+  '../../__fixtures__/data/valid-csv/rbac-policy.csv',
 );
 
-const knex = Knex.knex({ client: MockClient });
+const mockClientKnex = Knex.knex({ client: MockClient });
 
 const mockAuthService = mockServices.auth();
 
@@ -108,8 +106,6 @@ const pluginMetadataCollectorMock: Partial<PluginPermissionMetadataCollector> =
     getPluginPolicies: jest.fn().mockImplementation(),
     getMetadataByPluginId: jest.fn().mockImplementation(),
   };
-
-const mockAuth = mockServices.auth();
 
 const modifiedBy = 'user:default/some-admin';
 
@@ -135,10 +131,15 @@ describe('RBACPermissionPolicy Tests', () => {
         throw new Error(`Failed to create`);
       });
 
-    const stringPolicy = `p, user:default/known_user, test-resource, update, allow `;
     const config = newConfig();
-    const adapter = await newAdapter(config, stringPolicy);
+    const adapter = await newAdapter(config);
     const enfDelegate = await newEnforcerDelegate(adapter, config);
+    await enfDelegate.addPolicy([
+      'user:default/known_user',
+      'test-resource',
+      'update',
+      'allow',
+    ]);
 
     await expect(newPermissionPolicy(config, enfDelegate)).rejects.toThrow(
       'Failed to create',
@@ -155,7 +156,7 @@ describe('RBACPermissionPolicy Tests', () => {
       enfDelegate = await newEnforcerDelegate(adapter, config);
       policy = await newPermissionPolicy(config, enfDelegate);
 
-      catalogApi.getEntities.mockReturnValue({ items: [] });
+      catalogApiMock.getEntities.mockReturnValue({ items: [] });
     });
 
     // case1
@@ -295,7 +296,7 @@ describe('RBACPermissionPolicy Tests', () => {
       config = newConfig();
       adapter = await newAdapter(config);
 
-      catalogApi.getEntities.mockReturnValue({ items: [] });
+      catalogApiMock.getEntities.mockReturnValue({ items: [] });
     });
 
     it('should cleanup old group policies and metadata after re-attach policy file', async () => {
@@ -607,7 +608,7 @@ describe('RBACPermissionPolicy Tests', () => {
     beforeEach(async () => {
       const basicAndResourcePermissions = resolve(
         __dirname,
-        './../__fixtures__/data/valid-csv/basic-and-resource-policies.csv',
+        '../../__fixtures__/data/valid-csv/basic-and-resource-policies.csv',
       );
       const config = newConfig(basicAndResourcePermissions);
       const adapter = await newAdapter(config);
@@ -619,7 +620,7 @@ describe('RBACPermissionPolicy Tests', () => {
         roleMetadataStorageTest,
       );
 
-      catalogApi.getEntities.mockReturnValue({ items: [] });
+      catalogApiMock.getEntities.mockReturnValue({ items: [] });
     });
     // +-------+------+------------------------------------+
     // | allow | deny |         result                 |   |
@@ -898,7 +899,7 @@ describe('RBACPermissionPolicy Tests', () => {
     const superUser = new Array<{ name: string }>();
     superUser.push({ name: 'user:default/super_user' });
 
-    catalogApi.getEntities.mockReturnValue({ items: [] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [] });
 
     beforeEach(async () => {
       roleMetadataStorageMock.findRoleMetadata = jest
@@ -932,68 +933,6 @@ describe('RBACPermissionPolicy Tests', () => {
         enfDelegate,
         roleMetadataStorageTest,
       );
-    });
-
-    it('should build the admin permissions', async () => {
-      const enfRole = await enfDelegate.getFilteredGroupingPolicy(1, adminRole);
-      const enfPermission = await enfDelegate.getFilteredPolicy(0, adminRole);
-      expect(enfRole).toEqual(groupPolicy);
-      expect(enfPermission).toEqual(permissions);
-    });
-
-    it('should fail to build the admin permissions, problem with creating role metadata', async () => {
-      roleMetadataStorageMock.findRoleMetadata = jest
-        .fn()
-        .mockImplementation(async (): Promise<void> => {
-          return undefined;
-        });
-
-      roleMetadataStorageMock.createRoleMetadata = jest
-        .fn()
-        .mockImplementation(async (): Promise<void> => {
-          throw new Error(`Failed to create`);
-        });
-
-      const config = mockServices.rootConfig({
-        data: {
-          permission: {
-            rbac: {
-              'policies-csv-file': csvPermFile,
-              policyFileReload: true,
-            },
-          },
-          backend: {
-            database: {
-              client: 'better-sqlite3',
-              connection: ':memory:',
-            },
-          },
-        },
-      });
-
-      await expect(
-        newPermissionPolicy(config, enfDelegate, roleMetadataStorageMock),
-      ).rejects.toThrow('Failed to create');
-    });
-
-    it('should build and update a legacy admin permission', async () => {
-      roleMetadataStorageTest.findRoleMetadata = jest
-        .fn()
-        .mockImplementationOnce(
-          async (
-            _roleEntityRef: string,
-            _trx: Knex.Knex.Transaction,
-          ): Promise<RoleMetadata> => {
-            return { source: 'legacy' };
-          },
-        );
-
-      const enfRole = await enfDelegate.getFilteredGroupingPolicy(1, adminRole);
-      const enfPermission = await enfDelegate.getFilteredPolicy(0, adminRole);
-
-      expect(enfRole).toEqual(groupPolicy);
-      expect(enfPermission).toEqual(permissions);
-      expect(roleMetadataStorageTest.updateRoleMetadata).toHaveBeenCalled();
     });
 
     it('should allow read access to resource permission for user from config file', async () => {
@@ -1099,7 +1038,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
   });
 
   it('should allow access to resourced permission assigned by name', async () => {
-    catalogApi.getEntities.mockReturnValue({ items: [] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [] });
 
     await enfDelegate.addGroupingPolicy(
       ['user:default/tor', 'role:default/catalog_reader'],
@@ -1128,7 +1067,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
   });
 
   it('should allow access to resourced permission assigned by name, because it has higher priority then permission for the same resource assigned by resource type', async () => {
-    catalogApi.getEntities.mockReturnValue({ items: [] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [] });
 
     await enfDelegate.addGroupingPolicy(
       ['user:default/tor', 'role:default/catalog_reader'],
@@ -1155,7 +1094,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
   });
 
   it('should deny access to resourced permission assigned by name, because it has higher priority then permission for the same resource assigned by resource type', async () => {
-    catalogApi.getEntities.mockReturnValue({ items: [] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [] });
 
     await enfDelegate.addGroupingPolicy(
       ['user:default/tor', 'role:default/catalog_reader'],
@@ -1201,7 +1140,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
         members: ['tor'],
       },
     };
-    catalogApi.getEntities.mockImplementation(_arg => {
+    catalogApiMock.getEntities.mockImplementation(_arg => {
       return { items: [groupEntityMock] };
     });
 
@@ -1257,7 +1196,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
         namespace: 'default',
       },
     };
-    catalogApi.getEntities.mockImplementation(_arg => {
+    catalogApiMock.getEntities.mockImplementation(_arg => {
       return { items: [groupParentMock, groupEntityMock] };
     });
 
@@ -1307,7 +1246,7 @@ describe('Policy checks for users and groups', () => {
   beforeEach(async () => {
     const policyChecksCSV = resolve(
       __dirname,
-      './../__fixtures__/data/valid-csv/policy-checks.csv',
+      '../../__fixtures__/data/valid-csv/policy-checks.csv',
     );
     const config = newConfig(policyChecksCSV);
     const adapter = await newAdapter(config);
@@ -1316,7 +1255,7 @@ describe('Policy checks for users and groups', () => {
 
     policy = await newPermissionPolicy(config, enfDelegate);
 
-    catalogApi.getEntities.mockReset();
+    catalogApiMock.getEntities.mockReset();
   });
 
   // User inherits permissions from groups and their parent groups.
@@ -1350,7 +1289,7 @@ describe('Policy checks for users and groups', () => {
         members: ['alice'],
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
 
     const decision = await policy.handle(
       newPolicyQueryWithBasicPermission('test.resource'),
@@ -1379,7 +1318,7 @@ describe('Policy checks for users and groups', () => {
         members: ['akira'],
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
     const decision = await policy.handle(
       newPolicyQueryWithBasicPermission('test.resource'),
       newPolicyQueryUser('user:default/akira'),
@@ -1407,7 +1346,7 @@ describe('Policy checks for users and groups', () => {
         members: ['antey'],
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
     const decision = await policy.handle(
       newPolicyQueryWithBasicPermission('test.resource'),
       newPolicyQueryUser('user:default/antey'),
@@ -1432,7 +1371,7 @@ describe('Policy checks for users and groups', () => {
         namespace: 'default',
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
 
     const decision = await policy.handle(
       newPolicyQueryWithBasicPermission('test.resource'),
@@ -1461,7 +1400,7 @@ describe('Policy checks for users and groups', () => {
         members: ['mike'],
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
     const decision = await policy.handle(
       newPolicyQueryWithBasicPermission('test.resource'),
       newPolicyQueryUser('user:default/mike'),
@@ -1489,7 +1428,7 @@ describe('Policy checks for users and groups', () => {
         members: ['tom'],
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
     const decision = await policy.handle(
       newPolicyQueryWithBasicPermission('test.resource'),
       newPolicyQueryUser('user:default/tom'),
@@ -1528,7 +1467,7 @@ describe('Policy checks for users and groups', () => {
       },
     };
 
-    catalogApi.getEntities.mockImplementation(_arg => {
+    catalogApiMock.getEntities.mockImplementation(_arg => {
       return { items: [groupMock, groupParentMock] };
     });
 
@@ -1561,7 +1500,7 @@ describe('Policy checks for users and groups', () => {
         members: ['alice'],
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
 
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
@@ -1591,7 +1530,7 @@ describe('Policy checks for users and groups', () => {
         namespace: 'default',
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
         'test.resource.read',
@@ -1620,7 +1559,7 @@ describe('Policy checks for users and groups', () => {
         namespace: 'default',
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
         'test.resource.read',
@@ -1649,7 +1588,7 @@ describe('Policy checks for users and groups', () => {
         namespace: 'default',
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
 
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
@@ -1682,7 +1621,7 @@ describe('Policy checks for users and groups', () => {
         members: ['mike'],
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
         'test.resource.read',
@@ -1714,7 +1653,7 @@ describe('Policy checks for users and groups', () => {
         members: ['tom'],
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
         'test.resource.read',
@@ -1757,7 +1696,7 @@ describe('Policy checks for users and groups', () => {
       },
     };
 
-    catalogApi.getEntities.mockImplementation(_arg => {
+    catalogApiMock.getEntities.mockImplementation(_arg => {
       return { items: [groupParentMock, groupMock] };
     });
 
@@ -1784,38 +1723,38 @@ describe('Policy checks for conditional policies', () => {
   let policy: RBACPermissionPolicy;
 
   beforeEach(async () => {
-    const adapter = new StringAdapter(
-      `
-      p, role:default/test, catalog-entity, read, allow
-
-      g, group:default/test-group, role:default/test
-      g, group:default/qa, role:default/qa
-      `,
-    );
     const config = newConfig(undefined, []);
+    const adapter = await newAdapter(config);
     const theModel = newModelFromString(MODEL);
     const logger = mockServices.logger.mock();
     const enf = await createEnforcer(theModel, adapter, logger, config);
+    const policies = [['role:default/test', 'catalog-entity', 'read', 'allow']];
+    const groupPolicies = [
+      ['group:default/test-group', 'role:default/test'],
+      ['group:default/qa', 'role:default/qa'],
+    ];
+    await enf.addPolicies(policies);
+    await enf.addGroupingPolicies(groupPolicies);
 
     const enfDelegate = new EnforcerDelegate(
       enf,
       roleMetadataStorageMock,
-      knex,
+      mockClientKnex,
     );
 
     policy = await RBACPermissionPolicy.build(
       logger,
       auditLoggerMock,
       config,
-      conditionalStorage,
+      conditionalStorageMock,
       enfDelegate,
       roleMetadataStorageMock,
-      knex,
+      mockClientKnex,
       pluginMetadataCollectorMock as PluginPermissionMetadataCollector,
-      mockAuth,
+      mockAuthService,
     );
 
-    catalogApi.getEntities.mockReset();
+    catalogApiMock.getEntities.mockReset();
   });
 
   it('should execute condition policy', async () => {
@@ -1830,8 +1769,8 @@ describe('Policy checks for conditional policies', () => {
         members: ['mike'],
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
-    (conditionalStorage.filterConditions as jest.Mock).mockReturnValueOnce([
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
+    (conditionalStorageMock.filterConditions as jest.Mock).mockReturnValueOnce([
       {
         id: 1,
         pluginId: 'catalog',
@@ -1887,8 +1826,8 @@ describe('Policy checks for conditional policies', () => {
         members: ['mike'],
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
-    (conditionalStorage.filterConditions as jest.Mock).mockReturnValueOnce([
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
+    (conditionalStorageMock.filterConditions as jest.Mock).mockReturnValueOnce([
       {
         id: 1,
         pluginId: 'catalog',
@@ -1958,10 +1897,10 @@ describe('Policy checks for conditional policies', () => {
         members: ['mike'],
       },
     };
-    catalogApi.getEntities.mockReturnValue({
+    catalogApiMock.getEntities.mockReturnValue({
       items: [entityMock, qaGroupMock],
     });
-    (conditionalStorage.filterConditions as jest.Mock)
+    (conditionalStorageMock.filterConditions as jest.Mock)
       .mockReturnValueOnce([
         {
           id: 1,
@@ -2037,8 +1976,8 @@ describe('Policy checks for conditional policies', () => {
         members: ['mike'],
       },
     };
-    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
-    (conditionalStorage.filterConditions as jest.Mock).mockReturnValueOnce([
+    catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
+    (conditionalStorageMock.filterConditions as jest.Mock).mockReturnValueOnce([
       {
         id: 1,
         pluginId: 'catalog',
@@ -2171,16 +2110,10 @@ function newConfig(
   });
 }
 
-async function newAdapter(
-  config: Config,
-  stringPolicy?: string,
-): Promise<Adapter> {
-  if (stringPolicy) {
-    return new StringAdapter(stringPolicy);
-  }
+async function newAdapter(config: Config): Promise<Adapter> {
   return await new CasbinDBAdapterFactory(
     config,
-    dbManagerMock,
+    mockClientKnex,
   ).createAdapter();
 }
 
@@ -2195,7 +2128,7 @@ async function createEnforcer(
   const enf = await newEnforcer(theModel, adapter);
 
   const rm = new BackstageRoleManager(
-    catalogApi,
+    catalogApiMock,
     logger,
     catalogDBClient,
     rbacDBClient,
@@ -2228,7 +2161,7 @@ async function newEnforcerDelegate(
     await enf.addGroupingPolicies(storedGroupingPolicies);
   }
 
-  return new EnforcerDelegate(enf, roleMetadataStorageMock, knex);
+  return new EnforcerDelegate(enf, roleMetadataStorageMock, mockClientKnex);
 }
 
 async function newPermissionPolicy(
@@ -2241,12 +2174,12 @@ async function newPermissionPolicy(
     logger,
     auditLoggerMock,
     config,
-    conditionalStorage,
+    conditionalStorageMock,
     enfDelegate,
     roleMock || roleMetadataStorageMock,
-    knex,
+    mockClientKnex,
     pluginMetadataCollectorMock as PluginPermissionMetadataCollector,
-    mockAuth,
+    mockAuthService,
   );
   auditLoggerMock.auditLog.mockReset();
   return permissionPolicy;

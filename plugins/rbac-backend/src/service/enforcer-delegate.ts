@@ -3,13 +3,13 @@ import { Knex } from 'knex';
 
 import EventEmitter from 'events';
 
+import { ADMIN_ROLE_NAME } from '../admin-permissions/admin-creation';
 import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { mergeRoleMetadata, policiesToString, policyToString } from '../helper';
 import { MODEL } from './permission-model';
-import { ADMIN_ROLE_NAME } from './permission-policy';
 
 export type RoleEvents = 'roleAdded';
 export interface RoleEventEmitter<T extends RoleEvents> {

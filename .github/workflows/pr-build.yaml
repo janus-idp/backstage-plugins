@@ -41,7 +41,5 @@ jobs:
 
       - name: Build packages
         uses: ./.github/actions/build
-        env:
-          CI: false
         with:
           args: --affected

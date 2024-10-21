@@ -1,5 +1,5 @@
-name: Build all packages
-description: Build all packages
+name: Build packages
+description: Build packages
 inputs:
   args:
     description: Backstage CLI repo build arguments
@@ -8,18 +8,7 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Export dynamic
+    - name: Build packages
       shell: bash
       run: |
-        echo "disable env var 'CI' to ensure 'yarn install' is not called with '--immutable'"
-        echo CI=$CI
-        ls -al ./plugins/bulk-import-backend
-        yarn run export-dynamic:clean --concurrency=75% ${{ inputs.args }}
-
-    - name: Build all packages
-      shell: bash
-      run: |
-        echo "disable env var 'CI' to ensure 'yarn install' is not called with '--immutable'"
-        echo CI=$CI
-        ls -al ./plugins/bulk-import-backend
         yarn run build --concurrency=75% ${{ inputs.args }}
