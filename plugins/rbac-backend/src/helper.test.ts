@@ -11,9 +11,9 @@ import {
   typedPoliciesToString,
   typedPolicyToString,
 } from './helper';
+import { ADMIN_ROLE_AUTHOR } from './policies/permission-policy';
 // Import the function to test
 import { EnforcerDelegate } from './service/enforcer-delegate';
-import { ADMIN_ROLE_AUTHOR } from './service/permission-policy';
 
 const modifiedBy = 'user:default/some-user';
 
