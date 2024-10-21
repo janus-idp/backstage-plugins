@@ -217,7 +217,7 @@ describe('PolicyBuilder', () => {
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
     expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
     expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
-    expect(RBACPermissionPolicy.build).toHaveBeenCalled();
+    expect(RBACPermissionPolicy.build).not.toHaveBeenCalled();
 
     expect(PoliciesServer).toHaveBeenCalled();
     expect(mockPoliciesServer.serve).toHaveBeenCalled();

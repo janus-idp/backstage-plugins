@@ -11,6 +11,7 @@ import { CatalogClient } from '@backstage/catalog-client';
 import type { Config } from '@backstage/config';
 import type { RouterOptions } from '@backstage/plugin-permission-backend';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { PermissionPolicy } from '@backstage/plugin-permission-node';
 
 import { newEnforcer, newModelFromString } from 'casbin';
 import type { Router } from 'express';
@@ -25,6 +26,7 @@ import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { DataBaseConditionalStorage } from '../database/conditional-storage';
 import { migrate } from '../database/migration';
 import { DataBaseRoleMetadataStorage } from '../database/role-metadata';
+import { AllowAllPolicy } from '../policies/allow-all-policy';
 import { connectRBACProviders } from '../providers/connect-providers';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
@@ -48,14 +50,7 @@ export class PolicyBuilder {
     pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
     rbacProviders?: Array<RBACProvider>,
   ): Promise<Router> {
-    const isPluginEnabled = env.config.getOptionalBoolean('permission.enabled');
-    if (isPluginEnabled) {
-      env.logger.info('RBAC backend plugin was enabled');
-    } else {
-      env.logger.warn(
-        'RBAC backend plugin was disabled by application config permission.enabled: false',
-      );
-    }
+    let policy: PermissionPolicy;
 
     const databaseManager = DatabaseManager.fromConfig(env.config).forPlugin(
       'permission',
@@ -139,11 +134,11 @@ export class PolicyBuilder {
       },
     });
 
-    const options: RouterOptions = {
-      config: env.config,
-      logger: env.logger,
-      discovery: env.discovery,
-      policy: await RBACPermissionPolicy.build(
+    const isPluginEnabled = env.config.getOptionalBoolean('permission.enabled');
+    if (isPluginEnabled) {
+      env.logger.info('RBAC backend plugin was enabled');
+
+      policy = await RBACPermissionPolicy.build(
         env.logger,
         defAuditLog,
         env.config,
@@ -153,7 +148,20 @@ export class PolicyBuilder {
         databaseClient,
         pluginPermMetaData,
         env.auth,
-      ),
+      );
+    } else {
+      env.logger.warn(
+        'RBAC backend plugin was disabled by application config permission.enabled: false',
+      );
+
+      policy = new AllowAllPolicy();
+    }
+
+    const options: RouterOptions = {
+      config: env.config,
+      logger: env.logger,
+      discovery: env.discovery,
+      policy,
       auth: env.auth,
       httpAuth: env.httpAuth,
       userInfo: env.userInfo,
