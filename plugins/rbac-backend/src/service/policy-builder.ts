@@ -9,7 +9,6 @@ import type {
 } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import type { Config } from '@backstage/config';
-import type { RouterOptions } from '@backstage/plugin-permission-backend';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 
@@ -35,18 +34,30 @@ import { MODEL } from './permission-model';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import { PoliciesServer } from './policies-rest-api';
 
+export type EnvOptions = {
+  config: Config;
+  logger: LoggerService;
+  discovery: DiscoveryService;
+  permissions: PermissionEvaluator;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
+  userInfo: UserInfoService;
+  lifecycle: LifecycleService;
+};
+
+export type RBACRouterOptions = {
+  config: Config;
+  logger: LoggerService;
+  discovery: DiscoveryService;
+  policy: PermissionPolicy;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
+  userInfo: UserInfoService;
+};
+
 export class PolicyBuilder {
   public static async build(
-    env: {
-      config: Config;
-      logger: LoggerService;
-      discovery: DiscoveryService;
-      permissions: PermissionEvaluator;
-      auth: AuthService;
-      httpAuth: HttpAuthService;
-      userInfo: UserInfoService;
-      lifecycle: LifecycleService;
-    },
+    env: EnvOptions,
     pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
     rbacProviders?: Array<RBACProvider>,
   ): Promise<Router> {
@@ -157,7 +168,7 @@ export class PolicyBuilder {
       policy = new AllowAllPolicy();
     }
 
-    const options: RouterOptions = {
+    const options: RBACRouterOptions = {
       config: env.config,
       logger: env.logger,
       discovery: env.discovery,
@@ -171,9 +182,6 @@ export class PolicyBuilder {
       env.permissions,
       options,
       enforcerDelegate,
-      env.config,
-      env.httpAuth,
-      env.auth,
       conditionStorage,
       pluginPermMetaData,
       roleMetadataStorage,

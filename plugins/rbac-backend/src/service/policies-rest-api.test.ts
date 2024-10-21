@@ -1,7 +1,6 @@
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { InputError } from '@backstage/errors';
-import type { RouterOptions } from '@backstage/plugin-permission-backend';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import type { MetadataResponse } from '@backstage/plugin-permission-node';
 
@@ -35,6 +34,7 @@ import {
   PluginPermissionMetadataCollector,
 } from './plugin-endpoints';
 import { PoliciesServer } from './policies-rest-api';
+import { RBACRouterOptions } from './policy-builder';
 
 jest.setTimeout(60000);
 
@@ -126,6 +126,7 @@ const mockHttpAuth = mockServices.httpAuth({
 });
 const mockAuthService = mockServices.auth();
 const credentials = mockCredentials.user('user:default/guest');
+const mockUserInfo = mockServices.userInfo();
 
 const conditions: RoleConditionalPolicyDecision<PermissionInfo>[] = [
   {
@@ -267,7 +268,7 @@ describe('REST policies api', () => {
 
     mockHttpAuth.credentials = jest.fn().mockImplementation(() => credentials);
 
-    const options: RouterOptions = {
+    const options: RBACRouterOptions = {
       config: config,
       logger,
       discovery: mockDiscovery,
@@ -284,15 +285,13 @@ describe('REST policies api', () => {
         pluginPermissionMetadataCollectorMock as PluginPermissionMetadataCollector,
         mockAuthService,
       ),
+      userInfo: mockUserInfo,
     };
 
     server = new PoliciesServer(
       mockPermissionEvaluator,
       options,
       enforcerDelegateMock as EnforcerDelegate,
-      config,
-      mockHttpAuth,
-      mockAuthService,
       conditionalStorageMock,
       pluginPermissionMetadataCollectorMock as PluginPermissionMetadataCollector,
       roleMetadataStorageMock,
@@ -3492,7 +3491,7 @@ describe('REST policies api', () => {
         { result: AuthorizeResult.ALLOW },
       ]);
 
-      const options: RouterOptions = {
+      const options: RBACRouterOptions = {
         config: config,
         logger,
         discovery: mockDiscovery,
@@ -3509,15 +3508,13 @@ describe('REST policies api', () => {
           pluginPermissionMetadataCollectorMock as PluginPermissionMetadataCollector,
           mockAuthService,
         ),
+        userInfo: mockUserInfo,
       };
 
       server = new PoliciesServer(
         mockPermissionEvaluator,
         options,
         enforcerDelegateMock as EnforcerDelegate,
-        config,
-        mockHttpAuth,
-        mockAuthService,
         conditionalStorageMock,
         pluginPermissionMetadataCollectorMock as PluginPermissionMetadataCollector,
         roleMetadataStorageMock,
