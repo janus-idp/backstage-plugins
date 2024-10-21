@@ -16,12 +16,12 @@ import type { Source } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { resolve } from 'path';
 
+import { ADMIN_ROLE_AUTHOR } from '../admin-permissions/admin-creation';
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
-import { ADMIN_ROLE_AUTHOR } from '../file-permissions/admin-creation';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';

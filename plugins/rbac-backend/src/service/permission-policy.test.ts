@@ -25,13 +25,13 @@ import type { RoleMetadata } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { resolve } from 'path';
 
+import { ADMIN_ROLE_NAME } from '../admin-permissions/admin-creation';
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { ConditionalStorage } from '../database/conditional-storage';
 import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
-import { ADMIN_ROLE_NAME } from '../file-permissions/admin-creation';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';

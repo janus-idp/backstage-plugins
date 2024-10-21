@@ -30,6 +30,10 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import {
+  setAdminPermissions,
+  useAdminsFromConfig,
+} from '../admin-permissions/admin-creation';
+import {
   createPermissionEvaluationOptions,
   EVALUATE_PERMISSION_ACCESS_STAGE,
   EvaluationEvents,
@@ -37,10 +41,6 @@ import {
 import { replaceAliases } from '../conditional-aliases/alias-resolver';
 import { ConditionalStorage } from '../database/conditional-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
-import {
-  setAdminPermissions,
-  useAdminsFromConfig,
-} from '../file-permissions/admin-creation';
 import { CSVFileWatcher } from '../file-permissions/csv-file-watcher';
 import { YamlConditinalPoliciesFileWatcher } from '../file-permissions/yaml-conditional-file-watcher';
 import { EnforcerDelegate } from './enforcer-delegate';

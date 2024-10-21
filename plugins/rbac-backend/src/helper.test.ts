@@ -1,5 +1,5 @@
+import { ADMIN_ROLE_AUTHOR } from './admin-permissions/admin-creation';
 import { RoleMetadataDao } from './database/role-metadata';
-import { ADMIN_ROLE_AUTHOR } from './file-permissions/admin-creation';
 import {
   deepSortedEqual,
   isPermissionAction,
