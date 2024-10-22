@@ -9,7 +9,6 @@ import {
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { mergeRoleMetadata, policiesToString, policyToString } from '../helper';
-import { ADMIN_ROLE_NAME } from '../policies/permission-policy';
 import { MODEL } from './permission-model';
 
 export type RoleEvents = 'roleAdded';

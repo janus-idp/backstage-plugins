@@ -12,7 +12,6 @@ import {
   typedPoliciesToString,
   typedPolicyToString,
 } from './helper';
-import { ADMIN_ROLE_AUTHOR } from './policies/permission-policy';
 // Import the function to test
 import { EnforcerDelegate } from './service/enforcer-delegate';
 
