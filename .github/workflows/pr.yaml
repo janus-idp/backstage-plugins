@@ -71,10 +71,14 @@ jobs:
           yarn install
 
       - name: Verify changesets
-        if: ${{ !startsWith(github.ref_name, 'changeset-release/') }}
         run: |
-          yarn changeset status --since=${{ github.event.pull_request.base.sha }}
-
+          echo "Working in branch ${{ github.ref_name }}"
+          if [[ "${{ github.ref_name }}" != *"changeset-release/"* ]]; then
+            echo "Check changeset status since ${{ github.event.pull_request.base.sha }}"
+            yarn changeset status --since=${{ github.event.pull_request.base.sha }}
+          else
+            echo "Skipped - changeset-release/* PR"
+          fi
       - name: Test packages
         uses: ./.github/actions/test
         with:
