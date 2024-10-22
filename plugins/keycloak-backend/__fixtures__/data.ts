@@ -90,9 +90,4 @@ export const users = [
   },
 ];
 
-export const groupMembers = [
-  ['jamesdoe'],
-  [],
-  [],
-  ['jamesdoe', 'joedoe', 'johndoe'],
-];
+export const groupMembers = ['jamesdoe'];

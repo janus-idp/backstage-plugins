@@ -55,10 +55,25 @@ export class KeycloakAdminClientMock {
     count: jest.fn().mockResolvedValue(groups.length),
     listMembers: jest
       .fn()
-      .mockResolvedValueOnce(groupMembers[0].map(username => ({ username })))
-      .mockResolvedValueOnce(groupMembers[1].map(username => ({ username })))
-      .mockResolvedValueOnce(groupMembers[2].map(username => ({ username })))
-      .mockResolvedValueOnce(groupMembers[3].map(username => ({ username }))),
+      .mockImplementation(
+        async (payload?: {
+          id: string;
+          _max?: number;
+          _realm?: string;
+          first?: number;
+        }) => {
+          const { id, first } = payload || {};
+          if (id === '9cf51b5d-e066-4ed8-940c-dc6da77f81a5' && first === 0) {
+            // biggroup - first members page
+            return groupMembers.map(username => ({ username }));
+          }
+          if (id === 'bb10231b-2939-4b1a-b8bb-9249ed7b76f7' && first === 0) {
+            // testgroup - first members page
+            return groupMembers.map(username => ({ username }));
+          }
+          return [];
+        },
+      ),
   };
 
   auth = authMock;
@@ -73,6 +88,14 @@ class FakeAbortSignal implements AbortSignal {
   removeEventListener() {}
   dispatchEvent() {
     return true;
+  }
+  any(signals: Iterable<AbortSignal>): AbortSignal {
+    for (const signal of signals) {
+      if (signal.aborted) {
+        return signal;
+      }
+    }
+    throw new Error('No abort signal found');
   }
 }
 
