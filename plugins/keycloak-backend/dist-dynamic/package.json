@@ -46,7 +46,7 @@
   "configSchema": "config.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/janus-idp/backstage-plugins",
+    "url": "git+https://github.com/janus-idp/backstage-plugins.git",
     "directory": "plugins/keycloak-backend"
   },
   "keywords": [

@@ -58,7 +58,7 @@
     "prettier": "3.3.3",
     "@backstage/backend-test-utils": "0.4.4",
     "@backstage/cli": "0.26.11",
-    "@janus-idp/cli": "1.13.2"
+    "@janus-idp/cli": "1.13.3"
   },
   "files": [
     "dist",
