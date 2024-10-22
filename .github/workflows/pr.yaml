@@ -77,7 +77,7 @@ jobs:
             echo "Check changeset status since ${{ github.event.pull_request.base.sha }}"
             yarn changeset status --since=${{ github.event.pull_request.base.sha }}
           else
-            echo "Skipped, not a changeset-release/ PR"
+            echo "Skipped - changeset-release/* PR"
           fi
       - name: Test packages
         uses: ./.github/actions/test
