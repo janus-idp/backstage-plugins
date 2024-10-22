@@ -22,18 +22,17 @@ jobs:
     name: Release Packages
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
-        with:
-          # don't persist the GITHUB_TOKEN so the release can use use the generated token
-          persist-credentials: false
-
       - name: Generate token
         id: generate-token
         uses: actions/create-github-app-token@31c86eb3b33c9b601a1f60f98dcbfd1d70f379b4 # v1.10.3
         with:
           app-id: ${{ vars.JANUS_IDP_GITHUB_APP_ID }}
           private-key: ${{ secrets.JANUS_IDP_GITHUB_APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
 
       - name: Setup Node.js
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
