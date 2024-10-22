@@ -12,7 +12,7 @@
   },
   "backstage": {
     "role": "node-library",
-    "supported-versions": "1.31.3",
+    "supported-versions": "1.32.4",
     "pluginId": "rbac",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-rbac",
@@ -34,14 +34,14 @@
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
-    "@backstage/cli": "0.27.1",
+    "@backstage/cli": "0.28.2",
     "prettier": "3.3.3"
   },
   "files": [
     "dist"
   ],
   "dependencies": {
-    "@backstage/backend-plugin-api": "^1.0.0"
+    "@backstage/backend-plugin-api": "^1.0.1"
   },
   "repository": {
     "type": "git",

@@ -11,7 +11,7 @@
   },
   "backstage": {
     "role": "frontend-plugin",
-    "supported-versions": "1.31.3",
+    "supported-versions": "1.32.4",
     "pluginId": "quay",
     "pluginPackage": "@janus-idp/backstage-plugin-quay",
     "pluginPackages": [
@@ -37,12 +37,12 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^1.7.0",
-    "@backstage/core-components": "^0.15.0",
-    "@backstage/core-plugin-api": "^1.9.4",
+    "@backstage/core-components": "^0.15.1",
+    "@backstage/core-plugin-api": "^1.10.0",
     "@backstage/plugin-catalog-common": "^1.1.0",
-    "@backstage/plugin-catalog-react": "^1.13.1",
-    "@backstage/plugin-permission-react": "^0.4.26",
-    "@backstage/theme": "^0.5.7",
+    "@backstage/plugin-catalog-react": "^1.14.0",
+    "@backstage/plugin-permission-react": "^0.4.27",
+    "@backstage/theme": "^0.6.0",
     "@janus-idp/backstage-plugin-quay-common": "^1.2.0",
     "@janus-idp/shared-react": "^2.12.0",
     "@material-ui/core": "^4.12.2",
@@ -56,10 +56,10 @@
     "react-router-dom": "^6.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.27.1",
-    "@backstage/core-app-api": "1.15.0",
-    "@backstage/dev-utils": "1.1.1",
-    "@backstage/test-utils": "1.6.0",
+    "@backstage/cli": "0.28.2",
+    "@backstage/core-app-api": "1.15.1",
+    "@backstage/dev-utils": "1.1.2",
+    "@backstage/test-utils": "1.7.0",
     "@playwright/test": "1.45.3",
     "@redhat-developer/red-hat-developer-hub-theme": "0.4.0",
     "@testing-library/jest-dom": "6.4.8",
