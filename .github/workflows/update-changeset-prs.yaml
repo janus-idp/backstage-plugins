@@ -6,20 +6,43 @@ on:
       - 'changeset-release/**'
 
 jobs:
-  update-and-commit-files:
-    name: Update and commit files
+  prev-commit:
+    name: Verify previous commit
     runs-on: ubuntu-latest
-
-    permissions:
-      # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
-      contents: write
-
+    outputs:
+      is-valid: ${{ steps.prev-commit.outputs.is-valid }}
     steps:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
         with:
-          # Fetch the last 2 commits instead of just 1. (Fetching just 1 commit would overwrite the whole history)
+          # Fetch the latest two commits
           fetch-depth: 2
+
+      # We do not want an infinite loop; therefore, we are checking if the previous
+      # commit was created by this action.
+      - name: Get previous commit message
+        id: prev-commit
+        run: |
+          echo "is-valid=$(if [[ $(git log -1 --pretty=%B HEAD^) != 'chore: update yarn.lock' ]]; then echo 'true'; else echo 'false'; fi)" >> $GITHUB_OUTPUT
+
+  update-and-commit-files:
+    name: Update and commit files
+    needs: prev-commit
+    if: needs.prev-commit.outputs.is-valid == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: actions/create-github-app-token@31c86eb3b33c9b601a1f60f98dcbfd1d70f379b4 # v1.10.3
+        with:
+          app-id: ${{ vars.JANUS_IDP_GITHUB_APP_ID }}
+          private-key: ${{ secrets.JANUS_IDP_GITHUB_APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
 
       - name: Setup Node.js
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
@@ -31,17 +54,7 @@ jobs:
         # We want to commit the yarn.lock changes
         run: yarn install --no-immutable
 
-      - name: Get last commit message
-        id: last-commit
-        run: |
-          echo "message=$(git log -1 --pretty=%s)" >> $GITHUB_OUTPUT
-          echo "author=$(git log -1 --pretty=\"%an <%ae>\")" >> $GITHUB_OUTPUT
-
       - name: Amend previous commit
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_author: ${{ steps.last-commit.outputs.author }}
-          commit_message: ${{ steps.last-commit.outputs.message }}
-          commit_options: '--amend --no-edit'
-          push_options: '--force'
-          skip_fetch: true
+          commit_message: 'chore: update yarn.lock'
