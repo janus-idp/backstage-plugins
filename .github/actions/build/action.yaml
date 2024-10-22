@@ -1,5 +1,5 @@
-name: Build all packages
-description: Build all packages
+name: Build packages
+description: Build packages
 inputs:
   args:
     description: Backstage CLI repo build arguments
@@ -8,6 +8,7 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Build all packages
+    - name: Build packages
       shell: bash
-      run: yarn run build ${{ inputs.args }}
+      run: |
+        yarn run build --concurrency=75% ${{ inputs.args }}
