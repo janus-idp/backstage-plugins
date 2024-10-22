@@ -1,0 +1,46 @@
+name: Update Changeset PRs
+
+on:
+  push:
+    branches:
+      - 'changeset-release/**'
+
+jobs:
+  update-and-commit-files:
+    name: Update and Commit Files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate token
+        id: generate-token
+        uses: actions/create-github-app-token@31c86eb3b33c9b601a1f60f98dcbfd1d70f379b4 # v1.10.3
+        with:
+          app-id: ${{ vars.JANUS_IDP_GITHUB_APP_ID }}
+          private-key: ${{ secrets.JANUS_IDP_GITHUB_APP_PRIVATE_KEY }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
+        with:
+          node-version: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        # We want to commit the yarn.lock changes
+        run: yarn install --no-immutable
+
+      - name: Commit changes
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          git config user.name 'janus-idp[bot]'
+          git config user.email '41898282+janus-idp[bot]@users.noreply.github.com'
+          git add yarn.lock
+          if [[ -n $(git status --porcelain) ]]; then
+            git commit -m 'chore: update yarn.lock'
+            git push origin HEAD:${{ github.ref }}
+          fi
