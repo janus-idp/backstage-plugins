@@ -1,9 +1,10 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-backend-dynamic",
-  "version": "1.19.3",
+  "version": "1.20.100",
   "license": "Apache-2.0",
   "main": "./dist/index.cjs.js",
   "types": "src/index.ts",
+  "private": true,
   "publishConfig": {
     "access": "public"
   },
@@ -31,7 +32,7 @@
   "homepage": "https://red.ht/rhdh",
   "repository": {
     "type": "git",
-    "url": "https://github.com/janus-idp/backstage-plugins",
+    "url": "git+https://github.com/janus-idp/backstage-plugins.git",
     "directory": "plugins/orchestrator-backend"
   },
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
