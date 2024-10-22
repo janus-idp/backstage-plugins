@@ -1,4 +1,4 @@
-name: Update Changeset PRs
+name: Update changeset PRs (yarn lock regen)
 
 on:
   push:
