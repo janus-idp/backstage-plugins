@@ -1,0 +1,55 @@
+name: Pull Request - UI Tests
+
+on: pull_request
+
+env:
+  TURBO_SCM_BASE: ${{ github.event.pull_request.base.sha }}
+  TURBO_SCM_HEAD: ${{ github.sha }}
+
+# enforce only one action can run at a time for a given PR, and
+# when updating a PR, actions in progress will be cancelled to start a fresh one
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ui-test:
+    name: UI Tests with Node.js ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'yarn'
+
+      - name: Setup local Turbo cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@cc723b4600e40a6b8815b65701d8614b91e2669e # v1
+
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Install playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Run tests
+        run: |
+          # enable permission support and RBAC plugins
+          printf "\npermission:\n  enabled: true\n" >> $(pwd)/app-config.yaml
+
+          yarn run ui-test --affected
+
+      - uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4
+        if: !cancelled()
+        with:
+          name: playwright-report
+          path: plugins/*/playwright-report/
+          retention-days: 1
