@@ -4,14 +4,14 @@
 
 ### Minor Changes
 
-- 45903e9: feat(deps): update to backstage 1.31
+- d9551ae: feat(deps): update to backstage 1.31
 
 ### Patch Changes
 
-- 20fde68: Change local package references to a `*`
-- 31fc0e6: upgrade to yarn v3
-- Updated dependencies [31fc0e6]
-- Updated dependencies [45903e9]
+- d9551ae: Change local package references to a `*`
+- d9551ae: upgrade to yarn v3
+- Updated dependencies [d9551ae]
+- Updated dependencies [d9551ae]
   - @janus-idp/backstage-plugin-orchestrator-form-api@1.3.0
 
 * **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.21.0

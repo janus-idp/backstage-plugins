@@ -4,18 +4,18 @@
 
 ### Major Changes
 
-- 4e93fe0: Include embedded folder to release package
+- d9551ae: Include embedded folder to release package
 
 ### Minor Changes
 
-- 45903e9: feat(deps): update to backstage 1.31
+- d9551ae: feat(deps): update to backstage 1.31
 
 ### Patch Changes
 
-- 20fde68: Change local package references to a `*`
-- 59374c5: pin the @janus-idp/cli package
-- 31fc0e6: upgrade to yarn v3
-- c0f48c1: Change the export-dynamic script to no longer use any flags and remove the tracking of the dist-dynamic folder
+- d9551ae: Change local package references to a `*`
+- d9551ae: pin the @janus-idp/cli package
+- d9551ae: upgrade to yarn v3
+- d9551ae: Change the export-dynamic script to no longer use any flags and remove the tracking of the dist-dynamic folder
 
 * **@janus-idp/cli:** upgraded to 1.15.2
 
