@@ -13,7 +13,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
         with:
-          fetch-depth: 0
+          # don't persist the GITHUB_TOKEN so the release can use use the generated token
+          persist-credentials: false
 
       - name: Generate token
         id: generate-token
@@ -25,9 +26,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
         with:
-          node-version: '.nvmrc'
+          node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
-          cache: 'yarn'
 
       - name: Install dependencies
         # We want to commit the yarn.lock changes
