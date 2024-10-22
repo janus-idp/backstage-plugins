@@ -5,6 +5,11 @@ on:
     branches:
       - 'changeset-release/**'
 
+# enforce only one release action per release branch at a time
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   prev-commit:
     name: Verify previous commit

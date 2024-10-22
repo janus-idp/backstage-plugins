@@ -14,7 +14,7 @@ export default defineConfig({
   /* Run tests in sequence. */
   workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: process.env.CI ? 'github' : 'list',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     baseURL: process.env.PLUGIN_BASE_URL || 'http://localhost:3000',
