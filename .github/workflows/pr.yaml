@@ -71,7 +71,7 @@ jobs:
           yarn install
 
       - name: Verify changesets
-        if: startsWith(github.ref_name, 'changeset-release/')
+        if: ${{ !startsWith(github.ref_name, 'changeset-release/') }}
         run: |
           yarn changeset status --since=${{ github.event.pull_request.base.sha }}
 
