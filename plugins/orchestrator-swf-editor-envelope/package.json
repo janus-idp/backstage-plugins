@@ -14,7 +14,7 @@
   },
   "backstage": {
     "role": "web-library",
-    "supported-versions": "1.28.4",
+    "supported-versions": "1.31.3",
     "pluginId": "orchestrator-swf-editor-envelope",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-orchestrator-swf-editor-envelope"
@@ -43,8 +43,7 @@
     "@kie-tools/serverless-workflow-text-editor": "^0.32.0"
   },
   "devDependencies": {
-    "prettier": "3.3.3",
-    "@backstage/cli": "0.26.11",
+    "@backstage/cli": "0.27.1",
     "clean-webpack-plugin": "4.0.0",
     "css-loader": "6.11.0",
     "filemanager-webpack-plugin": "8.0.0",
@@ -53,6 +52,7 @@
     "monaco-editor-webpack-plugin": "7.1.0",
     "monaco-yaml": "5.1.1",
     "node-polyfill-webpack-plugin": "3.0.0",
+    "prettier": "3.3.3",
     "sass": "1.77.2",
     "sass-loader": "14.2.1",
     "style-loader": "3.3.4",

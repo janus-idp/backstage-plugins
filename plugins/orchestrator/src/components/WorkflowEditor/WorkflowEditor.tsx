@@ -34,7 +34,10 @@ import { useCancelableEffect } from '@kie-tools-core/react-hooks/dist/useCancela
 import { editorDisplayOptions } from '@kie-tools/serverless-workflow-combined-editor/dist/api';
 import { SwfCombinedEditorChannelApiImpl } from '@kie-tools/serverless-workflow-combined-editor/dist/channel/SwfCombinedEditorChannelApiImpl';
 import { SwfPreviewOptionsChannelApiImpl } from '@kie-tools/serverless-workflow-combined-editor/dist/channel/SwfPreviewOptionsChannelApiImpl';
-import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types';
+import {
+  DiagnosticSeverity,
+  type Diagnostic,
+} from 'vscode-languageserver-types';
 
 import {
   extractWorkflowFormat,

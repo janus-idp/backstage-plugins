@@ -1,5 +1,5 @@
 import { createApiRef } from '@backstage/core-plugin-api';
-import { JsonObject } from '@backstage/types';
+import type { JsonObject } from '@backstage/types';
 
 import { AxiosResponse } from 'axios';
 

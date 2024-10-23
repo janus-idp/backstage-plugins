@@ -3,8 +3,11 @@ import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
+  IconComponent,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+
+import HubOutlinedIcon from '@mui/icons-material/HubOutlined';
 
 import { OcmApiClient, OcmApiRef } from './api';
 import { rootRouteRef } from './routes';
@@ -35,3 +38,5 @@ export const OcmPage = ocmPlugin.provide(
     mountPoint: rootRouteRef,
   }),
 );
+
+export const OcmIcon = HubOutlinedIcon as IconComponent;

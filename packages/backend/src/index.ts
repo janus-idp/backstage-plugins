@@ -1,5 +1,5 @@
 import { createBackend } from '@backstage/backend-defaults';
-import { dynamicPluginsSchemasServiceFactory } from '@backstage/backend-dynamic-feature-service';
+import { dynamicPluginsSchemasServiceFactoryWithOptions } from '@backstage/backend-dynamic-feature-service';
 import { PackageRoles } from '@backstage/cli-node';
 
 import * as path from 'path';
@@ -9,7 +9,7 @@ import { customLogger } from './logger/customLogger';
 const backend = createBackend();
 
 backend.add(
-  dynamicPluginsSchemasServiceFactory({
+  dynamicPluginsSchemasServiceFactoryWithOptions({
     schemaLocator(pluginPackage) {
       const platform = PackageRoles.getRoleInfo(
         pluginPackage.manifest.backstage.role,
@@ -21,7 +21,7 @@ backend.add(
     },
   }),
 );
-backend.add(customLogger());
+backend.add(customLogger);
 
 backend.add(import('@backstage/plugin-app-backend/alpha'));
 backend.add(import('@backstage/plugin-proxy-backend/alpha'));

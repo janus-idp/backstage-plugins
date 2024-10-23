@@ -1,6 +1,6 @@
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
-import { JsonObject } from '@backstage/types';
+import type { JsonObject } from '@backstage/types';
 
 import axios, {
   AxiosInstance,
