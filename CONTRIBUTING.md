@@ -41,6 +41,7 @@ This guide will show you how to migrate plugins from `janus-idp/backstage-plugin
      ```
 
    - For `backstage/community-plugins`:
+
      ```bash
      git checkout -b "migrate-workspace-name"
      ```
@@ -56,6 +57,7 @@ This guide will show you how to migrate plugins from `janus-idp/backstage-plugin
    - The `maintainers` array of arguments is the github usernames of those individuals that should be listed as the maintainers for the migrated plugins. Please separate each maintainer by a comma while supplying this value.
 
    - example usage:
+
      ```bash
       yarn community-cli janus-plugin migrate --monorepo-path ../backstage-plugins --workspace-name workspace-name --branch deprecate-workspace-name --maintainers @maintainer1,@maintainer2,@maintainer3
      ```
@@ -78,7 +80,7 @@ This guide will show you how to migrate plugins from `janus-idp/backstage-plugin
   - [Backend plugin `package.json` example](https://github.com/janus-idp/backstage-showcase/blob/main/dynamic-plugins/wrappers/backstage-community-plugin-3scale-backend/package.json)
 - run `yarn export-dynamic` to generate dist-dynamic directory
 
-For migrating plugins to `redhat-developer/rhdh-plugins` see: https://github.com/redhat-developer/rhdh-plugins/blob/main/CONTRIBUTING.md#using-the-cli-to-migrate-plugins-from-janus-idpbackstage-plugins 
+For migrating plugins to `redhat-developer/rhdh-plugins` see: <https://github.com/redhat-developer/rhdh-plugins/blob/main/CONTRIBUTING.md#using-the-cli-to-migrate-plugins-from-janus-idpbackstage-plugins>
 
 ## How can I contribute?
 
@@ -453,7 +455,7 @@ Changesets are enabled on release branches to facilitate backporting. However, t
 2. Run the following command, replacing `<plugin name>` and `<latest plugin version>` with the appropriate values:
 
     ```bash
-    npm dist-tag @janus-idp/<plugin name>@<latest plugin version e.g. 1.2.3> latest
+    npm dist-tag add @janus-idp/<plugin name>@<latest plugin version e.g. 1.2.3> latest
     ```
 
 This will update the npm tag to point to the latest version.
