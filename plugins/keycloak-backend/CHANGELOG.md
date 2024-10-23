@@ -1,5 +1,15 @@
 ### Dependencies
 
+## 1.13.4
+
+### Patch Changes
+
+- ed96bea: Provide keycloak-backend fixes:
+
+  - avoid undefined values for keycloak group members
+  - retrieve full list group members using pagination
+  - revert unexpected major upgrade of the keycloak backend plugin
+
 ## 2.0.0
 
 ### Major Changes
