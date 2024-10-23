@@ -2,7 +2,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 
-import { groupMembers, groups, users } from './data';
+import { groupMembers1, groupMembers2, groups, users } from './data';
 
 export const BASIC_VALID_CONFIG = {
   catalog: {
@@ -65,11 +65,11 @@ export class KeycloakAdminClientMock {
           const { id, first } = payload || {};
           if (id === '9cf51b5d-e066-4ed8-940c-dc6da77f81a5' && first === 0) {
             // biggroup - first members page
-            return groupMembers.map(username => ({ username }));
+            return groupMembers1.map(username => ({ username }));
           }
           if (id === 'bb10231b-2939-4b1a-b8bb-9249ed7b76f7' && first === 0) {
             // testgroup - first members page
-            return groupMembers.map(username => ({ username }));
+            return groupMembers2.map(username => ({ username }));
           }
           return [];
         },
