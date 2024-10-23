@@ -1,3 +1,5 @@
+import { mockServices } from '@backstage/backend-test-utils';
+
 import KcAdminClient from '@keycloak/keycloak-admin-client';
 
 import {
@@ -21,10 +23,12 @@ const config: KeycloakProviderConfig = {
   baseUrl: 'http://mock-url',
 };
 
+const logger = mockServices.logger.mock();
+
 describe('readKeycloakRealm', () => {
   it('should return the correct number of users and groups', async () => {
     const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
-    const { users, groups } = await readKeycloakRealm(client, config);
+    const { users, groups } = await readKeycloakRealm(client, config, logger);
 
     expect(users).toHaveLength(3);
     expect(groups).toHaveLength(4);
@@ -41,7 +45,7 @@ describe('readKeycloakRealm', () => {
     };
 
     const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
-    const { users, groups } = await readKeycloakRealm(client, config, {
+    const { users, groups } = await readKeycloakRealm(client, config, logger, {
       userTransformer,
       groupTransformer,
     });
@@ -144,11 +148,15 @@ describe('getEntities', () => {
   it('should fetch all users', async () => {
     const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
 
-    const users = await getEntities(client.users, {
-      id: '',
-      baseUrl: '',
-      realm: '',
-    });
+    const users = await getEntities(
+      client.users,
+      {
+        id: '',
+        baseUrl: '',
+        realm: '',
+      },
+      logger,
+    );
 
     expect(users).toHaveLength(3);
   });
@@ -163,6 +171,7 @@ describe('getEntities', () => {
         baseUrl: '',
         realm: '',
       },
+      logger,
       1,
     );
 
