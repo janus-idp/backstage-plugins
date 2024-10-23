@@ -71,14 +71,10 @@ jobs:
           yarn install
 
       - name: Verify changesets
+        if: ${{ !(github.actor == 'janus-idp[bot]' || github.actor == 'github-actions[bot]') }}
         run: |
-          echo "Working in branch ${{ github.ref_name }}"
-          if [[ "${{ github.ref_name }}" != *"changeset-release/"* ]]; then
-            echo "Check changeset status since ${{ github.event.pull_request.base.sha }}"
-            yarn changeset status --since=${{ github.event.pull_request.base.sha }}
-          else
-            echo "Skipped - changeset-release/* PR"
-          fi
+          yarn changeset status --since=${{ github.event.pull_request.base.sha }}
+
       - name: Test packages
         uses: ./.github/actions/test
         with:
