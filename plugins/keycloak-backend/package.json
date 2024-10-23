@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-keycloak-backend",
-  "version": "1.13.4",
+  "version": "2.0.0",
   "description": "A Backend backend plugin for Keycloak",
   "main": "src/index.ts",
   "types": "src/index.ts",
