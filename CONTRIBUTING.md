@@ -396,6 +396,18 @@ Changesets are enabled on release branches to facilitate backporting. However, t
 
 This will update the npm tag to point to the latest version.
 
+### Plugin Ownership and Responsibilities**
+
+#### **Publishing:**
+
+- **Main Branch:** The plugins team is responsible for merging the versioning PR to publish plugins.
+- **Release Branches:** The security team is responsible for merging the versioning PR to publish plugins.
+
+#### **Version Compatibility:**
+
+- **Main Branch:** The plugins team is responsible for ensuring RHDH uses the latest compatible plugin versions. Exception: Backstage version bumps are handled by the core platform team.  **Note:** Plugins should not depend on a newer version of Backstage than what RHDH allows.
+- **Release Branches:** The security team is responsible for ensuring RHDH uses the latest compatible plugin versions.
+
 ## Creating new plugins - DEPRECATED
 
 **As of June 2024, new plugins should be contributed to the new [Backstage Community Plugins](https://github.com/backstage/community-plugins/blob/main/CONTRIBUTING.md#get-started) repo.**
