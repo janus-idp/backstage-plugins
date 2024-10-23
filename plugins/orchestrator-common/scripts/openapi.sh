@@ -32,7 +32,6 @@ export const openApiDocument = JSON.parse(OPENAPI);
 EOF
 
     rm ./src/openapi/openapi.json
-    yarn openapi:prettier:fix
     NEW_SHA=$(openapi_checksum)
     openapi_update "${NEW_SHA}"
 }
