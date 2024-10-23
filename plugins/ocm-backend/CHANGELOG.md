@@ -1,5 +1,11 @@
 ### Dependencies
 
+## 5.1.1
+
+### Patch Changes
+
+- ffe2546: Fix CVE-2024-21534 by upgrading @kubernetes/client-node package to 0.22.1
+
 ## 5.1.0
 
 ### Minor Changes
