@@ -1,5 +1,11 @@
 ## @janus-idp/backstage-plugin-orchestrator-common [1.13.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.13.0...@janus-idp/backstage-plugin-orchestrator-common@1.13.1) (2024-08-02)
 
+## 1.22.1
+
+### Patch Changes
+
+- 8bd8660: fix(orchestrator): fix typo in package resolution
+
 ## 1.22.0
 
 ### Minor Changes
