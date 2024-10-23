@@ -57,7 +57,7 @@ jobs:
         run: yarn install --no-immutable
 
       - name: Amend previous commit
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@8621497c8c39c72f3e2a999a26b4ca1b5058a842 # v5
         with:
           commit_message: 'chore: update yarn.lock'
           file_pattern: yarn.lock
