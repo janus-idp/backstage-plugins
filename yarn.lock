@@ -9230,7 +9230,7 @@ __metadata:
   dependencies:
     "@backstage/cli": 0.27.1
     "@backstage/types": 1.1.1
-    "@openapitools/openapi-generator-cli": v2.13.4
+    "@openapitools/openapi-generator-cli": 2.13.4
     "@severlessworkflow/sdk-typescript": 3.0.3
     js-yaml-cli: 0.6.0
     json-schema: 0.4.0
@@ -13054,7 +13054,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openapitools/openapi-generator-cli@npm:2.13.4, @openapitools/openapi-generator-cli@npm:v2.13.4":
+"@openapitools/openapi-generator-cli@npm:2.13.4":
   version: 2.13.4
   resolution: "@openapitools/openapi-generator-cli@npm:2.13.4"
   dependencies:
