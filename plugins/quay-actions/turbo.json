@@ -2,8 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "tsc": {
-      "outputs": ["../../dist-types/plugins/quay-actions/**"],
-      "dependsOn": ["^tsc"]
+      "outputs": ["../../dist-types/plugins/quay-actions/**"]
     }
   }
 }

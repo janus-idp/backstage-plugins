@@ -54,8 +54,7 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "openapi:generate": "./scripts/openapi.sh generate",
-    "openapi:check": "./scripts/openapi.sh check",
-    "openapi:prettier:fix": "prettier --ignore-unknown --write ./src/generated/api"
+    "openapi:check": "./scripts/openapi.sh check"
   },
   "peerDependencies": {
     "@backstage/plugin-permission-common": "^0.8.1",
