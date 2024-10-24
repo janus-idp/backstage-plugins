@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useDebounce from 'react-use/lib/useDebounce';
 
@@ -50,27 +50,21 @@ const useStyles = makeStyles(theme => ({
 
 const NodeChip = ({
   count,
-  indicator,
+  indicatorComponent: IndicatorComponent,
 }: {
   count: number;
-  indicator: ReactElement;
-}) => (
-  <>
-    {count > 0 ? (
-      <Chip
-        label={
-          <>
-            {indicator}
-            {count}
-          </>
-        }
-        variant="outlined"
-      />
-    ) : (
-      <></>
-    )}
-  </>
-);
+  indicatorComponent: React.FC<React.PropsWithChildren<{}>>;
+}) => {
+  if (!count) {
+    return null;
+  }
+  return (
+    <Chip
+      label={<IndicatorComponent>{count}</IndicatorComponent>}
+      variant="outlined"
+    />
+  );
+};
 
 const NodeChips = ({ nodes }: { nodes: ClusterNodesStatus[] }) => {
   const readyChipsNodes = nodes.filter(node => node.status === 'True').length;
@@ -85,11 +79,11 @@ const NodeChips = ({ nodes }: { nodes: ClusterNodesStatus[] }) => {
 
   return (
     <>
-      <NodeChip count={readyChipsNodes} indicator={<StatusOK />} />
-      <NodeChip count={notReadyNodesCount} indicator={<StatusError />} />
+      <NodeChip count={readyChipsNodes} indicatorComponent={StatusOK} />
+      <NodeChip count={notReadyNodesCount} indicatorComponent={StatusError} />
       <NodeChip
         count={nodes.length - readyChipsNodes - notReadyNodesCount}
-        indicator={<StatusAborted />}
+        indicatorComponent={StatusAborted}
       />
     </>
   );
