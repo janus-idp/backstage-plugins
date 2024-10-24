@@ -15,7 +15,7 @@ import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import { PoliciesServer } from './policies-rest-api';
 import { PolicyBuilder } from './policy-builder';
 
-const mockEnforcer: Partial<Enforcer> = {
+const enforcerMock: Partial<Enforcer> = {
   loadPolicy: jest.fn().mockImplementation(async () => {}),
   enableAutoSave: jest.fn().mockImplementation(() => {}),
   setRoleManager: jest.fn().mockImplementation(() => {}),
@@ -28,7 +28,7 @@ jest.mock('casbin', () => {
   return {
     ...actualCasbin,
     newEnforcer: jest.fn((): Promise<Partial<Enforcer>> => {
-      return Promise.resolve(mockEnforcer);
+      return Promise.resolve(enforcerMock);
     }),
     FileAdapter: jest.fn((): Adapter => {
       return {} as Adapter;
@@ -36,7 +36,7 @@ jest.mock('casbin', () => {
   };
 });
 
-const mockDataBaseAdapterFactory: Partial<CasbinDBAdapterFactory> = {
+const dataBaseAdapterFactoryMock: Partial<CasbinDBAdapterFactory> = {
   createAdapter: jest.fn((): Promise<TypeORMAdapter> => {
     return Promise.resolve({} as TypeORMAdapter);
   }),
@@ -45,12 +45,12 @@ const mockDataBaseAdapterFactory: Partial<CasbinDBAdapterFactory> = {
 jest.mock('../database/casbin-adapter-factory', () => {
   return {
     CasbinDBAdapterFactory: jest.fn((): Partial<CasbinDBAdapterFactory> => {
-      return mockDataBaseAdapterFactory;
+      return dataBaseAdapterFactoryMock;
     }),
   };
 });
 
-const mockPluginMetadataCollector: Partial<PluginPermissionMetadataCollector> =
+const pluginMetadataCollectorMock: Partial<PluginPermissionMetadataCollector> =
   {
     getPluginConditionRules: jest.fn().mockImplementation(),
     getPluginPolicies: jest.fn().mockImplementation(),
@@ -61,12 +61,12 @@ jest.mock('./plugin-endpoints', () => {
   return {
     PluginPermissionMetadataCollector: jest
       .fn()
-      .mockImplementation(() => mockPluginMetadataCollector),
+      .mockImplementation(() => pluginMetadataCollectorMock),
   };
 });
 
 const mockRouter: Router = {} as Router;
-const mockPoliciesServer: Partial<PoliciesServer> = {
+const policiesServerMock: Partial<PoliciesServer> = {
   serve: jest.fn().mockImplementation(async () => {
     return mockRouter;
   }),
@@ -74,7 +74,7 @@ const mockPoliciesServer: Partial<PoliciesServer> = {
 
 jest.mock('./policies-rest-api', () => {
   return {
-    PoliciesServer: jest.fn().mockImplementation(() => mockPoliciesServer),
+    PoliciesServer: jest.fn().mockImplementation(() => policiesServerMock),
   };
 });
 
@@ -101,7 +101,7 @@ describe('PolicyBuilder', () => {
     }),
   };
 
-  const logger = mockServices.logger.mock();
+  const mockLoggerService = mockServices.logger.mock();
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -124,7 +124,7 @@ describe('PolicyBuilder', () => {
             },
           },
         }),
-        logger,
+        logger: mockLoggerService,
         discovery: mockServices.discovery.mock(),
         permissions: mockServices.permissions.mock(),
         userInfo: mockServices.userInfo.mock(),
@@ -135,15 +135,17 @@ describe('PolicyBuilder', () => {
       backendPluginIDsProviderMock,
     );
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
-    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
-    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
+    expect(enforcerMock.loadPolicy).toHaveBeenCalled();
+    expect(enforcerMock.enableAutoSave).toHaveBeenCalled();
     expect(RBACPermissionPolicy.build).toHaveBeenCalled();
 
     expect(PoliciesServer).toHaveBeenCalled();
-    expect(mockPoliciesServer.serve).toHaveBeenCalled();
+    expect(policiesServerMock.serve).toHaveBeenCalled();
     expect(router).toBeTruthy();
     expect(router).toBe(mockRouter);
-    expect(logger.info).toHaveBeenCalledWith('RBAC backend plugin was enabled');
+    expect(mockLoggerService.info).toHaveBeenCalledWith(
+      'RBAC backend plugin was enabled',
+    );
   });
 
   it('should build policy server with rbac providers', async () => {
@@ -163,7 +165,7 @@ describe('PolicyBuilder', () => {
             },
           },
         }),
-        logger,
+        logger: mockLoggerService,
         discovery: mockServices.discovery.mock(),
         permissions: mockServices.permissions.mock(),
         userInfo: mockServices.userInfo.mock(),
@@ -175,16 +177,18 @@ describe('PolicyBuilder', () => {
       [providerMock],
     );
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
-    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
-    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
+    expect(enforcerMock.loadPolicy).toHaveBeenCalled();
+    expect(enforcerMock.enableAutoSave).toHaveBeenCalled();
     expect(RBACPermissionPolicy.build).toHaveBeenCalled();
     expect(providerMock.connect).toHaveBeenCalled();
 
     expect(PoliciesServer).toHaveBeenCalled();
-    expect(mockPoliciesServer.serve).toHaveBeenCalled();
+    expect(policiesServerMock.serve).toHaveBeenCalled();
     expect(router).toBeTruthy();
     expect(router).toBe(mockRouter);
-    expect(logger.info).toHaveBeenCalledWith('RBAC backend plugin was enabled');
+    expect(mockLoggerService.info).toHaveBeenCalledWith(
+      'RBAC backend plugin was enabled',
+    );
   });
 
   it('should build policy server, but log warning that permission framework disabled', async () => {
@@ -204,7 +208,7 @@ describe('PolicyBuilder', () => {
             },
           },
         }),
-        logger,
+        logger: mockLoggerService,
         discovery: mockServices.discovery.mock(),
         permissions: mockServices.permissions.mock(),
         userInfo: mockServices.userInfo.mock(),
@@ -215,15 +219,15 @@ describe('PolicyBuilder', () => {
       backendPluginIDsProviderMock,
     );
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
-    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
-    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
+    expect(enforcerMock.loadPolicy).toHaveBeenCalled();
+    expect(enforcerMock.enableAutoSave).toHaveBeenCalled();
     expect(RBACPermissionPolicy.build).toHaveBeenCalled();
 
     expect(PoliciesServer).toHaveBeenCalled();
-    expect(mockPoliciesServer.serve).toHaveBeenCalled();
+    expect(policiesServerMock.serve).toHaveBeenCalled();
     expect(router).toBeTruthy();
     expect(router).toBe(mockRouter);
-    expect(logger.warn).toHaveBeenCalledWith(
+    expect(mockLoggerService.warn).toHaveBeenCalledWith(
       'RBAC backend plugin was disabled by application config permission.enabled: false',
     );
   });
@@ -248,7 +252,7 @@ describe('PolicyBuilder', () => {
             },
           },
         }),
-        logger,
+        logger: mockLoggerService,
         discovery: mockServices.discovery.mock(),
         permissions: mockServices.permissions.mock(),
         userInfo: mockServices.userInfo.mock(),
@@ -259,15 +263,17 @@ describe('PolicyBuilder', () => {
       pluginIdProvider,
     );
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
-    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
-    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
+    expect(enforcerMock.loadPolicy).toHaveBeenCalled();
+    expect(enforcerMock.enableAutoSave).toHaveBeenCalled();
     expect(RBACPermissionPolicy.build).toHaveBeenCalled();
 
     expect(PoliciesServer).toHaveBeenCalled();
-    expect(mockPoliciesServer.serve).toHaveBeenCalled();
+    expect(policiesServerMock.serve).toHaveBeenCalled();
     expect(router).toBeTruthy();
     expect(router).toBe(mockRouter);
-    expect(logger.info).toHaveBeenCalledWith('RBAC backend plugin was enabled');
+    expect(mockLoggerService.info).toHaveBeenCalledWith(
+      'RBAC backend plugin was enabled',
+    );
 
     expect(pluginIdProvider.getPluginIds()).toEqual(['catalog']);
   });
@@ -292,7 +298,7 @@ describe('PolicyBuilder', () => {
             },
           },
         }),
-        logger,
+        logger: mockLoggerService,
         discovery: mockServices.discovery.mock(),
         permissions: mockServices.permissions.mock(),
         userInfo: mockServices.userInfo.mock(),
@@ -303,15 +309,17 @@ describe('PolicyBuilder', () => {
       pluginIdProvider,
     );
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
-    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
-    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
+    expect(enforcerMock.loadPolicy).toHaveBeenCalled();
+    expect(enforcerMock.enableAutoSave).toHaveBeenCalled();
     expect(RBACPermissionPolicy.build).toHaveBeenCalled();
 
     expect(PoliciesServer).toHaveBeenCalled();
-    expect(mockPoliciesServer.serve).toHaveBeenCalled();
+    expect(policiesServerMock.serve).toHaveBeenCalled();
     expect(router).toBeTruthy();
     expect(router).toBe(mockRouter);
-    expect(logger.info).toHaveBeenCalledWith('RBAC backend plugin was enabled');
+    expect(mockLoggerService.info).toHaveBeenCalledWith(
+      'RBAC backend plugin was enabled',
+    );
 
     expect(pluginIdProvider.getPluginIds()).toEqual(['catalog', 'rbac']);
   });
@@ -334,7 +342,7 @@ describe('PolicyBuilder', () => {
           },
         },
       }),
-      logger,
+      logger: mockLoggerService,
       discovery: mockServices.discovery.mock(),
       permissions: mockServices.permissions.mock(),
       userInfo: mockServices.userInfo.mock(),
@@ -343,14 +351,16 @@ describe('PolicyBuilder', () => {
       lifecycle: mockServices.lifecycle.mock(),
     });
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
-    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
-    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
+    expect(enforcerMock.loadPolicy).toHaveBeenCalled();
+    expect(enforcerMock.enableAutoSave).toHaveBeenCalled();
     expect(RBACPermissionPolicy.build).toHaveBeenCalled();
 
-    expect(mockPoliciesServer.serve).toHaveBeenCalled();
+    expect(policiesServerMock.serve).toHaveBeenCalled();
     expect(router).toBeTruthy();
     expect(router).toBe(mockRouter);
-    expect(logger.info).toHaveBeenCalledWith('RBAC backend plugin was enabled');
+    expect(mockLoggerService.info).toHaveBeenCalledWith(
+      'RBAC backend plugin was enabled',
+    );
     const pIdProvider = (
       PluginPermissionMetadataCollector as unknown as jest.Mock
     ).mock.calls[0][0].deps.pluginIdProvider;

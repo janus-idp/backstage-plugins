@@ -10,7 +10,6 @@ import {
   SidebarSpace,
   useSidebarOpenState,
 } from '@backstage/core-components';
-import { IconComponent } from '@backstage/core-plugin-api';
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import { SidebarSearchModal } from '@backstage/plugin-search';
 import {
@@ -31,17 +30,17 @@ import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
 
 const useSidebarLogoStyles = makeStyles()({
-  root: {
+  sidebarLogo: {
     width: sidebarConfig.drawerWidthClosed,
     height: 3 * sidebarConfig.logoHeight,
     display: 'flex',
     flexFlow: 'row nowrap',
     alignItems: 'center',
     marginBottom: -14,
-  },
-  link: {
-    width: sidebarConfig.drawerWidthClosed,
-    marginLeft: 24,
+    '& > a': {
+      width: sidebarConfig.drawerWidthClosed,
+      marginLeft: 24,
+    },
   },
 });
 
@@ -50,8 +49,8 @@ const SidebarLogo = () => {
   const { isOpen } = useSidebarOpenState();
 
   return (
-    <div className={classes.root}>
-      <Link to="/" underline="none" className={classes.link} aria-label="Home">
+    <div className={classes.sidebarLogo}>
+      <Link to="/" underline="none" aria-label="Home">
         {isOpen ? <LogoFull /> : <LogoIcon />}
       </Link>
     </div>
@@ -70,31 +69,15 @@ export const Root = ({
       <SidebarDivider />
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
         {/* Global nav, not org-specific */}
-        <SidebarItem
-          icon={HomeIcon as IconComponent}
-          to="catalog"
-          text="Home"
-        />
+        <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
         <MyGroupsSidebarItem
-          icon={GroupIcon as IconComponent}
+          icon={GroupIcon}
           singularTitle="My Group"
           pluralTitle="My Groups"
         />
-        <SidebarItem
-          icon={ExtensionIcon as IconComponent}
-          to="api-docs"
-          text="APIs"
-        />
-        <SidebarItem
-          icon={LibraryBooks as IconComponent}
-          to="docs"
-          text="Docs"
-        />
-        <SidebarItem
-          icon={CreateComponentIcon as IconComponent}
-          to="create"
-          text="Create..."
-        />
+        <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+        <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
+        <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
         {/* End global nav */}
         <SidebarDivider />
         <SidebarScrollWrapper>

@@ -16,6 +16,7 @@ import type { Source } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { resolve } from 'path';
 
+import { ADMIN_ROLE_AUTHOR } from '../admin-permissions/admin-creation';
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import {
   RoleMetadataDao,
@@ -24,7 +25,6 @@ import {
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
-import { ADMIN_ROLE_AUTHOR } from '../service/permission-policy';
 import { CSVFileWatcher } from './csv-file-watcher';
 
 const legacyPermission = [
@@ -56,7 +56,7 @@ const configRole = ['user:default/guest', 'role:default/config'];
 
 // TODO: Move to 'catalogServiceMock' from '@backstage/plugin-catalog-node/testUtils'
 // once '@backstage/plugin-catalog-node' is upgraded
-const catalogApi = {
+const catalogApiMock = {
   getEntityAncestors: jest.fn().mockImplementation(),
   getLocationById: jest.fn().mockImplementation(),
   getEntities: jest.fn().mockImplementation(),
@@ -73,7 +73,7 @@ const catalogApi = {
   getLocationByEntity: jest.fn().mockImplementation(),
 };
 
-const loggerMock = mockServices.logger.mock();
+const mockLoggerService = mockServices.logger.mock();
 
 const modifiedBy = 'user:default/some-admin';
 
@@ -116,7 +116,7 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
   removeRoleMetadata: jest.fn().mockImplementation(),
 };
 
-const dbManagerMock = Knex.knex({ client: MockClient });
+const mockClientKnex = Knex.knex({ client: MockClient });
 
 const mockAuthService = mockServices.auth();
 
@@ -150,18 +150,18 @@ describe('CSVFileWatcher', () => {
   beforeEach(async () => {
     csvFileName = resolve(
       __dirname,
-      './../__fixtures__/data/valid-csv/rbac-policy.csv',
+      '../../__fixtures__/data/valid-csv/rbac-policy.csv',
     );
 
     const config = newConfig();
 
     const adapter = await new CasbinDBAdapterFactory(
       config,
-      dbManagerMock,
+      mockClientKnex,
     ).createAdapter();
 
     const stringModel = newModelFromString(MODEL);
-    const enf = await createEnforcer(stringModel, adapter, loggerMock);
+    const enf = await createEnforcer(stringModel, adapter, mockLoggerService);
 
     const knex = Knex.knex({ client: MockClient });
 
@@ -172,7 +172,7 @@ describe('CSVFileWatcher', () => {
   });
 
   afterEach(() => {
-    (loggerMock.warn as jest.Mock).mockReset();
+    (mockLoggerService.warn as jest.Mock).mockReset();
     (roleMetadataStorageMock.removeRoleMetadata as jest.Mock).mockReset();
   });
 
@@ -180,7 +180,7 @@ describe('CSVFileWatcher', () => {
     return new CSVFileWatcher(
       fileName,
       false,
-      loggerMock,
+      mockLoggerService,
       enforcerDelegate,
       roleMetadataStorageMock,
       auditLoggerMock,
@@ -293,7 +293,7 @@ describe('CSVFileWatcher', () => {
     it('should fail to add duplicate policies', async () => {
       csvFileName = resolve(
         __dirname,
-        './../__fixtures__/data/invalid-csv/duplicate-policy.csv',
+        '../../__fixtures__/data/invalid-csv/duplicate-policy.csv',
       );
       const csvFileWatcher = createCSVFileWatcher(csvFileName);
 
@@ -316,27 +316,27 @@ describe('CSVFileWatcher', () => {
 
       await csvFileWatcher.initialize();
 
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         1,
         `Duplicate policy: ${duplicatePolicy} found in the file ${csvFileName}`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         2,
         `Duplicate policy: ${duplicatePolicy} found in the file ${csvFileName}`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         3,
         `Duplicate policy: ${duplicatePolicyWithDifferentEffect[0]}, ${duplicatePolicyWithDifferentEffect[1]}, ${duplicatePolicyWithDifferentEffect[2]} with different effect found in the file ${csvFileName}`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         4,
         `Duplicate policy: ${duplicatePolicyWithDifferentEffect[0]}, ${duplicatePolicyWithDifferentEffect[1]}, ${duplicatePolicyWithDifferentEffect[2]} with different effect found in the file ${csvFileName}`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         5,
         `Duplicate role: ${duplicateRole} found in the file ${csvFileName}`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         6,
         `Duplicate role: ${duplicateRole} found in the file ${csvFileName}`,
       );
@@ -345,7 +345,7 @@ describe('CSVFileWatcher', () => {
     it('should fail to add policies with errors', async () => {
       csvFileName = resolve(
         __dirname,
-        './../__fixtures__/data/invalid-csv/error-policy.csv',
+        '../../__fixtures__/data/invalid-csv/error-policy.csv',
       );
       const csvFileWatcher = createCSVFileWatcher(csvFileName);
 
@@ -367,35 +367,35 @@ describe('CSVFileWatcher', () => {
 
       await csvFileWatcher.initialize();
 
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         1,
         `Failed to validate policy from file ${csvFileName}. Cause: Entity reference "${roleErrorPolicy[0]}" was not on the form [<kind>:][<namespace>/]<name>`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         2,
         `Failed to validate policy from file ${csvFileName}. Cause: 'effect' has invalid value: '${allowErrorPolicy[3]}'. It should be: 'allow' or 'deny'`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         3,
         `Unable to add policy ${restPermission} from file ${csvFileName}. Cause: source does not match originating role ${restPermission[0]}, consider making changes to the 'REST'`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         4,
         `Unable to add policy ${configPermission} from file ${csvFileName}. Cause: source does not match originating role ${configPermission[0]}, consider making changes to the 'CONFIGURATION'`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         5,
         `Failed to validate group policy ${entityRoleError}. Cause: Entity reference "${entityRoleError[0]}" was not on the form [<kind>:][<namespace>/]<name>, error originates from file ${csvFileName}`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         6,
         `Failed to validate group policy ${roleError}. Cause: Entity reference "${roleError[1]}" was not on the form [<kind>:][<namespace>/]<name>, error originates from file ${csvFileName}`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         7,
         `Unable to validate role ${restRole}. Cause: source does not match originating role ${restRole[1]}, consider making changes to the 'REST', error originates from file ${csvFileName}`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         8,
         `Unable to validate role ${configRole}. Cause: source does not match originating role ${configRole[1]}, consider making changes to the 'CONFIGURATION', error originates from file ${csvFileName}`,
       );
@@ -408,7 +408,7 @@ describe('CSVFileWatcher', () => {
     beforeEach(async () => {
       csvFileName = resolve(
         __dirname,
-        './../__fixtures__/data/valid-csv/simple-policy.csv',
+        '../../__fixtures__/data/valid-csv/simple-policy.csv',
       );
       csvFileWatcher = createCSVFileWatcher(csvFileName);
       await csvFileWatcher.initialize();
@@ -511,11 +511,11 @@ describe('CSVFileWatcher', () => {
 
       expect(enfPolicies).toStrictEqual(policies);
 
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         1,
         `Unable to add policy ${configPermission} from file ${csvFileName}. Cause: source does not match originating role ${configPermission[0]}, consider making changes to the 'CONFIGURATION'`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         2,
         `Unable to add policy ${restPermission} from file ${csvFileName}. Cause: source does not match originating role ${restPermission[0]}, consider making changes to the 'REST'`,
       );
@@ -555,11 +555,11 @@ describe('CSVFileWatcher', () => {
 
       expect(enfRoles).toStrictEqual(roles);
 
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         1,
         `Unable to validate role ${restRole}. Cause: source does not match originating role ${restRole[1]}, consider making changes to the 'REST', error originates from file ${csvFileName}`,
       );
-      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+      expect(mockLoggerService.warn).toHaveBeenNthCalledWith(
         2,
         `Unable to validate role ${configRole}. Cause: source does not match originating role ${configRole[1]}, consider making changes to the 'CONFIGURATION', error originates from file ${csvFileName}`,
       );
@@ -698,7 +698,7 @@ async function createEnforcer(
   const config = newConfig();
 
   const rm = new BackstageRoleManager(
-    catalogApi,
+    catalogApiMock,
     logger,
     catalogDBClient,
     rbacDBClient,

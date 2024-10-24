@@ -4,17 +4,22 @@
   "tasks": {
     "start": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["openapi:generate"]
     },
     "build": {
       "outputs": ["dist/**"],
-      "dependsOn": ["tsc", "^build", "export-dynamic"]
+      "dependsOn": ["^build", "export-dynamic", "tsc"]
     },
     "clean": {
       "cache": false
     },
     "test": {
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**"],
+      "dependsOn": ["openapi:generate"]
+    },
+    "ui-test": {
+      "outputs": ["test-results/**"]
     },
     "export-dynamic": {
       "cache": false,
@@ -34,7 +39,11 @@
     },
     "tsc": {
       "outputs": ["../../dist-types/**"],
-      "dependsOn": ["^tsc"]
+      "dependsOn": ["^tsc", "openapi:generate"]
+    },
+    "openapi:generate": {
+      "outputs": ["src/generated/**"],
+      "dependsOn": ["^openapi:generate"]
     }
   }
 }

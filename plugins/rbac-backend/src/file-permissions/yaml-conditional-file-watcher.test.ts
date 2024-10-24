@@ -14,7 +14,7 @@ import { RoleEventEmitter, RoleEvents } from '../service/enforcer-delegate';
 import { PluginPermissionMetadataCollector } from '../service/plugin-endpoints';
 import { YamlConditinalPoliciesFileWatcher } from './yaml-conditional-file-watcher'; // Adjust the import path as necessary
 
-const loggerMock = mockServices.logger.mock();
+const mockLoggerService = mockServices.logger.mock();
 
 let loggerWarnSpy: jest.SpyInstance;
 
@@ -180,10 +180,10 @@ describe('YamlConditionalFileWatcher', () => {
   beforeEach(() => {
     csvFileName = resolve(
       __dirname,
-      './../__fixtures__/data/valid-conditions/conditions.yaml',
+      '../../__fixtures__/data/valid-conditions/conditions.yaml',
     );
 
-    loggerWarnSpy = jest.spyOn(loggerMock, 'warn');
+    loggerWarnSpy = jest.spyOn(mockLoggerService, 'warn');
 
     auditLoggerMock.auditLog.mockClear();
     conditionalStorageMock.createCondition = jest.fn().mockImplementation();
@@ -195,7 +195,7 @@ describe('YamlConditionalFileWatcher', () => {
     return new YamlConditinalPoliciesFileWatcher(
       filePath,
       false,
-      loggerMock,
+      mockLoggerService,
       conditionalStorageMock as DataBaseConditionalStorage,
       auditLoggerMock,
       mockAuthService,
@@ -220,7 +220,7 @@ describe('YamlConditionalFileWatcher', () => {
   test('handles error on parse invalid yaml file', async () => {
     const invalidFilePath = resolve(
       __dirname,
-      './../__fixtures__/data/invalid-conditions/invalid-yaml.yaml',
+      '../../__fixtures__/data/invalid-conditions/invalid-yaml.yaml',
     );
     const watcher = createWatcher(invalidFilePath);
     await watcher.initialize();
@@ -294,7 +294,7 @@ describe('YamlConditionalFileWatcher', () => {
 
     csvFileName = resolve(
       __dirname,
-      './../__fixtures__/data/valid-conditions/empty-conditions.yaml',
+      '../../__fixtures__/data/valid-conditions/empty-conditions.yaml',
     );
     const watcher = createWatcher(csvFileName);
     await watcher.initialize();

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAsync, useAsyncRetry, useDebounce, useInterval } from 'react-use';
+import { useAsync, useDebounce } from 'react-use';
 
 import {
   configApiRef,
@@ -7,6 +7,7 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 
+import { useQuery } from '@tanstack/react-query';
 import { useFormikContext } from 'formik';
 
 import {
@@ -18,33 +19,32 @@ import { bulkImportApiRef } from '../api/BulkImportBackendClient';
 import {
   AddRepositoriesFormValues,
   AddRepositoryData,
-  ImportJobStatus,
-  RepositoryStatus,
+  ImportJobs,
 } from '../types';
-import { getPRTemplate } from '../utils/repository-utils';
+import { prepareDataForAddedRepositories } from '../utils/repository-utils';
 
 export const useAddedRepositories = (
-  page: number,
+  pageNumber: number,
   rowsPerPage: number,
   searchString: string,
   pollInterval?: number,
 ): {
   loaded: boolean;
-  data: AddRepositoryData[];
+  data: {
+    addedRepositories: AddRepositoryData[];
+    totalJobs: number;
+  };
   error: any;
-  retry: () => void;
+  refetch: () => void;
 } => {
-  const [addedRepositoriesData, setAddedRepositoriesData] = React.useState<
-    AddRepositoryData[]
-  >([]);
+  const [addedRepositoriesData, setAddedRepositoriesData] = React.useState<{
+    [id: string]: AddRepositoryData;
+  }>({});
+  const [totalImportJobs, setTotalImportJobs] = React.useState(0);
   const [loaded, setLoaded] = React.useState<boolean>(false);
   const [debouncedSearch, setDebouncedSearch] = React.useState(searchString);
-  const [errorState, setErrorState] = React.useState<
-    { [key: string]: string | undefined } | undefined
-  >();
   const identityApi = useApi(identityApiRef);
   const configApi = useApi(configApiRef);
-  const mounted = React.useRef(false);
   const { value: user } = useAsync(async () => {
     const identityRef = await identityApi.getBackstageIdentity();
     return identityRef.userEntityRef;
@@ -65,77 +65,38 @@ export const useAddedRepositories = (
 
   const bulkImportApi = useApi(bulkImportApiRef);
   const { setFieldValue } = useFormikContext<AddRepositoriesFormValues>();
-  const { value, loading, error, retry } = useAsyncRetry(
-    async () =>
-      await bulkImportApi.getImportJobs(page, rowsPerPage, searchString),
-    [page, rowsPerPage, debouncedSearch],
+  const fetchAddedRepositories = async (
+    page: number,
+    size: number,
+    searchStr: string,
+  ) => {
+    const response = await bulkImportApi.getImportJobs(page, size, searchStr);
+    return response;
+  };
+
+  const {
+    data: value,
+    error,
+    isLoading: loading,
+    refetch,
+  } = useQuery(
+    ['importJobs', pageNumber, rowsPerPage, debouncedSearch],
+    () => fetchAddedRepositories(pageNumber, rowsPerPage, debouncedSearch),
+    { keepPreviousData: true, refetchInterval: pollInterval || 60000 },
   );
 
-  React.useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-
-  const prepareDataForAddedRepositories = React.useCallback(
-    (
-      addedRepositories: ImportJobStatus[] | Response,
-      isLoading: boolean,
-      errorData: { [key: string]: string | undefined } | undefined,
-    ) => {
-      if (!isLoading && !errorData && mounted.current) {
-        if (!Array.isArray(addedRepositories)) {
-          setAddedRepositoriesData([]);
-        } else {
-          const repoData: { [id: string]: AddRepositoryData } =
-            addedRepositories?.reduce((acc, val: ImportJobStatus) => {
-              const id = `${val.repository.organization}/${val.repository.name}`;
-              return {
-                ...acc,
-                [id]: {
-                  id,
-                  repoName: val.repository.name,
-                  defaultBranch: val.repository.defaultBranch,
-                  orgName: val.repository.organization,
-                  repoUrl: val.repository.url,
-                  organizationUrl: val?.repository?.url?.substring(
-                    0,
-                    val.repository.url.indexOf(val?.repository?.name || '') - 1,
-                  ),
-                  catalogInfoYaml: {
-                    status: val.status
-                      ? RepositoryStatus[val.status as RepositoryStatus]
-                      : RepositoryStatus.NotGenerated,
-                    prTemplate: getPRTemplate(
-                      val.repository.name || '',
-                      val.repository.organization || '',
-                      user as string,
-                      baseUrl as string,
-                      val.repository.url || '',
-                      val.repository.defaultBranch || 'main',
-                    ),
-                    pullRequest: val?.github?.pullRequest?.url || '',
-                    lastUpdated: val.lastUpdate,
-                  },
-                },
-              };
-            }, {});
-          setFieldValue(`repositories`, repoData);
-          setAddedRepositoriesData(Object.values(repoData));
-        }
+  const prepareData = React.useCallback(
+    (addedRepositories: ImportJobs | Response, isLoading: boolean) => {
+      if (!isLoading) {
+        const repoData = prepareDataForAddedRepositories(
+          addedRepositories,
+          user as string,
+          baseUrl as string,
+        );
+        setAddedRepositoriesData(repoData);
+        setFieldValue(`repositories`, repoData);
+        setTotalImportJobs((addedRepositories as ImportJobs)?.totalCount || 0);
         setLoaded(true);
-      } else if (errorData && mounted.current) {
-        setLoaded(true);
-        setErrorState({
-          ...(errorData ?? {}),
-          ...((addedRepositories as Response)?.statusText
-            ? {
-                name: 'Error',
-                message: (addedRepositories as Response)?.statusText,
-              }
-            : {}),
-        });
       }
     },
     [
@@ -143,31 +104,31 @@ export const useAddedRepositories = (
       baseUrl,
       setFieldValue,
       setAddedRepositoriesData,
-      setErrorState,
-      setLoaded,
+      setTotalImportJobs,
     ],
   );
 
-  const debouncedUpdateResources = useDebounceCallback(
-    prepareDataForAddedRepositories,
-    250,
-  );
+  const debouncedUpdateResources = useDebounceCallback(prepareData, 250);
 
   React.useEffect(() => {
-    debouncedUpdateResources?.(value, loading, error);
-  }, [debouncedUpdateResources, value, loading, error]);
-
-  useInterval(
-    () => {
-      retry();
-    },
-    loading ? null : pollInterval || 60000,
-  );
+    debouncedUpdateResources?.(value, loading);
+  }, [debouncedUpdateResources, value, loading]);
 
   return useDeepCompareMemoize({
-    data: addedRepositoriesData,
+    data: {
+      addedRepositories: Object.values(addedRepositoriesData),
+      totalJobs: totalImportJobs,
+    },
     loaded,
-    error: errorState,
-    retry,
+    error: {
+      ...(error ?? {}),
+      ...((value as Response)?.statusText
+        ? {
+            name: 'Error',
+            message: (value as Response)?.statusText,
+          }
+        : {}),
+    },
+    refetch,
   });
 };

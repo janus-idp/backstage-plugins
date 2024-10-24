@@ -1,18 +1,8 @@
 {
   "extends": ["//"],
   "tasks": {
-    "start": {
-      "dependsOn": ["generate"]
-    },
     "tsc": {
-      "outputs": ["../../dist-types/plugins/servicenow-actions/**"],
-      "dependsOn": ["^tsc", "generate"]
-    },
-    "generate": {
-      "outputs": ["src/generated/**"]
-    },
-    "test": {
-      "dependsOn": ["generate"]
+      "outputs": ["../../dist-types/plugins/servicenow-actions/**"]
     }
   }
 }

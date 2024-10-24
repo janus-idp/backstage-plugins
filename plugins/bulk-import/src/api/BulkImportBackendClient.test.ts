@@ -90,7 +90,12 @@ const handlers = [
     (req, res, ctx) => {
       const test = req.headers.get('Content-Type');
       if (test === 'application/json') {
-        return res(ctx.status(200), ctx.json(mockGetImportJobs[1]));
+        return res(
+          ctx.status(200),
+          ctx.json(
+            mockGetImportJobs.imports.find(i => i.id === 'org/dessert/donut'),
+          ),
+        );
       }
       return res(ctx.status(404));
     },
@@ -103,7 +108,7 @@ const handlers = [
       return res(
         ctx.status(200),
         ctx.json(
-          mockGetImportJobs.filter(r =>
+          mockGetImportJobs.imports.filter(r =>
             r.repository.name?.includes(searchParam),
           ),
         ),
@@ -138,9 +143,9 @@ const handlers = [
     (req, res, ctx) => {
       const test = req.headers.get('Content-Type');
       if (test === 'application/json') {
-        return res(ctx.status(200));
+        return res(ctx.json({ status: 200, ok: true }));
       }
-      return res(ctx.status(404));
+      return res(ctx.json({ status: 404, ok: false }));
     },
   ),
 ];
@@ -288,7 +293,9 @@ describe('BulkImportBackendClient', () => {
     it('getImportJobs should retrieve the import jobs based on search string', async () => {
       const jobs = await bulkImportApi.getImportJobs(1, 2, 'cup');
       expect(jobs).toEqual(
-        mockGetImportJobs.filter(r => r.repository.name?.includes('cup')),
+        mockGetImportJobs.imports.filter(r =>
+          r.repository.name?.includes('cup'),
+        ),
       );
     });
 
@@ -308,7 +315,9 @@ describe('BulkImportBackendClient', () => {
 
       expect(response.status).toBe(200);
     });
+  });
 
+  describe('getImportAction', () => {
     it('getImportAction should retrive the status of the repo', async () => {
       const response = await bulkImportApi.getImportAction(
         'org/dessert/donut',
@@ -316,7 +325,9 @@ describe('BulkImportBackendClient', () => {
       );
 
       expect(response.status).toBe(RepositoryStatus.WAIT_PR_APPROVAL);
-      expect(response).toEqual(mockGetImportJobs[1]);
+      expect(response).toEqual(
+        mockGetImportJobs.imports.find(i => i.id === 'org/dessert/donut'),
+      );
     });
   });
 

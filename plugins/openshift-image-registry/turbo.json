@@ -2,8 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "tsc": {
-      "outputs": ["../../dist-types/plugins/openshift-image-registry/**"],
-      "dependsOn": ["^tsc"]
+      "outputs": ["../../dist-types/plugins/openshift-image-registry/**"]
     }
   }
 }
