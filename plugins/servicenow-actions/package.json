@@ -30,7 +30,7 @@
     "clean": "backstage-cli package clean",
     "export-dynamic": "janus-cli package export-dynamic-plugin",
     "export-dynamic:clean": "janus-cli package export-dynamic-plugin --clean",
-    "generate": "bash ./scripts/generate.sh",
+    "openapi:generate": "bash ./scripts/generate.sh",
     "lint:check": "backstage-cli package lint",
     "lint:fix": "backstage-cli package lint --fix",
     "postpack": "backstage-cli package postpack",
