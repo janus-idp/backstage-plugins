@@ -4,18 +4,18 @@
 
 ### Minor Changes
 
-- 45903e9: feat(deps): update to backstage 1.31
+- d9551ae: feat(deps): update to backstage 1.31
 
 ### Patch Changes
 
-- 20fde68: Change local package references to a `*`
-- 2bebc8c: change deps to peer deps in common packages
-- 59374c5: pin the @janus-idp/cli package
-- 31fc0e6: upgrade to yarn v3
-- c0f48c1: Change the export-dynamic script to no longer use any flags and remove the tracking of the dist-dynamic folder
-- Updated dependencies [2bebc8c]
-- Updated dependencies [31fc0e6]
-- Updated dependencies [45903e9]
+- d9551ae: Change local package references to a `*`
+- d9551ae: change deps to peer deps in common packages
+- d9551ae: pin the @janus-idp/cli package
+- d9551ae: upgrade to yarn v3
+- d9551ae: Change the export-dynamic script to no longer use any flags and remove the tracking of the dist-dynamic folder
+- Updated dependencies [d9551ae]
+- Updated dependencies [d9551ae]
+- Updated dependencies [d9551ae]
   - @janus-idp/backstage-plugin-ocm-common@3.5.0
 
 * **@janus-idp/cli:** upgraded to 1.15.2

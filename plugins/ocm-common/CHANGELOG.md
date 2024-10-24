@@ -4,12 +4,12 @@
 
 ### Minor Changes
 
-- 45903e9: feat(deps): update to backstage 1.31
+- d9551ae: feat(deps): update to backstage 1.31
 
 ### Patch Changes
 
-- 2bebc8c: change deps to peer deps in common packages
-- 31fc0e6: upgrade to yarn v3
+- d9551ae: change deps to peer deps in common packages
+- d9551ae: upgrade to yarn v3
 
 ### Features
 

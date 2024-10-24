@@ -1,13 +1,8 @@
 {
   "extends": ["//"],
   "tasks": {
-    "start:backstage": {
-      "cache": false,
-      "persistent": true
-    },
     "tsc": {
-      "outputs": ["../../dist-types/packages/app/**"],
-      "dependsOn": ["^tsc"]
+      "outputs": ["../../dist-types/packages/app/**"]
     }
   }
 }

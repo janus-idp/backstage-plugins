@@ -4,16 +4,16 @@
 
 ### Minor Changes
 
-- 45903e9: feat(deps): update to backstage 1.31
+- d9551ae: feat(deps): update to backstage 1.31
 
 ### Patch Changes
 
-- 326bca2: fix(cli): allow mutable install for monorepo yarn.lock
+- d9551ae: fix(cli): allow mutable install for monorepo yarn.lock
 
   This change updates the CLI to use `--no-immutable` when a plugin package or monorepo `yarn.lock` file is used during the `export-dynamic-plugin` command. Explicitly passing this flag avoids the default Yarn 3.x behavior of `--immutable` when the command is run in a CI environment.
 
-- 31fc0e6: upgrade to yarn v3
-- 140cc50: Fixed issue with missing configSchema.json that was affecting packages in @backstage-community
+- d9551ae: upgrade to yarn v3
+- d9551ae: Fixed issue with missing configSchema.json that was affecting packages in @backstage-community
 
 ### Features
 

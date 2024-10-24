@@ -2,8 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "tsc": {
-      "outputs": ["../../dist-types/plugins/regex-actions/**"],
-      "dependsOn": ["^tsc"]
+      "outputs": ["../../dist-types/plugins/regex-actions/**"]
     }
   }
 }

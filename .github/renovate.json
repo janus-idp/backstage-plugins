@@ -85,7 +85,7 @@
       "description": "disable updates to the kubernetes client. Lock it down to the same version as Backstage",
       "enabled": false,
       "matchDatasources": ["npm"],
-      "matchCurrentVersion": "0.20.0",
+      "matchCurrentVersion": "^0.22.1",
       "matchPackageNames": ["@kubernetes/client-node"],
       "groupName": "Kubernetes client dependency"
     },

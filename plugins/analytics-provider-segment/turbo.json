@@ -2,8 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "tsc": {
-      "outputs": ["../../dist-types/plugins/analytics-provider-segment/**"],
-      "dependsOn": ["^tsc"]
+      "outputs": ["../../dist-types/plugins/analytics-provider-segment/**"]
     }
   }
 }

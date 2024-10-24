@@ -2,8 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "tsc": {
-      "outputs": ["../../dist-types/plugins/web-terminal/**"],
-      "dependsOn": ["^tsc"]
+      "outputs": ["../../dist-types/plugins/web-terminal/**"]
     }
   }
 }

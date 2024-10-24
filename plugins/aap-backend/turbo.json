@@ -2,8 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "tsc": {
-      "outputs": ["../../dist-types/plugins/aap-backend/**"],
-      "dependsOn": ["^tsc"]
+      "outputs": ["../../dist-types/plugins/aap-backend/**"]
     }
   }
 }

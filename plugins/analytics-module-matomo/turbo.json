@@ -2,8 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "tsc": {
-      "outputs": ["../../dist-types/plugins/analytics-module-matomo/**"],
-      "dependsOn": ["^tsc"]
+      "outputs": ["../../dist-types/plugins/analytics-module-matomo/**"]
     }
   }
 }
