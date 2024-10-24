@@ -43,8 +43,8 @@ import { ConditionalStorage } from '../database/conditional-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
 import { CSVFileWatcher } from '../file-permissions/csv-file-watcher';
 import { YamlConditinalPoliciesFileWatcher } from '../file-permissions/yaml-conditional-file-watcher';
-import { EnforcerDelegate } from './enforcer-delegate';
-import { PluginPermissionMetadataCollector } from './plugin-endpoints';
+import { EnforcerDelegate } from '../service/enforcer-delegate';
+import { PluginPermissionMetadataCollector } from '../service/plugin-endpoints';
 
 const evaluatePermMsg = (
   userEntityRef: string | undefined,

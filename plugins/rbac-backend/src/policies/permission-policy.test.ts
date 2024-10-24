@@ -33,10 +33,10 @@ import {
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { BackstageRoleManager } from '../role-manager/role-manager';
-import { EnforcerDelegate } from './enforcer-delegate';
-import { MODEL } from './permission-model';
+import { EnforcerDelegate } from '../service/enforcer-delegate';
+import { MODEL } from '../service/permission-model';
+import { PluginPermissionMetadataCollector } from '../service/plugin-endpoints';
 import { RBACPermissionPolicy } from './permission-policy';
-import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 
 type PermissionAction = 'create' | 'read' | 'update' | 'delete';
 
