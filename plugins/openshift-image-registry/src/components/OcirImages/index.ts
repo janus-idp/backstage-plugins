@@ -1,1 +1,0 @@
-export { OcirImagesCards } from './OcirImagesCards';
