@@ -1,7 +1,0 @@
-{
-  "verify": false,
-  "missingAttributes": ["serviceAccountToken"],
-  "message": "Attribute 'serviceAccountToken' is not in the backstage configuration",
-  "helper": "For more information follow the steps in https://janus-idp.io/plugins/kiali",
-  "authData": { "strategy": "token", "sessionInfo": {} }
-}
