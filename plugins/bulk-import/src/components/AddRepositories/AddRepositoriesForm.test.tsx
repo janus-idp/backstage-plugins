@@ -4,6 +4,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { configApiRef, identityApiRef } from '@backstage/core-plugin-api';
 import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 
@@ -12,7 +13,7 @@ import { useDrawer } from '@janus-idp/shared-react';
 import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
 import { mockGetImportJobs, mockGetRepositories } from '../../mocks/mockData';
 import { ImportJobStatus, RepositorySelection } from '../../types';
-import { AddRepositoriesForm } from './AddRepositoriesForm';
+import { AddRepositories } from './AddRepositories';
 
 jest.mock('formik', () => ({
   ...jest.requireActual('formik'),
@@ -44,6 +45,16 @@ jest.mock('@material-ui/core', () => ({
   },
 }));
 
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false, // Disable retries for testing
+      },
+    },
+  });
+let queryClient: QueryClient;
+
 class MockBulkImportApi {
   async getImportAction(
     repo: string,
@@ -70,6 +81,7 @@ beforeEach(() => {
     },
     setFieldValue: jest.fn(),
   });
+  queryClient = createTestQueryClient();
 });
 
 describe('AddRepsositoriesForm', () => {
@@ -97,7 +109,9 @@ describe('AddRepsositoriesForm', () => {
             ],
           ]}
         >
-          <AddRepositoriesForm error={null} />
+          <QueryClientProvider client={queryClient}>
+            <AddRepositories error={null} />
+          </QueryClientProvider>
         </TestApiProvider>
       </Router>,
     );
@@ -134,9 +148,11 @@ describe('AddRepsositoriesForm', () => {
             ],
           ]}
         >
-          <AddRepositoriesForm
-            error={{ message: 'error', title: 'error occurred' }}
-          />
+          <QueryClientProvider client={queryClient}>
+            <AddRepositories
+              error={{ message: 'error', title: 'error occurred' }}
+            />
+          </QueryClientProvider>
         </TestApiProvider>
       </Router>,
     );

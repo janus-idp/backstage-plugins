@@ -1,133 +1,112 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { makeStyles } from '@material-ui/core';
-import { Alert, AlertTitle } from '@material-ui/lab';
-import FormControl from '@mui/material/FormControl';
-import { useFormikContext } from 'formik';
+import { useApi } from '@backstage/core-plugin-api';
 
-import { useDrawer } from '@janus-idp/shared-react';
+import { useMutation } from '@tanstack/react-query';
+import { Formik, FormikHelpers } from 'formik';
+import { get } from 'lodash';
 
-import { AddRepositoriesFormValues, PullRequestPreviewData } from '../../types';
-import { PreviewFileSidebar } from '../PreviewFile/PreviewFileSidebar';
-// import HelpIcon from '@mui/icons-material/HelpOutline';
-// import FormControlLabel from '@mui/material/FormControlLabel';
-// import Radio from '@mui/material/Radio';
-// import RadioGroup from '@mui/material/RadioGroup';
-// import Tooltip from '@mui/material/Tooltip';
-// import Typography from '@mui/material/Typography';
-// import { useFormikContext } from 'formik';
-// import { AddRepositoriesFormValues } from '../../types';
-import { AddRepositoriesFormFooter } from './AddRepositoriesFormFooter';
-import { AddRepositoriesTable } from './AddRepositoriesTable';
+import { DrawerContextProvider } from '@janus-idp/shared-react';
 
-const useStyles = makeStyles(theme => ({
-  body: {
-    marginBottom: '50px',
-    padding: '24px',
-  },
-  approvalTool: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'left',
-    alignItems: 'center',
-    paddingTop: '24px',
-    paddingBottom: '24px',
-    paddingLeft: '16px',
-    backgroundColor: theme.palette.background.paper,
-    borderBottomStyle: 'groove',
-    border: theme.palette.divider,
-  },
+import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
+import {
+  AddRepositoriesFormValues,
+  ApprovalTool,
+  CreateImportJobRepository,
+  ImportJobResponse,
+  RepositorySelection,
+} from '../../types';
+import {
+  getJobErrors,
+  prepareDataForSubmission,
+} from '../../utils/repository-utils';
+import { AddRepositories } from './AddRepositories';
 
-  approvalToolTooltip: {
-    paddingTop: '4px',
-    paddingRight: '24px',
-    paddingLeft: '5px',
-  },
-}));
-
-export const AddRepositoriesForm = ({
-  error,
-}: {
-  error: { message: string; title: string } | null;
-}) => {
-  const styles = useStyles();
-  const { openDrawer, setOpenDrawer, drawerData } = useDrawer();
-  const { setFieldValue, values } =
-    useFormikContext<AddRepositoriesFormValues>();
-
-  const closeDrawer = () => {
-    setOpenDrawer(false);
+export const AddRepositoriesForm = () => {
+  const bulkImportApi = useApi(bulkImportApiRef);
+  const navigate = useNavigate();
+  const [generalSubmitError, setGeneralSubmitError] = React.useState<{
+    message: string;
+    title: string;
+  } | null>(null);
+  const initialValues: AddRepositoriesFormValues = {
+    repositoryType: RepositorySelection.Repository,
+    repositories: {},
+    excludedRepositories: {},
+    approvalTool: ApprovalTool.Git,
   };
 
-  const handleSave = (pullRequest: PullRequestPreviewData, _event: any) => {
-    Object.keys(pullRequest).forEach(pr => {
-      setFieldValue(
-        `repositories.${pr}.catalogInfoYaml.prTemplate`,
-        pullRequest[pr],
-      );
+  const createImportJobs = async (importOptions: {
+    importJobs: CreateImportJobRepository[];
+    dryRun?: boolean;
+  }) =>
+    await bulkImportApi.createImportJobs(
+      importOptions.importJobs,
+      importOptions.dryRun,
+    );
+
+  const mutationCreate = useMutation(createImportJobs, {
+    onSuccess: (data: ImportJobResponse[] | Response) => {
+      return data;
+    },
+    onError: (error: Error) => {
+      setGeneralSubmitError({
+        message:
+          error?.message ||
+          `${get(error, 'error.message')}\n${get(error, 'error.response.url')}` ||
+          'Failed to create pull request',
+        title: error?.name || get(error, 'error.name') || 'Error occured',
+      });
+      return error;
+    },
+  });
+
+  const handleSubmit = async (
+    values: AddRepositoriesFormValues,
+    formikHelpers: FormikHelpers<AddRepositoriesFormValues>,
+  ) => {
+    formikHelpers.setSubmitting(true);
+    formikHelpers.setStatus(null);
+    const importRepositories = prepareDataForSubmission(
+      values.repositories,
+      values.approvalTool,
+    );
+    formikHelpers.setSubmitting(true);
+    const dryRunResult = await mutationCreate.mutateAsync({
+      importJobs: importRepositories,
+      dryRun: true,
     });
-    setOpenDrawer(false);
+    const dryRunErrors = getJobErrors(dryRunResult as ImportJobResponse[]);
+    if (Object.keys(dryRunErrors?.errors || {}).length > 0) {
+      formikHelpers.setStatus(dryRunErrors);
+      formikHelpers.setSubmitting(false);
+    } else {
+      formikHelpers.setStatus(dryRunErrors); // to show info messages
+      const submitResult = await mutationCreate.mutateAsync({
+        importJobs: importRepositories,
+      });
+      formikHelpers.setSubmitting(true);
+      const createJobErrors = getJobErrors(submitResult as ImportJobResponse[]);
+      if (Object.keys(createJobErrors?.errors || {}).length > 0) {
+        formikHelpers.setStatus(createJobErrors);
+      } else {
+        navigate(`..`);
+      }
+    }
+
+    formikHelpers.setSubmitting(false);
   };
 
   return (
-    <>
-      <FormControl fullWidth>
-        <div className={styles.body}>
-          {error && (
-            <div style={{ paddingBottom: '10px' }}>
-              <Alert severity="error">
-                <AlertTitle>{error?.title}</AlertTitle>
-                {error?.message}
-              </Alert>
-            </div>
-          )}
-          {/* 
-          // Enable this when ServiceNow approval tool is supported
-          <span className={styles.approvalTool}>
-            <Typography fontSize="16px" fontWeight="500">
-              Approval tool
-            </Typography>
-            <Tooltip
-              placement="top"
-              title="When adding a new repository, it requires approval. Once the PR is approved or the ServiceNow ticket is closed, the repositories will be added to the Catalog page."
-            >
-              <span className={styles.approvalToolTooltip}>
-                <HelpIcon fontSize="small" />
-              </span>
-            </Tooltip>
-            <RadioGroup
-              id="approval-tool"
-              data-testid="approval-tool"
-              row
-              name="approvalTool"
-              value={values.approvalTool}
-              onChange={(_event, value: string) => {
-                setFieldValue('approvalTool', value);
-              }}
-            >
-              <FormControlLabel value="git" control={<Radio />} label="Git" />
-              <FormControlLabel
-                value="servicenow"
-                control={<Radio />}
-                label="ServiceNow"
-                disabled
-              />
-            </RadioGroup>
-          </span> */}
-          <AddRepositoriesTable title="Selected repositories" />
-        </div>
-        <br />
-      </FormControl>
-      <AddRepositoriesFormFooter />
-      {openDrawer && (
-        <PreviewFileSidebar
-          open={openDrawer}
-          onClose={closeDrawer}
-          data={drawerData}
-          repositoryType={values.repositoryType}
-          handleSave={handleSave}
-        />
-      )}
-    </>
+    <DrawerContextProvider>
+      <Formik
+        initialValues={initialValues}
+        enableReinitialize
+        onSubmit={handleSubmit}
+      >
+        <AddRepositories error={generalSubmitError} />
+      </Formik>
+    </DrawerContextProvider>
   );
 };
