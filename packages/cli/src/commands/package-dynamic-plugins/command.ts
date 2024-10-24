@@ -1,7 +1,9 @@
 import { PackageRoles } from '@backstage/cli-node';
 
+import chalk from 'chalk';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
+import YAML from 'yaml';
 
 import os from 'os';
 import path from 'path';
@@ -10,7 +12,13 @@ import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
 
 export async function command(opts: OptionValues): Promise<void> {
-  const { forceExport, preserveTempDir, tag, useDocker } = opts;
+  const { exportTo, forceExport, preserveTempDir, tag, useDocker } = opts;
+  if (!exportTo && !tag) {
+    Task.error(
+      `Neither ${chalk.white('--export-to')} or ${chalk.white('--tag')} was specified, either specify ${chalk.white('--export-to')} to export plugins to a directory or ${chalk.white('--tag')} to export plugins to a container image`,
+    );
+    return;
+  }
   const containerTool = useDocker ? 'docker' : 'podman';
   // check if the container tool is available
   try {
@@ -73,6 +81,7 @@ export async function command(opts: OptionValues): Promise<void> {
     path.join(os.tmpdir(), 'package-dynamic-plugins'),
   );
   const pluginRegistryMetadata = [];
+  const pluginConfigs: Record<string, string> = {};
   try {
     // copy the dist-dynamic output folder for each plugin to some temp directory and generate the metadata entry for each plugin
     for (const pluginPkg of packages) {
@@ -92,7 +101,12 @@ export async function command(opts: OptionValues): Promise<void> {
       const targetDirectory = path.join(tmpDir, packageName);
       Task.log(`Copying '${distDirectory}' to '${targetDirectory}`);
       try {
-        fs.cpSync(distDirectory, targetDirectory, { recursive: true });
+        // Copy the exported package to the staging area and ensure symlinks
+        // are copied as normal folders
+        fs.cpSync(distDirectory, targetDirectory, {
+          recursive: true,
+          dereference: true,
+        });
         const {
           name,
           version,
@@ -121,6 +135,27 @@ export async function command(opts: OptionValues): Promise<void> {
             keywords,
           },
         });
+        // some plugins include configuration snippets in an app-config.janus-idp.yaml
+        const pluginConfigPath = path.join(
+          packageDirectory,
+          'app-config.janus-idp.yaml',
+        );
+        if (fs.existsSync(pluginConfigPath)) {
+          try {
+            const pluginConfig = fs.readFileSync(pluginConfigPath);
+            pluginConfigs[packageName] = YAML.parse(
+              pluginConfig.toLocaleString(),
+            );
+          } catch (err) {
+            Task.log(
+              `Encountered an error parsing configuration at ${pluginConfigPath}, no example configuration will be displayed`,
+            );
+          }
+        } else {
+          Task.log(
+            `No plugin configuration found at ${pluginConfigPath} create this file as needed if this plugin requires configuration`,
+          );
+        }
       } catch (err) {
         Task.log(
           `Encountered an error copying static assets for plugin ${packageFilePath}, the plugin will not be packaged.  The error was ${err}`,
@@ -134,15 +169,51 @@ export async function command(opts: OptionValues): Promise<void> {
       metadataFile,
       JSON.stringify(pluginRegistryMetadata, undefined, 2),
     );
-    // run the command to generate the image
-    Task.log(`Creating image using ${containerTool}`);
-    await Task.forCommand(
-      `echo "from scratch
+    if (exportTo) {
+      // copy the temporary directory contents to the target directory
+      fs.mkdirSync(exportTo, { recursive: true });
+      Task.log(`Writing exported plugins to ${exportTo}`);
+      fs.readdirSync(tmpDir).forEach(entry => {
+        const source = path.join(tmpDir, entry);
+        const destination = path.join(exportTo, entry);
+        fs.copySync(source, destination, { recursive: true, overwrite: true });
+      });
+    } else {
+      // run the command to generate the image
+      Task.log(`Creating image using ${containerTool}`);
+      await Task.forCommand(
+        `echo "from scratch
 COPY . .
 " | ${containerTool} build --annotation com.redhat.rhdh.plugins='${JSON.stringify(pluginRegistryMetadata)}' -t '${tag}' -f - .
     `,
-      { cwd: tmpDir },
-    );
+        { cwd: tmpDir },
+      );
+      Task.log(`Successfully built image ${tag} with following plugins:`);
+      for (const plugin of pluginRegistryMetadata) {
+        Task.log(`  ${chalk.white(Object.keys(plugin)[0])}`);
+      }
+    }
+    // print out a configuration example based on available plugin data
+    try {
+      const configurationExample = YAML.stringify({
+        plugins: pluginRegistryMetadata.map(plugin => {
+          const packageName = Object.keys(plugin)[0];
+          const pluginConfig = pluginConfigs[packageName];
+          return {
+            package: `oci://${tag}!${packageName}`,
+            disabled: false,
+            ...(pluginConfig ? { pluginConfig } : {}),
+          };
+        }),
+      });
+      Task.log(
+        `\nHere is an example dynamic-plugins.yaml for these plugins: \n\n${chalk.white(configurationExample)}\n\n`,
+      );
+    } catch (err) {
+      Task.error(
+        `An error occurred while creating configuration example: ${err}`,
+      );
+    }
   } catch (e) {
     Task.error(`Error encountered while packaging dynamic plugins: ${e}`);
   } finally {
@@ -152,22 +223,6 @@ COPY . .
       }
       if (preserveTempDir) {
         Task.log(`Keeping temporary directory ${tmpDir}`);
-      }
-
-      Task.log(`Successfully built image ${tag} with following plugins:`);
-      for (const plugin of pluginRegistryMetadata) {
-        Task.log(`  ${Object.keys(plugin)[0]}`);
-      }
-      Task.log(`
-Configuration example for the dynamic-plugins.yaml:
-
-packages:`);
-      for (const plugin of pluginRegistryMetadata) {
-        Task.log(`- package: oci://${tag}!${Object.keys(plugin)[0]}
-  disabled: false
-  pluginConfig:
-    # add required plugin configuration here
-`);
       }
     } catch (err) {
       Task.error(
