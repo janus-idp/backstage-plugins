@@ -34,14 +34,14 @@
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
-    "@backstage/cli": "0.27.1",
+    "@backstage/cli": "0.28.1",
     "prettier": "3.3.3"
   },
   "files": [
     "dist"
   ],
   "dependencies": {
-    "@backstage/backend-plugin-api": "^1.0.0"
+    "@backstage/backend-plugin-api": "^1.0.1"
   },
   "repository": {
     "type": "git",
