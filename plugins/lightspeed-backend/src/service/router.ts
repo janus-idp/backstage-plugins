@@ -14,7 +14,10 @@ import {
   loadHistory,
   saveHistory,
 } from '../handlers/chatHistory';
-import { validateUserRequest } from '../handlers/conversationId';
+import {
+  generateConversationId,
+  validateUserRequest,
+} from '../handlers/conversationId';
 import {
   DEFAULT_HISTORY_LENGTH,
   QueryRequestBody,
@@ -61,6 +64,26 @@ export async function createRouter(
       .getOptionalString('token'); // currently only single llm server is supported
     req.headers.authorization = `Bearer ${apiToken}`;
     return apiProxy(req, res, next);
+  });
+
+  router.post('/conversations', async (request, response) => {
+    try {
+      const userEntity = await userInfo.getUserInfo(
+        await httpAuth.credentials(request),
+      );
+      const user_id = userEntity.userEntityRef;
+
+      logger.info(`POST /conversations receives call from user: ${user_id}`);
+
+      const conversation_id = generateConversationId(user_id);
+
+      response.status(200).json({ conversation_id: conversation_id });
+      response.end();
+    } catch (error) {
+      const errormsg = `${error}`;
+      logger.error(errormsg);
+      response.status(500).json({ error: errormsg });
+    }
   });
 
   router.get(

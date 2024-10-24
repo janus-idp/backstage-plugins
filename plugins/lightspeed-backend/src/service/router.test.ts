@@ -148,6 +148,22 @@ describe('lightspeed router tests', () => {
     });
   });
 
+  describe('POST /conversations', () => {
+    it('generate new conversation_id', async () => {
+      const backendServer = await startBackendServer();
+      const response = await request(backendServer).post(
+        `/api/lightspeed/conversations`,
+      );
+      expect(response.statusCode).toEqual(200);
+      const conversation_id = response.body.conversation_id;
+
+      expect(conversation_id.length).toBe(mockUserId.length + 17); // user_id length + `+` + 16-character session_id
+      const [user_id, session_id] = conversation_id.split('+');
+      expect(user_id).toBe(mockUserId);
+      expect(/^[a-zA-Z0-9]+$/.test(session_id)).toBe(true);
+    });
+  });
+
   describe('GET and DELETE /conversations/:conversation_id', () => {
     const humanMessage = 'Hello';
     const aiMessage = 'Hi! How can I help you today?';
