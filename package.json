@@ -44,7 +44,7 @@
     ]
   },
   "devDependencies": {
-    "@backstage/cli": "0.28.0",
+    "@backstage/cli": "0.28.1",
     "@changesets/cli": "2.27.9",
     "@ianvs/prettier-plugin-sort-imports": "4.2.1",
     "@janus-idp/cli": "1.16.0",

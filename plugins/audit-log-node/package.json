@@ -35,7 +35,7 @@
   "devDependencies": {
     "@backstage/backend-plugin-api": "1.0.1",
     "@backstage/backend-test-utils": "1.0.2",
-    "@backstage/cli": "0.28.0",
+    "@backstage/cli": "0.28.1",
     "@backstage/errors": "1.2.4",
     "@backstage/types": "1.1.1",
     "@types/lodash": "4.17.5",

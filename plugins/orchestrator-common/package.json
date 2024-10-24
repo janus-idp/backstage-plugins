@@ -65,7 +65,7 @@
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.28.0",
+    "@backstage/cli": "0.28.1",
     "@backstage/types": "1.1.1",
     "@openapitools/openapi-generator-cli": "v2.13.4",
     "@severlessworkflow/sdk-typescript": "3.0.3",

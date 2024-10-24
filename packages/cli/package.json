@@ -89,7 +89,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.28.0",
+    "@backstage/cli": "0.28.1",
     "@backstage/core-plugin-api": "1.10.0",
     "@types/fs-extra": "9.0.13",
     "@types/mock-fs": "4.13.4",

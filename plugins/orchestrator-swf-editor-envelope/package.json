@@ -43,7 +43,7 @@
     "@kie-tools/serverless-workflow-text-editor": "^0.32.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.28.0",
+    "@backstage/cli": "0.28.1",
     "clean-webpack-plugin": "4.0.0",
     "css-loader": "6.11.0",
     "filemanager-webpack-plugin": "8.0.0",

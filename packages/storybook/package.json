@@ -43,7 +43,7 @@
     "storybook-dark-mode": "^3.0.1"
   },
   "peerDependencies": {
-    "@backstage/cli": "^0.28.0",
+    "@backstage/cli": "^0.28.1",
     "@backstage/core-app-api": "^1.15.1",
     "@backstage/core-components": "^0.15.1",
     "@backstage/core-plugin-api": "^1.10.0",
