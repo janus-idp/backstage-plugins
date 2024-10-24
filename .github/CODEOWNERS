@@ -43,3 +43,7 @@ yarn.lock                    @janus-idp/maintainers-plugins
 /plugins/quay                               @janus-idp/rhtap
 /plugins/tekton                             @janus-idp/rhtap
 /plugins/argocd                             @janus-idp/rhtap
+
+
+# Dynamic plugins tooling
+/packages/cli                               @davidfestal @jesuino @gashcrumb @kadel
