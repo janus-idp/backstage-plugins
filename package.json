@@ -57,7 +57,9 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "@backstage/backend-dynamic-feature-service@0.4.3": "patch:@backstage/backend-dynamic-feature-service@npm%3A0.4.3#./.yarn/patches/@backstage-backend-dynamic-feature-service-npm-0.4.3-2650d84cc8.patch",
+    "@backstage/backend-dynamic-feature-service@^0.4.3": "patch:@backstage/backend-dynamic-feature-service@npm%3A0.4.3#./.yarn/patches/@backstage-backend-dynamic-feature-service-npm-0.4.3-2650d84cc8.patch"
   },
   "jest": {
     "testTimeout": 15000

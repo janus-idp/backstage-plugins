@@ -3063,7 +3063,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/backend-dynamic-feature-service@npm:0.4.3, @backstage/backend-dynamic-feature-service@npm:^0.4.3":
+"@backstage/backend-dynamic-feature-service@npm:0.4.3":
   version: 0.4.3
   resolution: "@backstage/backend-dynamic-feature-service@npm:0.4.3"
   dependencies:
@@ -3095,6 +3095,41 @@ __metadata:
     lodash: ^4.17.21
     winston: ^3.2.1
   checksum: 10cae4e76c184936f981c6b6bcbb4e7473b5898d11c6b6c7091d904b6459fcf62918b07a861fb38e23cf4c45ad0072d7b62c34e06324861480749bc896ac7f41
+  languageName: node
+  linkType: hard
+
+"@backstage/backend-dynamic-feature-service@patch:@backstage/backend-dynamic-feature-service@npm%3A0.4.3#./.yarn/patches/@backstage-backend-dynamic-feature-service-npm-0.4.3-2650d84cc8.patch::locator=root%40workspace%3A.":
+  version: 0.4.3
+  resolution: "@backstage/backend-dynamic-feature-service@patch:@backstage/backend-dynamic-feature-service@npm%3A0.4.3#./.yarn/patches/@backstage-backend-dynamic-feature-service-npm-0.4.3-2650d84cc8.patch::version=0.4.3&hash=fe5034&locator=root%40workspace%3A."
+  dependencies:
+    "@backstage/backend-app-api": ^1.0.1
+    "@backstage/backend-common": ^0.25.0
+    "@backstage/backend-defaults": ^0.5.2
+    "@backstage/backend-plugin-api": ^1.0.1
+    "@backstage/cli-common": ^0.1.14
+    "@backstage/cli-node": ^0.2.9
+    "@backstage/config": ^1.2.0
+    "@backstage/config-loader": ^1.9.1
+    "@backstage/errors": ^1.2.4
+    "@backstage/plugin-app-node": ^0.1.26
+    "@backstage/plugin-auth-node": ^0.5.3
+    "@backstage/plugin-catalog-backend": ^1.27.1
+    "@backstage/plugin-events-backend": ^0.3.14
+    "@backstage/plugin-events-node": ^0.4.2
+    "@backstage/plugin-permission-common": ^0.8.1
+    "@backstage/plugin-permission-node": ^0.8.4
+    "@backstage/plugin-scaffolder-node": ^0.5.0
+    "@backstage/plugin-search-backend-node": ^1.3.4
+    "@backstage/plugin-search-common": ^1.2.14
+    "@backstage/types": ^1.1.1
+    "@manypkg/get-packages": ^1.1.3
+    "@types/express": ^4.17.6
+    chokidar: ^3.5.3
+    express: ^4.17.1
+    fs-extra: ^11.2.0
+    lodash: ^4.17.21
+    winston: ^3.2.1
+  checksum: 956242bb773c31887cb7050afd49e95210ef23dd11f16cf149d9626ba6e86c7f11b6d7fe504a361467d8543e5dd8696adef9209aa8f1192f68905b19ea2957c3
   languageName: node
   linkType: hard
 
@@ -21458,6 +21493,7 @@ __metadata:
     app: "*"
     prettier: 3.3.3
     winston: 3.11.0
+    winston-daily-rotate-file: 5.0.0
   languageName: unknown
   linkType: soft
 
@@ -27800,6 +27836,15 @@ __metadata:
   dependencies:
     tslib: ^2.4.0
   checksum: 7d051b6e5d793f3c6e2ab287ba5e7c2c6a0971bccc9d56e044c8047ba483e18f60fc0b5771c951dc707c0d15f4f36ccb4f1f1aaf385d21ec8f7700dadf8325ba
+  languageName: node
+  linkType: hard
+
+"file-stream-rotator@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "file-stream-rotator@npm:0.6.1"
+  dependencies:
+    moment: ^2.29.1
+  checksum: ebdf6a9e7ca886a50f4dafb2284d4569cefd5bdf4e4451ead25f4d68b7f9776b2620a3d110d534edd40935d1e17f37d818e2129303201870ff89c71b19b49ac1
   languageName: node
   linkType: hard
 
@@ -36034,7 +36079,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.29.4":
+"moment@npm:^2.29.1, moment@npm:^2.29.4":
   version: 2.30.1
   resolution: "moment@npm:2.30.1"
   checksum: 859236bab1e88c3e5802afcf797fc801acdbd0ee509d34ea3df6eea21eb6bcc2abd4ae4e4e64aa7c986aa6cba563c6e62806218e6412a765010712e5fa121ba6
@@ -47991,6 +48036,20 @@ __metadata:
   version: 2.0.1
   resolution: "wildcard@npm:2.0.1"
   checksum: e0c60a12a219e4b12065d1199802d81c27b841ed6ad6d9d28240980c73ceec6f856771d575af367cbec2982d9ae7838759168b551776577f155044f5a5ba843c
+  languageName: node
+  linkType: hard
+
+"winston-daily-rotate-file@npm:5.0.0":
+  version: 5.0.0
+  resolution: "winston-daily-rotate-file@npm:5.0.0"
+  dependencies:
+    file-stream-rotator: ^0.6.1
+    object-hash: ^3.0.0
+    triple-beam: ^1.4.1
+    winston-transport: ^4.7.0
+  peerDependencies:
+    winston: ^3
+  checksum: 45d0a1c1d1a178a22a6f92f4248139e0889720947d5afa657314826d6ea48e7dceae37521e2de2ed3a121993c4ae4ddcb0b510613c489a68d2eed689a304bef5
   languageName: node
   linkType: hard
 

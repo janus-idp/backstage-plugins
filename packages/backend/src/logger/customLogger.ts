@@ -1,15 +1,8 @@
-import { createConfigSecretEnumerator } from '@backstage/backend-defaults/rootConfig';
-import { WinstonLogger } from '@backstage/backend-defaults/rootLogger';
-import { DynamicPluginsSchemasService } from '@backstage/backend-dynamic-feature-service';
-import {
-  coreServices,
-  createServiceFactory,
-  createServiceRef,
-} from '@backstage/backend-plugin-api';
-import { loadConfigSchema } from '@backstage/config-loader';
+import type { Config } from '@backstage/config';
 
-import { getPackages } from '@manypkg/get-packages';
 import * as winston from 'winston';
+
+import 'winston-daily-rotate-file';
 
 const defaultFormat = winston.format.combine(
   winston.format.timestamp({
@@ -31,7 +24,13 @@ const auditLogFormat = winston.format((info, opts) => {
   return !opts.isAuditLog ? newInfo : false;
 });
 
-const transports = {
+const auditLogWinstonFormat = winston.format.combine(
+  auditLogFormat({ isAuditLog: true }),
+  defaultFormat,
+  winston.format.json(),
+);
+
+export const transports = {
   log: [
     new winston.transports.Console({
       format: winston.format.combine(
@@ -41,52 +40,36 @@ const transports = {
       ),
     }),
   ],
-  auditLog: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        auditLogFormat({ isAuditLog: true }),
-        defaultFormat,
-        winston.format.json(),
-      ),
-    }),
-  ],
+  auditLog: (config?: Config) => {
+    if (config?.getOptionalBoolean('console.enabled') === false) {
+      return [];
+    }
+    return [
+      new winston.transports.Console({
+        format: auditLogWinstonFormat,
+      }),
+    ];
+  },
+  auditLogFile: (config?: Config) => {
+    if (!config?.getOptionalBoolean('rotateFile.enabled')) {
+      return [];
+    }
+    return [
+      new winston.transports.DailyRotateFile({
+        format: auditLogWinstonFormat,
+        dirname:
+          config?.getOptionalString('rotateFile.logFileDirPath') ??
+          '/var/log/redhat-developer-hub/audit',
+        filename:
+          config?.getOptionalString('rotateFile.logFileName') ??
+          'redhat-developer-hub-audit-%DATE%.log',
+        datePattern: config?.getOptionalString('rotateFile.dateFormat'),
+        frequency: config?.getOptionalString('rotateFile.frequency'),
+        zippedArchive: config?.getOptionalBoolean('rotateFile.zippedArchive'),
+        utc: config?.getOptionalBoolean('rotateFile.utc'),
+        maxSize: config?.getOptionalString('rotateFile.maxSize'),
+        maxFiles: config?.getOptional('rotateFile.maxFilesOrDays'),
+      }),
+    ];
+  },
 };
-
-const dynamicPluginsSchemasServiceRef =
-  createServiceRef<DynamicPluginsSchemasService>({
-    id: 'core.dynamicplugins.schemas',
-    scope: 'root',
-  });
-
-export const customLogger = createServiceFactory({
-  service: coreServices.rootLogger,
-  deps: {
-    config: coreServices.rootConfig,
-    schemas: dynamicPluginsSchemasServiceRef,
-  },
-  async factory({ config, schemas }) {
-    const logger = WinstonLogger.create({
-      meta: {
-        service: 'backstage',
-      },
-      level: process.env.LOG_LEVEL ?? 'info',
-      format: winston.format.combine(defaultFormat, winston.format.json()),
-      transports: [...transports.log, ...transports.auditLog],
-    });
-
-    const configSchema = await loadConfigSchema({
-      dependencies: (await getPackages(process.cwd())).packages.map(
-        p => p.packageJson.name,
-      ),
-    });
-
-    const secretEnumerator = await createConfigSecretEnumerator({
-      logger,
-      schema: (await schemas.addDynamicPluginsSchemas(configSchema)).schema,
-    });
-    logger.addRedactions(secretEnumerator(config));
-    config.subscribe?.(() => logger.addRedactions(secretEnumerator(config)));
-
-    return logger;
-  },
-});
