@@ -1,3 +1,9 @@
+# ❗DEPRECATED❗
+
+This package has been deprecated.
+
+Please use the **[@backstage-community/plugin-topology](https://www.npmjs.com/package/@backstage-community/plugin-topology)** package instead.
+
 # Topology plugin for Backstage
 
 The Topology plugin enables you to visualize the workloads such as Deployment, Job, Daemonset, Statefulset, CronJob, Pods and Virtual Machines powering any service on the Kubernetes cluster.
@@ -12,7 +18,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 - The Kubernetes plugin is configured and connects to the cluster using a `ServiceAccount`.
 - The [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) must be granted to `ServiceAccount` accessing the cluster. If you have the Backstage Kubernetes plugin configured, then the `ClusterRole` is already granted.
 
-> Tip: You can use the [prepared manifest for a read-only `ClusterRole`](https://raw.githubusercontent.com/janus-idp/backstage-plugins/main/plugins/topology/manifests/clusterrole.yaml), providing access for both Kubernetes plugin and Topology plugin.
+> Tip: You can use the [prepared manifest for a read-only `ClusterRole`](https://raw.githubusercontent.com/backstage/community-plugins/refs/heads/main/workspaces/topology/plugins/topology/manifests/clusterrole.yaml), providing access for both Kubernetes plugin and Topology plugin.
 
 #### Other configurations
 
@@ -343,14 +349,14 @@ For more information about the labels and annotations, see [Guidelines for label
 1. Install the Topology plugin using the following command:
 
    ```console
-   yarn workspace app add @janus-idp/backstage-plugin-topology
+   yarn workspace app add @backstage-community/plugin-topology
    ```
 
 2. Enable **TOPOLOGY** tab in `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
-   import { TopologyPage } from '@janus-idp/backstage-plugin-topology';
+   import { TopologyPage } from '@backstage-community/plugin-topology';
 
    const serviceEntityPage = (
      <EntityLayout>
