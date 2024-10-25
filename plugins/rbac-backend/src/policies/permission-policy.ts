@@ -58,8 +58,6 @@ const evaluatePermMsg = (
   } and action '${toPermissionAction(permission.attributes)}'`;
 
 export class RBACPermissionPolicy implements PermissionPolicy {
-  private readonly superUserList?: string[];
-
   public static async build(
     logger: LoggerService,
     auditLogger: AuditLogger,
@@ -162,10 +160,8 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     private readonly enforcer: EnforcerDelegate,
     private readonly auditLogger: AuditLogger,
     private readonly conditionStorage: ConditionalStorage,
-    superUserList?: string[],
-  ) {
-    this.superUserList = superUserList;
-  }
+    private readonly superUsers: string[],
+  ) {}
 
   async handle(
     request: PolicyQuery,
@@ -278,13 +274,13 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     return false;
   }
 
-  private isAuthorized = async (
+  private readonly isAuthorized = async (
     userIdentity: string,
     permission: string,
     action: string,
     roles: string[],
   ): Promise<boolean> => {
-    if (this.superUserList!.includes(userIdentity)) {
+    if (this.superUsers.includes(userIdentity)) {
       return true;
     }
 

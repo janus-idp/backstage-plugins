@@ -90,18 +90,24 @@ export class PluginPermissionMetadataCollector {
     const pluginMetadata = await this.getPluginMetaData(auth);
 
     return pluginMetadata
-      .filter(metadata => metadata.metaDataResponse.permissions !== undefined)
+      .filter(
+        (
+          metadata,
+        ): metadata is typeof metadata & {
+          metaDataResponse: { permissions: Permission[] };
+        } => metadata.metaDataResponse.permissions !== undefined,
+      )
       .map(metadata => {
         return {
           pluginId: metadata.pluginId,
           policies: permissionsToCasbinPolicies(
-            metadata.metaDataResponse.permissions!,
+            metadata.metaDataResponse.permissions,
           ),
         };
       });
   }
 
-  private static permissionFactory: ReaderFactory = () => {
+  private static readonly permissionFactory: ReaderFactory = () => {
     return [{ reader: new FetchUrlReader(), predicate: (_url: URL) => true }];
   };
 

@@ -143,7 +143,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
 
     await trx<RoleMetadataDao>(ROLE_METADATA_TABLE)
       .delete()
-      .whereIn('id', [metadataDao.id!]);
+      .whereIn('id', [metadataDao.id]);
   }
 }
 

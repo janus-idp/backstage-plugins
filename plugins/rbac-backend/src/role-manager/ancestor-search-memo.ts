@@ -17,14 +17,14 @@ export type ASMGroup = Relation | Entity;
 // Also AncestorSearchMemo supports detection cycle dependencies between groups in the graph.
 //
 export class AncestorSearchMemo {
-  private graph: Graph;
+  private readonly graph: Graph;
 
-  private catalogApi: CatalogApi;
-  private catalogDBClient: Knex;
-  private auth: AuthService;
+  private readonly catalogApi: CatalogApi;
+  private readonly catalogDBClient: Knex;
+  private readonly auth: AuthService;
 
-  private userEntityRef: string;
-  private maxDepth?: number;
+  private readonly userEntityRef: string;
+  private readonly maxDepth?: number;
 
   constructor(
     userEntityRef: string,

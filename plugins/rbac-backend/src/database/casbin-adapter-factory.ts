@@ -22,32 +22,32 @@ export class CasbinDBAdapterFactory {
     const client = databaseConfig?.getOptionalString('client');
 
     let adapter;
-    if (client === 'pg') {
+    if (databaseConfig && client === 'pg') {
       const dbName =
         await this.databaseClient.client.config.connection.database;
       const schema =
         (await this.databaseClient.client.searchPath?.[0]) ?? 'public';
 
-      const ssl = this.handlePostgresSSL(databaseConfig!);
+      const ssl = this.handlePostgresSSL(databaseConfig);
 
       adapter = await TypeORMAdapter.newAdapter({
         type: 'postgres',
-        host: databaseConfig?.getString('connection.host'),
-        port: databaseConfig?.getNumber('connection.port'),
-        username: databaseConfig?.getString('connection.user'),
-        password: databaseConfig?.getString('connection.password'),
+        host: databaseConfig.getString('connection.host'),
+        port: databaseConfig.getNumber('connection.port'),
+        username: databaseConfig.getString('connection.user'),
+        password: databaseConfig.getString('connection.password'),
         ssl,
         database: dbName,
         schema: schema,
       });
     }
 
-    if (client === 'better-sqlite3') {
+    if (databaseConfig && client === 'better-sqlite3') {
       let storage;
-      if (typeof databaseConfig?.get('connection')?.valueOf() === 'string') {
-        storage = databaseConfig?.getString('connection');
-      } else if (databaseConfig?.has('connection.directory')) {
-        const storageDir = databaseConfig?.getString('connection.directory');
+      if (typeof databaseConfig.get('connection')?.valueOf() === 'string') {
+        storage = databaseConfig.getString('connection');
+      } else if (databaseConfig.has('connection.directory')) {
+        const storageDir = databaseConfig.getString('connection.directory');
         storage = resolve(storageDir, DEFAULT_SQLITE3_STORAGE_FILE_NAME);
       }
 

@@ -73,9 +73,12 @@ describe('BackstageRoleManager', () => {
 
   describe('unimplemented methods', () => {
     it('should throw an error for syncedHasLink', () => {
-      expect(() =>
-        roleManager.syncedHasLink!('user:default/role1', 'user:default/role2'),
-      ).toThrow('Method "syncedHasLink" not implemented.');
+      expect(() => {
+        if (!roleManager.syncedHasLink) {
+          throw new Error('Method "syncedHasLink" is undefined.');
+        }
+        roleManager.syncedHasLink('user:default/role1', 'user:default/role2');
+      }).toThrow('Method "syncedHasLink" not implemented.');
     });
 
     it('should throw an error for getUsers', async () => {

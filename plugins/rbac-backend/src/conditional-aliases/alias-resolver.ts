@@ -12,9 +12,7 @@ import {
   ConditionalAliases,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
-interface Predicate<T> {
-  (item: T): boolean;
-}
+type Predicate<T> = (item: T) => boolean;
 
 function isOwnerRefsAlias(value: PermissionRuleParam): boolean {
   const alias = `${CONDITION_ALIAS_SIGN}${ConditionalAliases.OWNER_REFS}`;

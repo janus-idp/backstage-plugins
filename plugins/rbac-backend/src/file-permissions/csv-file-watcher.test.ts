@@ -224,7 +224,7 @@ describe('CSVFileWatcher', () => {
       await enforcerDelegate.addPolicy(legacyPermission);
       await enforcerDelegate.addGroupingPolicies(
         [['user:default/guest', 'role:default/legacy']],
-        legacyRoleMetadata!,
+        legacyRoleMetadata,
       );
       roleMetadataStorageMock.filterRoleMetadata = jest
         .fn()
