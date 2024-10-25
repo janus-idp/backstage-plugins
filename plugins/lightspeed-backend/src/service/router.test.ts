@@ -1,6 +1,7 @@
 import { type BackendFeature } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 
+import { AIMessage, HumanMessage } from '@langchain/core/messages';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import express from 'express';
 import { http, HttpResponse } from 'msw';
@@ -45,6 +46,16 @@ jest.mock('http-proxy-middleware', () => ({
       res.status(404).json({ error: 'unknown path' });
     }),
 }));
+
+const splitJsonObjects = (response: { text: string }): string[] =>
+  response.text.split('}{').map((chunk, index, arr) => {
+    if (index === 0) {
+      return `${chunk}}`;
+    } else if (index === arr.length - 1) {
+      return `{${chunk}`;
+    }
+    return `{${chunk}}`;
+  });
 
 describe('lightspeed router tests', () => {
   const server = setupServer(...handlers);
@@ -170,7 +181,26 @@ describe('lightspeed router tests', () => {
   });
 
   describe('POST /v1/query', () => {
-    const chatOpenAISpy = jest.spyOn(ChatPromptTemplate, 'fromMessages');
+    let chatOpenAISpy: any;
+
+    const setupStreamSpy = (mockStream: jest.Mock) => {
+      // Spy on fromMessages and mock its return value
+      jest
+        .spyOn(ChatPromptTemplate, 'fromMessages')
+        .mockImplementation((): any => ({
+          pipe: jest.fn().mockReturnValue({
+            stream: mockStream,
+          }),
+        }));
+    };
+    beforeEach(() => {
+      chatOpenAISpy = jest.spyOn(ChatPromptTemplate, 'fromMessages');
+    });
+
+    afterEach(() => {
+      chatOpenAISpy.mockRestore();
+      chatOpenAISpy.mockReset();
+    });
 
     it('chat completions', async () => {
       const backendServer = await startBackendServer();
@@ -187,14 +217,8 @@ describe('lightspeed router tests', () => {
       expect(response.statusCode).toEqual(200);
       const expectedData = 'Mockup AI Message';
       let receivedData = '';
-      const chunkList = response.text.split('}{').map((chunk, index, arr) => {
-        if (index === 0) {
-          return `${chunk}}`;
-        } else if (index === arr.length - 1) {
-          return `{${chunk}`;
-        }
-        return `{${chunk}}`;
-      });
+      const chunkList = splitJsonObjects(response);
+
       expect(chunkList.length).toEqual(4);
       // Parse each chunk individually
       chunkList.forEach(chunk => {
@@ -210,6 +234,134 @@ describe('lightspeed router tests', () => {
       });
       receivedData = receivedData.trimEnd(); // remove space at the last chunk
       expect(receivedData).toEqual(expectedData);
+    });
+
+    it('should not have any history for the initial conversation', async () => {
+      const mockStream = jest.fn().mockImplementation(async function* stream() {
+        yield { content: 'Chunk 1', response_metadata: {} };
+      });
+
+      setupStreamSpy(mockStream);
+
+      const backendServer = await startBackendServer();
+      await deleteHistory(mockConversationId); // delete existing conversation history
+
+      const response = await request(backendServer)
+        .post('/api/lightspeed/v1/query')
+        .send({
+          model: mockModel,
+          conversation_id: mockConversationId,
+          query: 'Hi',
+          serverURL: LOCAL_AI_ADDR,
+        });
+
+      expect(response.statusCode).toEqual(200);
+      expect(mockStream).toHaveBeenCalled();
+
+      const streamCalledWithMessages = mockStream.mock.calls[0][0].messages;
+
+      expect(streamCalledWithMessages).toHaveLength(1);
+      expect(streamCalledWithMessages[0]).toBeInstanceOf(HumanMessage);
+      expect(streamCalledWithMessages[0]).toEqual(
+        expect.objectContaining({ content: 'Hi' }),
+      );
+    });
+
+    it('should call the stream with conversation history', async () => {
+      const mockStream = jest.fn().mockImplementation(async function* stream() {
+        yield { content: 'Chunk 1', response_metadata: {} };
+      });
+
+      setupStreamSpy(mockStream);
+
+      const backendServer = await startBackendServer();
+      await deleteHistory(mockConversationId); // delete existing conversation history
+
+      const humanMessage = 'Hi';
+      const aiMessage = 'Hi! How can I help you today?';
+      await saveHistory(mockConversationId, Roles.HumanRole, humanMessage);
+      await saveHistory(mockConversationId, Roles.AIRole, aiMessage);
+
+      const response = await request(backendServer)
+        .post('/api/lightspeed/v1/query')
+        .send({
+          model: mockModel,
+          conversation_id: mockConversationId,
+          query: 'What is Langchain?',
+          serverURL: LOCAL_AI_ADDR,
+        });
+
+      expect(response.statusCode).toEqual(200);
+      expect(mockStream).toHaveBeenCalled();
+
+      const streamCalledWithMessages = mockStream.mock.calls[0][0].messages;
+
+      expect(streamCalledWithMessages).toHaveLength(3);
+      expect(streamCalledWithMessages[0]).toBeInstanceOf(HumanMessage);
+      expect(streamCalledWithMessages[0]).toEqual(
+        expect.objectContaining({ content: 'Hi' }),
+      );
+
+      expect(streamCalledWithMessages[1]).toBeInstanceOf(AIMessage);
+      expect(streamCalledWithMessages[1]).toEqual(
+        expect.objectContaining({ content: 'Hi! How can I help you today?' }),
+      );
+
+      expect(streamCalledWithMessages[2]).toBeInstanceOf(HumanMessage);
+      expect(streamCalledWithMessages[2]).toEqual(
+        expect.objectContaining({ content: 'What is Langchain?' }),
+      );
+    });
+
+    it('should contain ai and human message timestamp', async () => {
+      const delay = (ms = 100) =>
+        new Promise<void>(resolve => setTimeout(resolve, ms));
+      const mockStream = jest.fn().mockImplementation(async function* stream() {
+        await delay();
+        yield { content: 'Chunk 1', response_metadata: {} };
+        await delay(); // delay of 100ms
+        yield { content: 'Chunk 2', response_metadata: {} };
+      });
+      setupStreamSpy(mockStream); // use mockStream
+
+      const backendServer = await startBackendServer();
+      await deleteHistory(mockConversationId);
+
+      const response = await request(backendServer)
+        .post('/api/lightspeed/v1/query')
+        .send({
+          model: mockModel,
+          conversation_id: mockConversationId,
+          query: 'Hello',
+          serverURL: LOCAL_AI_ADDR,
+        });
+
+      const jsonStrings = splitJsonObjects(response);
+      const aiMessages = jsonStrings.map(str => {
+        try {
+          return JSON.parse(str);
+        } catch (error) {
+          console.error(`Failed to parse: ${str}`);
+          throw error;
+        }
+      });
+
+      expect(response.statusCode).toEqual(200);
+      expect(mockStream).toHaveBeenCalled();
+
+      const humanMessage = mockStream.mock.calls[0][0].messages[0];
+      const humanMessageTimestamp = humanMessage.response_metadata.created_at;
+      expect(humanMessage).toBeInstanceOf(HumanMessage);
+      expect(humanMessage).toEqual(
+        expect.objectContaining({ content: 'Hello' }),
+      );
+
+      // check each ai message chunk timestamp to be greater than human message timestamp
+      aiMessages.forEach(chunk => {
+        expect(chunk.response.response_metadata.created_at).toBeGreaterThan(
+          humanMessageTimestamp,
+        );
+      });
     });
 
     it('returns 400 if conversation_id is missing', async () => {
