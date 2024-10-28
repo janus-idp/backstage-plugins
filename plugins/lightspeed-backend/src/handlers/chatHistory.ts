@@ -14,19 +14,35 @@ export async function saveHistory(
   conversation_id: string,
   role: string,
   message: string,
+  timestamp?: number,
 ): Promise<void> {
   let newMessage: BaseMessage;
   switch (role) {
     case Roles.AIRole: {
-      newMessage = new AIMessage(message);
+      newMessage = new AIMessage({
+        content: message,
+        response_metadata: {
+          created_at: timestamp || Date.now(),
+        },
+      });
       break;
     }
     case Roles.HumanRole: {
-      newMessage = new HumanMessage(message);
+      newMessage = new HumanMessage({
+        content: message,
+        response_metadata: {
+          created_at: timestamp || Date.now(),
+        },
+      });
       break;
     }
     case Roles.SystemRole: {
-      newMessage = new SystemMessage(message);
+      newMessage = new SystemMessage({
+        content: message,
+        response_metadata: {
+          created_at: timestamp || Date.now(),
+        },
+      });
       break;
     }
     default:

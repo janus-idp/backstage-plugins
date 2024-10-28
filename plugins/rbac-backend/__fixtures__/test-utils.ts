@@ -14,10 +14,10 @@ import { MockClient } from 'knex-mock-client';
 
 import { CasbinDBAdapterFactory } from '../src/database/casbin-adapter-factory';
 import { RoleMetadataStorage } from '../src/database/role-metadata';
+import { RBACPermissionPolicy } from '../src/policies/permission-policy';
 import { BackstageRoleManager } from '../src/role-manager/role-manager';
 import { EnforcerDelegate } from '../src/service/enforcer-delegate';
 import { MODEL } from '../src/service/permission-model';
-import { RBACPermissionPolicy } from '../src/service/permission-policy';
 import { PluginPermissionMetadataCollector } from '../src/service/plugin-endpoints';
 import {
   auditLoggerMock,

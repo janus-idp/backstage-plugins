@@ -1,6 +1,6 @@
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 
-import { HumanMessage } from '@langchain/core/messages';
+import { BaseMessage, HumanMessage } from '@langchain/core/messages';
 import {
   ChatPromptTemplate,
   MessagesPlaceholder,
@@ -186,11 +186,35 @@ export async function createRouter(
           new MessagesPlaceholder('messages'),
         ]);
 
+        let conversationHistory: BaseMessage[] = [];
+        try {
+          conversationHistory = await loadHistory(
+            conversation_id,
+            DEFAULT_HISTORY_LENGTH,
+          );
+        } catch (error) {
+          logger.error(`${error}`);
+        }
+
         const chain = prompt.pipe(openAIApi);
         let content = '';
+        const userMessageTimestamp = Date.now();
+        let botMessageTimestamp;
         for await (const chunk of await chain.stream({
-          messages: [new HumanMessage(query)],
+          messages: [
+            ...conversationHistory,
+            new HumanMessage({
+              content: query,
+              response_metadata: {
+                created_at: userMessageTimestamp,
+              },
+            }),
+          ],
         })) {
+          if (!botMessageTimestamp) {
+            botMessageTimestamp = Date.now();
+          }
+          chunk.response_metadata.created_at = botMessageTimestamp;
           const data = {
             conversation_id: conversation_id,
             response: chunk,
@@ -201,8 +225,18 @@ export async function createRouter(
         }
         response.end();
 
-        await saveHistory(conversation_id, Roles.HumanRole, query);
-        await saveHistory(conversation_id, Roles.AIRole, content);
+        await saveHistory(
+          conversation_id,
+          Roles.HumanRole,
+          query,
+          userMessageTimestamp,
+        );
+        await saveHistory(
+          conversation_id,
+          Roles.AIRole,
+          content,
+          botMessageTimestamp,
+        );
       } catch (error) {
         const errormsg = `Error fetching completions from ${serverURL}: ${error}`;
         logger.error(errormsg);
