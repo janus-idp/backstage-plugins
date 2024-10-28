@@ -1,5 +1,9 @@
 import { type BackendFeature } from '@backstage/backend-plugin-api';
-import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  mockServices,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
 
 import { AIMessage, HumanMessage } from '@langchain/core/messages';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
@@ -13,7 +17,16 @@ import { deleteHistory, saveHistory } from '../handlers/chatHistory';
 import { lightspeedPlugin } from '../plugin';
 import { Roles } from '../service/types';
 
-const mockConversationId = 'user1+1q2w3e4r-qwer1234';
+const mockUserId = `user: default/user1`;
+const mockConversationId = `${mockUserId}+1q2w3e4r-qwer1234`;
+const encodedConversationId = encodeURIComponent(mockConversationId);
+
+const mockAnotherUserId = `user: default/anotheruser`;
+const mockAnotherConversationId = `${mockAnotherUserId}+1q2w3e4r-qwer1234`;
+const encodedAnotherConversationId = encodeURIComponent(
+  mockAnotherConversationId,
+);
+
 const mockModel = 'test-model';
 const mockToken = 'dummy-token';
 
@@ -47,6 +60,16 @@ jest.mock('http-proxy-middleware', () => ({
     }),
 }));
 
+jest.mock('@backstage/backend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/backend-plugin-api'),
+  UserInfoService: jest.fn().mockImplementation(() => ({
+    getUserInfo: jest.fn().mockResolvedValue({
+      BackstageUserInfo: {
+        userEntityRef: mockUserId,
+      },
+    }),
+  })),
+}));
 const splitJsonObjects = (response: { text: string }): string[] =>
   response.text.split('}{').map((chunk, index, arr) => {
     if (index === 0) {
@@ -91,6 +114,10 @@ describe('lightspeed router tests', () => {
         mockServices.rootConfig.factory({
           data: { ...BASE_CONFIG, ...(config || {}) },
         }),
+        mockServices.httpAuth.factory({
+          defaultCredentials: mockCredentials.user(mockUserId),
+        }),
+        mockServices.userInfo.factory(),
       ];
     return (await startTestBackend({ features })).server;
   }
@@ -131,6 +158,22 @@ describe('lightspeed router tests', () => {
     });
   });
 
+  describe('POST /conversations', () => {
+    it('generate new conversation_id', async () => {
+      const backendServer = await startBackendServer();
+      const response = await request(backendServer).post(
+        `/api/lightspeed/conversations`,
+      );
+      expect(response.statusCode).toEqual(200);
+      const conversation_id = response.body.conversation_id;
+
+      expect(conversation_id.length).toBe(mockUserId.length + 17); // user_id length + `+` + 16-character session_id
+      const [user_id, session_id] = conversation_id.split('+');
+      expect(user_id).toBe(mockUserId);
+      expect(/^[a-zA-Z0-9]+$/.test(session_id)).toBe(true);
+    });
+  });
+
   describe('GET and DELETE /conversations/:conversation_id', () => {
     const humanMessage = 'Hello';
     const aiMessage = 'Hi! How can I help you today?';
@@ -143,7 +186,7 @@ describe('lightspeed router tests', () => {
     it('load history', async () => {
       const backendServer = await startBackendServer();
       const response = await request(backendServer).get(
-        `/api/lightspeed/conversations/${mockConversationId}`,
+        `/api/lightspeed/conversations/${encodedConversationId}`,
       );
       expect(response.statusCode).toEqual(200);
       // Parse response body
@@ -164,7 +207,7 @@ describe('lightspeed router tests', () => {
       // delete request
       const backendServer = await startBackendServer();
       const deleteResponse = await request(backendServer).delete(
-        `/api/lightspeed/conversations/${mockConversationId}`,
+        `/api/lightspeed/conversations/${encodedConversationId}`,
       );
       expect(deleteResponse.statusCode).toEqual(200);
     });
@@ -173,10 +216,33 @@ describe('lightspeed router tests', () => {
       await deleteHistory(mockConversationId);
       const backendServer = await startBackendServer();
       const response = await request(backendServer).get(
-        `/api/lightspeed/conversations/${mockConversationId}`,
+        `/api/lightspeed/conversations/${encodedConversationId}`,
       );
       expect(response.statusCode).toEqual(500);
       expect(response.body.error).toContain('unknown conversation_id');
+    });
+
+    it('load history from another authenticated user should error out', async () => {
+      const backendServer = await startBackendServer();
+
+      const response = await request(backendServer).get(
+        `/api/lightspeed/conversations/${encodedAnotherConversationId}`,
+      );
+      expect(response.statusCode).toEqual(500);
+      expect(response.body.error).toContain(
+        'does not belong to authenticated user',
+      );
+    });
+
+    it('delete history from another authenticated user should error out', async () => {
+      const backendServer = await startBackendServer();
+      const deleteResponse = await request(backendServer).delete(
+        `/api/lightspeed/conversations/${encodedAnotherConversationId}`,
+      );
+      expect(deleteResponse.statusCode).toEqual(500);
+      expect(deleteResponse.body.error).toContain(
+        'does not belong to authenticated user',
+      );
     });
   });
 
@@ -449,6 +515,22 @@ describe('lightspeed router tests', () => {
           query: 'Hello',
         });
       expect(response.statusCode).toEqual(500);
+    });
+
+    it('returns 500 if query sent for a different user', async () => {
+      const backendServer = await startBackendServer();
+      const response = await request(backendServer)
+        .post('/api/lightspeed/v1/query')
+        .send({
+          model: mockModel,
+          conversation_id: mockAnotherConversationId,
+          query: 'Hello',
+          serverURL: LOCAL_AI_ADDR,
+        });
+      expect(response.statusCode).toEqual(500);
+      expect(response.body.error).toContain(
+        'does not belong to authenticated user',
+      );
     });
   });
 });
