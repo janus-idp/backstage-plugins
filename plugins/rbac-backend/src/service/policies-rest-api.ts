@@ -1,9 +1,4 @@
-import type {
-  AuthService,
-  HttpAuthService,
-  PermissionsService,
-} from '@backstage/backend-plugin-api';
-import type { Config } from '@backstage/config';
+import type { PermissionsService } from '@backstage/backend-plugin-api';
 import {
   ConflictError,
   InputError,
@@ -11,10 +6,7 @@ import {
   NotFoundError,
   ServiceUnavailableError,
 } from '@backstage/errors';
-import {
-  createRouter,
-  RouterOptions,
-} from '@backstage/plugin-permission-backend';
+import { createRouter } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
   PolicyDecision,
@@ -76,15 +68,13 @@ import {
 } from '../validation/policies-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
+import { RBACRouterOptions } from './policy-builder';
 
 export class PoliciesServer {
   constructor(
     private readonly permissions: PermissionsService,
-    private readonly options: RouterOptions,
+    private readonly options: RBACRouterOptions,
     private readonly enforcer: EnforcerDelegate,
-    private readonly config: Config,
-    private readonly httpAuth: HttpAuthService,
-    private readonly auth: AuthService,
     private readonly conditionalStorage: ConditionalStorage,
     private readonly pluginPermMetaData: PluginPermissionMetadataCollector,
     private readonly roleMetadata: RoleMetadataStorage,
@@ -96,13 +86,13 @@ export class PoliciesServer {
     request: Request,
     permission: ResourcePermission,
   ): Promise<PolicyDecision> {
-    const credentials = await this.httpAuth.credentials(request, {
+    const credentials = await this.options.httpAuth.credentials(request, {
       allow: ['user', 'service'],
     });
 
     // allow service to service communication, but only with read permission
     if (
-      this.auth.isPrincipal(credentials, 'service') &&
+      this.options.auth.isPrincipal(credentials, 'service') &&
       permission !== policyEntityReadPermission
     ) {
       throw new NotAllowedError(
@@ -138,7 +128,7 @@ export class PoliciesServer {
     router.use(permissionsIntegrationRouter);
 
     const isPluginEnabled =
-      this.config.getOptionalBoolean('permission.enabled');
+      this.options.config.getOptionalBoolean('permission.enabled');
     if (!isPluginEnabled) {
       return router;
     }
@@ -767,7 +757,9 @@ export class PoliciesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const body = await this.pluginPermMetaData.getPluginPolicies(this.auth);
+      const body = await this.pluginPermMetaData.getPluginPolicies(
+        this.options.auth,
+      );
 
       await this.aLog.auditLog({
         message: `Return list plugin policies`,
@@ -792,7 +784,7 @@ export class PoliciesServer {
       }
 
       const body = await this.pluginPermMetaData.getPluginConditionRules(
-        this.auth,
+        this.options.auth,
       );
 
       await this.aLog.auditLog({
@@ -861,7 +853,7 @@ export class PoliciesServer {
       const conditionToCreate = await processConditionMapping(
         roleConditionPolicy,
         this.pluginPermMetaData,
-        this.auth,
+        this.options.auth,
       );
 
       const id =
@@ -982,7 +974,7 @@ export class PoliciesServer {
       const conditionToUpdate = await processConditionMapping(
         roleConditionPolicy,
         this.pluginPermMetaData,
-        this.auth,
+        this.options.auth,
       );
 
       await this.conditionalStorage.updateCondition(id, conditionToUpdate);
