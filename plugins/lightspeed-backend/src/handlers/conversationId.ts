@@ -1,3 +1,5 @@
+import { randomBytes } from 'crypto';
+
 const SESSION_ID_LENGTH = 16;
 export const INVALID_FORTMAT_ERROR =
   'Invalid format: Must be in <user_id>+<session_id> format';
@@ -5,10 +7,15 @@ export const INVALID_FORTMAT_ERROR =
 function generateSessionId(length = SESSION_ID_LENGTH) {
   const characters =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  return Array.from({ length }, () => {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    return characters[randomIndex];
-  }).join('');
+  const bytes = randomBytes(length);
+  let sessionId = '';
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = bytes[i] % characters.length; // Ensures the index is within the range
+    sessionId += characters[randomIndex];
+  }
+
+  return sessionId;
 }
 
 export function generateConversationId(user_id: string) {
