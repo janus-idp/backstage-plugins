@@ -55,7 +55,6 @@ spec:
     - ./plugins/ocm/catalog-info.yaml
     - ./plugins/ocm-backend/catalog-info.yaml
     - ./plugins/ocm-common/catalog-info.yaml
-    - ./plugins/openshift-image-registry/catalog-info.yaml
     - ./plugins/orchestrator/catalog-info.yaml
     - ./plugins/orchestrator-backend/catalog-info.yaml
     - ./plugins/orchestrator-common/catalog-info.yaml
