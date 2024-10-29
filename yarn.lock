@@ -7062,7 +7062,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/styled@npm:^11.10.5":
+"@emotion/styled@npm:^11.10.5, @emotion/styled@npm:^11.13.0":
   version: 11.13.0
   resolution: "@emotion/styled@npm:11.13.0"
   dependencies:
@@ -9479,6 +9479,7 @@ __metadata:
     "@backstage/plugin-permission-react": ^0.4.26
     "@backstage/test-utils": 1.6.0
     "@backstage/theme": ^0.5.7
+    "@emotion/styled": ^11.13.0
     "@janus-idp/backstage-plugin-rbac-common": "*"
     "@janus-idp/cli": 1.16.0
     "@janus-idp/shared-react": "*"
@@ -9605,6 +9606,7 @@ __metadata:
     "@backstage/plugin-permission-react": ^0.4.26
     "@backstage/test-utils": 1.6.0
     "@backstage/theme": ^0.5.7
+    "@emotion/styled": ^11.13.0
     "@janus-idp/backstage-plugin-topology-common": "*"
     "@janus-idp/cli": 1.16.0
     "@janus-idp/shared-react": "*"
@@ -21265,6 +21267,7 @@ __metadata:
     "@backstage/plugin-user-settings": 0.8.13
     "@backstage/test-utils": 1.6.0
     "@emotion/react": 11.11.4
+    "@emotion/styled": ^11.13.0
     "@mui/icons-material": 5.15.16
     "@mui/material": 5.15.16
     "@mui/styles": 5.15.16
