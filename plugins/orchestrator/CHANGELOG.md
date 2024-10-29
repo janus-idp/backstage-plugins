@@ -1,5 +1,16 @@
 ### Dependencies
 
+## 2.2.1
+
+### Patch Changes
+
+- 7342e9b: chore: remove @janus-idp/cli dep and relink local packages
+
+  This update removes `@janus-idp/cli` from all plugins, as it’s no longer necessary. Additionally, packages are now correctly linked with a specified version.
+
+- Updated dependencies [7342e9b]
+  - @janus-idp/backstage-plugin-orchestrator-form-react@1.3.1
+
 ## 2.2.0
 
 ### Minor Changes
