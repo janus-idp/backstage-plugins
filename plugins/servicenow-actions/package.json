@@ -28,13 +28,10 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "export-dynamic": "janus-cli package export-dynamic-plugin",
-    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --clean",
     "openapi:generate": "bash ./scripts/generate.sh",
     "lint:check": "backstage-cli package lint",
     "lint:fix": "backstage-cli package lint --fix",
     "postpack": "backstage-cli package postpack",
-    "postversion": "yarn run export-dynamic",
     "prepack": "backstage-cli package prepack",
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
@@ -58,7 +55,6 @@
     "@backstage/plugin-scaffolder-node-test-utils": "0.1.12",
     "@backstage/types": "1.1.1",
     "@hey-api/openapi-ts": "0.34.5",
-    "@janus-idp/cli": "1.16.1",
     "@types/node-fetch": "2.6.11",
     "msw": "1.3.3",
     "prettier": "3.3.3"

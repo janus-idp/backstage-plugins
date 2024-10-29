@@ -31,7 +31,6 @@
     "lint:check": "backstage-cli package lint",
     "lint:fix": "backstage-cli package lint --fix",
     "postpack": "backstage-cli package postpack",
-    "postversion": "yarn run export-dynamic",
     "prepack": "backstage-cli package prepack",
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
@@ -42,7 +41,7 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "^1.0.0",
     "@backstage/errors": "^1.2.4",
-    "@janus-idp/backstage-plugin-rbac-node": "*",
+    "@janus-idp/backstage-plugin-rbac-node": "^1.7.0",
     "csv-parse": "^5.5.6"
   },
   "devDependencies": {
@@ -50,7 +49,6 @@
     "@backstage/backend-test-utils": "1.0.0",
     "@backstage/cli": "0.27.1",
     "@backstage/config": "1.2.0",
-    "@janus-idp/cli": "1.16.1",
     "prettier": "3.3.3"
   },
   "files": [

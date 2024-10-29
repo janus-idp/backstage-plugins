@@ -8,7 +8,7 @@ on:
 # enforce only one release action per release branch at a time
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   prev-commit:
