@@ -35,7 +35,7 @@ export function mapToWorkflowOverviewDTO(
     description: overview.description,
     lastRunId: overview.lastRunId,
     lastRunStatus: overview.lastRunStatus
-      ? getProcessInstancesDTOFromString(overview.lastRunStatus)
+      ? getProcessInstancesStatusDTOFromString(overview.lastRunStatus)
       : undefined,
     lastTriggeredMs: overview.lastTriggeredMs,
     category: mapWorkflowCategoryDTOFromString(overview.category),
@@ -81,7 +81,7 @@ export function mapWorkflowCategoryDTO(
   return 'infrastructure';
 }
 
-export function getProcessInstancesDTOFromString(
+export function getProcessInstancesStatusDTOFromString(
   state?: string,
 ): ProcessInstanceStatusDTO {
   switch (state) {
@@ -135,7 +135,7 @@ export function mapToProcessInstanceDTO(
     duration: duration,
     // @ts-ignore
     workflowdata: variables?.workflowdata,
-    status: getProcessInstancesDTOFromString(processInstance.state),
+    status: getProcessInstancesStatusDTOFromString(processInstance.state),
     nodes: processInstance.nodes.map(mapToNodeInstanceDTO),
   };
 }
