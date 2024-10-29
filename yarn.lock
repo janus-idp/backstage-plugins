@@ -7063,7 +7063,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/styled@npm:^11.10.5":
+"@emotion/styled@npm:^11.10.5, @emotion/styled@npm:^11.13.0":
   version: 11.13.0
   resolution: "@emotion/styled@npm:11.13.0"
   dependencies:
@@ -21149,6 +21149,7 @@ __metadata:
     "@backstage/plugin-user-settings": 0.8.13
     "@backstage/test-utils": 1.6.0
     "@emotion/react": 11.11.4
+    "@emotion/styled": ^11.13.0
     "@mui/icons-material": 5.15.16
     "@mui/material": 5.15.16
     "@mui/styles": 5.15.16
