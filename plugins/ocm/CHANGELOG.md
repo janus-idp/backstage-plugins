@@ -1,5 +1,11 @@
 ### Dependencies
 
+## 5.1.1
+
+### Patch Changes
+
+- 412e8ba: fix unaligned status icon and message
+
 ## 5.1.0
 
 ### Minor Changes
