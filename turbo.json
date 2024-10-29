@@ -9,7 +9,7 @@
     },
     "build": {
       "outputs": ["dist/**"],
-      "dependsOn": ["^build", "export-dynamic", "tsc"]
+      "dependsOn": ["^build", "tsc"]
     },
     "clean": {
       "cache": false
@@ -20,14 +20,6 @@
     },
     "ui-test": {
       "outputs": ["test-results/**"]
-    },
-    "export-dynamic": {
-      "cache": false,
-      "dependsOn": ["tsc"]
-    },
-    "export-dynamic:clean": {
-      "cache": false,
-      "dependsOn": ["tsc"]
     },
     "lint:check": {},
     "lint:fix": {
