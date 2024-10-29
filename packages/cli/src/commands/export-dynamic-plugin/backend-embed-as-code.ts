@@ -337,7 +337,7 @@ export async function backend(
       ? `${yarn} install --production${
           yarnLockExists ? ' --frozen-lockfile' : ''
         }`
-      : `${yarn} install${yarnLockExists ? ' --immutable' : ''}`;
+      : `${yarn} install${yarnLockExists ? ' --immutable' : ' --no-immutable'}`;
 
     await Task.forCommand(yarnInstall, { cwd: target, optional: false });
     await fs.remove(paths.resolveTarget('dist-dynamic', '.yarn'));
