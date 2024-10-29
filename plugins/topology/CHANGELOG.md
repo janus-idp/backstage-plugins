@@ -1,5 +1,13 @@
 ### Dependencies
 
+## 1.29.1
+
+### Patch Changes
+
+- ffe2546: Fix CVE-2024-21534 by upgrading @kubernetes/client-node package to 0.22.1
+- Updated dependencies [ffe2546]
+  - @janus-idp/shared-react@2.12.1
+
 ## 1.29.0
 
 ### Minor Changes

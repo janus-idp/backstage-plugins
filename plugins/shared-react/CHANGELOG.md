@@ -1,5 +1,11 @@
 ## @janus-idp/shared-react [2.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.9.0...@janus-idp/shared-react@2.10.0) (2024-08-02)
 
+## 2.12.1
+
+### Patch Changes
+
+- ffe2546: Fix CVE-2024-21534 by upgrading @kubernetes/client-node package to 0.22.1
+
 ## 2.12.0
 
 ### Minor Changes
