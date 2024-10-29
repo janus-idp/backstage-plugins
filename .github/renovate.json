@@ -303,7 +303,6 @@
         "plugins/aap-backend*/**",
         "plugins/jfrog-artifactory*/**",
         "plugins/kubernetes-actions*/**",
-        "plugins/openshift-image-registry*/**",
         "plugins/servicenow-actions*/**",
         "plugins/sonarqube-actions*/**",
         "plugins/web-terminal*/**"
@@ -319,7 +318,6 @@
         "plugins/aap-backend*/**",
         "plugins/jfrog-artifactory*/**",
         "plugins/kubernetes-actions*/**",
-        "plugins/openshift-image-registry*/**",
         "plugins/servicenow-actions*/**",
         "plugins/sonarqube-actions*/**",
         "plugins/web-terminal*/**"
