@@ -78,6 +78,7 @@ export class DataIndexService {
         }
       }`;
   }
+
   public async inspectInputArgument(
     type: string,
   ): Promise<IntrospectionField[]> {
@@ -200,6 +201,7 @@ export class DataIndexService {
     const filterCondition = filter
       ? buildFilterCondition(
           await this.initInputProcessDefinitionArgs(),
+          'ProcessDefinition',
           filter,
         )
       : undefined;
@@ -247,9 +249,11 @@ export class DataIndexService {
     const definitionIdsCondition = definitionIds
       ? `processId: {in: ${JSON.stringify(definitionIds)}}`
       : undefined;
+    const type = 'ProcessInstance';
     const filterCondition = filter
       ? buildFilterCondition(
-          await this.inspectInputArgument('ProcessInstance'),
+          await this.inspectInputArgument(type),
+          type,
           filter,
         )
       : '';
@@ -315,6 +319,7 @@ export class DataIndexService {
     const filterCondition = filter
       ? buildFilterCondition(
           await this.inspectInputArgument('ProcessInstance'),
+          'ProcessInstance',
           filter,
         )
       : '';

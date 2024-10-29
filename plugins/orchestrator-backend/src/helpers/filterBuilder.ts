@@ -4,8 +4,13 @@ import {
   Filter,
   IntrospectionField,
   LogicalFilter,
+  ProcessInstanceStatusDTO,
   TypeName,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
+
+import { getProcessInstanceStateFromStatusDTOString } from '../service/api/mapping/V2Mappings';
+
+type ProcessType = 'ProcessDefinition' | 'ProcessInstance';
 
 function isLogicalFilter(filter: Filter): filter is LogicalFilter {
   return (filter as LogicalFilter).filters !== undefined;
@@ -13,12 +18,13 @@ function isLogicalFilter(filter: Filter): filter is LogicalFilter {
 
 function handleLogicalFilter(
   introspection: IntrospectionField[],
+  type: ProcessType,
   filter: LogicalFilter,
 ): string {
   if (!filter.operator) return '';
 
   const subClauses = filter.filters.map(f =>
-    buildFilterCondition(introspection, f),
+    buildFilterCondition(introspection, type, f),
   );
 
   return `${filter.operator.toLowerCase()}: {${subClauses.join(', ')}}`;
@@ -35,19 +41,75 @@ function handleIsNullOperator(filter: FieldFilter): string {
   return `${filter.field}: {${getGraphQLOperator(FieldFilterOperatorEnum.IsNull)}: ${convertToBoolean(filter.value)}}`;
 }
 
+function isEnumFilter(
+  fieldName: string,
+  type: 'ProcessDefinition' | 'ProcessInstance',
+): boolean {
+  if (type === 'ProcessInstance') {
+    if (fieldName === 'state') {
+      return true;
+    }
+  }
+  return false;
+}
+
+function convertEnumValue(
+  fieldName: string,
+  fieldValue: string,
+  type: 'ProcessDefinition' | 'ProcessInstance',
+): string {
+  if (type === 'ProcessInstance') {
+    if (fieldName === 'state') {
+      const state = (ProcessInstanceStatusDTO as any)[
+        fieldValue as keyof typeof ProcessInstanceStatusDTO
+      ];
+
+      if (!state) {
+        throw new Error(
+          `status ${fieldValue} is not a valid value of ProcessInstanceStatusDTO`,
+        );
+      }
+      return getProcessInstanceStateFromStatusDTOString(state).valueOf();
+    }
+  }
+  throw new Error(
+    `Unsupported enum ${fieldName}: can't convert value ${fieldValue}`,
+  );
+}
+
+function isValidEnumOperator(operator: FieldFilterOperatorEnum): boolean {
+  return (
+    operator === FieldFilterOperatorEnum.In ||
+    operator === FieldFilterOperatorEnum.Eq
+  );
+}
+
 function handleBinaryOperator(
   binaryFilter: FieldFilter,
   fieldDef: IntrospectionField,
+  type: 'ProcessDefinition' | 'ProcessInstance',
 ): string {
+  if (isEnumFilter(binaryFilter.field, type)) {
+    if (!isValidEnumOperator(binaryFilter.operator)) {
+      throw new Error(
+        `Invalid operator ${binaryFilter.operator} for enum field ${binaryFilter.field} filter`,
+      );
+    }
+    binaryFilter.value = convertEnumValue(
+      binaryFilter.field,
+      binaryFilter.value,
+      type,
+    );
+  }
   const formattedValue = Array.isArray(binaryFilter.value)
-    ? `[${binaryFilter.value.map(v => formatValue(binaryFilter.field, v, fieldDef)).join(', ')}]`
-    : formatValue(binaryFilter.field, binaryFilter.value, fieldDef);
-
+    ? `[${binaryFilter.value.map(v => formatValue(binaryFilter.field, v, fieldDef, type)).join(', ')}]`
+    : formatValue(binaryFilter.field, binaryFilter.value, fieldDef, type);
   return `${binaryFilter.field}: {${getGraphQLOperator(binaryFilter.operator)}: ${formattedValue}}`;
 }
 
 export function buildFilterCondition(
   introspection: IntrospectionField[],
+  type: ProcessType,
   filters?: Filter,
 ): string {
   if (!filters) {
@@ -55,7 +117,7 @@ export function buildFilterCondition(
   }
 
   if (isLogicalFilter(filters)) {
-    return handleLogicalFilter(introspection, filters);
+    return handleLogicalFilter(introspection, type, filters);
   }
 
   if (!isOperatorSupported(filters.operator)) {
@@ -83,7 +145,7 @@ export function buildFilterCondition(
     case FieldFilterOperatorEnum.Gte:
     case FieldFilterOperatorEnum.Lt:
     case FieldFilterOperatorEnum.Lte:
-      return handleBinaryOperator(filters, fieldDef);
+      return handleBinaryOperator(filters, fieldDef, type);
 
     default:
       throw new Error(`Can't build filter condition`);
@@ -156,11 +218,15 @@ function formatValue(
   fieldName: string,
   fieldValue: any,
   fieldDef: IntrospectionField,
+  type: ProcessType,
 ): string {
   if (!isFieldFilterSupported) {
     throw new Error(`Unsupported field type ${fieldDef.type.name}`);
   }
 
+  if (isEnumFilter(fieldName, type)) {
+    return `${fieldValue}`;
+  }
   if (
     fieldDef.type.name === TypeName.String ||
     fieldDef.type.name === TypeName.Id ||

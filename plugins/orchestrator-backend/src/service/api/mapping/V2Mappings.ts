@@ -104,6 +104,29 @@ export function getProcessInstancesStatusDTOFromString(
   }
 }
 
+export function getProcessInstanceStateFromStatusDTOString(
+  status?: ProcessInstanceStatusDTO,
+): string {
+  switch (status) {
+    case 'Active':
+      return ProcessInstanceState.Active.valueOf();
+    case 'Error':
+      return ProcessInstanceState.Error.valueOf();
+    case 'Completed':
+      return ProcessInstanceState.Completed.valueOf();
+    case 'Aborted':
+      return ProcessInstanceState.Aborted.valueOf();
+    case 'Suspended':
+      return ProcessInstanceState.Suspended.valueOf();
+    case 'Pending':
+      return ProcessInstanceState.Pending.valueOf();
+    default:
+      throw new Error(
+        `status ${status} is not one of the values of type ProcessInstanceState`,
+      );
+  }
+}
+
 export function mapToProcessInstanceDTO(
   processInstance: ProcessInstance,
 ): ProcessInstanceDTO {
