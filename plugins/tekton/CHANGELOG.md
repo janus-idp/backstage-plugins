@@ -1,5 +1,13 @@
 ### Dependencies
 
+## 3.14.2
+
+### Patch Changes
+
+- 7342e9b: chore: remove @janus-idp/cli dep and relink local packages
+
+  This update removes `@janus-idp/cli` from all plugins, as it’s no longer necessary. Additionally, packages are now correctly linked with a specified version.
+
 ## 3.14.1
 
 ### Patch Changes

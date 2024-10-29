@@ -1,5 +1,13 @@
 ## @janus-idp/backstage-scaffolder-backend-module-annotator [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-annotator@1.2.1...@janus-idp/backstage-scaffolder-backend-module-annotator@1.3.0) (2024-07-25)
 
+## 2.1.1
+
+### Patch Changes
+
+- 7342e9b: chore: remove @janus-idp/cli dep and relink local packages
+
+  This update removes `@janus-idp/cli` from all plugins, as it’s no longer necessary. Additionally, packages are now correctly linked with a specified version.
+
 ## 2.1.0
 
 ### Minor Changes
