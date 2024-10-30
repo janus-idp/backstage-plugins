@@ -1,5 +1,18 @@
 ### Dependencies
 
+## 4.0.0
+
+### Minor Changes
+
+- 8244f28: chore(deps): update to backstage 1.32
+
+### Patch Changes
+
+- Updated dependencies [8244f28]
+  - @janus-idp/backstage-plugin-orchestrator-common@1.23.0
+  - @janus-idp/backstage-plugin-audit-log-node@1.7.0
+  - @janus-idp/backstage-plugin-rbac-common@1.12.0
+
 ## 3.0.1
 
 ### Patch Changes

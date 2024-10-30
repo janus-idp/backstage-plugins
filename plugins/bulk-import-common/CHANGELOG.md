@@ -1,5 +1,11 @@
 ## @janus-idp/backstage-plugin-bulk-import-common [0.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-bulk-import-common@0.1.0...@janus-idp/backstage-plugin-bulk-import-common@0.2.0) (2024-07-25)
 
+## 1.3.0
+
+### Minor Changes
+
+- 8244f28: chore(deps): update to backstage 1.32
+
 ## 1.2.0
 
 ### Minor Changes
