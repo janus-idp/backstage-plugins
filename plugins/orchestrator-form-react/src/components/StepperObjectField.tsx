@@ -4,7 +4,7 @@ import { JsonObject } from '@backstage/types';
 
 import ObjectField from '@rjsf/core/lib/components/fields/ObjectField';
 import { ErrorSchema, FieldProps, IdSchema } from '@rjsf/utils';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 
 import OrchestratorFormStepper, {
   OrchestratorFormStep,

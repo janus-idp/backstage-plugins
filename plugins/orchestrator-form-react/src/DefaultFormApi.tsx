@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 
 import {
   FormDecoratorProps,

@@ -4,7 +4,7 @@ import { Content, StructuredMetadataTable } from '@backstage/core-components';
 import { JsonObject } from '@backstage/types';
 
 import { Box, Button, makeStyles, Paper } from '@material-ui/core';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 
 import generateReviewTableData from '../utils/generateReviewTableData';
 import { useStepperContext } from '../utils/StepperContext';
