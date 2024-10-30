@@ -1,7 +1,6 @@
 ---
 "@janus-idp/backstage-scaffolder-backend-module-annotator": minor
 "@janus-idp/backstage-plugin-analytics-provider-segment": minor
-"@janus-idp/backstage-plugin-openshift-image-registry": minor
 "@janus-idp/backstage-plugin-analytics-module-matomo": minor
 "@janus-idp/backstage-plugin-orchestrator-form-react": minor
 "@janus-idp/backstage-plugin-orchestrator-form-api": minor
