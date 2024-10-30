@@ -8393,7 +8393,6 @@ __metadata:
     "@types/supertest": 2.0.16
     express: ^4.18.2
     http-proxy-middleware: ^3.0.2
-    jest-fetch-mock: ^3.0.3
     msw: 2.4.0
     prettier: 3.3.3
     supertest: 6.3.4
@@ -23927,7 +23926,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^3.0.4, cross-fetch@npm:^3.1.5":
+"cross-fetch@npm:^3.1.5":
   version: 3.1.8
   resolution: "cross-fetch@npm:3.1.8"
   dependencies:
@@ -31731,16 +31730,6 @@ __metadata:
   dependencies:
     jest-node-http: 1.0.0
   checksum: 55de11d258f06778d8928c9b2ecf838646837c6e6df97c55d179b6b678e3c76beba314bdaf42b174b203b0163c7fe8b9b652160dd007a6c0145c84a803d9f94f
-  languageName: node
-  linkType: hard
-
-"jest-fetch-mock@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "jest-fetch-mock@npm:3.0.3"
-  dependencies:
-    cross-fetch: ^3.0.4
-    promise-polyfill: ^8.1.3
-  checksum: fb052f7e0ef1c8192a9c15efdd1b18d281ab68fc6b1648b30bff8880fe24418bdf12190ea79b1996932dc15417c3c01f5b2d77ef7104a7e7943e7cbe8d61071d
   languageName: node
   linkType: hard
 
@@ -39732,13 +39721,6 @@ __metadata:
   version: 1.0.1
   resolution: "promise-inflight@npm:1.0.1"
   checksum: 22749483091d2c594261517f4f80e05226d4d5ecc1fc917e1886929da56e22b5718b7f2a75f3807e7a7d471bc3be2907fe92e6e8f373ddf5c64bae35b5af3981
-  languageName: node
-  linkType: hard
-
-"promise-polyfill@npm:^8.1.3":
-  version: 8.3.0
-  resolution: "promise-polyfill@npm:8.3.0"
-  checksum: 206373802076c77def0805758d0a8ece64120dfa6603f092404a1004211f8f2f67f33cadbc35953fc2a8ed0b0d38c774e88bdf01e20ce7a920723a60df84b7a5
   languageName: node
   linkType: hard
 
