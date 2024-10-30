@@ -1,5 +1,17 @@
 ### Dependencies
 
+## 5.0.0
+
+### Minor Changes
+
+- 8244f28: chore(deps): update to backstage 1.32
+
+### Patch Changes
+
+- Updated dependencies [8244f28]
+  - @janus-idp/backstage-plugin-bulk-import-common@1.3.0
+  - @janus-idp/backstage-plugin-audit-log-node@1.7.0
+
 ## 4.0.1
 
 ### Patch Changes

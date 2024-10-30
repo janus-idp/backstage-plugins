@@ -1,5 +1,17 @@
 ### Dependencies
 
+## 1.14.0
+
+### Minor Changes
+
+- 8244f28: chore(deps): update to backstage 1.32
+
+### Patch Changes
+
+- Updated dependencies [8244f28]
+  - @janus-idp/shared-react@2.13.0
+  - @janus-idp/backstage-plugin-quay-common@1.3.0
+
 ## 1.13.1
 
 ### Patch Changes

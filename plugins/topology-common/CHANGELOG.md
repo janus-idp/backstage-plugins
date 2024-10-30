@@ -1,5 +1,11 @@
 ## @janus-idp/backstage-plugin-topology-common [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology-common@1.2.2...@janus-idp/backstage-plugin-topology-common@1.3.0) (2024-07-26)
 
+## 1.6.0
+
+### Minor Changes
+
+- 8244f28: chore(deps): update to backstage 1.32
+
 ## 1.5.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 ### Dependencies
 
+## 1.11.0
+
+### Minor Changes
+
+- 8244f28: chore(deps): update to backstage 1.32
+
 ## 1.10.1
 
 ### Patch Changes

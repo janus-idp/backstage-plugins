@@ -1,5 +1,17 @@
 ### Dependencies
 
+## 1.32.0
+
+### Minor Changes
+
+- 8244f28: chore(deps): update to backstage 1.32
+
+### Patch Changes
+
+- Updated dependencies [8244f28]
+  - @janus-idp/shared-react@2.13.0
+  - @janus-idp/backstage-plugin-rbac-common@1.12.0
+
 ## 1.31.1
 
 ### Patch Changes

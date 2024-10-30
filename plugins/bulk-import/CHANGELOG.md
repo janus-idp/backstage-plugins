@@ -1,5 +1,17 @@
 ### Dependencies
 
+## 1.7.0
+
+### Minor Changes
+
+- 8244f28: chore(deps): update to backstage 1.32
+
+### Patch Changes
+
+- Updated dependencies [8244f28]
+  - @janus-idp/backstage-plugin-bulk-import-common@1.3.0
+  - @janus-idp/shared-react@2.13.0
+
 ## 1.6.1
 
 ### Patch Changes

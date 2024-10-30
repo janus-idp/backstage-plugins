@@ -1,5 +1,16 @@
 ### Dependencies
 
+## 1.10.0
+
+### Minor Changes
+
+- 8244f28: chore(deps): update to backstage 1.32
+
+### Patch Changes
+
+- Updated dependencies [8244f28]
+  - @janus-idp/shared-react@2.13.0
+
 ## 1.9.1
 
 ### Patch Changes

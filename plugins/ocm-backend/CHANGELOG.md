@@ -1,5 +1,16 @@
 ### Dependencies
 
+## 5.2.0
+
+### Minor Changes
+
+- 8244f28: chore(deps): update to backstage 1.32
+
+### Patch Changes
+
+- Updated dependencies [8244f28]
+  - @janus-idp/backstage-plugin-ocm-common@3.6.0
+
 ## 5.1.2
 
 ### Patch Changes
