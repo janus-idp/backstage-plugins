@@ -1,5 +1,16 @@
 ### Dependencies
 
+## 1.4.0
+
+### Minor Changes
+
+- 8244f28: chore(deps): update to backstage 1.32
+
+### Patch Changes
+
+- Updated dependencies [8244f28]
+  - @janus-idp/backstage-plugin-orchestrator-form-api@1.4.0
+
 ## 1.3.1
 
 ### Patch Changes

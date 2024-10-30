@@ -1,5 +1,11 @@
 ## @janus-idp/backstage-plugin-rbac-common [1.8.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-common@1.8.1...@janus-idp/backstage-plugin-rbac-common@1.8.2) (2024-08-06)
 
+## 1.12.0
+
+### Minor Changes
+
+- 8244f28: chore(deps): update to backstage 1.32
+
 ## 1.11.0
 
 ### Minor Changes

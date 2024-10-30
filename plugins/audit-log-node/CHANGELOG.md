@@ -1,5 +1,11 @@
 ## @janus-idp/backstage-plugin-audit-log-node [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-audit-log-node@1.3.0...@janus-idp/backstage-plugin-audit-log-node@1.4.0) (2024-07-25)
 
+## 1.7.0
+
+### Minor Changes
+
+- 8244f28: chore(deps): update to backstage 1.32
+
 ## 1.6.0
 
 ### Minor Changes
