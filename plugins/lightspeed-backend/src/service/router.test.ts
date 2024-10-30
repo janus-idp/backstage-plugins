@@ -20,6 +20,7 @@ import { Roles } from '../service/types';
 const mockUserId = `user: default/user1`;
 const mockConversationId = `${mockUserId}+1q2w3e4r-qwer1234`;
 const encodedConversationId = encodeURIComponent(mockConversationId);
+const mockConversationId2 = `${mockUserId}+9i8u7y6t-654rew3`;
 
 const mockAnotherUserId = `user: default/anotheruser`;
 const mockAnotherConversationId = `${mockAnotherUserId}+1q2w3e4r-qwer1234`;
@@ -42,7 +43,13 @@ const BASE_CONFIG = {
   },
 };
 
-const mockServerResponse = { data: 'redirect to v1/models' };
+const mockServerResponse = {
+  data: [
+    {
+      id: mockModel,
+    },
+  ],
+};
 // Mocking the actual request that the proxy would make
 jest.mock('http-proxy-middleware', () => ({
   createProxyMiddleware: jest
@@ -253,8 +260,8 @@ describe('lightspeed router tests', () => {
       // Spy on fromMessages and mock its return value
       jest
         .spyOn(ChatPromptTemplate, 'fromMessages')
-        .mockImplementation((): any => ({
-          pipe: jest.fn().mockReturnValue({
+        .mockImplementationOnce((): any => ({
+          pipe: jest.fn().mockReturnValueOnce({
             stream: mockStream,
           }),
         }));
@@ -266,6 +273,7 @@ describe('lightspeed router tests', () => {
     afterEach(() => {
       chatOpenAISpy.mockRestore();
       chatOpenAISpy.mockReset();
+      jest.clearAllMocks();
     });
 
     it('chat completions', async () => {
@@ -531,6 +539,66 @@ describe('lightspeed router tests', () => {
       expect(response.body.error).toContain(
         'does not belong to authenticated user',
       );
+    });
+  });
+
+  describe('GET /conversations', () => {
+    const mockSummary = 'mock summary';
+    const mockAIMessage = new AIMessage(mockSummary);
+    const mockInvokeReturnValue = jest.fn().mockResolvedValue(mockAIMessage);
+    let chatPromptSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      // Setup fresh spy for each test
+      chatPromptSpy = jest
+        .spyOn(ChatPromptTemplate, 'fromMessages')
+        .mockImplementation(
+          () =>
+            ({
+              pipe: jest.fn().mockReturnValue({
+                invoke: mockInvokeReturnValue,
+              }),
+            }) as any,
+        );
+
+      // Clear any existing history
+      jest.clearAllMocks();
+    });
+
+    afterEach(() => {
+      chatPromptSpy.mockRestore();
+      jest.clearAllMocks();
+    });
+
+    const humanMessage = 'Hello';
+    const aiMessage = 'Hi! How can I help you today?';
+    it('load conversations list with summary', async () => {
+      await saveHistory(mockConversationId, Roles.HumanRole, humanMessage);
+      await saveHistory(mockConversationId, Roles.AIRole, aiMessage);
+
+      await saveHistory(mockConversationId2, Roles.HumanRole, humanMessage);
+      await saveHistory(mockConversationId2, Roles.AIRole, aiMessage);
+
+      const backendServer = await startBackendServer();
+      const response = await request(backendServer).get(
+        `/api/lightspeed/conversations`,
+      );
+      expect(response.statusCode).toEqual(200);
+      // Parse response body
+      const responseData = response.body;
+
+      // Check that responseData is an array
+      expect(Array.isArray(responseData)).toBe(true);
+      expect(responseData.length).toBe(2);
+      const ids = responseData.map(item => item.conversation_id);
+
+      // Check if both expected IDs are present
+      expect(ids).toContain(mockConversationId);
+      expect(ids).toContain(mockConversationId);
+
+      // check the summary
+      expect(responseData[0].summary).toBe(mockSummary);
+      expect(responseData[1].summary).toBe(mockSummary);
     });
   });
 });

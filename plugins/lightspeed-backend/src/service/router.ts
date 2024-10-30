@@ -11,6 +11,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 
 import {
   deleteHistory,
+  loadAllConversations,
   loadHistory,
   saveHistory,
 } from '../handlers/chatHistory';
@@ -82,6 +83,102 @@ export async function createRouter(
     } catch (error) {
       const errormsg = `${error}`;
       logger.error(errormsg);
+      response.status(500).json({ error: errormsg });
+    }
+  });
+
+  router.get('/conversations', async (request, response) => {
+    try {
+      const userEntity = await userInfo.getUserInfo(
+        await httpAuth.credentials(request),
+      );
+      const user_id = userEntity.userEntityRef;
+      logger.info(`GET /conversations receives call from user: ${user_id}`);
+
+      type ConversationSummary = {
+        conversation_id: string;
+        summary: string;
+      };
+      const conversationList = await loadAllConversations(user_id);
+      const conversationSummaryList: ConversationSummary[] = [];
+
+      // currently only single llm server is supported
+      const serverURL = config
+        .getConfigArray('lightspeed.servers')[0]
+        .getString('url');
+      const apiToken = config
+        .getConfigArray('lightspeed.servers')[0]
+        .getOptionalString('token');
+
+      // get model list and select first model to use for conversation summary
+      const url = new URL(`${serverURL}/models`);
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${apiToken}`,
+        },
+      });
+      const data = await res.json();
+      let model = '';
+      if (data.data && data.data[0]) {
+        model = data.data[0].id;
+        logger.info(`using model ${model} for retriving conversation summary`);
+      } else {
+        throw Error(`no available model found in server ${serverURL}`);
+      }
+
+      // get summary
+      const promises = conversationList.map(async conversation_id => {
+        const conversationHistory = await loadHistory(
+          conversation_id,
+          DEFAULT_HISTORY_LENGTH,
+        );
+        const openAIApi = new ChatOpenAI({
+          apiKey: apiToken || 'sk-no-key-required', // set to sk-no-key-required if api token is not provided
+          model: model,
+          streaming: false,
+          temperature: 0,
+          configuration: {
+            baseOptions: {
+              headers: {
+                ...(apiToken && { Authorization: `Bearer ${apiToken}` }),
+              },
+            },
+            baseURL: serverURL,
+          },
+        });
+
+        const summarizePrompt = ChatPromptTemplate.fromMessages([
+          [
+            'system',
+            "Your task is to summarize of user's main purpose of a conversation in one sentence without any introductory phrases.",
+          ],
+          new MessagesPlaceholder('messages'),
+        ]);
+
+        const newchain = summarizePrompt.pipe(openAIApi);
+        const summary = await newchain.invoke({
+          messages: [
+            ...conversationHistory,
+            new HumanMessage({
+              content:
+                'get the main subject of our above conversation, return without any introductory phrases. do not form a sentence, only return the subject of the main purpose.',
+            }),
+          ],
+        });
+        const conversationSummary: ConversationSummary = {
+          conversation_id: conversation_id,
+          summary: String(summary.content),
+        };
+        conversationSummaryList.push(conversationSummary);
+      });
+      await Promise.all(promises);
+      response.status(200).json(conversationSummaryList);
+      response.end();
+    } catch (error) {
+      const errormsg = `${error}`;
+      logger.error(errormsg);
+      console.log(errormsg);
       response.status(500).json({ error: errormsg });
     }
   });
