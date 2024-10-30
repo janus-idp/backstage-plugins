@@ -16,6 +16,7 @@ import { handlers, LOCAL_AI_ADDR } from '../../__fixtures__/handlers';
 import { deleteHistory, saveHistory } from '../handlers/chatHistory';
 import { lightspeedPlugin } from '../plugin';
 import { Roles } from '../service/types';
+import { ConversationSummary } from './types';
 
 const mockUserId = `user: default/user1`;
 const mockConversationId = `${mockUserId}+1q2w3e4r-qwer1234`;
@@ -585,7 +586,7 @@ describe('lightspeed router tests', () => {
       );
       expect(response.statusCode).toEqual(200);
       // Parse response body
-      const responseData = response.body;
+      const responseData: ConversationSummary[] = response.body;
 
       // Check that responseData is an array
       expect(Array.isArray(responseData)).toBe(true);

@@ -20,6 +20,7 @@ import {
   validateUserRequest,
 } from '../handlers/conversationId';
 import {
+  ConversationSummary,
   DEFAULT_HISTORY_LENGTH,
   QueryRequestBody,
   Roles,
@@ -94,11 +95,6 @@ export async function createRouter(
       );
       const user_id = userEntity.userEntityRef;
       logger.info(`GET /conversations receives call from user: ${user_id}`);
-
-      type ConversationSummary = {
-        conversation_id: string;
-        summary: string;
-      };
       const conversationList = await loadAllConversations(user_id);
       const conversationSummaryList: ConversationSummary[] = [];
 
