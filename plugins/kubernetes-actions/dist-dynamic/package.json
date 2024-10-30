@@ -27,7 +27,7 @@
   },
   "scripts": {},
   "dependencies": {
-    "@kubernetes/client-node": "^0.20.0"
+    "@kubernetes/client-node": "^0.22.1"
   },
   "devDependencies": {},
   "files": [
