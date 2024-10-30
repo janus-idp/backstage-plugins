@@ -11,7 +11,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "web-library"
+    "role": "web-library",
+    "supported-versions": "1.32.4"
   },
   "sideEffects": false,
   "scripts": {
@@ -26,7 +27,7 @@
     "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
-    "@backstage/core-plugin-api": "^1.9.4",
+    "@backstage/core-plugin-api": "^1.10.0",
     "@backstage/types": "^1.1.1",
     "@rjsf/core": "^5.21.2"
   },
@@ -34,7 +35,7 @@
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.27.1",
+    "@backstage/cli": "0.28.2",
     "@types/json-schema": "7.0.15",
     "prettier": "3.3.3"
   },

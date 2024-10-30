@@ -12,7 +12,7 @@
   },
   "backstage": {
     "role": "node-library",
-    "supported-versions": "1.31.3",
+    "supported-versions": "1.32.4",
     "pluginId": "audit-log",
     "pluginPackage": "@janus-idp/backstage-plugin-audit-log-node",
     "pluginPackages": [
@@ -33,9 +33,9 @@
     "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "devDependencies": {
-    "@backstage/backend-plugin-api": "1.0.0",
-    "@backstage/backend-test-utils": "1.0.0",
-    "@backstage/cli": "0.27.1",
+    "@backstage/backend-plugin-api": "1.0.1",
+    "@backstage/backend-test-utils": "1.0.2",
+    "@backstage/cli": "0.28.2",
     "@backstage/errors": "1.2.4",
     "@backstage/types": "1.1.1",
     "@types/lodash": "4.17.5",
