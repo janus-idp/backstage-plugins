@@ -10,7 +10,7 @@
   },
   "backstage": {
     "role": "backend-plugin-module",
-    "supported-versions": "1.31.3",
+    "supported-versions": "1.32.4",
     "pluginId": "scaffolder",
     "pluginPackage": "@backstage/plugin-scaffolder-backend"
   },
@@ -39,13 +39,13 @@
     "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
-    "@backstage/backend-plugin-api": "^1.0.0",
-    "@backstage/plugin-scaffolder-node": "^0.4.11",
+    "@backstage/backend-plugin-api": "^1.0.1",
+    "@backstage/plugin-scaffolder-node": "^0.5.0",
     "yaml": "^2.3.3"
   },
   "devDependencies": {
-    "@backstage/cli": "0.27.1",
-    "@backstage/plugin-scaffolder-node-test-utils": "0.1.12",
+    "@backstage/cli": "0.28.2",
+    "@backstage/plugin-scaffolder-node-test-utils": "0.1.14",
     "prettier": "3.3.3"
   },
   "files": [

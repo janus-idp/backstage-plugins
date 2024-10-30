@@ -10,7 +10,7 @@
   "configSchema": "config.d.ts",
   "backstage": {
     "role": "backend-plugin",
-    "supported-versions": "1.31.3",
+    "supported-versions": "1.32.4",
     "pluginId": "matomo",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-matomo",
@@ -42,8 +42,8 @@
     "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
-    "@backstage/backend-defaults": "^0.5.0",
-    "@backstage/backend-plugin-api": "^1.0.0",
+    "@backstage/backend-defaults": "^0.5.2",
+    "@backstage/backend-plugin-api": "^1.0.1",
     "@backstage/config": "^1.2.0",
     "@types/express": "4.17.20",
     "express": "^4.18.2",
@@ -52,7 +52,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.27.1",
+    "@backstage/cli": "0.28.2",
     "@types/supertest": "2.0.16",
     "msw": "1.3.3",
     "prettier": "3.3.3",
