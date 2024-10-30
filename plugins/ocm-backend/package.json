@@ -35,8 +35,8 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "export-dynamic": "janus-cli package export-dynamic-plugin --embed-package --embed-package @backstage/plugin-kubernetes-common --no-embed-as-dependencies",
-    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --embed-package --embed-package @backstage/plugin-kubernetes-common --no-embed-as-dependencies --clean",
+    "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies",
+    "export-dynamic:clean": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies --clean",
     "lint:check": "backstage-cli package lint",
     "lint:fix": "backstage-cli package lint --fix",
     "postpack": "backstage-cli package postpack",
@@ -67,7 +67,7 @@
     "@backstage/plugin-permission-common": "^0.8.0",
     "@backstage/plugin-permission-node": "^0.8.0",
     "@janus-idp/backstage-plugin-ocm-common": "3.3.0",
-    "@kubernetes/client-node": "^0.20.0",
+    "@kubernetes/client-node": "^0.22.1",
     "express": "^4.18.2",
     "express-promise-router": "^4.1.1",
     "semver": "^7.5.4"
