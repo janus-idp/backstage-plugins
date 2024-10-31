@@ -2093,7 +2093,7 @@ function newConfig(
       permission: {
         rbac: {
           'policies-csv-file': permFile || csvPermFile,
-          policyFileReload: true,
+          policyFileReload: false,
           admin: {
             users: users || testUsers,
             superUsers: superUsers,

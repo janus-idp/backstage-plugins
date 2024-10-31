@@ -111,6 +111,28 @@ describe('Admin Creation', () => {
       expect(enfPermission).toEqual(permissions);
     });
 
+    it(`should not assign an admin to the permissions if permissions are already assigned`, async () => {
+      await expect(async () => {
+        await setAdminPermissions(enfDelegate, auditLoggerMock);
+      }).not.toThrow();
+    });
+
+    it(`should assign an admin to the new permission`, async () => {
+      const newDefaultPermission = [
+        adminRole,
+        'something-new',
+        'create',
+        'allow',
+      ];
+      await enfDelegate.addPolicy(newDefaultPermission);
+      await setAdminPermissions(enfDelegate, auditLoggerMock);
+      const enfPermission = await enfDelegate.getFilteredPolicy(
+        0,
+        ...newDefaultPermission,
+      );
+      expect(enfPermission.length).toEqual(1);
+    });
+
     it('should fail to build the admin permissions, problem with creating role metadata', async () => {
       roleMetadataStorageMock.findRoleMetadata = jest
         .fn()

@@ -122,7 +122,13 @@ const addAdminPermissions = async (
   enf: EnforcerDelegate,
   auditLogger: AuditLogger,
 ) => {
-  await enf.addPolicies(policies);
+  const policiesToAdd: string[][] = [];
+  for (const policy of policies) {
+    if (!(await enf.hasPolicy(...policy))) {
+      policiesToAdd.push(policy);
+    }
+  }
+  await enf.addPolicies(policiesToAdd);
 
   await auditLogger.auditLog<PermissionAuditInfo>({
     actorId: RBAC_BACKEND,

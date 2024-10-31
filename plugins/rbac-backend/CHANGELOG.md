@@ -1,5 +1,11 @@
 ### Dependencies
 
+## 5.2.1
+
+### Patch Changes
+
+- 0646434: Fix broken plugin startup: don't attempt to store permission policies that are already stored.
+
 ## 5.2.0
 
 ### Minor Changes
