@@ -24,7 +24,7 @@ Help us keep **Janus-IDP** open and inclusive. Please read and follow our [Code 
 ## Guide for Migrating Plugins from janus-idp/backstage-plugins to backstage/community-plugins
 
 > [!NOTE]
-> After fully migrating plugins, remember to check for any updates that may have been made in the `janus-idp/backstage-plugins` repository. You may need to update BCP plugins accordingly to ensure all recent changes are included.
+> After fully migrating plugins, remember to check for any updates that may have been made in the `janus-idp/backstage-plugins` repository. You may need to update backstage/community-plugins accordingly to ensure all recent changes are included.
 
 
 This guide will show you how to migrate plugins from `janus-idp/backstage-plugins` to `backstage/community-plugins` using the backstage/community-plugins cli.
