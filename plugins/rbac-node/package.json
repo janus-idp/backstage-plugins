@@ -12,7 +12,7 @@
   },
   "backstage": {
     "role": "node-library",
-    "supported-versions": "1.32.4",
+    "supported-versions": "1.32.5",
     "pluginId": "rbac",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-rbac",
