@@ -12,7 +12,7 @@
   },
   "backstage": {
     "role": "node-library",
-    "supported-versions": "1.32.4",
+    "supported-versions": "1.32.5",
     "pluginId": "audit-log",
     "pluginPackage": "@janus-idp/backstage-plugin-audit-log-node",
     "pluginPackages": [

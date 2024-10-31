@@ -12,7 +12,7 @@
   "configSchema": "config.d.ts",
   "backstage": {
     "role": "frontend-plugin",
-    "supported-versions": "1.32.4",
+    "supported-versions": "1.32.5",
     "pluginId": "matomo",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-matomo",
