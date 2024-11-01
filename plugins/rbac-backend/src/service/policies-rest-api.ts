@@ -165,9 +165,9 @@ export class PoliciesServer {
         const effect = this.getFirstQuery(request.query.effect);
 
         const filter: string[] = [entityRef, permission, policy, effect];
-        policies = await this.enforcer.getFilteredPolicy(0, ...filter);
+        policies = await this.enforcer.getFilteredPolicy(0, ...filter); // here
       } else {
-        policies = await this.enforcer.getPolicy();
+        policies = await this.enforcer.getPolicy(); // here
       }
 
       const body = await this.transformPolicyArray(...policies);
@@ -198,7 +198,7 @@ export class PoliciesServer {
 
         const entityRef = this.getEntityReference(request);
 
-        const policy = await this.enforcer.getFilteredPolicy(0, entityRef);
+        const policy = await this.enforcer.getFilteredPolicy(0, entityRef); // here
         if (policy.length !== 0) {
           const body = await this.transformPolicyArray(...policy);
 
@@ -397,7 +397,7 @@ export class PoliciesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const roles = await this.enforcer.getGroupingPolicy();
+      const roles = await this.enforcer.getGroupingPolicy(); // here
 
       const body = await this.transformRoleArray(...roles);
 
@@ -425,6 +425,7 @@ export class PoliciesServer {
       const roleEntityRef = this.getEntityReference(request, true);
 
       const role = await this.enforcer.getFilteredGroupingPolicy(
+        // here
         1,
         roleEntityRef,
       );

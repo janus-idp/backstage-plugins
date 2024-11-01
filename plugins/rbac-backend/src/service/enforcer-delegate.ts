@@ -43,10 +43,12 @@ export class EnforcerDelegate implements RoleEventEmitter<RoleEvents> {
   }
 
   async getPolicy(): Promise<string[][]> {
+    await this.enforcer.loadPolicy();
     return await this.enforcer.getPolicy();
   }
 
   async getGroupingPolicy(): Promise<string[][]> {
+    await this.enforcer.loadPolicy();
     return await this.enforcer.getGroupingPolicy();
   }
 
@@ -58,6 +60,7 @@ export class EnforcerDelegate implements RoleEventEmitter<RoleEvents> {
     fieldIndex: number,
     ...filter: string[]
   ): Promise<string[][]> {
+    await this.enforcer.loadPolicy();
     return await this.enforcer.getFilteredPolicy(fieldIndex, ...filter);
   }
 
@@ -65,6 +68,7 @@ export class EnforcerDelegate implements RoleEventEmitter<RoleEvents> {
     fieldIndex: number,
     ...filter: string[]
   ): Promise<string[][]> {
+    await this.enforcer.loadPolicy();
     return await this.enforcer.getFilteredGroupingPolicy(fieldIndex, ...filter);
   }
 
