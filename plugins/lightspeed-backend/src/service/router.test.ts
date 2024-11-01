@@ -583,6 +583,11 @@ describe('lightspeed router tests', () => {
       await saveHistory(mockConversationId2, Roles.HumanRole, humanMessage);
       await saveHistory(mockConversationId2, Roles.AIRole, aiMessage);
 
+      await new Promise(resolve => setTimeout(resolve, 1));
+      const mockConversationId3 = 'user: default/user1+9i8u7y6t-654red3';
+      await saveHistory(mockConversationId3, Roles.HumanRole, humanMessage);
+      await saveHistory(mockConversationId3, Roles.AIRole, aiMessage);
+
       const backendServer = await startBackendServer();
       const response = await request(backendServer).get(
         `/api/lightspeed/conversations`,
@@ -593,20 +598,28 @@ describe('lightspeed router tests', () => {
 
       // Check that responseData is an array
       expect(Array.isArray(responseData)).toBe(true);
-      expect(responseData.length).toBe(2);
+      expect(responseData.length).toBe(3);
       const ids = responseData.map(item => item.conversation_id);
 
       // Check if both expected IDs are present
       expect(ids).toContain(mockConversationId);
-      expect(ids).toContain(mockConversationId);
+      expect(ids).toContain(mockConversationId2);
+      expect(ids).toContain(mockConversationId3);
 
       // check the summary
       expect(responseData[0].summary).toBe(mockSummary);
       expect(responseData[1].summary).toBe(mockSummary);
+      expect(responseData[2].summary).toBe(mockSummary);
+
+      // check the timestamp is in descending order
       expect(responseData[0].lastMessageTimestamp).toBeDefined();
       expect(responseData[1].lastMessageTimestamp).toBeDefined();
-      expect(responseData[0].lastMessageTimestamp).not.toEqual(
+      expect(responseData[2].lastMessageTimestamp).toBeDefined();
+      expect(responseData[0].lastMessageTimestamp).toBeGreaterThan(
         responseData[1].lastMessageTimestamp,
+      );
+      expect(responseData[1].lastMessageTimestamp).toBeGreaterThan(
+        responseData[2].lastMessageTimestamp,
       );
     });
   });

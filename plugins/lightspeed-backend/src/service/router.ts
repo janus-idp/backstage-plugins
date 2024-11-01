@@ -173,6 +173,10 @@ export async function createRouter(
         conversationSummaryList.push(conversationSummary);
       });
       await Promise.all(promises);
+      // Sorting the array
+      conversationSummaryList.sort(
+        (a, b) => b.lastMessageTimestamp - a.lastMessageTimestamp,
+      );
       response.status(200).json(conversationSummaryList);
       response.end();
     } catch (error) {
