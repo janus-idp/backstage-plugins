@@ -577,6 +577,9 @@ describe('lightspeed router tests', () => {
       await saveHistory(mockConversationId, Roles.HumanRole, humanMessage);
       await saveHistory(mockConversationId, Roles.AIRole, aiMessage);
 
+      // wait for 1ms for the second conversation to be saved to test for timestamp
+      await new Promise(resolve => setTimeout(resolve, 1));
+
       await saveHistory(mockConversationId2, Roles.HumanRole, humanMessage);
       await saveHistory(mockConversationId2, Roles.AIRole, aiMessage);
 
@@ -600,6 +603,11 @@ describe('lightspeed router tests', () => {
       // check the summary
       expect(responseData[0].summary).toBe(mockSummary);
       expect(responseData[1].summary).toBe(mockSummary);
+      expect(responseData[0].lastMessageTimestamp).toBeDefined();
+      expect(responseData[1].lastMessageTimestamp).toBeDefined();
+      expect(responseData[0].lastMessageTimestamp).not.toEqual(
+        responseData[1].lastMessageTimestamp,
+      );
     });
   });
 });

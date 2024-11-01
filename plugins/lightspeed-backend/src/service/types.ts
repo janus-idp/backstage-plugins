@@ -43,4 +43,5 @@ export const DEFAULT_HISTORY_LENGTH = 10;
 export type ConversationSummary = {
   conversation_id: string;
   summary: string;
+  lastMessageTimestamp: number;
 };

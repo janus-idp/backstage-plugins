@@ -129,6 +129,9 @@ export async function createRouter(
           conversation_id,
           DEFAULT_HISTORY_LENGTH,
         );
+        const LastMessage = conversationHistory[conversationHistory.length - 1];
+        const timestamp = LastMessage.response_metadata.created_at;
+
         const openAIApi = new ChatOpenAI({
           apiKey: apiToken || 'sk-no-key-required', // set to sk-no-key-required if api token is not provided
           model: model,
@@ -147,7 +150,7 @@ export async function createRouter(
         const summarizePrompt = ChatPromptTemplate.fromMessages([
           [
             'system',
-            "Your task is to summarize of user's main purpose of a conversation in one sentence without any introductory phrases.",
+            "Your task is to summarize of user's main purpose of a conversation in a few words without any introductory phrases. ",
           ],
           new MessagesPlaceholder('messages'),
         ]);
@@ -158,13 +161,14 @@ export async function createRouter(
             ...conversationHistory,
             new HumanMessage({
               content:
-                'get the main subject of our above conversation, return without any introductory phrases. do not form a sentence, only return the subject of the main purpose.',
+                'summarize the above conversation to be displayed as a title in frontend for people to get a main subject of the conversation. do not form a sentence, only return the subject of the main purpose. ',
             }),
           ],
         });
         const conversationSummary: ConversationSummary = {
           conversation_id: conversation_id,
           summary: String(summary.content),
+          lastMessageTimestamp: timestamp,
         };
         conversationSummaryList.push(conversationSummary);
       });
