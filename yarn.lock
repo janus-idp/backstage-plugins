@@ -8127,7 +8127,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-audit-log-node@^1.7.0, @janus-idp/backstage-plugin-audit-log-node@workspace:plugins/audit-log-node":
+"@janus-idp/backstage-plugin-audit-log-node@^1.7.1, @janus-idp/backstage-plugin-audit-log-node@workspace:plugins/audit-log-node":
   version: 0.0.0-use.local
   resolution: "@janus-idp/backstage-plugin-audit-log-node@workspace:plugins/audit-log-node"
   dependencies:
@@ -8161,7 +8161,7 @@ __metadata:
     "@backstage/plugin-catalog-node": ^1.13.1
     "@backstage/plugin-permission-common": ^0.8.1
     "@backstage/plugin-permission-node": ^0.8.4
-    "@janus-idp/backstage-plugin-bulk-import-common": ^1.3.0
+    "@janus-idp/backstage-plugin-bulk-import-common": ^1.3.1
     "@octokit/auth-app": ^6.0.3
     "@octokit/rest": ^20.0.2
     "@openapitools/openapi-generator-cli": 2.13.4
@@ -8180,11 +8180,11 @@ __metadata:
     prettier: 3.3.3
     supertest: 6.3.4
   peerDependencies:
-    "@janus-idp/backstage-plugin-audit-log-node": ^1.7.0
+    "@janus-idp/backstage-plugin-audit-log-node": ^1.7.1
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-bulk-import-common@^1.3.0, @janus-idp/backstage-plugin-bulk-import-common@workspace:plugins/bulk-import-common":
+"@janus-idp/backstage-plugin-bulk-import-common@^1.3.1, @janus-idp/backstage-plugin-bulk-import-common@workspace:plugins/bulk-import-common":
   version: 0.0.0-use.local
   resolution: "@janus-idp/backstage-plugin-bulk-import-common@workspace:plugins/bulk-import-common"
   dependencies:
@@ -8210,8 +8210,8 @@ __metadata:
     "@backstage/plugin-permission-react": ^0.4.27
     "@backstage/test-utils": 1.7.0
     "@backstage/theme": ^0.6.0
-    "@janus-idp/backstage-plugin-bulk-import-common": ^1.3.0
-    "@janus-idp/shared-react": ^2.13.0
+    "@janus-idp/backstage-plugin-bulk-import-common": ^1.3.1
+    "@janus-idp/shared-react": ^2.13.1
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.11.3
     "@material-ui/lab": ^4.0.0-alpha.61
@@ -8250,7 +8250,7 @@ __metadata:
     "@backstage/plugin-catalog-react": ^1.14.0
     "@backstage/test-utils": 1.7.0
     "@backstage/theme": ^0.6.0
-    "@janus-idp/shared-react": ^2.13.0
+    "@janus-idp/shared-react": ^2.13.1
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.11.3
     "@material-ui/lab": ^4.0.0-alpha.45
@@ -8499,7 +8499,7 @@ __metadata:
     "@backstage/plugin-catalog-node": ^1.13.1
     "@backstage/plugin-permission-common": ^0.8.1
     "@backstage/plugin-permission-node": ^0.8.4
-    "@janus-idp/backstage-plugin-ocm-common": ^3.6.0
+    "@janus-idp/backstage-plugin-ocm-common": ^3.6.1
     "@kubernetes/client-node": ^0.22.1
     "@openapitools/openapi-generator-cli": 2.13.4
     "@types/express": 4.17.21
@@ -8512,7 +8512,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-ocm-common@^3.6.0, @janus-idp/backstage-plugin-ocm-common@workspace:plugins/ocm-common":
+"@janus-idp/backstage-plugin-ocm-common@^3.6.1, @janus-idp/backstage-plugin-ocm-common@workspace:plugins/ocm-common":
   version: 0.0.0-use.local
   resolution: "@janus-idp/backstage-plugin-ocm-common@workspace:plugins/ocm-common"
   dependencies:
@@ -8541,7 +8541,7 @@ __metadata:
     "@backstage/plugin-search-react": ^1.8.1
     "@backstage/test-utils": 1.7.0
     "@backstage/theme": ^0.6.0
-    "@janus-idp/backstage-plugin-ocm-common": ^3.6.0
+    "@janus-idp/backstage-plugin-ocm-common": ^3.6.1
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.11.3
     "@material-ui/lab": ^4.0.0-alpha.45
@@ -8581,7 +8581,7 @@ __metadata:
     "@backstage/plugin-permission-node": ^0.8.4
     "@backstage/plugin-scaffolder-backend": ^1.26.2
     "@backstage/plugin-scaffolder-node": ^0.5.0
-    "@janus-idp/backstage-plugin-orchestrator-common": ^1.23.0
+    "@janus-idp/backstage-plugin-orchestrator-common": ^1.23.1
     "@types/express": 4.17.21
     "@types/fs-extra": 11.0.4
     "@types/json-schema": 7.0.15
@@ -8598,12 +8598,12 @@ __metadata:
     prettier: 3.3.3
     yn: ^5.0.0
   peerDependencies:
-    "@janus-idp/backstage-plugin-audit-log-node": ^1.7.0
-    "@janus-idp/backstage-plugin-rbac-common": ^1.12.0
+    "@janus-idp/backstage-plugin-audit-log-node": ^1.7.1
+    "@janus-idp/backstage-plugin-rbac-common": ^1.12.1
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-orchestrator-common@^1.23.0, @janus-idp/backstage-plugin-orchestrator-common@workspace:plugins/orchestrator-common":
+"@janus-idp/backstage-plugin-orchestrator-common@^1.23.1, @janus-idp/backstage-plugin-orchestrator-common@workspace:plugins/orchestrator-common":
   version: 0.0.0-use.local
   resolution: "@janus-idp/backstage-plugin-orchestrator-common@workspace:plugins/orchestrator-common"
   dependencies:
@@ -8623,7 +8623,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-orchestrator-form-api@^1.4.0, @janus-idp/backstage-plugin-orchestrator-form-api@workspace:plugins/orchestrator-form-api":
+"@janus-idp/backstage-plugin-orchestrator-form-api@^1.4.1, @janus-idp/backstage-plugin-orchestrator-form-api@workspace:plugins/orchestrator-form-api":
   version: 0.0.0-use.local
   resolution: "@janus-idp/backstage-plugin-orchestrator-form-api@workspace:plugins/orchestrator-form-api"
   dependencies:
@@ -8639,7 +8639,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-orchestrator-form-react@^1.4.0, @janus-idp/backstage-plugin-orchestrator-form-react@workspace:plugins/orchestrator-form-react":
+"@janus-idp/backstage-plugin-orchestrator-form-react@^1.4.1, @janus-idp/backstage-plugin-orchestrator-form-react@workspace:plugins/orchestrator-form-react":
   version: 0.0.0-use.local
   resolution: "@janus-idp/backstage-plugin-orchestrator-form-react@workspace:plugins/orchestrator-form-react"
   dependencies:
@@ -8647,7 +8647,7 @@ __metadata:
     "@backstage/core-components": ^0.15.1
     "@backstage/core-plugin-api": ^1.10.0
     "@backstage/types": ^1.1.1
-    "@janus-idp/backstage-plugin-orchestrator-form-api": ^1.4.0
+    "@janus-idp/backstage-plugin-orchestrator-form-api": ^1.4.1
     "@material-ui/core": ^4.12.4
     "@rjsf/core": ^5.21.2
     "@rjsf/material-ui": ^5.21.2
@@ -8706,9 +8706,9 @@ __metadata:
     "@backstage/plugin-permission-react": ^0.4.27
     "@backstage/test-utils": 1.7.0
     "@backstage/types": 1.1.1
-    "@janus-idp/backstage-plugin-orchestrator-common": ^1.23.0
-    "@janus-idp/backstage-plugin-orchestrator-form-api": ^1.4.0
-    "@janus-idp/backstage-plugin-orchestrator-form-react": ^1.4.0
+    "@janus-idp/backstage-plugin-orchestrator-common": ^1.23.1
+    "@janus-idp/backstage-plugin-orchestrator-form-api": ^1.4.1
+    "@janus-idp/backstage-plugin-orchestrator-form-react": ^1.4.1
     "@kie-tools-core/editor": ^0.32.0
     "@kie-tools-core/notifications": ^0.32.0
     "@kie-tools-core/react-hooks": ^0.32.0
@@ -8742,7 +8742,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-quay-common@^1.3.0, @janus-idp/backstage-plugin-quay-common@workspace:plugins/quay-common":
+"@janus-idp/backstage-plugin-quay-common@^1.3.1, @janus-idp/backstage-plugin-quay-common@workspace:plugins/quay-common":
   version: 0.0.0-use.local
   resolution: "@janus-idp/backstage-plugin-quay-common@workspace:plugins/quay-common"
   dependencies:
@@ -8769,8 +8769,8 @@ __metadata:
     "@backstage/plugin-permission-react": ^0.4.27
     "@backstage/test-utils": 1.7.0
     "@backstage/theme": ^0.6.0
-    "@janus-idp/backstage-plugin-quay-common": ^1.3.0
-    "@janus-idp/shared-react": ^2.13.0
+    "@janus-idp/backstage-plugin-quay-common": ^1.3.1
+    "@janus-idp/shared-react": ^2.13.1
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.11.3
     "@material-ui/lab": 4.0.0-alpha.61
@@ -8803,7 +8803,7 @@ __metadata:
     "@backstage/cli": 0.28.2
     "@backstage/config": 1.2.0
     "@backstage/errors": ^1.2.4
-    "@janus-idp/backstage-plugin-rbac-node": ^1.8.0
+    "@janus-idp/backstage-plugin-rbac-node": ^1.8.1
     csv-parse: ^5.5.6
     prettier: 3.3.3
   languageName: unknown
@@ -8828,9 +8828,9 @@ __metadata:
     "@backstage/plugin-permission-node": ^0.8.4
     "@backstage/types": 1.1.1
     "@dagrejs/graphlib": ^2.1.13
-    "@janus-idp/backstage-plugin-audit-log-node": ^1.7.0
-    "@janus-idp/backstage-plugin-rbac-common": ^1.12.0
-    "@janus-idp/backstage-plugin-rbac-node": ^1.8.0
+    "@janus-idp/backstage-plugin-audit-log-node": ^1.7.1
+    "@janus-idp/backstage-plugin-rbac-common": ^1.12.1
+    "@janus-idp/backstage-plugin-rbac-node": ^1.8.1
     "@types/express": 4.17.21
     "@types/node": 18.19.34
     "@types/supertest": 2.0.16
@@ -8850,7 +8850,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-rbac-common@^1.12.0, @janus-idp/backstage-plugin-rbac-common@workspace:plugins/rbac-common":
+"@janus-idp/backstage-plugin-rbac-common@^1.12.1, @janus-idp/backstage-plugin-rbac-common@workspace:plugins/rbac-common":
   version: 0.0.0-use.local
   resolution: "@janus-idp/backstage-plugin-rbac-common@workspace:plugins/rbac-common"
   dependencies:
@@ -8862,7 +8862,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-rbac-node@^1.8.0, @janus-idp/backstage-plugin-rbac-node@workspace:plugins/rbac-node":
+"@janus-idp/backstage-plugin-rbac-node@^1.8.1, @janus-idp/backstage-plugin-rbac-node@workspace:plugins/rbac-node":
   version: 0.0.0-use.local
   resolution: "@janus-idp/backstage-plugin-rbac-node@workspace:plugins/rbac-node"
   dependencies:
@@ -8888,8 +8888,8 @@ __metadata:
     "@backstage/plugin-permission-react": ^0.4.27
     "@backstage/test-utils": 1.7.0
     "@backstage/theme": ^0.6.0
-    "@janus-idp/backstage-plugin-rbac-common": ^1.12.0
-    "@janus-idp/shared-react": ^2.13.0
+    "@janus-idp/backstage-plugin-rbac-common": ^1.12.1
+    "@janus-idp/shared-react": ^2.13.1
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.11.3
     "@material-ui/lab": ^4.0.0-alpha.45
@@ -8920,7 +8920,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-tekton-common@^1.3.0, @janus-idp/backstage-plugin-tekton-common@workspace:plugins/tekton-common":
+"@janus-idp/backstage-plugin-tekton-common@^1.3.1, @janus-idp/backstage-plugin-tekton-common@workspace:plugins/tekton-common":
   version: 0.0.0-use.local
   resolution: "@janus-idp/backstage-plugin-tekton-common@workspace:plugins/tekton-common"
   dependencies:
@@ -8949,8 +8949,8 @@ __metadata:
     "@backstage/plugin-permission-react": ^0.4.27
     "@backstage/test-utils": 1.7.0
     "@backstage/theme": ^0.6.0
-    "@janus-idp/backstage-plugin-tekton-common": ^1.3.0
-    "@janus-idp/shared-react": ^2.13.0
+    "@janus-idp/backstage-plugin-tekton-common": ^1.3.1
+    "@janus-idp/shared-react": ^2.13.1
     "@kubernetes/client-node": ^0.22.1
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.11.3
@@ -8984,7 +8984,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-topology-common@^1.6.0, @janus-idp/backstage-plugin-topology-common@workspace:plugins/topology-common":
+"@janus-idp/backstage-plugin-topology-common@^1.6.1, @janus-idp/backstage-plugin-topology-common@workspace:plugins/topology-common":
   version: 0.0.0-use.local
   resolution: "@janus-idp/backstage-plugin-topology-common@workspace:plugins/topology-common"
   dependencies:
@@ -9012,8 +9012,8 @@ __metadata:
     "@backstage/plugin-permission-react": ^0.4.27
     "@backstage/test-utils": 1.7.0
     "@backstage/theme": ^0.6.0
-    "@janus-idp/backstage-plugin-topology-common": ^1.6.0
-    "@janus-idp/shared-react": ^2.13.0
+    "@janus-idp/backstage-plugin-topology-common": ^1.6.1
+    "@janus-idp/shared-react": ^2.13.1
     "@kubernetes/client-node": ^0.22.1
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.11.3
@@ -9259,7 +9259,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/shared-react@^2.13.0, @janus-idp/shared-react@workspace:plugins/shared-react":
+"@janus-idp/shared-react@^2.13.1, @janus-idp/shared-react@workspace:plugins/shared-react":
   version: 0.0.0-use.local
   resolution: "@janus-idp/shared-react@workspace:plugins/shared-react"
   dependencies:
