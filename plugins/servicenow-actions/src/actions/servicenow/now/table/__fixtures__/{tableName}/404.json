@@ -1,7 +1,0 @@
-{
-  "error": {
-    "message": "Invalid table :tableName",
-    "detail": null
-  },
-  "status": "failure"
-}
