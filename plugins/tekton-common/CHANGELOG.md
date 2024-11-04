@@ -1,5 +1,13 @@
 # @janus-idp/backstage-plugin-tekton-common
 
+## 1.3.1
+
+### Patch Changes
+
+- 0e6bfd3: feat: update Backstage to the latest version
+
+  Update to Backstage 1.32.5
+
 ## 1.3.0
 
 ### Minor Changes

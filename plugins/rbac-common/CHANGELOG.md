@@ -1,5 +1,13 @@
 ## @janus-idp/backstage-plugin-rbac-common [1.8.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-common@1.8.1...@janus-idp/backstage-plugin-rbac-common@1.8.2) (2024-08-06)
 
+## 1.12.1
+
+### Patch Changes
+
+- 0e6bfd3: feat: update Backstage to the latest version
+
+  Update to Backstage 1.32.5
+
 ## 1.12.0
 
 ### Minor Changes

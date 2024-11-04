@@ -1,5 +1,13 @@
 ## @janus-idp/backstage-plugin-rbac-node [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-node@1.3.1...@janus-idp/backstage-plugin-rbac-node@1.4.0) (2024-07-26)
 
+## 1.8.1
+
+### Patch Changes
+
+- 0e6bfd3: feat: update Backstage to the latest version
+
+  Update to Backstage 1.32.5
+
 ## 1.8.0
 
 ### Minor Changes

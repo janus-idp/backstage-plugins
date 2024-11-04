@@ -1,5 +1,16 @@
 ### Dependencies
 
+## 5.2.1
+
+### Patch Changes
+
+- 0e6bfd3: feat: update Backstage to the latest version
+
+  Update to Backstage 1.32.5
+
+- Updated dependencies [0e6bfd3]
+  - @janus-idp/backstage-plugin-ocm-common@3.6.1
+
 ## 5.2.0
 
 ### Minor Changes

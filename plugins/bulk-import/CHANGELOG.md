@@ -1,5 +1,17 @@
 ### Dependencies
 
+## 1.7.1
+
+### Patch Changes
+
+- 0e6bfd3: feat: update Backstage to the latest version
+
+  Update to Backstage 1.32.5
+
+- Updated dependencies [0e6bfd3]
+  - @janus-idp/backstage-plugin-bulk-import-common@1.3.1
+  - @janus-idp/shared-react@2.13.1
+
 ## 1.7.0
 
 ### Minor Changes

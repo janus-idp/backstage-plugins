@@ -1,5 +1,18 @@
 ### Dependencies
 
+## 5.2.2
+
+### Patch Changes
+
+- 0e6bfd3: feat: update Backstage to the latest version
+
+  Update to Backstage 1.32.5
+
+- Updated dependencies [0e6bfd3]
+  - @janus-idp/backstage-plugin-audit-log-node@1.7.1
+  - @janus-idp/backstage-plugin-rbac-common@1.12.1
+  - @janus-idp/backstage-plugin-rbac-node@1.8.1
+
 ## 5.2.1
 
 ### Patch Changes
