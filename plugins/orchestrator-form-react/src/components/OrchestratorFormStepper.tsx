@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 
 import { useStepperContext } from '../utils/StepperContext';
+import SubmitButton from './SubmitButton';
 
 const useStyles = makeStyles(theme => ({
   // Hotfix: this should be fixed in the theme
@@ -85,16 +86,14 @@ const OrchestratorFormStepper = ({
 };
 
 export const OrchestratorFormToolbar = () => {
-  const { activeStep, handleBack } = useStepperContext();
+  const { activeStep, handleBack, isValidating } = useStepperContext();
   const styles = useStyles();
   return (
     <div className={styles.footer}>
       <Button disabled={activeStep === 0} onClick={handleBack}>
         Back
       </Button>
-      <Button variant="contained" color="primary" type="submit">
-        Next
-      </Button>
+      <SubmitButton submitting={isValidating}>Next</SubmitButton>
     </div>
   );
 };
