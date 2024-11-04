@@ -72,3 +72,11 @@ export async function loadHistory(
 export async function deleteHistory(conversation_id: string): Promise<void> {
   return await historyStore.mdelete([conversation_id]);
 }
+
+export async function loadAllConversations(user_id: string): Promise<string[]> {
+  const conversationIDList = [];
+  for await (const key of historyStore.yieldKeys(user_id)) {
+    conversationIDList.push(key);
+  }
+  return conversationIDList;
+}
