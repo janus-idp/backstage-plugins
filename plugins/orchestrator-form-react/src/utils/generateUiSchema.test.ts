@@ -1,5 +1,5 @@
 import { UiSchema } from '@rjsf/utils';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 
 import generateUiSchema from './generateUiSchema';
 
