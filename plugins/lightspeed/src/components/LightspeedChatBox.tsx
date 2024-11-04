@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { useApi } from '@backstage/core-plugin-api';
-
 import { makeStyles } from '@material-ui/core';
 import {
   Chatbot,
@@ -13,16 +11,11 @@ import {
   Message,
   MessageBar,
   MessageBox,
-  MessageProps,
 } from '@patternfly/virtual-assistant';
 
-import { lightspeedApiRef } from '../api/LightspeedProxyClient';
-import logo from '../images/logo.svg';
-import { Conversations } from '../types';
-import {
-  getFootnoteProps,
-  getTimestamp,
-} from '../utils/lightspeed-chatbox-utils';
+import { useBackstageUserIdentity } from '../hooks/useBackstageUserIdentity';
+import { useConversations } from '../hooks/useConversations';
+import { getFootnoteProps } from '../utils/lightspeed-chatbox-utils';
 import { LightspeedChatBoxHeader } from './LightspeedChatBoxHeader';
 
 const useStyles = makeStyles(theme => ({
@@ -33,6 +26,17 @@ const useStyles = makeStyles(theme => ({
           color: theme.palette.common.white,
         },
       },
+    },
+  },
+  content: {
+    '&.pf-chatbot__content': {
+      padding: 0,
+    },
+  },
+  footer: {
+    '&.pf-chatbot__footer': {
+      padding:
+        '0 var(--pf-t--global--spacer--lg) var(--pf-t--global--spacer--lg) var(--pf-t--global--spacer--lg)',
     },
   },
 }));
@@ -54,77 +58,37 @@ export const LightspeedChatBox = ({
   handleSelectedModel,
   models,
 }: LightspeedChatBoxProps) => {
-  const lightspeedApi = useApi(lightspeedApiRef);
-  const [, setChunkIndex] = React.useState(0);
   const classes = useStyles();
-  const [convoIndex, setConvoIndex] = React.useState<number[]>([0]);
-  const [messages, setMessages] = React.useState<Conversations>({});
-  const convoCounter = convoIndex.length - 1;
+  const user = useBackstageUserIdentity();
+  const [isSendButtonDisabled, setIsSendButtonDisabled] = React.useState(false);
+  const [announcement, setAnnouncement] = React.useState<string>();
 
-  const context_template = Object.values(messages)
-    .map(convo => `USER: ${convo.user}\nBOT: ${convo.bot}`)
-    .join('\n\n');
+  const conversationId = user ? `${user}+DD4sfxEPLmFoMujg` : ''; // TODO: Replace placeholder ID with actual ID once the Conversation List API is available.
 
-  const handleInputPrompt = React.useCallback(
-    async (prompt: string) => {
-      setMessages(m => {
-        m[convoCounter] = {
-          user: prompt,
-          bot: '',
-          model: selectedModel,
-          loading: true,
-          timestamp: '',
-        };
-        return m;
-      });
-      setChunkIndex(0);
+  const onComplete = () => {
+    setIsSendButtonDisabled(false);
+    setAnnouncement(`Message from Bot: API response goes here`);
+  };
+  const { conversations, handleInputPrompt, scrollToBottomRef } =
+    useConversations(
+      conversationId,
+      userName,
+      selectedModel,
+      avatar,
+      onComplete,
+    );
 
-      const latestQuestion = `Respond to the users current message\n\nCONTEXT: ${context_template}\n\nCURRENT QUESTION: ${prompt}`;
-      const result = await lightspeedApi.createChatCompletions(
-        `${latestQuestion}`,
-        selectedModel,
-      );
-
-      let chunkNumber = 1;
-      for await (const chunk of result) {
-        setChunkIndex(index => index + 1);
-        // eslint-disable-next-line no-loop-func
-        setMessages(m => {
-          m[convoCounter] = {
-            ...m[convoCounter],
-            bot: `${m[`${convoCounter}`]?.bot || ''}${chunk.choices[0]?.delta?.content || ''}`,
-            loading: false,
-            ...(chunkNumber === 1
-              ? { timestamp: getTimestamp(chunk.created) }
-              : {}),
-          };
-          return m;
-        });
-        chunkNumber++;
-      }
-      setConvoIndex(conIndex => [...conIndex, convoCounter + 1]);
-    },
-    [context_template, convoCounter, lightspeedApi, selectedModel],
+  const messages = React.useMemo(
+    () => conversations[conversationId] ?? [],
+    [conversations, conversationId],
   );
 
-  const transformedMessages = Object.values(messages)
-    .map(msg => [
-      {
-        role: 'user',
-        content: msg.user,
-        name: `${userName}`,
-        avatar,
-      },
-      {
-        role: 'bot',
-        content: msg.bot,
-        name: `${msg.model}`,
-        isLoading: msg.loading,
-        timestamp: msg.timestamp,
-        avatar: logo,
-      },
-    ])
-    .flat() as MessageProps[];
+  // Auto-scrolls to the latest message
+  React.useEffect(() => {
+    if (messages.length > 2) {
+      scrollToBottomRef.current?.scrollIntoView({ behavior: 'auto' });
+    }
+  }, [messages, scrollToBottomRef]);
 
   const welcomePrompts = [
     {
@@ -140,30 +104,49 @@ export const LightspeedChatBox = ({
   ];
 
   return (
-    <>
-      <Chatbot displayMode={ChatbotDisplayMode.embedded}>
-        <LightspeedChatBoxHeader
-          selectedModel={selectedModel}
-          handleSelectedModel={item => handleSelectedModel(item)}
-          models={models}
+    <Chatbot displayMode={ChatbotDisplayMode.embedded}>
+      <LightspeedChatBoxHeader
+        selectedModel={selectedModel}
+        handleSelectedModel={item => handleSelectedModel(item)}
+        models={models}
+      />
+      <ChatbotContent className={classes.content}>
+        <MessageBox
+          className={classes.userMessageText}
+          announcement={announcement}
+        >
+          <ChatbotWelcomePrompt
+            title={`Hello, ${profileLoading ? '...' : (userName ?? 'Guest')}`}
+            description="How can I help you today?"
+            prompts={!messages.length ? welcomePrompts : []}
+          />
+          {messages.map((message, index) => {
+            if (index === messages.length - 1) {
+              return (
+                <React.Fragment key={`${message.role}-${index}`}>
+                  <Message key={`${message.role}-${index}`} {...message} />
+                  <div ref={scrollToBottomRef} />
+                </React.Fragment>
+              );
+            }
+            return <Message key={`${message.role}-${index}`} {...message} />;
+          })}
+        </MessageBox>
+      </ChatbotContent>
+      <ChatbotFooter className={classes.footer}>
+        <MessageBar
+          onSendMessage={prompt => {
+            setIsSendButtonDisabled(true);
+            setAnnouncement(
+              `Message from User: ${prompt}. Message from Bot is loading.`,
+            );
+            handleInputPrompt(prompt);
+          }}
+          hasMicrophoneButton
+          isSendButtonDisabled={isSendButtonDisabled}
         />
-        <ChatbotContent>
-          <MessageBox className={classes.userMessageText}>
-            <ChatbotWelcomePrompt
-              title={`Hello, ${profileLoading ? '...' : userName}`}
-              description="How can I help you today?"
-              prompts={!transformedMessages.length ? welcomePrompts : []}
-            />
-            {transformedMessages.map((message, index) => (
-              <Message key={`${message.role}-${index}`} {...message} />
-            ))}
-          </MessageBox>
-        </ChatbotContent>
-        <ChatbotFooter>
-          <MessageBar onSendMessage={handleInputPrompt} hasMicrophoneButton />
-          <ChatbotFootnote {...getFootnoteProps()} />
-        </ChatbotFooter>
-      </Chatbot>
-    </>
+        <ChatbotFootnote {...getFootnoteProps()} />
+      </ChatbotFooter>
+    </Chatbot>
   );
 };

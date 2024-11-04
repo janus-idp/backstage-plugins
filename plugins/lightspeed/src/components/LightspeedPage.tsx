@@ -5,8 +5,9 @@ import { Content, Page } from '@backstage/core-components';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import { lightspeedApiRef } from '../api/LightspeedProxyClient';
+import { lightspeedApiRef } from '../api/api';
 import { LightspeedChatBox } from './LightspeedChatBox';
 
 const useStyles = makeStyles(() =>
@@ -28,6 +29,7 @@ export const LightspeedPage = () => {
 
   const lightspeedApi = useApi(lightspeedApiRef);
   const identityApi = useApi(identityApiRef);
+  const queryClient = new QueryClient();
 
   const { value: models } = useAsync(
     async () => await lightspeedApi.getAllModels(),
@@ -61,16 +63,18 @@ export const LightspeedPage = () => {
   return (
     <Page themeId="tool">
       <Content className={classes.container}>
-        <LightspeedChatBox
-          selectedModel={selectedModel}
-          handleSelectedModel={item => {
-            setSelectedModel(item);
-          }}
-          models={modelsItems}
-          userName={profile?.displayName}
-          avatar={profile?.picture}
-          profileLoading={profileLoading}
-        />
+        <QueryClientProvider client={queryClient}>
+          <LightspeedChatBox
+            selectedModel={selectedModel}
+            handleSelectedModel={item => {
+              setSelectedModel(item);
+            }}
+            models={modelsItems}
+            userName={profile?.displayName}
+            avatar={profile?.picture}
+            profileLoading={profileLoading}
+          />
+        </QueryClientProvider>
       </Content>
     </Page>
   );
