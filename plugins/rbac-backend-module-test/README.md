@@ -1,5 +1,3 @@
-# @janus-idp/backstage-plugin-rbac-backend-module-test
+# Deprecated
 
-The test backend module for the rbac plugin.
-
-_This plugin was created through the Backstage CLI_
+This package has been moved to the [backstage-community/plugins](https://github.com/backstage/community-plugins) repository. Migrate to using `@backstage-community/plugin-rbac-backend-module-test` instead.
