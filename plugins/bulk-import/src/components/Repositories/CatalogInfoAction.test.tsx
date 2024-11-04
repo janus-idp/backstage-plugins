@@ -105,6 +105,7 @@ describe('CatalogInfoAction', () => {
         repositories: {
           ['org/dessert/cupcake']: {
             ...mockGetImportJobs.imports[0],
+            status: RepositoryStatus.ADDED,
             catalogInfoYaml: {
               status: RepositoryStatus.ADDED,
             },

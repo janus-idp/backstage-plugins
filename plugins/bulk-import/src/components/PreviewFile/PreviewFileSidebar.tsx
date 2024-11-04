@@ -116,7 +116,7 @@ export const PreviewFileSidebar = ({
             [id]: {
               error: {
                 message: [
-                  `The entity YAML in your pull request is invalid (empty file or missing apiVersion, kind, or metadata.name). A new YAML has been generated below.`,
+                  'The entity YAML in your pull request is invalid (empty file or missing apiVersion, kind, or metadata.name). A new YAML has been generated below.',
                 ],
               },
             },

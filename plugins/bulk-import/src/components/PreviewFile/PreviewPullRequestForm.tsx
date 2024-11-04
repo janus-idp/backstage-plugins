@@ -19,7 +19,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
-import { useFormikContext } from 'formik';
+import { FormikErrors, useFormik, useFormikContext } from 'formik';
 
 import {
   AddRepositoriesFormValues,
@@ -27,8 +27,8 @@ import {
   PullRequestPreviewData,
 } from '../../types';
 import {
-  componentNameRegex,
   convertKeyValuePairsToString,
+  getValidationSchema,
   getYamlKeyValuePairs,
 } from '../../utils/repository-utils';
 import KeyValueTextField from './KeyValueTextField';
@@ -49,15 +49,11 @@ export const PreviewPullRequestForm = ({
   setPullRequest,
   formErrors,
   setFormErrors,
-  entityOwner,
-  setEntityOwner,
 }: {
   repoId: string;
   repoUrl: string;
   pullRequest: PullRequestPreviewData;
   formErrors: PullRequestPreviewData;
-  entityOwner: string;
-  setEntityOwner: (name: string) => void;
   setPullRequest: (pullRequest: PullRequestPreviewData) => void;
   setFormErrors: (pullRequest: PullRequestPreviewData) => void;
 }) => {
@@ -67,6 +63,16 @@ export const PreviewPullRequestForm = ({
 
   const approvalTool =
     values.approvalTool === 'git' ? 'Pull request' : 'ServiceNow ticket';
+
+  const formik = useFormik<PullRequestPreview>({
+    enableReinitialize: true,
+    initialValues: pullRequest[repoId],
+    initialErrors: formErrors?.[
+      repoId
+    ] as any as FormikErrors<PullRequestPreview>,
+    validationSchema: getValidationSchema(approvalTool),
+    onSubmit: () => {},
+  });
 
   const { loading: entitiesLoading, value: entities } = useAsync(async () => {
     const allEntities = await catalogApi.getEntities({
@@ -80,34 +86,12 @@ export const PreviewPullRequestForm = ({
       .sort((a, b) => a.localeCompare(b));
   });
 
-  React.useEffect(() => {
-    const newFormErrors = {
-      ...formErrors,
-      [repoId]: {
-        ...formErrors?.[repoId],
-        entityOwner: 'Entity owner is missing',
-      },
-    };
-
-    if (
-      Object.keys(pullRequest || {}).length > 0 &&
-      !pullRequest[repoId]?.entityOwner &&
-      !pullRequest[repoId]?.useCodeOwnersFile
-    ) {
-      if (JSON.stringify(formErrors) !== JSON.stringify(newFormErrors)) {
-        setFormErrors(newFormErrors);
-      }
-    } else if (pullRequest[repoId]?.entityOwner) {
-      setEntityOwner(pullRequest[repoId].entityOwner || 'user:default/guest');
-    }
-  }, [setFormErrors, setEntityOwner, formErrors, repoId, pullRequest]);
-
   const updatePullRequestKeyValuePairFields = (
     field: string,
     value: string,
     yamlKey: string,
   ) => {
-    const yamlUpdate: Entity = { ...pullRequest[repoId]?.yaml };
+    const yamlUpdate: Entity = { ...formik.values?.yaml };
 
     if (value.length === 0) {
       if (yamlKey.includes('.')) {
@@ -131,119 +115,65 @@ export const PreviewPullRequestForm = ({
     setPullRequest({
       ...pullRequest,
       [repoId]: {
-        ...pullRequest[repoId],
+        ...formik.values,
         [field]: value,
         yaml: yamlUpdate,
       },
     });
   };
 
-  const updateFieldAndErrors = (
-    field: string,
-    value: string,
-    errorMessage: string,
-  ) => {
-    setPullRequest({
-      ...pullRequest,
+  const updateFieldAndErrors = (field: string, value: string) => {
+    if (formik.values?.[field as keyof PullRequestPreview] !== value) {
+      formik.setFieldValue(field, value);
+    }
+
+    const pr: PullRequestPreviewData = {
       [repoId]: {
-        ...pullRequest[repoId],
+        ...formik.values,
         [field]: value,
         ...(field === 'componentName'
           ? {
               yaml: {
-                ...pullRequest[repoId]?.yaml,
+                ...formik.values?.yaml,
                 metadata: {
-                  ...pullRequest[repoId]?.yaml.metadata,
+                  ...formik.values?.yaml.metadata,
                   name: value,
                 },
               },
             }
           : {}),
+        ...(field === 'entityOwner'
+          ? {
+              yaml: {
+                ...formik.values?.yaml,
+                spec: {
+                  ...formik.values?.yaml.spec,
+                  owner: value,
+                },
+              },
+            }
+          : {}),
       },
-    });
-
-    if (!value) {
-      setFormErrors({
-        ...formErrors,
-        [repoId]: {
-          ...formErrors?.[repoId],
-          [field]: errorMessage,
-        },
-      });
-    } else if (field === 'componentName' && !componentNameRegex.exec(value)) {
-      setFormErrors({
-        ...formErrors,
-        [repoId]: {
-          ...formErrors?.[repoId],
-          [field]: `"${value}" is not valid; expected a string that is sequences of [a-zA-Z0-9] separated by any of [-_.], at most 63 characters in total. To learn more about catalog file format, visit: https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md`,
-        },
-      });
-    } else {
-      const err = { ...formErrors };
-      delete err[repoId]?.[field as keyof PullRequestPreview];
-      setFormErrors(err);
-    }
+    };
+    setPullRequest({ ...pullRequest, ...pr });
   };
 
   const handleChange = (
     event: React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
-    const targetName = event.target.name
-      .split('.')
-      .find(s =>
-        [
-          'prTitle',
-          'prDescription',
-          'componentName',
-          'prAnnotations',
-          'prLabels',
-          'prSpec',
-          'entityOwner',
-        ].includes(s),
-      );
+    const targetName = event.target.name;
 
     if (!targetName) return;
-
     const inputValue = event.target.value;
     switch (targetName) {
       case 'prTitle':
-        updateFieldAndErrors(
-          'prTitle',
-          inputValue,
-          `${approvalTool} title is missing`,
-        );
-        break;
       case 'prDescription':
-        updateFieldAndErrors(
-          'prDescription',
-          inputValue,
-          `${approvalTool} description is missing`,
-        );
-        break;
       case 'entityOwner':
-        setPullRequest({
-          ...pullRequest,
-          [repoId]: {
-            ...pullRequest[repoId],
-            entityOwner: inputValue,
-            yaml: {
-              ...pullRequest[repoId]?.yaml,
-              spec: {
-                ...pullRequest[repoId]?.yaml.spec,
-                ...(inputValue ? { owner: inputValue } : {}),
-              },
-            },
-          },
-        });
-        break;
       case 'componentName':
-        updateFieldAndErrors(
-          'componentName',
-          inputValue,
-          'Component name is missing',
-        );
-
+      case 'useCodeOwnersFile':
+        updateFieldAndErrors(targetName, inputValue);
         break;
+
       case 'prAnnotations':
         updatePullRequestKeyValuePairFields(
           'prAnnotations',
@@ -271,30 +201,43 @@ export const PreviewPullRequestForm = ({
       label: 'Annotations',
       name: 'prAnnotations',
       value:
-        pullRequest[repoId]?.prAnnotations ??
+        formik.values?.prAnnotations ??
         convertKeyValuePairsToString(
-          pullRequest[repoId]?.yaml?.metadata?.annotations,
+          formik.values?.yaml?.metadata?.annotations,
         ),
     },
     {
       label: 'Labels',
       name: 'prLabels',
       value:
-        pullRequest[repoId]?.prLabels ??
-        convertKeyValuePairsToString(
-          pullRequest[repoId]?.yaml?.metadata?.labels,
-        ),
+        formik.values?.prLabels ??
+        convertKeyValuePairsToString(formik.values?.yaml?.metadata?.labels),
     },
     {
       label: 'Spec',
       name: 'prSpec',
       value:
-        pullRequest[repoId]?.prSpec ??
+        formik.values?.prSpec ??
         convertKeyValuePairsToString(
-          pullRequest[repoId]?.yaml?.spec as Record<string, string>,
+          formik.values?.yaml?.spec as Record<string, string>,
         ),
     },
   ];
+
+  React.useEffect(() => {
+    const err = {
+      ...formErrors,
+      [repoId]: formik.errors as any as PullRequestPreview,
+    };
+
+    if (!formik.errors) {
+      delete err[repoId];
+    }
+
+    setFormErrors(err);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formik.errors]);
 
   return (
     <>
@@ -308,10 +251,11 @@ export const PreviewPullRequestForm = ({
         variant="outlined"
         margin="normal"
         fullWidth
-        name={`repositories.${pullRequest[repoId]?.componentName}.prTitle`}
-        value={pullRequest[repoId]?.prTitle}
+        name="prTitle"
+        value={formik.values?.prTitle}
         onChange={handleChange}
-        error={!!formErrors?.[repoId]?.prTitle}
+        error={!!formik.errors?.prTitle}
+        helperText={formik.errors?.prTitle}
         required
       />
 
@@ -322,9 +266,10 @@ export const PreviewPullRequestForm = ({
         variant="outlined"
         fullWidth
         onChange={handleChange}
-        name={`repositories.${pullRequest[repoId]?.componentName}.prDescription`}
-        value={pullRequest[repoId]?.prDescription}
-        error={!!formErrors?.[repoId]?.prDescription}
+        name="prDescription"
+        value={formik.values?.prDescription}
+        error={!!formik.errors?.prDescription}
+        helperText={formik.errors?.prDescription}
         multiline
         required
       />
@@ -339,63 +284,43 @@ export const PreviewPullRequestForm = ({
         margin="normal"
         variant="outlined"
         onChange={handleChange}
-        value={pullRequest[repoId]?.componentName}
-        name={`repositories.${pullRequest[repoId]?.componentName}.componentName`}
-        error={!!formErrors?.[repoId]?.componentName}
-        helperText={
-          formErrors?.[repoId]?.componentName
-            ? formErrors?.[repoId]?.componentName
-            : ''
-        }
+        name="componentName"
+        value={formik.values?.componentName}
+        error={!!formik.errors?.componentName}
+        helperText={formik.errors?.componentName}
         fullWidth
         required
       />
       <br />
       <br />
 
-      {!pullRequest[repoId]?.useCodeOwnersFile && (
+      {!formik.values?.useCodeOwnersFile && (
         <Autocomplete
           options={entities || []}
-          value={entityOwner || pullRequest[repoId]?.entityOwner || ''}
+          value={formik.values?.entityOwner}
           loading={entitiesLoading}
           loadingText="Loading groups and users"
-          onChange={(_event: React.ChangeEvent<{}>, value: string | null) => {
-            setEntityOwner(value || '');
+          onChange={(_event, value) =>
             handleChange({
               target: { name: 'entityOwner', value },
-            } as any);
-          }}
-          onInputChange={(_e, newSearch: string) => {
-            setEntityOwner(newSearch || '');
+            } as any)
+          }
+          onInputChange={(_event, value) =>
             handleChange({
-              target: { name: 'entityOwner', value: newSearch },
-            } as any);
-            if (!newSearch && !pullRequest[repoId]?.useCodeOwnersFile) {
-              setFormErrors({
-                ...formErrors,
-                [repoId]: {
-                  ...formErrors?.[repoId],
-                  entityOwner: 'Entity Owner is required',
-                },
-              });
-            } else {
-              const err = { ...formErrors };
-              delete err[repoId]?.entityOwner;
-              setFormErrors(err);
-            }
-          }}
+              target: { name: 'entityOwner', value },
+            } as any)
+          }
           renderInput={params => (
             <TextField
               {...params}
+              name="entityOwner"
               variant="outlined"
-              error={!!formErrors?.[repoId]?.entityOwner}
+              error={!!formik.errors?.entityOwner}
               label="Entity owner"
               placeholder="groups and users"
               helperText={
-                formErrors?.[repoId]?.entityOwner &&
-                !pullRequest[repoId]?.useCodeOwnersFile
-                  ? 'Entity owner is required'
-                  : 'Select an owner from the list or enter a reference to a Group or a User'
+                formik.errors?.entityOwner ||
+                'Select an owner from the list or enter a reference to a Group or a User'
               }
               InputProps={{
                 ...params.InputProps,
@@ -417,26 +342,16 @@ export const PreviewPullRequestForm = ({
       <FormControlLabel
         control={
           <Checkbox
-            checked={pullRequest[repoId]?.useCodeOwnersFile}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              const pr = {
-                ...pullRequest,
-                [repoId]: {
-                  ...pullRequest[repoId],
-                  useCodeOwnersFile: event.target.checked,
+            name="useCodeOwnersFile"
+            checked={formik.values?.useCodeOwnersFile}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange({
+                target: {
+                  name: 'useCodeOwnersFile',
+                  value: event.target.checked,
                 },
-              };
-
-              delete pr[repoId]?.entityOwner;
-              delete pr[repoId]?.yaml?.spec?.owner;
-
-              setPullRequest(pr);
-              if (event.target.checked) {
-                const err = { ...formErrors };
-                delete err[repoId]?.entityOwner;
-                setFormErrors(err);
-              }
-            }}
+              } as any)
+            }
           />
         }
         label={
@@ -449,18 +364,20 @@ export const PreviewPullRequestForm = ({
         WARNING: This may fail if no CODEOWNERS file is found at the target
         location.
       </FormHelperText>
-      {keyValueTextFields.map(field => (
-        <KeyValueTextField
-          key={field.name}
-          label={field.label}
-          name={`repositories.${pullRequest[repoId]?.componentName}.${field.name}`}
-          value={field.value ?? ''}
-          onChange={handleChange}
-          setFormErrors={setFormErrors}
-          formErrors={formErrors}
-          repoId={repoId}
-        />
-      ))}
+      {keyValueTextFields.map(field => {
+        return (
+          <KeyValueTextField
+            key={field.name}
+            label={field.label}
+            value={field.value ?? ''}
+            name={field.name}
+            onChange={handleChange}
+            setFormErrors={setFormErrors}
+            formErrors={formErrors}
+            repoId={repoId}
+          />
+        );
+      })}
       <Box marginTop={2}>
         <Typography variant="h6">
           Preview {`${approvalTool.toLowerCase()}`}
@@ -468,8 +385,8 @@ export const PreviewPullRequestForm = ({
       </Box>
 
       <PreviewPullRequestComponent
-        title={pullRequest[repoId]?.prTitle ?? ''}
-        description={pullRequest[repoId]?.prDescription ?? ''}
+        title={formik.values?.prTitle ?? ''}
+        description={formik.values?.prDescription ?? ''}
         classes={{
           card: contentClasses.previewCard,
           cardContent: contentClasses.previewCardContent,
@@ -481,7 +398,7 @@ export const PreviewPullRequestForm = ({
       </Box>
 
       <PreviewCatalogInfoComponent
-        entities={[pullRequest[repoId]?.yaml]}
+        entities={[formik.values?.yaml]}
         repositoryUrl={repoUrl}
         classes={{
           card: contentClasses.previewCard,

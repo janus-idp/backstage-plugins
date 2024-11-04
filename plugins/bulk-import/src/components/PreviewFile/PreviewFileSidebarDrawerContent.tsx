@@ -185,7 +185,7 @@ export const PreviewFileSidebarDrawerContent = ({
             isSubmitting ||
             (!!formErrors &&
               Object.values(formErrors).length > 0 &&
-              Object.values(formErrors).every(
+              Object.values(formErrors).some(
                 fe => !!fe && Object.values(fe).length > 0,
               ))
           }

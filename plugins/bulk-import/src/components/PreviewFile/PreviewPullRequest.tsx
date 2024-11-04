@@ -37,8 +37,6 @@ export const PreviewPullRequest = ({
 }) => {
   const { status } = useFormikContext<AddRepositoriesFormValues>();
 
-  const [entityOwner, setEntityOwner] = React.useState<string>('');
-
   const error = status?.errors?.[repoId];
   const info = status?.infos?.[repoId];
   if (
@@ -100,8 +98,6 @@ export const PreviewPullRequest = ({
         </Box>
       )}
       <PreviewPullRequestForm
-        entityOwner={entityOwner}
-        setEntityOwner={setEntityOwner}
         repoId={repoId}
         repoUrl={repoUrl}
         pullRequest={pullRequest}
