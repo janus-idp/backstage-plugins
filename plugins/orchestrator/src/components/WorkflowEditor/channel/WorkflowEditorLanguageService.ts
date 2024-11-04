@@ -4,8 +4,8 @@ import {
 } from '@kie-tools/serverless-workflow-language-service/dist/api';
 import {
   SwfJsonLanguageService,
-  SwfLanguageServiceArgs,
   SwfYamlLanguageService,
+  type SwfLanguageServiceArgs,
 } from '@kie-tools/serverless-workflow-language-service/dist/channel';
 import { SwfServiceCatalogService } from '@kie-tools/serverless-workflow-service-catalog/dist/api';
 

@@ -1,9 +1,17 @@
 import { AIMessage, HumanMessage } from '@langchain/core/messages';
 
 import { Roles } from '../service/types';
-import { deleteHistory, loadHistory, saveHistory } from './chatHistory';
+import {
+  deleteHistory,
+  loadAllConversations,
+  loadHistory,
+  saveHistory,
+} from './chatHistory';
 
-const mockConversationId = 'user1+1q2w3e4r-qwer1234';
+const mockUser = 'user1';
+const mockConversationId = `${mockUser}+1q2w3e4r-qwer1234`;
+
+const mockConversationId2 = `${mockUser}+9i8u7y6t-654rew3`;
 
 describe('Test History Functions', () => {
   afterEach(async () => {
@@ -68,6 +76,31 @@ describe('Test History Functions', () => {
     await expect(
       saveHistory(mockConversationId, 'UnknownRole', 'Message'),
     ).rejects.toThrow('Unknown role: UnknownRole');
+  });
+
+  test('loadAllConversations should return all conversation_id for given user_id', async () => {
+    await saveHistory(mockConversationId, Roles.HumanRole, 'Hello');
+    await saveHistory(
+      mockConversationId,
+      Roles.AIRole,
+      'Hi! How can I help you today?',
+    );
+
+    await saveHistory(mockConversationId2, Roles.HumanRole, 'Hello');
+    await saveHistory(
+      mockConversationId2,
+      Roles.AIRole,
+      'Hi! How can I help you today?',
+    );
+
+    const conversationList = await loadAllConversations(mockUser);
+    expect(conversationList.length).toBe(2);
+    expect(
+      conversationList.some(item => item.includes(mockConversationId)),
+    ).toBe(true);
+    expect(
+      conversationList.some(item => item.includes(mockConversationId2)),
+    ).toBe(true);
   });
 
   test('deleteHistory should delete specific conversation', async () => {

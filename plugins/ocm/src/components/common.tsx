@@ -7,7 +7,7 @@ import {
 } from '@backstage/core-components';
 
 import { Button, Grid, makeStyles, Tooltip } from '@material-ui/core';
-import { ArrowCircleUpIcon } from '@patternfly/react-icons';
+import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 
 import { ClusterStatus } from '@janus-idp/backstage-plugin-ocm-common';
 
@@ -25,26 +25,11 @@ const useStyles = makeStyles({
 
 export const Status = ({ status }: { status: ClusterStatus }) => {
   if (!status) {
-    return (
-      <>
-        <StatusAborted />
-        Unknown
-      </>
-    );
+    return <StatusAborted>Unknown</StatusAborted>;
   } else if (status.available) {
-    return (
-      <>
-        <StatusOK />
-        Ready
-      </>
-    );
+    return <StatusOK>Ready</StatusOK>;
   }
-  return (
-    <>
-      <StatusError />
-      Not Ready
-    </>
-  );
+  return <StatusError>Not Ready</StatusError>;
 };
 
 export const Update = ({ data }: { data: versionDetails }) => {

@@ -187,7 +187,7 @@ catalog:
    yarn workspace app add @janus-idp/backstage-plugin-ocm
    ```
 
-1. Select the components that you want to use, such as:
+2. Select the components that you want to use, such as:
 
    - `OcmPage`: This is a standalone page or dashboard displaying all clusters as tiles. You can add `OcmPage` to `packages/app/src/App.tsx` file as follows:
 
@@ -208,7 +208,7 @@ catalog:
 
      ```tsx title="packages/app/src/components/Root/Root.tsx"
      /* highlight-add-next-line */
-     import StorageIcon from '@material-ui/icons/Storage';
+     import { OcmIcon } from '@janus-idp/backstage-plugin-ocm';
 
      export const Root = ({ children }: PropsWithChildren<{}>) => (
        <SidebarPage>
@@ -216,7 +216,7 @@ catalog:
            <SidebarGroup label="Menu" icon={<MenuIcon />}>
              {/* ... */}
              {/* highlight-add-next-line */}
-             <SidebarItem icon={StorageIcon} to="ocm" text="Clusters" />
+             <SidebarItem icon={OcmIcon} to="ocm" text="Clusters" />
            </SidebarGroup>
            {/* ... */}
          </Sidebar>

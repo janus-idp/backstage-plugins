@@ -1,9 +1,15 @@
-import type { LoggerService } from '@backstage/backend-plugin-api';
+import type {
+  HttpAuthService,
+  LoggerService,
+  UserInfoService,
+} from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
 
 export type RouterOptions = {
   logger: LoggerService;
   config: Config;
+  httpAuth: HttpAuthService;
+  userInfo: UserInfoService;
 };
 
 /**
@@ -33,3 +39,9 @@ export const Roles = {
 
 // default number of message history being loaded
 export const DEFAULT_HISTORY_LENGTH = 10;
+
+export type ConversationSummary = {
+  conversation_id: string;
+  summary: string;
+  lastMessageTimestamp: number;
+};

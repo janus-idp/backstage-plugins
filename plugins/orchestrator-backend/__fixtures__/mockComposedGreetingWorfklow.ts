@@ -1,4 +1,4 @@
-import { JsonObject } from '@backstage/types';
+import type { JsonObject } from '@backstage/types';
 
 import { JSONSchema7 } from 'json-schema';
 

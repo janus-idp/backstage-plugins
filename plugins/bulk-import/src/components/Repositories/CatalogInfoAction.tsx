@@ -91,8 +91,6 @@ const CatalogInfoAction = ({ data }: { data: AddRepositoryData }) => {
         if (Object.keys(drawerData || {}).length === 0) {
           setDrawerData(value as ImportJobStatus);
         }
-      } else {
-        removeQueryParams();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -125,9 +123,9 @@ const CatalogInfoAction = ({ data }: { data: AddRepositoryData }) => {
           <IconButton
             target="_blank"
             href={
-              values?.repositories[data.id]?.catalogInfoYaml?.prTemplate
+              values?.repositories?.[data.id]?.catalogInfoYaml?.prTemplate
                 ?.pullRequestUrl ||
-              values?.repositories[data.id]?.repoUrl ||
+              values?.repositories?.[data.id]?.repoUrl ||
               ''
             }
             color="inherit"

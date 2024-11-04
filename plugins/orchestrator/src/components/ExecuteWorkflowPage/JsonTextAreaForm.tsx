@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { JsonObject } from '@backstage/types';
+import type { JsonObject } from '@backstage/types';
 
 import { Box, Grid, useTheme } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';

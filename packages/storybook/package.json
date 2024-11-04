@@ -1,5 +1,5 @@
 {
-  "name": "storybook",
+  "name": "storybook-tests",
   "version": "0.0.0",
   "license": "Apache-2.0",
   "private": true,
@@ -18,14 +18,14 @@
     "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "devDependencies": {
-    "prettier": "3.3.3",
     "@storybook/react-webpack5": "7.5.3",
     "@storybook/testing-library": "0.2.2",
+    "@swc/core": "1.6.1",
     "@testing-library/jest-dom": "6.4.8",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
-    "@swc/core": "1.6.1",
     "eslint-plugin-storybook": "0.8.0",
+    "prettier": "3.3.3",
     "prop-types": "15.8.1",
     "swc-loader": "0.2.6"
   },
@@ -43,11 +43,11 @@
     "storybook-dark-mode": "^3.0.1"
   },
   "peerDependencies": {
-    "@backstage/cli": "^0.26.11",
-    "@backstage/core-app-api": "^1.14.1",
-    "@backstage/core-components": "^0.14.9",
-    "@backstage/core-plugin-api": "^1.9.3",
-    "@backstage/test-utils": "^1.5.9",
-    "@backstage/theme": "^0.5.6"
+    "@backstage/cli": "^0.28.2",
+    "@backstage/core-app-api": "^1.15.1",
+    "@backstage/core-components": "^0.15.1",
+    "@backstage/core-plugin-api": "^1.10.0",
+    "@backstage/test-utils": "^1.7.0",
+    "@backstage/theme": "^0.6.0"
   }
 }

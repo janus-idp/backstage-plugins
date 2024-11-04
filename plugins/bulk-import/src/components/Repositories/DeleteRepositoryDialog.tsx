@@ -17,6 +17,7 @@ import { Theme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import createStyles from '@mui/styles/createStyles';
+import { useMutation } from '@tanstack/react-query';
 import { get } from 'lodash';
 
 import { bulkImportApiRef } from '../../api/BulkImportBackendClient';
@@ -71,29 +72,23 @@ const DeleteRepositoryDialog = ({
   closeDialog: () => void;
 }) => {
   const classes = useStyles();
-  const [error, setError] = React.useState<string>('');
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const bulkImportApi = useApi(bulkImportApiRef);
-  const handleClickRemove = async () => {
-    setIsSubmitting(true);
-    if (!repository.repoUrl || !repository?.defaultBranch) {
-      setIsSubmitting(false);
-      setError(
-        `Unable to remove repository. ${!repository?.repoUrl ? 'Repository URL missing' : 'Repository default branch is missing'}`,
-      );
-    } else {
-      const value = await bulkImportApi.deleteImportAction(
-        repository.repoUrl,
-        repository.defaultBranch,
-      );
-      setIsSubmitting(false);
-      if (get(value, 'error')) {
-        setError(`Unable to remove repository. ${get(value, 'error.message')}`);
-      } else {
-        closeDialog();
-      }
-    }
+  const deleteRepository = (deleteRepo: AddRepositoryData) => {
+    return bulkImportApi.deleteImportAction(
+      deleteRepo.repoUrl || '',
+      deleteRepo.defaultBranch || 'main',
+    );
   };
+  const mutationDelete = useMutation(deleteRepository, {
+    onSuccess: () => {
+      closeDialog();
+    },
+  });
+  const handleClickRemove = async () => {
+    mutationDelete.mutate(repository);
+  };
+
+  const isUrlMissing = !repository.repoUrl;
 
   return (
     <Dialog
@@ -130,9 +125,14 @@ const DeleteRepositoryDialog = ({
           Catalog page.
         </Typography>
       </DialogContent>
-      {error && (
+      {(isUrlMissing || mutationDelete.isError) && (
         <Box maxWidth="650px" marginLeft="20px">
-          <Alert severity="error">{error}</Alert>
+          <Alert severity="error">
+            {isUrlMissing &&
+              'Cannot remove repository as the repository URL is missing.'}
+            {mutationDelete.isError &&
+              `Unable to remove repository. ${mutationDelete.error}`}
+          </Alert>
         </Box>
       )}
       <DialogActions style={{ justifyContent: 'left', padding: '20px' }}>
@@ -140,9 +140,13 @@ const DeleteRepositoryDialog = ({
           variant="contained"
           className={`${classes.deleteButton} ${classes.button}`}
           onClick={() => handleClickRemove()}
-          disabled={isSubmitting}
+          disabled={
+            isUrlMissing || mutationDelete.isLoading || mutationDelete.isError
+          }
           startIcon={
-            isSubmitting && <CircularProgress size="20px" color="inherit" />
+            mutationDelete.isLoading && (
+              <CircularProgress size="20px" color="inherit" />
+            )
           }
         >
           Remove

@@ -15,7 +15,7 @@ import { MODEL } from './permission-model';
 
 // TODO: Move to 'catalogServiceMock' from '@backstage/plugin-catalog-node/testUtils'
 // once '@backstage/plugin-catalog-node' is upgraded
-const catalogApi = {
+const catalogApiMock = {
   getEntityAncestors: jest.fn().mockImplementation(),
   getLocationById: jest.fn().mockImplementation(),
   getEntities: jest.fn().mockImplementation(),
@@ -40,7 +40,7 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
   removeRoleMetadata: jest.fn().mockImplementation(),
 };
 
-const dbManagerMock = Knex.knex({ client: MockClient });
+const mockClientKnex = Knex.knex({ client: MockClient });
 
 const mockAuthService = mockServices.auth();
 
@@ -126,7 +126,7 @@ describe('EnforcerDelegate', () => {
 
     const sqliteInMemoryAdapter = await new CasbinDBAdapterFactory(
       config,
-      dbManagerMock,
+      mockClientKnex,
     ).createAdapter();
 
     const catalogDBClient = Knex.knex({ client: MockClient });
@@ -143,7 +143,7 @@ describe('EnforcerDelegate', () => {
     enfAddPoliciesSpy = jest.spyOn(enf, 'addPolicies');
 
     const rm = new BackstageRoleManager(
-      catalogApi,
+      catalogApiMock,
       logger,
       catalogDBClient,
       rbacDBClient,

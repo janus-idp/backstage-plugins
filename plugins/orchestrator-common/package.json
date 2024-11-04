@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-common",
-  "version": "1.21.0",
+  "version": "1.23.0",
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -12,7 +12,7 @@
   },
   "backstage": {
     "role": "common-library",
-    "supported-versions": "1.28.4",
+    "supported-versions": "1.32.5",
     "pluginId": "orchestrator",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-orchestrator",
@@ -54,22 +54,23 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "openapi:generate": "./scripts/openapi.sh generate",
-    "openapi:check": "./scripts/openapi.sh check",
-    "openapi:prettier:fix": "prettier --ignore-unknown --write ./src/generated/api"
+    "openapi:check": "./scripts/openapi.sh check"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "@backstage/plugin-permission-common": "^0.8.1",
     "@backstage/types": "^1.1.1",
-    "@backstage/plugin-permission-common": "^0.8.0",
     "@severlessworkflow/sdk-typescript": "^3.0.3",
-    "js-yaml": "^4.1.0",
-    "json-schema": "^0.4.0",
-    "axios": "^1.7.4"
+    "axios": "^1.7.4",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
-    "prettier": "3.3.3",
-    "@backstage/cli": "0.26.11",
+    "@backstage/cli": "0.28.2",
+    "@backstage/types": "1.1.1",
     "@openapitools/openapi-generator-cli": "2.13.4",
-    "js-yaml-cli": "0.6.0"
+    "@severlessworkflow/sdk-typescript": "3.0.3",
+    "js-yaml-cli": "0.6.0",
+    "json-schema": "0.4.0",
+    "prettier": "3.3.3"
   },
   "maintainers": [
     "@janus-idp/maintainers-plugins",

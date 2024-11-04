@@ -1,5 +1,5 @@
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
-import { JsonObject } from '@backstage/types';
+import type { JsonObject } from '@backstage/types';
 
 import axios, {
   AxiosRequestConfig,

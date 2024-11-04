@@ -19,7 +19,7 @@ import {
   ClusterContextProvider,
   ClusterInfoCard,
 } from '../src';
-import { OcmPage, ocmPlugin } from '../src/plugin';
+import { OcmIcon, OcmPage, ocmPlugin } from '../src/plugin';
 
 const clusterEntity = (name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -87,8 +87,9 @@ createDevApp()
   .addThemes(getAllThemes())
   .addPage({
     element: <OcmPage />,
-    title: 'Root Page',
+    title: 'Clusters',
     path: '/ocm',
+    icon: OcmIcon,
   })
   .addPage({
     path: '/catalog/:kind/:namespace/:name',

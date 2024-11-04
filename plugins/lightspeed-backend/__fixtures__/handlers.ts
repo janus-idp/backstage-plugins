@@ -29,4 +29,17 @@ export const handlers = [
       },
     });
   }),
+
+  http.get(`${LOCAL_AI_ADDR}/models`, () => {
+    const mockModelRes = {
+      object: 'list',
+      data: [
+        {
+          id: 'ibm-granite-8b-code-instruct',
+          object: 'model',
+        },
+      ],
+    };
+    return HttpResponse.json(mockModelRes);
+  }),
 ];

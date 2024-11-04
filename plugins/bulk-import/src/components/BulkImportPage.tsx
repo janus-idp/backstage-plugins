@@ -6,6 +6,7 @@ import { usePermission } from '@backstage/plugin-permission-react';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import FormControl from '@mui/material/FormControl';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Formik } from 'formik';
 
 import { bulkImportPermission } from '@janus-idp/backstage-plugin-bulk-import-common';
@@ -22,6 +23,8 @@ import {
 import { RepositoriesList } from './Repositories/RepositoriesList';
 
 export const BulkImportPage = () => {
+  // to store the queryClient instance
+  const queryClientRef = React.useRef<QueryClient>();
   const initialValues: AddRepositoriesFormValues = {
     repositoryType: RepositorySelection.Repository,
     repositories: {},
@@ -34,21 +37,27 @@ export const BulkImportPage = () => {
     resourceRef: bulkImportPermission.resourceType,
   });
 
+  if (!queryClientRef.current) {
+    queryClientRef.current = new QueryClient();
+  }
+
   const showContent = () => {
     if (bulkImportViewPermissionResult.loading) {
       return <Progress />;
     }
     if (bulkImportViewPermissionResult.allowed) {
       return (
-        <Formik
-          initialValues={initialValues}
-          enableReinitialize
-          onSubmit={async (_values: AddRepositoriesFormValues) => {}}
-        >
-          <FormControl fullWidth>
-            <RepositoriesList />
-          </FormControl>
-        </Formik>
+        <QueryClientProvider client={queryClientRef.current as QueryClient}>
+          <Formik
+            initialValues={initialValues}
+            enableReinitialize
+            onSubmit={async (_values: AddRepositoriesFormValues) => {}}
+          >
+            <FormControl fullWidth>
+              <RepositoriesList />
+            </FormControl>
+          </Formik>
+        </QueryClientProvider>
       );
     }
     return (

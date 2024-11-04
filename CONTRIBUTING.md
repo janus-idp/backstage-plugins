@@ -18,6 +18,74 @@ We also recommend that you read [How to Contribute to Open Source](https://opens
 
 Help us keep **Janus-IDP** open and inclusive. Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
+> [!IMPORTANT]
+> We encourage users to migrate their plugins to the `backstage/community-plugins` repository.
+
+## Guide for Migrating Plugins from janus-idp/backstage-plugins to backstage/community-plugins
+
+> [!NOTE]
+> After fully migrating plugins, remember to check for any updates that may have been made in the `janus-idp/backstage-plugins` repository. You may need to update `backstage/community-plugins` accordingly to ensure all recent changes are included.
+
+
+This guide will show you how to migrate plugins from `janus-idp/backstage-plugins` to `backstage/community-plugins` using the backstage/community-plugins cli.
+
+### Prerequisites
+
+- Have a `janus-idp/backstage-plugins` fork locally cloned
+- Have a `backstage/community-plugins` fork locally cloned
+
+### Steps
+
+1. In both repositories, create a new branch:
+
+   - For `janus-idp/backstage-plugins`:
+
+     ```bash
+     git checkout -b "deprecate-workspace-name"
+     ```
+
+   - For `backstage/community-plugins`:
+
+     ```bash
+     git checkout -b "migrate-workspace-name"
+     ```
+
+2. Update the community-cli to include the `janus-plugin migrate` command. In the `backstage/community-plugins` repository, add the [`janus-migration.ts`](https://github.com/04kash/community-plugins/blob/janus-migration-script/workspaces/repo-tools/packages/cli/src/commands/plugin/janus-migration.ts) file into the following directory: `workspaces/repo-tools/packages/cli/src/commands/plugin`
+   Additionally, copy the [`index.ts`](https://github.com/04kash/community-plugins/blob/janus-migration-script/workspaces/repo-tools/packages/cli/src/commands/index.ts/#L50-#L64) file into: `workspaces/repo-tools/packages/cli/src/commands/index.ts`
+
+3. In the `backstage/community-plugins` repository, execute the janus-plugin migrate command.- Usage:`yarn community-cli janus-plugin migrate --monorepo-path [path_to_backstage_plugins]--workspace-name [workspace_name] --branch [branch_name] --maintainers [maintainer1],[maintainer2],[maintainer3],...`
+
+   - The `path_to_backstage_plugins` is the path to the `backstage-plugins` project where the plugin(s) you want to migrate live.
+   - The `workspace-name` is the name of the workspace you wish to create in the `community-plugins` project. All plugins in the `backstage-plugins` that either are exactly or start with `@janus-idp/backstage-plugin-[workspace_name]` will be migrated to this new workspace.
+   - The `branch_name` is the name of the branch in the `backstage-plugins` project where the changes to add a deprecate note for the migrated plugins will be made.
+   - The `maintainers` array of arguments is the github usernames of those individuals that should be listed as the maintainers for the migrated plugins. Please separate each maintainer by a comma while supplying this value.
+
+   - example usage:
+
+     ```bash
+      yarn community-cli janus-plugin migrate --monorepo-path ../backstage-plugins --workspace-name workspace-name --branch deprecate-workspace-name --maintainers @maintainer1,@maintainer2,@maintainer3
+     ```
+
+4. The script will generate changesets in both repositories. Be sure to commit these changes and open pull requests.
+
+> [!IMPORTANT]
+> This script updates metadata commonly found across all plugins. Please review your migrated plugins to ensure that all references to "janus" have been updated to point to "community-plugins."
+> Also make sure that you don't accidentally commit the `workspaces/repo-tools/packages/cli/src/commands/plugin/janus-migration.ts` or `workspaces/repo-tools/packages/cli/src/commands/index.ts` files.
+
+5. If you run into CI issues in `community-plugins` take a look at [this github gist](https://gist.github.com/Fortune-Ndlovu/1562789f3905b4fe818b9079a3032982) which outlines the process taken to migrate argocd plugins in great detail.
+
+6. Check if the migrated plugins need to be added to janus-idp/backstage-showcase. If they do, create a wrapper for them following the steps below:
+
+- In `dynamic-plugins> wrappers` create a directory, name it based on your plugin (eg: `backstage-community-plugin-3scale-backend`)
+- Create a `src` directory within it
+- Add a `index.ts` file to this src directory and export from the plugin package here. Eg: `export * from '@backstage-community/plugin-3scale-backend';`
+- In `dynamic-plugins> wrappers > backstage-community-plugin-3scale-backend` (or whatever you named your wrapper directory), add a `package.json` file. Add your plugin package in dependencies.
+  - [Frontend plugin `package.json` example](https://github.com/janus-idp/backstage-showcase/blob/main/dynamic-plugins/wrappers/backstage-community-plugin-redhat-argocd/package.json)
+  - [Backend plugin `package.json` example](https://github.com/janus-idp/backstage-showcase/blob/main/dynamic-plugins/wrappers/backstage-community-plugin-3scale-backend/package.json)
+- run `yarn export-dynamic` to generate dist-dynamic directory
+
+For migrating plugins to `redhat-developer/rhdh-plugins` see: <https://github.com/redhat-developer/rhdh-plugins/blob/main/CONTRIBUTING.md#using-the-cli-to-migrate-plugins-from-janus-idpbackstage-plugins>
+
 ## How can I contribute?
 
 ### Improve documentation
@@ -200,8 +268,6 @@ The **body** can contain a [closing reference to an issue](https://help.github.c
 
 #### Pull Request message format
 
-Following these guidelines for Pull Request messages is **required** and will be enforced by the CI. This is a strong prerequisite for our [release automation](#releasing-changes).
-
 Each pull request consists of a **title** and a **body**
 
 The title has a special format that includes a **type**, a **scope** and a **subject**:
@@ -212,7 +278,7 @@ The title has a special format that includes a **type**, a **scope** and a **sub
 
 #### Revert
 
-If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit.
+If the commit reverts a previous commit, it should begin with `revert:`, followed by the header of the reverted commit.
 The body should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
 
 #### Type
@@ -290,7 +356,7 @@ $ yarn install
 
 The Backstage has multiple dependencies. To pass through their installation, make sure to follow the [isolated-vm](https://github.com/laverdet/isolated-vm#requirements) requirements.
 
-It's also recommended to install a pre-commit hook to prevent secrets from being accidentally exposed. If you don't already have one, you can choose from a few options here: https://pre-commit.com/hooks.html
+It's also recommended to install a pre-commit hook to prevent secrets from being accidentally exposed. If you don't already have one, you can choose from a few options here: <https://pre-commit.com/hooks.html>
 
 ### Lint
 
@@ -323,82 +389,94 @@ To run the UI tests locally, take the following steps:
 First, install playwright dependencies:
 
 ```bash
-$ yarn install --with-deps chromium
-```
-
-The remaining steps need to be run in parallel.
-Launch the backend package and wait for it to start:
-
-```bash
-$ cd packages/backend && yarn start
-```
-
-Launch the plugin:
-
-```bash
-$ cd plugins/${plugin} && yarn start
+$ npx playwright install --with-deps chromium
 ```
 
 Finally, launch the UI tests (headless):
 
 ```bash
-$ cd plugins/${plugin} && yarn run ui-test
-```
-
-If you wish to see the test runner UI, instead of headless:
-
-```bash
-$ cd plugins/${plugin} && yarn playwright test --ui
+$ yarn run ui-test
 ```
 
 Test results from the headless run will be available in `plugins/${plugin}/playwright-report` folder.
 
-## Releasing changes
+## Versioning and Publishing Plugins with Changesets
 
-This repository defaults to a rapid release scheme where we would rather release on every PR merge than restrict ourselves by a strict release cadence and policy. This brings contributors the opportunity to see the direct impact of their contributions since they are released immediately after the merge. The release process itself is done via the [semantic-release](https://semantic-release.gitbook.io/semantic-release/) tool. In order for it to work properly, it requires contributors to follow a simple set of rules:
+This guide outlines the process for contributing to our monorepo and publishing plugins using changesets. Changesets help us manage versioning and changelogs, especially with multiple packages.
 
-1. Never bump the package version manually yourself. `semantic-release` will calculate the appropriate version change and do it for you.
-2. Do not hesitate to update multiple packages in a single PR. [multi-semantic-release](https://github.com/dhoulb/multi-semantic-release) (MSR) will take care of it, and release a new version for all of them while updating their cross-dependencies accordingly.
+### **Workflow**
 
-**NOTE**: When adding a **new** plugin, MSR will try to convert the entire repo's history of commits into a single changelog / commit message for your new plugin. This will break git and result in the [push action](https://github.com/janus-idp/backstage-plugins/actions/workflows/push.yaml) failing; you will prevent everyone from releasing their changes.
+1. **Make your changes:** Develop and test your plugin within the monorepo.
+2. **Add a changeset:** Describe your changes and the desired version bump.
+3. **Open a pull request:** Submit your changes for review.
+4. **Merge:** Once approved, your changes will be merged.
+5. **Versioning PR:** A separate automated PR will be created to bump package versions based on your changeset.
+6. **Publish:** Once the Versioning PR is merged, the plugins are automatically published.
 
-**Workaround**: manually release your plugin to npmjs.com, then tag the repo manually.
+### **Adding a Changeset**
 
+After making changes to a plugin, run the following command to add a changeset:
+
+```bash
+yarn changeset
 ```
-cd plugins/topology-common
-npm publish --cwd . --access public -w .
-git tag @janus-idp/backstage-plugin-topology-common@1.0.0
-git push origin @janus-idp/backstage-plugin-topology-common@1.0.0 || true
+
+This will prompt you to:
+
+- **Select the packages to be released:** Choose the plugin(s) you modified.
+- **Specify the release type:**  Choose from `patch`, `minor`, or `major` based on the semantic versioning guidelines.
+- **Summarize your changes:** Provide a brief description of the changes included in the release.
+
+### **Important Notes:**
+
+- **Private plugins and CI changes:** Even if your changes don't affect public packages, you should still create an empty changeset using:
+
+    ```bash
+    yarn changeset add --empty
+    ```
+
+    This helps us track all modifications and ensures consistent versioning across the monorepo.
+- **Changeset format:** Follow the conventional commit format for your changeset summaries. This improves readability and helps with automated changelog generation.
+- **Review process:** During the review process, ensure your changeset accurately reflects the modifications made in your pull request.
+
+### **Example Changeset Summary:**
+
+```md
+feat(my-plugin): add new feature X
+
+This change introduces a new feature to the my-plugin package, allowing users to do Y.
 ```
 
-Note also that as this repo is **DEPRECATED**, new plugins should be contributed to the new **[Backstage Community Plugins](https://github.com/backstage/community-plugins/blob/main/CONTRIBUTING.md#get-started)** repo.
+### **Backporting Changes**
 
-### Release workflow
+Changesets are enabled on release branches to facilitate backporting. However, there is a caveat:
 
-Semantic Release does the following:
+- **Manual Retagging:** After a backported plugin is published, the publish action may overwrite the latest plugin version with the backported version. To fix this, you need to manually retag the latest plugin version on NPM.
 
-1. Analyze commits for each package to determine if a release is necessary (if there are changes in the package)
-2. Generates `CHANGELOG.md` for each package to be released
-3. Bump the version number in the `package.json` for each package
-4. Creates a git tag `<package-name>@<version>` pointing to the new release
-5. Create a new GitHub release for each package
-6. Publishes the new version to the NPM registry
+#### **To retag a plugin:**
 
-### Version changes guidelines
+1. Ensure you have the correct permissions on NPM. If you don't, please reach out to Nick Boldt or Kim Tsao.
+2. Run the following command, replacing `<plugin name>` and `<latest plugin version>` with the appropriate values:
 
-**semantic-release** uses the Pull request title to determine the consumer impact of changes in the codebase.
-Following formalized conventions for Pull request title messages, **semantic-release** automatically determines the next [semantic version](https://semver.org) number, generates a changelog, and publishes the release. Please read the [pull request message format](#pull-request-message-format) section for more details.
+    ```bash
+    npm dist-tag add @janus-idp/<plugin name>@<latest plugin version e.g. 1.2.3> latest
+    ```
 
-The table below shows which Pull Request titles get you which release:
+This will update the npm tag to point to the latest version.
 
-| Release type                         | Type and scope that triggers it                                                                                     | Commit message example                                      |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| ~~Patch~~ `vX.Y.🆙` Fix Release      | Type must be `fix`, `docs`, `refactor`, `style`, `revert` or `chore(deps)` (in this case the scope must match)      | `fix(topology): fix pipelinerun status icon color`          |
-| ~~Minor~~ `vX.🆙.0` Feature Release  | Type must be `feat`, `perf`                                                                                         | `feat(kiali): add namespace selector`                       |
-| ~~Major~~ `v🆙.0.0` Breaking Release | `<type>(<optional-scope>)!: <message>` Notice the `!` token. It must be present. The type and scope are irrelevant. | `feat(ocm)!: Relocate OCM config and support multiple hubs` |
-| No release                           | Type `chore` (except when the scope is `deps`), or for any type when the scope is `no-release`                      |
+### Plugin Ownership and Responsibilities**
 
-## Creating new plugins - DEPRECATED!
+#### **Publishing:**
+
+- **Main Branch:** The plugins team is responsible for merging the versioning PR to publish plugins.
+- **Release Branches:** The security team is responsible for merging the versioning PR to publish plugins.
+
+#### **Version Compatibility:**
+
+- **Main Branch:** The plugins team is responsible for ensuring RHDH uses the latest compatible plugin versions. Exception: Backstage version bumps are handled by the core platform team.  **Note:** Plugins should not depend on a newer version of Backstage than what RHDH allows.
+- **Release Branches:** The security team is responsible for ensuring RHDH uses the latest compatible plugin versions.
+
+## Creating new plugins - DEPRECATED
 
 **As of June 2024, new plugins should be contributed to the new [Backstage Community Plugins](https://github.com/backstage/community-plugins/blob/main/CONTRIBUTING.md#get-started) repo.**
 
@@ -448,6 +526,7 @@ Backstage's support for standalone plugin development is minimal (especially for
 2. Follow the plugin's install instructions
 3. (Optional) Tell git to assume the modified files are unchanged, so that
    status/diff commands are representative of your current work:
+
    ```shell
    # Example, list any dev app files where you don't want changes tracked
    git update-index --assume-unchanged \
@@ -455,6 +534,7 @@ Backstage's support for standalone plugin development is minimal (especially for
        packages/app/package.json \
        packages/app/src/components/catalog/EntityPage.tsx
    ```
+
 4. Run `yarn dev`
 
 ### Standalone standalone plugin development

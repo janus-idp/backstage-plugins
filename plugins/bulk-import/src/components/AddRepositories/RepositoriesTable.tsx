@@ -42,7 +42,7 @@ export const RepositoriesTable = ({
   drawerOrganization?: string;
   updateSelectedReposInDrawer?: (repos: AddedRepositories) => void;
 }) => {
-  const { setFieldValue, values } =
+  const { setFieldValue, values, setStatus } =
     useFormikContext<AddRepositoriesFormValues>();
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<string>();
@@ -203,6 +203,7 @@ export const RepositoriesTable = ({
 
   const updateSelection = (newSelected: AddedRepositories) => {
     setSelected(newSelected);
+    setStatus(null);
 
     if (drawerOrganization && updateSelectedReposInDrawer) {
       // Update in the context of the drawer

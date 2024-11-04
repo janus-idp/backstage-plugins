@@ -2,8 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "tsc": {
-      "outputs": ["../../dist-types/plugins/scaffolder-annotator-action/**"],
-      "dependsOn": ["^tsc"]
+      "outputs": ["../../dist-types/plugins/scaffolder-annotator-action/**"]
     }
   }
 }
