@@ -1,5 +1,19 @@
 ### Dependencies
 
+## 2.3.1
+
+### Patch Changes
+
+- 0e6bfd3: feat: update Backstage to the latest version
+
+  Update to Backstage 1.32.5
+
+- Updated dependencies [0e6bfd3]
+- Updated dependencies [67f466a]
+  - @janus-idp/backstage-plugin-orchestrator-form-react@1.4.1
+  - @janus-idp/backstage-plugin-orchestrator-form-api@1.4.1
+  - @janus-idp/backstage-plugin-orchestrator-common@1.23.1
+
 ## 2.3.0
 
 ### Minor Changes

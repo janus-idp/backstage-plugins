@@ -1,5 +1,13 @@
 ## @janus-idp/backstage-plugin-audit-log-node [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-audit-log-node@1.3.0...@janus-idp/backstage-plugin-audit-log-node@1.4.0) (2024-07-25)
 
+## 1.7.1
+
+### Patch Changes
+
+- 0e6bfd3: feat: update Backstage to the latest version
+
+  Update to Backstage 1.32.5
+
 ## 1.7.0
 
 ### Minor Changes

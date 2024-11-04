@@ -1,5 +1,17 @@
 ### Dependencies
 
+## 1.32.1
+
+### Patch Changes
+
+- 0e6bfd3: feat: update Backstage to the latest version
+
+  Update to Backstage 1.32.5
+
+- Updated dependencies [0e6bfd3]
+  - @janus-idp/shared-react@2.13.1
+  - @janus-idp/backstage-plugin-rbac-common@1.12.1
+
 ## 1.32.0
 
 ### Minor Changes

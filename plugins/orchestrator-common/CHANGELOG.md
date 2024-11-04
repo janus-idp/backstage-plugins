@@ -1,5 +1,13 @@
 ## @janus-idp/backstage-plugin-orchestrator-common [1.13.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.13.0...@janus-idp/backstage-plugin-orchestrator-common@1.13.1) (2024-08-02)
 
+## 1.23.1
+
+### Patch Changes
+
+- 0e6bfd3: feat: update Backstage to the latest version
+
+  Update to Backstage 1.32.5
+
 ## 1.23.0
 
 ### Minor Changes

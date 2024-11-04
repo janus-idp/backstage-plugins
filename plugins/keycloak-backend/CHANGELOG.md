@@ -1,5 +1,13 @@
 ### Dependencies
 
+## 3.1.1
+
+### Patch Changes
+
+- 0e6bfd3: feat: update Backstage to the latest version
+
+  Update to Backstage 1.32.5
+
 ## 3.1.0
 
 ### Minor Changes
