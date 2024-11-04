@@ -1,5 +1,27 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 1.18.0
+
+### Minor Changes
+
+- 8448c17: feat(cli) add flag to specify output directory
+
+  This change adds an --export-to flag to the package-dynamic-plugins CLI command. This flag will skip the container build step, and instead copy the staged dynamic plugin assets to the specified output directory. The addition of this flag makes the --tag argument optional, and only required if --export-to is not specified.
+
+### Patch Changes
+
+- 8448c17: fix(cli): Improve example configuration display
+
+  This change changes the CLI package-dynamic-plugins command to take
+  advantage of some dynamic plugin projects that have followed the
+  convention of maintaining a app-config.janus-idp.yaml in the root of the
+  plugin source directory. When this file is present, it will be read in
+  as the command processes dynamic plugins in the monorepo and then
+  included in the example dynamic-plugins.yaml configuration printed out
+  when the command successfully completes. This change also adjusts the
+  control flow where this is printed out to ensure it's after successful
+  completion of the container image.
+
 ## 1.17.1
 
 ### Patch Changes
