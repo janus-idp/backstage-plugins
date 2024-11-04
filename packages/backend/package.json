@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@backstage/backend-app-api": "1.0.0",
-    "@backstage/backend-defaults": "0.5.0",
+    "@backstage/backend-defaults": "0.5.2",
     "@backstage/backend-dynamic-feature-service": "0.4.1",
     "@backstage/backend-plugin-api": "1.0.0",
     "@backstage/cli-node": "0.2.8",

@@ -42,7 +42,7 @@
     "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
-    "@backstage/backend-defaults": "^0.5.0",
+    "@backstage/backend-defaults": "0.5.2",
     "@backstage/backend-plugin-api": "^1.0.0",
     "@backstage/config": "^1.2.0",
     "@types/express": "4.17.20",

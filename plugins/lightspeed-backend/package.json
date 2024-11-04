@@ -41,7 +41,7 @@
     "prettier:fix": "prettier --ignore-unknown --write ."
   },
   "dependencies": {
-    "@backstage/backend-defaults": "^0.5.0",
+    "@backstage/backend-defaults": "0.5.2",
     "@backstage/backend-plugin-api": "^1.0.0",
     "@langchain/core": "^0.2.30",
     "@langchain/openai": "^0.2.8",
