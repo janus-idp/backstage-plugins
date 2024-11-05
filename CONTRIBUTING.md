@@ -21,7 +21,7 @@ Help us keep **Janus-IDP** open and inclusive. Please read and follow our [Code 
 > [!IMPORTANT]
 > We encourage users to migrate their plugins to the `[backstage/community-plugins](https://github.com/backstage/community-plugins)` or `[redhat-developer/rhdh-plugins](https://github.com/redhat-developer/rhdh-plugins)` repos. For migrating plugins to `redhat-developer/rhdh-plugins` see: [Using the cli to migrate plugins to redhat-developer/rhdh-plugins from janus-idp/backstage-plugins](https://github.com/redhat-developer/rhdh-plugins/blob/main/CONTRIBUTING.md#using-the-cli-to-migrate-plugins-from-janus-idpbackstage-plugins) instead of this guide.
 
-## Guide for Migrating Plugins from janus-idp/backstage-plugins to `[backstage/community-plugins](https://github.com/backstage/community-plugins)` or `[redhat-developer/rhdh-plugins](https://github.com/redhat-developer/rhdh-plugins)`
+## Guide for Migrating Plugins from janus-idp/backstage-plugins to `[backstage/community-plugins](https://github.com/backstage/community-plugins)`
 
 > [!NOTE]
 > After fully migrating plugins, remember to check for any updates that may have been made in the `janus-idp/backstage-plugins` repository. You may need to update the migrated plugins to pull in changes made to the janus-idp/backstage-plugins repo after migration. Additionally, any unmerged PRs should be closed and recreated against the new repo.
