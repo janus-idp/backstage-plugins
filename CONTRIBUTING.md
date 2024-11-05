@@ -83,7 +83,7 @@ This guide will show you how to migrate plugins from `janus-idp/backstage-plugin
   - [Backend plugin `package.json` example](https://github.com/janus-idp/backstage-showcase/blob/main/dynamic-plugins/wrappers/backstage-community-plugin-3scale-backend/package.json)
 - run `yarn export-dynamic` to generate dist-dynamic directory
 
-For migrating plugins to `redhat-developer/rhdh-plugins` see: [Using the cli to migrate plugins to redhat-developer/rhdh-plugins from janus-idp/backstage-plugins](https://github.com/redhat-developer/rhdh-plugins/blob/main/CONTRIBUTING.md#using-the-cli-to-migrate-plugins-from-janus-idpbackstage-plugins)
+For migrating plugins to `redhat-developer/rhdh-plugins` see: [Migrating plugins to redhat-developer/rhdh-plugins](https://github.com/redhat-developer/rhdh-plugins/blob/main/CONTRIBUTING.md#using-the-cli-to-migrate-plugins-from-janus-idpbackstage-plugins)
 
 ## Next steps
 
