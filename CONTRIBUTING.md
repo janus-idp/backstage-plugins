@@ -19,7 +19,7 @@ We also recommend that you read [How to Contribute to Open Source](https://opens
 Help us keep **Janus-IDP** open and inclusive. Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 > [!IMPORTANT]
-> We encourage users to migrate their plugins to the `[backstage/community-plugins](https://github.com/backstage/community-plugins)` or `[redhat-developer/rhdh-plugins](https://github.com/redhat-developer/rhdh-plugins)` repos. For migrating plugins to `redhat-developer/rhdh-plugins` see: [Using the cli to migrate plugins to redhat-developer/rhdh-plugins from janus-idp/backstage-plugins](https://github.com/redhat-developer/rhdh-plugins/blob/main/CONTRIBUTING.md#using-the-cli-to-migrate-plugins-from-janus-idpbackstage-plugins) instead of this guide.
+> We encourage users to migrate their plugins to the `[backstage/community-plugins](https://github.com/backstage/community-plugins)` or `[redhat-developer/rhdh-plugins](https://github.com/redhat-developer/rhdh-plugins)` repos. For migrating plugins to `redhat-developer/rhdh-plugins` see: [Migrating plugins to redhat-developer/rhdh-plugins](https://github.com/redhat-developer/rhdh-plugins/blob/main/CONTRIBUTING.md#using-the-cli-to-migrate-plugins-from-janus-idpbackstage-plugins) instead of this guide.
 
 ## Guide for Migrating Plugins from janus-idp/backstage-plugins to `[backstage/community-plugins](https://github.com/backstage/community-plugins)`
 
