@@ -3,7 +3,7 @@ import React, { Fragment } from 'react';
 import { JsonObject } from '@backstage/types';
 
 import { UiSchema } from '@rjsf/utils';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 
 import generateUiSchema from '../utils/generateUiSchema';
 import { StepperContextProvider } from '../utils/StepperContext';
@@ -25,12 +25,12 @@ const getNumSteps = (schema: JSONSchema7): number | undefined => {
 const SingleStepForm = ({
   schema,
   formData,
-  onSubmit,
+  onChange,
   uiSchema,
 }: {
   schema: JSONSchema7;
   formData: JsonObject;
-  onSubmit: (formData: JsonObject) => void;
+  onChange: (formData: JsonObject) => void;
   uiSchema: UiSchema<JsonObject>;
 }) => {
   const steps = React.useMemo<OrchestratorFormStep[]>(() => {
@@ -42,7 +42,7 @@ const SingleStepForm = ({
           <OrchestratorFormWrapper
             schema={{ ...schema, title: '' }}
             formData={formData}
-            onSubmit={onSubmit}
+            onChange={onChange}
             uiSchema={uiSchema}
           >
             <OrchestratorFormToolbar />
@@ -50,7 +50,7 @@ const SingleStepForm = ({
         ),
       },
     ];
-  }, [schema, formData, onSubmit, uiSchema]);
+  }, [schema, formData, onChange, uiSchema]);
   return <OrchestratorFormStepper steps={steps} />;
 };
 
@@ -59,7 +59,7 @@ type OrchestratorFormProps = {
   isExecuting: boolean;
   handleExecute: (parameters: JsonObject) => Promise<void>;
   data?: JsonObject;
-  isDataReadonly: boolean;
+  isDataReadonly?: boolean;
 };
 
 const OrchestratorForm = ({
@@ -80,7 +80,7 @@ const OrchestratorForm = ({
     handleExecute(formData || {});
   }, [formData, handleExecute]);
 
-  const onSubmit = React.useCallback(
+  const onChange = React.useCallback(
     (_formData: JsonObject) => {
       setFormData(_formData);
     },
@@ -114,7 +114,7 @@ const OrchestratorForm = ({
           schema={schema}
           numStepsInMultiStepSchema={numStepsInMultiStepSchema}
           formData={formData}
-          onSubmit={onSubmit}
+          onChange={onChange}
           uiSchema={uiSchema}
         >
           <Fragment />
@@ -122,7 +122,7 @@ const OrchestratorForm = ({
       ) : (
         <SingleStepForm
           schema={schema}
-          onSubmit={onSubmit}
+          onChange={onChange}
           formData={formData}
           uiSchema={uiSchema}
         />

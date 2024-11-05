@@ -39,7 +39,6 @@
     "@rjsf/material-ui": "5.18.5",
     "@rjsf/utils": "5.18.5",
     "@rjsf/validator-ajv8": "5.18.5",
-    "json-schema": "^0.4.0",
     "json-schema-library": "^9.0.0",
     "lodash": "^4.17.21"
   },

@@ -2,7 +2,7 @@
 // import { JSONSchema7 } from 'json-schema';
 import { JsonObject, JsonValue } from '@backstage/types';
 
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { JsonSchema, Draft07 as JSONSchema } from 'json-schema-library';
 
 export function isJsonObject(value?: JsonValue): value is JsonObject {

@@ -2,7 +2,7 @@
 import { JsonObject } from '@backstage/types';
 
 import { UiSchema } from '@rjsf/utils';
-import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
+import type { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 import get from 'lodash/get';
 import set from 'lodash/set';
 
