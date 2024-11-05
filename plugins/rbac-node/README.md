@@ -1,9 +1,3 @@
-# @backstage/plugin-rbac-node
+# Deprecated
 
-Welcome to the Node.js library package for the rbac plugin!
-
-For more information about RBAC plugin, see the [RBAC plugin documentation](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/rbac-backend) on GitHub.
-
-## Version bump history
-
-- Bumped to 1.0.6 to re-release changes meant for 1.0.5, which failed due to timeout - see https://github.com/janus-idp/backstage-plugins/issues/1467
+This package has been moved to the [backstage-community/plugins](https://github.com/backstage/community-plugins) repository. Migrate to using `@backstage-community/plugin-rbac-node` instead.

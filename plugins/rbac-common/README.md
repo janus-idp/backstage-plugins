@@ -1,5 +1,3 @@
-# @janus-idp/backstage-plugin-rbac-common
+# Deprecated
 
-The RBAC plugin provides your Backstage instance with role based access control and policy management.
-
-For more information about RBAC plugin, see the [RBAC plugin documentation](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/rbac-backend) on GitHub.
+This package has been moved to the [backstage-community/plugins](https://github.com/backstage/community-plugins) repository. Migrate to using `@backstage-community/plugin-rbac-common` instead.
