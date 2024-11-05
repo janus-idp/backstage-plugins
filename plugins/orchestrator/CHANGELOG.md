@@ -1,5 +1,11 @@
 ### Dependencies
 
+## 2.3.2
+
+### Patch Changes
+
+- 76674da: Fixes issue when WorkflowResult panel fails on malformed provided result.
+
 ## 2.3.1
 
 ### Patch Changes
