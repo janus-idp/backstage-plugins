@@ -28,6 +28,10 @@ const useStyles = makeStyles(theme => ({
       },
     },
   },
+  regularButton: {
+    // hotifx for https://issues.redhat.com/browse/FLPATH-1825
+    backgroundColor: 'inherit !important',
+  },
   footer: {
     display: 'flex',
     flexDirection: 'row',
@@ -90,7 +94,11 @@ export const OrchestratorFormToolbar = () => {
   const styles = useStyles();
   return (
     <div className={styles.footer}>
-      <Button disabled={activeStep === 0} onClick={handleBack}>
+      <Button
+        disabled={activeStep === 0}
+        onClick={handleBack}
+        className={styles.regularButton}
+      >
         Back
       </Button>
       <SubmitButton submitting={isValidating}>Next</SubmitButton>
