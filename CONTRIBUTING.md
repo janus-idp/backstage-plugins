@@ -31,7 +31,7 @@ This guide will show you how to migrate plugins from `janus-idp/backstage-plugin
 ### Prerequisites
 
 - Have a `[janus-idp/backstage-plugins](https://github.com/janus-idp/backstage-plugins)` fork locally cloned
-- Have a `[backstage/community-plugins](https://github.com/backstage/community-plugins)` or `[redhat-developer/rhdh-plugins](https://github.com/redhat-developer/rhdh-plugins)` fork locally cloned
+- Have a `[backstage/community-plugins](https://github.com/backstage/community-plugins)` fork locally cloned
 
 ### Steps
 
