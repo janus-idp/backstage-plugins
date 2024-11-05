@@ -19,20 +19,19 @@ We also recommend that you read [How to Contribute to Open Source](https://opens
 Help us keep **Janus-IDP** open and inclusive. Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 > [!IMPORTANT]
-> We encourage users to migrate their plugins to the `backstage/community-plugins` repository.
+> We encourage users to migrate their plugins to the `[backstage/community-plugins](https://github.com/backstage/community-plugins)` or `[redhat-developer/rhdh-plugins](https://github.com/redhat-developer/rhdh-plugins)` repos. For migrating plugins to `redhat-developer/rhdh-plugins` see: [Using the cli to migrate plugins to redhat-developer/rhdh-plugins from janus-idp/backstage-plugins](https://github.com/redhat-developer/rhdh-plugins/blob/main/CONTRIBUTING.md#using-the-cli-to-migrate-plugins-from-janus-idpbackstage-plugins) instead of this guide.
 
-## Guide for Migrating Plugins from janus-idp/backstage-plugins to backstage/community-plugins
+## Guide for Migrating Plugins from janus-idp/backstage-plugins to `[backstage/community-plugins](https://github.com/backstage/community-plugins)` or `[redhat-developer/rhdh-plugins](https://github.com/redhat-developer/rhdh-plugins)`
 
 > [!NOTE]
-> After fully migrating plugins, remember to check for any updates that may have been made in the `janus-idp/backstage-plugins` repository. You may need to update `backstage/community-plugins` accordingly to ensure all recent changes are included.
-
+> After fully migrating plugins, remember to check for any updates that may have been made in the `janus-idp/backstage-plugins` repository. You may need to update the migrated plugins to pull in changes made to the janus-idp/backstage-plugins repo after migration. Additionally, any unmerged PRs should be closed and recreated against the new repo.
 
 This guide will show you how to migrate plugins from `janus-idp/backstage-plugins` to `backstage/community-plugins` using the backstage/community-plugins cli.
 
 ### Prerequisites
 
-- Have a `janus-idp/backstage-plugins` fork locally cloned
-- Have a `backstage/community-plugins` fork locally cloned
+- Have a `[janus-idp/backstage-plugins](https://github.com/janus-idp/backstage-plugins)` fork locally cloned
+- Have a `[backstage/community-plugins](https://github.com/backstage/community-plugins)` or `[redhat-developer/rhdh-plugins](https://github.com/redhat-developer/rhdh-plugins)` fork locally cloned
 
 ### Steps
 
@@ -84,7 +83,15 @@ This guide will show you how to migrate plugins from `janus-idp/backstage-plugin
   - [Backend plugin `package.json` example](https://github.com/janus-idp/backstage-showcase/blob/main/dynamic-plugins/wrappers/backstage-community-plugin-3scale-backend/package.json)
 - run `yarn export-dynamic` to generate dist-dynamic directory
 
-For migrating plugins to `redhat-developer/rhdh-plugins` see: <https://github.com/redhat-developer/rhdh-plugins/blob/main/CONTRIBUTING.md#using-the-cli-to-migrate-plugins-from-janus-idpbackstage-plugins>
+For migrating plugins to `redhat-developer/rhdh-plugins` see: [Using the cli to migrate plugins to redhat-developer/rhdh-plugins from janus-idp/backstage-plugins](https://github.com/redhat-developer/rhdh-plugins/blob/main/CONTRIBUTING.md#using-the-cli-to-migrate-plugins-from-janus-idpbackstage-plugins)
+
+## Next steps
+
+Once PRs are merged in the new repo, you should [mark the old plugins deprecated, and delete the content - leaving only a README.md](https://github.com/janus-idp/backstage-plugins/pull/2482/files#diff-74b70d63dd0c250dcfdd7cacf4639fc82a1a66098d9fc2a269bb98bf89790f9fR1).
+
+## Maintenance of older versions
+
+As only a single version will be migrated to the new repo, maintenance of older plugins for previous RHDH releases should continue to be done in the older repo, as the migrated versions will be aligned to newer versions of Backstage and may not be compatible.
 
 ## How can I contribute?
 
