@@ -222,21 +222,33 @@ const WorkflowOutputs = ({
 
   return (
     <>
-      {nonLinks.map(item => (
-        <Grid item md={6} key={item.key} className={styles.outputGrid}>
-          <AboutField
-            label={item.key}
-            value={(item.value || VALUE_UNAVAILABLE) as string}
-          />
-        </Grid>
-      ))}
+      {nonLinks.map(item => {
+        let value = item.value || VALUE_UNAVAILABLE;
+        if (typeof value !== 'string') {
+          // This is a workaround for malformed returned data. It should not happen if the sender does WorkflowResult validation properly.
+          if (typeof value === 'object') {
+            value = `Object: ${JSON.stringify(value)}`;
+          } else {
+            value = 'Unexpected type';
+          }
+        }
+
+        return (
+          <Grid item md={6} key={item.key} className={styles.outputGrid}>
+            <AboutField label={item.key} value={value as string} />
+          </Grid>
+        );
+      })}
 
       {links?.length > 0 && (
         <Grid item md={12} key="__links" className={styles.links}>
           <AboutField label="Links">
             <List dense disablePadding>
               {links
-                .filter(item => item.value && item.key)
+                .filter(
+                  item =>
+                    item.value && item.key && typeof item.value === 'string',
+                )
                 .map(item => {
                   return (
                     <ListItem disableGutters key={item.key}>
