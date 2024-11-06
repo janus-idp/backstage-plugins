@@ -1,3 +1,0 @@
-Version: Vancouver
-
-Download the OpenAPI Spec under `Rest API Explorer` in ServiceNow
