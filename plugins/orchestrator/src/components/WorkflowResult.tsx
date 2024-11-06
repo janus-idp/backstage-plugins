@@ -267,7 +267,7 @@ const WorkflowOutputs = ({
 export const WorkflowResult: React.FC<{
   assessedInstance: AssessedProcessInstanceDTO;
   className: string;
-  cardClassName: string;
+  cardClassName?: string;
 }> = ({ assessedInstance, className, cardClassName }) => {
   const instance = assessedInstance.instance;
   const result = instance.workflowdata?.result;
