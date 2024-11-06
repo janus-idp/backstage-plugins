@@ -1,1 +1,0 @@
-export { TableCardFromData } from './TableCardFromData';
