@@ -50,6 +50,8 @@ const useStyles = makeStyles(_ => ({
   },
   middleRowCard: {
     height: '20rem',
+    overflow: 'auto',
+    wordBreak: 'break-word',
   },
   bottomRowCard: {
     minHeight: '40rem',
@@ -122,7 +124,6 @@ export const WorkflowInstancePageContent: React.FC<{
           <WorkflowResult
             assessedInstance={assessedInstance}
             className={styles.middleRowCard}
-            cardClassName={styles.autoOverflow}
           />
         </Grid>
 
