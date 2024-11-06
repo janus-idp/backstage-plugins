@@ -8615,116 +8615,53 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-rbac-backend@*, @janus-idp/backstage-plugin-rbac-backend@workspace:plugins/rbac-backend":
-  version: 0.0.0-use.local
-  resolution: "@janus-idp/backstage-plugin-rbac-backend@workspace:plugins/rbac-backend"
+"@janus-idp/backstage-plugin-rbac-backend@npm:*":
+  version: 5.2.2
+  resolution: "@janus-idp/backstage-plugin-rbac-backend@npm:5.2.2"
   dependencies:
     "@backstage/backend-defaults": ^0.5.2
     "@backstage/backend-plugin-api": ^1.0.1
-    "@backstage/backend-test-utils": 1.0.2
     "@backstage/catalog-client": ^1.7.1
     "@backstage/catalog-model": ^1.7.0
-    "@backstage/cli": 0.28.2
-    "@backstage/config": 1.2.0
-    "@backstage/core-plugin-api": 1.10.0
     "@backstage/errors": ^1.2.4
     "@backstage/plugin-auth-node": ^0.5.3
     "@backstage/plugin-permission-backend": ^0.5.50
     "@backstage/plugin-permission-common": ^0.8.1
     "@backstage/plugin-permission-node": ^0.8.4
-    "@backstage/types": 1.1.1
     "@dagrejs/graphlib": ^2.1.13
     "@janus-idp/backstage-plugin-audit-log-node": ^1.7.1
     "@janus-idp/backstage-plugin-rbac-common": ^1.12.1
     "@janus-idp/backstage-plugin-rbac-node": ^1.8.1
-    "@types/express": 4.17.21
-    "@types/node": 18.19.34
-    "@types/supertest": 2.0.16
     casbin: ^5.27.1
     chokidar: ^3.6.0
     csv-parse: ^5.5.5
     express: ^4.18.2
     js-yaml: ^4.1.0
     knex: ^3.0.0
-    knex-mock-client: 2.0.1
     lodash: ^4.17.21
-    msw: 1.3.3
-    prettier: 3.3.3
-    qs: 6.11.2
-    supertest: 6.3.4
     typeorm-adapter: ^1.6.1
-  languageName: unknown
-  linkType: soft
+  checksum: 55fdb65eaa9a2b7fe9381cb68601a79e3faaefae9960e03cf94439e6f455c44136ebb94fe6aee27e6a8c42f64eed3d8ab2a6e7526eb2ecaefcc4a0b85b3f8fe7
+  languageName: node
+  linkType: hard
 
-"@janus-idp/backstage-plugin-rbac-common@^1.12.1, @janus-idp/backstage-plugin-rbac-common@workspace:plugins/rbac-common":
-  version: 0.0.0-use.local
-  resolution: "@janus-idp/backstage-plugin-rbac-common@workspace:plugins/rbac-common"
-  dependencies:
-    "@backstage/cli": 0.28.2
-    prettier: 3.3.3
+"@janus-idp/backstage-plugin-rbac-common@npm:^1.12.1":
+  version: 1.12.1
+  resolution: "@janus-idp/backstage-plugin-rbac-common@npm:1.12.1"
   peerDependencies:
     "@backstage/errors": ^1.2.4
     "@backstage/plugin-permission-common": ^0.8.1
-  languageName: unknown
-  linkType: soft
+  checksum: 83fa0355c0816dd55664533949b2eea489fc4cd7b661836d297d7c67115d660aa8ba8246ab13d1fa9cdda3e3f13448cf70f53359ad09aca058ce0361c68789dc
+  languageName: node
+  linkType: hard
 
-"@janus-idp/backstage-plugin-rbac-node@^1.8.1, @janus-idp/backstage-plugin-rbac-node@workspace:plugins/rbac-node":
-  version: 0.0.0-use.local
-  resolution: "@janus-idp/backstage-plugin-rbac-node@workspace:plugins/rbac-node"
+"@janus-idp/backstage-plugin-rbac-node@npm:^1.8.1":
+  version: 1.8.1
+  resolution: "@janus-idp/backstage-plugin-rbac-node@npm:1.8.1"
   dependencies:
     "@backstage/backend-plugin-api": ^1.0.1
-    "@backstage/cli": 0.28.2
-    prettier: 3.3.3
-  languageName: unknown
-  linkType: soft
-
-"@janus-idp/backstage-plugin-rbac@workspace:plugins/rbac":
-  version: 0.0.0-use.local
-  resolution: "@janus-idp/backstage-plugin-rbac@workspace:plugins/rbac"
-  dependencies:
-    "@backstage/catalog-model": ^1.7.0
-    "@backstage/cli": 0.28.2
-    "@backstage/core-app-api": 1.15.1
-    "@backstage/core-components": ^0.15.1
-    "@backstage/core-plugin-api": ^1.10.0
-    "@backstage/dev-utils": 1.1.2
-    "@backstage/plugin-catalog": ^1.24.0
-    "@backstage/plugin-catalog-common": ^1.1.0
-    "@backstage/plugin-permission-common": ^0.8.1
-    "@backstage/plugin-permission-react": ^0.4.27
-    "@backstage/test-utils": 1.7.0
-    "@backstage/theme": ^0.6.0
-    "@janus-idp/backstage-plugin-rbac-common": ^1.12.1
-    "@janus-idp/shared-react": ^2.13.1
-    "@material-ui/core": ^4.9.13
-    "@material-ui/icons": ^4.11.3
-    "@material-ui/lab": ^4.0.0-alpha.45
-    "@mui/icons-material": 5.16.4
-    "@mui/material": ^5.14.18
-    "@playwright/test": 1.45.3
-    "@redhat-developer/red-hat-developer-hub-theme": 0.4.0
-    "@rjsf/core": ^5.21.2
-    "@rjsf/mui": ^5.21.2
-    "@rjsf/utils": ^5.21.2
-    "@rjsf/validator-ajv8": ^5.21.2
-    "@testing-library/jest-dom": 6.4.8
-    "@testing-library/react": 14.3.1
-    "@testing-library/react-hooks": 8.0.1
-    "@testing-library/user-event": 14.5.2
-    "@types/autosuggest-highlight": 3.2.3
-    "@types/node": 18.19.34
-    autosuggest-highlight: ^3.3.4
-    formik: ^2.4.5
-    msw: 1.3.3
-    prettier: 3.3.3
-    react-use: ^17.4.0
-    start-server-and-test: 2.0.8
-    yup: ^1.3.2
-  peerDependencies:
-    react: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.0.0
-  languageName: unknown
-  linkType: soft
+  checksum: c333c0249a6cfbb8cfd50c25e06e635c61ba7c6cb3a4400c65ebe4774d1b1995fa616dcd4de895ab7b136b6fed4029718d8c9c5e8b233a63773cfe117186f93b
+  languageName: node
+  linkType: hard
 
 "@janus-idp/backstage-plugin-tekton-common@^1.3.1, @janus-idp/backstage-plugin-tekton-common@workspace:plugins/tekton-common":
   version: 0.0.0-use.local
@@ -10702,7 +10639,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^5.12.2, @mui/material@npm:^5.14.18, @mui/material@npm:^5.15.18":
+"@mui/material@npm:^5.12.2, @mui/material@npm:^5.15.18":
   version: 5.16.7
   resolution: "@mui/material@npm:5.16.7"
   dependencies:
@@ -13815,21 +13752,6 @@ __metadata:
     "@rjsf/utils": ^5.22.x
     react: ^16.14.0 || >=17
   checksum: 120406e0e8021f1950cf99d7db3b4e2b470f36977ea350cb78541db32c434e70717cadd70290354f80a8066a0626b5b09a3ff0d82b8e837efee8bb1aca19c8fa
-  languageName: node
-  linkType: hard
-
-"@rjsf/mui@npm:^5.21.2":
-  version: 5.22.1
-  resolution: "@rjsf/mui@npm:5.22.1"
-  peerDependencies:
-    "@emotion/react": ^11.7.0
-    "@emotion/styled": ^11.6.0
-    "@mui/icons-material": ^5.2.0 || ^6.0.0
-    "@mui/material": ^5.2.2 || ^6.0.0
-    "@rjsf/core": ^5.22.x
-    "@rjsf/utils": ^5.22.x
-    react: ">=17"
-  checksum: b9a7a0d348424a9f88310bc1979ae1e7ac0ab8b58005c1e67f549744f4c83c2929399e827742ece32b5ac185685446dacfb98ea480417c5914c8907ebd2e4565
   languageName: node
   linkType: hard
 
@@ -17627,13 +17549,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/autosuggest-highlight@npm:3.2.3":
-  version: 3.2.3
-  resolution: "@types/autosuggest-highlight@npm:3.2.3"
-  checksum: de115f7a838482e5af750f2b51249fcbe1f3473d1c31119731d392dc1dfb119d6b7275f97db737cd4d01b626d3c32d88554377ba4aa55fac8bbae73ab7881756
-  languageName: node
-  linkType: hard
-
 "@types/aws-lambda@npm:^8.10.83":
   version: 8.10.145
   resolution: "@types/aws-lambda@npm:8.10.145"
@@ -20958,15 +20873,6 @@ __metadata:
   dependencies:
     tslib: ^2.3.0
   checksum: 1d5d20ef23586629ec3c341052e6bb6250399cf5e66db21540c17b2f5b1137066435fb274a2115b57464d05e75b85afad61ef7cdf6ea693ef2920a3748b7249d
-  languageName: node
-  linkType: hard
-
-"autosuggest-highlight@npm:^3.3.4":
-  version: 3.3.4
-  resolution: "autosuggest-highlight@npm:3.3.4"
-  dependencies:
-    remove-accents: ^0.4.2
-  checksum: ec89d69770c65f4a6615d1443307553ca1d1b6d397bce4e2e488610a3c42ffc534b986424c362c84089865922c5713cba94be9fd74ed30e13bd5bbf47162c61d
   languageName: node
   linkType: hard
 
@@ -32797,17 +32703,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex-mock-client@npm:2.0.1":
-  version: 2.0.1
-  resolution: "knex-mock-client@npm:2.0.1"
-  dependencies:
-    lodash.clonedeep: ^4.5.0
-  peerDependencies:
-    knex: ">=2.0.0"
-  checksum: 18d152f58cbadc908f38091b642d9f816df67e75dfc4b98d7d8dfdc25a707be474d931180dfc05edc9b1434a2fe44b732892c89d58bdcccdb8452e8095bd33a6
-  languageName: node
-  linkType: hard
-
 "knex@npm:3, knex@npm:^3.0.0":
   version: 3.1.0
   resolution: "knex@npm:3.1.0"
@@ -39794,15 +39689,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:6.11.2":
-  version: 6.11.2
-  resolution: "qs@npm:6.11.2"
-  dependencies:
-    side-channel: ^1.0.4
-  checksum: e812f3c590b2262548647d62f1637b6989cc56656dc960b893fe2098d96e1bd633f36576f4cd7564dfbff9db42e17775884db96d846bebe4f37420d073ecdc0b
-  languageName: node
-  linkType: hard
-
 "qs@npm:6.13.0, qs@npm:^6.10.0, qs@npm:^6.10.1, qs@npm:^6.10.3, qs@npm:^6.11.0, qs@npm:^6.11.2, qs@npm:^6.12.3, qs@npm:^6.5.2, qs@npm:^6.9.3, qs@npm:^6.9.4":
   version: 6.13.0
   resolution: "qs@npm:6.13.0"
@@ -41412,13 +41298,6 @@ __metadata:
   bin:
     remarkable: bin/remarkable.js
   checksum: aee83ece531a7196f92e668aa76450f17bc1af77ce2939153f57b289b54f3aa3a72f355f4d57680336ab8205d53dca7ae06e6e743355ad2d4868cc7c85eafe89
-  languageName: node
-  linkType: hard
-
-"remove-accents@npm:^0.4.2":
-  version: 0.4.4
-  resolution: "remove-accents@npm:0.4.4"
-  checksum: 0219a20550f8e6d7ebb47993fc08633c9c10b171d573467671641178de7a00b47ffcdbbf3be323a22c45de8903ac869cc4707dfc5aa5f25b7711e0c9b4daf4f4
   languageName: node
   linkType: hard
 
@@ -48324,7 +48203,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yup@npm:^1.0.0, yup@npm:^1.3.2":
+"yup@npm:^1.0.0":
   version: 1.4.0
   resolution: "yup@npm:1.4.0"
   dependencies:
