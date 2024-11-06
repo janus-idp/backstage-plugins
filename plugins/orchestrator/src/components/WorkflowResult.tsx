@@ -267,8 +267,7 @@ const WorkflowOutputs = ({
 export const WorkflowResult: React.FC<{
   assessedInstance: AssessedProcessInstanceDTO;
   className: string;
-  cardClassName: string;
-}> = ({ assessedInstance, className, cardClassName }) => {
+}> = ({ assessedInstance, className }) => {
   const instance = assessedInstance.instance;
   const result = instance.workflowdata?.result;
 
@@ -285,7 +284,6 @@ export const WorkflowResult: React.FC<{
       }
       divider={false}
       className={className}
-      cardClassName={cardClassName}
     >
       <Grid container alignContent="flex-start">
         <NextWorkflows
