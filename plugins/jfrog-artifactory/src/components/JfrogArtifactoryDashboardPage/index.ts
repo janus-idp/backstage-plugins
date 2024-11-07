@@ -1,1 +1,0 @@
-export { JfrogArtifactoryDashboardPage } from './JfrogArtifactoryDashboardPage';

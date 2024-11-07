@@ -42,7 +42,6 @@ spec:
     - ./plugins/analytics-module-matomo/catalog-info.yaml
     - ./plugins/analytics-provider-segment/catalog-info.yaml
     - ./plugins/audit-log-node/catalog-info.yaml
-    - ./plugins/jfrog-artifactory/catalog-info.yaml
     - ./plugins/kiali/catalog-info.yaml
     - ./plugins/kiali-backend/catalog-info.yaml
     - ./plugins/kubernetes-actions/catalog-info.yaml

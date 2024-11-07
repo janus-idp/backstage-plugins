@@ -276,7 +276,6 @@
     {
       "matchFileNames": [
         "plugins/aap-backend*/**",
-        "plugins/jfrog-artifactory*/**",
         "plugins/kubernetes-actions*/**",
         "plugins/servicenow-actions*/**",
         "plugins/sonarqube-actions*/**",
