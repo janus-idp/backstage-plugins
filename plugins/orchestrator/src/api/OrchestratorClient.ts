@@ -1,11 +1,11 @@
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
-import { ResponseError } from '@backstage/errors';
-import { JsonObject } from '@backstage/types';
+import type { JsonObject } from '@backstage/types';
 
 import axios, {
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
+  isAxiosError,
   RawAxiosRequestHeaders,
 } from 'axios';
 
@@ -20,12 +20,23 @@ import {
   PaginationInfoDTO,
   ProcessInstanceListResultDTO,
   WorkflowDefinition,
-  WorkflowExecutionResponse,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { OrchestratorApi } from './api';
+
+const getError = (err: unknown): Error => {
+  if (
+    isAxiosError<{ error: { message: string; name: string } }>(err) &&
+    err.response?.data?.error?.message
+  ) {
+    const error = new Error(err.response?.data?.error?.message);
+    error.name = err.response?.data?.error?.name || 'Error';
+    return error;
+  }
+  return err as Error;
+};
 
 export interface OrchestratorClientOptions {
   discoveryApi: DiscoveryApi;
@@ -80,11 +91,15 @@ export class OrchestratorClient implements OrchestratorApi {
     const defaultApi = await this.getDefaultAPI();
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
-    return await defaultApi.executeWorkflow(
-      args.workflowId,
-      { inputData: args.parameters },
-      reqConfigOption,
-    );
+    try {
+      return await defaultApi.executeWorkflow(
+        args.workflowId,
+        { inputData: args.parameters },
+        reqConfigOption,
+      );
+    } catch (err) {
+      throw getError(err);
+    }
   }
 
   async abortWorkflowInstance(
@@ -93,14 +108,22 @@ export class OrchestratorClient implements OrchestratorApi {
     const defaultApi = await this.getDefaultAPI();
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
-    return await defaultApi.abortWorkflow(instanceId, reqConfigOption);
+    try {
+      return await defaultApi.abortWorkflow(instanceId, reqConfigOption);
+    } catch (err) {
+      throw getError(err);
+    }
   }
 
   async getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition> {
     const baseUrl = await this.getBaseUrl();
-    return await this.fetcher(`${baseUrl}/workflows/${workflowId}`).then(r =>
-      r.json(),
-    );
+    try {
+      return await this.fetcher(`${baseUrl}/workflows/${workflowId}`).then(r =>
+        r.json(),
+      );
+    } catch (err) {
+      throw getError(err);
+    }
   }
 
   async getWorkflowSource(workflowId: string): Promise<AxiosResponse<string>> {
@@ -108,7 +131,14 @@ export class OrchestratorClient implements OrchestratorApi {
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
     reqConfigOption.responseType = 'text';
-    return await defaultApi.getWorkflowSourceById(workflowId, reqConfigOption);
+    try {
+      return await defaultApi.getWorkflowSourceById(
+        workflowId,
+        reqConfigOption,
+      );
+    } catch (err) {
+      throw getError(err);
+    }
   }
 
   async listWorkflowOverviews(
@@ -118,10 +148,14 @@ export class OrchestratorClient implements OrchestratorApi {
     const defaultApi = await this.getDefaultAPI();
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
-    return await defaultApi.getWorkflowsOverview(
-      { paginationInfo, filters },
-      reqConfigOption,
-    );
+    try {
+      return await defaultApi.getWorkflowsOverview(
+        { paginationInfo, filters },
+        reqConfigOption,
+      );
+    } catch (err) {
+      throw getError(err);
+    }
   }
 
   async listInstances(
@@ -130,7 +164,11 @@ export class OrchestratorClient implements OrchestratorApi {
     const defaultApi = await this.getDefaultAPI();
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
-    return await defaultApi.getInstances(args, reqConfigOption);
+    try {
+      return await defaultApi.getInstances(args, reqConfigOption);
+    } catch (err) {
+      throw getError(err);
+    }
   }
 
   async getInstance(
@@ -146,8 +184,8 @@ export class OrchestratorClient implements OrchestratorApi {
         includeAssessment,
         reqConfigOption,
       );
-    } catch (error: any) {
-      throw new Error(error);
+    } catch (err) {
+      throw getError(err);
     }
   }
 
@@ -158,11 +196,15 @@ export class OrchestratorClient implements OrchestratorApi {
     const defaultApi = await this.getDefaultAPI();
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
-    return await defaultApi.getWorkflowInputSchemaById(
-      workflowId,
-      instanceId,
-      reqConfigOption,
-    );
+    try {
+      return await defaultApi.getWorkflowInputSchemaById(
+        workflowId,
+        instanceId,
+        reqConfigOption,
+      );
+    } catch (err) {
+      throw getError(err);
+    }
   }
 
   async getWorkflowOverview(
@@ -171,23 +213,14 @@ export class OrchestratorClient implements OrchestratorApi {
     const defaultApi = await this.getDefaultAPI();
     const reqConfigOption: AxiosRequestConfig =
       await this.getDefaultReqConfig();
-    return await defaultApi.getWorkflowOverviewById(
-      workflowId,
-      reqConfigOption,
-    );
-  }
-
-  async retriggerInstanceInError(args: {
-    instanceId: string;
-    inputData: JsonObject;
-  }): Promise<WorkflowExecutionResponse> {
-    const baseUrl = await this.getBaseUrl();
-    const urlToFetch = `${baseUrl}/instances/${args.instanceId}/retrigger`;
-    return await this.fetcher(urlToFetch, {
-      method: 'POST',
-      body: JSON.stringify(args.inputData),
-      headers: { 'Content-Type': 'application/json' },
-    }).then(r => r.json());
+    try {
+      return await defaultApi.getWorkflowOverviewById(
+        workflowId,
+        reqConfigOption,
+      );
+    } catch (err) {
+      throw getError(err);
+    }
   }
 
   /** fetcher is convenience fetch wrapper that includes authentication
@@ -203,9 +236,6 @@ export class OrchestratorClient implements OrchestratorApi {
       ...(idToken && { Authorization: `Bearer ${idToken}` }),
     };
     const response = await fetch(url, r);
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
     return response;
   }
 

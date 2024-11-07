@@ -133,12 +133,18 @@ export async function createBackendRouter(
       throw new Error('next is undefined');
     }
 
-    routerApi.openApiBackend.handleRequest(req as Request, req, res, next);
+    return routerApi.openApiBackend.handleRequest(
+      req as Request,
+      req,
+      res,
+      next,
+    );
   });
 
   const middleware = MiddlewareFactory.create({ logger, config });
 
   router.use(middleware.error());
+
   return router;
 }
 
@@ -297,15 +303,12 @@ function setupInternalRoutes(
       if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint, req);
       }
-      await routerApi.v2
+      return routerApi.v2
         .getWorkflowsOverview(buildPagination(req), getRequestFilters(req))
         .then(result => res.json(result))
         .catch(error => {
           auditLogRequestError(error, endpointName, endpoint, req);
-          res
-            .status(500)
-            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
-          next();
+          next(error);
         });
     },
   );
@@ -342,11 +345,7 @@ function setupInternalRoutes(
         res.status(200).contentType('text/plain').send(result);
       } catch (error) {
         auditLogRequestError(error, endpointName, endpoint, _req);
-        res
-          .status(500)
-          .contentType('text/plain')
-          .send((error as Error)?.message || INTERNAL_SERVER_ERROR_MESSAGE);
-        next();
+        next(error);
       }
     },
   );
@@ -354,7 +353,7 @@ function setupInternalRoutes(
   // v2
   routerApi.openApiBackend.register(
     'executeWorkflow',
-    async (c, req: express.Request, res: express.Response) => {
+    async (c, req: express.Request, res: express.Response, next) => {
       const workflowId = c.request.params.workflowId as string;
       const endpointName = 'executeWorkflow';
       const endpoint = `/v2/workflows/${workflowId}/execute`;
@@ -385,14 +384,12 @@ function setupInternalRoutes(
 
       const executeWorkflowRequestDTO = req.body;
 
-      await routerApi.v2
+      return routerApi.v2
         .executeWorkflow(executeWorkflowRequestDTO, workflowId, businessKey)
         .then(result => res.status(200).json(result))
         .catch(error => {
           auditLogRequestError(error, endpointName, endpoint, req);
-          res
-            .status(500)
-            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
+          next(error);
         });
     },
   );
@@ -423,18 +420,20 @@ function setupInternalRoutes(
       if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint, _req);
       }
-
-      await routerApi.v2
+      return routerApi.v2
         .getWorkflowOverviewById(workflowId)
         .then(result => res.json(result))
-        .catch(next);
+        .catch(error => {
+          auditLogRequestError(error, endpointName, endpoint, _req);
+          next(error);
+        });
     },
   );
 
   // v2
   routerApi.openApiBackend.register(
     'getWorkflowStatuses',
-    async (_c, _req: express.Request, res: express.Response) => {
+    async (_c, _req: express.Request, res: express.Response, next) => {
       const endpointName = 'getWorkflowStatuses';
       const endpoint = '/v2/workflows/instances/statuses';
 
@@ -455,14 +454,12 @@ function setupInternalRoutes(
       if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint, _req);
       }
-      await routerApi.v2
+      return routerApi.v2
         .getWorkflowStatuses()
         .then(result => res.status(200).json(result))
-        .catch((error: { message: string }) => {
+        .catch(error => {
           auditLogRequestError(error, endpointName, endpoint, _req);
-          res
-            .status(500)
-            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
+          next(error);
         });
     },
   );
@@ -470,139 +467,119 @@ function setupInternalRoutes(
   // v2
   routerApi.openApiBackend.register(
     'getWorkflowInputSchemaById',
-    async (c, req: express.Request, res: express.Response) => {
+    async (c, req: express.Request, res: express.Response, next) => {
       const workflowId = c.request.params.workflowId as string;
       const instanceId = c.request.query.instanceId as string;
       const endpointName = 'getWorkflowInputSchemaById';
       const endpoint = `/v2/workflows/${workflowId}/inputSchema`;
-
-      auditLogger.auditLog({
-        eventName: endpointName,
-        stage: 'start',
-        status: 'succeeded',
-        level: 'debug',
-        request: req,
-        message: `Received request to '${endpoint}' endpoint`,
-      });
-      const decision = await authorize(
-        req,
-        orchestratorWorkflowInstanceReadPermission,
-        permissions,
-        httpAuth,
-      );
-      if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(endpointName, endpoint, req);
-      }
-
-      const workflowDefinition =
-        await services.orchestratorService.fetchWorkflowInfo({
-          definitionId: workflowId,
-          cacheHandler: 'throw',
+      try {
+        auditLogger.auditLog({
+          eventName: endpointName,
+          stage: 'start',
+          status: 'succeeded',
+          level: 'debug',
+          request: req,
+          message: `Received request to '${endpoint}' endpoint`,
         });
-
-      if (!workflowDefinition) {
-        auditLogRequestError(
-          new Error(`Couldn't fetch workflow definition ${workflowId}`),
-          endpointName,
-          endpoint,
+        const decision = await authorize(
           req,
+          orchestratorWorkflowInstanceReadPermission,
+          permissions,
+          httpAuth,
         );
-        res
-          .status(500)
-          .send(`Couldn't fetch workflow definition ${workflowId}`);
-        return;
-      }
+        if (decision.result === AuthorizeResult.DENY) {
+          manageDenyAuthorization(endpointName, endpoint, req);
+        }
 
-      const serviceUrl = workflowDefinition.serviceUrl;
-      if (!serviceUrl) {
-        auditLogRequestError(
-          new Error(`Service URL is not defined for workflow ${workflowId}`),
-          endpointName,
-          endpoint,
-          req,
-        );
-        res
-          .status(500)
-          .send(`Service URL is not defined for workflow ${workflowId}`);
-        return;
-      }
-
-      const definition =
-        await services.orchestratorService.fetchWorkflowDefinition({
-          definitionId: workflowId,
-          cacheHandler: 'throw',
-        });
-
-      if (!definition) {
-        auditLogRequestError(
-          new Error(
-            `Couldn't fetch workflow definition of workflow source ${workflowId}`,
-          ),
-          endpointName,
-          endpoint,
-          req,
-        );
-        res
-          .status(500)
-          .send(
-            `Couldn't fetch workflow definition of workflow source ${workflowId}`,
-          );
-        return;
-      }
-
-      if (!definition.dataInputSchema) {
-        res.status(200).json({});
-        return;
-      }
-
-      const instanceVariables = instanceId
-        ? await services.orchestratorService.fetchInstanceVariables({
-            instanceId,
+        const workflowDefinition =
+          await services.orchestratorService.fetchWorkflowInfo({
+            definitionId: workflowId,
             cacheHandler: 'throw',
-          })
-        : undefined;
+          });
 
-      const workflowData = instanceVariables
-        ? services.dataInputSchemaService.extractWorkflowData(instanceVariables)
-        : undefined;
+        if (!workflowDefinition) {
+          throw new Error(
+            `Failed to fetch workflow info for workflow ${workflowId}`,
+          );
+        }
+        const serviceUrl = workflowDefinition.serviceUrl;
+        if (!serviceUrl) {
+          throw new Error(
+            `Service URL is not defined for workflow ${workflowId}`,
+          );
+        }
 
-      const workflowInfo = await routerApi.v2
-        .getWorkflowInputSchemaById(workflowId, serviceUrl)
-        .catch((error: { message: string }) => {
-          auditLogRequestError(error, endpointName, endpoint, req);
-          res
-            .status(500)
-            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
-        });
+        const definition =
+          await services.orchestratorService.fetchWorkflowDefinition({
+            definitionId: workflowId,
+            cacheHandler: 'throw',
+          });
 
-      if (
-        !workflowInfo ||
-        !workflowInfo.inputSchema ||
-        !workflowInfo.inputSchema.properties
-      ) {
-        res.status(200).json({});
-        return;
-      }
+        if (!definition) {
+          throw new Error(
+            'Failed to fetch workflow definition for workflow ${workflowId}',
+          );
+        }
 
-      const inputSchemaProps = workflowInfo.inputSchema.properties;
-      let inputData;
+        if (!definition.dataInputSchema) {
+          res.status(200).json({});
+          return;
+        }
 
-      if (workflowData) {
-        inputData = Object.keys(inputSchemaProps)
-          .filter(k => k in workflowData)
-          .reduce((result, k) => {
-            if (!workflowData[k]) {
+        const instanceVariables = instanceId
+          ? await services.orchestratorService.fetchInstanceVariables({
+              instanceId,
+              cacheHandler: 'throw',
+            })
+          : undefined;
+
+        const workflowData = instanceVariables
+          ? services.dataInputSchemaService.extractWorkflowData(
+              instanceVariables,
+            )
+          : undefined;
+
+        const workflowInfo = await routerApi.v2
+          .getWorkflowInputSchemaById(workflowId, serviceUrl)
+          .catch((error: { message: string }) => {
+            auditLogRequestError(error, endpointName, endpoint, req);
+            res.status(500).json({
+              message: error.message || INTERNAL_SERVER_ERROR_MESSAGE,
+            });
+          });
+
+        if (
+          !workflowInfo ||
+          !workflowInfo.inputSchema ||
+          !workflowInfo.inputSchema.properties
+        ) {
+          res.status(200).json({});
+          return;
+        }
+
+        const inputSchemaProps = workflowInfo.inputSchema.properties;
+        let inputData;
+
+        if (workflowData) {
+          inputData = Object.keys(inputSchemaProps)
+            .filter(k => k in workflowData)
+            .reduce((result, k) => {
+              if (!workflowData[k]) {
+                return result;
+              }
+              result[k] = workflowData[k];
               return result;
-            }
-            result[k] = workflowData[k];
-            return result;
-          }, {} as JsonObject);
-      }
+            }, {} as JsonObject);
+        }
 
-      res.status(200).json({
-        inputSchema: workflowInfo.inputSchema,
-        data: inputData,
-      });
+        res.status(200).json({
+          inputSchema: workflowInfo.inputSchema,
+          data: inputData,
+        });
+      } catch (err) {
+        auditLogRequestError(err, endpointName, endpoint, req);
+        next(err);
+      }
     },
   );
 
@@ -632,10 +609,13 @@ function setupInternalRoutes(
       if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint, req);
       }
-      await routerApi.v2
+      return routerApi.v2
         .getInstances(buildPagination(req), getRequestFilters(req), workflowId)
         .then(result => res.json(result))
-        .catch(next);
+        .catch(error => {
+          auditLogRequestError(error, endpointName, endpoint, req);
+          next(error);
+        });
     },
   );
 
@@ -664,10 +644,13 @@ function setupInternalRoutes(
       if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint, req);
       }
-      await routerApi.v2
+      return routerApi.v2
         .getInstances(buildPagination(req), getRequestFilters(req))
         .then(result => res.json(result))
-        .catch(next);
+        .catch(error => {
+          auditLogRequestError(error, endpointName, endpoint, req);
+          next(error);
+        });
     },
   );
 
@@ -701,15 +684,12 @@ function setupInternalRoutes(
         c.request,
         QUERY_PARAM_INCLUDE_ASSESSMENT,
       );
-      await routerApi.v2
+      return routerApi.v2
         .getInstanceById(instanceId, !!includeAssessment)
         .then(result => res.status(200).json(result))
         .catch(error => {
           auditLogRequestError(error, endpointName, endpoint, _req);
-          res
-            .status(500)
-            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
-          next();
+          next(error);
         });
     },
   );
@@ -740,15 +720,12 @@ function setupInternalRoutes(
       if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint, _req);
       }
-      await routerApi.v2
+      return routerApi.v2
         .abortWorkflow(instanceId)
         .then(result => res.json(result))
         .catch(error => {
           auditLogRequestError(error, endpointName, endpoint, _req);
-          res
-            .status(500)
-            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
-          next();
+          next(error);
         });
     },
   );

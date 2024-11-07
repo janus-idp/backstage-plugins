@@ -10,7 +10,6 @@ import {
   InputSchemaResponseDTO,
   ProcessInstanceListResultDTO,
   WorkflowDefinition,
-  WorkflowExecutionResponse,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -23,11 +22,6 @@ export interface OrchestratorApi {
     parameters: JsonObject;
     businessKey?: string;
   }): Promise<AxiosResponse<ExecuteWorkflowResponseDTO>>;
-
-  retriggerInstanceInError(args: {
-    instanceId: string;
-    inputData: JsonObject;
-  }): Promise<WorkflowExecutionResponse>;
 
   getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition>;
 
