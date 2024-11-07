@@ -780,6 +780,11 @@ function setupExternalRoutes(
     const scaffolderUrl = await discovery.getBaseUrl('scaffolder');
     const response = await fetch(`${scaffolderUrl}/v2/actions`);
     const json = await response.json();
+    if (!response.ok) {
+      throw new Error(
+        `Couldn't fetch URL ${scaffolderUrl}/v2/actions. Status code: ${response.status}. Response: ${json}`,
+      );
+    }
     res.status(response.status).json(json);
   });
 
