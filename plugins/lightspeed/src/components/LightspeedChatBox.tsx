@@ -52,11 +52,15 @@ export const LightspeedChatBox = React.forwardRef(
         className={classes.userMessageText}
         announcement={announcement}
       >
-        <ChatbotWelcomePrompt
-          title={`Hello, ${profileLoading ? '...' : (userName ?? 'Guest')}`}
-          description="How can I help you today?"
-          prompts={welcomePrompts}
-        />
+        {welcomePrompts.length ? (
+          <ChatbotWelcomePrompt
+            title={`Hello, ${profileLoading ? '...' : (userName ?? 'Guest')}`}
+            description="How can I help you today?"
+            prompts={welcomePrompts}
+          />
+        ) : (
+          <br />
+        )}
         {cmessages.map((message, index) => {
           if (index === cmessages.length - 1) {
             return (

@@ -174,6 +174,9 @@ export const useConversationMessages = (
               setConversations(prevConversations => {
                 const conversation = prevConversations[currentConversation];
 
+                if (!conversation) {
+                  return prevConversations;
+                }
                 const lastMessageIndex = conversation.length - 1;
                 const lastMessage = { ...conversation[lastMessageIndex] };
 
@@ -207,6 +210,9 @@ export const useConversationMessages = (
         setConversations(prevConversations => {
           const conversation = prevConversations[currentConversation];
 
+          if (!conversation) {
+            return prevConversations;
+          }
           const lastMessageIndex = conversation.length - 1;
           const lastMessage = { ...conversation[lastMessageIndex] };
 

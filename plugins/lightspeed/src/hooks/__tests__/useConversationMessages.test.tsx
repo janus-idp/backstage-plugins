@@ -131,7 +131,7 @@ describe('useConversationMesages', () => {
       ({ conversationId }: { conversationId: any }) =>
         useConversationMessages(
           conversationId,
-          'test-user',
+          'test-user-id',
           'gpt-3',
           'avatar.png',
         ),
@@ -155,7 +155,7 @@ describe('useConversationMesages', () => {
   it('should call onComplete when streaming is done', async () => {
     const onComplete = jest.fn();
 
-    const mockApi = {
+    const lightSpeedApi = {
       createMessage: jest.fn().mockResolvedValue({
         read: jest
           .fn()
@@ -169,20 +169,19 @@ describe('useConversationMesages', () => {
       }),
     };
 
-    (useApi as jest.Mock).mockReturnValue(mockApi);
+    (useApi as jest.Mock).mockReturnValue(lightSpeedApi);
 
     const { result } = renderHook(
-      ({ conversationId }: { conversationId: any }) =>
+      () =>
         useConversationMessages(
-          conversationId,
+          'initialConversationId',
           'test-user',
           'gpt-3',
-          'avatar.png',
+          'user.png',
           onComplete,
         ),
       {
         wrapper,
-        initialProps: { conversationId: 'initialConversationId' },
       },
     );
 
@@ -213,17 +212,16 @@ describe('useConversationMesages', () => {
     (useApi as jest.Mock).mockReturnValue(mockApi);
 
     const { result } = renderHook(
-      ({ conversationId }: { conversationId: any }) =>
+      () =>
         useConversationMessages(
-          conversationId,
+          'testId',
           'test-user',
           'gpt-3',
-          'avatar.png',
+          'user.png',
           onComplete,
         ),
       {
         wrapper,
-        initialProps: { conversationId: 'initialConversationId' },
       },
     );
 
@@ -343,18 +341,18 @@ describe('useConversationMesages', () => {
   });
 
   it('should surface API error if last bot message failed', async () => {
-    const mockApi = {
+    const mockLsApiClient = {
       createMessage: jest
         .fn()
         .mockRejectedValue(new Error('Failed to create message')),
     };
 
-    (useApi as jest.Mock).mockReturnValue(mockApi);
+    (useApi as jest.Mock).mockReturnValue(mockLsApiClient);
 
     const { result } = renderHook(
       () =>
         useConversationMessages(
-          'testConversationId',
+          'testConversationID',
           'test-user',
           'gpt-3',
           'avatar.png',
@@ -362,14 +360,14 @@ describe('useConversationMesages', () => {
       { wrapper },
     );
 
-    const prompt = 'Hello, how are you?';
+    const prompt = 'what is json?';
 
     await act(async () => {
       await result.current.handleInputPrompt(prompt);
     });
 
     await waitFor(() => {
-      expect(result.current.conversations.testConversationId).toEqual([
+      expect(result.current.conversations.testConversationID).toEqual([
         expect.objectContaining({
           role: 'user',
           content: prompt,

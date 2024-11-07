@@ -8132,7 +8132,6 @@ __metadata:
     "@patternfly/react-core": 6.0.0-prerelease.21
     "@patternfly/virtual-assistant": 2.0.0-alpha.61
     "@tanstack/react-query": ^5.59.15
-    "@testing-library/dom": ^10.4.0
     "@testing-library/jest-dom": 6.4.8
     "@testing-library/react": ^16.0.1
     "@testing-library/react-hooks": 8.0.1
@@ -16535,22 +16534,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/dom@npm:^10.4.0":
-  version: 10.4.0
-  resolution: "@testing-library/dom@npm:10.4.0"
-  dependencies:
-    "@babel/code-frame": ^7.10.4
-    "@babel/runtime": ^7.12.5
-    "@types/aria-query": ^5.0.1
-    aria-query: 5.3.0
-    chalk: ^4.1.0
-    dom-accessibility-api: ^0.5.9
-    lz-string: ^1.5.0
-    pretty-format: ^27.0.2
-  checksum: bb128b90be0c8cd78c5f5e67aa45f53de614cc048a2b50b230e736ec710805ac6c73375af354b83c74d710b3928d52b83a273a4cb89de4eb3efe49e91e706837
-  languageName: node
-  linkType: hard
-
 "@testing-library/jest-dom@npm:6.4.8":
   version: 6.4.8
   resolution: "@testing-library/jest-dom@npm:6.4.8"
@@ -23758,7 +23741,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dequal@npm:^2.0.0, dequal@npm:^2.0.2, dequal@npm:^2.0.3":
+"dequal@npm:^2.0.0, dequal@npm:^2.0.2":
   version: 2.0.3
   resolution: "dequal@npm:2.0.3"
   checksum: 8679b850e1a3d0ebbc46ee780d5df7b478c23f335887464023a631d1b9af051ad4a6595a44220f9ff8ff95a8ddccf019b5ad778a976fd7bbf77383d36f412f90

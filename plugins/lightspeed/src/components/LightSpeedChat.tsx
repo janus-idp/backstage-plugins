@@ -80,11 +80,9 @@ export const LightspeedChat = ({
 
   const queryClient = useQueryClient();
 
+  const { data: conversations = [] } = useConversations();
   const { mutateAsync: createConversation } = useCreateConversation();
-  const { data: conversations = [], isFetching: isFetchingConversations } =
-    useConversations();
-  const { mutateAsync: deleteConversation, isPending: isDeleting } =
-    useDeleteConversation();
+  const { mutateAsync: deleteConversation } = useDeleteConversation();
 
   React.useEffect(() => {
     if (user) {
@@ -151,7 +149,6 @@ export const LightspeedChat = ({
     (conversationSummary: ConversationSummary) => ({
       menuItems: (
         <DropdownItem
-          isDisabled={isDeleting || isFetchingConversations}
           onClick={async () => {
             try {
               await deleteConversation({
@@ -169,7 +166,7 @@ export const LightspeedChat = ({
         </DropdownItem>
       ),
     }),
-    [deleteConversation, onNewChat, isDeleting, isFetchingConversations],
+    [deleteConversation, onNewChat],
   );
   const categorizedMessages = getCategorizeMessages(
     conversations,
