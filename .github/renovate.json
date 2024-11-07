@@ -266,7 +266,6 @@
         "plugins/regex-actions*/**",
         "plugins/scaffolder-annotator-action*/**",
         "plugins/shared-react*/**",
-        "plugins/topology*/**",
         "packages/**",
         "package.json"
       ],
@@ -288,7 +287,6 @@
         "plugins/regex-actions*/**",
         "plugins/scaffolder-annotator-action*/**",
         "plugins/shared-react*/**",
-        "plugins/topology*/**",
         "packages/**",
         "package.json"
       ],
