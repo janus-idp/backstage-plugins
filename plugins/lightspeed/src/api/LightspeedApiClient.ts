@@ -30,12 +30,11 @@ export class LightspeedApiClient implements LightspeedAPI {
     return idToken;
   }
 
-  async createChatCompletions(
+  async createMessage(
     prompt: string,
     selectedModel: string,
     conversation_id: string,
   ) {
-    await this.createConversation();
     const baseUrl = await this.getBaseUrl();
     const token = await this.getUserAuthorization();
 
@@ -66,32 +65,6 @@ export class LightspeedApiClient implements LightspeedAPI {
     return response.body.getReader();
   }
 
-  async createConversation() {
-    const baseUrl = await this.getBaseUrl();
-    const token = await this.getUserAuthorization();
-
-    const response = await fetch(`${baseUrl}/conversations`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      body: JSON.stringify({}),
-    });
-
-    if (!response.body) {
-      throw new Error('Readable stream is not supported or there is no body.');
-    }
-
-    if (!response.ok) {
-      throw new Error(
-        `failed to fetch data, status ${response.status}: ${response.statusText}`,
-      );
-    }
-    const result = await response.json();
-    return result;
-  }
-
   private async fetcher(url: string) {
     const token = await this.getUserAuthorization();
 
@@ -118,11 +91,64 @@ export class LightspeedApiClient implements LightspeedAPI {
     return response?.data ? response.data : [];
   }
 
-  async getConversations(conversation_id: string) {
+  async getConversationMessages(conversation_id: string) {
     const baseUrl = await this.getBaseUrl();
     const result = await this.fetcher(
       `${baseUrl}/conversations/${encodeURIComponent(conversation_id)}`,
     );
     return await result.json();
+  }
+
+  async getConversations() {
+    const baseUrl = await this.getBaseUrl();
+    const result = await this.fetcher(`${baseUrl}/conversations`);
+    return await result.json();
+  }
+
+  async createConversation() {
+    const baseUrl = await this.getBaseUrl();
+    const token = await this.getUserAuthorization();
+
+    const response = await fetch(`${baseUrl}/conversations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: JSON.stringify({}),
+    });
+
+    if (!response.body) {
+      throw new Error('Something went wrong.');
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        `failed to create conversation, status ${response.status}: ${response.statusText}`,
+      );
+    }
+    return await response.json();
+  }
+
+  async deleteConversation(conversation_id: string) {
+    const baseUrl = await this.getBaseUrl();
+    const token = await this.getUserAuthorization();
+
+    const response = await fetch(
+      `${baseUrl}/conversations/${encodeURIComponent(conversation_id)}`,
+      {
+        method: 'DELETE',
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `failed to delete conversation, status ${response.status}: ${response.statusText}`,
+      );
+    }
+    return { success: true };
   }
 }

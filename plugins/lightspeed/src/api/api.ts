@@ -2,16 +2,21 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 import OpenAI from 'openai';
 
-import { BaseMessage } from '../types';
+import { BaseMessage, ConversationList } from '../types';
 
 export type LightspeedAPI = {
-  createChatCompletions: (
+  getAllModels: () => Promise<OpenAI.Models.Model[]>;
+  getConversationMessages: (conversation_id: string) => Promise<BaseMessage[]>;
+  createConversation: () => Promise<{ conversation_id: string }>;
+  createMessage: (
     prompt: string,
     selectedModel: string,
     conversation_id: string,
   ) => Promise<ReadableStreamDefaultReader>;
-  getAllModels: () => Promise<OpenAI.Models.Model[]>;
-  getConversations: (conversation_id: string) => Promise<BaseMessage[]>;
+  deleteConversation: (
+    conversation_id: string,
+  ) => Promise<{ success: boolean }>;
+  getConversations: () => Promise<ConversationList>;
 };
 
 export const lightspeedApiRef = createApiRef<LightspeedAPI>({

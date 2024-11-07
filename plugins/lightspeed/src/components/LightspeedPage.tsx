@@ -5,10 +5,11 @@ import { Content, Page } from '@backstage/core-components';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 
 import { lightspeedApiRef } from '../api/api';
-import { LightspeedChatBox } from './LightspeedChatBox';
+import queryClient from '../utils/queryClient';
+import { LightspeedChat } from './LightSpeedChat';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -29,7 +30,6 @@ export const LightspeedPage = () => {
 
   const lightspeedApi = useApi(lightspeedApiRef);
   const identityApi = useApi(identityApiRef);
-  const queryClient = new QueryClient();
 
   const { value: models } = useAsync(
     async () => await lightspeedApi.getAllModels(),
@@ -64,7 +64,7 @@ export const LightspeedPage = () => {
     <Page themeId="tool">
       <Content className={classes.container}>
         <QueryClientProvider client={queryClient}>
-          <LightspeedChatBox
+          <LightspeedChat
             selectedModel={selectedModel}
             handleSelectedModel={item => {
               setSelectedModel(item);

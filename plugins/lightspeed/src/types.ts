@@ -24,3 +24,10 @@ export interface BaseMessage {
     };
   };
 }
+export type ConversationSummary = {
+  conversation_id: string;
+  lastMessageTimestamp: number;
+  summary: string;
+};
+
+export type ConversationList = ConversationSummary[];

@@ -1,4 +1,6 @@
-import { BaseMessage } from '../types';
+import { Conversation } from '@patternfly/virtual-assistant';
+
+import { BaseMessage, ConversationList, ConversationSummary } from '../types';
 
 export const getFootnoteProps = () => ({
   label: 'Lightspeed uses AI. Check for mistakes.',
@@ -104,4 +106,76 @@ export const getMessageData = (message: BaseMessage) => {
     content: message?.kwargs?.content || '',
     timestamp: getTimestamp(message?.kwargs?.response_metadata?.created_at),
   };
+};
+
+export const getDayDifference = (sourceTime: number, targetTime: number) => {
+  const sourceDate = new Date(sourceTime);
+  const targetDate = new Date(targetTime);
+
+  sourceDate.setHours(0, 0, 0, 0);
+  targetDate.setHours(0, 0, 0, 0);
+
+  const timeDifference = sourceDate.getTime() - targetDate.getTime();
+
+  return Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+};
+
+export const getCategorizeMessages = (
+  messages: ConversationList,
+  addProps: (c: ConversationSummary) => { [k: string]: any },
+): { [k: string]: Conversation[] } => {
+  const now: any = new Date();
+  const today = now.toDateString();
+
+  const categorizedMessages: { [k: string]: Conversation[] } = {
+    Today: [],
+    Yesterday: [],
+    'Previous 7 Days': [],
+    'Previous 30 Days': [],
+  };
+
+  messages.forEach(c => {
+    const messageDate = new Date(c.lastMessageTimestamp);
+    const messageDayString = messageDate.toDateString();
+    const dayDifference = getDayDifference(now, c.lastMessageTimestamp);
+
+    const message: Conversation = {
+      id: c.conversation_id,
+      text: c.summary,
+      label: 'Options',
+      ...addProps(c),
+    };
+
+    if (messageDayString === today) {
+      categorizedMessages.Today.push(message);
+    } else if (dayDifference === 1) {
+      categorizedMessages.Yesterday.push(message);
+    } else if (dayDifference <= 7) {
+      categorizedMessages['Previous 7 Days'].push(message);
+    } else if (dayDifference <= 30) {
+      categorizedMessages['Previous 30 Days'].push(message);
+    } else {
+      // handle month-wise grouping
+      const monthYear = messageDate.toLocaleString('default', {
+        month: 'long',
+        year: 'numeric',
+      });
+      if (!categorizedMessages[monthYear]) {
+        categorizedMessages[monthYear] = [];
+      }
+      categorizedMessages[monthYear].push(message);
+    }
+  });
+
+  const filteredCategories = Object.keys(categorizedMessages).reduce(
+    (result, category) => {
+      if (categorizedMessages[category].length > 0) {
+        result[category] = categorizedMessages[category];
+      }
+      return result;
+    },
+    {} as any,
+  );
+
+  return filteredCategories;
 };
