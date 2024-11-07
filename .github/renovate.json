@@ -67,21 +67,6 @@
       ]
     },
     {
-      "description": "disable updates to the keycloak admin client - see https://github.com/janus-idp/backstage-plugins/issues/47 https://github.com/janus-idp/backstage-plugins/issues/1046",
-      "enabled": false,
-      "matchDatasources": ["npm"],
-      "matchPackageNames": ["@keycloak/keycloak-admin-client"],
-      "groupName": "Keycloak dependency"
-    },
-    {
-      "description": "ignore updates to the axios to version that keycloak 18 needs",
-      "enabled": false,
-      "matchDatasources": ["npm"],
-      "matchPackageNames": ["axios"],
-      "matchCurrentVersion": "0.26.1",
-      "groupName": "Keycloak dependency"
-    },
-    {
       "description": "disable updates to the kubernetes client. Lock it down to the same version as Backstage",
       "enabled": false,
       "matchDatasources": ["npm"],
@@ -258,11 +243,7 @@
       "matchFileNames": [
         "plugins/analytics-provider-segment*/**",
         "plugins/audit-log*/**",
-        "plugins/bulk-import*/**",
-        "plugins/keycloak*/**",
-        "plugins/ocm*/**",
         "plugins/quay-actions*/**",
-        "plugins/rbac*/**",
         "plugins/regex-actions*/**",
         "plugins/scaffolder-annotator-action*/**",
         "plugins/shared-react*/**",
@@ -279,11 +260,7 @@
       "matchFileNames": [
         "plugins/analytics-provider-segment*/**",
         "plugins/audit-log*/**",
-        "plugins/bulk-import*/**",
-        "plugins/keycloak*/**",
-        "plugins/ocm*/**",
         "plugins/quay-actions*/**",
-        "plugins/rbac*/**",
         "plugins/regex-actions*/**",
         "plugins/scaffolder-annotator-action*/**",
         "plugins/shared-react*/**",
