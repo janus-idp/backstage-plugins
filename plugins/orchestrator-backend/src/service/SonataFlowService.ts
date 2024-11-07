@@ -27,38 +27,26 @@ export class SonataFlowService {
     definitionId: string;
     serviceUrl: string;
   }): Promise<WorkflowInfo | undefined> {
-    try {
-      const urlToFetch = `${args.serviceUrl}/management/processes/${args.definitionId}`;
-      const response = await fetch(urlToFetch);
+    const urlToFetch = `${args.serviceUrl}/management/processes/${args.definitionId}`;
+    const response = await fetch(urlToFetch);
 
-      if (response.ok) {
-        const json = await response.json();
-        this.logger.debug(
-          `Fetch workflow info result: ${JSON.stringify(json)}`,
-        );
-        return json;
-      }
-      throw new Error(
-        await this.createPrefixFetchErrorMessage(urlToFetch, response),
-      );
-    } catch (error) {
-      this.logger.error(`Error when fetching workflow info: ${error}`);
+    if (response.ok) {
+      const json = await response.json();
+      this.logger.debug(`Fetch workflow info result: ${JSON.stringify(json)}`);
+      return json;
     }
-
-    return undefined;
+    throw new Error(
+      await this.createPrefixFetchErrorMessage(urlToFetch, response),
+    );
   }
 
   public async fetchWorkflowDefinition(
     definitionId: string,
   ): Promise<WorkflowDefinition | undefined> {
-    try {
-      const source =
-        await this.dataIndexService.fetchWorkflowSource(definitionId);
-      if (source) {
-        return fromWorkflowSource(source);
-      }
-    } catch (error) {
-      this.logger.error(`Error when fetching workflow definition: ${error}`);
+    const source =
+      await this.dataIndexService.fetchWorkflowSource(definitionId);
+    if (source) {
+      return fromWorkflowSource(source);
     }
     return undefined;
   }
@@ -69,27 +57,20 @@ export class SonataFlowService {
     filter?: Filter;
   }): Promise<WorkflowOverview[] | undefined> {
     const { definitionIds, pagination, filter } = args;
-    try {
-      const workflowInfos = await this.dataIndexService.fetchWorkflowInfos({
-        definitionIds,
-        pagination,
-        filter,
-      });
-      if (!workflowInfos?.length) {
-        return [];
-      }
-      const items = await Promise.all(
-        workflowInfos
-          .filter(info => info.source)
-          .map(info => this.fetchWorkflowOverviewBySource(info.source!)),
-      );
-      return items.filter((item): item is WorkflowOverview => !!item);
-    } catch (error) {
-      this.logger.error(
-        `Error when fetching workflows for workflowOverview: ${error}`,
-      );
+    const workflowInfos = await this.dataIndexService.fetchWorkflowInfos({
+      definitionIds,
+      pagination,
+      filter,
+    });
+    if (!workflowInfos?.length) {
+      return [];
     }
-    return undefined;
+    const items = await Promise.all(
+      workflowInfos
+        .filter(info => info.source)
+        .map(info => this.fetchWorkflowOverviewBySource(info.source!)),
+    );
+    return items.filter((item): item is WorkflowOverview => !!item);
   }
 
   public async executeWorkflow(args: {
@@ -98,29 +79,24 @@ export class SonataFlowService {
     inputData: ProcessInstanceVariables;
     businessKey?: string;
   }): Promise<WorkflowExecutionResponse | undefined> {
-    try {
-      const urlToFetch = args.businessKey
-        ? `${args.serviceUrl}/${args.definitionId}?businessKey=${args.businessKey}`
-        : `${args.serviceUrl}/${args.definitionId}`;
+    const urlToFetch = args.businessKey
+      ? `${args.serviceUrl}/${args.definitionId}?businessKey=${args.businessKey}`
+      : `${args.serviceUrl}/${args.definitionId}`;
 
-      const response = await fetch(urlToFetch, {
-        method: 'POST',
-        body: JSON.stringify(args.inputData),
-        headers: { 'content-type': 'application/json' },
-      });
+    const response = await fetch(urlToFetch, {
+      method: 'POST',
+      body: JSON.stringify(args.inputData),
+      headers: { 'content-type': 'application/json' },
+    });
 
-      if (response.ok) {
-        const json = await response.json();
-        this.logger.debug(`Execute workflow result: ${JSON.stringify(json)}`);
-        return json;
-      }
-      throw new Error(
-        `${await this.createPrefixFetchErrorMessage(urlToFetch, response, 'POST')}`,
-      );
-    } catch (error) {
-      this.logger.error(`Error when executing workflow: ${error}`);
+    if (response.ok) {
+      const json = await response.json();
+      this.logger.debug(`Execute workflow result: ${JSON.stringify(json)}`);
+      return json;
     }
-    return undefined;
+    throw new Error(
+      `${await this.createPrefixFetchErrorMessage(urlToFetch, response, 'POST')}`,
+    );
   }
 
   public async fetchWorkflowOverview(
@@ -193,14 +169,9 @@ export class SonataFlowService {
     definitionId: string;
     serviceUrl: string;
   }): Promise<boolean> {
-    try {
-      const urlToFetch = `${args.serviceUrl}/management/processes/${args.definitionId}`;
-      const response = await fetch(urlToFetch);
-      return response.ok;
-    } catch (error) {
-      this.logger.debug(`Error when pinging workflow service: ${error}`);
-    }
-    return false;
+    const urlToFetch = `${args.serviceUrl}/management/processes/${args.definitionId}`;
+    const response = await fetch(urlToFetch);
+    return response.ok;
   }
 
   public async updateInstanceInputData(args: {
@@ -210,18 +181,13 @@ export class SonataFlowService {
     inputData: ProcessInstanceVariables;
   }): Promise<boolean> {
     const { definitionId, serviceUrl, instanceId, inputData } = args;
-    try {
-      const urlToFetch = `${serviceUrl}/${definitionId}/${instanceId}`;
-      const response = await fetch(urlToFetch, {
-        method: 'PATCH',
-        body: JSON.stringify(inputData),
-        headers: { 'content-type': 'application/json' },
-      });
-      return response.ok;
-    } catch (error) {
-      this.logger.error(`Error when updating instance input data: ${error}`);
-    }
-    return false;
+    const urlToFetch = `${serviceUrl}/${definitionId}/${instanceId}`;
+    const response = await fetch(urlToFetch, {
+      method: 'PATCH',
+      body: JSON.stringify(inputData),
+      headers: { 'content-type': 'application/json' },
+    });
+    return response.ok;
   }
 
   public async createPrefixFetchErrorMessage(

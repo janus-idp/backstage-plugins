@@ -61,7 +61,7 @@ describe('SonataFlowService', () => {
       );
     });
 
-    it('should log an error and return undefined when the fetch response is not ok', async () => {
+    it('should propagate thrown error when the fetch response is not ok', async () => {
       // Given
       const mockResponse: Partial<Response> = {
         ok: false,
@@ -75,41 +75,35 @@ describe('SonataFlowService', () => {
       global.fetch = jest.fn().mockResolvedValue(mockResponse as any);
 
       // When
-      const result = await sonataFlowService.fetchWorkflowInfoOnService({
-        definitionId,
-        serviceUrl,
-      });
+      let result;
+      try {
+        await sonataFlowService.fetchWorkflowInfoOnService({
+          definitionId,
+          serviceUrl,
+        });
+      } catch (error) {
+        result = error;
+      }
 
-      // Then
-      expect(fetch).toHaveBeenCalledWith(urlToFetch);
-      expect(result).toBeUndefined();
-      expect(loggerMock.error).toHaveBeenCalledTimes(1);
-      expect(loggerMock.error).toHaveBeenCalledWith(
-        `Error when fetching workflow info: Error: ${await sonataFlowService.createPrefixFetchErrorMessage(urlToFetch, mockResponse as Response)}`,
-      );
-      expect(loggerMock.info).not.toHaveBeenCalled();
-      expect(loggerMock.debug).not.toHaveBeenCalled();
-      expect(loggerMock.warn).not.toHaveBeenCalled();
-      expect(loggerMock.child).not.toHaveBeenCalled();
+      expect(result).toBeDefined();
     });
 
-    it('should log an error and return undefined when fetch throws an error', async () => {
+    it('should propagate thrown error when fetch throws an error', async () => {
       // Given
-      const testErrorMsg = 'Network Error';
       global.fetch = jest.fn().mockRejectedValue(new Error('Network Error'));
 
       // When
-      const result = await sonataFlowService.fetchWorkflowInfoOnService({
-        definitionId,
-        serviceUrl,
-      });
+      let result;
+      try {
+        await sonataFlowService.fetchWorkflowInfoOnService({
+          definitionId,
+          serviceUrl,
+        });
+      } catch (error) {
+        result = error;
+      }
 
-      // Then
-      expect(fetch).toHaveBeenCalledWith(urlToFetch);
-      expect(result).toBeUndefined();
-      expect(loggerMock.error).toHaveBeenCalledWith(
-        `Error when fetching workflow info: Error: ${testErrorMsg}`,
-      );
+      expect(result).toBeDefined();
     });
   });
   describe('executeWorkflow', () => {
@@ -203,68 +197,57 @@ describe('SonataFlowService', () => {
       );
       expect(result).toEqual({ id: definitionId, status: 'completed' });
     });
-    it('should log an error and return undefined when the fetch response is not ok without extra info', async () => {
+    it('should propagate thrown error when the fetch response is not ok without extra info', async () => {
       // When
-      const mockResponse = setupTest({
+      setupTest({
         ok: false,
         status: 500,
         statusText: 'Internal Server Error',
         json: { details: undefined, stack: undefined },
       });
 
-      const result = await runErrorTest();
+      let result;
+      try {
+        await runErrorTest();
+      } catch (error) {
+        result = error;
+      }
 
-      // Then
-      expect(fetch).toHaveBeenCalledWith(
-        urlToFetch,
-        expectedFetchRequestInit(),
-      );
-      expect(result).toBeUndefined();
-      expect(loggerMock.error).toHaveBeenCalledTimes(1);
-      expect(loggerMock.error).toHaveBeenCalledWith(
-        `Error when executing workflow: Error: ${await sonataFlowService.createPrefixFetchErrorMessage(urlToFetch, mockResponse as Response, 'POST')}`,
-      );
+      expect(result).toBeDefined();
     });
-    it('should log an error and return undefined when the fetch response is not ok with extra info', async () => {
+    it('should propagate thrown exception when the fetch response is not ok with extra info', async () => {
       // When
-      const mockResponse = setupTest({
+      setupTest({
         ok: false,
         json: { details: 'Error details test', stack: 'Error stacktrace test' },
       });
 
-      const result = await runErrorTest();
+      let result;
+      try {
+        await runErrorTest();
+      } catch (error) {
+        result = error;
+      }
 
-      // Then
-      expect(fetch).toHaveBeenCalledWith(
-        urlToFetch,
-        expectedFetchRequestInit(),
-      );
-      expect(result).toBeUndefined();
-      expect(loggerMock.error).toHaveBeenCalledTimes(1);
-      expect(loggerMock.error).toHaveBeenCalledWith(
-        `Error when executing workflow: Error: ${await sonataFlowService.createPrefixFetchErrorMessage(urlToFetch, mockResponse as Response, 'POST')}`,
-      );
+      expect(result).toBeDefined();
     });
-    it('should log an error and return undefined when fetch throws an error', async () => {
+    it('should propagate thrown error when fetch throws an error', async () => {
       // Given
       global.fetch = jest.fn().mockRejectedValue(new Error('Network Error'));
 
       // When
-      const result = await sonataFlowService.executeWorkflow({
-        definitionId,
-        serviceUrl,
-        inputData: inputData,
-      });
+      let result;
+      try {
+        await sonataFlowService.executeWorkflow({
+          definitionId,
+          serviceUrl,
+          inputData: inputData,
+        });
+      } catch (error) {
+        result = error;
+      }
 
-      // Then
-      expect(fetch).toHaveBeenCalledWith(
-        urlToFetch,
-        expectedFetchRequestInit(),
-      );
-      expect(result).toBeUndefined();
-      expect(loggerMock.error).toHaveBeenCalledWith(
-        'Error when executing workflow: Error: Network Error',
-      );
+      expect(result).toBeDefined();
     });
   });
 
