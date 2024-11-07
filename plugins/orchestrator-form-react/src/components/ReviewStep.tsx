@@ -17,6 +17,20 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'right',
     marginTop: theme.spacing(2),
   },
+  paper: {
+    // Workaround since the StructuredMetadataTable is neither responsive as it simply uses <table> nor can be customized via props or styles.
+    '& > table > tbody > tr': {
+      '& > td:nth-child(1)': {
+        minWidth: '10rem',
+        width: '25%',
+      },
+      '& > td:nth-child(2)': {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'left',
+      },
+    },
+  },
 }));
 
 const ReviewStep = ({
@@ -37,7 +51,7 @@ const ReviewStep = ({
   }, [schema, data]);
   return (
     <Content noPadding>
-      <Paper square elevation={0}>
+      <Paper square elevation={0} className={styles.paper}>
         <StructuredMetadataTable dense metadata={displayData} />
         <Box mb={4} />
         <div className={styles.footer}>
