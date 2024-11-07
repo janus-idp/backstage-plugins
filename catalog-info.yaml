@@ -72,7 +72,5 @@ spec:
     - ./plugins/sonarqube-actions/catalog-info.yaml
     - ./plugins/tekton/catalog-info.yaml
     - ./plugins/tekton-common/catalog-info.yaml
-    - ./plugins/topology/catalog-info.yaml
-    - ./plugins/topology-common/catalog-info.yaml
     - ./plugins/web-terminal/catalog-info.yaml
     - ./packages/cli/catalog-info.yaml
