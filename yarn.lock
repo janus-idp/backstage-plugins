@@ -8633,20 +8633,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-scaffolder-backend-module-regex@workspace:plugins/regex-actions":
-  version: 0.0.0-use.local
-  resolution: "@janus-idp/backstage-scaffolder-backend-module-regex@workspace:plugins/regex-actions"
-  dependencies:
-    "@backstage/backend-plugin-api": ^1.0.1
-    "@backstage/cli": 0.28.2
-    "@backstage/plugin-scaffolder-node": ^0.5.0
-    "@backstage/plugin-scaffolder-node-test-utils": 0.1.14
-    prettier: 3.3.3
-    yaml: ^2.3.3
-    zod: ^3.22.4
-  languageName: unknown
-  linkType: soft
-
 "@janus-idp/cli@*, @janus-idp/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@janus-idp/cli@workspace:packages/cli"
@@ -45346,7 +45332,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.0.0, yaml@npm:^2.2.1, yaml@npm:^2.2.2, yaml@npm:^2.3.3, yaml@npm:^2.5.1":
+"yaml@npm:^2.0.0, yaml@npm:^2.2.1, yaml@npm:^2.2.2, yaml@npm:^2.5.1":
   version: 2.6.0
   resolution: "yaml@npm:2.6.0"
   bin:
