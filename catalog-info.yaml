@@ -53,7 +53,6 @@ spec:
     - ./plugins/quay/catalog-info.yaml
     - ./plugins/quay-common/catalog-info.yaml
     - ./plugins/quay-actions/catalog-info.yaml
-    - ./plugins/regex-actions/catalog-info.yaml
     - ./plugins/scaffolder-annotator-action/catalog-info.yaml
     - ./plugins/shared-react/catalog-info.yaml
     - ./plugins/tekton/catalog-info.yaml
