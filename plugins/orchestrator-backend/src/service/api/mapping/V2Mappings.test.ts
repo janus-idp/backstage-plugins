@@ -13,7 +13,7 @@ import {
   generateTestWorkflowOverview,
 } from '../test-utils';
 import {
-  getProcessInstancesDTOFromString,
+  getProcessInstancesStatusDTOFromString,
   mapToExecuteWorkflowResponseDTO,
   mapToProcessInstanceDTO,
   mapToWorkflowOverviewDTO,
@@ -58,7 +58,7 @@ describe('scenarios to verify mapToWorkflowOverviewDTO', () => {
     expect(result.format).toBe(overview.format);
     expect(result.lastTriggeredMs).toBe(overview.lastTriggeredMs);
     expect(result.lastRunStatus).toBe(
-      getProcessInstancesDTOFromString(overview.lastRunStatus),
+      getProcessInstancesStatusDTOFromString(overview.lastRunStatus),
     );
     expect(result.category).toBe('assessment');
     expect(result.avgDurationMs).toBe(overview.avgDurationMs);
@@ -102,7 +102,7 @@ describe('scenarios to verify mapToProcessInstanceDTO', () => {
     expect(result.end).toBeUndefined();
     expect(result.duration).toBeUndefined();
     expect(result.status).toEqual(
-      getProcessInstancesDTOFromString(processInstanceV1.state),
+      getProcessInstancesStatusDTOFromString(processInstanceV1.state),
     );
     expect(result.description).toEqual(processInstanceV1.description);
     expect(result.category).toEqual('infrastructure');
@@ -130,7 +130,7 @@ describe('scenarios to verify mapToProcessInstanceDTO', () => {
 
     expect(result).toBeDefined();
     expect(result.status).toEqual(
-      getProcessInstancesDTOFromString(processIntanceV1.state),
+      getProcessInstancesStatusDTOFromString(processIntanceV1.state),
     );
     expect(result.end).toEqual(processIntanceV1.end);
     expect(result.duration).toEqual(duration);

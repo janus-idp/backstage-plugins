@@ -2,6 +2,8 @@ import {
   FieldFilterOperatorEnum,
   Filter,
   IntrospectionField,
+  ProcessInstanceState,
+  ProcessInstanceStatusDTO,
   TypeKind,
   TypeName,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -49,7 +51,11 @@ describe('column filters', () => {
     emptyFilterTestCases.forEach(
       ({ name, introspectionFields, filter, expectedResult }) => {
         it(`${name}`, () => {
-          const result = buildFilterCondition(introspectionFields, filter);
+          const result = buildFilterCondition(
+            introspectionFields,
+            'ProcessInstance',
+            filter,
+          );
           expect(result).toBe(expectedResult);
         });
       },
@@ -247,7 +253,11 @@ describe('column filters', () => {
     stringTestCases.forEach(
       ({ name, introspectionFields, filter, expectedResult }) => {
         it(`${name}`, () => {
-          const result = buildFilterCondition(introspectionFields, filter);
+          const result = buildFilterCondition(
+            introspectionFields,
+            'ProcessInstance',
+            filter,
+          );
           expect(result).toBe(expectedResult);
         });
       },
@@ -334,7 +344,11 @@ describe('column filters', () => {
     idTestCases.forEach(
       ({ name, introspectionFields, filter, expectedResult }) => {
         it(`${name}`, () => {
-          const result = buildFilterCondition(introspectionFields, filter);
+          const result = buildFilterCondition(
+            introspectionFields,
+            'ProcessInstance',
+            filter,
+          );
           expect(result).toBe(expectedResult);
         });
       },
@@ -497,7 +511,40 @@ describe('column filters', () => {
     idTestCases.forEach(
       ({ name, introspectionFields, filter, expectedResult }) => {
         it(`${name}`, () => {
-          const result = buildFilterCondition(introspectionFields, filter);
+          const result = buildFilterCondition(
+            introspectionFields,
+            'ProcessInstance',
+            filter,
+          );
+          expect(result).toBe(expectedResult);
+        });
+      },
+    );
+  });
+  describe('enumArgument testcases', () => {
+    const idTestCases: FilterTestCase[] = [
+      {
+        name: 'returns correct filter for state enum field with equal operator',
+        introspectionFields: [
+          createIntrospectionField('state', TypeName.String),
+        ],
+        filter: createFieldFilter(
+          'state',
+          FieldFilterOperatorEnum.Eq,
+          ProcessInstanceStatusDTO.Completed,
+        ),
+        expectedResult: `state: {equal: ${ProcessInstanceState.Completed}}`,
+      },
+    ];
+
+    idTestCases.forEach(
+      ({ name, introspectionFields, filter, expectedResult }) => {
+        it(`${name}`, () => {
+          const result = buildFilterCondition(
+            introspectionFields,
+            'ProcessInstance',
+            filter,
+          );
           expect(result).toBe(expectedResult);
         });
       },

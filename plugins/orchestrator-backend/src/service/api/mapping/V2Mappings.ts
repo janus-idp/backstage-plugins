@@ -35,7 +35,7 @@ export function mapToWorkflowOverviewDTO(
     description: overview.description,
     lastRunId: overview.lastRunId,
     lastRunStatus: overview.lastRunStatus
-      ? getProcessInstancesDTOFromString(overview.lastRunStatus)
+      ? getProcessInstancesStatusDTOFromString(overview.lastRunStatus)
       : undefined,
     lastTriggeredMs: overview.lastTriggeredMs,
     category: mapWorkflowCategoryDTOFromString(overview.category),
@@ -81,7 +81,7 @@ export function mapWorkflowCategoryDTO(
   return 'infrastructure';
 }
 
-export function getProcessInstancesDTOFromString(
+export function getProcessInstancesStatusDTOFromString(
   state?: string,
 ): ProcessInstanceStatusDTO {
   switch (state) {
@@ -100,6 +100,29 @@ export function getProcessInstancesDTOFromString(
     default:
       throw new Error(
         `state ${state} is not one of the values of type ProcessInstanceStatusDTO`,
+      );
+  }
+}
+
+export function getProcessInstanceStateFromStatusDTOString(
+  status?: ProcessInstanceStatusDTO,
+): string {
+  switch (status) {
+    case 'Active':
+      return ProcessInstanceState.Active.valueOf();
+    case 'Error':
+      return ProcessInstanceState.Error.valueOf();
+    case 'Completed':
+      return ProcessInstanceState.Completed.valueOf();
+    case 'Aborted':
+      return ProcessInstanceState.Aborted.valueOf();
+    case 'Suspended':
+      return ProcessInstanceState.Suspended.valueOf();
+    case 'Pending':
+      return ProcessInstanceState.Pending.valueOf();
+    default:
+      throw new Error(
+        `status ${status} is not one of the values of type ProcessInstanceState`,
       );
   }
 }
@@ -135,7 +158,7 @@ export function mapToProcessInstanceDTO(
     duration: duration,
     // @ts-ignore
     workflowdata: variables?.workflowdata,
-    status: getProcessInstancesDTOFromString(processInstance.state),
+    status: getProcessInstancesStatusDTOFromString(processInstance.state),
     nodes: processInstance.nodes.map(mapToNodeInstanceDTO),
   };
 }

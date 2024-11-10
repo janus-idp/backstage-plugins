@@ -3,6 +3,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { Client, OperationResult } from '@urql/core';
 
 import {
+  FieldFilter,
   FieldFilterOperatorEnum,
   LogicalFilter,
   NodeInstance,
@@ -349,6 +350,7 @@ describe('fetchWorkflowInfos', () => {
     expect(buildFilterConditionSpy).toHaveBeenCalledTimes(1);
     expect(buildFilterConditionSpy).toHaveBeenCalledWith(
       mockProcessDefinitionIntrospection,
+      'ProcessDefinition',
       logicalFilter,
     );
     expect(mockClient.query).toHaveBeenCalledTimes(2);
@@ -394,6 +396,7 @@ describe('fetchWorkflowInfos', () => {
     expect(buildFilterConditionSpy).toHaveBeenCalledTimes(1);
     expect(buildFilterConditionSpy).toHaveBeenCalledWith(
       mockProcessDefinitionIntrospection,
+      'ProcessDefinition',
       logicalFilter,
     );
     expect(mockClient.query).toHaveBeenCalledTimes(2);
@@ -448,6 +451,7 @@ describe('fetchWorkflowInfos', () => {
     expect(buildFilterConditionSpy).toHaveBeenCalledTimes(1);
     expect(buildFilterConditionSpy).toHaveBeenCalledWith(
       mockProcessDefinitionIntrospection,
+      'ProcessDefinition',
       logicalFilter,
     );
     expect(result).toBeDefined();
@@ -488,12 +492,12 @@ describe('fetchInstances', () => {
   const filterString =
     'or: {processId: {equal: "processId1"}, processName: {like: "processName%"}}';
 
-  const procName1Filter = {
+  const procName1Filter: FieldFilter = {
     field: 'processName',
     operator: FieldFilterOperatorEnum.Like,
     value: 'processName%',
   };
-  const procId1Filter = {
+  const procId1Filter: FieldFilter = {
     field: 'processId',
     operator: FieldFilterOperatorEnum.Eq,
     value: 'processId1',
@@ -678,6 +682,7 @@ describe('fetchInstances', () => {
     expect(buildFilterConditionSpy).toHaveBeenCalledTimes(1);
     expect(buildFilterConditionSpy).toHaveBeenCalledWith(
       mockProcessInstanceIntrospection,
+      'ProcessInstance',
       logicalFilter,
     );
     expect(mockClient.query).toHaveBeenCalledTimes(2);
@@ -714,6 +719,7 @@ describe('fetchInstances', () => {
     expect(buildFilterConditionSpy).toHaveBeenCalledTimes(1);
     expect(buildFilterConditionSpy).toHaveBeenCalledWith(
       mockProcessInstanceIntrospection,
+      'ProcessInstance',
       logicalFilter,
     );
     expect(mockClient.query).toHaveBeenCalledTimes(2);
@@ -755,6 +761,7 @@ describe('fetchInstances', () => {
     expect(buildFilterConditionSpy).toHaveBeenCalledTimes(1);
     expect(buildFilterConditionSpy).toHaveBeenCalledWith(
       mockProcessInstanceIntrospection,
+      'ProcessInstance',
       logicalFilter,
     );
     expect(mockClient.query).toHaveBeenCalledTimes(2);
