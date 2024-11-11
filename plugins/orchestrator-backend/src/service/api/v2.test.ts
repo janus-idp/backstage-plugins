@@ -3,7 +3,9 @@ import { Request } from 'express';
 import {
   AssessedProcessInstanceDTO,
   ExecuteWorkflowResponseDTO,
+  FieldFilterOperatorEnum,
   ProcessInstanceListResultDTO,
+  SearchRequest,
   toWorkflowYaml,
   WorkflowOverview,
   WorkflowOverviewDTO,
@@ -11,7 +13,7 @@ import {
   WorkflowRunStatusDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { buildPagination } from '../../types/pagination';
+import { buildPagination, buildPaginationTmp } from '../../types/pagination';
 import { OrchestratorService } from '../OrchestratorService';
 import { mapToWorkflowOverviewDTO } from './mapping/V2Mappings';
 import {
@@ -23,7 +25,6 @@ import {
   generateTestWorkflowOverviewList,
   generateWorkflowDefinition,
 } from './test-utils';
-import { V1 } from './v1';
 import { V2 } from './v2';
 
 jest.mock('../Helper.ts', () => ({
@@ -56,7 +57,7 @@ const createMockOrchestratorService = (): OrchestratorService => {
   return mockOrchestratorService;
 };
 const mockOrchestratorService = createMockOrchestratorService();
-const v2 = new V2(mockOrchestratorService, new V1(mockOrchestratorService));
+const v2 = new V2(mockOrchestratorService);
 
 describe('getWorkflowOverview', () => {
   beforeEach(() => {
@@ -155,6 +156,76 @@ describe('getWorkflowOverview', () => {
     // Act
     const result: WorkflowOverviewListResultDTO = await v2.getWorkflowsOverview(
       buildPagination(mockRequest),
+    );
+
+    // Assert
+    expect(result).toEqual({
+      overviews: mockOverviewsV1.items.map((item: WorkflowOverview) =>
+        mapToWorkflowOverviewDTO(item),
+      ),
+      paginationInfo: {
+        offset: 1,
+        pageSize: 50,
+        totalCount: mockOverviewsV1.items.length,
+      },
+    });
+  });
+
+  it('filter test', async () => {
+    // Arrange
+    // category = "electronics" AND (price <= 1000 OR (brand IN ("Apple", "Samsung") AND brand like 'Apple'))
+    const mockRequest: SearchRequest = {
+      filters: {
+        operator: 'AND',
+        filters: [
+          {
+            field: 'category',
+            operator: FieldFilterOperatorEnum.Eq,
+            value: 'electronics',
+          },
+          {
+            operator: 'OR',
+            filters: [
+              {
+                field: 'price',
+                operator: FieldFilterOperatorEnum.Lte,
+                value: 1000,
+              },
+              {
+                operator: 'AND',
+                filters: [
+                  {
+                    field: 'brand',
+                    operator: FieldFilterOperatorEnum.In,
+                    value: ['Apple', 'Samsung'],
+                  },
+                  {
+                    field: 'brand',
+                    operator: FieldFilterOperatorEnum.Like,
+                    value: 'Apple',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      paginationInfo: {
+        offset: 1,
+        pageSize: 50,
+        orderBy: 'lastUpdated',
+        orderDirection: 'DESC',
+      },
+    };
+    const mockOverviewsV1 = generateTestWorkflowOverviewList(100, {});
+
+    (
+      mockOrchestratorService.fetchWorkflowOverviews as jest.Mock
+    ).mockResolvedValue(mockOverviewsV1.items);
+
+    // Act
+    const result: WorkflowOverviewListResultDTO = await v2.getWorkflowsOverview(
+      buildPaginationTmp(mockRequest.paginationInfo),
     );
 
     // Assert

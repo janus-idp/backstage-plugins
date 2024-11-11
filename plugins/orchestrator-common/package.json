@@ -24,7 +24,7 @@
   "homepage": "https://red.ht/rhdh",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/janus-idp/backstage-plugins.git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
     "directory": "plugins/orchestrator-common"
   },
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
@@ -39,17 +39,14 @@
   "files": [
     "config.d.ts",
     "dist",
-    "src/generated/docs"
+    "src/generated/docs/html"
   ],
   "configSchema": "config.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "yarn openapi:check && backstage-cli package build",
     "tsc": "tsc",
-    "prettier:check": "prettier --ignore-unknown --check .",
-    "prettier:fix": "prettier --ignore-unknown --write .",
-    "lint:check": "backstage-cli package lint",
-    "lint:fix": "backstage-cli package lint --fix",
+    "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
@@ -67,7 +64,6 @@
     "axios": "^1.7.4"
   },
   "devDependencies": {
-    "prettier": "3.3.3",
     "@backstage/cli": "0.26.11",
     "@openapitools/openapi-generator-cli": "2.13.4",
     "js-yaml-cli": "0.6.0"

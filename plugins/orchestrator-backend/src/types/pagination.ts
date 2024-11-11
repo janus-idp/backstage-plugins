@@ -40,3 +40,36 @@ export function buildPagination(req: Request): Pagination {
   }
   return pagination;
 }
+
+export function buildPaginationTmp(
+  paginationInfo?: PaginationInfoDTO,
+): Pagination {
+  const pagination: Pagination = {
+    limit: undefined,
+    offset: undefined,
+    order: undefined,
+    sortField: undefined,
+  };
+
+  if (!paginationInfo) {
+    return pagination;
+  }
+  const { offset, pageSize, orderBy, orderDirection } = paginationInfo;
+
+  if (!isNaN(Number(offset))) {
+    pagination.offset = Number(offset);
+  }
+
+  if (!isNaN(Number(pageSize))) {
+    pagination.limit = Number(pageSize);
+  }
+
+  if (orderBy) {
+    pagination.sortField = String(orderBy);
+  }
+
+  if (orderDirection) {
+    pagination.order = String(orderDirection).toUpperCase();
+  }
+  return pagination;
+}

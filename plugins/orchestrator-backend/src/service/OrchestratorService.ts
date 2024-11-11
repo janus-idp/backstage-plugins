@@ -1,5 +1,5 @@
 import {
-  FilterInfo,
+  Filter,
   ProcessInstance,
   ProcessInstanceVariables,
   WorkflowDefinition,
@@ -54,18 +54,29 @@ export class OrchestratorService {
 
   public async fetchInstances(args: {
     pagination?: Pagination;
-    filter?: FilterInfo;
+    filter?: Filter;
+    workflowId?: string;
   }): Promise<ProcessInstance[]> {
+    const definitionIds = args.workflowId
+      ? [args.workflowId]
+      : this.workflowCacheService.definitionIds;
     return await this.dataIndexService.fetchInstances({
-      definitionIds: this.workflowCacheService.definitionIds,
+      definitionIds: definitionIds,
       pagination: args.pagination,
       filter: args.filter,
     });
   }
 
-  public async fetchInstancesTotalCount(): Promise<number> {
+  public async fetchInstancesTotalCount(
+    workflowId?: string,
+    filter?: Filter,
+  ): Promise<number> {
+    const definitionIds = workflowId
+      ? [workflowId]
+      : this.workflowCacheService.definitionIds;
     return await this.dataIndexService.fetchInstancesTotalCount(
-      this.workflowCacheService.definitionIds,
+      definitionIds,
+      filter,
     );
   }
 
@@ -145,7 +156,7 @@ export class OrchestratorService {
 
   public async fetchWorkflowOverviews(args: {
     pagination?: Pagination;
-    filter?: FilterInfo;
+    filter?: Filter;
   }): Promise<WorkflowOverview[] | undefined> {
     return await this.sonataFlowService.fetchWorkflowOverviews({
       definitionIds: this.workflowCacheService.definitionIds,
@@ -183,42 +194,5 @@ export class OrchestratorService {
     return isWorkflowAvailable
       ? await this.sonataFlowService.fetchWorkflowOverview(definitionId)
       : undefined;
-  }
-
-  public async retriggerInstanceInError(args: {
-    definitionId: string;
-    serviceUrl: string;
-    instanceId: string;
-    cacheHandler?: CacheHandler;
-  }): Promise<boolean> {
-    const { definitionId, cacheHandler } = args;
-
-    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
-      definitionId,
-      cacheHandler,
-    );
-
-    return isWorkflowAvailable
-      ? await this.sonataFlowService.retriggerInstanceInError(args)
-      : false;
-  }
-
-  public async updateInstanceInputData(args: {
-    definitionId: string;
-    serviceUrl: string;
-    instanceId: string;
-    inputData: ProcessInstanceVariables;
-    cacheHandler?: CacheHandler;
-  }): Promise<boolean> {
-    const { definitionId, cacheHandler } = args;
-
-    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
-      definitionId,
-      cacheHandler,
-    );
-
-    return isWorkflowAvailable
-      ? await this.sonataFlowService.updateInstanceInputData(args)
-      : false;
   }
 }

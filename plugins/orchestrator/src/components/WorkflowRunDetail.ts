@@ -13,7 +13,4 @@ export type WorkflowRunDetail = {
   category?: string;
   description?: string;
   businessKey?: string;
-  nextWorkflowSuggestions?: {
-    [key: string]: WorkflowSuggestion | WorkflowSuggestion[];
-  };
 };

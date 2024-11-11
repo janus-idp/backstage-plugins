@@ -6,12 +6,10 @@ import { AxiosResponse } from 'axios';
 import {
   AssessedProcessInstanceDTO,
   ExecuteWorkflowResponseDTO,
-  FilterInfo,
-  PaginationInfoDTO,
+  GetInstancesRequest,
+  InputSchemaResponseDTO,
   ProcessInstanceListResultDTO,
   WorkflowDefinition,
-  WorkflowExecutionResponse,
-  WorkflowInputSchemaResponse,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -25,25 +23,19 @@ export interface OrchestratorApi {
     businessKey?: string;
   }): Promise<AxiosResponse<ExecuteWorkflowResponseDTO>>;
 
-  retriggerInstanceInError(args: {
-    instanceId: string;
-    inputData: JsonObject;
-  }): Promise<WorkflowExecutionResponse>;
-
   getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition>;
 
-  getWorkflowSource(workflowId: string): Promise<string>;
+  getWorkflowSource(workflowId: string): Promise<AxiosResponse<string>>;
 
   getInstance(
     instanceId: string,
     includeAssessment: boolean,
   ): Promise<AxiosResponse<AssessedProcessInstanceDTO>>;
 
-  getWorkflowDataInputSchema(args: {
-    workflowId: string;
-    instanceId?: string;
-    assessmentInstanceId?: string;
-  }): Promise<WorkflowInputSchemaResponse>;
+  getWorkflowDataInputSchema(
+    workflowId: string,
+    instanceId?: string,
+  ): Promise<AxiosResponse<InputSchemaResponseDTO>>;
 
   getWorkflowOverview(
     workflowId: string,
@@ -53,10 +45,9 @@ export interface OrchestratorApi {
     AxiosResponse<WorkflowOverviewListResultDTO>
   >;
 
-  listInstances(args?: {
-    paginationInfo?: PaginationInfoDTO;
-    filterInfo?: FilterInfo;
-  }): Promise<AxiosResponse<ProcessInstanceListResultDTO>>;
+  listInstances(
+    args?: GetInstancesRequest,
+  ): Promise<AxiosResponse<ProcessInstanceListResultDTO>>;
 }
 
 export const orchestratorApiRef = createApiRef<OrchestratorApi>({

@@ -1,32 +1,20 @@
 import React from 'react';
 
-import { Content, InfoCard, Link } from '@backstage/core-components';
-import {
-  PathParams,
-  RouteFunc,
-  useApi,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { Content, InfoCard } from '@backstage/core-components';
 
-import { Chip, Grid, makeStyles } from '@material-ui/core';
+import { Grid, makeStyles } from '@material-ui/core';
 import moment from 'moment';
 
 import {
   AssessedProcessInstanceDTO,
-  parseWorkflowVariables,
   ProcessInstanceDTO,
-  QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
-  WorkflowOverviewDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { orchestratorApiRef } from '../api';
 import { VALUE_UNAVAILABLE } from '../constants';
-import { executeWorkflowRouteRef } from '../routes';
-import { buildUrl } from '../utils/UrlUtils';
-import { WorkflowDescriptionModal } from './WorkflowDescriptionModal';
 import { EditorViewKind, WorkflowEditor } from './WorkflowEditor';
 import { WorkflowProgress } from './WorkflowProgress';
-import { WorkflowRunDetail, WorkflowSuggestion } from './WorkflowRunDetail';
+import { WorkflowResult } from './WorkflowResult';
+import { WorkflowRunDetail } from './WorkflowRunDetail';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowVariablesViewer } from './WorkflowVariablesViewer';
 
@@ -42,10 +30,6 @@ export const mapProcessInstanceToDetails = (
   }
 
   const started = start?.toDate().toLocaleString() ?? VALUE_UNAVAILABLE;
-  const variables = parseWorkflowVariables(instance?.variables);
-  const nextWorkflowSuggestions: WorkflowRunDetail['nextWorkflowSuggestions'] =
-    // @ts-ignore
-    variables?.workflowdata?.workflowOptions;
 
   return {
     id: instance.id,
@@ -56,7 +40,6 @@ export const mapProcessInstanceToDetails = (
     category: instance.category,
     status: instance.status,
     description: instance.description,
-    nextWorkflowSuggestions,
     businessKey: instance.businessKey,
   };
 };
@@ -66,9 +49,12 @@ const useStyles = makeStyles(_ => ({
     height: '20rem',
   },
   middleRowCard: {
-    height: 'calc(2 * 20rem)',
+    height: '20rem',
+    overflow: 'auto',
+    wordBreak: 'break-word',
   },
   bottomRowCard: {
+    minHeight: '40rem',
     height: '100%',
   },
   autoOverflow: { overflow: 'auto' },
@@ -80,106 +66,32 @@ const useStyles = makeStyles(_ => ({
   recommendedLabel: { margin: '0 0.25rem' },
 }));
 
-const getNextWorkflows = (
-  details: WorkflowRunDetail,
-  executeWorkflowLink: RouteFunc<
-    PathParams<'/v2/workflows/:workflowId/execute'>
-  >,
-) => {
-  const nextWorkflows: {
-    title: string;
-    link: string;
-    id: string;
-    isRecommended: boolean;
-  }[] = [];
-
-  if (details.nextWorkflowSuggestions) {
-    Object.entries(details.nextWorkflowSuggestions).forEach(([_, value]) => {
-      const nextWorkflowSuggestions: WorkflowSuggestion[] = Array.isArray(value)
-        ? value
-        : [value];
-      nextWorkflowSuggestions.forEach(nextWorkflowSuggestion => {
-        // Produce flat structure
-        const routeUrl = executeWorkflowLink({
-          workflowId: nextWorkflowSuggestion.id,
-        });
-        const urlToNavigate = buildUrl(routeUrl, {
-          [QUERY_PARAM_ASSESSMENT_INSTANCE_ID]: details.id,
-        });
-        nextWorkflows.push({
-          title: nextWorkflowSuggestion.name,
-          link: urlToNavigate,
-          id: nextWorkflowSuggestion.id,
-          isRecommended:
-            (
-              details.nextWorkflowSuggestions
-                ?.currentVersion as WorkflowSuggestion
-            )?.id === nextWorkflowSuggestion.id,
-        });
-      });
-    });
-  }
-
-  return nextWorkflows;
-};
-
 export const WorkflowInstancePageContent: React.FC<{
   assessedInstance: AssessedProcessInstanceDTO;
 }> = ({ assessedInstance }) => {
   const styles = useStyles();
-  const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
+
   const details = React.useMemo(
     () => mapProcessInstanceToDetails(assessedInstance.instance),
     [assessedInstance.instance],
   );
-  const orchestratorApi = useApi(orchestratorApiRef);
 
-  const [
-    currentOpenedWorkflowDescriptionModalID,
-    setCurrentOpenedWorkflowDescriptionModalID,
-  ] = React.useState('');
-  const [currentWorkflow, setCurrentWorkflow] = React.useState(
-    {} as WorkflowOverviewDTO,
-  );
-
-  const openWorkflowDescriptionModal = (itemId: string) => {
-    if (itemId) {
-      orchestratorApi
-        .getWorkflowOverview(itemId)
-        .then(
-          workflow => {
-            setCurrentWorkflow(workflow.data);
-          },
-          error => {
-            throw new Error(error);
-          },
-        )
-        .catch(error => {
-          throw new Error(error);
-        });
-      setCurrentOpenedWorkflowDescriptionModalID(itemId);
+  const workflowdata = assessedInstance.instance?.workflowdata;
+  let instanceVariables;
+  if (workflowdata) {
+    instanceVariables = {
+      /* Since we are about to remove just the top-level property, shallow copy of the object is sufficient */
+      ...workflowdata,
+    };
+    if (instanceVariables.hasOwnProperty('result')) {
+      delete instanceVariables.result;
     }
-  };
-
-  const closeWorkflowDescriptionModal = () => {
-    setCurrentOpenedWorkflowDescriptionModalID('');
-    setCurrentWorkflow({} as WorkflowOverviewDTO);
-  };
-
-  const nextWorkflows = React.useMemo(
-    () => getNextWorkflows(details, executeWorkflowLink),
-    [details, executeWorkflowLink],
-  );
-
-  const instanceVariables = React.useMemo(
-    () => parseWorkflowVariables(assessedInstance.instance.variables),
-    [assessedInstance],
-  );
+  }
 
   return (
     <Content noPadding>
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <InfoCard
             title="Details"
             divider={false}
@@ -188,63 +100,38 @@ export const WorkflowInstancePageContent: React.FC<{
             <WorkflowRunDetails
               details={details}
               assessedBy={assessedInstance.assessedBy}
+              completedWith={workflowdata?.result?.completedWith}
             />
           </InfoCard>
         </Grid>
 
         <Grid item xs={6}>
           <InfoCard
-            title="Results"
+            title="Variables"
             divider={false}
-            className={styles.topRowCard}
+            className={styles.middleRowCard}
             cardClassName={styles.autoOverflow}
           >
-            {nextWorkflows.length === 0 ? (
+            {instanceVariables && (
               <WorkflowVariablesViewer variables={instanceVariables} />
-            ) : (
-              <Grid container spacing={3}>
-                {nextWorkflows.map(item => (
-                  <Grid item xs={4} key={item.title}>
-                    <div
-                      className={styles.recommendedLabelContainer}
-                      key={item.title}
-                    >
-                      <Link
-                        color="primary"
-                        to="#"
-                        onClick={() => {
-                          openWorkflowDescriptionModal(item.id);
-                        }}
-                      >
-                        {item.title}
-                      </Link>
-                      {item.isRecommended ? (
-                        <Chip
-                          size="small"
-                          label="Recommended"
-                          color="secondary"
-                          className={styles.recommendedLabel}
-                        />
-                      ) : null}
-                    </div>
-                    <WorkflowDescriptionModal
-                      workflow={currentWorkflow}
-                      runWorkflowLink={item.link}
-                      open={item.id === currentOpenedWorkflowDescriptionModalID}
-                      onClose={closeWorkflowDescriptionModal}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
+            )}
+            {!instanceVariables && (
+              <div>The workflow instance has no variables</div>
             )}
           </InfoCard>
+        </Grid>
+        <Grid item xs={6}>
+          <WorkflowResult
+            assessedInstance={assessedInstance}
+            className={styles.middleRowCard}
+          />
         </Grid>
 
         <Grid item xs={6}>
           <InfoCard
             title="Workflow definition"
             divider={false}
-            className={styles.middleRowCard}
+            className={styles.bottomRowCard}
           >
             <WorkflowEditor
               workflowId={assessedInstance.instance.processId}
@@ -258,7 +145,7 @@ export const WorkflowInstancePageContent: React.FC<{
           <InfoCard
             title="Workflow progress"
             divider={false}
-            className={styles.middleRowCard}
+            className={styles.bottomRowCard}
             cardClassName={styles.autoOverflow}
           >
             <WorkflowProgress
@@ -268,19 +155,6 @@ export const WorkflowInstancePageContent: React.FC<{
             />
           </InfoCard>
         </Grid>
-
-        {nextWorkflows.length > 0 ? (
-          <Grid item xs={12}>
-            <InfoCard
-              title="Variables"
-              divider={false}
-              className={styles.bottomRowCard}
-              cardClassName={styles.autoOverflow}
-            >
-              <WorkflowVariablesViewer variables={instanceVariables} />
-            </InfoCard>
-          </Grid>
-        ) : null}
       </Grid>
     </Content>
   );

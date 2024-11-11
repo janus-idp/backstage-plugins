@@ -18,7 +18,6 @@
 | **businessKey** | **String** |  | [optional] [default to null] |
 | **nodes** | [**List**](NodeInstanceDTO.md) |  | [default to null] |
 | **error** | [**ProcessInstanceErrorDTO**](ProcessInstanceErrorDTO.md) |  | [optional] [default to null] |
-| **variables** | [**Object**](.md) |  | [optional] [default to null] |
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

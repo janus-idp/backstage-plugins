@@ -76,13 +76,6 @@ export const isComposedSchema = (
     curSchema => !isJsonObjectSchema(curSchema),
   ).length === 0;
 
-export interface WorkflowInputSchemaResponse {
-  definition: WorkflowDefinition;
-  schemaSteps: WorkflowInputSchemaStep[];
-  isComposedSchema: boolean;
-  schemaParseError?: string;
-}
-
 export interface WorkflowExecutionResponse {
   id: string;
 }

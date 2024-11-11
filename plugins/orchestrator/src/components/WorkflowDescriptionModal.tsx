@@ -18,6 +18,10 @@ import { WorkflowOverviewDTO } from '@janus-idp/backstage-plugin-orchestrator-co
 
 export type WorkflowDescriptionModalProps = {
   workflow: WorkflowOverviewDTO;
+  workflowError?: {
+    itemId: string;
+    error: any;
+  };
   runWorkflowLink: string;
   open: boolean;
   onClose?: () => void;
@@ -37,7 +41,13 @@ export const RefForwardingWorkflowDescriptionModal: ForwardRefRenderFunction<
   ParentComponentRef,
   WorkflowDescriptionModalProps
 > = (props, forwardedRef): JSX.Element | null => {
-  const { workflow, open = false, onClose, runWorkflowLink } = props;
+  const {
+    workflow,
+    open = false,
+    onClose,
+    runWorkflowLink,
+    workflowError,
+  } = props;
   const classes = useStyles();
   const navigate = useNavigate();
 
@@ -46,6 +56,27 @@ export const RefForwardingWorkflowDescriptionModal: ForwardRefRenderFunction<
       navigate(runWorkflowLink);
     }
   };
+
+  let content;
+  if (workflowError) {
+    content = (
+      <Box>
+        <p>
+          Failed to load details for the workflow ID:
+          {workflowError.itemId}
+        </p>
+        {workflowError.error.message && <p>{workflowError.error.message}</p>}
+      </Box>
+    );
+  } else if (workflow.description) {
+    content = <Box>{workflow.description}</Box>;
+  } else {
+    content = (
+      <Box>
+        <p>Are you sure you want to run this workflow?</p>
+      </Box>
+    );
+  }
 
   return (
     <Dialog
@@ -67,17 +98,15 @@ export const RefForwardingWorkflowDescriptionModal: ForwardRefRenderFunction<
           </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent>
-        {workflow.description ? (
-          <Box>{workflow.description}</Box>
-        ) : (
-          <Box>
-            <p>Are you sure you want to run this workflow?</p>
-          </Box>
-        )}
-      </DialogContent>
+
+      <DialogContent>{content}</DialogContent>
       <DialogActions>
-        <Button onClick={handleRunWorkflow} color="primary" variant="contained">
+        <Button
+          onClick={handleRunWorkflow}
+          color="primary"
+          variant="contained"
+          disabled={!!workflowError}
+        >
           Run workflow
         </Button>
         <Button onClick={onClose} color="primary" variant="outlined">

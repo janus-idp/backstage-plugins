@@ -1,7 +1,10 @@
-import { loggerToWinstonLogger, UrlReader } from '@backstage/backend-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
+import type {
+  LoggerService,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
+import type { CatalogApi } from '@backstage/catalog-client';
+import type { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   createBuiltinActions,
@@ -11,7 +14,7 @@ import {
   ActionContext,
   TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
-import { JsonObject, JsonValue } from '@backstage/types';
+import type { JsonObject, JsonValue } from '@backstage/types';
 
 import fs from 'fs-extra';
 
@@ -35,7 +38,7 @@ export class ScaffolderService {
     private readonly logger: LoggerService,
     private readonly config: Config,
     private readonly catalogApi: CatalogApi,
-    private readonly urlReader: UrlReader,
+    private readonly urlReader: UrlReaderService,
   ) {
     this.actionRegistry = new TemplateActionRegistry();
   }
@@ -85,10 +88,11 @@ export class ScaffolderService {
       );
       throw err;
     }
-    const mockContext: ActionContext<JsonObject> = {
+    const actionContext: ActionContext<JsonObject> = {
       input: actionExecutionContext.input,
       workspacePath: workspacePath,
       // TODO: Move this to LoggerService after scaffolder-node moves to LoggerService
+      // https://github.com/backstage/backstage/issues/26933
       logger: loggerToWinstonLogger(this.logger),
       logStream: this.streamLogger,
       createTemporaryDirectory: async () =>
@@ -107,7 +111,7 @@ export class ScaffolderService {
         return fn();
       },
     };
-    await action.handler(mockContext);
+    await action.handler(actionContext);
 
     return stepOutput;
   }

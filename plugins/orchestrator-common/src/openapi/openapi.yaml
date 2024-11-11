@@ -12,14 +12,14 @@ paths:
   /v2/workflows/overview:
     post:
       operationId: getWorkflowsOverview
-      description: Get a list of workflow overviews
+      description: Returns the key fields of the workflow including data on the last run instance
       requestBody:
         required: false
-        description: Parameters for retrieving of workflow overviews
+        description: Pagination and filters
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GetOverviewsRequestParams'
+              $ref: '#/components/schemas/SearchRequest'
       responses:
         '200':
           description: Success
@@ -36,7 +36,7 @@ paths:
   /v2/workflows/{workflowId}/overview:
     get:
       operationId: getWorkflowOverviewById
-      description: Get a workflow overview by ID
+      description: Returns the key fields of the workflow including data on the last run instance
       parameters:
         - name: workflowId
           in: path
@@ -60,7 +60,7 @@ paths:
   /v2/workflows/{workflowId}:
     get:
       operationId: getWorkflowById
-      description: Get a workflow by ID
+      description: Get full workflow info
       parameters:
         - name: workflowId
           in: path
@@ -84,7 +84,7 @@ paths:
   /v2/workflows/{workflowId}/source:
     get:
       operationId: getWorkflowSourceById
-      description: Get a workflow source by ID
+      description: Get the workflow's definition
       parameters:
         - name: workflowId
           in: path
@@ -108,7 +108,7 @@ paths:
   /v2/workflows/{workflowId}/inputSchema:
     get:
       operationId: getWorkflowInputSchemaById
-      description: Get a workflow input schema by ID
+      description: Get the workflow input schema. It defines the input fields of the workflow
       parameters:
         - name: workflowId
           in: path
@@ -127,7 +127,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/InputSchemaResponseDTO'
         '500':
           description: Error fetching workflow input schema by id
           content:
@@ -138,14 +138,46 @@ paths:
     post:
       operationId: getInstances
       summary: Get instances
-      description: Retrieve an array of instances
+      description: Retrieve an array of workflow executions (instances)
       requestBody:
         required: false
         description: Parameters for retrieving instances
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GetInstancesRequestParams'
+              $ref: '#/components/schemas/GetInstancesRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessInstanceListResultDTO'
+        '500':
+          description: Error fetching instances
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/workflows/{workflowId}/instances:
+    post:
+      operationId: getWorkflowInstances
+      summary: Get instances for a specific workflow
+      description: Retrieve an array of workflow executions (instances) for the given workflow
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          description: ID of the workflow
+          schema:
+            type: string
+      requestBody:
+        required: false
+        description: Parameters for retrieving workflow instances
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
       responses:
         '200':
           description: Success
@@ -162,6 +194,7 @@ paths:
   /v2/workflows/instances/{instanceId}:
     get:
       summary: Get Workflow Instance by ID
+      description: Get a workflow execution/run (instance)
       operationId: getInstanceById
       parameters:
         - name: instanceId
@@ -194,7 +227,7 @@ paths:
     get:
       operationId: getWorkflowStatuses
       summary: Get workflow status list
-      description: Retrieve an array of workflow statuses
+      description: Retrieve array with the status of all instances
       responses:
         '200':
           description: Success
@@ -213,6 +246,7 @@ paths:
   /v2/workflows/{workflowId}/execute:
     post:
       summary: Execute a workflow
+      description: Execute a workflow
       operationId: executeWorkflow
       parameters:
         - name: workflowId
@@ -240,7 +274,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /v2/instances/{instanceId}/abort:
+  /v2/workflows/instances/{instanceId}/abort:
     delete:
       summary: Abort a workflow instance
       operationId: abortWorkflow
@@ -286,20 +320,20 @@ components:
           type: string
       required:
         - message
-    GetInstancesRequestParams:
+    GetInstancesRequest:
       type: object
       properties:
         paginationInfo:
           $ref: '#/components/schemas/PaginationInfoDTO'
-        filterInfo:
-          $ref: '#/components/schemas/FilterInfo'
+        filters:
+          $ref: '#/components/schemas/SearchRequest'
     GetOverviewsRequestParams:
       type: object
       properties:
         paginationInfo:
           $ref: '#/components/schemas/PaginationInfoDTO'
-        filterInfo:
-          $ref: '#/components/schemas/FilterInfo'
+        filters:
+          $ref: '#/components/schemas/SearchRequest'
     WorkflowOverviewListResultDTO:
       type: object
       properties:
@@ -329,7 +363,7 @@ components:
           type: number
           minimum: 0
         lastRunStatus:
-          type: string
+          $ref: '#/components/schemas/ProcessInstanceStatusDTO'
         category:
           $ref: '#/components/schemas/WorkflowCategoryDTO'
         avgDurationMs:
@@ -356,31 +390,6 @@ components:
         orderBy:
           type: string
       additionalProperties: false
-    FilterInfo:
-      type: object
-      properties:
-        fieldName:
-          description: The name of the field to filter on
-          type: string
-        operator:
-          $ref: '#/components/schemas/Operator'
-        fieldValue:
-          title: FilterValue
-          oneOf:
-            - type: string
-            - type: number
-            - type: boolean
-          description: The value to filter by, which can be a string, number, boolean, or ProcessInstanceStatusDTO
-      required:
-        - fieldName
-        - operator
-        - fieldValue
-    Operator:
-      type: string
-      description: The operator to use for filtering, such as equality or inclusion
-      enum:
-        - equal
-        - in
     WorkflowFormatDTO:
       type: string
       description: Format of the workflow definition
@@ -484,8 +493,6 @@ components:
             $ref: '#/components/schemas/NodeInstanceDTO'
         error:
           $ref: '#/components/schemas/ProcessInstanceErrorDTO'
-        variables:
-          $ref: '#/components/schemas/ProcessInstanceVariablesDTO'
       required:
         - id
         - processId
@@ -493,22 +500,61 @@ components:
     WorkflowDataDTO:
       type: object
       properties:
-        workflowoptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowOptionsDTO'
+        result:
+          $ref: '#/components/schemas/WorkflowResultDTO'
       additionalProperties: true
-    WorkflowOptionsDTO:
-      type: array
-      items:
-        $ref: '#/components/schemas/WorkflowSuggestionDTO'
-    WorkflowSuggestionDTO:
+    WorkflowResultDTO:
+      # Based on https://github.com/parodos-dev/serverless-workflows/blob/main/shared/schemas/workflow-result-schema.json
+      description: Result of a workflow execution
       type: object
       properties:
-        id:
+        completedWith:
+          description: The state of workflow completion.
           type: string
-        name:
+          enum:
+            - error
+            - success
+        message:
+          description: High-level summary of the current status, free-form text, human readable.
           type: string
+        nextWorkflows:
+          description: List of workflows suggested to run next. Items at lower indexes are of higher priority.
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                description: Workflow identifier
+                type: string
+              name:
+                description: Human readable title describing the workflow.
+                type: string
+            required:
+              - id
+              - name
+        outputs:
+          description: Additional structured output of workflow processing. This can contain identifiers of created resources, links to resources, logs or other output.
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                description: Unique identifier of the option. Preferably human-readable.
+                type: string
+              value:
+                description: Free form value of the option.
+                anyOf:
+                  - type: string
+                  - type: number
+              format:
+                description: More detailed type of the 'value' property. Defaults to 'text'.
+                enum:
+                  - text
+                  - number
+                  - link
+            required:
+              - key
+              - value
     ProcessInstanceStatusDTO:
       type: string
       description: Status of the workflow run
@@ -595,6 +641,74 @@ components:
           description: Error message (optional)
       required:
         - nodeDefinitionId
-    ProcessInstanceVariablesDTO:
+    SearchRequest:
       type: object
-      additionalProperties: true
+      properties:
+        filters:
+          $ref: '#/components/schemas/Filter'
+        paginationInfo:
+          $ref: '#/components/schemas/PaginationInfoDTO'
+    Filter:
+      oneOf:
+        - $ref: '#/components/schemas/LogicalFilter'
+        - $ref: '#/components/schemas/FieldFilter'
+    LogicalFilter:
+      type: object
+      required:
+        - operator
+        - filters
+      properties:
+        operator:
+          type: string
+          enum: [AND, OR, NOT]
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Filter'
+
+    FieldFilter:
+      type: object
+      required:
+        - field
+        - operator
+        - value
+      properties:
+        field:
+          type: string
+        operator:
+          type: string
+          enum:
+            [
+              EQ,
+              GT,
+              GTE,
+              LT,
+              LTE,
+              IN,
+              IS_NULL,
+              CONTAINS,
+              CONTAINS_ALL,
+              CONTAINS_ANY,
+              LIKE,
+              BETWEEN,
+              FROM,
+              TO,
+            ]
+        value:
+          oneOf:
+            - type: string
+            - type: number
+            - type: boolean
+            - type: array
+              items:
+                oneOf:
+                  - type: string
+                  - type: number
+                  - type: boolean
+    InputSchemaResponseDTO:
+      type: object
+      properties:
+        inputSchema:
+          type: object
+        data:
+          type: object

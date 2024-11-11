@@ -1,33 +1,35 @@
-import { createLegacyAuthAdapters, UrlReader } from '@backstage/backend-common';
-import {
+import type {
   AuthService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
   PermissionsService,
+  SchedulerService,
+  UrlReaderService,
 } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
-import { CatalogApi } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
+import type { CatalogApi } from '@backstage/catalog-client';
+import type { Config } from '@backstage/config';
 
 import express from 'express';
 
 import { DevModeService } from '../service/DevModeService';
 import { createBackendRouter } from '../service/router';
 
-export interface RouterArgs {
+export interface RouterOptions {
   config: Config;
   logger: LoggerService;
   discovery: DiscoveryService;
   catalogApi: CatalogApi;
-  urlReader: UrlReader;
-  scheduler: PluginTaskScheduler;
+  urlReader: UrlReaderService;
+  scheduler: SchedulerService;
   permissions: PermissionsService;
-  httpAuth?: HttpAuthService;
-  auth?: AuthService;
+  httpAuth: HttpAuthService;
+  auth: AuthService;
 }
 
-export async function createRouter(args: RouterArgs): Promise<express.Router> {
+export async function createRouter(
+  args: RouterOptions,
+): Promise<express.Router> {
   const autoStartDevMode =
     args.config.getOptionalBoolean(
       'orchestrator.sonataFlowService.autoStart',
@@ -43,11 +45,6 @@ export async function createRouter(args: RouterArgs): Promise<express.Router> {
     }
   }
 
-  const { auth, httpAuth } = createLegacyAuthAdapters({
-    httpAuth: args.httpAuth,
-    discovery: args.discovery,
-    auth: args.auth,
-  });
   return await createBackendRouter({
     config: args.config,
     logger: args.logger,
@@ -56,7 +53,7 @@ export async function createRouter(args: RouterArgs): Promise<express.Router> {
     urlReader: args.urlReader,
     scheduler: args.scheduler,
     permissions: args.permissions,
-    httpAuth: httpAuth,
-    auth: auth,
+    httpAuth: args.httpAuth,
+    auth: args.auth,
   });
 }

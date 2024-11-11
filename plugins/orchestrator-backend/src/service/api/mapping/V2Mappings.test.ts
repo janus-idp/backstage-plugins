@@ -57,11 +57,12 @@ describe('scenarios to verify mapToWorkflowOverviewDTO', () => {
     expect(result.name).toBe(overview.name);
     expect(result.format).toBe(overview.format);
     expect(result.lastTriggeredMs).toBe(overview.lastTriggeredMs);
-    expect(result.lastRunStatus).toBe(overview.lastRunStatus);
+    expect(result.lastRunStatus).toBe(
+      getProcessInstancesDTOFromString(overview.lastRunStatus),
+    );
     expect(result.category).toBe('assessment');
     expect(result.avgDurationMs).toBe(overview.avgDurationMs);
     expect(result.description).toBe(overview.description);
-    expect(Object.keys(result).length).toBe(8);
   });
 });
 describe('scenarios to verify mapWorkflowCategoryDTOFromString', () => {

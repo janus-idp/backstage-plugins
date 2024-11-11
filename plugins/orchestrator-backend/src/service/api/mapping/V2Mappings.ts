@@ -28,7 +28,16 @@ export function mapToWorkflowOverviewDTO(
   overview: WorkflowOverview,
 ): WorkflowOverviewDTO {
   return {
-    ...overview,
+    name: overview.name,
+    format: overview.format,
+    workflowId: overview.workflowId,
+    avgDurationMs: overview.avgDurationMs,
+    description: overview.description,
+    lastRunId: overview.lastRunId,
+    lastRunStatus: overview.lastRunStatus
+      ? getProcessInstancesDTOFromString(overview.lastRunStatus)
+      : undefined,
+    lastTriggeredMs: overview.lastTriggeredMs,
     category: mapWorkflowCategoryDTOFromString(overview.category),
   };
 }
@@ -90,7 +99,7 @@ export function getProcessInstancesDTOFromString(
       return 'Pending';
     default:
       throw new Error(
-        'state is not one of the values of type ProcessInstanceStatusDTO',
+        `state ${state} is not one of the values of type ProcessInstanceStatusDTO`,
       );
   }
 }
@@ -112,8 +121,17 @@ export function mapToProcessInstanceDTO(
   }
 
   return {
-    ...processInstance,
+    id: processInstance.id,
+    processId: processInstance.processId,
+    processName: processInstance.processName,
+    description: processInstance.description,
+    serviceUrl: processInstance.serviceUrl,
+    businessKey: processInstance.businessKey,
+    endpoint: processInstance.endpoint,
+    error: processInstance.error,
     category: mapWorkflowCategoryDTO(processInstance.category),
+    start: processInstance.start,
+    end: processInstance.end,
     duration: duration,
     // @ts-ignore
     workflowdata: variables?.workflowdata,
