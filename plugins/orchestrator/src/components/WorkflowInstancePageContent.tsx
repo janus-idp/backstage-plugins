@@ -100,7 +100,6 @@ export const WorkflowInstancePageContent: React.FC<{
             <WorkflowRunDetails
               details={details}
               assessedBy={assessedInstance.assessedBy}
-              completedWith={workflowdata?.result?.completedWith}
             />
           </InfoCard>
         </Grid>
