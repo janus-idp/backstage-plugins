@@ -1,5 +1,14 @@
 ### Dependencies
 
+## 1.21.101
+
+### Patch Changes
+
+- 358dbfd: Fix filtering by status on the Workflow Runs tab.
+- Updated dependencies [e94a6c1]
+  - @janus-idp/backstage-plugin-orchestrator-form-react@1.0.101
+  - @janus-idp/backstage-plugin-orchestrator-form-api@1.0.101
+
 ## 2.3.2
 
 ### Patch Changes

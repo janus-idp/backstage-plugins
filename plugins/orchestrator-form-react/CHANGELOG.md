@@ -1,5 +1,13 @@
 ### Dependencies
 
+## 1.0.101
+
+### Patch Changes
+
+- e94a6c1: backport all orchestrator commits since release 1.2
+- Updated dependencies [e94a6c1]
+  - @janus-idp/backstage-plugin-orchestrator-form-api@1.0.101
+
 ## 1.4.1
 
 ### Patch Changes
