@@ -11,7 +11,6 @@ All URIs are relative to *http://localhost*
 *DefaultApi* | [**executeWorkflow**](Apis/DefaultApi.md#executeworkflow) | **POST** /v2/workflows/{workflowId}/execute | Execute a workflow |
 *DefaultApi* | [**getInstanceById**](Apis/DefaultApi.md#getinstancebyid) | **GET** /v2/workflows/instances/{instanceId} | Get Workflow Instance by ID |
 *DefaultApi* | [**getInstances**](Apis/DefaultApi.md#getinstances) | **POST** /v2/workflows/instances | Get instances |
-*DefaultApi* | [**getWorkflowById**](Apis/DefaultApi.md#getworkflowbyid) | **GET** /v2/workflows/{workflowId} | Get full workflow info |
 *DefaultApi* | [**getWorkflowInputSchemaById**](Apis/DefaultApi.md#getworkflowinputschemabyid) | **GET** /v2/workflows/{workflowId}/inputSchema | Get the workflow input schema. It defines the input fields of the workflow |
 *DefaultApi* | [**getWorkflowInstances**](Apis/DefaultApi.md#getworkflowinstances) | **POST** /v2/workflows/{workflowId}/instances | Get instances for a specific workflow |
 *DefaultApi* | [**getWorkflowOverviewById**](Apis/DefaultApi.md#getworkflowoverviewbyid) | **GET** /v2/workflows/{workflowId}/overview | Returns the key fields of the workflow including data on the last run instance |
