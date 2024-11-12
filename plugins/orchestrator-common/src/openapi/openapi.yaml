@@ -57,30 +57,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /v2/workflows/{workflowId}:
-    get:
-      operationId: getWorkflowById
-      description: Get full workflow info
-      parameters:
-        - name: workflowId
-          in: path
-          description: ID of the workflow to fetch
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowDTO'
-        '500':
-          description: Error fetching workflow by id
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/{workflowId}/source:
     get:
       operationId: getWorkflowSourceById

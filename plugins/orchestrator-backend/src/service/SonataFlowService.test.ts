@@ -167,7 +167,7 @@ describe('SonataFlowService', () => {
       );
       expect(result).toEqual({ id: definitionId, status: 'completed' });
       expect(loggerMock.debug).toHaveBeenCalledWith(
-        `Execute workflow result: {"id":"${definitionId}","status":"completed"}`,
+        'Execute workflow successful. Response: {"id":"workflow-123","status":"completed"}',
       );
       // Verify that all other logger methods were not called
       expect(loggerMock.debug).toHaveBeenCalledTimes(1);
