@@ -101,7 +101,7 @@ export const WorkflowRunsTabContent = () => {
       (value ?? []).filter(
         (row: WorkflowRunDetail) =>
           statusSelectorValue === Selector.AllItems ||
-          row.status === statusSelectorValue,
+          row.status?.toUpperCase() === statusSelectorValue,
       ),
     [statusSelectorValue, value],
   );
