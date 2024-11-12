@@ -73,17 +73,26 @@ export class WorkflowCacheService {
       });
       await Promise.all(
         Object.entries(idUrlMap).map(async ([definitionId, serviceUrl]) => {
-          const isServiceUp = await this.sonataFlowService.pingWorkflowService({
-            definitionId,
-            serviceUrl,
-          });
+          let isServiceUp = false;
+          try {
+            isServiceUp = await this.sonataFlowService.pingWorkflowService({
+              definitionId,
+              serviceUrl,
+            });
+          } catch (err) {
+            this.logger.error(
+              `Ping workflow ${definitionId} service threw error: ${err}`,
+            );
+          }
           if (isServiceUp) {
             this.definitionIdCache.add(definitionId);
-          } else if (this.definitionIdCache.has(definitionId)) {
+          } else {
             this.logger.error(
               `Failed to ping service for workflow ${definitionId} at ${serviceUrl}`,
             );
-            this.definitionIdCache.delete(definitionId);
+            if (this.definitionIdCache.has(definitionId)) {
+              this.definitionIdCache.delete(definitionId);
+            }
           }
         }),
       );
