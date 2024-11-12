@@ -324,6 +324,7 @@ export async function createRouter(
             botMessageTimestamp = Date.now();
           }
           chunk.response_metadata.created_at = botMessageTimestamp;
+          chunk.response_metadata.model = model;
           const data = {
             conversation_id: conversation_id,
             response: chunk,
@@ -345,6 +346,7 @@ export async function createRouter(
           Roles.AIRole,
           content,
           botMessageTimestamp,
+          model,
         );
       } catch (error) {
         const errormsg = `Error fetching completions from ${serverURL}: ${error}`;

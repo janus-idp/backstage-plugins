@@ -19,6 +19,7 @@ export async function saveHistory(
   role: string,
   message: string,
   timestamp?: number,
+  model?: string,
 ): Promise<void> {
   let newMessage: BaseMessage;
   switch (role) {
@@ -27,6 +28,7 @@ export async function saveHistory(
         content: message,
         response_metadata: {
           created_at: timestamp || Date.now(),
+          model: model,
         },
       });
       break;

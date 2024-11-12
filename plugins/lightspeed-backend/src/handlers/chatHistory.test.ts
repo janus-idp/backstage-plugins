@@ -22,25 +22,37 @@ describe('Test History Functions', () => {
 
   test('saveHistory should save a human message', async () => {
     const message = 'Hello, how are you?';
+    const timestamp = Date.now();
 
-    await saveHistory(mockConversationId, Roles.HumanRole, message);
+    await saveHistory(mockConversationId, Roles.HumanRole, message, timestamp);
 
     const history = (await loadHistory(mockConversationId, 10)).history;
     expect(history.length).toBe(1);
     expect(history[0]).toBeInstanceOf(HumanMessage);
     expect(history[0].content).toBe(message);
+    expect(history[0].response_metadata.created_at).toBe(timestamp);
   });
 
   test('saveHistory should save an AI message', async () => {
     const message = 'I am fine, thank you!';
+    const model = 'mock-model';
+    const timestamp = Date.now();
 
-    await saveHistory(mockConversationId, Roles.AIRole, message);
+    await saveHistory(
+      mockConversationId,
+      Roles.AIRole,
+      message,
+      timestamp,
+      model,
+    );
 
     const history = (await loadHistory(mockConversationId, 10)).history;
 
     expect(history.length).toBe(1);
     expect(history[0]).toBeInstanceOf(AIMessage);
     expect(history[0].content).toBe(message);
+    expect(history[0].response_metadata.created_at).toBe(timestamp);
+    expect(history[0].response_metadata.model).toBe(model);
   });
 
   test('saveHistory and loadHistory with multiple messages', async () => {
