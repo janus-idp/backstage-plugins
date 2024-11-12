@@ -14,6 +14,7 @@ import {
   loadAllConversations,
   loadHistory,
   saveHistory,
+  saveSummary,
 } from '../handlers/chatHistory';
 import {
   generateConversationId,
@@ -129,45 +130,50 @@ export async function createRouter(
           conversation_id,
           DEFAULT_HISTORY_LENGTH,
         );
-        const LastMessage = conversationHistory[conversationHistory.length - 1];
+        const history = conversationHistory.history;
+        const LastMessage = history[history.length - 1];
         const timestamp = LastMessage.response_metadata.created_at;
-
-        const openAIApi = new ChatOpenAI({
-          apiKey: apiToken || 'sk-no-key-required', // set to sk-no-key-required if api token is not provided
-          model: model,
-          streaming: false,
-          temperature: 0,
-          configuration: {
-            baseOptions: {
-              headers: {
-                ...(apiToken && { Authorization: `Bearer ${apiToken}` }),
+        let chatSummary = conversationHistory.summary;
+        if (!chatSummary) {
+          const openAIApi = new ChatOpenAI({
+            apiKey: apiToken || 'sk-no-key-required', // set to sk-no-key-required if api token is not provided
+            model: model,
+            streaming: false,
+            temperature: 0,
+            configuration: {
+              baseOptions: {
+                headers: {
+                  ...(apiToken && { Authorization: `Bearer ${apiToken}` }),
+                },
               },
+              baseURL: serverURL,
             },
-            baseURL: serverURL,
-          },
-        });
+          });
 
-        const summarizePrompt = ChatPromptTemplate.fromMessages([
-          [
-            'system',
-            "Your task is to summarize of user's main purpose of a conversation in a few words without any introductory phrases. ",
-          ],
-          new MessagesPlaceholder('messages'),
-        ]);
+          const summarizePrompt = ChatPromptTemplate.fromMessages([
+            [
+              'system',
+              "Your task is to summarize of user's main purpose of a conversation in a few words without any introductory phrases. ",
+            ],
+            new MessagesPlaceholder('messages'),
+          ]);
 
-        const newchain = summarizePrompt.pipe(openAIApi);
-        const summary = await newchain.invoke({
-          messages: [
-            ...conversationHistory,
-            new HumanMessage({
-              content:
-                'summarize the above conversation to be displayed as a title in frontend for people to get a main subject of the conversation. do not form a sentence, only return the subject of the main purpose. ',
-            }),
-          ],
-        });
+          const newchain = summarizePrompt.pipe(openAIApi);
+          const summary = await newchain.invoke({
+            messages: [
+              ...history,
+              new HumanMessage({
+                content:
+                  'summarize the above conversation to be displayed as a title in frontend for people to get a main subject of the conversation. do not form a sentence, only return the subject of the main purpose. ',
+              }),
+            ],
+          });
+          chatSummary = String(summary.content);
+          saveSummary(conversation_id, chatSummary);
+        }
         const conversationSummary: ConversationSummary = {
           conversation_id: conversation_id,
-          summary: String(summary.content),
+          summary: chatSummary,
           lastMessageTimestamp: timestamp,
         };
         conversationSummaryList.push(conversationSummary);
@@ -206,8 +212,11 @@ export async function createRouter(
 
         validateUserRequest(conversation_id, user_id); // will throw error and return 500 with error message if user_id does not match
 
-        const history = await loadHistory(conversation_id, loadhistoryLength);
-        response.status(200).json(history);
+        const conversationHistory = await loadHistory(
+          conversation_id,
+          loadhistoryLength,
+        );
+        response.status(200).json(conversationHistory.history);
         response.end();
       } catch (error) {
         const errormsg = `${error}`;
@@ -289,10 +298,9 @@ export async function createRouter(
 
         let conversationHistory: BaseMessage[] = [];
         try {
-          conversationHistory = await loadHistory(
-            conversation_id,
-            DEFAULT_HISTORY_LENGTH,
-          );
+          conversationHistory = (
+            await loadHistory(conversation_id, DEFAULT_HISTORY_LENGTH)
+          ).history;
         } catch (error) {
           logger.error(`${error}`);
         }
