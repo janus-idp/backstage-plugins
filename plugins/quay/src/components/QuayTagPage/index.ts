@@ -1,1 +1,0 @@
-export { QuayTagPage } from './component';
