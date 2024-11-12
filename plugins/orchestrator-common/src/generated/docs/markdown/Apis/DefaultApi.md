@@ -8,7 +8,6 @@ All URIs are relative to *http://localhost*
 | [**executeWorkflow**](DefaultApi.md#executeWorkflow) | **POST** /v2/workflows/{workflowId}/execute | Execute a workflow |
 | [**getInstanceById**](DefaultApi.md#getInstanceById) | **GET** /v2/workflows/instances/{instanceId} | Get Workflow Instance by ID |
 | [**getInstances**](DefaultApi.md#getInstances) | **POST** /v2/workflows/instances | Get instances |
-| [**getWorkflowById**](DefaultApi.md#getWorkflowById) | **GET** /v2/workflows/{workflowId} |  |
 | [**getWorkflowInputSchemaById**](DefaultApi.md#getWorkflowInputSchemaById) | **GET** /v2/workflows/{workflowId}/inputSchema |  |
 | [**getWorkflowInstances**](DefaultApi.md#getWorkflowInstances) | **POST** /v2/workflows/{workflowId}/instances | Get instances for a specific workflow |
 | [**getWorkflowOverviewById**](DefaultApi.md#getWorkflowOverviewById) | **GET** /v2/workflows/{workflowId}/overview |  |
@@ -125,33 +124,6 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
-
-<a name="getWorkflowById"></a>
-# **getWorkflowById**
-> WorkflowDTO getWorkflowById(workflowId)
-
-
-
-    Get full workflow info
-
-### Parameters
-
-|Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **workflowId** | **String**| ID of the workflow to fetch | [default to null] |
-
-### Return type
-
-[**WorkflowDTO**](../Models/WorkflowDTO.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
 - **Accept**: application/json
 
 <a name="getWorkflowInputSchemaById"></a>

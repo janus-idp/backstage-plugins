@@ -19,7 +19,6 @@ import {
   InputSchemaResponseDTO,
   PaginationInfoDTO,
   ProcessInstanceListResultDTO,
-  WorkflowDefinition,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -110,17 +109,6 @@ export class OrchestratorClient implements OrchestratorApi {
       await this.getDefaultReqConfig();
     try {
       return await defaultApi.abortWorkflow(instanceId, reqConfigOption);
-    } catch (err) {
-      throw getError(err);
-    }
-  }
-
-  async getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition> {
-    const baseUrl = await this.getBaseUrl();
-    try {
-      return await this.fetcher(`${baseUrl}/workflows/${workflowId}`).then(r =>
-        r.json(),
-      );
     } catch (err) {
       throw getError(err);
     }
@@ -221,22 +209,6 @@ export class OrchestratorClient implements OrchestratorApi {
     } catch (err) {
       throw getError(err);
     }
-  }
-
-  /** fetcher is convenience fetch wrapper that includes authentication
-   * and other necessary headers **/
-  private async fetcher(
-    url: string,
-    requestInit?: RequestInit,
-  ): Promise<Response> {
-    const { token: idToken } = await this.identityApi.getCredentials();
-    const r = { ...requestInit };
-    r.headers = {
-      ...r.headers,
-      ...(idToken && { Authorization: `Bearer ${idToken}` }),
-    };
-    const response = await fetch(url, r);
-    return response;
   }
 
   // getDefaultReqConfig is a convenience wrapper that includes authentication and other necessary headers
