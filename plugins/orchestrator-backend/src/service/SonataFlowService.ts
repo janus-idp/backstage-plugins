@@ -89,14 +89,28 @@ export class SonataFlowService {
       headers: { 'content-type': 'application/json' },
     });
 
-    if (response.ok) {
-      const json = await response.json();
-      this.logger.debug(`Execute workflow result: ${JSON.stringify(json)}`);
+    const json = await response.json();
+    if (json.id) {
+      this.logger.debug(
+        `Execute workflow successful. Response: ${JSON.stringify(json)}`,
+      );
       return json;
+    } else if (!response.ok) {
+      const errorMessage = await this.createPrefixFetchErrorMessage(
+        urlToFetch,
+        response,
+        'POST',
+      );
+      this.logger.error(
+        `Execute workflow failed. Response: ${JSON.stringify(json)}`,
+      );
+      throw new Error(errorMessage);
+    } else {
+      this.logger.error(
+        `Execute workflow did not return a workflow instance ID. Response: ${JSON.stringify(json)}`,
+      );
+      throw new Error('Execute workflow did not return a workflow instance ID');
     }
-    throw new Error(
-      `${await this.createPrefixFetchErrorMessage(urlToFetch, response, 'POST')}`,
-    );
   }
 
   public async fetchWorkflowOverview(
