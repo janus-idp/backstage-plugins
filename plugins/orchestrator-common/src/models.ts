@@ -85,3 +85,35 @@ export interface ProcessInstance {
   category?: WorkflowCategory;
   description?: WorkflowDefinition['description'];
 }
+export interface IntrospectionQuery {
+  __type: IntrospectionType | null;
+}
+
+export interface IntrospectionType {
+  name: string;
+  kind: TypeKind;
+  description: string | null;
+  fields: IntrospectionField[] | null;
+}
+
+export interface IntrospectionField {
+  name: string;
+  type: IntrospectionTypeRef;
+}
+
+export interface IntrospectionTypeRef {
+  kind: TypeKind;
+  name: TypeName;
+  ofType: IntrospectionTypeRef | null;
+}
+
+export enum TypeKind {
+  InputObject = 'INPUT_OBJECT',
+}
+
+export enum TypeName {
+  Id = 'IdArgument',
+  String = 'StringArgument',
+  StringArray = 'StringArrayArgument',
+  Date = 'DateArgument',
+}

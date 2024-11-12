@@ -1,207 +1,133 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
-import { Content, StructuredMetadataTable } from '@backstage/core-components';
-import { useApiHolder } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 
-import {
-  Box,
-  Button,
-  Paper,
-  Step,
-  StepContent,
-  StepLabel,
-  Stepper,
-  Typography,
-} from '@material-ui/core';
-import { FormProps, withTheme } from '@rjsf/core';
-import { Theme as MuiTheme } from '@rjsf/material-ui';
-import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import validator from '@rjsf/validator-ajv8';
+import { UiSchema } from '@rjsf/utils';
+import type { JSONSchema7 } from 'json-schema';
 
-import { WorkflowInputSchemaStep } from '@janus-idp/backstage-plugin-orchestrator-common';
-import { orchestratorFormApiRef } from '@janus-idp/backstage-plugin-orchestrator-form-api';
+import generateUiSchema from '../utils/generateUiSchema';
+import { StepperContextProvider } from '../utils/StepperContext';
+import OrchestratorFormStepper, {
+  OrchestratorFormStep,
+  OrchestratorFormToolbar,
+} from './OrchestratorFormStepper';
+import OrchestratorFormWrapper from './OrchestratorFormWrapper';
+import ReviewStep from './ReviewStep';
 
-import { defaultFormExtensionsApi } from '../DefaultFormApi';
-import SubmitButton from './SubmitButton';
-
-const Form = withTheme(MuiTheme);
-
-const getCombinedData = (
-  steps: WorkflowInputSchemaStep[],
-  isComposedSchema: boolean,
-): JsonObject => {
-  if (!isComposedSchema) {
-    return steps[0].data;
-  }
-  return steps.reduce<JsonObject>(
-    (prev, { key, data }) => ({ ...prev, [key]: data }),
-    {},
+const getNumSteps = (schema: JSONSchema7): number | undefined => {
+  if (schema.type !== 'object' || !schema.properties) return undefined;
+  const isMultiStep = Object.values(schema.properties).every(
+    prop => (prop as JSONSchema7).type === 'object',
   );
+  return isMultiStep ? Object.keys(schema.properties).length : undefined;
 };
 
-const ReviewStep = ({
-  busy,
-  steps,
-  isComposedSchema,
-  handleBack,
-  handleReset,
-  handleExecute,
+const SingleStepForm = ({
+  schema,
+  formData,
+  onChange,
+  uiSchema,
 }: {
-  busy: boolean;
-  steps: WorkflowInputSchemaStep[];
-  isComposedSchema: boolean;
-  handleBack: () => void;
-  handleReset: () => void;
-  handleExecute: (getParameters: () => JsonObject) => Promise<void>;
+  schema: JSONSchema7;
+  formData: JsonObject;
+  onChange: (formData: JsonObject) => void;
+  uiSchema: UiSchema<JsonObject>;
 }) => {
-  const displayData: JsonObject = React.useMemo(() => {
-    if (!isComposedSchema) {
-      return steps[0].data;
-    }
-    return steps.reduce<JsonObject>(
-      (prev, { title, data }) => ({ ...prev, [title]: data }),
-      {},
-    );
-  }, [steps, isComposedSchema]);
-  return (
-    <Content noPadding>
-      <Paper square elevation={0}>
-        <Typography variant="h6">Review and run</Typography>
-        <StructuredMetadataTable dense metadata={displayData} />
-        <Box mb={4} />
-        <Button onClick={handleBack} disabled={busy}>
-          Back
-        </Button>
-        <Button onClick={handleReset} disabled={busy}>
-          Reset
-        </Button>
-        <SubmitButton
-          handleClick={() =>
-            handleExecute(() => getCombinedData(steps, isComposedSchema))
-          }
-          submitting={busy}
-          focusOnMount
-        >
-          Run
-        </SubmitButton>
-      </Paper>
-    </Content>
-  );
+  const steps = React.useMemo<OrchestratorFormStep[]>(() => {
+    return [
+      {
+        title: schema.title || 'Inputs',
+        key: 'schema',
+        content: (
+          <OrchestratorFormWrapper
+            schema={{ ...schema, title: '' }}
+            formData={formData}
+            onChange={onChange}
+            uiSchema={uiSchema}
+          >
+            <OrchestratorFormToolbar />
+          </OrchestratorFormWrapper>
+        ),
+      },
+    ];
+  }, [schema, formData, onChange, uiSchema]);
+  return <OrchestratorFormStepper steps={steps} />;
 };
 
-const FormWrapper = ({
-  step,
-  onSubmit,
-  children,
-}: Pick<FormProps<JsonObject>, 'onSubmit' | 'children'> & {
-  step: WorkflowInputSchemaStep;
-}) => {
-  const formApi =
-    useApiHolder().get(orchestratorFormApiRef) || defaultFormExtensionsApi;
-  const withFormExtensions = formApi.getFormDecorator();
-  const firstKey = Object.keys(step.schema.properties ?? {})[0];
-  const uiSchema = React.useMemo(() => {
-    const res: UiSchema<any, RJSFSchema, any> = firstKey
-      ? { [firstKey]: { 'ui:autofocus': 'true' } }
-      : {};
-    for (const key of step.readonlyKeys) {
-      res[key] = { 'ui:disabled': 'true' };
-    }
-    return res;
-  }, [firstKey, step.readonlyKeys]);
-
-  const schema = { ...step.schema, title: '' }; // the title is in the step
-
-  const FormComponent = (props: Partial<FormProps>) => {
-    return (
-      <Form
-        validator={props.validator || validator}
-        schema={props.schema || schema}
-        uiSchema={props.uiSchema || uiSchema}
-        noHtml5Validate={props.noHtml5Validate || true}
-        onSubmit={props.onSubmit || onSubmit}
-        {...props}
-      >
-        {children}
-      </Form>
-    );
-  };
-  const NewComponent = withFormExtensions(FormComponent);
-  return <NewComponent />;
+type OrchestratorFormProps = {
+  schema: JSONSchema7;
+  isExecuting: boolean;
+  handleExecute: (parameters: JsonObject) => Promise<void>;
+  data?: JsonObject;
+  isDataReadonly?: boolean;
 };
 
 const OrchestratorForm = ({
-  isComposedSchema,
-  steps: inputSteps,
+  schema,
   handleExecute,
   isExecuting,
-  onReset,
-}: {
-  isComposedSchema: boolean;
-  steps: WorkflowInputSchemaStep[];
-  handleExecute: (getParameters: () => JsonObject) => Promise<void>;
-  isExecuting: boolean;
-  onReset: () => void;
-}) => {
-  const [activeStep, setActiveStep] = React.useState(0);
-  const handleBack = () => setActiveStep(activeStep - 1);
+  data,
+  isDataReadonly,
+}: OrchestratorFormProps) => {
+  const [formData, setFormData] = React.useState<JsonObject>(data || {});
+  const numStepsInMultiStepSchema = React.useMemo(
+    () => getNumSteps(schema),
+    [schema],
+  );
+  const isMultiStep = numStepsInMultiStepSchema !== undefined;
 
-  const [steps, setSteps] = React.useState([...inputSteps]);
+  const _handleExecute = React.useCallback(() => {
+    handleExecute(formData || {});
+  }, [formData, handleExecute]);
+
+  const onChange = React.useCallback(
+    (_formData: JsonObject) => {
+      setFormData(_formData);
+    },
+    [setFormData],
+  );
+
+  const uiSchema = React.useMemo<UiSchema<JsonObject>>(() => {
+    return generateUiSchema(
+      schema,
+      isMultiStep,
+      isDataReadonly ? data : undefined,
+    );
+  }, [schema, isMultiStep, isDataReadonly, data]);
+
+  const reviewStep = React.useMemo(
+    () => (
+      <ReviewStep
+        data={formData || {}}
+        schema={schema}
+        busy={isExecuting}
+        handleExecute={_handleExecute}
+      />
+    ),
+    [formData, schema, isExecuting, _handleExecute],
+  );
+
   return (
-    <>
-      <Stepper activeStep={activeStep} orientation="vertical">
-        {steps?.map((step, index) => (
-          <Step key={step.key}>
-            <StepLabel
-              aria-label={`Step ${index + 1} ${step.title}`}
-              aria-disabled="false"
-              tabIndex={0}
-            >
-              <Typography variant="h6" component="h2">
-                {step.title}
-              </Typography>
-            </StepLabel>
-            <StepContent>
-              <FormWrapper
-                step={step}
-                onSubmit={e => {
-                  const newStep: WorkflowInputSchemaStep = {
-                    ...step,
-                    data: e.formData ?? {},
-                  };
-                  const newSteps = [...steps];
-                  newSteps.splice(index, 1, newStep);
-                  setSteps(newSteps);
-                  setActiveStep(activeStep + 1);
-                }}
-              >
-                <Button disabled={activeStep === 0} onClick={handleBack}>
-                  Back
-                </Button>
-                <Button variant="contained" color="primary" type="submit">
-                  Next step
-                </Button>
-              </FormWrapper>
-            </StepContent>
-          </Step>
-        ))}
-      </Stepper>
-      {activeStep === steps.length && (
-        <ReviewStep
-          steps={steps}
-          isComposedSchema={isComposedSchema}
-          handleBack={handleBack}
-          handleReset={() => {
-            onReset();
-            setSteps([...inputSteps]);
-            setActiveStep(0);
-          }}
-          handleExecute={handleExecute}
-          busy={isExecuting}
+    <StepperContextProvider reviewStep={reviewStep}>
+      {isMultiStep ? (
+        <OrchestratorFormWrapper
+          schema={schema}
+          numStepsInMultiStepSchema={numStepsInMultiStepSchema}
+          formData={formData}
+          onChange={onChange}
+          uiSchema={uiSchema}
+        >
+          <Fragment />
+        </OrchestratorFormWrapper> // it is required to pass the fragment so rjsf won't generate a Submit button
+      ) : (
+        <SingleStepForm
+          schema={schema}
+          onChange={onChange}
+          formData={formData}
+          uiSchema={uiSchema}
         />
       )}
-    </>
+    </StepperContextProvider>
   );
 };
 

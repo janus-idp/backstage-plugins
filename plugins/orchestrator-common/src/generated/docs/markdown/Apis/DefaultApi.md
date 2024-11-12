@@ -4,12 +4,13 @@ All URIs are relative to *http://localhost*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
-| [**abortWorkflow**](DefaultApi.md#abortWorkflow) | **DELETE** /v2/instances/{instanceId}/abort | Abort a workflow instance |
+| [**abortWorkflow**](DefaultApi.md#abortWorkflow) | **DELETE** /v2/workflows/instances/{instanceId}/abort | Abort a workflow instance |
 | [**executeWorkflow**](DefaultApi.md#executeWorkflow) | **POST** /v2/workflows/{workflowId}/execute | Execute a workflow |
 | [**getInstanceById**](DefaultApi.md#getInstanceById) | **GET** /v2/workflows/instances/{instanceId} | Get Workflow Instance by ID |
 | [**getInstances**](DefaultApi.md#getInstances) | **POST** /v2/workflows/instances | Get instances |
 | [**getWorkflowById**](DefaultApi.md#getWorkflowById) | **GET** /v2/workflows/{workflowId} |  |
 | [**getWorkflowInputSchemaById**](DefaultApi.md#getWorkflowInputSchemaById) | **GET** /v2/workflows/{workflowId}/inputSchema |  |
+| [**getWorkflowInstances**](DefaultApi.md#getWorkflowInstances) | **POST** /v2/workflows/{workflowId}/instances | Get instances for a specific workflow |
 | [**getWorkflowOverviewById**](DefaultApi.md#getWorkflowOverviewById) | **GET** /v2/workflows/{workflowId}/overview |  |
 | [**getWorkflowSourceById**](DefaultApi.md#getWorkflowSourceById) | **GET** /v2/workflows/{workflowId}/source |  |
 | [**getWorkflowStatuses**](DefaultApi.md#getWorkflowStatuses) | **GET** /v2/workflows/instances/statuses | Get workflow status list |
@@ -49,6 +50,8 @@ No authorization required
 
 Execute a workflow
 
+    Execute a workflow
+
 ### Parameters
 
 |Name | Type | Description  | Notes |
@@ -75,6 +78,8 @@ No authorization required
 
 Get Workflow Instance by ID
 
+    Get a workflow execution/run (instance)
+
 ### Parameters
 
 |Name | Type | Description  | Notes |
@@ -97,17 +102,17 @@ No authorization required
 
 <a name="getInstances"></a>
 # **getInstances**
-> ProcessInstanceListResultDTO getInstances(GetInstancesRequestParams)
+> ProcessInstanceListResultDTO getInstances(GetInstancesRequest)
 
 Get instances
 
-    Retrieve an array of instances
+    Retrieve an array of workflow executions (instances)
 
 ### Parameters
 
 |Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **GetInstancesRequestParams** | [**GetInstancesRequestParams**](../Models/GetInstancesRequestParams.md)| Parameters for retrieving instances | [optional] |
+| **GetInstancesRequest** | [**GetInstancesRequest**](../Models/GetInstancesRequest.md)| Parameters for retrieving instances | [optional] |
 
 ### Return type
 
@@ -128,7 +133,7 @@ No authorization required
 
 
 
-    Get a workflow by ID
+    Get full workflow info
 
 ### Parameters
 
@@ -151,11 +156,11 @@ No authorization required
 
 <a name="getWorkflowInputSchemaById"></a>
 # **getWorkflowInputSchemaById**
-> Object getWorkflowInputSchemaById(workflowId, instanceId)
+> InputSchemaResponseDTO getWorkflowInputSchemaById(workflowId, instanceId)
 
 
 
-    Get a workflow input schema by ID
+    Get the workflow input schema. It defines the input fields of the workflow
 
 ### Parameters
 
@@ -166,7 +171,7 @@ No authorization required
 
 ### Return type
 
-**Object**
+[**InputSchemaResponseDTO**](../Models/InputSchemaResponseDTO.md)
 
 ### Authorization
 
@@ -177,13 +182,41 @@ No authorization required
 - **Content-Type**: Not defined
 - **Accept**: application/json
 
+<a name="getWorkflowInstances"></a>
+# **getWorkflowInstances**
+> ProcessInstanceListResultDTO getWorkflowInstances(workflowId, SearchRequest)
+
+Get instances for a specific workflow
+
+    Retrieve an array of workflow executions (instances) for the given workflow
+
+### Parameters
+
+|Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **workflowId** | **String**| ID of the workflow | [default to null] |
+| **SearchRequest** | [**SearchRequest**](../Models/SearchRequest.md)| Parameters for retrieving workflow instances | [optional] |
+
+### Return type
+
+[**ProcessInstanceListResultDTO**](../Models/ProcessInstanceListResultDTO.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
 <a name="getWorkflowOverviewById"></a>
 # **getWorkflowOverviewById**
 > WorkflowOverviewDTO getWorkflowOverviewById(workflowId)
 
 
 
-    Get a workflow overview by ID
+    Returns the key fields of the workflow including data on the last run instance
 
 ### Parameters
 
@@ -210,7 +243,7 @@ No authorization required
 
 
 
-    Get a workflow source by ID
+    Get the workflow&#39;s definition
 
 ### Parameters
 
@@ -237,7 +270,7 @@ No authorization required
 
 Get workflow status list
 
-    Retrieve an array of workflow statuses
+    Retrieve array with the status of all instances
 
 ### Parameters
 This endpoint does not need any parameter.
@@ -257,17 +290,17 @@ No authorization required
 
 <a name="getWorkflowsOverview"></a>
 # **getWorkflowsOverview**
-> WorkflowOverviewListResultDTO getWorkflowsOverview(GetOverviewsRequestParams)
+> WorkflowOverviewListResultDTO getWorkflowsOverview(SearchRequest)
 
 
 
-    Get a list of workflow overviews
+    Returns the key fields of the workflow including data on the last run instance
 
 ### Parameters
 
 |Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **GetOverviewsRequestParams** | [**GetOverviewsRequestParams**](../Models/GetOverviewsRequestParams.md)| Parameters for retrieving of workflow overviews | [optional] |
+| **SearchRequest** | [**SearchRequest**](../Models/SearchRequest.md)| Pagination and filters | [optional] |
 
 ### Return type
 

@@ -4,7 +4,7 @@ import {
   AssessedProcessInstanceDTO,
   ExecuteWorkflowRequestDTO,
   ExecuteWorkflowResponseDTO,
-  FilterInfo,
+  Filter,
   ProcessInstance,
   ProcessInstanceListResultDTO,
   ProcessInstanceState,
@@ -26,20 +26,16 @@ import {
   mapToWorkflowOverviewDTO,
   mapToWorkflowRunStatusDTO,
 } from './mapping/V2Mappings';
-import { V1 } from './v1';
 
 const FETCH_INSTANCE_MAX_ATTEMPTS = 10;
 const FETCH_INSTANCE_RETRY_DELAY_MS = 1000;
 
 export class V2 {
-  constructor(
-    private readonly orchestratorService: OrchestratorService,
-    private readonly v1: V1,
-  ) {}
+  constructor(private readonly orchestratorService: OrchestratorService) {}
 
   public async getWorkflowsOverview(
     pagination: Pagination,
-    filter?: FilterInfo,
+    filter?: Filter,
   ): Promise<WorkflowOverviewListResultDTO> {
     const overviews = await this.orchestratorService.fetchWorkflowOverviews({
       pagination,
@@ -74,25 +70,37 @@ export class V2 {
   }
 
   public async getWorkflowById(workflowId: string): Promise<WorkflowDTO> {
-    const resultV1 = await this.v1.getWorkflowSourceById(workflowId);
+    const resultV1 = await this.getWorkflowSourceById(workflowId);
     return mapToWorkflowDTO(resultV1);
   }
 
   public async getWorkflowSourceById(workflowId: string): Promise<string> {
-    const resultV1 = await this.v1.getWorkflowSourceById(workflowId);
-    return resultV1;
+    const source = await this.orchestratorService.fetchWorkflowSource({
+      definitionId: workflowId,
+      cacheHandler: 'throw',
+    });
+
+    if (!source) {
+      throw new Error(`Couldn't fetch workflow source for ${workflowId}`);
+    }
+
+    return source;
   }
 
   public async getInstances(
     pagination?: Pagination,
-    filter?: FilterInfo,
+    filter?: Filter,
+    workflowId?: string,
   ): Promise<ProcessInstanceListResultDTO> {
     const instances = await this.orchestratorService.fetchInstances({
       pagination,
       filter,
+      workflowId,
     });
-    const totalCount =
-      await this.orchestratorService.fetchInstancesTotalCount();
+    const totalCount = await this.orchestratorService.fetchInstancesTotalCount(
+      workflowId,
+      filter,
+    );
 
     const result: ProcessInstanceListResultDTO = {
       items: instances?.map(mapToProcessInstanceDTO),

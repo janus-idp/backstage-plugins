@@ -86,61 +86,7 @@ orchestrator:
 
 For more information about the configuration options, including other optional properties, see the [config.d.ts](../orchestrator-common/config.d.ts) file.
 
-#### Setting up the Orchestrator backend package for the legacy backend
-
-1. Install the Orchestrator backend plugin using the following command:
-
-   ```console
-   yarn workspace backend add @janus-idp/backstage-plugin-orchestrator-backend
-   ```
-
-1. Create a new plugin instance in `packages/backend/src/plugins/orchestrator.ts` file:
-
-   ```ts title="packages/backend/src/plugins/orchestrator.ts"
-   import { Router } from 'express';
-
-   import { createRouter } from '@janus-idp/backstage-plugin-orchestrator-backend';
-
-   import { PluginEnvironment } from '../types';
-
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     return await createRouter({
-       config: env.config,
-       logger: env.logger,
-       discovery: env.discovery,
-       catalogApi: env.catalogApi,
-       urlReader: env.reader,
-       scheduler: env.scheduler,
-     });
-   }
-   ```
-
-1. Import and plug the new instance into `packages/backend/src/index.ts` file:
-
-   ```ts title="packages/backend/src/index.ts"
-   /* highlight-add-next-line */
-   import orchestrator from './plugins/orchestrator';
-
-   async function main() {
-     // ...
-     const createEnv = makeCreateEnv(config);
-     // ...
-     /* highlight-add-next-line */
-     const orchestratorEnv = useHotMemoize(module, () =>
-       createEnv('orchestrator'),
-     );
-     // ...
-     const apiRouter = Router();
-     // ...
-     /* highlight-add-next-line */
-     apiRouter.use('/orchestrator', await orchestrator(orchestratorEnv));
-     // ...
-   }
-   ```
-
-#### Setting up the Orchestrator backend package for the new backend
+#### Setting up the Orchestrator backend package
 
 1. Install the Orchestrator backend plugin using the following command:
 
@@ -154,9 +100,7 @@ For more information about the configuration options, including other optional p
    const backend = createBackend();
 
    /* highlight-add-next-line */
-   backend.add(
-     import('@janus-idp/backstage-plugin-orchestrator-backend/alpha'),
-   );
+   backend.add(import('@janus-idp/backstage-plugin-orchestrator-backend'));
 
    backend.start();
    ```

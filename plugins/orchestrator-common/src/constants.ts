@@ -1,6 +1,6 @@
 // Default values for the orchestrator plugin configuration
 export const DEFAULT_SONATAFLOW_CONTAINER_IMAGE =
-  'quay.io/kiegroup/kogito-swf-devmode-nightly:main-2024-04-17';
+  'docker.io/apache/incubator-kie-sonataflow-devmode:latest';
 export const DEFAULT_SONATAFLOW_PERSISTENCE_PATH = '/home/kogito/persistence';
 export const DEFAULT_SONATAFLOW_BASE_URL = 'http://localhost';
 
