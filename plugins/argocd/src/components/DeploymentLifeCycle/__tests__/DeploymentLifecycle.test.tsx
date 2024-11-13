@@ -140,6 +140,25 @@ describe('DeploymentLifecycle', () => {
     });
   });
 
+  test('should not render the component if there are no applications matching the selector', async () => {
+    (useApi as any).mockReturnValue({
+      listApps: async () => {
+        return Promise.resolve({ items: [] });
+      },
+      getRevisionDetailsList: async () => {
+        return Promise.resolve({});
+      },
+    });
+    render(<DeploymentLifecycle />);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('argocd-loader')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Deployment lifecycle'),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   test('should open and close the sidebar', async () => {
     render(<DeploymentLifecycle />);
 

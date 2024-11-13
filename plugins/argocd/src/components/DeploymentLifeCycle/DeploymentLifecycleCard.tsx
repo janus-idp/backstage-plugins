@@ -33,6 +33,11 @@ const useCardStyles = makeStyles<Theme>(theme =>
       marginRight: theme.spacing(2.5),
       maxWidth: '300px',
     },
+    commitMessage: {
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+    },
   }),
 );
 
@@ -117,47 +122,65 @@ const DeploymentLifecycleCard: React.FC<DeploymentLifecycleCardProps> = ({
 
             <AppNamespace app={app} />
           </Grid>
-          <Grid item xs={12}>
-            <Typography color="textPrimary">Commit</Typography>
-            {revisionsMap && latestRevision ? (
-              <>
-                <Chip
-                  data-testid={`${latestRevision?.revision?.slice(
-                    0,
-                    5,
-                  )}-commit-link`}
-                  size="small"
-                  variant="outlined"
-                  onClick={e => {
-                    e.stopPropagation();
-                    const repoUrl = app?.spec?.source?.repoURL ?? '';
-                    if (repoUrl.length) {
-                      window.open(
-                        getCommitUrl(
-                          repoUrl,
-                          latestRevision?.revision,
-                          entity?.metadata?.annotations ?? {},
-                        ),
-                        '_blank',
-                      );
-                    }
-                  }}
-                  icon={<GitLabIcon />}
-                  color="primary"
-                  label={latestRevision?.revision.slice(0, 7)}
-                />
-                <Typography variant="body2" color="textSecondary">
-                  {revisionsMap?.[latestRevision?.revision] ? (
-                    <>{revisionsMap?.[latestRevision?.revision]?.message}</>
-                  ) : (
-                    <Skeleton />
-                  )}
-                </Typography>
-              </>
-            ) : (
-              <>-</>
-            )}
-          </Grid>
+          {!app?.spec?.source?.chart && (
+            <Grid item xs={12}>
+              <Typography color="textPrimary">Commit</Typography>
+              {revisionsMap && latestRevision ? (
+                <>
+                  <Chip
+                    data-testid={`${latestRevision?.revision?.slice(
+                      0,
+                      5,
+                    )}-commit-link`}
+                    size="small"
+                    variant="outlined"
+                    onClick={e => {
+                      e.stopPropagation();
+                      const repoUrl = app?.spec?.source?.repoURL ?? '';
+                      if (repoUrl.length) {
+                        window.open(
+                          getCommitUrl(
+                            repoUrl,
+                            latestRevision?.revision,
+                            entity?.metadata?.annotations ?? {},
+                          ),
+                          '_blank',
+                        );
+                      }
+                    }}
+                    icon={<GitLabIcon />}
+                    color="primary"
+                    label={latestRevision?.revision.slice(0, 7)}
+                  />
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    className={classes.commitMessage}
+                  >
+                    {revisionsMap?.[latestRevision?.revision] ? (
+                      <Tooltip
+                        data-testid={`${latestRevision?.revision?.slice(
+                          0,
+                          5,
+                        )}-commit-message`}
+                        title={
+                          revisionsMap?.[latestRevision?.revision]?.message
+                        }
+                      >
+                        <span>
+                          {revisionsMap?.[latestRevision?.revision]?.message}
+                        </span>
+                      </Tooltip>
+                    ) : (
+                      <Skeleton />
+                    )}
+                  </Typography>
+                </>
+              ) : (
+                <>-</>
+              )}
+            </Grid>
+          )}
 
           <Grid item xs={12}>
             <Typography variant="body1" color="textPrimary">

@@ -1,3 +1,65 @@
+## @janus-idp/backstage-plugin-argocd [1.2.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.2.3...@janus-idp/backstage-plugin-argocd@1.2.4) (2024-07-17)
+
+
+### Bug Fixes
+
+* **argocd:** fix argocd commit message visibility ([#1874](https://github.com/janus-idp/backstage-plugins/issues/1874)) ([e558d75](https://github.com/janus-idp/backstage-plugins/commit/e558d7549c49a1821eafc9424f174c6d457ce414))
+
+## @janus-idp/backstage-plugin-argocd [1.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.2.2...@janus-idp/backstage-plugin-argocd@1.2.3) (2024-06-21)
+
+
+### Bug Fixes
+
+* **argocd:** hide commit section for helm based applications ([#1834](https://github.com/janus-idp/backstage-plugins/issues/1834)) ([a86ce1e](https://github.com/janus-idp/backstage-plugins/commit/a86ce1e5237ac419eb93a9766cb8e2736ba9b8d7))
+
+## @janus-idp/backstage-plugin-argocd [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.2.1...@janus-idp/backstage-plugin-argocd@1.2.2) (2024-06-19)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.11.1
+
+## @janus-idp/backstage-plugin-argocd [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.2.0...@janus-idp/backstage-plugin-argocd@1.2.1) (2024-06-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency react-use to v17.5.0 ([#1780](https://github.com/janus-idp/backstage-plugins/issues/1780)) ([a25bf15](https://github.com/janus-idp/backstage-plugins/commit/a25bf15e14e9fa5a946551c5626c92f6b1f83d2f))
+
+## @janus-idp/backstage-plugin-argocd [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.10...@janus-idp/backstage-plugin-argocd@1.2.0) (2024-06-13)
+
+
+### Features
+
+* **deps:** update to backstage 1.27 ([#1683](https://github.com/janus-idp/backstage-plugins/issues/1683)) ([a14869c](https://github.com/janus-idp/backstage-plugins/commit/a14869c3f4177049cb8d6552b36c3ffd17e7997d))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.11.0
+
+## @janus-idp/backstage-plugin-argocd [1.1.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.9...@janus-idp/backstage-plugin-argocd@1.1.10) (2024-06-13)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.10.1
+
+## @janus-idp/backstage-plugin-argocd [1.1.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.8...@janus-idp/backstage-plugin-argocd@1.1.9) (2024-06-10)
+
+## @janus-idp/backstage-plugin-argocd [1.1.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.7...@janus-idp/backstage-plugin-argocd@1.1.8) (2024-06-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.10.0
+
+## @janus-idp/backstage-plugin-argocd [1.1.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.6...@janus-idp/backstage-plugin-argocd@1.1.7) (2024-06-04)
+
 ## @janus-idp/backstage-plugin-argocd [1.1.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.5...@janus-idp/backstage-plugin-argocd@1.1.6) (2024-06-03)
 
 

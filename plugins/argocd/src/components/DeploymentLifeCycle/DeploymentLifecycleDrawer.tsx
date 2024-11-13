@@ -51,6 +51,9 @@ const useDrawerStyles = makeStyles<Theme>(theme =>
       justifyContent: 'space-between',
       alignItems: 'baseline',
     },
+    commitMessage: {
+      wordBreak: 'break-word',
+    },
   }),
 );
 const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
@@ -136,51 +139,56 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
 
             <AppNamespace app={app} />
           </Grid>
-          <Grid item xs={12}>
-            <Typography color="textPrimary">Commit</Typography>
-            {latestRevision ? (
-              <>
-                <Chip
-                  data-testid={`${latestRevision?.revision?.slice(
-                    0,
-                    5,
-                  )}-commit-link`}
-                  size="small"
-                  variant="outlined"
-                  icon={<GitLabIcon />}
-                  color="primary"
-                  onClick={e => {
-                    e.stopPropagation();
+          {!app?.spec?.source?.chart && (
+            <Grid item xs={12}>
+              <Typography color="textPrimary">Commit</Typography>
+              {latestRevision ? (
+                <>
+                  <Chip
+                    data-testid={`${latestRevision?.revision?.slice(
+                      0,
+                      5,
+                    )}-commit-link`}
+                    size="small"
+                    variant="outlined"
+                    icon={<GitLabIcon />}
+                    color="primary"
+                    onClick={e => {
+                      e.stopPropagation();
 
-                    const repoUrl = app?.spec?.source?.repoURL ?? '';
-                    if (repoUrl) {
-                      window.open(
-                        getCommitUrl(
-                          repoUrl,
-                          latestRevision?.revision,
-                          entity?.metadata?.annotations ?? {},
-                        ),
-                        '_blank',
-                      );
-                    }
-                  }}
-                  label={latestRevision?.revision.slice(0, 7)}
-                />
-                <Typography color="textSecondary">
-                  {revisionsMap?.[latestRevision?.revision] ? (
-                    <>
-                      {revisionsMap?.[latestRevision?.revision]?.message} by{' '}
-                      {revisionsMap?.[latestRevision?.revision]?.author}
-                    </>
-                  ) : (
-                    <Skeleton />
-                  )}
-                </Typography>
-              </>
-            ) : (
-              <>-</>
-            )}
-          </Grid>
+                      const repoUrl = app?.spec?.source?.repoURL ?? '';
+                      if (repoUrl) {
+                        window.open(
+                          getCommitUrl(
+                            repoUrl,
+                            latestRevision?.revision,
+                            entity?.metadata?.annotations ?? {},
+                          ),
+                          '_blank',
+                        );
+                      }
+                    }}
+                    label={latestRevision?.revision.slice(0, 7)}
+                  />
+                  <Typography
+                    color="textSecondary"
+                    className={classes.commitMessage}
+                  >
+                    {revisionsMap?.[latestRevision?.revision] ? (
+                      <>
+                        {revisionsMap?.[latestRevision?.revision]?.message} by{' '}
+                        {revisionsMap?.[latestRevision?.revision]?.author}
+                      </>
+                    ) : (
+                      <Skeleton />
+                    )}
+                  </Typography>
+                </>
+              ) : (
+                <>-</>
+              )}
+            </Grid>
+          )}
           {appHistory.length >= 1 && (
             <Grid item xs={12}>
               <Typography color="textPrimary">Latest deployment</Typography>
@@ -191,7 +199,11 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
                     Deployment
                   </Typography>
 
-                  <Typography variant="body2" color="textSecondary">
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    className={classes.commitMessage}
+                  >
                     Image{' '}
                     <Link
                       href={`https://${app?.status?.summary?.images?.[0]}`}
@@ -255,7 +267,11 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
                             Deployment
                           </Typography>
 
-                          <Typography variant="body2" color="textSecondary">
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            className={classes.commitMessage}
+                          >
                             {revisionsMap[dep.revision]?.message}{' '}
                             <Link
                               aria-disabled={!!commitUrl}
