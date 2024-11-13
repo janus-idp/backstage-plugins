@@ -1,3 +1,17 @@
+## @janus-idp/cli [1.10.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.10.0...@janus-idp/cli@1.10.1) (2024-06-13)
+
+
+### Bug Fixes
+
+* **cli:** fix the removal of type definitions by `export-dynamic`. ([#1810](https://github.com/janus-idp/backstage-plugins/issues/1810)) ([8472d91](https://github.com/janus-idp/backstage-plugins/commit/8472d914a2f9107c08a9a30ab1ea8ed8d10bc43a))
+
+## @janus-idp/cli [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.9.0...@janus-idp/cli@1.10.0) (2024-06-05)
+
+
+### Features
+
+* switch defaults of the `--embed-as-dependencies` and `in-place` options. ([#1787](https://github.com/janus-idp/backstage-plugins/issues/1787)) ([049e675](https://github.com/janus-idp/backstage-plugins/commit/049e67502e7b4f9f00c8c6b01d112a27bc09ca9c))
+
 ## @janus-idp/cli [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.10...@janus-idp/cli@1.9.0) (2024-06-03)
 
 

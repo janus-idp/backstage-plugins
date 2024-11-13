@@ -346,6 +346,9 @@ export async function backend(
   // Remove the `dist` folder of the original plugin root folder and rebuild it,
   // since it has been compiled with dynamic-specific settings.
   await fs.remove(paths.resolveTarget('dist'));
+  if (roleInfo.output.includes('types')) {
+    outputs.add(Output.types);
+  }
   await buildPackage({
     outputs,
     minify: Boolean(opts.minify),

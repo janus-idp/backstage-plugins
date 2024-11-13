@@ -1,0 +1,1 @@
+## @janus-idp/backstage-plugin-audit-log-node [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-audit-log-node@1.0.2...@janus-idp/backstage-plugin-audit-log-node@1.0.3) (2024-06-04)
