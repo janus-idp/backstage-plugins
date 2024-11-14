@@ -1,5 +1,11 @@
 ## @janus-idp/backstage-plugin-ocm-backend [4.0.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@4.0.9...@janus-idp/backstage-plugin-ocm-backend@4.0.10) (2024-10-10)
 
+## 4.0.13
+
+### Patch Changes
+
+- 8a15869: fix CVE-2024-21534
+
 ## 4.0.12
 
 ### Patch Changes
