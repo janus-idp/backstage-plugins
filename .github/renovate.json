@@ -219,7 +219,6 @@
     },
     {
       "matchFileNames": [
-        "plugins/quay*/**",
         "plugins/tekton*/**"
       ],
       "additionalBranchPrefix": "rhtap ",
@@ -230,7 +229,6 @@
     },
     {
       "matchFileNames": [
-        "plugins/quay*/**",
         "plugins/tekton*/**"
       ],
       "additionalBranchPrefix": "rhtap ",
