@@ -1,5 +1,17 @@
 ### Dependencies
 
+## 4.1.0
+
+### Minor Changes
+
+- 25f1787: Add enum filters to orchestrator plugin
+- 603a162: make error handling consistent in backend and UI
+
+### Patch Changes
+
+- Updated dependencies [25f1787]
+  - @janus-idp/backstage-plugin-orchestrator-common@1.24.0
+
 ## 4.0.1
 
 ### Patch Changes
