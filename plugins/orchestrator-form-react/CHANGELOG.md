@@ -1,5 +1,11 @@
 ### Dependencies
 
+## 1.4.2
+
+### Patch Changes
+
+- aee9d4a: Hotfix for button background - to share the one with theme.
+
 ## 1.4.1
 
 ### Patch Changes

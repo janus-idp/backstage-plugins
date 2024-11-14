@@ -1,5 +1,11 @@
 ## @janus-idp/backstage-plugin-orchestrator-common [1.13.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.13.0...@janus-idp/backstage-plugin-orchestrator-common@1.13.1) (2024-08-02)
 
+## 1.24.0
+
+### Minor Changes
+
+- 25f1787: Add enum filters to orchestrator plugin
+
 ## 1.23.1
 
 ### Patch Changes

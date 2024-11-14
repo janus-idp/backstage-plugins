@@ -1,5 +1,20 @@
 ### Dependencies
 
+## 2.4.0
+
+### Minor Changes
+
+- 603a162: make error handling consistent in backend and UI
+
+### Patch Changes
+
+- 8a76b49: Makes very long workflow result messages still readable.
+- b2a7181: Fix filtering by status on the Workflow Runs tab.
+- Updated dependencies [aee9d4a]
+- Updated dependencies [25f1787]
+  - @janus-idp/backstage-plugin-orchestrator-form-react@1.4.2
+  - @janus-idp/backstage-plugin-orchestrator-common@1.24.0
+
 ## 2.3.2
 
 ### Patch Changes

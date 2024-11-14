@@ -8215,7 +8215,7 @@ __metadata:
     "@backstage/plugin-permission-node": ^0.8.4
     "@backstage/plugin-scaffolder-backend": ^1.26.2
     "@backstage/plugin-scaffolder-node": ^0.5.0
-    "@janus-idp/backstage-plugin-orchestrator-common": ^1.23.1
+    "@janus-idp/backstage-plugin-orchestrator-common": ^1.24.0
     "@types/express": 4.17.21
     "@types/fs-extra": 11.0.4
     "@types/json-schema": 7.0.15
@@ -8237,7 +8237,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-orchestrator-common@^1.23.1, @janus-idp/backstage-plugin-orchestrator-common@workspace:plugins/orchestrator-common":
+"@janus-idp/backstage-plugin-orchestrator-common@^1.24.0, @janus-idp/backstage-plugin-orchestrator-common@workspace:plugins/orchestrator-common":
   version: 0.0.0-use.local
   resolution: "@janus-idp/backstage-plugin-orchestrator-common@workspace:plugins/orchestrator-common"
   dependencies:
@@ -8273,7 +8273,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-orchestrator-form-react@^1.4.1, @janus-idp/backstage-plugin-orchestrator-form-react@workspace:plugins/orchestrator-form-react":
+"@janus-idp/backstage-plugin-orchestrator-form-react@^1.4.2, @janus-idp/backstage-plugin-orchestrator-form-react@workspace:plugins/orchestrator-form-react":
   version: 0.0.0-use.local
   resolution: "@janus-idp/backstage-plugin-orchestrator-form-react@workspace:plugins/orchestrator-form-react"
   dependencies:
@@ -8340,9 +8340,9 @@ __metadata:
     "@backstage/plugin-permission-react": ^0.4.27
     "@backstage/test-utils": 1.7.0
     "@backstage/types": 1.1.1
-    "@janus-idp/backstage-plugin-orchestrator-common": ^1.23.1
+    "@janus-idp/backstage-plugin-orchestrator-common": ^1.24.0
     "@janus-idp/backstage-plugin-orchestrator-form-api": ^1.4.1
-    "@janus-idp/backstage-plugin-orchestrator-form-react": ^1.4.1
+    "@janus-idp/backstage-plugin-orchestrator-form-react": ^1.4.2
     "@kie-tools-core/editor": ^0.32.0
     "@kie-tools-core/notifications": ^0.32.0
     "@kie-tools-core/react-hooks": ^0.32.0
