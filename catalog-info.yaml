@@ -50,8 +50,6 @@ spec:
     - ./plugins/orchestrator/catalog-info.yaml
     - ./plugins/orchestrator-backend/catalog-info.yaml
     - ./plugins/orchestrator-common/catalog-info.yaml
-    - ./plugins/quay/catalog-info.yaml
-    - ./plugins/quay-common/catalog-info.yaml
     - ./plugins/quay-actions/catalog-info.yaml
     - ./plugins/scaffolder-annotator-action/catalog-info.yaml
     - ./plugins/shared-react/catalog-info.yaml
