@@ -195,6 +195,34 @@ export class V2 {
     return mapToExecuteWorkflowResponseDTO(workflowId, executionResponse);
   }
 
+  public async retriggerInstance(
+    workflowId: string,
+    instanceId: string,
+  ): Promise<void> {
+    const definition = await this.orchestratorService.fetchWorkflowInfo({
+      definitionId: workflowId,
+      cacheHandler: 'throw',
+    });
+    if (!definition) {
+      throw new Error(`Couldn't fetch workflow definition for ${workflowId}`);
+    }
+    if (!definition.serviceUrl) {
+      throw new Error(`ServiceURL is not defined for workflow ${workflowId}`);
+    }
+    const response = await this.orchestratorService.retriggerWorkflow({
+      definitionId: workflowId,
+      instanceId: instanceId,
+      serviceUrl: definition.serviceUrl,
+      cacheHandler: 'throw',
+    });
+
+    if (!response) {
+      throw new Error(
+        `Couldn't retrigger instance ${instanceId} of workflow ${workflowId}`,
+      );
+    }
+  }
+
   public async abortWorkflow(instanceId: string): Promise<string> {
     await this.orchestratorService.abortWorkflowInstance({
       instanceId,

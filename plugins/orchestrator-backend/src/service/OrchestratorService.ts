@@ -182,6 +182,22 @@ export class OrchestratorService {
       : undefined;
   }
 
+  public async retriggerWorkflow(args: {
+    definitionId: string;
+    instanceId: string;
+    serviceUrl: string;
+    cacheHandler?: CacheHandler;
+  }): Promise<boolean | undefined> {
+    const { definitionId, cacheHandler } = args;
+    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
+      definitionId,
+      cacheHandler,
+    );
+    return isWorkflowAvailable
+      ? await this.sonataFlowService.retriggerInstance(args)
+      : undefined;
+  }
+
   public async fetchWorkflowOverview(args: {
     definitionId: string;
     cacheHandler?: CacheHandler;

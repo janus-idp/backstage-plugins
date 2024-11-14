@@ -14,6 +14,7 @@ All URIs are relative to *http://localhost*
 | [**getWorkflowSourceById**](DefaultApi.md#getWorkflowSourceById) | **GET** /v2/workflows/{workflowId}/source |  |
 | [**getWorkflowStatuses**](DefaultApi.md#getWorkflowStatuses) | **GET** /v2/workflows/instances/statuses | Get workflow status list |
 | [**getWorkflowsOverview**](DefaultApi.md#getWorkflowsOverview) | **POST** /v2/workflows/overview |  |
+| [**retriggerInstance**](DefaultApi.md#retriggerInstance) | **POST** /v2/workflows/{workflowId}/{instanceId}/retrigger | Retrigger an instance |
 
 
 <a name="abortWorkflow"></a>
@@ -285,5 +286,33 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: application/json
+- **Accept**: application/json
+
+<a name="retriggerInstance"></a>
+# **retriggerInstance**
+> Object retriggerInstance(workflowId, instanceId)
+
+Retrigger an instance
+
+    Retrigger an instance
+
+### Parameters
+
+|Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **workflowId** | **String**| ID of the workflow | [default to null] |
+| **instanceId** | **String**| ID of the instance to retrigger | [default to null] |
+
+### Return type
+
+**Object**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
 - **Accept**: application/json
 
