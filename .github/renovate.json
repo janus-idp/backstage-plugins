@@ -197,51 +197,7 @@
     },
     {
       "matchFileNames": [
-        "plugins/*matomo*/**",
-        "plugins/analytics-module-matomo*/**"
-      ],
-      "additionalBranchPrefix": "devex ",
-      "addLabels": ["team/devex"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "matchDepTypes": ["dependencies", "peerDependencies"],
-      "groupName": "Devex Dependencies (non-major)"
-    },
-    {
-      "matchFileNames": [
-        "plugins/*matomo*/**",
-        "plugins/analytics-module-matomo*/**"
-      ],
-      "additionalBranchPrefix": "devex ",
-      "addLabels": ["team/devex"],
-      "matchUpdateTypes": ["major"],
-      "matchDepTypes": ["dependencies", "peerDependencies"],
-      "groupName": "Devex Dependencies "
-    },
-    {
-      "matchFileNames": [
-        "plugins/tekton*/**"
-      ],
-      "additionalBranchPrefix": "rhtap ",
-      "addLabels": ["team/rhtap"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "matchDepTypes": ["dependencies", "peerDependencies"],
-      "groupName": "RHTAP Dependencies (non-major) "
-    },
-    {
-      "matchFileNames": [
-        "plugins/tekton*/**"
-      ],
-      "additionalBranchPrefix": "rhtap ",
-      "addLabels": ["team/rhtap"],
-      "matchUpdateTypes": ["major"],
-      "matchDepTypes": ["dependencies", "peerDependencies"],
-      "groupName": "RHTAP Dependencies "
-    },
-    {
-      "matchFileNames": [
-        "plugins/analytics-provider-segment*/**",
         "plugins/audit-log*/**",
-        "plugins/quay-actions*/**",
         "plugins/scaffolder-annotator-action*/**",
         "plugins/shared-react*/**",
         "packages/**",
@@ -255,9 +211,7 @@
     },
     {
       "matchFileNames": [
-        "plugins/analytics-provider-segment*/**",
         "plugins/audit-log*/**",
-        "plugins/quay-actions*/**",
         "plugins/scaffolder-annotator-action*/**",
         "plugins/shared-react*/**",
         "packages/**",
