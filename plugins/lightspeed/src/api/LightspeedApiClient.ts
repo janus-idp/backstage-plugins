@@ -1,19 +1,19 @@
-import { ConfigApi, IdentityApi } from '@backstage/core-plugin-api';
+import { ConfigApi, FetchApi } from '@backstage/core-plugin-api';
 
 import { LightspeedAPI } from './api';
 
 export type Options = {
   configApi: ConfigApi;
-  identityApi: IdentityApi;
+  fetchApi: FetchApi;
 };
 
 export class LightspeedApiClient implements LightspeedAPI {
   private readonly configApi: ConfigApi;
-  private readonly identityApi: IdentityApi;
+  private readonly fetchApi: FetchApi;
 
   constructor(options: Options) {
     this.configApi = options.configApi;
-    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi;
   }
 
   async getBaseUrl() {
@@ -25,24 +25,17 @@ export class LightspeedApiClient implements LightspeedAPI {
     return `${this.configApi.getConfigArray('lightspeed.servers')[0].getOptionalString('url')}`;
   }
 
-  async getUserAuthorization() {
-    const { token: idToken } = await this.identityApi.getCredentials();
-    return idToken;
-  }
-
   async createMessage(
     prompt: string,
     selectedModel: string,
     conversation_id: string,
   ) {
     const baseUrl = await this.getBaseUrl();
-    const token = await this.getUserAuthorization();
 
-    const response = await fetch(`${baseUrl}/v1/query`, {
+    const response = await this.fetchApi.fetch(`${baseUrl}/v1/query`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: JSON.stringify({
         conversation_id,
@@ -66,15 +59,10 @@ export class LightspeedApiClient implements LightspeedAPI {
   }
 
   private async fetcher(url: string) {
-    const token = await this.getUserAuthorization();
-
-    const response = await fetch(url, {
-      headers: token
-        ? {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          }
-        : undefined,
+    const response = await this.fetchApi.fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
     if (!response.ok) {
       throw new Error(
@@ -107,13 +95,11 @@ export class LightspeedApiClient implements LightspeedAPI {
 
   async createConversation() {
     const baseUrl = await this.getBaseUrl();
-    const token = await this.getUserAuthorization();
 
-    const response = await fetch(`${baseUrl}/conversations`, {
+    const response = await this.fetchApi.fetch(`${baseUrl}/conversations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: JSON.stringify({}),
     });
@@ -132,15 +118,12 @@ export class LightspeedApiClient implements LightspeedAPI {
 
   async deleteConversation(conversation_id: string) {
     const baseUrl = await this.getBaseUrl();
-    const token = await this.getUserAuthorization();
 
-    const response = await fetch(
+    const response = await this.fetchApi.fetch(
       `${baseUrl}/conversations/${encodeURIComponent(conversation_id)}`,
       {
         method: 'DELETE',
-        headers: {
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
+        headers: {},
       },
     );
 

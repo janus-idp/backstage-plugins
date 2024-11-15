@@ -16,6 +16,7 @@ export interface BaseMessage {
   kwargs: {
     content: string;
     response_metadata: {
+      model?: string;
       created_at: number;
       role: string;
     };

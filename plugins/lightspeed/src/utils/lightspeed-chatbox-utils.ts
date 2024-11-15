@@ -103,6 +103,7 @@ export const createBotMessage = (props: MessageProps) =>
 
 export const getMessageData = (message: BaseMessage) => {
   return {
+    model: message?.kwargs?.response_metadata?.model,
     content: message?.kwargs?.content || '',
     timestamp: getTimestamp(message?.kwargs?.response_metadata?.created_at),
   };

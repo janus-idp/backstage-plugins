@@ -89,8 +89,11 @@ export const useConversationMessages = (
 
         const { content: humanMessage, timestamp: userTimestamp } =
           getMessageData(userMessage);
-        const { content: botMessage, timestamp: botTimestamp } =
-          getMessageData(aiMessage);
+        const {
+          model,
+          content: botMessage,
+          timestamp: botTimestamp,
+        } = getMessageData(aiMessage);
 
         _conversations[currentConversation].push(
           ...[
@@ -103,7 +106,7 @@ export const useConversationMessages = (
             createBotMessage({
               avatar: logo,
               isLoading: false,
-              name: selectedModel,
+              name: model ?? selectedModel,
               content: botMessage,
               timestamp: botTimestamp,
             }),
@@ -182,6 +185,8 @@ export const useConversationMessages = (
 
                 lastMessage.isLoading = false;
                 lastMessage.content += content;
+                lastMessage.name =
+                  jsonData?.response?.kwargs?.response_metadata?.model;
                 lastMessage.timestamp = getTimestamp(
                   jsonData?.response?.kwargs?.response_metadata?.created_at ||
                     Date.now(),

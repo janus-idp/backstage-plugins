@@ -285,6 +285,7 @@ export const LightspeedChat = ({
                   onSendMessage={sendMessage}
                   isSendButtonDisabled={isSendButtonDisabled}
                   hasAttachButton={false}
+                  hasMicrophoneButton
                 />
                 <ChatbotFootnote {...getFootnoteProps()} />
               </ChatbotFooter>
