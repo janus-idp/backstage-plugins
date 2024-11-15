@@ -1,0 +1,42 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "globalDependencies": [],
+    "tasks": {
+      "start": {
+        "cache": false,
+        "persistent": true,
+        "dependsOn": ["openapi:generate"]
+      },
+      "build": {
+        "outputs": ["dist/**"],
+        "dependsOn": ["^build", "tsc"]
+      },
+      "clean": {
+        "cache": false
+      },
+      "test": {
+        "outputs": ["coverage/**"],
+        "dependsOn": ["openapi:generate"]
+      },
+      "ui-test": {
+        "outputs": ["test-results/**"]
+      },
+      "lint:check": {},
+      "lint:fix": {
+        "cache": false
+      },
+      "prettier:check": {},
+      "prettier:fix": {
+        "cache": false
+      },
+      "tsc": {
+        "outputs": ["../../dist-types/**"],
+        "dependsOn": ["^tsc", "openapi:generate"]
+      },
+      "openapi:generate": {
+        "outputs": ["src/generated/**"],
+        "dependsOn": ["^openapi:generate"]
+      }
+    }
+  }
+  
