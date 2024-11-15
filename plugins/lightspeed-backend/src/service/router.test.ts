@@ -187,8 +187,19 @@ describe('lightspeed router tests', () => {
     const aiMessage = 'Hi! How can I help you today?';
 
     beforeEach(async () => {
-      await saveHistory(mockConversationId, Roles.HumanRole, humanMessage);
-      await saveHistory(mockConversationId, Roles.AIRole, aiMessage);
+      await saveHistory(
+        mockConversationId,
+        Roles.HumanRole,
+        humanMessage,
+        Date.now(),
+      );
+      await saveHistory(
+        mockConversationId,
+        Roles.AIRole,
+        aiMessage,
+        Date.now(),
+        mockModel,
+      );
     });
 
     it('load history', async () => {
@@ -206,9 +217,16 @@ describe('lightspeed router tests', () => {
 
       expect(responseData[0].id).toContain('HumanMessage');
       expect(responseData[0].kwargs?.content).toBe(humanMessage);
+      expect(
+        responseData[0].kwargs?.response_metadata.created_at,
+      ).toBeDefined();
 
       expect(responseData[1].id).toContain('AIMessage');
       expect(responseData[1].kwargs?.content).toBe(aiMessage);
+      expect(
+        responseData[1].kwargs?.response_metadata.created_at,
+      ).toBeDefined();
+      expect(responseData[1].kwargs?.response_metadata.model).toBe(mockModel);
     });
 
     it('delete history', async () => {
@@ -388,7 +406,7 @@ describe('lightspeed router tests', () => {
       );
     });
 
-    it('should contain ai and human message timestamp', async () => {
+    it('should contain message timestamp in human and ai message, and ai model in ai message', async () => {
       const delay = (ms = 100) =>
         new Promise<void>(resolve => setTimeout(resolve, ms));
       const mockStream = jest.fn().mockImplementation(async function* stream() {
@@ -436,6 +454,7 @@ describe('lightspeed router tests', () => {
         expect(chunk.response.response_metadata.created_at).toBeGreaterThan(
           humanMessageTimestamp,
         );
+        expect(chunk.response.response_metadata.model).toBe(mockModel);
       });
     });
 

@@ -6,6 +6,7 @@ import {
   loadAllConversations,
   loadHistory,
   saveHistory,
+  saveSummary,
 } from './chatHistory';
 
 const mockUser = 'user1';
@@ -21,25 +22,37 @@ describe('Test History Functions', () => {
 
   test('saveHistory should save a human message', async () => {
     const message = 'Hello, how are you?';
+    const timestamp = Date.now();
 
-    await saveHistory(mockConversationId, Roles.HumanRole, message);
+    await saveHistory(mockConversationId, Roles.HumanRole, message, timestamp);
 
-    const history = await loadHistory(mockConversationId, 10);
+    const history = (await loadHistory(mockConversationId, 10)).history;
     expect(history.length).toBe(1);
     expect(history[0]).toBeInstanceOf(HumanMessage);
     expect(history[0].content).toBe(message);
+    expect(history[0].response_metadata.created_at).toBe(timestamp);
   });
 
   test('saveHistory should save an AI message', async () => {
     const message = 'I am fine, thank you!';
+    const model = 'mock-model';
+    const timestamp = Date.now();
 
-    await saveHistory(mockConversationId, Roles.AIRole, message);
+    await saveHistory(
+      mockConversationId,
+      Roles.AIRole,
+      message,
+      timestamp,
+      model,
+    );
 
-    const history = await loadHistory(mockConversationId, 10);
+    const history = (await loadHistory(mockConversationId, 10)).history;
 
     expect(history.length).toBe(1);
     expect(history[0]).toBeInstanceOf(AIMessage);
     expect(history[0].content).toBe(message);
+    expect(history[0].response_metadata.created_at).toBe(timestamp);
+    expect(history[0].response_metadata.model).toBe(model);
   });
 
   test('saveHistory and loadHistory with multiple messages', async () => {
@@ -50,7 +63,7 @@ describe('Test History Functions', () => {
       'Hi! How can I help you today?',
     );
 
-    const history = await loadHistory(mockConversationId, 10);
+    const history = (await loadHistory(mockConversationId, 10)).history;
     expect(history.length).toBe(2);
     expect(history[0]).toBeInstanceOf(HumanMessage);
     expect(history[0].content).toBe('Hello');
@@ -66,7 +79,7 @@ describe('Test History Functions', () => {
       'Hi! How can I help you today?',
     );
 
-    const history = await loadHistory(mockConversationId, 1);
+    const history = (await loadHistory(mockConversationId, 1)).history;
     expect(history.length).toBe(1);
     expect(history[0]).toBeInstanceOf(AIMessage);
     expect(history[0].content).toBe('Hi! How can I help you today?');
@@ -76,6 +89,44 @@ describe('Test History Functions', () => {
     await expect(
       saveHistory(mockConversationId, 'UnknownRole', 'Message'),
     ).rejects.toThrow('Unknown role: UnknownRole');
+  });
+
+  test('saveSummary should throw an error for unknown conversationId', async () => {
+    await expect(
+      saveSummary('UnknownConversationId', 'summary'),
+    ).rejects.toThrow('unknown conversation_id: UnknownConversationId');
+  });
+
+  test('saveSummary should save a summary', async () => {
+    const message = 'Hello, how are you?';
+    const mockSummary = 'mock summary';
+
+    await saveHistory(mockConversationId, Roles.HumanRole, message);
+    await saveSummary(mockConversationId, mockSummary);
+
+    const conversationHistory = await loadHistory(mockConversationId, 10);
+    expect(conversationHistory.summary).toBe(mockSummary);
+  });
+
+  test('saveHistory should preserve previous summary', async () => {
+    const message = 'Hello, how are you?';
+    const mockSummary = 'mock summary';
+
+    await saveHistory(mockConversationId, Roles.HumanRole, message);
+    await saveSummary(mockConversationId, mockSummary);
+
+    let conversationHistory = await loadHistory(mockConversationId, 10);
+    expect(conversationHistory.history.length).toBe(1);
+    expect(conversationHistory.summary).toBe(mockSummary);
+
+    await saveHistory(
+      mockConversationId,
+      Roles.AIRole,
+      'Hi! How can I help you today?',
+    );
+    conversationHistory = await loadHistory(mockConversationId, 10);
+    expect(conversationHistory.history.length).toBe(2);
+    expect(conversationHistory.summary).toBe(mockSummary);
   });
 
   test('loadAllConversations should return all conversation_id for given user_id', async () => {
@@ -107,10 +158,10 @@ describe('Test History Functions', () => {
     await saveHistory(mockConversationId, Roles.HumanRole, 'Hello');
     await saveHistory('conv2', Roles.AIRole, 'Hi! How can I help you today?');
 
-    const history1 = await loadHistory(mockConversationId, 1);
+    const history1 = (await loadHistory(mockConversationId, 1)).history;
     expect(history1.length).toBe(1);
 
-    const history2 = await loadHistory('conv2', 1);
+    const history2 = (await loadHistory('conv2', 1)).history;
     expect(history2.length).toBe(1);
 
     await deleteHistory('conv2');
