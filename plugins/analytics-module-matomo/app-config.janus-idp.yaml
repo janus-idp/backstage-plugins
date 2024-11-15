@@ -1,5 +1,0 @@
-app:
-  analytics:
-    matomo:
-      host: ${ANALYTICS_MATOMO_INSTANCE_URL}
-      siteId: ${ANALYTICS_MATOMO_SITE_ID}

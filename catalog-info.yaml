@@ -39,21 +39,15 @@ metadata:
 spec:
   targets:
     - ./plugins/aap-backend/catalog-info.yaml
-    - ./plugins/analytics-module-matomo/catalog-info.yaml
-    - ./plugins/analytics-provider-segment/catalog-info.yaml
     - ./plugins/audit-log-node/catalog-info.yaml
     - ./plugins/kiali/catalog-info.yaml
     - ./plugins/kiali-backend/catalog-info.yaml
     - ./plugins/kubernetes-actions/catalog-info.yaml
-    - ./plugins/matomo/catalog-info.yaml
-    - ./plugins/matomo-backend/catalog-info.yaml
     - ./plugins/orchestrator/catalog-info.yaml
     - ./plugins/orchestrator-backend/catalog-info.yaml
     - ./plugins/orchestrator-common/catalog-info.yaml
     - ./plugins/quay-actions/catalog-info.yaml
     - ./plugins/scaffolder-annotator-action/catalog-info.yaml
     - ./plugins/shared-react/catalog-info.yaml
-    - ./plugins/tekton/catalog-info.yaml
-    - ./plugins/tekton-common/catalog-info.yaml
     - ./plugins/web-terminal/catalog-info.yaml
     - ./packages/cli/catalog-info.yaml
