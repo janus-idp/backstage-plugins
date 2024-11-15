@@ -6,13 +6,11 @@ import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
-  identityApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
-import {
-  lightspeedApiRef,
-  LightspeedProxyClient,
-} from './api/LightspeedProxyClient';
+import { lightspeedApiRef } from './api/api';
+import { LightspeedApiClient } from './api/LightspeedApiClient';
 import { rootRouteRef } from './routes';
 
 export const lightspeedPlugin = createPlugin({
@@ -25,10 +23,10 @@ export const lightspeedPlugin = createPlugin({
       api: lightspeedApiRef,
       deps: {
         configApi: configApiRef,
-        identityApi: identityApiRef,
+        fetchApi: fetchApiRef,
       },
-      factory: ({ configApi, identityApi }) =>
-        new LightspeedProxyClient({ configApi, identityApi }),
+      factory: ({ configApi, fetchApi }) =>
+        new LightspeedApiClient({ configApi, fetchApi }),
     }),
   ],
 });

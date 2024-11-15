@@ -5,5 +5,30 @@ export type Conversations = {
     model: string;
     loading: boolean;
     timestamp: string;
+    botTimestamp: string;
   };
 };
+
+export interface BaseMessage {
+  lc: number;
+  type: string;
+  id: string[];
+  kwargs: {
+    content: string;
+    response_metadata: {
+      model?: string;
+      created_at: number;
+      role: string;
+    };
+    additional_kwargs: {
+      [_key: string]: any;
+    };
+  };
+}
+export type ConversationSummary = {
+  conversation_id: string;
+  lastMessageTimestamp: number;
+  summary: string;
+};
+
+export type ConversationList = ConversationSummary[];

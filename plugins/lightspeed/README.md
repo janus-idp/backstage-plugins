@@ -4,6 +4,10 @@ The Lightspeed plugin enables you to interact with any LLM server running a mode
 
 ## For administrators
 
+### Prerequisites
+
+- Follow the lightspeed backend plugin [README](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/lightspeed-backend) to integrate lightspeed backend in your Backstage instance.
+
 ### Installation
 
 1. Install the Lightspeed plugin using the following command:
@@ -14,18 +18,7 @@ The Lightspeed plugin enables you to interact with any LLM server running a mode
 
 ### Configuration
 
-1. Set the proxy to the desired LLM server in the `app-config.yaml` file as follows:
-
-   ```yaml title="app-config.yaml"
-   proxy:
-     endpoints:
-       '/lightspeed/api':
-         target: http://localhost:11434/v1/
-         headers:
-           Authorization: Bearer <token>
-   ```
-
-2. Add a new nav item **Lightspeed** in App `packages/app/src/App.tsx`:
+1. Add a new nav item **Lightspeed** in App `packages/app/src/App.tsx`:
 
    ```tsx title="packages/app/src/components/App.tsx"
    /* highlight-add-next-line */ import { LightspeedPage } from '@janus-idp/backstage-plugin-lightspeed';
@@ -33,7 +26,7 @@ The Lightspeed plugin enables you to interact with any LLM server running a mode
    <Route path="/lightspeed" element={<LightspeedPage />} />;
    ```
 
-3. Enable **Lightspeed** page in `packages/app/src/components/Root/Root.tsx`:
+2. Enable **Lightspeed** page in `packages/app/src/components/Root/Root.tsx`:
 
    ```tsx title="packages/app/src/components/Root/Root.tsx"
    /* highlight-add-next-line */ import { LightspeedIcon } from '@janus-idp/backstage-plugin-lightspeed';
@@ -94,15 +87,14 @@ global:
                       text: Lightspeed
 ```
 
-- add the proxy configuration in the `app-config.yaml`
+- add the lightspeed configuration in the `app-config.yaml`
 
 ```
-proxy:
- endpoints:
-  '/lightspeed/api':
-    target: http://localhost:11434/v1/
-    headers:
-      Authorization: Bearer <token>
+lightspeed:
+  servers:
+    - id: <server_id>
+      url: <server_URL>
+      token: <api_key>
 ```
 
 ---
@@ -136,12 +128,11 @@ mv package $(echo $archive | sed -e 's:\.tgz$::')
 
 ```
 
-proxy:
-  endpoints:
-     '/lightspeed/api':
-      target: http://localhost:11434/v1/
-      headers:
-         Authorization: Bearer <token>
+lightspeed:
+  servers:
+    - id: <server id>
+      url: <serverURL>
+      token: <api key> # dummy token
 
 dynamicPlugins:
   frontend:

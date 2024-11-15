@@ -5,9 +5,11 @@ import { Content, Page } from '@backstage/core-components';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
+import { QueryClientProvider } from '@tanstack/react-query';
 
-import { lightspeedApiRef } from '../api/LightspeedProxyClient';
-import { LightspeedChatBox } from './LightspeedChatBox';
+import { useAllModels } from '../hooks/useAllModels';
+import queryClient from '../utils/queryClient';
+import { LightspeedChat } from './LightSpeedChat';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -20,18 +22,15 @@ const useStyles = makeStyles(() =>
 const THEME_DARK = 'dark';
 const THEME_DARK_CLASS = 'pf-v6-theme-dark';
 
-export const LightspeedPage = () => {
+const LightspeedPageInner = () => {
   const classes = useStyles();
   const {
     palette: { type },
   } = useTheme();
 
-  const lightspeedApi = useApi(lightspeedApiRef);
   const identityApi = useApi(identityApiRef);
 
-  const { value: models } = useAsync(
-    async () => await lightspeedApi.getAllModels(),
-  );
+  const { data: models } = useAllModels();
 
   const { value: profile, loading: profileLoading } = useAsync(
     async () => await identityApi.getProfileInfo(),
@@ -61,7 +60,7 @@ export const LightspeedPage = () => {
   return (
     <Page themeId="tool">
       <Content className={classes.container}>
-        <LightspeedChatBox
+        <LightspeedChat
           selectedModel={selectedModel}
           handleSelectedModel={item => {
             setSelectedModel(item);
@@ -73,5 +72,13 @@ export const LightspeedPage = () => {
         />
       </Content>
     </Page>
+  );
+};
+
+export const LightspeedPage = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <LightspeedPageInner />
+    </QueryClientProvider>
   );
 };
