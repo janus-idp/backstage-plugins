@@ -396,6 +396,44 @@ function setupInternalRoutes(
 
   // v2
   routerApi.openApiBackend.register(
+    'retriggerInstance',
+    async (c, req: express.Request, res: express.Response, next) => {
+      const workflowId = c.request.params.workflowId as string;
+      const instanceId = c.request.params.instanceId as string;
+      const endpointName = 'retriggerInstance';
+      const endpoint = `/v2/workflows/${workflowId}/${instanceId}/retrigger`;
+
+      auditLogger.auditLog({
+        eventName: endpointName,
+        stage: 'start',
+        status: 'succeeded',
+        level: 'debug',
+        request: req,
+        message: `Received request to '${endpoint}' endpoint`,
+      });
+
+      const decision = await authorize(
+        req,
+        orchestratorWorkflowExecutePermission,
+        permissions,
+        httpAuth,
+      );
+      if (decision.result === AuthorizeResult.DENY) {
+        manageDenyAuthorization(endpointName, endpoint, req);
+      }
+
+      await routerApi.v2
+        .retriggerInstance(workflowId, instanceId)
+        .then(result => res.status(200).json(result))
+        .catch(error => {
+          auditLogRequestError(error, endpointName, endpoint, req);
+          next(error);
+        });
+    },
+  );
+
+  // v2
+  routerApi.openApiBackend.register(
     'getWorkflowOverviewById',
     async (c, _req: express.Request, res: express.Response, next) => {
       const workflowId = c.request.params.workflowId as string;

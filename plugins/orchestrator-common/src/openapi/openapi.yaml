@@ -250,6 +250,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /v2/workflows/{workflowId}/{instanceId}/retrigger:
+    post:
+      summary: Retrigger an instance
+      description: Retrigger an instance
+      operationId: retriggerInstance
+      parameters:
+        - name: workflowId
+          in: path
+          description: ID of the workflow
+          required: true
+          schema:
+            type: string
+        - name: instanceId
+          in: path
+          description: ID of the instance to retrigger
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/instances/{instanceId}/abort:
     delete:
       summary: Abort a workflow instance

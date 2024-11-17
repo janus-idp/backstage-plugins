@@ -113,6 +113,26 @@ export class SonataFlowService {
     }
   }
 
+  public async retriggerInstance(args: {
+    definitionId: string;
+    instanceId: string;
+    serviceUrl: string;
+  }): Promise<boolean> {
+    const urlToFetch = `${args.serviceUrl}/management/processes/${args.definitionId}/instances/${args.instanceId}/retrigger`;
+
+    const response = await fetch(urlToFetch, {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `${await this.createPrefixFetchErrorMessage(urlToFetch, response, 'POST')}`,
+      );
+    }
+
+    return true;
+  }
+
   public async fetchWorkflowOverview(
     definitionId: string,
   ): Promise<WorkflowOverview | undefined> {
