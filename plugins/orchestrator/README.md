@@ -154,6 +154,10 @@ For more information about the configuration options, including other optional p
    );
    ```
 
+### Extensible Workflow Execution Form
+
+The `orchestrator` plugin includes an extensible form for executing forms. For detailed guidance see the [Extensible Workflow Execution Form Documentation](./docs/extensibleForm.md).
+
 ## For users
 
 ### Using the Orchestrator plugin in Backstage
