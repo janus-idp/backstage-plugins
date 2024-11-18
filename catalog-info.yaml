@@ -41,7 +41,6 @@ spec:
     - ./plugins/aap-backend/catalog-info.yaml
     - ./plugins/audit-log-node/catalog-info.yaml
     - ./plugins/kiali/catalog-info.yaml
-    - ./plugins/kiali-backend/catalog-info.yaml
     - ./plugins/kubernetes-actions/catalog-info.yaml
     - ./plugins/orchestrator/catalog-info.yaml
     - ./plugins/orchestrator-backend/catalog-info.yaml

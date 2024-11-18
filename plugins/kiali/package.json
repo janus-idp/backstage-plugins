@@ -15,7 +15,7 @@
     "pluginId": "kiali",
     "pluginPackages": [
       "@janus-idp/backstage-plugin-kiali",
-      "@janus-idp/backstage-plugin-kiali-backend"
+      "@backstage-community/plugin-kiali-backend"
     ]
   },
   "sideEffects": false,

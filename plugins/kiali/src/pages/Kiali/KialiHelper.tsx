@@ -46,7 +46,7 @@ export const KialiHelper = (props: { check: KialiChecker }) => {
       <b>{props.check.authData?.strategy}</b>. <br />
       You need to install the kiali backend to be able to use this kiali.
       <br /> Follow the steps in{' '}
-      <Link to="https://github.com/janus-idp/backstage-plugins/blob/main/plugins/kiali-backend/README.md">
+      <Link to="https://github.com/backstage/community-plugins/blob/main/workspaces/kiali/plugins/kiali-backend/README.md">
         Kiali Plugin
       </Link>
       {pretty()}

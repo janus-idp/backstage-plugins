@@ -34,7 +34,7 @@ global:
                     path: /kiali
       - disabled: falseName of the contact in Engineering
         integrity: <Checksum>
-        package: '@janus-idp/backstage-plugin-kiali-backend-dynamic@<version>'
+        package: '@backstage-community/plugin-kiali-backend-dynamic@<version>'
         pluginConfig:
           catalog:
             providers:
@@ -46,12 +46,12 @@ global:
 
 _integrity: required for external packages) An integrity checksum in the format of <alg>-<digest> specific to the package. Supported algorithms include sha256, sha384, and sha512._
 
-We can calculate the integrity with the next bash commands (Example with version 1.9.0).
+We can calculate the integrity with the next bash commands (Example with version 1.19.0).
 
 ```bash
 
-npm pack @janus-idp/backstage-plugin-kiali-backend-dynamic@1.9.0
-echo "sha512-$(cat janus-idp-backstage-plugin-kiali-backend-dynamic-1.9.0.tgz | openssl dgst -sha512 -binary | openssl base64 -A)"
+npm pack @backstage-community/plugin-kiali-backend-dynamic@1.19.0
+echo "sha512-$(cat backstage-community-plugin-kiali-backend-dynamic-1.19.0.tgz | openssl dgst -sha512 -binary | openssl base64 -A)"
 
 ```
 
