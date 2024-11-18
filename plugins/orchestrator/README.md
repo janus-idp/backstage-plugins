@@ -189,6 +189,13 @@ The orchestrator backend can use the generated schema to validate the HTTP reque
 
 > NOTE: Temporary the validation has been disabled. It will be enabled when the orchestrator frontend will switch to the use of v2 endpoints only.
 
+#### audit log
+
+The orchestrator backend has audit logs for all incoming requests.
+
+For more information about audit logs in RHDH, please refer to [the official documentation](https://docs.redhat.com/en/documentation/red_hat_developer_hub/1.2/html/getting_started_with_red_hat_developer_hub/assembly-audit-log#con-audit-log-config_assembly-audit-log).
+[The official Log storage OpenShift documentation](https://docs.openshift.com/container-platform/4.15/observability/logging/log_storage/about-log-storage.html) may also be of interest.
+
 #### Development instruction
 
 Checkout the backstage-plugin
