@@ -46,12 +46,12 @@ global:
 
 _integrity: required for external packages) An integrity checksum in the format of <alg>-<digest> specific to the package. Supported algorithms include sha256, sha384, and sha512._
 
-We can calculate the integrity with the next bash commands (Example with version 1.19.0).
+We can calculate the integrity with the next bash commands (Example with version 1.19.1).
 
 ```bash
 
-npm pack @backstage-community/plugin-kiali-backend-dynamic@1.19.0
-echo "sha512-$(cat backstage-community-plugin-kiali-backend-dynamic-1.19.0.tgz | openssl dgst -sha512 -binary | openssl base64 -A)"
+npm pack @backstage-community/plugin-kiali-backend-dynamic@1.19.1
+echo "sha512-$(cat backstage-community-plugin-kiali-backend-dynamic-1.19.1.tgz | openssl dgst -sha512 -binary | openssl base64 -A)"
 
 ```
 

@@ -20,10 +20,10 @@
    "@janus-idp/backstage-plugin-kiali": "link:../../plugins/kiali",
    ```
 
-   - Add to packages/backend/package.json
+   - Add to packages/backend/package.json (replace 1.19.1 with the version you want to use)
 
    ```yaml title="packages/backend/package.json"
-   "@backstage-community/plugin-kiali-backend": "link:../../plugins/kiali-backend",
+   "@backstage-community/plugin-kiali-backend": "1.19.1",
    ```
 
 2. Enable the **Kiali** tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file:
