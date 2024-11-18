@@ -10,11 +10,17 @@ This capability enables developers to extend and customize the `react-jsonschema
 
 The custom decorator is delivered via a factory method that leverages a [Backstage utility API](https://backstage.io/docs/api/utility-apis) provided by the orchestrator. To trigger the desired behavior, the workflow schema should include custom UI properties.
 
-For reference, an example plugin can be found [here](https://github.com/parodos-dev/custom-form-example-plugin).
+For reference, an example plugin can be found [here](https://github.com/parodos-dev/custom-form-example-plugin/tree/1.3).
 
 ## API
 
-To implement the API, include @janus-idp/backstage-plugin-orchestrator-form-api package as a dependency.
+To implement the API, include @janus-idp/backstage-plugin-orchestrator-form-api package as a dependency by running:
+
+```bash
+yarn add @janus-idp/backstage-plugin-orchestrator-form-api@~1.0.101
+``` 
+This will ensure that you install version 1.0.101 of the package that is compatible with backstage 1.29.x, allowing updates only to patch versions within the 1.0.x range.
+
 This package provides the `FormExtensionsApi` interface and related types.
 
 ```typescript
@@ -133,4 +139,9 @@ The `orchestrator-form-react` plugin handles the following key tasks:
 
 The [`orchestrator-form-react`](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/orchestrator-form-react) plugin is designed to operate independently of the main orchestrator plugin. This modularity allows developers to test and validate form behavior in a standalone Backstage development environment before integrating it with the full orchestrator setup.
 
-To use this plugin, add the `@janus-idp/backstage-plugin-orchestrator-form-react` package as a dependency in your project.
+To use orchestrator-form-react, add the `@janus-idp/backstage-plugin-orchestrator-form-react` package as a dependency in your project by running:
+
+```bash
+yarn add @janus-idp/backstage-plugin-orchestrator-form-react@~1.0.101
+``` 
+This will ensure that you install version 1.0.101 of the package that is compatible with backstage 1.29.x, allowing updates only to patch versions within the 1.0.x range.
