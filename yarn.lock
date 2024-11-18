@@ -8008,6 +8008,7 @@ __metadata:
     "@backstage/dev-utils": 1.1.2
     "@backstage/errors": ^1.2.4
     "@backstage/plugin-catalog": ^1.24.0
+    "@backstage/plugin-permission-common": ^0.8.1
     "@backstage/plugin-permission-react": ^0.4.27
     "@backstage/test-utils": 1.7.0
     "@backstage/types": 1.1.1

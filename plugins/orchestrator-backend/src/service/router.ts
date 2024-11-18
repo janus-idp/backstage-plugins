@@ -9,6 +9,7 @@ import {
 import type { Config } from '@backstage/config';
 import type { DiscoveryApi } from '@backstage/core-plugin-api';
 import {
+  AuthorizePermissionResponse,
   AuthorizeResult,
   BasicPermission,
 } from '@backstage/plugin-permission-common';
@@ -29,10 +30,14 @@ import {
   openApiDocument,
   orchestratorPermissions,
   orchestratorWorkflowExecutePermission,
+  orchestratorWorkflowExecuteSpecificPermission,
   orchestratorWorkflowInstanceAbortPermission,
   orchestratorWorkflowInstanceReadPermission,
+  orchestratorWorkflowInstanceReadSpecificPermission,
   orchestratorWorkflowInstancesReadPermission,
   orchestratorWorkflowReadPermission,
+  orchestratorWorkflowReadSpecificPermission,
+  orchestratorWorkflowsReadPermission,
   QUERY_PARAM_BUSINESS_KEY,
   QUERY_PARAM_INCLUDE_ASSESSMENT,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -62,17 +67,29 @@ interface RouterApi {
 
 const authorize = async (
   request: HttpRequest,
-  permission: BasicPermission,
+  anyOfPermissions: BasicPermission[],
   permissionsSvc: PermissionsService,
   httpAuth: HttpAuthService,
-) => {
-  const decision = (
-    await permissionsSvc.authorize([{ permission: permission }], {
-      credentials: await httpAuth.credentials(request),
-    })
-  )[0];
+): Promise<AuthorizePermissionResponse> => {
+  const credentials = await httpAuth.credentials(request);
 
-  return decision;
+  const decisionResponses: AuthorizePermissionResponse[][] = await Promise.all(
+    anyOfPermissions.map(permission =>
+      permissionsSvc.authorize([{ permission }], {
+        credentials,
+      }),
+    ),
+  );
+  const decisions: AuthorizePermissionResponse[] = decisionResponses.map(
+    d => d[0],
+  );
+
+  const allow = decisions.find(d => d.result === AuthorizeResult.ALLOW);
+  return (
+    allow || {
+      result: AuthorizeResult.DENY,
+    }
+  );
 };
 
 export async function createBackendRouter(
@@ -296,7 +313,7 @@ function setupInternalRoutes(
       });
       const decision = await authorize(
         req,
-        orchestratorWorkflowInstancesReadPermission,
+        [orchestratorWorkflowsReadPermission],
         permissions,
         httpAuth,
       );
@@ -332,7 +349,10 @@ function setupInternalRoutes(
 
       const decision = await authorize(
         _req,
-        orchestratorWorkflowReadPermission,
+        [
+          orchestratorWorkflowReadPermission,
+          orchestratorWorkflowReadSpecificPermission(workflowId),
+        ],
         permissions,
         httpAuth,
       );
@@ -369,7 +389,10 @@ function setupInternalRoutes(
 
       const decision = await authorize(
         req,
-        orchestratorWorkflowExecutePermission,
+        [
+          orchestratorWorkflowExecutePermission,
+          orchestratorWorkflowExecuteSpecificPermission(workflowId),
+        ],
         permissions,
         httpAuth,
       );
@@ -414,7 +437,7 @@ function setupInternalRoutes(
 
       const decision = await authorize(
         req,
-        orchestratorWorkflowExecutePermission,
+        [orchestratorWorkflowExecutePermission],
         permissions,
         httpAuth,
       );
@@ -451,7 +474,10 @@ function setupInternalRoutes(
 
       const decision = await authorize(
         _req,
-        orchestratorWorkflowReadPermission,
+        [
+          orchestratorWorkflowReadPermission,
+          orchestratorWorkflowReadSpecificPermission(workflowId),
+        ],
         permissions,
         httpAuth,
       );
@@ -485,7 +511,7 @@ function setupInternalRoutes(
       });
       const decision = await authorize(
         _req,
-        orchestratorWorkflowInstanceReadPermission,
+        [orchestratorWorkflowInstancesReadPermission],
         permissions,
         httpAuth,
       );
@@ -521,7 +547,10 @@ function setupInternalRoutes(
         });
         const decision = await authorize(
           req,
-          orchestratorWorkflowInstanceReadPermission,
+          [
+            orchestratorWorkflowReadPermission,
+            orchestratorWorkflowReadSpecificPermission(workflowId),
+          ],
           permissions,
           httpAuth,
         );
@@ -640,7 +669,7 @@ function setupInternalRoutes(
 
       const decision = await authorize(
         req,
-        orchestratorWorkflowInstancesReadPermission,
+        [orchestratorWorkflowInstancesReadPermission],
         permissions,
         httpAuth,
       );
@@ -675,7 +704,7 @@ function setupInternalRoutes(
 
       const decision = await authorize(
         req,
-        orchestratorWorkflowInstancesReadPermission,
+        [orchestratorWorkflowInstancesReadPermission],
         permissions,
         httpAuth,
       );
@@ -709,28 +738,39 @@ function setupInternalRoutes(
         message: `Received request to '${endpoint}' endpoint`,
       });
 
-      const decision = await authorize(
-        _req,
-        orchestratorWorkflowInstanceReadPermission,
-        permissions,
-        httpAuth,
-      );
-      if (decision.result === AuthorizeResult.DENY) {
-        manageDenyAuthorization(endpointName, endpoint, _req);
-      }
-
       const includeAssessment = routerApi.v2.extractQueryParam(
         c.request,
         QUERY_PARAM_INCLUDE_ASSESSMENT,
       );
 
-      return routerApi.v2
-        .getInstanceById(instanceId, !!includeAssessment)
-        .then(result => res.status(200).json(result))
-        .catch(error => {
-          auditLogRequestError(error, endpointName, endpoint, _req);
-          next(error);
-        });
+      try {
+        const assessedInstance = await routerApi.v2.getInstanceById(
+          instanceId,
+          !!includeAssessment,
+        );
+
+        const workflowId = assessedInstance.instance.processId;
+
+        // we need to authorize after retrieval to know the workflowId
+        const decision = await authorize(
+          _req,
+          [
+            orchestratorWorkflowInstanceReadPermission,
+            orchestratorWorkflowInstanceReadSpecificPermission(workflowId),
+          ],
+          permissions,
+          httpAuth,
+        );
+        if (decision.result === AuthorizeResult.DENY) {
+          manageDenyAuthorization(endpointName, endpoint, _req);
+        }
+
+        return res.status(200).json(assessedInstance);
+      } catch (error) {
+        auditLogRequestError(error, endpointName, endpoint, _req);
+        next(error);
+        throw error;
+      }
     },
   );
 
@@ -753,7 +793,10 @@ function setupInternalRoutes(
 
       const decision = await authorize(
         _req,
-        orchestratorWorkflowInstanceAbortPermission,
+        [
+          orchestratorWorkflowInstanceAbortPermission,
+          // TODO: get workflowId and use orchestratorWorkflowInstanceAbortSpecificPermission(workflowId)
+        ],
         permissions,
         httpAuth,
       );

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 import { Link, TableColumn, TableProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { usePermission } from '@backstage/plugin-permission-react';
 
 import Pageview from '@material-ui/icons/Pageview';
 import PlayArrow from '@material-ui/icons/PlayArrow';
@@ -11,6 +10,11 @@ import PlayArrow from '@material-ui/icons/PlayArrow';
 import {
   capitalize,
   orchestratorWorkflowExecutePermission,
+  orchestratorWorkflowExecuteSpecificPermission,
+  orchestratorWorkflowInstanceReadPermission,
+  orchestratorWorkflowInstanceReadSpecificPermission,
+  orchestratorWorkflowReadPermission,
+  orchestratorWorkflowReadSpecificPermission,
   ProcessInstanceStatusDTO,
   WorkflowOverviewDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -19,6 +23,7 @@ import { VALUE_UNAVAILABLE } from '../constants';
 import WorkflowOverviewFormatter, {
   FormattedWorkflowOverview,
 } from '../dataFormatters/WorkflowOverviewFormatter';
+import { usePermissionArrayBatch } from '../hooks/usePermissionArray';
 import {
   executeWorkflowRouteRef,
   workflowDefinitionsRouteRef,
@@ -30,14 +35,46 @@ export interface WorkflowsTableProps {
   items: WorkflowOverviewDTO[];
 }
 
+const usePermittedToExecuteBatch = (items: WorkflowOverviewDTO[]) =>
+  usePermissionArrayBatch<string>(
+    items.map(i => i.workflowId),
+    (workflowId: string) => [
+      orchestratorWorkflowExecutePermission,
+      orchestratorWorkflowExecuteSpecificPermission(workflowId),
+    ],
+  );
+
+const usePermittedToViewBatch = (items: WorkflowOverviewDTO[]) =>
+  usePermissionArrayBatch<string>(
+    items.map(i => i.workflowId),
+    (workflowId: string) => [
+      orchestratorWorkflowReadPermission,
+      orchestratorWorkflowReadSpecificPermission(workflowId),
+    ],
+  );
+
+const usePermittedToViewInstanceBatch = (items: WorkflowOverviewDTO[]) =>
+  usePermissionArrayBatch<string>(
+    items.map(i => i.workflowId),
+    (workflowId: string) => [
+      orchestratorWorkflowInstanceReadPermission,
+      orchestratorWorkflowInstanceReadSpecificPermission(workflowId),
+    ],
+  );
+
 export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   const navigate = useNavigate();
   const definitionLink = useRouteRef(workflowDefinitionsRouteRef);
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
   const [data, setData] = useState<FormattedWorkflowOverview[]>([]);
-  const permittedToExecute = usePermission({
-    permission: orchestratorWorkflowExecutePermission,
-  });
+
+  const { allowed: permittedToExecuteBatch } =
+    usePermittedToExecuteBatch(items);
+
+  const { allowed: permittedToViewInstanceBatch } =
+    usePermittedToViewInstanceBatch(items);
+
+  const { allowed: permittedToViewBatch } = usePermittedToViewBatch(items);
 
   const initialState = useMemo(
     () => items.map(WorkflowOverviewFormatter.format),
@@ -64,41 +101,76 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
     [executeWorkflowLink, navigate],
   );
 
+  const canExecuteWorkflow = useCallback(
+    (workflowId: string) => {
+      const idx = items?.findIndex(i => workflowId === i.workflowId);
+      if (idx < 0) {
+        return false;
+      }
+      return permittedToExecuteBatch[idx];
+    },
+    [items, permittedToExecuteBatch],
+  );
+
+  const canViewWorkflow = useCallback(
+    (workflowId: string) => {
+      const idx = items?.findIndex(i => workflowId === i.workflowId);
+      if (idx < 0) {
+        return false;
+      }
+      return permittedToViewBatch[idx];
+    },
+    [items, permittedToViewBatch],
+  );
+
+  const canViewInstance = useCallback(
+    (workflowId: string) => {
+      const idx = items?.findIndex(i => workflowId === i.workflowId);
+      if (idx < 0) {
+        return false;
+      }
+      return permittedToViewInstanceBatch[idx];
+    },
+    [items, permittedToViewInstanceBatch],
+  );
+
   const actions = useMemo(() => {
     const actionItems: TableProps<FormattedWorkflowOverview>['actions'] = [
-      {
+      rowData => ({
         icon: PlayArrow,
         tooltip: 'Execute',
-        disabled: !permittedToExecute.allowed,
-        onClick: (_, rowData) =>
-          handleExecute(rowData as FormattedWorkflowOverview),
-      },
-      {
+        disabled: !canExecuteWorkflow(rowData.id),
+        onClick: () => handleExecute(rowData),
+      }),
+      rowData => ({
         icon: Pageview,
         tooltip: 'View',
-        onClick: (_, rowData) =>
-          handleView(rowData as FormattedWorkflowOverview),
-      },
+        disabled: !canViewWorkflow(rowData.id),
+        onClick: () => handleView(rowData),
+      }),
     ];
 
     return actionItems;
-  }, [handleExecute, handleView, permittedToExecute]);
+  }, [canExecuteWorkflow, canViewWorkflow, handleExecute, handleView]);
 
   const columns = useMemo<TableColumn<FormattedWorkflowOverview>[]>(
     () => [
       {
         title: 'Name',
         field: 'name',
-        render: rowData => (
-          <Link
-            to={definitionLink({
-              workflowId: rowData.id,
-              format: rowData.format,
-            })}
-          >
-            {rowData.name}
-          </Link>
-        ),
+        render: rowData =>
+          canViewWorkflow(rowData.id) ? (
+            <Link
+              to={definitionLink({
+                workflowId: rowData.id,
+                format: rowData.format,
+              })}
+            >
+              {rowData.name}
+            </Link>
+          ) : (
+            rowData.name
+          ),
       },
       {
         title: 'Category',
@@ -114,7 +186,9 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
           rowData.lastRunId !== VALUE_UNAVAILABLE ? (
             <WorkflowInstanceStatusIndicator
               status={rowData.lastRunStatus as ProcessInstanceStatusDTO}
-              lastRunId={rowData.lastRunId}
+              lastRunId={
+                canViewInstance(rowData.id) ? rowData.lastRunId : undefined
+              }
             />
           ) : (
             VALUE_UNAVAILABLE
@@ -123,7 +197,7 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
       { title: 'Avg. duration', field: 'avgDuration' },
       { title: 'Description', field: 'description', minWidth: '25vw' },
     ],
-    [definitionLink],
+    [canViewInstance, canViewWorkflow, definitionLink],
   );
 
   const options = useMemo<TableProps['options']>(

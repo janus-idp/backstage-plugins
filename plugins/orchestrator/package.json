@@ -58,6 +58,7 @@
     "@backstage/core-plugin-api": "^1.10.0",
     "@backstage/errors": "^1.2.4",
     "@backstage/plugin-catalog": "^1.24.0",
+    "@backstage/plugin-permission-common": "^0.8.1",
     "@backstage/plugin-permission-react": "^0.4.27",
     "@janus-idp/backstage-plugin-orchestrator-common": "^1.24.0",
     "@janus-idp/backstage-plugin-orchestrator-form-api": "^1.4.1",
