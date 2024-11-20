@@ -1,23 +1,13 @@
-p, role:default/workflowViewer, orchestrator.workflows.read, read, allow
-p, role:default/workflowViewer, orchestrator.workflow.read, read, allow
+p, role:default/workflowUser, orchestrator.workflow.yamlgreet, read, allow
+p, role:default/workflowUser, orchestrator.workflow.wait-or-error, read, allow
 
-p, role:default/workflowViewer, orchestrator.workflowInstances.read, read, allow
-#p, role:default/workflowViewer, orchestrator.workflowInstance.read, read, allow
-p, role:default/workflowViewer, orchestrator.workflowInstance.read.yamlgreet, read, allow
+##p, role:default/workflowUser, orchestrator.workflow.use, use, allow
+p, role:default/workflowUser, orchestrator.workflow.use.yamlgreet, use, allow
+##p, role:default/workflowUser, orchestrator.workflow.use.wait-or-error, use, allow
 
-#p, role:default/workflowViewer, orchestrator.workflow.execute, use, allow
-p, role:default/workflowViewer, orchestrator.workflow.execute.yamlgreet, use, allow
-#p, role:default/workflowViewer, orchestrator.workflow.execute.wait-or-error, use, allow
+p, role:default/workflowAdmin, orchestrator.workflow, read, allow
+p, role:default/workflowAdmin, orchestrator.workflow.use, use, allow
 
-p, role:default/workflowAdmin, orchestrator.workflows.read, read, allow
-p, role:default/workflowAdmin, orchestrator.workflow.read, read, allow
-p, role:default/workflowAdmin, orchestrator.workflowInstance.abort, use, allow
-p, role:default/workflowAdmin, orchestrator.workflowInstances.read, read, allow
-p, role:default/workflowAdmin, orchestrator.workflowInstance.read, read, allow
-
-#p, role:default/workflowAdmin, orchestrator.workflow.execute, use, allow
-p, role:default/workflowAdmin, orchestrator.workflow.execute.yamlgreet, use, allow
-
-g, user:development/guest, role:default/workflowViewer
+g, user:development/guest, role:default/workflowUser
 g, user:default/rgolangh, role:default/workflowAdmin
 g, user:default/mareklibra, role:default/workflowAdmin

@@ -17,10 +17,8 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
 import {
   AssessedProcessInstanceDTO,
-  orchestratorWorkflowExecutePermission,
-  orchestratorWorkflowExecuteSpecificPermission,
-  orchestratorWorkflowInstanceAbortPermission,
-  orchestratorWorkflowInstanceAbortSpecificPermission,
+  orchestratorWorkflowUsePermission,
+  orchestratorWorkflowUseSpecificPermission,
   ProcessInstanceStatusDTO,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_ID,
@@ -28,7 +26,7 @@ import {
 
 import { orchestratorApiRef } from '../api';
 import { SHORT_REFRESH_INTERVAL } from '../constants';
-import { usePermissionArray } from '../hooks/usePermissionArray';
+import { usePermissionArrayDecision } from '../hooks/usePermissionArray';
 import usePolling from '../hooks/usePolling';
 import { executeWorkflowRouteRef, workflowInstanceRouteRef } from '../routes';
 import { isNonNullable } from '../utils/TypeGuards';
@@ -131,22 +129,13 @@ export const WorkflowInstancePage = ({
   );
 
   const workflowId = value?.instance?.processId;
-  const permittedToExecute = usePermissionArray(
+  const permittedToUse = usePermissionArrayDecision(
     workflowId
       ? [
-          orchestratorWorkflowExecutePermission,
-          orchestratorWorkflowExecuteSpecificPermission(workflowId),
+          orchestratorWorkflowUsePermission,
+          orchestratorWorkflowUseSpecificPermission(workflowId),
         ]
-      : [orchestratorWorkflowExecutePermission],
-  );
-
-  const permittedToAbort = usePermissionArray(
-    workflowId
-      ? [
-          orchestratorWorkflowInstanceAbortPermission,
-          orchestratorWorkflowInstanceAbortSpecificPermission(workflowId),
-        ]
-      : [orchestratorWorkflowInstanceAbortPermission],
+      : [orchestratorWorkflowUsePermission],
   );
 
   const canAbort =
@@ -234,11 +223,11 @@ export const WorkflowInstancePage = ({
               <Grid item>
                 <Tooltip
                   title="user not authorized to abort workflow"
-                  disableHoverListener={permittedToAbort.allowed}
+                  disableHoverListener={permittedToUse.allowed}
                 >
                   <Button
                     variant="contained"
-                    disabled={!permittedToAbort.allowed || !canAbort}
+                    disabled={!permittedToUse.allowed || !canAbort}
                     onClick={toggleAbortConfirmationDialog}
                     className={classes.abortButton}
                   >
@@ -250,12 +239,12 @@ export const WorkflowInstancePage = ({
               <Grid item>
                 <Tooltip
                   title="user not authorized to execute workflow"
-                  disableHoverListener={permittedToExecute.allowed}
+                  disableHoverListener={permittedToUse.allowed}
                 >
                   <Button
                     variant="contained"
                     color="primary"
-                    disabled={!permittedToExecute.allowed || !canRerun}
+                    disabled={!permittedToUse.allowed || !canRerun}
                     onClick={handleRerun}
                   >
                     Rerun

@@ -19,6 +19,8 @@ export const WorkflowsTabContent = () => {
   const orchestratorApi = useApi(orchestratorApiRef);
 
   const fetchWorkflowOverviews = useCallback(async () => {
+    // TODO: pass pagination details only if the user is granted the generic orchestratorWorkflowPermission
+    // FE pagination will be used otherwise
     const overviewsResp = await orchestratorApi.listWorkflowOverviews();
     return overviewsResp.data.overviews;
   }, [orchestratorApi]);

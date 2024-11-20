@@ -50,6 +50,7 @@ export const WorkflowRunsTabContent = () => {
   );
 
   const fetchInstances = React.useCallback(async () => {
+    // TODO: use pagination with generic permission, skip (or use FE-only) for specific permissions
     const instances = await orchestratorApi.listInstances({});
     const clonedData: WorkflowRunDetail[] =
       instances.data.items?.map(mapProcessInstanceToDetails) || [];

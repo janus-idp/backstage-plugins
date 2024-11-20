@@ -3,18 +3,17 @@ import { useNavigate } from 'react-router-dom';
 
 import { Link, TableColumn, TableProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { usePermission } from '@backstage/plugin-permission-react';
 
 import Pageview from '@material-ui/icons/Pageview';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 
 import {
   capitalize,
-  orchestratorWorkflowExecutePermission,
-  orchestratorWorkflowExecuteSpecificPermission,
-  orchestratorWorkflowInstanceReadPermission,
-  orchestratorWorkflowInstanceReadSpecificPermission,
-  orchestratorWorkflowReadPermission,
-  orchestratorWorkflowReadSpecificPermission,
+  orchestratorWorkflowPermission,
+  orchestratorWorkflowSpecificPermission,
+  orchestratorWorkflowUsePermission,
+  orchestratorWorkflowUseSpecificPermission,
   ProcessInstanceStatusDTO,
   WorkflowOverviewDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -23,7 +22,7 @@ import { VALUE_UNAVAILABLE } from '../constants';
 import WorkflowOverviewFormatter, {
   FormattedWorkflowOverview,
 } from '../dataFormatters/WorkflowOverviewFormatter';
-import { usePermissionArrayBatch } from '../hooks/usePermissionArray';
+import { usePermissionArray } from '../hooks/usePermissionArray';
 import {
   executeWorkflowRouteRef,
   workflowDefinitionsRouteRef,
@@ -35,32 +34,51 @@ export interface WorkflowsTableProps {
   items: WorkflowOverviewDTO[];
 }
 
-const usePermittedToExecuteBatch = (items: WorkflowOverviewDTO[]) =>
-  usePermissionArrayBatch<string>(
-    items.map(i => i.workflowId),
-    (workflowId: string) => [
-      orchestratorWorkflowExecutePermission,
-      orchestratorWorkflowExecuteSpecificPermission(workflowId),
-    ],
-  );
+const usePermittedToUseBatch = (
+  items: WorkflowOverviewDTO[],
+): { allowed: boolean[] } => {
+  const generic = usePermission({
+    permission: orchestratorWorkflowUsePermission,
+  });
 
-const usePermittedToViewBatch = (items: WorkflowOverviewDTO[]) =>
-  usePermissionArrayBatch<string>(
-    items.map(i => i.workflowId),
-    (workflowId: string) => [
-      orchestratorWorkflowReadPermission,
-      orchestratorWorkflowReadSpecificPermission(workflowId),
-    ],
-  );
+  let workflowIds: string[] = [];
+  if (!generic.loading && !generic.allowed) {
+    // This will effectively skip the requests if the generic permission grants the access
+    workflowIds = items.map(i => i.workflowId);
+  }
 
-const usePermittedToViewInstanceBatch = (items: WorkflowOverviewDTO[]) =>
-  usePermissionArrayBatch<string>(
-    items.map(i => i.workflowId),
-    (workflowId: string) => [
-      orchestratorWorkflowInstanceReadPermission,
-      orchestratorWorkflowInstanceReadSpecificPermission(workflowId),
-    ],
+  const specific = usePermissionArray(
+    workflowIds.map(workflowId =>
+      orchestratorWorkflowUseSpecificPermission(workflowId),
+    ),
   );
+  return {
+    allowed: items.map((_, idx) => generic.allowed || specific.allowed[idx]),
+  };
+};
+
+const usePermittedToViewBatch = (
+  items: WorkflowOverviewDTO[],
+): { allowed: boolean[] } => {
+  const generic = usePermission({
+    permission: orchestratorWorkflowPermission,
+  });
+
+  let workflowIds: string[] = [];
+  if (!generic.loading && !generic.allowed) {
+    // This will effectively skip the subsequent "specific" requests if the generic permission is granted
+    workflowIds = items.map(i => i.workflowId);
+  }
+
+  const specific = usePermissionArray(
+    workflowIds.map(workflowId =>
+      orchestratorWorkflowSpecificPermission(workflowId),
+    ),
+  );
+  return {
+    allowed: items.map((_, idx) => generic.allowed || specific.allowed[idx]),
+  };
+};
 
 export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   const navigate = useNavigate();
@@ -68,13 +86,8 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
   const [data, setData] = useState<FormattedWorkflowOverview[]>([]);
 
-  const { allowed: permittedToExecuteBatch } =
-    usePermittedToExecuteBatch(items);
-
-  const { allowed: permittedToViewInstanceBatch } =
-    usePermittedToViewInstanceBatch(items);
-
-  const { allowed: permittedToViewBatch } = usePermittedToViewBatch(items);
+  const { allowed: permittedToUse } = usePermittedToUseBatch(items);
+  const { allowed: permittedToView } = usePermittedToViewBatch(items);
 
   const initialState = useMemo(
     () => items.map(WorkflowOverviewFormatter.format),
@@ -107,9 +120,9 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
       if (idx < 0) {
         return false;
       }
-      return permittedToExecuteBatch[idx];
+      return permittedToUse[idx];
     },
-    [items, permittedToExecuteBatch],
+    [items, permittedToUse],
   );
 
   const canViewWorkflow = useCallback(
@@ -118,9 +131,9 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
       if (idx < 0) {
         return false;
       }
-      return permittedToViewBatch[idx];
+      return permittedToView[idx];
     },
-    [items, permittedToViewBatch],
+    [items, permittedToView],
   );
 
   const canViewInstance = useCallback(
@@ -129,9 +142,9 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
       if (idx < 0) {
         return false;
       }
-      return permittedToViewInstanceBatch[idx];
+      return permittedToView[idx];
     },
-    [items, permittedToViewInstanceBatch],
+    [items, permittedToView],
   );
 
   const actions = useMemo(() => {
@@ -209,6 +222,8 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
     [columns.length],
   );
 
+  // TODO: use backend pagination only if the generic orchestratorWorkflowPermission is in place
+  // use FE pagination otherwise (it means when specific permissions are used)
   return (
     <OverrideBackstageTable<FormattedWorkflowOverview>
       title="Workflows"
