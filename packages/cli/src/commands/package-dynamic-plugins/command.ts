@@ -3,6 +3,7 @@ import { PackageRoles } from '@backstage/cli-node';
 import chalk from 'chalk';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
+import { PackageJson } from 'type-fest';
 import YAML from 'yaml';
 
 import os from 'os';
@@ -31,9 +32,9 @@ export async function command(opts: OptionValues): Promise<void> {
       return;
     }
   }
-  const workspacePackage = await fs.readJson(
+  const workspacePackage = (await fs.readJson(
     paths.resolveTarget('package.json'),
-  );
+  )) as PackageJson;
   const workspacePackageRole =
     PackageRoles.detectRoleFromPackage(workspacePackage);
   const workspacePackageRoleInfo =
@@ -41,7 +42,8 @@ export async function command(opts: OptionValues): Promise<void> {
       ? PackageRoles.getRoleInfo(workspacePackageRole)
       : undefined;
   const isMonoRepo =
-    typeof workspacePackage.workspaces?.packages !== 'undefined';
+    typeof (workspacePackage.workspaces as PackageJson.WorkspaceConfig)
+      .packages !== 'undefined';
   // Find all plugin packages in the workspace
   const packages = isMonoRepo
     ? await discoverPluginPackages()
@@ -56,20 +58,42 @@ export async function command(opts: OptionValues): Promise<void> {
       ];
   // run export-dynamic on each plugin package
   for (const pluginPkg of packages) {
-    const { packageDirectory, packageFilePath } = pluginPkg;
+    const { packageDirectory, packageFilePath, packageJson } = pluginPkg;
     if (
       !fs.existsSync(path.join(packageDirectory, 'dist-dynamic')) ||
       forceExport
     ) {
-      Task.log(
-        `Running export-dynamic-plugin on plugin package ${packageFilePath}`,
-      );
-      try {
-        await Task.forCommand(`yarn export-dynamic`, { cwd: packageDirectory });
-      } catch (err) {
+      if (
+        Object.keys(packageJson.scripts as { [key: string]: string }).find(
+          script => script === 'export-dynamic',
+        )
+      ) {
         Task.log(
-          `Encountered an error running 'yarn export-dynamic on plugin package ${packageFilePath}, this plugin will not be packaged.  The error was ${err}`,
+          `Running existing export-dynamic script on plugin package ${packageFilePath}`,
         );
+        try {
+          await Task.forCommand(`yarn export-dynamic`, {
+            cwd: packageDirectory,
+          });
+        } catch (err) {
+          Task.log(
+            `Encountered an error running 'yarn export-dynamic' on plugin package ${packageFilePath}, this plugin will not be packaged.  The error was ${err}`,
+          );
+        }
+      } else {
+        Task.log(
+          `Using generated command to export plugin package ${packageFilePath}`,
+        );
+        try {
+          await Task.forCommand(
+            `${process.execPath} ${process.argv[1]} package export-dynamic-plugin`,
+            { cwd: packageDirectory },
+          );
+        } catch (err) {
+          Task.log(
+            `Encountered an error running 'npx @janus-idp/cli' on plugin package ${packageFilePath}, this plugin will not be packaged.  The error was ${err}`,
+          );
+        }
       }
     } else {
       Task.log(
@@ -93,7 +117,7 @@ export async function command(opts: OptionValues): Promise<void> {
         packageRoleInfo,
       } = pluginPkg;
       const packageName =
-        packageJson.name.replace(/^@/, '').replace(/\//, '-') +
+        packageJson.name!.replace(/^@/, '').replace(/\//, '-') +
         ((packageRoleInfo && packageRoleInfo.platform) === 'node'
           ? '-dynamic'
           : '');
@@ -252,7 +276,7 @@ async function discoverPluginPackages() {
   return (
     await Promise.all(
       packageJsonFilePaths.map(async packageFilePath => {
-        const packageJson = await fs.readJson(packageFilePath);
+        const packageJson = (await fs.readJson(packageFilePath)) as PackageJson;
         const packageRole = PackageRoles.getRoleFromPackage(packageJson);
         const packageRoleInfo = PackageRoles.getRoleInfo(packageRole || '');
         const packageDirectory = path.dirname(packageFilePath);
