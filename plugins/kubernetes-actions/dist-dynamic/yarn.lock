@@ -505,9 +505,9 @@ performance-now@^2.1.0:
   integrity sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==
 
 psl@^1.1.28:
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/psl/-/psl-1.10.0.tgz#1450f7e16f922c3beeb7bd9db3f312635018fa15"
-  integrity sha512-KSKHEbjAnpUuAUserOq0FxGXCUrzC3WniuSJhvdbs102rL55266ZcHBqLWOsG30spQMlPdpy7icATiAQehg/iA==
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/psl/-/psl-1.12.0.tgz#8b09cba186ebee68c0d824c1b22944cf5b2ad42c"
+  integrity sha512-OVcqwt4qWJF9G0fnSEMNz7aSa1PiGX/IvSXDO+PpbDK3r/IJ3QX2iu8ywanYG07e9IaYDigMu+EapE8TdMZOJQ==
   dependencies:
     punycode "^2.3.1"
 
