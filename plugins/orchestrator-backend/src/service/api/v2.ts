@@ -148,7 +148,7 @@ export class V2 {
     workflowId: string,
     businessKey: string | undefined,
   ): Promise<ExecuteWorkflowResponseDTO> {
-    if (Object.keys(executeWorkflowRequestDTO?.inputData).length === 0) {
+    if (!executeWorkflowRequestDTO?.inputData) {
       throw new Error(
         `ExecuteWorkflowRequestDTO.inputData is required for executing workflow with id ${workflowId}`,
       );
