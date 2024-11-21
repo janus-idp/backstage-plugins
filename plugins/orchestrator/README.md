@@ -57,7 +57,7 @@ The Orchestrator plugin is composed of the following packages:
 
 #### Setting up the Orchestrator as a dynamic plugin in a Helm deployment
 
-Please follow this link for instructions: https://github.com/janus-idp/backstage-showcase/blob/main/showcase-docs/dynamic-plugins.md#helm-deployment
+Please follow this link for instructions: https://github.com/janus-idp/backstage-showcase/blob/main/docs/dynamic-plugins/installing-plugins.md#installing-external-dynamic-plugins.
 
 #### Setting up the configuration for the Orchestrator plugin
 
@@ -156,7 +156,7 @@ For more information about the configuration options, including other optional p
 
 ### Extensible Workflow Execution Form
 
-The `orchestrator` plugin includes an extensible form for executing forms. For detailed guidance see the [Extensible Workflow Execution Form Documentation](./docs/extensibleForm.md).
+The `orchestrator` plugin includes an extensible form for executing forms. For detailed guidance see the [Extensible Workflow Execution Form Documentation](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator/docs/extensibleForm.md).
 
 ## For users
 
@@ -175,21 +175,15 @@ In addition, by leveraging on OpenAPI spec, it is possible to generate clients a
 OpenAPI specification [file](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common/src/openapi/openapi.yaml) is available in [orchestrator-common](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common).  
 OpenAPI specification documentation is available [here](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common/src/generated/docs/markdown/README.md)
 
-> **NOTE:**\
-> While the OpenAPI specification is available in the Orchestrator plugin, the UI currently does not rely on this spec. \
-> We plan to incorporate v2 endpoints into the UI in the near future.
-
 ### orchestrator-common
 
-The typescript schema is generated in [auto-generated](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common/src/auto-generated/api/models/schema.ts) folder from openapi.yaml specification file.
+The typescript client is generated in [generated](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common/src/generated/client) folder from openapi.yaml specification file.
 
 ### orchestrator-backend
 
 The orchestrator backend can use the generated schema to validate the HTTP requests and responses.
 
-> NOTE: Temporary the validation has been disabled. It will be enabled when the orchestrator frontend will switch to the use of v2 endpoints only.
-
-#### audit log
+### audit log
 
 The orchestrator backend has audit logs for all incoming requests.
 
@@ -206,11 +200,11 @@ If you need to change the OpenAPI spec, edit the [openapi.yaml](https://github.c
 
 `yarn --cwd plugins/orchestrator-common openapi`
 
-This command updates the [auto-generated files](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common/src/auto-generated/api/) and the [auto-generated docs](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/orchestrator-common/src/auto-generated/docs).
+This command updates the [generated files](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common/src/generated) including API, client and docs.
 
 > NOTE: Do not manually edit auto-generated files
 
-If you add a new component in the spec, then you need to export the generated typescript object [here](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common/src/openapi/types.ts). For example, if you define
+If you add a new component in the spec, then you need to export the generated typescript object [here](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common/src/generated/client/api.ts). For example, if you define
 
 ```yaml
 components:
