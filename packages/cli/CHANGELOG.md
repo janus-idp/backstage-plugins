@@ -1,5 +1,11 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 1.18.1
+
+### Patch Changes
+
+- e9b2878: fix(cli): fall back to using the cli script directly if a plugin package does not have an export-dynamic script
+
 ## 1.18.0
 
 ### Minor Changes
