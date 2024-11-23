@@ -718,10 +718,12 @@ function setupInternalRoutes(
       if (decision.result === AuthorizeResult.DENY) {
         manageDenyAuthorization(endpointName, endpoint, _req);
       }
+
       const includeAssessment = routerApi.v2.extractQueryParam(
         c.request,
         QUERY_PARAM_INCLUDE_ASSESSMENT,
       );
+
       return routerApi.v2
         .getInstanceById(instanceId, !!includeAssessment)
         .then(result => res.status(200).json(result))
