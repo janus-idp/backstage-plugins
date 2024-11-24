@@ -41,6 +41,7 @@ export interface OrchestratorFormApi {
   getFormDecorator(
     schema: JSONSchema7,
     uiSchema: UiSchema<JsonObject, JSONSchema7>,
+    initialFormData?: JsonObject
   ): OrchestratorFormDecorator;
 }
 

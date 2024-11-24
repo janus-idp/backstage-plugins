@@ -135,16 +135,17 @@ const FormComponent = (decoratorProps: FormDecoratorProps) => {
 const OrchestratorFormWrapper = ({
   schema,
   uiSchema,
+  formData,
   ...props
 }: OrchestratorFormWrapperProps) => {
   const formApi =
     useApiHolder().get(orchestratorFormApiRef) || defaultFormExtensionsApi;
   const NewComponent = React.useMemo(() => {
-    const formDecorator = formApi.getFormDecorator(schema, uiSchema);
+    const formDecorator = formApi.getFormDecorator(schema, uiSchema, formData);
     return formDecorator(FormComponent);
-  }, [schema, formApi, uiSchema]);
+  }, [schema, formApi, uiSchema, formData]);
   return (
-    <WrapperFormPropsContext.Provider value={{ schema, uiSchema, ...props }}>
+    <WrapperFormPropsContext.Provider value={{ schema, uiSchema, formData, ...props }}>
       <NewComponent />
     </WrapperFormPropsContext.Provider>
   );
