@@ -42,6 +42,7 @@ export const ExecuteWorkflowPage = () => {
   const [assessmentInstanceId] = useQueryParamState<string>(
     QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   );
+  const effectiveInstanceId = assessmentInstanceId || instanceId;
   const navigate = useNavigate();
   const instanceLink = useRouteRef(workflowInstanceRouteRef);
   const {
@@ -51,7 +52,7 @@ export const ExecuteWorkflowPage = () => {
   } = useAsync(async (): Promise<InputSchemaResponseDTO> => {
     const res = await orchestratorApi.getWorkflowDataInputSchema(
       workflowId,
-      assessmentInstanceId || instanceId,
+      effectiveInstanceId,
     );
     return res.data;
   }, [orchestratorApi, workflowId]);
@@ -74,7 +75,7 @@ export const ExecuteWorkflowPage = () => {
         const response = await orchestratorApi.executeWorkflow({
           workflowId,
           parameters,
-          businessKey: assessmentInstanceId,
+          businessKey: effectiveInstanceId,
         });
         navigate(instanceLink({ instanceId: response.data.id }));
       } catch (err) {
@@ -83,7 +84,7 @@ export const ExecuteWorkflowPage = () => {
         setIsExecuting(false);
       }
     },
-    [orchestratorApi, workflowId, navigate, instanceLink, assessmentInstanceId],
+    [orchestratorApi, workflowId, navigate, instanceLink, effectiveInstanceId],
   );
 
   const error = responseError || workflowNameError;
