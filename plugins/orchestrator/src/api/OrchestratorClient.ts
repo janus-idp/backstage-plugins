@@ -95,6 +95,7 @@ export class OrchestratorClient implements OrchestratorApi {
       return await defaultApi.executeWorkflow(
         args.workflowId,
         { inputData: args.parameters },
+        args.businessKey,
         reqConfigOption,
       );
     } catch (err) {
