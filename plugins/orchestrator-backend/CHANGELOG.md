@@ -1,5 +1,13 @@
 ### Dependencies
 
+## 1.20.101
+
+### Patch Changes
+
+- 9f20ced: The parent assessment link is shown again thanks to fixing passing of the businessKey when "execute" action is trigerred.
+- Updated dependencies [9f20ced]
+  - @janus-idp/backstage-plugin-orchestrator-common@1.16.101
+
 ## 4.0.1
 
 ### Patch Changes

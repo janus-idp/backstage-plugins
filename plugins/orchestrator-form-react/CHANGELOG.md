@@ -1,5 +1,13 @@
 ### Dependencies
 
+## 1.0.102
+
+### Patch Changes
+
+- 0f745c2: pass also initial form data to custom decorator
+- Updated dependencies [0f745c2]
+  - @janus-idp/backstage-plugin-orchestrator-form-api@1.0.102
+
 ## 1.0.101
 
 ### Patch Changes
