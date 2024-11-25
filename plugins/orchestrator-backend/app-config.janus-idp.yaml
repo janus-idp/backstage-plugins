@@ -1,3 +1,0 @@
-orchestrator:
-  dataIndexService:
-    url: http://sonataflow-platform-data-index-service.sonataflow-infra

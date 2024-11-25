@@ -1,5 +1,3 @@
-# backstage-plugin-orchestrator-form-react
+# Deprecated
 
-This library provides the form component used in the workflow execution form. It is decoupled from the orchestrator plugin to allow plugins implementing the OrchestratorFormApi test the behavior in a simple backstage developer environment.
-
-Details available [here](../orchestrator/docs/extensibleForm.md).
+This package has been moved to the [red-hat-developer/rhdh-plugins](https://github.com/redhat-developer/rhdh-plugins) repository. Migrate to using `@red-hat-developer-hub/backstage-plugin-orchestrator-form-react` instead.

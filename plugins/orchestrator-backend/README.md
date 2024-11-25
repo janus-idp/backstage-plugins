@@ -1,5 +1,3 @@
-# Orchestrator Backend Plugin for Backstage
+# Deprecated
 
-Welcome to the backend package for the Orchestrator plugin!
-
-For more information about the Orchestrator plugin, see the [Orchestrator Plugin documentation](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/orchestrator) on GitHub.
+This package has been moved to the [red-hat-developer/rhdh-plugins](https://github.com/redhat-developer/rhdh-plugins) repository. Migrate to using `@red-hat-developer-hub/backstage-plugin-orchestrator-backend` instead.
