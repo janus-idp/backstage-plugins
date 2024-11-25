@@ -1,5 +1,17 @@
 ### Dependencies
 
+## 1.21.102
+
+### Patch Changes
+
+- 0f745c2: pass also initial form data to custom decorator
+- 9f20ced: The parent assessment link is shown again thanks to fixing passing of the businessKey when "execute" action is trigerred.
+- Updated dependencies [0f745c2]
+- Updated dependencies [9f20ced]
+  - @janus-idp/backstage-plugin-orchestrator-form-react@1.0.102
+  - @janus-idp/backstage-plugin-orchestrator-form-api@1.0.102
+  - @janus-idp/backstage-plugin-orchestrator-common@1.16.101
+
 ## 1.21.101
 
 ### Patch Changes

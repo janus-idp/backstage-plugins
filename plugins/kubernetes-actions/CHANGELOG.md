@@ -1,5 +1,11 @@
 ### Dependencies
 
+## 1.7.4
+
+### Patch Changes
+
+- 3343893: bump jsonpath-plus to v10.2.0
+
 ## 1.7.3
 
 ### Patch Changes
