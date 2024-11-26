@@ -106,6 +106,14 @@ export function registerScriptCommand(program: Command) {
       {},
     )
     .option(
+      '--allow-native-package [package-name...]',
+      'Optional list of native packages names that can be included in the exported plugin',
+    )
+    .option(
+      '--suppress-native-package [package-name...]',
+      'Optional list of native package names to be excluded from the exported plugin',
+    )
+    .option(
       '--no-install',
       'Do not run `yarn install` to fill the dynamic plugin `node_modules` folder (backend plugin only).',
     )
