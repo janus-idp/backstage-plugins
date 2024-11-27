@@ -75,7 +75,7 @@ export const ExecuteWorkflowPage = () => {
         const response = await orchestratorApi.executeWorkflow({
           workflowId,
           parameters,
-          businessKey: effectiveInstanceId,
+          businessKey: assessmentInstanceId,
         });
         navigate(instanceLink({ instanceId: response.data.id }));
       } catch (err) {
@@ -84,7 +84,7 @@ export const ExecuteWorkflowPage = () => {
         setIsExecuting(false);
       }
     },
-    [orchestratorApi, workflowId, navigate, instanceLink, effectiveInstanceId],
+    [orchestratorApi, workflowId, navigate, instanceLink, assessmentInstanceId],
   );
 
   const error = responseError || workflowNameError;

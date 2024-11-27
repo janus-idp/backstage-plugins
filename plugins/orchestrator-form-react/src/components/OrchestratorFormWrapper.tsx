@@ -26,10 +26,10 @@ const MuiForm = withTheme<JsonObject, JSONSchema7>(MuiTheme);
 type OrchestratorFormWrapperProps = {
   schema: JSONSchema7;
   numStepsInMultiStepSchema?: number;
-  children: React.ReactNode;
-  formData: JsonObject;
-  onChange: (formData: JsonObject) => void;
+  children: React.ReactNode;  
+  onSubmit: (formData: JsonObject) => void;
   uiSchema: UiSchema<JsonObject, JSONSchema7>;
+  initialFormData?: JsonObject;
 };
 
 const WrapperFormPropsContext =
@@ -49,13 +49,15 @@ const FormComponent = (decoratorProps: FormDecoratorProps) => {
     numStepsInMultiStepSchema,
     uiSchema,
     schema,
-    onChange,
-    formData,
+    onSubmit: _onSubmit,
+    initialFormData,
     children,
   } = props;
   const [extraErrors, setExtraErrors] = React.useState<
     ErrorSchema<JsonObject> | undefined
   >();
+  // make this form a controlled component so state will remain when moving between steps. see https://rjsf-team.github.io/react-jsonschema-form/docs/quickstart#controlled-component
+  const [formData, setFormData] = React.useState<JsonObject>(initialFormData || {});
   const isMultiStep = numStepsInMultiStepSchema !== undefined;
   const { handleNext, activeStep, handleValidateStarted, handleValidateEnded } =
     useStepperContext();
@@ -96,8 +98,10 @@ const FormComponent = (decoratorProps: FormDecoratorProps) => {
       !_validationError &&
       activeStep < (numStepsInMultiStepSchema || 1)
     ) {
+      _onSubmit(_formData);
       handleNext();
-    }
+      
+    }    
   };
 
   return (
@@ -109,7 +113,7 @@ const FormComponent = (decoratorProps: FormDecoratorProps) => {
       )}
       <Grid item>
         <MuiForm
-          {...omit(decoratorProps, 'extra')}
+          {...omit(decoratorProps, 'getExtraErrors')}
           fields={isMultiStep ? { ObjectField: StepperObjectField } : {}}
           uiSchema={uiSchema}
           validator={validator}
@@ -119,7 +123,7 @@ const FormComponent = (decoratorProps: FormDecoratorProps) => {
           extraErrors={extraErrors}
           onSubmit={e => onSubmit(e.formData || {})}
           onChange={e => {
-            onChange(e.formData || {});
+            setFormData(e.formData || {});
             if (decoratorProps.onChange) {
               decoratorProps.onChange(e);
             }
@@ -135,17 +139,18 @@ const FormComponent = (decoratorProps: FormDecoratorProps) => {
 const OrchestratorFormWrapper = ({
   schema,
   uiSchema,
-  formData,
+  initialFormData,
   ...props
 }: OrchestratorFormWrapperProps) => {
   const formApi =
     useApiHolder().get(orchestratorFormApiRef) || defaultFormExtensionsApi;
   const NewComponent = React.useMemo(() => {
-    const formDecorator = formApi.getFormDecorator(schema, uiSchema, formData);
+    const formDecorator = formApi.getFormDecorator(schema, uiSchema, initialFormData);
     return formDecorator(FormComponent);
-  }, [schema, formApi, uiSchema, formData]);
+  }, [schema, uiSchema, formApi, initialFormData]);
+  console.log({initialFormData})
   return (
-    <WrapperFormPropsContext.Provider value={{ schema, uiSchema, formData, ...props }}>
+    <WrapperFormPropsContext.Provider value={{ schema, uiSchema, initialFormData, ...props }}>
       <NewComponent />
     </WrapperFormPropsContext.Provider>
   );
