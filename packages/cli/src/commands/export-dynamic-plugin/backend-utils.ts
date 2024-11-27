@@ -89,16 +89,16 @@ export function addToMainDependencies(
         Task.log(
           `The version of a dependency ('${dep}') of an embedded module differs from the main module's dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': keeping it as it is compatible`,
         );
+        continue;
+      }
+      if (ignoreVersionCheck.includes(dep)) {
+        Task.log(
+          `The version of a dependency ('${dep}') of an embedded module conflicts with the main module's dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': however this has been overridden`,
+        );
       } else {
-        if (!ignoreVersionCheck.includes(dep)) {
-          throw new Error(
-            `The version of a dependency ('${dep}') of an embedded module conflicts with main module dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': cannot proceed!`,
-          );
-        } else {
-          Task.log(
-            `The version of a dependency ('${dep}') of an embedded module conflicts with the main module's dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': however this has been overridden`,
-          );
-        }
+        throw new Error(
+          `The version of a dependency ('${dep}') of an embedded module conflicts with main module dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': cannot proceed!`,
+        );
       }
     }
   }

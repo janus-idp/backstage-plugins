@@ -141,7 +141,7 @@ ${
         path.join(target, 'embedded', toSuppress, 'index.js'),
         `
 throw new Error(
-  'The package "${toSuppress}" has been marked as a native module and removed from this dynamic plugin package "${derivedPackageName}"'
+  'The package "${toSuppress}" has been marked as a native module and removed from this dynamic plugin package "${derivedPackageName}", as native modules are not currently supported by dynamic plugins'
 );`,
       );
     }
@@ -233,11 +233,15 @@ throw new Error(
     })(path.join(embeddedDestDir, 'package.json'));
   }
 
-  const embeddedDependenciesResolutions: { [key: string]: any } = {};
-  embeddedResolvedPackages.map(ep => {
-    embeddedDependenciesResolutions[ep.packageName] =
-      `file:./${embeddedPackageRelativePath(ep)}`;
-  });
+  const embeddedDependenciesResolutions = embeddedResolvedPackages.reduce(
+    (resolutions, embeddedPkg) => ({
+      ...resolutions,
+      ...{
+        [embeddedPkg.packageName]: `file:./${embeddedPackageRelativePath(embeddedPkg)}`,
+      },
+    }),
+    {},
+  );
 
   if (opts.build) {
     Task.log(`Building main package`);
