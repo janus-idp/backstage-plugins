@@ -56,7 +56,10 @@ export async function backend(opts: OptionValues): Promise<string> {
     );
   }
 
+  const derivedPackageName = `${pkg.name}-dynamic`;
   const packagesToEmbed = (opts.embedPackage || []) as string[];
+  const allowNative = (opts.allowNativePackage || []) as string[];
+  const suppressNative = (opts.suppressNativePackage || []) as string[];
   const monoRepoPackages = await getPackages(paths.targetDir);
   const embeddedResolvedPackages = await searchEmbedded(
     pkg,
@@ -118,6 +121,30 @@ ${
     : ''
 }`,
   );
+
+  if (suppressNative.length > 0) {
+    for (const toSuppress of suppressNative) {
+      await fs.mkdirs(path.join(target, 'embedded', toSuppress));
+      await fs.writeFile(
+        path.join(target, 'embedded', toSuppress, 'package.json'),
+        JSON.stringify(
+          {
+            name: toSuppress,
+            main: 'index.js',
+          },
+          undefined,
+          2,
+        ),
+      );
+      await fs.writeFile(
+        path.join(target, 'embedded', toSuppress, 'index.js'),
+        `
+throw new Error(
+  'The package "${toSuppress}" has been marked as a native module and removed from this dynamic plugin package "${derivedPackageName}", as native modules are not currently supported by dynamic plugins'
+);`,
+      );
+    }
+  }
 
   const embeddedPeerDependencies: {
     [key: string]: string;
@@ -205,11 +232,14 @@ ${
     })(path.join(embeddedDestDir, 'package.json'));
   }
 
-  const embeddedDependenciesResolutions: { [key: string]: any } = {};
-  embeddedResolvedPackages.map(ep => {
-    embeddedDependenciesResolutions[ep.packageName] =
-      `file:./${embeddedPackageRelativePath(ep)}`;
-  });
+  const embeddedDependenciesResolutions = embeddedResolvedPackages.reduce(
+    (resolutions, ep) => {
+      resolutions[ep.packageName] = `file:./${embeddedPackageRelativePath(ep)}`;
+
+      return resolutions;
+    },
+    {} as { [key: string]: `file:./${string}` },
+  );
 
   if (opts.build) {
     Task.log(`Building main package`);
@@ -247,7 +277,7 @@ ${
     monoRepoPackages,
     sharedPackages: sharedPackagesRules,
     overridding: {
-      name: `${pkg.name}-dynamic`,
+      name: derivedPackageName,
       bundleDependencies: true,
       // We remove scripts, because they do not make sense for this derived package.
       // They even bring errors, especially the pre-pack and post-pack ones:
@@ -256,7 +286,14 @@ ${
       // which are related to the packaging of the original static package.
       scripts: {},
     },
-    additionalResolutions: embeddedDependenciesResolutions,
+    additionalResolutions: {
+      ...embeddedDependenciesResolutions,
+      ...suppressNative
+        .map((nativePkg: string) => ({
+          [nativePkg]: path.join('file:./embedded', nativePkg),
+        }))
+        .reduce((prev, curr) => ({ ...prev, ...curr }), {}),
+    },
     after(mainPkg) {
       if (Object.keys(embeddedPeerDependencies).length === 0) {
         return;
@@ -407,9 +444,12 @@ ${
 
     // Check whether private dependencies contain native modules, and fail for now (not supported).
     const nativePackages: string[] = [];
-    for await (const n of gatherNativeModules(target)) {
-      nativePackages.push(n);
+    for await (const nativePkg of gatherNativeModules(target)) {
+      if (!allowNative.includes(nativePkg)) {
+        nativePackages.push(nativePkg);
+      }
     }
+
     if (nativePackages.length > 0) {
       throw new Error(
         `Dynamic plugins do not support native plugins. the following native modules have been transitively detected:${chalk.cyan(
