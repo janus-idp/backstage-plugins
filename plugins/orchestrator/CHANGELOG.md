@@ -1,5 +1,13 @@
 ### Dependencies
 
+## 1.21.103
+
+### Patch Changes
+
+- 39ea6c4: multiple bug fixes related to execution form
+- Updated dependencies [39ea6c4]
+  - @janus-idp/backstage-plugin-orchestrator-form-react@1.0.103
+
 ## 1.21.102
 
 ### Patch Changes
