@@ -164,22 +164,6 @@
       "matchPackageNames": ["@scalprum/{/,}**"]
     },
     {
-      "matchFileNames": ["plugins/orchestrator*/**"],
-      "additionalBranchPrefix": "orchestrator ",
-      "addLabels": ["team/orchestrator"],
-      "matchDepTypes": ["dependencies", "peerDependencies"],
-      "groupName": "Orchestrator Dependencies (non-major)",
-      "matchUpdateTypes": ["minor", "patch"]
-    },
-    {
-      "matchFileNames": ["plugins/orchestrator*/**"],
-      "additionalBranchPrefix": "orchestrator ",
-      "addLabels": ["team/orchestrator"],
-      "matchDepTypes": ["dependencies", "peerDependencies"],
-      "groupName": "Orchestrator Dependencies",
-      "matchUpdateTypes": ["major"]
-    },
-    {
       "matchFileNames": ["plugins/kiali*/**"],
       "additionalBranchPrefix": "kiali ",
       "addLabels": ["team/kiali"],
