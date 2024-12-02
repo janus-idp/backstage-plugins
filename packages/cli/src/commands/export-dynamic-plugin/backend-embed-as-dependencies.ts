@@ -65,7 +65,7 @@ export async function backend(opts: OptionValues): Promise<string> {
     pkg,
     packagesToEmbed,
     monoRepoPackages,
-    createRequire(`${paths.targetDir}/package.json`),
+    createRequire(path.join(paths.targetDir, 'package.json')),
     [],
   );
   const embeddedPackages = embeddedResolvedPackages.map(e => e.packageName);
@@ -611,13 +611,13 @@ async function searchEmbedded(
             parentPackageName: pkg.name,
             alreadyPacked,
           });
-
+          // scan for embedded packages under the resolved package
           resolved.push(
             ...(await searchEmbedded(
               resolvedPackage,
               embedded,
               monoRepoPackages,
-              req,
+              createRequire(path.join(resolvedPackageDir, 'package.json')),
               [...alreadyResolved, ...resolved],
             )),
           );
