@@ -1,5 +1,11 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 1.18.3
+
+### Patch Changes
+
+- 318af8b: fix(cli): adjust embedded module searching. The CLI attempts a require call to detect built embedded packages, this change adjusts the directory this require is attempted from to be at the level of discovered package instead of the dynamic plugin package.
+
 ## 1.18.2
 
 ### Patch Changes
