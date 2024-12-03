@@ -30,14 +30,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
-          cache: 'yarn'
 
       - name: Setup local Turbo cache
         uses: dtinth/setup-github-actions-caching-for-turbo@cc723b4600e40a6b8815b65701d8614b91e2669e # v1
 
       - name: Install dependencies
-        run: |
-          yarn install
+        uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: Build packages
         uses: ./.github/actions/build
@@ -61,14 +61,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
-          cache: 'yarn'
 
       - name: Setup local Turbo cache
         uses: dtinth/setup-github-actions-caching-for-turbo@cc723b4600e40a6b8815b65701d8614b91e2669e # v1
 
       - name: Install dependencies
-        run: |
-          yarn install
+        uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: Verify changesets
         if: ${{ !(github.actor == 'janus-idp[bot]' || github.actor == 'github-actions[bot]') }}
@@ -97,14 +97,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
-          cache: 'yarn'
 
       - name: Setup local Turbo cache
         uses: dtinth/setup-github-actions-caching-for-turbo@cc723b4600e40a6b8815b65701d8614b91e2669e # v1
 
       - name: Install dependencies
-        run: |
-          yarn install
+        uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        with:
+          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: Install playwright
         run: npx playwright install --with-deps chromium
@@ -114,7 +114,7 @@ jobs:
           # enable permission support and RBAC plugins
           printf "\npermission:\n  enabled: true\n" >> $(pwd)/app-config.yaml
 
-          yarn run ui-test --affected
+          yarn run ui-test --affected --continue
 
       - uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4
         if: ${{ !cancelled() }}

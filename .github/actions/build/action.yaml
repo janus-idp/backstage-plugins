@@ -11,4 +11,4 @@ runs:
     - name: Build packages
       shell: bash
       run: |
-        yarn run build --concurrency=75% ${{ inputs.args }}
+        yarn run build --continue ${{ inputs.args }}
