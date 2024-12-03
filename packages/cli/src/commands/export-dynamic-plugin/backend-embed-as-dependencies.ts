@@ -353,11 +353,13 @@ throw new Error(
     Task.log(`Installing private dependencies of the main package`);
 
     const version = execSync(`${yarn} --version`).toString().trim();
+    const logFile = 'yarn-install.log';
+    const redirect = `> ${logFile}`;
     const yarnInstall = version.startsWith('1.')
       ? `${yarn} install --production${
           yarnLockExists ? ' --frozen-lockfile' : ''
-        }`
-      : `${yarn} install${yarnLockExists ? ' --immutable' : ' --no-immutable'}`;
+        } ${redirect}`
+      : `${yarn} install${yarnLockExists ? ' --immutable' : ' --no-immutable'} ${redirect}`;
 
     await Task.forCommand(yarnInstall, { cwd: target, optional: false });
     await fs.remove(paths.resolveTarget(targetRelativePath, '.yarn'));
@@ -464,6 +466,8 @@ throw new Error(
     if (validateEntryPointsError) {
       throw new Error(validateEntryPointsError);
     }
+    // everything is fine, remove the yarn install log
+    await fs.remove(paths.resolveTarget(targetRelativePath, logFile));
   }
   return target;
 }
