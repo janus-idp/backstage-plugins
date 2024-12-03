@@ -1,5 +1,11 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 1.18.4
+
+### Patch Changes
+
+- 2bc9e4f: fix(cli): redirect install output. This change updates the CLI so that stdout of the `yarn install` command is redirected to a file. This prevents a possible buffer overflow error that can occur but also gives the added benefit of making the install output available for troubleshooting should a dynamic plugin fail to export. On successful installation and plugin validation the yarn install log file will be removed.
+
 ## 1.18.3
 
 ### Patch Changes
