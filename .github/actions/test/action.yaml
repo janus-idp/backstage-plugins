@@ -10,12 +10,12 @@ runs:
   steps:
     - name: Run prettier
       shell: bash
-      run: yarn prettier:check --concurrency=75% ${{ inputs.args }}
+      run: yarn prettier:check --continue ${{ inputs.args }}
 
     - name: Run lint
       shell: bash
-      run: yarn run lint:check --concurrency=75% ${{ inputs.args }}
+      run: yarn run lint:check --continue ${{ inputs.args }}
 
     - name: Run tests
       shell: bash
-      run: yarn run test --concurrency=75% ${{ inputs.args }}
+      run: yarn run test --continue ${{ inputs.args }}
