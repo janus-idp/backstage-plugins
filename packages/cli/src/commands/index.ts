@@ -114,6 +114,10 @@ export function registerScriptCommand(program: Command) {
       'Optional list of native package names to be excluded from the exported plugin',
     )
     .option(
+      '--ignore-version-check [packageName...]',
+      'Optional list of package names to ignore when doing semver dependency checks',
+    )
+    .option(
       '--no-install',
       'Do not run `yarn install` to fill the dynamic plugin `node_modules` folder (backend plugin only).',
     )

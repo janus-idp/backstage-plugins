@@ -21,6 +21,8 @@ import semver from 'semver';
 
 import path from 'path';
 
+import { Task } from '../../lib/tasks';
+
 export function addToDependenciesForModule(
   dependency: { name: string; version: string },
   dependencies: { [key: string]: string },
@@ -43,24 +45,22 @@ export function addToDependenciesForModule(
     existingDependencyMinVersion &&
     semver.satisfies(existingDependencyMinVersion, dependency.version)
   ) {
-    console.log(
+    Task.log(
       `Several compatible versions ('${existingDependencyVersion}', '${dependency.version}') of the same transitive dependency ('${dependency.name}') for embedded module ('${module}'): keeping '${existingDependencyVersion}'`,
     );
     return;
   }
-
   const newDependencyMinVersion = semver.minVersion(dependency.version);
   if (
     newDependencyMinVersion &&
     semver.satisfies(newDependencyMinVersion, existingDependencyVersion)
   ) {
     dependencies[dependency.name] = dependency.version;
-    console.log(
+    Task.log(
       `Several compatible versions ('${existingDependencyVersion}', '${dependency.version}') of the same transitive dependency ('${dependency.name}') for embedded module ('${module}'): keeping '${dependency.version}'`,
     );
     return;
   }
-
   throw new Error(
     `Several incompatible versions ('${existingDependencyVersion}', '${dependency.version}') of the same transitive dependency ('${dependency.name}') for embedded module ('${module}')`,
   );
@@ -69,6 +69,7 @@ export function addToDependenciesForModule(
 export function addToMainDependencies(
   dependenciesToAdd: { [key: string]: string },
   mainDependencies: { [key: string]: string },
+  ignoreVersionCheck: string[] = [],
 ): void {
   for (const dep in dependenciesToAdd) {
     if (!Object.prototype.hasOwnProperty.call(dependenciesToAdd, dep)) {
@@ -81,18 +82,23 @@ export function addToMainDependencies(
     }
     if (existingVersion !== dependenciesToAdd[dep]) {
       const existingMinVersion = semver.minVersion(existingVersion);
-
       if (
         existingMinVersion &&
         semver.satisfies(existingMinVersion, dependenciesToAdd[dep])
       ) {
-        console.log(
+        Task.log(
           `The version of a dependency ('${dep}') of an embedded module differs from the main module's dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': keeping it as it is compatible`,
         );
       } else {
-        throw new Error(
-          `The version of a dependency ('${dep}') of an embedded module conflicts with main module dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': cannot proceed!`,
-        );
+        if (!ignoreVersionCheck.includes(dep)) {
+          throw new Error(
+            `The version of a dependency ('${dep}') of an embedded module conflicts with main module dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': cannot proceed!`,
+          );
+        } else {
+          Task.log(
+            `The version of a dependency ('${dep}') of an embedded module conflicts with the main module's dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': however this has been overridden`,
+          );
+        }
       }
     }
   }

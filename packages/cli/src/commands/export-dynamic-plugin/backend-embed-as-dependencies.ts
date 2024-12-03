@@ -60,6 +60,7 @@ export async function backend(opts: OptionValues): Promise<string> {
   const packagesToEmbed = (opts.embedPackage || []) as string[];
   const allowNative = (opts.allowNativePackage || []) as string[];
   const suppressNative = (opts.suppressNativePackage || []) as string[];
+  const ignoreVersionCheck = (opts.ignoreVersionCheck || []) as string[];
   const monoRepoPackages = await getPackages(paths.targetDir);
   const embeddedResolvedPackages = await searchEmbedded(
     pkg,
@@ -299,7 +300,11 @@ throw new Error(
         `Hoisting peer dependencies of embedded packages to the main package`,
       );
       const mainPeerDependencies = mainPkg.peerDependencies || {};
-      addToMainDependencies(embeddedPeerDependencies, mainPeerDependencies);
+      addToMainDependencies(
+        embeddedPeerDependencies,
+        mainPeerDependencies,
+        ignoreVersionCheck,
+      );
       if (Object.keys(mainPeerDependencies).length > 0) {
         mainPkg.peerDependencies = mainPeerDependencies;
       }
