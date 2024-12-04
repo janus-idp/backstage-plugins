@@ -1,5 +1,11 @@
 ## @janus-idp/backstage-scaffolder-backend-module-annotator [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-annotator@1.2.1...@janus-idp/backstage-scaffolder-backend-module-annotator@1.3.0) (2024-07-25)
 
+## 2.3.0
+
+### Minor Changes
+
+- 9671df5: Bump plugins/scaffolder-annotator-action to 2.3.0 in main branch, in prep for release of 1.4.0
+
 ## 2.2.1
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 1.19.0
+
+### Minor Changes
+
+- 9671df5: Bump packages/cli to 1.19.0 in main branch, in prep for release of 1.4.0
+
+### Patch Changes
+
+- 2acb6e0: fix(cli): add a flag to relax semver checks. This change updates the CLI to add an option to relax the semver checks on a per-package basis to cater for plugins where it is known there should be runtime compabability due to no interface changes.
+- 6d292af: fix(cli): adjust embedded module searching. The CLI attempts a require call to detect built embedded packages, this change adjusts the directory this require is attempted from to be at the level of discovered package instead of the dynamic plugin package.
+- 2ef4806: This change adds two new flags to handle native module dependencies.
+
+  - `--allow-native-package [package-name...]`: flag to selectively allow native packages when exporting a dynamic plugin and allowing it's installation into the exported dynamic plugin.
+  - `--suppress-native-package [package-name..]`: flag which replaces the native package with an empty package during export, preventing the native package's inclusion into the exported dynamic plugin's private dependencies.
+
+- 7643bda: fix(cli): redirect install output. This change updates the CLI so that stdout of the `yarn install` command is redirected to a file. This prevents a possible buffer overflow error that can occur but also gives the added benefit of making the install output available for troubleshooting should a dynamic plugin fail to export. On successful installation and plugin validation the yarn install log file will be removed.
+
 ## 1.18.1
 
 ### Patch Changes

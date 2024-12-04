@@ -1,5 +1,11 @@
 ### Dependencies
 
+## 1.35.0
+
+### Minor Changes
+
+- 9671df5: Bump plugins/kiali to 1.35.0 in main branch, in prep for release of 1.4.0
+
 ## 1.34.1
 
 ### Patch Changes

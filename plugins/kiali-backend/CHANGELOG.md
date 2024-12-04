@@ -1,5 +1,11 @@
 ### Dependencies
 
+## 1.21.0
+
+### Minor Changes
+
+- 9671df5: Bump plugins/kiali-backend to 1.21.0 in main branch, in prep for release of 1.4.0
+
 ## 1.20.1
 
 ### Patch Changes
