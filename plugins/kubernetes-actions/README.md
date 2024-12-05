@@ -1,3 +1,9 @@
+# ❗DEPRECATED❗
+
+This package has been deprecated.
+
+Please use the **[@backstage-community/plugin-scaffolder-backend-module-kubernetes](https://github.com/backstage/community-plugins/tree/main/workspaces/scaffolder-backend-module-kubernetes)** package instead.
+
 # Kubernetes actions for Backstage
 
 This module provides [Backstage](https://backstage.io/) template [actions](https://backstage.io/docs/features/software-templates/builtin-actions) for [Kubernetes](https://kubernetes.io/docs/home/).

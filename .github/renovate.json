@@ -182,7 +182,6 @@
     {
       "matchFileNames": [
         "plugins/audit-log*/**",
-        "plugins/scaffolder-annotator-action*/**",
         "plugins/shared-react*/**",
         "packages/**",
         "package.json"
@@ -196,7 +195,6 @@
     {
       "matchFileNames": [
         "plugins/audit-log*/**",
-        "plugins/scaffolder-annotator-action*/**",
         "plugins/shared-react*/**",
         "packages/**",
         "package.json"
@@ -210,7 +208,6 @@
     {
       "matchFileNames": [
         "plugins/aap-backend*/**",
-        "plugins/kubernetes-actions*/**",
         "plugins/servicenow-actions*/**",
         "plugins/sonarqube-actions*/**",
         "plugins/web-terminal*/**"
@@ -225,7 +222,6 @@
       "matchFileNames": [
         "plugins/aap-backend*/**",
         "plugins/jfrog-artifactory*/**",
-        "plugins/kubernetes-actions*/**",
         "plugins/servicenow-actions*/**",
         "plugins/sonarqube-actions*/**",
         "plugins/web-terminal*/**"

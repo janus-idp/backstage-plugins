@@ -3040,7 +3040,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/backend-test-utils@npm:1.0.2, @backstage/backend-test-utils@npm:^1.0.2":
+"@backstage/backend-test-utils@npm:1.0.2":
   version: 1.0.2
   resolution: "@backstage/backend-test-utils@npm:1.0.2"
   dependencies:
@@ -3090,7 +3090,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/catalog-model@npm:1.7.0, @backstage/catalog-model@npm:^1.7.0":
+"@backstage/catalog-model@npm:^1.7.0":
   version: 1.7.0
   resolution: "@backstage/catalog-model@npm:1.7.0"
   dependencies:
@@ -4762,26 +4762,6 @@ __metadata:
     "@backstage/plugin-permission-common": ^0.8.1
     "@backstage/types": ^1.1.1
   checksum: 0dcfa5089d92dd7e0e400df25d17e838846ee8bec60f84f268c77d7815f37a217226f9385dcbb6a816de0266ecce502f9f491208aec06f83ca8e5f5a84451e9a
-  languageName: node
-  linkType: hard
-
-"@backstage/plugin-scaffolder-node-test-utils@npm:0.1.14":
-  version: 0.1.14
-  resolution: "@backstage/plugin-scaffolder-node-test-utils@npm:0.1.14"
-  dependencies:
-    "@backstage/backend-common": ^0.25.0
-    "@backstage/backend-test-utils": ^1.0.2
-    "@backstage/plugin-scaffolder-node": ^0.5.0
-    "@backstage/types": ^1.1.1
-  peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
-    react: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 0aa7c0dd0a618821eb288bc60358cf1d5abe28792d305b6e0c25f8169dc9a6598f4ff1c9e1c8c76f1187ce69bea72095001ee01a5560bf20b5384f473a4093aa
   languageName: node
   linkType: hard
 
@@ -7835,37 +7815,6 @@ __metadata:
     xterm-addon-fit: ^0.8.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
-  languageName: unknown
-  linkType: soft
-
-"@janus-idp/backstage-scaffolder-backend-module-annotator@workspace:plugins/scaffolder-annotator-action":
-  version: 0.0.0-use.local
-  resolution: "@janus-idp/backstage-scaffolder-backend-module-annotator@workspace:plugins/scaffolder-annotator-action"
-  dependencies:
-    "@backstage/backend-plugin-api": ^1.0.1
-    "@backstage/backend-test-utils": 1.0.2
-    "@backstage/cli": 0.28.2
-    "@backstage/plugin-scaffolder-node": ^0.5.0
-    fs-extra: ^11.2.0
-    lodash: ^4.17.21
-    prettier: 3.3.3
-    yaml: ^2.0.0
-  languageName: unknown
-  linkType: soft
-
-"@janus-idp/backstage-scaffolder-backend-module-kubernetes@workspace:plugins/kubernetes-actions":
-  version: 0.0.0-use.local
-  resolution: "@janus-idp/backstage-scaffolder-backend-module-kubernetes@workspace:plugins/kubernetes-actions"
-  dependencies:
-    "@backstage/backend-plugin-api": ^1.0.1
-    "@backstage/catalog-client": ^1.7.1
-    "@backstage/catalog-model": 1.7.0
-    "@backstage/cli": 0.28.2
-    "@backstage/plugin-scaffolder-node": ^0.5.0
-    "@backstage/plugin-scaffolder-node-test-utils": 0.1.14
-    "@kubernetes/client-node": ^0.22.1
-    msw: 1.3.3
-    prettier: 3.3.3
   languageName: unknown
   linkType: soft
 
