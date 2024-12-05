@@ -1,3 +1,9 @@
+# ❗DEPRECATED❗
+
+This package has been deprecated.
+
+Please use the **[@backstage-community/plugin-scaffolder-backend-module-annotator](https://github.com/backstage/community-plugins/tree/main/workspaces/scaffolder-backend-module-annotator)** package instead.
+
 # Annotator custom action for Scaffolder Backstage
 
 The annotator module for [@backstage/plugin-scaffolder-backend](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend).
