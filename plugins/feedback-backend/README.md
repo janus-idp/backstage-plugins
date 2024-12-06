@@ -1,11 +1,4 @@
 # ❗DEPRECATED❗
 
-This package has been deprecated.
+This package has been moved to the [backstage-community/plugins](https://github.com/backstage/community-plugins) repository. Migrate to using `@backstage-community/backstage-plugin-feedback-backend` instead.
 
-Please use the **[@backstage-community/backstage-plugin-feedback-backend](https://github.com/backstage/community-plugins/tree/main/workspaces/feedback/plugins/feedback-backend)** package instead.
-
-# Feedback Backend
-
-This is feedback-backend plugin which provides Rest API to create feedbacks.
-
-It is also responsible for creating JIRA tickets,
