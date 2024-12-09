@@ -41,9 +41,7 @@ export async function command(opts: OptionValues): Promise<void> {
     workspacePackageRole !== undefined
       ? PackageRoles.getRoleInfo(workspacePackageRole)
       : undefined;
-  const isMonoRepo =
-    typeof (workspacePackage.workspaces as PackageJson.WorkspaceConfig)
-      .packages !== 'undefined';
+  const isMonoRepo = typeof workspacePackage.workspaces !== 'undefined';
   // Find all plugin packages in the workspace
   const packages = isMonoRepo
     ? await discoverPluginPackages()
