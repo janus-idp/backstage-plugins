@@ -1,5 +1,11 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 1.19.1
+
+### Patch Changes
+
+- 2d73fa1: fix(cli): support single packages better. This change fixes an issue in the `package-dynamic-plugins` command that prevents it from running properly in a single plugin project that does not have workspaces.
+
 ## 1.19.0
 
 ### Minor Changes
