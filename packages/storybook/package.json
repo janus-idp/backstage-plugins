@@ -30,7 +30,7 @@
     "swc-loader": "0.2.6"
   },
   "dependencies": {
-    "@material-ui/core": "^4.12.4",
+    "@mui/material": "^5.0.0",
     "@storybook/addon-controls": "^7.5.3",
     "@storybook/addon-essentials": "^7.5.3",
     "@storybook/addon-interactions": "^7.5.3",
