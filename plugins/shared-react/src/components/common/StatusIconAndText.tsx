@@ -1,12 +1,27 @@
 import React from 'react';
 
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
 import classNames from 'classnames';
 
 import CamelCaseWrap from './CamelCaseWrap';
 
-import './StatusIconAndText.css';
-
 const DASH = '-';
+
+const useStyles = makeStyles({
+  iconAndText: {
+    alignItems: 'baseline',
+    display: 'flex',
+    fontWeight: 400,
+    fontSize: '14px',
+  },
+
+  flexChild: {
+    flex: ' 0 0 auto',
+    position: 'relative',
+    top: '0.125em',
+  },
+});
 
 export const StatusIconAndText = ({
   icon,
@@ -23,6 +38,7 @@ export const StatusIconAndText = ({
   spin?: boolean;
   dataTestId?: string;
 }): React.ReactElement => {
+  const styles = useStyles();
   if (!title) {
     return <>{DASH}</>;
   }
@@ -39,8 +55,8 @@ export const StatusIconAndText = ({
   }
 
   return (
-    <span
-      className={classNames('bs-shared-icon-and-text', className)}
+    <Typography
+      className={classNames(styles.iconAndText, className)}
       data-testid={dataTestId ?? `icon-with-title-${title}`}
       title={title}
     >
@@ -48,11 +64,11 @@ export const StatusIconAndText = ({
         className: classNames(
           spin && 'fa-spin',
           icon.props.className,
-          'bs-shared-icon-and-text__icon bs-shared-icon-flex-child',
+          styles.flexChild,
         ),
       })}
       <CamelCaseWrap value={title} dataTest="status-text" />
-    </span>
+    </Typography>
   );
 };
 
