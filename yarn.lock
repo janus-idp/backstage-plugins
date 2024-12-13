@@ -7719,22 +7719,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-rbac-backend-module-test@workspace:plugins/rbac-backend-module-test":
-  version: 0.0.0-use.local
-  resolution: "@janus-idp/backstage-plugin-rbac-backend-module-test@workspace:plugins/rbac-backend-module-test"
-  dependencies:
-    "@backstage/backend-dynamic-feature-service": 0.4.3
-    "@backstage/backend-plugin-api": ^1.0.1
-    "@backstage/backend-test-utils": 1.0.2
-    "@backstage/cli": 0.28.2
-    "@backstage/config": 1.2.0
-    "@backstage/errors": ^1.2.4
-    "@janus-idp/backstage-plugin-rbac-node": ^1.8.1
-    csv-parse: ^5.5.6
-    prettier: 3.3.3
-  languageName: unknown
-  linkType: soft
-
 "@janus-idp/backstage-plugin-rbac-backend@npm:*":
   version: 5.2.2
   resolution: "@janus-idp/backstage-plugin-rbac-backend@npm:5.2.2"
@@ -20654,7 +20638,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-parse@npm:^5.3.5, csv-parse@npm:^5.5.5, csv-parse@npm:^5.5.6":
+"csv-parse@npm:^5.3.5, csv-parse@npm:^5.5.5":
   version: 5.5.6
   resolution: "csv-parse@npm:5.5.6"
   checksum: ee06f97f674487dc1d001b360de8ea510a41b9d971abf43bcf9c3be22c83a3634df0d3ebfbe52fd49d145077066be7ff9f25de3fc6b71aefb973099b04147a25
