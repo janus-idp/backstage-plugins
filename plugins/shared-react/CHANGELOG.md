@@ -1,5 +1,11 @@
 ## @janus-idp/shared-react [2.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.9.0...@janus-idp/shared-react@2.10.0) (2024-08-02)
 
+## 2.14.1
+
+### Patch Changes
+
+- 3ae105b: moved css styles from css file to the Status component
+
 ## 2.14.0
 
 ### Minor Changes
