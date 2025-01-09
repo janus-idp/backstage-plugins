@@ -164,22 +164,6 @@
       "matchPackageNames": ["@scalprum/{/,}**"]
     },
     {
-      "matchFileNames": ["plugins/kiali*/**"],
-      "additionalBranchPrefix": "kiali ",
-      "addLabels": ["team/kiali"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "matchDepTypes": ["dependencies", "peerDependencies"],
-      "groupName": "Kiali Dependencies  (non-major)"
-    },
-    {
-      "matchFileNames": ["plugins/kiali*/**"],
-      "additionalBranchPrefix": "kiali ",
-      "addLabels": ["team/kiali"],
-      "matchUpdateTypes": ["major"],
-      "matchDepTypes": ["dependencies", "peerDependencies"],
-      "groupName": "Kiali Dependencies "
-    },
-    {
       "matchFileNames": [
         "plugins/audit-log*/**",
         "plugins/shared-react*/**",
@@ -208,8 +192,6 @@
     {
       "matchFileNames": [
         "plugins/aap-backend*/**",
-        "plugins/servicenow-actions*/**",
-        "plugins/sonarqube-actions*/**",
         "plugins/web-terminal*/**"
       ],
       "additionalBranchPrefix": "community ",
@@ -221,9 +203,6 @@
     {
       "matchFileNames": [
         "plugins/aap-backend*/**",
-        "plugins/jfrog-artifactory*/**",
-        "plugins/servicenow-actions*/**",
-        "plugins/sonarqube-actions*/**",
         "plugins/web-terminal*/**"
       ],
       "additionalBranchPrefix": "community ",
