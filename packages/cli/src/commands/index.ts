@@ -186,6 +186,10 @@ export function registerScriptCommand(program: Command) {
       'By defult, the command uses podman to build the container image. Use this flag to use docker instead.',
       false,
     )
+    .option(
+      '-m, --marketplace-file <file>',
+      'Marketplace yaml file. This is a Plugin entity definition for Marketplace.',
+    )
     .action(
       lazy(() => import('./package-dynamic-plugins').then(m => m.command)),
     );

@@ -13,7 +13,14 @@ import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
 
 export async function command(opts: OptionValues): Promise<void> {
-  const { exportTo, forceExport, preserveTempDir, tag, useDocker } = opts;
+  const {
+    exportTo,
+    forceExport,
+    preserveTempDir,
+    tag,
+    useDocker,
+    marketplaceFile,
+  } = opts;
   if (!exportTo && !tag) {
     Task.error(
       `Neither ${chalk.white('--export-to')} or ${chalk.white('--tag')} was specified, either specify ${chalk.white('--export-to')} to export plugins to a directory or ${chalk.white('--tag')} to export plugins to a container image`,
@@ -30,6 +37,19 @@ export async function command(opts: OptionValues): Promise<void> {
         `Unable to find ${containerTool} command: ${e}\nMake sure that ${containerTool} is installed and available in your PATH.`,
       );
       return;
+    }
+  }
+  const maketplaceInfo: Object[] = [];
+  if (marketplaceFile) {
+    if (!fs.existsSync(marketplaceFile)) {
+      Task.error(`Marketplace file ${marketplaceFile} does not exist`);
+      return;
+    }
+    const yamlDocuments = YAML.parseAllDocuments(
+      fs.readFileSync(marketplaceFile).toLocaleString(),
+    );
+    for (const document of yamlDocuments) {
+      maketplaceInfo.push(document.toJS());
     }
   }
   const workspacePackage = (await fs.readJson(
@@ -183,6 +203,7 @@ export async function command(opts: OptionValues): Promise<void> {
         );
       }
     }
+
     // Write the plugin registry metadata
     const metadataFile = path.join(tmpDir, 'index.json');
     Task.log(`Writing plugin registry metadata to '${metadataFile}'`);
@@ -200,12 +221,29 @@ export async function command(opts: OptionValues): Promise<void> {
         fs.copySync(source, destination, { recursive: true, overwrite: true });
       });
     } else {
+      // collect flags for the container build command
+      const flags = [
+        `--annotation io.backstage.dynamic-packages='${Buffer.from(JSON.stringify(pluginRegistryMetadata)).toString('base64')}'`,
+      ];
+
+      for (const pluginInfo of maketplaceInfo) {
+        const base64pluginInfo = Buffer.from(
+          JSON.stringify(pluginInfo),
+        ).toString('base64');
+        const pluginName = (pluginInfo as { metadata: { name: string } })
+          .metadata.name;
+        flags.push(
+          `--annotation io.backstage.marketplace/${pluginName}='${base64pluginInfo}'`,
+        );
+      }
       // run the command to generate the image
       Task.log(`Creating image using ${containerTool}`);
       await Task.forCommand(
         `echo "from scratch
 COPY . .
-" | ${containerTool} build --annotation com.redhat.rhdh.plugins='${JSON.stringify(pluginRegistryMetadata)}' -t '${tag}' -f - .
+" | ${containerTool} build \
+  ${flags.join(' ')} \
+  -t '${tag}' -f - .
     `,
         { cwd: tmpDir },
       );
