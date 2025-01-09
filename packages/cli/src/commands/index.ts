@@ -188,7 +188,7 @@ export function registerScriptCommand(program: Command) {
     )
     .option(
       '-m, --marketplace-file <file>',
-      'Marketplace yaml file. This is a Plugin entitity definition for Marketplace.',
+      'Marketplace yaml file. This is a Plugin entity definition for Marketplace.',
     )
     .action(
       lazy(() => import('./package-dynamic-plugins').then(m => m.command)),
