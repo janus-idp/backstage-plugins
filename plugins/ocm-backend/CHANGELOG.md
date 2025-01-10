@@ -1,5 +1,11 @@
 ### Dependencies
 
+## 4.4.6
+
+### Patch Changes
+
+- e3665ac: Bump path-to-regexp to v0.1.12 to fix CVE-2024-52798
+
 ## 4.4.5
 
 ### Patch Changes
