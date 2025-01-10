@@ -190,6 +190,11 @@ export function registerScriptCommand(program: Command) {
       '-m, --marketplace-file <file>',
       'Marketplace yaml file. This is a Plugin entity definition for Marketplace.',
     )
+    .option(
+      '--platform <platform>',
+      'Platform to use when building the container image. Default is "linux/amd64". Can be set to "" to not set --platfrom flag in builder command.',
+      'linux/amd64',
+    )
     .action(
       lazy(() => import('./package-dynamic-plugins').then(m => m.command)),
     );

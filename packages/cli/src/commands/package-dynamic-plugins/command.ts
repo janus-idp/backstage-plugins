@@ -20,6 +20,7 @@ export async function command(opts: OptionValues): Promise<void> {
     tag,
     useDocker,
     marketplaceFile,
+    platform,
   } = opts;
   if (!exportTo && !tag) {
     Task.error(
@@ -235,6 +236,9 @@ export async function command(opts: OptionValues): Promise<void> {
         flags.push(
           `--annotation io.backstage.marketplace/${pluginName}='${base64pluginInfo}'`,
         );
+      }
+      if (platform) {
+        flags.push(`--platform ${platform}`);
       }
       // run the command to generate the image
       Task.log(`Creating image using ${containerTool}`);
