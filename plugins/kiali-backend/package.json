@@ -50,7 +50,7 @@
     "@backstage/errors": "^1.2.4",
     "@backstage/plugin-auth-node": "^0.5.3",
     "axios": "^1.7.4",
-    "express": "^4.18.2",
+    "express": "^4.21.2",
     "moment": "^2.29.4",
     "yn": "^4.0.0"
   },
