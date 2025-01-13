@@ -1,5 +1,11 @@
 ### Dependencies
 
+## 1.20.2
+
+### Patch Changes
+
+- cd6ad46: Bump path-to-regexp to v0.1.12 to fix CVE-2024-52798
+
 ## 1.20.1
 
 ### Patch Changes
