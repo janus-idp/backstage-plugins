@@ -1,5 +1,11 @@
 ## @janus-idp/backstage-plugin-audit-log-node [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-audit-log-node@1.3.0...@janus-idp/backstage-plugin-audit-log-node@1.4.0) (2024-07-25)
 
+## 1.7.2
+
+### Patch Changes
+
+- cd6ad46: Bump path-to-regexp to v0.1.12 to fix CVE-2024-52798
+
 ## 1.7.1
 
 ### Patch Changes
