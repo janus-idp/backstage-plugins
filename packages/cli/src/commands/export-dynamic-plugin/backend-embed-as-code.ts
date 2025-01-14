@@ -168,14 +168,14 @@ export async function backend(
     embedModules({
       filter: filter,
       addDependency: (embeddedModule, dependencyName, newDependencyVersion) =>
-        addToDependenciesForModule(
-          {
+        addToDependenciesForModule({
+          dependency: {
             name: dependencyName,
             version: newDependencyVersion,
           },
-          dependenciesToAdd,
-          embeddedModule,
-        ),
+          dependencies: dependenciesToAdd,
+          module: embeddedModule,
+        }),
     }),
   );
 
