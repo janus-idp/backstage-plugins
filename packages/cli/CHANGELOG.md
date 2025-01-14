@@ -1,5 +1,22 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 2.0.0
+
+### Major Changes
+
+- eac5451: changes to package-dynamic-plugins command:
+
+  - rename com.redhat.rhdh.plugins to io.backstage.dynamic-packages to make it more "upstream friendly"
+  - add io.backstage.marketplace/<plugin-name> annotations, value is read from file specified by optional --marketplace flag
+  - use base64 for annotation values
+
+### Minor Changes
+
+- 70cde20: changes to package-dynamic-plugins command:
+
+  - by default `--platform linux/amd64` is added to the command container build command
+  - added a new flag `--platfrom` allow user to specify the platform for the container build command
+
 ## 1.19.1
 
 ### Patch Changes
