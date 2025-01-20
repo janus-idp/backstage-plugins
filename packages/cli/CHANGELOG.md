@@ -1,5 +1,19 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 3.0.0
+
+### Major Changes
+
+- 8c307f7: changes to `package-dynamic-plugins` command:
+
+  - Removed `-m` (`--marketplace`) flag. This flag will be replaced with more generic implementation see: https://issues.redhat.com/browse/RHIDP-5290
+
+### Patch Changes
+
+- 684e4ad: fix(cli): extend --ignore-version-check
+
+  This change updates the cli's --ignore-version-check flag to also ignore the check performed on an embedded transitive dependencies that are moved to peer dependencies, when it is known that the mismatch is runtime compatible.
+
 ## 2.0.0
 
 ### Major Changes
