@@ -23,11 +23,17 @@ import path from 'path';
 
 import { Task } from '../../lib/tasks';
 
-export function addToDependenciesForModule(
-  dependency: { name: string; version: string },
-  dependencies: { [key: string]: string },
-  module: string,
-): void {
+export function addToDependenciesForModule({
+  dependency,
+  dependencies,
+  ignoreVersionCheck = [],
+  module,
+}: {
+  dependency: { name: string; version: string };
+  dependencies: { [key: string]: string };
+  ignoreVersionCheck?: string[];
+  module: string;
+}): void {
   const existingDependencyVersion = dependencies[dependency.name];
   if (existingDependencyVersion === undefined) {
     dependencies[dependency.name] = dependency.version;
@@ -61,9 +67,15 @@ export function addToDependenciesForModule(
     );
     return;
   }
-  throw new Error(
-    `Several incompatible versions ('${existingDependencyVersion}', '${dependency.version}') of the same transitive dependency ('${dependency.name}') for embedded module ('${module}')`,
-  );
+  if (!ignoreVersionCheck.includes(dependency.name)) {
+    throw new Error(
+      `Several incompatible versions ('${existingDependencyVersion}', '${dependency.version}') of the same transitive dependency ('${dependency.name}') for embedded module ('${module}')`,
+    );
+  } else {
+    Task.log(
+      `Several incompatible versions ('${existingDependencyVersion}', '${dependency.version}') of the same transitive dependency ('${dependency.name}') for embedded module ('${module}') however this has been overridden to use '${dependency.version}'`,
+    );
+  }
 }
 
 export function addToMainDependencies(
