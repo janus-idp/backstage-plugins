@@ -221,11 +221,12 @@ throw new Error(
         if (embeddedPkg.peerDependencies) {
           Object.entries(embeddedPkg.peerDependencies).forEach(
             ([name, version]) => {
-              addToDependenciesForModule(
-                { name, version },
-                embeddedPeerDependencies,
-                embeddedPkg.name,
-              );
+              addToDependenciesForModule({
+                dependency: { name, version },
+                dependencies: embeddedPeerDependencies,
+                ignoreVersionCheck,
+                module: embeddedPkg.name,
+              });
             },
           );
         }
