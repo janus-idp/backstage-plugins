@@ -1,5 +1,11 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 3.1.0
+
+### Minor Changes
+
+- 6b766eb: Update dependencies to Backstage 1.35.0
+
 ## 3.0.0
 
 ### Major Changes
