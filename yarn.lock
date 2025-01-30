@@ -3021,7 +3021,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/backend-plugin-api@npm:1.0.1, @backstage/backend-plugin-api@npm:^1.0.0, @backstage/backend-plugin-api@npm:^1.0.1":
+"@backstage/backend-plugin-api@npm:^1.0.0, @backstage/backend-plugin-api@npm:^1.0.1":
   version: 1.0.1
   resolution: "@backstage/backend-plugin-api@npm:1.0.1"
   dependencies:
@@ -3459,7 +3459,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/errors@npm:1.2.4, @backstage/errors@npm:^1.2.4":
+"@backstage/errors@npm:^1.2.4":
   version: 1.2.4
   resolution: "@backstage/errors@npm:1.2.4"
   dependencies:
@@ -5362,7 +5362,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/types@npm:1.1.1, @backstage/types@npm:^1.1.1":
+"@backstage/types@npm:^1.1.1":
   version: 1.1.1
   resolution: "@backstage/types@npm:1.1.1"
   checksum: 54bd9e53570cf2a7a8d9ae30e7181ee6b669b7f543949391a2168f616e1f7b13f0419f324941a87aa15f723d0313eda8f212db2077675421d6f91484f477c4f5
@@ -7602,22 +7602,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@janus-idp/backstage-plugin-audit-log-node@^1.7.1, @janus-idp/backstage-plugin-audit-log-node@workspace:plugins/audit-log-node":
-  version: 0.0.0-use.local
-  resolution: "@janus-idp/backstage-plugin-audit-log-node@workspace:plugins/audit-log-node"
+"@janus-idp/backstage-plugin-audit-log-node@npm:^1.7.1":
+  version: 1.8.1
+  resolution: "@janus-idp/backstage-plugin-audit-log-node@npm:1.8.1"
   dependencies:
-    "@backstage/backend-plugin-api": 1.0.1
-    "@backstage/backend-test-utils": 1.0.2
-    "@backstage/cli": 0.28.2
-    "@backstage/errors": 1.2.4
-    "@backstage/types": 1.1.1
-    "@types/lodash": 4.17.5
-    express: 4.21.2
-    jest-express: 1.12.0
     lodash: ^4.17.21
-    prettier: 3.3.3
-  languageName: unknown
-  linkType: soft
+  checksum: 56e854c94663e14c963dbf43564fe1d94f8b55e827aa6b962a5740ad41b1cc100fb729f91245546f305cd9189127426d4c054fa80bbd92bfd5ec191bc73687ee
+  languageName: node
+  linkType: hard
 
 "@janus-idp/backstage-plugin-rbac-backend@npm:*":
   version: 5.2.2
@@ -15300,13 +15292,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:4.17.5":
-  version: 4.17.5
-  resolution: "@types/lodash@npm:4.17.5"
-  checksum: 3c9bb15772509f0ecb40428531863dbc3f064f2bf34bbccc2ce2b2923c69fb0868aec7e357b1d97fd0d7f7e435a014ea5c1adef8a64715529887179c97a5a823
-  languageName: node
-  linkType: hard
-
 "@types/lodash@npm:^4.14.167, @types/lodash@npm:^4.14.175":
   version: 4.17.12
   resolution: "@types/lodash@npm:4.17.12"
@@ -22643,7 +22628,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:4.21.2, express@npm:^4.14.0, express@npm:^4.17.1, express@npm:^4.17.3, express@npm:^4.18.2, express@npm:^4.19.2":
+"express@npm:^4.14.0, express@npm:^4.17.1, express@npm:^4.17.3, express@npm:^4.18.2, express@npm:^4.19.2":
   version: 4.21.2
   resolution: "express@npm:4.21.2"
   dependencies:
@@ -26291,15 +26276,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-express@npm:1.12.0":
-  version: 1.12.0
-  resolution: "jest-express@npm:1.12.0"
-  dependencies:
-    jest-node-http: 1.0.0
-  checksum: 55de11d258f06778d8928c9b2ecf838646837c6e6df97c55d179b6b678e3c76beba314bdaf42b174b203b0163c7fe8b9b652160dd007a6c0145c84a803d9f94f
-  languageName: node
-  linkType: hard
-
 "jest-get-type@npm:^29.6.3":
   version: 29.6.3
   resolution: "jest-get-type@npm:29.6.3"
@@ -26387,13 +26363,6 @@ __metadata:
     "@types/node": "*"
     jest-util: ^29.7.0
   checksum: 81ba9b68689a60be1482212878973700347cb72833c5e5af09895882b9eb5c4e02843a1bbdf23f94c52d42708bab53a30c45a3482952c9eec173d1eaac5b86c5
-  languageName: node
-  linkType: hard
-
-"jest-node-http@npm:1.0.0":
-  version: 1.0.0
-  resolution: "jest-node-http@npm:1.0.0"
-  checksum: f8e12aa5717c1c7a5202878a20fa98fd26ff4db60ff9ea74e0cd3d4d2767f5e44b200c30ba2a26ea95b526f25ecb88ade102fc128338789b5c5ca59546cd759c
   languageName: node
   linkType: hard
 
