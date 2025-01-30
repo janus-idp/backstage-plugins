@@ -1,5 +1,11 @@
 ### Dependencies
 
+## 2.4.0
+
+### Minor Changes
+
+- 6b766eb: Update dependencies to Backstage 1.35.0
+
 ## 2.3.0
 
 ### Minor Changes
