@@ -38,7 +38,6 @@ metadata:
   name: janus-idp-backstage-plugins
 spec:
   targets:
-    - ./plugins/aap-backend/catalog-info.yaml
     - ./plugins/audit-log-node/catalog-info.yaml
     - ./plugins/shared-react/catalog-info.yaml
     - ./plugins/web-terminal/catalog-info.yaml
