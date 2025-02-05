@@ -45,7 +45,7 @@
     "winston-daily-rotate-file": "5.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.29.5",
+    "@backstage/cli": "0.29.6",
     "prettier": "3.3.3"
   },
   "files": [

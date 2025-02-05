@@ -12,7 +12,7 @@
   },
   "backstage": {
     "role": "common-library",
-    "supported-versions": "1.35.0",
+    "supported-versions": "1.35.1",
     "pluginId": "shared-react",
     "pluginPackage": "@janus-idp/shared-react",
     "pluginPackages": [
@@ -55,7 +55,7 @@
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.29.5",
+    "@backstage/cli": "0.29.6",
     "@backstage/core-app-api": "1.15.4",
     "@backstage/dev-utils": "1.1.6",
     "@backstage/test-utils": "1.7.4",
