@@ -164,20 +164,22 @@ export async function backend(
   } = {};
 
   const rollupConfig = rollupConfigs[0];
-  rollupConfig.plugins?.push(
-    embedModules({
-      filter: filter,
-      addDependency: (embeddedModule, dependencyName, newDependencyVersion) =>
-        addToDependenciesForModule({
-          dependency: {
-            name: dependencyName,
-            version: newDependencyVersion,
-          },
-          dependencies: dependenciesToAdd,
-          module: embeddedModule,
-        }),
-    }),
-  );
+  if (Array.isArray(rollupConfig.plugins)) {
+    rollupConfig.plugins?.push(
+      embedModules({
+        filter: filter,
+        addDependency: (embeddedModule, dependencyName, newDependencyVersion) =>
+          addToDependenciesForModule({
+            dependency: {
+              name: dependencyName,
+              version: newDependencyVersion,
+            },
+            dependencies: dependenciesToAdd,
+            module: embeddedModule,
+          }),
+      }),
+    );
+  }
 
   if (Array.isArray(rollupConfig.output)) {
     rollupConfig.output.forEach(output => {
@@ -194,7 +196,7 @@ export async function backend(
             );
             return interopForPackage[id];
           }
-          return interopForAll || true; // true is the default value in Rollup.
+          return interopForAll || 'compat'; // compat is the default value in Rollup.
         };
       }
     });

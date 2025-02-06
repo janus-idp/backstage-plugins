@@ -23,7 +23,7 @@ import yaml from '@rollup/plugin-yaml';
 import svgr from '@svgr/rollup';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { OutputOptions, RollupOptions, RollupWarning } from 'rollup';
+import { OutputOptions, RollupLog, RollupOptions } from 'rollup';
 import dts from 'rollup-plugin-dts';
 import esbuild from 'rollup-plugin-esbuild';
 import postcss from 'rollup-plugin-postcss';
@@ -68,7 +68,7 @@ export async function makeRollupConfigs(
     targetPkg = (await fs.readJson(packagePath)) as BackstagePackageJson;
   }
 
-  const onwarn = ({ code, message }: RollupWarning) => {
+  const onwarn = ({ code, message }: RollupLog) => {
     if (code === 'EMPTY_BUNDLE') {
       return; // We don't care about this one
     }
