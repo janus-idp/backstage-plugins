@@ -1,5 +1,11 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 3.2.0
+
+### Minor Changes
+
+- 99e7cd1: Bump rollup to v4
+
 ## 3.1.0
 
 ### Minor Changes
