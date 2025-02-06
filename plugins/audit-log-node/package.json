@@ -1,0 +1,69 @@
+{
+  "name": "@janus-idp/backstage-plugin-audit-log-node",
+  "description": "Node.js library for the audit-log plugin",
+  "version": "1.8.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "node-library",
+    "supported-versions": "1.32.5",
+    "pluginId": "audit-log",
+    "pluginPackage": "@janus-idp/backstage-plugin-audit-log-node",
+    "pluginPackages": [
+      "@janus-idp/backstage-plugin-audit-log-node"
+    ]
+  },
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint:check": "backstage-cli package lint",
+    "lint:fix": "backstage-cli package lint --fix",
+    "postpack": "backstage-cli package postpack",
+    "prepack": "backstage-cli package prepack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
+    "tsc": "tsc",
+    "prettier:check": "prettier --ignore-unknown --check .",
+    "prettier:fix": "prettier --ignore-unknown --write ."
+  },
+  "devDependencies": {
+    "@backstage/backend-plugin-api": "1.0.1",
+    "@backstage/backend-test-utils": "1.0.2",
+    "@backstage/cli": "0.28.2",
+    "@backstage/errors": "1.2.4",
+    "@backstage/types": "1.1.1",
+    "@types/lodash": "4.17.5",
+    "express": "4.21.2",
+    "jest-express": "1.12.0",
+    "prettier": "3.3.3"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/audit-log-node"
+  },
+  "keywords": [
+    "support:production",
+    "lifecycle:active",
+    "backstage",
+    "plugin"
+  ],
+  "homepage": "https://red.ht/rhdh",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "maintainers": [
+    "@janus-idp/maintainers-plugins"
+  ],
+  "author": "Red Hat"
+}
