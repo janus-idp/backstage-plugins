@@ -1,5 +1,5 @@
 ---
-"@janus-idp/shared-react": major
+"@janus-idp/shared-react": minor
 ---
 
 Update @kubernetes/client-node for shared/react.
