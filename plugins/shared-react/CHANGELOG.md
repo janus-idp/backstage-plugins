@@ -1,5 +1,11 @@
 ## @janus-idp/shared-react [2.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.9.0...@janus-idp/shared-react@2.10.0) (2024-08-02)
 
+## 2.16.0
+
+### Minor Changes
+
+- e94d774: Update @kubernetes/client-node for shared/react.
+
 ## 2.15.0
 
 ### Minor Changes
