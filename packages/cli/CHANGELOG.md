@@ -1,5 +1,11 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 3.3.0
+
+### Minor Changes
+
+- 9983dd8: Bump packages/cli to 3.3.0 in main branch, in prep for release of 1.5.0
+
 ## 3.2.0
 
 ### Minor Changes

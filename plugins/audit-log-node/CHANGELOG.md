@@ -1,5 +1,11 @@
 ## @janus-idp/backstage-plugin-audit-log-node [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-audit-log-node@1.3.0...@janus-idp/backstage-plugin-audit-log-node@1.4.0) (2024-07-25)
 
+## 1.9.0
+
+### Minor Changes
+
+- 9983dd8: Bump plugins/audit-log-node to 1.9.0 in main branch, in prep for release of 1.5.0
+
 ## 1.8.1
 
 ### Patch Changes
