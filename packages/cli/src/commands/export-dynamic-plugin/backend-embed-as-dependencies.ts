@@ -758,7 +758,7 @@ export function customizeForDynamicUse(options: {
           continue;
         }
 
-        // If yarn v1 => detect if the current dep is an embedded one,
+        // If yarn v1, then detect if the current dep is an embedded one,
         // and if it is the case replace the version by the file protocol
         // (like what we do for the resolutions).
         if (options.isYarnV1) {
