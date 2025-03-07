@@ -1,5 +1,15 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 3.3.0
+
+### Minor Changes
+
+- 9983dd8: Bump packages/cli to 3.3.0 in main branch, in prep for release of 1.5.0
+
+### Patch Changes
+
+- 0123a8d: Fix Yarn v1 incompatibility in the `export-dynamic-plugin` command
+
 ## 3.2.0
 
 ### Minor Changes
