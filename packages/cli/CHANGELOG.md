@@ -1,5 +1,11 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 3.3.1
+
+### Patch Changes
+
+- 4af162c: This change ensures the CLI properly updates any manually added resolutions a plugin has with the embedded version. This fixes cases where a plugin may be using resolutions for finer grained version control on packages the CLI would embed, such as native dependencies.
+
 ## 3.3.0
 
 ### Minor Changes
