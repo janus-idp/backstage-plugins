@@ -785,6 +785,9 @@ export function customizeForDynamicUse(options: {
     // See https://github.com/yarnpkg/yarn/issues/6373#issuecomment-760068356
     pkgToCustomize.devDependencies = {};
 
+    // additionalOverrides and additionalResolutions will override the
+    // current package.json entries for "overrides" and "resolutions"
+    // respectively
     const overrides = (pkgToCustomize as any).overrides || {};
     (pkgToCustomize as any).overrides = {
       // The following lines are a workaround for the fact that the @aws-sdk/util-utf8-browser package
@@ -795,8 +798,8 @@ export function customizeForDynamicUse(options: {
       '@aws-sdk/util-utf8-browser': {
         '@smithy/util-utf8': '^2.0.0',
       },
-      ...(options.additionalOverrides || {}),
       ...overrides,
+      ...(options.additionalOverrides || {}),
     };
     const resolutions = (pkgToCustomize as any).resolutions || {};
     (pkgToCustomize as any).resolutions = {
@@ -806,8 +809,8 @@ export function customizeForDynamicUse(options: {
       //
       // See https://github.com/aws/aws-sdk-js-v3/issues/5305.
       '@aws-sdk/util-utf8-browser': 'npm:@smithy/util-utf8@~2',
-      ...(options.additionalResolutions || {}),
       ...resolutions,
+      ...(options.additionalResolutions || {}),
     };
 
     if (options.after) {
