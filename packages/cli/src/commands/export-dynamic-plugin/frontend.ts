@@ -27,7 +27,7 @@ import { buildScalprumPlugin } from '../../lib/builder/buildScalprumPlugin';
 import { productionPack } from '../../lib/packager/productionPack';
 import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
-import { customizeForDynamicUse } from './backend-embed-as-dependencies';
+import { customizeForDynamicUse } from './backend';
 
 export async function frontend(
   _: PackageRoleInfo,
