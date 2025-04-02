@@ -112,6 +112,7 @@ export async function frontend(
     const monoRepoPackages = await getPackages(paths.targetDir);
     await customizeForDynamicUse({
       embedded: [],
+      isYarnV1: false,
       monoRepoPackages,
       overridding: {
         name: `${name}-dynamic`,

@@ -42,6 +42,7 @@ export async function backend(opts: OptionValues): Promise<string> {
   const targetRelativePath = 'dist-dynamic';
   const target = path.join(paths.targetDir, targetRelativePath);
   const yarn = 'yarn';
+  const yarnVersion = execSync(`${yarn} --version`).toString().trim();
 
   const pkgContent = await fs.readFile(
     paths.resolveTarget('package.json'),
@@ -151,12 +152,6 @@ throw new Error(
     [key: string]: string;
   } = {};
 
-  function embeddedPackageRelativePath(p: ResolvedEmbedded): string {
-    return path.join(
-      'embedded',
-      p.packageName.replace(/^@/, '').replace(/\//, '-'),
-    );
-  }
   for (const embedded of embeddedResolvedPackages) {
     const embeddedDestRelativeDir = embeddedPackageRelativePath(embedded);
     const embeddedDestDir = path.join(target, embeddedDestRelativeDir);
@@ -211,6 +206,7 @@ throw new Error(
     );
     await customizeForDynamicUse({
       embedded: embeddedResolvedPackages,
+      isYarnV1: yarnVersion.startsWith('1.'),
       monoRepoPackages,
       sharedPackages: sharedPackagesRules,
       overridding: {
@@ -277,6 +273,7 @@ throw new Error(
   );
   await customizeForDynamicUse({
     embedded: embeddedResolvedPackages,
+    isYarnV1: yarnVersion.startsWith('1.'),
     monoRepoPackages,
     sharedPackages: sharedPackagesRules,
     overridding: {
@@ -359,10 +356,9 @@ throw new Error(
   if (opts.install) {
     Task.log(`Installing private dependencies of the main package`);
 
-    const version = execSync(`${yarn} --version`).toString().trim();
     const logFile = 'yarn-install.log';
     const redirect = `> ${logFile}`;
-    const yarnInstall = version.startsWith('1.')
+    const yarnInstall = yarnVersion.startsWith('1.')
       ? `${yarn} install --production${
           yarnLockExists ? ' --frozen-lockfile' : ''
         } ${redirect}`
@@ -659,6 +655,7 @@ function checkWorkspacePackageVersion(
 
 export function customizeForDynamicUse(options: {
   embedded: ResolvedEmbedded[];
+  isYarnV1: boolean;
   monoRepoPackages: Packages | undefined;
   sharedPackages?: SharedPackagesRules | undefined;
   overridding?:
@@ -757,6 +754,23 @@ export function customizeForDynamicUse(options: {
           pkgToCustomize.peerDependencies[dep] =
             pkgToCustomize.dependencies[dep];
           delete pkgToCustomize.dependencies[dep];
+
+          continue;
+        }
+
+        // If yarn v1, then detect if the current dep is an embedded one,
+        // and if it is the case replace the version by the file protocol
+        // (like what we do for the resolutions).
+        if (options.isYarnV1) {
+          const embeddedDep = options.embedded.find(
+            e =>
+              e.packageName === dep &&
+              checkWorkspacePackageVersion(dependencyVersionSpec, e),
+          );
+          if (embeddedDep) {
+            pkgToCustomize.dependencies[dep] =
+              `file:./${embeddedPackageRelativePath(embeddedDep)}`;
+          }
         }
       }
     }
@@ -771,6 +785,9 @@ export function customizeForDynamicUse(options: {
     // See https://github.com/yarnpkg/yarn/issues/6373#issuecomment-760068356
     pkgToCustomize.devDependencies = {};
 
+    // additionalOverrides and additionalResolutions will override the
+    // current package.json entries for "overrides" and "resolutions"
+    // respectively
     const overrides = (pkgToCustomize as any).overrides || {};
     (pkgToCustomize as any).overrides = {
       // The following lines are a workaround for the fact that the @aws-sdk/util-utf8-browser package
@@ -781,8 +798,8 @@ export function customizeForDynamicUse(options: {
       '@aws-sdk/util-utf8-browser': {
         '@smithy/util-utf8': '^2.0.0',
       },
-      ...(options.additionalOverrides || {}),
       ...overrides,
+      ...(options.additionalOverrides || {}),
     };
     const resolutions = (pkgToCustomize as any).resolutions || {};
     (pkgToCustomize as any).resolutions = {
@@ -792,8 +809,8 @@ export function customizeForDynamicUse(options: {
       //
       // See https://github.com/aws/aws-sdk-js-v3/issues/5305.
       '@aws-sdk/util-utf8-browser': 'npm:@smithy/util-utf8@~2',
-      ...(options.additionalResolutions || {}),
       ...resolutions,
+      ...(options.additionalResolutions || {}),
     };
 
     if (options.after) {
@@ -920,4 +937,11 @@ function validatePluginEntryPoints(target: string): string {
   }
 
   return '';
+}
+
+function embeddedPackageRelativePath(p: ResolvedEmbedded): string {
+  return path.join(
+    'embedded',
+    p.packageName.replace(/^@/, '').replace(/\//, '-'),
+  );
 }
