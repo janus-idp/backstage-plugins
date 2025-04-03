@@ -109,30 +109,22 @@ export async function command(opts: OptionValues): Promise<void> {
   try {
     // copy the dist-dynamic output folder for each plugin to some temp directory and generate the metadata entry for each plugin
     for (const pluginPkg of packages) {
-      const {
-        packageDirectory,
-        packageFilePath,
-        packageJson,
-        packageRoleInfo,
-      } = pluginPkg;
-      const packageName =
-        packageJson.name!.replace(/^@/, '').replace(/\//, '-') +
-        ((packageRoleInfo && packageRoleInfo.platform) === 'node'
-          ? '-dynamic'
-          : '');
-
-      const distDirectory = path.join(packageDirectory, 'dist-dynamic');
+      const { packageDirectory, packageFilePath } = pluginPkg;
+      const distDynamicDirectory = path.join(packageDirectory, 'dist-dynamic');
+      const pluginPackageJson = (await fs.readJson(
+        path.join(distDynamicDirectory, 'package.json'),
+      )) as PackageJson;
+      const packageName = pluginPackageJson.name!.replace(/-dynamic$/, '');
       const targetDirectory = path.join(tmpDir, packageName);
-      Task.log(`Copying '${distDirectory}' to '${targetDirectory}`);
+      Task.log(`Copying '${distDynamicDirectory}' to '${targetDirectory}`);
       try {
         // Copy the exported package to the staging area and ensure symlinks
         // are copied as normal folders
-        fs.cpSync(distDirectory, targetDirectory, {
+        fs.cpSync(distDynamicDirectory, targetDirectory, {
           recursive: true,
           dereference: true,
         });
         const {
-          name,
           version,
           description,
           backstage,
@@ -143,10 +135,10 @@ export async function command(opts: OptionValues): Promise<void> {
           author,
           bugs,
           keywords,
-        } = packageJson;
+        } = pluginPackageJson;
         pluginRegistryMetadata.push({
           [packageName]: {
-            name,
+            name: packageName,
             version,
             description,
             backstage,
@@ -173,10 +165,6 @@ export async function command(opts: OptionValues): Promise<void> {
               `Encountered an error parsing configuration at ${pluginConfigPath}, no example configuration will be displayed`,
             );
           }
-        } else {
-          Task.log(
-            `No plugin configuration found at ${pluginConfigPath} create this file as needed if this plugin requires configuration`,
-          );
         }
       } catch (err) {
         Task.log(
