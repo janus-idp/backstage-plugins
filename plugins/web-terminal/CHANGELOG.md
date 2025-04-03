@@ -1,5 +1,11 @@
 ### Dependencies
 
+## 1.15.0
+
+### Minor Changes
+
+- b25ecb4: Bump plugins/web-terminal to 1.15.0 in main branch, in prep for release of 1.6.0
+
 ## 1.14.0
 
 ### Minor Changes
