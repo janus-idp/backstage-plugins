@@ -1,5 +1,15 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 3.4.0
+
+### Minor Changes
+
+- b25ecb4: Bump packages/cli to 3.4.0 in main branch, in prep for release of 1.6.0
+
+### Patch Changes
+
+- f694a76: This change updates the package-dynamic-plugins command to use the exported plugin package name rather than deriving a package name from the base plugin package and package role. This change also ensures the exported plugin metadata is taken from the exported package instead of the original package. This change will potentially affect the final directory name of exported plugins.
+
 ## 3.3.1
 
 ### Patch Changes
