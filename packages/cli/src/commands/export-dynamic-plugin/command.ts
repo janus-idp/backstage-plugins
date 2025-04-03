@@ -30,14 +30,6 @@ import { backend as backendEmbedAsDependencies } from './backend-embed-as-depend
 import { applyDevOptions } from './dev';
 import { frontend } from './frontend';
 
-const saveSchema = async (packageName: string, destination: string) => {
-  const configSchema = await getConfigSchema(packageName);
-  await fs.writeJson(paths.resolveTarget(destination), configSchema, {
-    encoding: 'utf8',
-    spaces: 2,
-  });
-};
-
 export async function command(opts: OptionValues): Promise<void> {
   const rawPkg = await fs.readJson(paths.resolveTarget('package.json'));
   const role = PackageRoles.getRoleFromPackage(rawPkg);
@@ -47,7 +39,7 @@ export async function command(opts: OptionValues): Promise<void> {
 
   let targetPath: string;
   const roleInfo = PackageRoles.getRoleInfo(role);
-  let configSchemaPath: string;
+  let configSchemaPaths: string[];
 
   if (role === 'backend-plugin' || role === 'backend-plugin-module') {
     if (opts.embedAsDependencies) {
@@ -55,10 +47,15 @@ export async function command(opts: OptionValues): Promise<void> {
     } else {
       targetPath = await backendEmbedAsCode(roleInfo, opts);
     }
-    configSchemaPath = path.join(targetPath, 'dist/configSchema.json');
+    configSchemaPaths = [
+      path.join(targetPath, 'dist/configSchema.json'),
+      path.join(targetPath, 'dist/.config-schema.json'),
+    ];
   } else if (role === 'frontend-plugin' || role === 'frontend-plugin-module') {
     targetPath = await frontend(roleInfo, opts);
-    configSchemaPath = path.join(targetPath, 'dist-scalprum/configSchema.json');
+    configSchemaPaths = [
+      path.join(targetPath, 'dist-scalprum/configSchema.json'),
+    ];
   } else {
     throw new Error(
       'Only packages with the "backend-plugin", "backend-plugin-module" or "frontend-plugin" roles can be exported as dynamic backend plugins',
@@ -66,9 +63,16 @@ export async function command(opts: OptionValues): Promise<void> {
   }
 
   Task.log(
-    `Saving self-contained config schema in ${chalk.cyan(configSchemaPath)}`,
+    `Saving self-contained config schema in ${chalk.cyan(configSchemaPaths.join(' and '))}`,
   );
-  await saveSchema(rawPkg.name, configSchemaPath);
+
+  const configSchema = await getConfigSchema(rawPkg.name);
+  for (const configSchemaPath of configSchemaPaths) {
+    await fs.writeJson(paths.resolveTarget(configSchemaPath), configSchema, {
+      encoding: 'utf8',
+      spaces: 2,
+    });
+  }
 
   await applyDevOptions(opts, rawPkg.name, roleInfo, targetPath);
 }
