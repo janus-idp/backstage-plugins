@@ -114,7 +114,10 @@ export async function command(opts: OptionValues): Promise<void> {
       const pluginPackageJson = (await fs.readJson(
         path.join(distDynamicDirectory, 'package.json'),
       )) as PackageJson;
-      const packageName = pluginPackageJson.name!.replace(/-dynamic$/, '');
+      const packageName = pluginPackageJson
+        .name!.replace(/-dynamic$/, '')
+        .replace(/^@/, '')
+        .replace(/\//, '-');
       const targetDirectory = path.join(tmpDir, packageName);
       Task.log(`Copying '${distDynamicDirectory}' to '${targetDirectory}`);
       try {
@@ -125,6 +128,7 @@ export async function command(opts: OptionValues): Promise<void> {
           dereference: true,
         });
         const {
+          name,
           version,
           description,
           backstage,
@@ -138,7 +142,7 @@ export async function command(opts: OptionValues): Promise<void> {
         } = pluginPackageJson;
         pluginRegistryMetadata.push({
           [packageName]: {
-            name: packageName,
+            name,
             version,
             description,
             backstage,
