@@ -25,15 +25,6 @@ declare module 'fs' {
 
 declare module 'gitconfiglocal';
 
-declare module 'rollup-plugin-image-files' {
-  export default function image(options?: any): any;
-}
-
-declare module '@svgr/rollup' {
-  export default function svgr(options?: any): any;
-}
-
-declare module '@rollup/plugin-yaml';
 declare module 'react-dev-utils/formatWebpackMessages' {
   export default function (stats: any): {
     errors: string[];

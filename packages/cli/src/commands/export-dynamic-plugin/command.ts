@@ -25,8 +25,7 @@ import path from 'path';
 import { paths } from '../../lib/paths';
 import { getConfigSchema } from '../../lib/schema/collect';
 import { Task } from '../../lib/tasks';
-import { backend as backendEmbedAsCode } from './backend-embed-as-code';
-import { backend as backendEmbedAsDependencies } from './backend-embed-as-dependencies';
+import { backend } from './backend';
 import { applyDevOptions } from './dev';
 import { frontend } from './frontend';
 
@@ -40,13 +39,8 @@ export async function command(opts: OptionValues): Promise<void> {
   let targetPath: string;
   const roleInfo = PackageRoles.getRoleInfo(role);
   let configSchemaPaths: string[];
-
   if (role === 'backend-plugin' || role === 'backend-plugin-module') {
-    if (opts.embedAsDependencies) {
-      targetPath = await backendEmbedAsDependencies(opts);
-    } else {
-      targetPath = await backendEmbedAsCode(roleInfo, opts);
-    }
+    targetPath = await backend(opts);
     configSchemaPaths = [
       path.join(targetPath, 'dist/configSchema.json'),
       path.join(targetPath, 'dist/.config-schema.json'),
