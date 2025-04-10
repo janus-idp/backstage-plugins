@@ -13,15 +13,36 @@ import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
 
 export async function command(opts: OptionValues): Promise<void> {
-  const { exportTo, forceExport, preserveTempDir, tag, useDocker, platform } =
-    opts;
+  const {
+    exportTo,
+    forceExport,
+    preserveTempDir,
+    tag,
+    useDocker,
+    useBuildah,
+    platform,
+  } = opts;
   if (!exportTo && !tag) {
     Task.error(
       `Neither ${chalk.white('--export-to')} or ${chalk.white('--tag')} was specified, either specify ${chalk.white('--export-to')} to export plugins to a directory or ${chalk.white('--tag')} to export plugins to a container image`,
     );
     return;
   }
-  const containerTool = useDocker ? 'docker' : 'podman';
+  if (useDocker && useBuildah) {
+    Task.error(
+      `Both ${chalk.white('--use-docker')} and ${chalk.white('--use-buildah')} were specified, please specify at most one`,
+    );
+    return;
+  }
+  let containerTool = 'podman';
+
+  if (useDocker) {
+    containerTool = 'docker';
+  }
+  if (useBuildah) {
+    containerTool = 'buildah';
+  }
+
   // check if the container tool is available, skip if just exporting the plugins to a directory
   if (!exportTo) {
     try {

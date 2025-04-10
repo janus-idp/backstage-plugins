@@ -183,7 +183,12 @@ export function registerScriptCommand(program: Command) {
     )
     .option(
       '--use-docker',
-      'By defult, the command uses podman to build the container image. Use this flag to use docker instead.',
+      'By default, the command uses podman to build the container image. Use this flag to use docker instead.',
+      false,
+    )
+    .option(
+      '--use-buildah',
+      'By default, the command uses podman to build the container image. Use this flag to use buildah instead.',
       false,
     )
     .option(
