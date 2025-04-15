@@ -19,6 +19,7 @@ import { PackageRoles } from '@backstage/cli-node';
 import chalk from 'chalk';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
+import * as semver from 'semver';
 
 import path from 'path';
 
@@ -74,5 +75,49 @@ export async function command(opts: OptionValues): Promise<void> {
     });
   }
 
+  await checkBackstageSupportedVersions(targetPath);
+
   await applyDevOptions(opts, rawPkg.name, roleInfo, targetPath);
+}
+
+async function checkBackstageSupportedVersions(targetPath: string) {
+  const targetPackageFile = path.join(targetPath, 'package.json');
+  const targetPackage = await fs.readJSON(targetPackageFile);
+  const supportedVersions: string | undefined =
+    targetPackage.backstage?.['supported-versions'];
+  const backstageJson = path.join(paths.targetRoot, '/backstage.json');
+  if (!fs.existsSync(backstageJson)) {
+    return;
+  }
+  const backstageVersion: string = (await fs.readJSON(backstageJson)).version;
+  if (supportedVersions) {
+    const singleVersionInSupportedVersions = semver.valid(
+      supportedVersions,
+      true,
+    );
+    const supportedVersionsRange = singleVersionInSupportedVersions
+      ? `~${supportedVersions}`
+      : supportedVersions;
+
+    if (semver.subset(`~${backstageVersion}`, supportedVersionsRange)) {
+      return;
+    }
+    const errorMessage = `The ${chalk.cyan('backstage.supported-versions')} field in the package descriptor is not compatible with the backstage version specified in the ${chalk.cyan('backstage.json')} file: ${chalk.cyan(supportedVersions)} vs ${chalk.cyan(backstageVersion)}.`;
+    if (!singleVersionInSupportedVersions) {
+      throw new Error(errorMessage);
+    }
+    Task.log(
+      chalk.yellow(
+        `${errorMessage}\nOverriding it with ${chalk.cyan(backstageVersion)}.`,
+      ),
+    );
+  } else {
+    Task.log(
+      `Filling ${chalk.cyan('supported-versions')} with ${chalk.cyan(backstageVersion)}.`,
+    );
+  }
+  targetPackage.backstage['supported-versions'] = backstageVersion;
+  await fs.writeJSON(targetPackageFile, targetPackage, {
+    spaces: 2,
+  });
 }
