@@ -37,7 +37,7 @@ export async function command(opts: OptionValues): Promise<void> {
     paths.resolveTarget('package.json'),
   )) as PackageJson;
   const workspacePackageRole =
-    PackageRoles.detectRoleFromPackage(workspacePackage);
+    PackageRoles.getRoleFromPackage(workspacePackage);
   const workspacePackageRoleInfo =
     workspacePackageRole !== undefined
       ? PackageRoles.getRoleInfo(workspacePackageRole)
