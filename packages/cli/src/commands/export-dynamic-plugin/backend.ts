@@ -42,7 +42,7 @@ export async function backend(opts: OptionValues): Promise<string> {
   const targetRelativePath = 'dist-dynamic';
   const target = path.join(paths.targetDir, targetRelativePath);
   const yarn = 'yarn';
-  const yarnVersion = execSync(`${yarn} --version`).toString().trim();
+  const yarnVersion = execSync(`${yarn} --version`).toString().trim(); // NOSONAR
 
   const pkgContent = await fs.readFile(
     paths.resolveTarget('package.json'),

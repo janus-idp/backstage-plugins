@@ -138,12 +138,6 @@ export function registerScriptCommand(program: Command) {
       'Provides the dynamic plugins root folder when the dynamic plugins content should be copied when using the `--dev` argument.',
     )
     .option(
-      '--embed-as-dependencies',
-      'Include embedded packages as private dependencies of backend plugins. When value is `false` (using `--no-embed-as-dependencies`), source code of embedded plugins is merged with the generated code, so that the embedded plugin packages are completly erased (only available for legacy reasons: use with care).',
-      true,
-    )
-    .option('--no-embed-as-dependencies', undefined, false)
-    .option(
       '--in-place',
       'Adds the frontend dynamic plugin assets to the `dist-scalprum` folder of the original plugin package, instead of producing the assets in a distinct package located in the `dist-dynamic` sub-folder, as for backend plugins.',
       false,
