@@ -1,5 +1,19 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 3.4.2
+
+### Patch Changes
+
+- 611e23a: Fix wrong role retrieval which could break the `metadata` command behavior.
+- 611e23a: Check backstage the `support-versions` field value during export, and fix it if possible while emitting a warning.
+
+## 3.4.1
+
+### Patch Changes
+
+- a3e8716: Prepare for better compatibility with the upstream dynamic plugins support, by generating the config schema for backend plugins in both `dist/configSchema.json` (for backward compatibility with RHDH) and `dist/.config-schema.json` for consistency and compatibility with upstream.
+- 2559fd7: This change fixes package-dynamic-plugin to transform any organization identifier into a flat file path when packaging dynamic plugins.
+
 ## 3.4.0
 
 ### Minor Changes
