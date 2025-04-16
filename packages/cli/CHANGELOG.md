@@ -1,5 +1,11 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 3.5.0
+
+### Minor Changes
+
+- 049f200: This change removes the embed-as-code method of exporting from export-dynamic-plugin and the associated --no-embed-as-dependencies flag. This change also removes the forked code required to support this exporting method as well as the associated rollup dependencies.
+
 ## 3.4.2
 
 ### Patch Changes
