@@ -1,5 +1,12 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 3.4.2
+
+### Patch Changes
+
+- 611e23a: Fix wrong role retrieval which could break the `metadata` command behavior.
+- 611e23a: Check backstage the `support-versions` field value during export, and fix it if possible while emitting a warning.
+
 ## 3.4.1
 
 ### Patch Changes
