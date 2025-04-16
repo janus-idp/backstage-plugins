@@ -166,13 +166,13 @@ export async function command(opts: OptionValues): Promise<void> {
             );
           } catch (err) {
             Task.log(
-              `Encountered an error parsing configuration at ${pluginConfigPath}, no example configuration will be displayed`,
+              `Encountered an error parsing configuration at ${pluginConfigPath}, no example configuration will be displayed. The error was ${err}`,
             );
           }
         }
       } catch (err) {
         Task.log(
-          `Encountered an error copying static assets for plugin ${packageFilePath}, the plugin will not be packaged.  The error was ${err}`,
+          `Encountered an error copying static assets for plugin ${packageFilePath}, the plugin will not be packaged. The error was ${err}`,
         );
       }
     }
@@ -279,7 +279,7 @@ async function discoverPluginPackages() {
       packageJsonFilePaths.map(async packageFilePath => {
         const packageJson = (await fs.readJson(packageFilePath)) as PackageJson;
         const packageRole = PackageRoles.getRoleFromPackage(packageJson);
-        const packageRoleInfo = PackageRoles.getRoleInfo(packageRole || '');
+        const packageRoleInfo = PackageRoles.getRoleInfo(packageRole ?? '');
         const packageDirectory = path.dirname(packageFilePath);
         return {
           packageDirectory,
