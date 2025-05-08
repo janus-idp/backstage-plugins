@@ -858,10 +858,12 @@ function validatePluginEntryPoints(target: string): string {
     try {
       return dynamicPluginRequire(modulePath);
     } catch (e) {
-      // Retry only if we failed with SyntaxError because the `ts` require extension was not there.
-      // Else we should throw.
+      // Retry only if we failed with SyntaxError or unsupported dir format
+      // because the `ts` require extension was not there.  Else we should
+      // throw.
       if (
-        e?.name !== SyntaxError.name ||
+        (e?.code !== 'ERR_UNSUPPORTED_DIR_IMPORT' &&
+          e?.name !== SyntaxError.name) ||
         dynamicPluginRequire.extensions['.ts'] !== undefined
       ) {
         throw e;
