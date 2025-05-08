@@ -13,22 +13,59 @@ import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
 
 export async function command(opts: OptionValues): Promise<void> {
-  const { exportTo, forceExport, preserveTempDir, tag, useDocker, platform } =
-    opts;
+  const {
+    exportTo,
+    forceExport,
+    preserveTempDir,
+    tag,
+    useDocker,
+    containerTool = 'podman',
+    platform,
+  } = opts;
   if (!exportTo && !tag) {
     Task.error(
       `Neither ${chalk.white('--export-to')} or ${chalk.white('--tag')} was specified, either specify ${chalk.white('--export-to')} to export plugins to a directory or ${chalk.white('--tag')} to export plugins to a container image`,
     );
     return;
   }
-  const containerTool = useDocker ? 'docker' : 'podman';
+
   // check if the container tool is available, skip if just exporting the plugins to a directory
+  let containerToolCmd = containerTool;
+
   if (!exportTo) {
+    let _containerTool = containerTool;
+
+    // Check if useDocker is set to true and set the container tool to docker
+    if (useDocker) {
+      Task.log(
+        `The ${chalk.white('--use-docker')} flag is deprecated, use ${chalk.white(
+          '--container-tool',
+        )} instead`,
+      );
+      Task.log(
+        `Setting ${chalk.white('--container-tool')} to docker as ${chalk.white(
+          '--use-docker',
+        )} was specified`,
+      );
+      _containerTool = 'docker';
+    }
+
+    // Validate containerTool value
+    const allowedTools = ['docker', 'podman', 'buildah'];
+    if (!allowedTools.includes(_containerTool)) {
+      Task.error(
+        `Invalid value for --container-tool: ${_containerTool}. Allowed values are: ${allowedTools.join(', ')}`,
+      );
+      return;
+    }
+
+    // version check command
+    containerToolCmd = _containerTool;
     try {
-      await Task.forCommand(`${containerTool} --version`);
+      await Task.forCommand(`${containerToolCmd} --version`);
     } catch (e) {
       Task.error(
-        `Unable to find ${containerTool} command: ${e}\nMake sure that ${containerTool} is installed and available in your PATH.`,
+        `Unable to find ${containerToolCmd} command: ${e}\nMake sure that ${containerToolCmd} is installed and available in your PATH.`,
       );
       return;
     }
@@ -202,16 +239,13 @@ export async function command(opts: OptionValues): Promise<void> {
         flags.push(`--platform ${platform}`);
       }
       // run the command to generate the image
-      Task.log(`Creating image using ${containerTool}`);
-      await Task.forCommand(
-        `echo "from scratch
+      Task.log(`Creating image using ${containerToolCmd}`);
+      const containerInput = `from scratch
 COPY . .
-" | ${containerTool} build \
-  ${flags.join(' ')} \
-  -t '${tag}' -f - .
-    `,
-        { cwd: tmpDir },
-      );
+`;
+      const buildCmd = `echo "${containerInput}" | ${containerToolCmd} build ${flags.join(' ')} -t '${tag}' -f - .`;
+
+      await Task.forCommand(buildCmd, { cwd: tmpDir });
       Task.log(`Successfully built image ${tag} with following plugins:`);
       for (const plugin of pluginRegistryMetadata) {
         Task.log(`  ${chalk.white(Object.keys(plugin)[0])}`);
