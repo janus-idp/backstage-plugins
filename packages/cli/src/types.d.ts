@@ -254,3 +254,5 @@ declare module 'webpack-node-externals' {
 }
 
 declare module '@esbuild-kit/cjs-loader' {}
+
+declare module '@backstage/cli/dist/commands/build/buildFrontend.cjs';
