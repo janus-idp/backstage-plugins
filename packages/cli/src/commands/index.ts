@@ -177,12 +177,16 @@ export function registerScriptCommand(program: Command) {
     )
     .option(
       '--use-docker',
-      'By defult, the command uses podman to build the container image. Use this flag to use docker instead.',
-      false,
+      'Use Docker as the container tool (deprecated, use --container-tool instead)',
+    )
+    .option(
+      '--container-tool <tool>',
+      'Container tool to use for building the image. Allowed values: "docker", "podman", "buildah". Default is "podman".',
+      'podman',
     )
     .option(
       '--platform <platform>',
-      'Platform to use when building the container image. Default is "linux/amd64". Can be set to "" to not set --platfrom flag in builder command.',
+      'Platform to use when building the container image. Default is "linux/amd64". Can be set to "" to not set --platform flag in builder command.',
       'linux/amd64',
     )
     .action(
