@@ -1,5 +1,11 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 3.6.0
+
+### Minor Changes
+
+- cd7aa9e: The janus-cli now can use buildah as a container tool.
+
 ## 3.5.0
 
 ### Minor Changes
