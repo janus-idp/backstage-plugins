@@ -1,5 +1,11 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 3.6.1
+
+### Patch Changes
+
+- 701b93c: This change updates the CLI to cater for the way modules are handled by `require` in node v20.19.0, which fixes an error that can be thrown by the CLI when an es6 or typescript module is picked up by `require`.
+
 ## 3.6.0
 
 ### Minor Changes
