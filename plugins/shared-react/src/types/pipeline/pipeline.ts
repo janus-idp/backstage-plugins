@@ -85,6 +85,7 @@ export type WhenExpression = {
   input: string;
   operator: string;
   values: string[];
+  cel: string;
 };
 
 export type PipelineResult = {
