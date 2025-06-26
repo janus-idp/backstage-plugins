@@ -80,7 +80,7 @@ export function registerScriptCommand(program: Command) {
   command
     .command('export-dynamic-plugin')
     .description(
-      'Build and export a plugin package to be loaded as a dynamic plugin. The repackaged dynamic plugin is exported inside a ./dist-dynamic sub-folder.',
+      '[DEPRECATED] Build and export a plugin package to be loaded as a dynamic plugin. Use "npx @red-hat-developer-hub/cli plugin export" instead.',
     )
     .option('--minify', 'Minify the generated code (backend plugin only).')
     .option(
@@ -157,7 +157,7 @@ export function registerScriptCommand(program: Command) {
   command
     .command('package-dynamic-plugins')
     .description(
-      'Package up exported dynamic plugins as container image for deployment',
+             '[DEPRECATED] Package up exported dynamic plugins as container image for deployment. Use "npx @red-hat-developer-hub/cli plugin package" instead.',
     )
     .option(
       '--force-export',
