@@ -82,9 +82,10 @@ export type PipelineTaskParam = {
 };
 
 export type WhenExpression = {
-  input: string;
-  operator: string;
-  values: string[];
+  input?: string;
+  operator?: string;
+  values?: string[];
+  cel?: string;
 };
 
 export type PipelineResult = {
