@@ -49,7 +49,7 @@
     "codeowners": "^5.1.1",
     "commander": "^9.1.0",
     "css-loader": "^6.5.1",
-    "esbuild": "^0.23.0",
+    "esbuild": "^0.25.0",
     "esbuild-loader": "^2.18.0",
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^8.10.0",
