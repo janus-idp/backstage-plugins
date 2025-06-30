@@ -10,6 +10,11 @@ import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
 import { DynamicPluginOptions } from './types';
 
+const singletonAnyVersion = {
+  singleton: true,
+  requiredVersion: '*',
+};
+
 /**
  * TODO: Create a config API to configure and optimize dependency sharing
  * https://medium.com/@marvusm.mmi/webpack-module-federation-think-twice-before-sharing-a-dependency-18b3b0e352cb
@@ -18,81 +23,36 @@ export const sharedModules = {
   /**
    * Mandatory singleton packages for sharing
    */
-  react: {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  'react-dom': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  'react-router-dom': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  'react-router': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@backstage/version-bridge': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@backstage/core-app-api': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@backstage/core-plugin-api': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@backstage/frontend-plugin-api': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@scalprum/react-core': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@openshift/dynamic-plugin-sdk': {
-    singleton: true,
-    requiredVersion: '*',
-  },
+  react: singletonAnyVersion,
+  'react-dom': singletonAnyVersion,
+
+  'react-router-dom': singletonAnyVersion,
+  'react-router': singletonAnyVersion,
+
+  '@backstage/core-app-api': singletonAnyVersion,
+  '@backstage/core-plugin-api': singletonAnyVersion,
+  '@backstage/frontend-plugin-api': singletonAnyVersion,
+  '@backstage/version-bridge': singletonAnyVersion,
+
+  '@scalprum/react-core': singletonAnyVersion,
+  '@openshift/dynamic-plugin-sdk': singletonAnyVersion,
+
   /**
-   * The following two packages are required to be shared as singletons to enable UI theming
+   * The following two packages are required to be shared as singletons to enable MUI v4 theming
    */
-  '@material-ui/core/styles': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@material-ui/styles': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@mui/material': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@mui/system': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@mui/private-theming': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@mui/styled-engine': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@emotion/cache': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@emotion/react': {
-    singleton: true,
-    requiredVersion: '*',
-  },
+  '@material-ui/core/styles': singletonAnyVersion,
+  '@material-ui/styles': singletonAnyVersion,
+
+  /**
+   * And these for MUI v5 theming
+   */
+  '@mui/material': singletonAnyVersion,
+  '@mui/system': singletonAnyVersion,
+  '@mui/private-theming': singletonAnyVersion,
+  '@mui/styled-engine': singletonAnyVersion,
+  '@mui/utils': singletonAnyVersion,
+  '@emotion/cache': singletonAnyVersion,
+  '@emotion/react': singletonAnyVersion,
 };
 
 export async function createScalprumConfig(
