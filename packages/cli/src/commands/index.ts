@@ -157,7 +157,7 @@ export function registerScriptCommand(program: Command) {
   command
     .command('package-dynamic-plugins')
     .description(
-             '[DEPRECATED] Package up exported dynamic plugins as container image for deployment. Use "npx @red-hat-developer-hub/cli plugin package" instead.',
+      '[DEPRECATED] Package up exported dynamic plugins as container image for deployment. Use "npx @red-hat-developer-hub/cli plugin package" instead.',
     )
     .option(
       '--force-export',

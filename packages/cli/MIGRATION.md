@@ -13,11 +13,13 @@ The Red Hat Developer Hub team has introduced a new CLI tool that replaces the `
 ### Export Dynamic Plugin
 
 **Old Command:**
+
 ```bash
 npx @janus-idp/cli package export-dynamic-plugin
 ```
 
 **New Command:**
+
 ```bash
 npx @red-hat-developer-hub/cli plugin export
 ```
@@ -25,11 +27,13 @@ npx @red-hat-developer-hub/cli plugin export
 ### Package Dynamic Plugins
 
 **Old Command:**
+
 ```bash
 npx @janus-idp/cli package package-dynamic-plugins
 ```
 
 **New Command:**
+
 ```bash
 npx @red-hat-developer-hub/cli plugin package
 ```
@@ -37,6 +41,7 @@ npx @red-hat-developer-hub/cli plugin package
 ### NPM Scripts Example
 
 **Before:**
+
 ```json
 {
   "scripts": {
@@ -47,6 +52,7 @@ npx @red-hat-developer-hub/cli plugin package
 ```
 
 **After:**
+
 ```json
 {
   "scripts": {

@@ -1,17 +1,21 @@
 # @janus-idp/cli
 
-> [!WARNING]
+<!-- prettier formatting breaks GitHub Markdown callouts, so this block is ignored -->
+<!-- prettier-ignore-start -->
+> [!WARNING] 
 > **⚠️ DEPRECATION NOTICE**
-> 
+>
 > This CLI is **deprecated** and will no longer receive updates. Please migrate to the new **[@red-hat-developer-hub/cli](https://github.com/redhat-developer/rhdh-cli)**.
 >
 > **Command Migration:**
+>
 > - `npx @janus-idp/cli package export-dynamic-plugin` → `npx @red-hat-developer-hub/cli plugin export`
 > - `npx @janus-idp/cli package package-dynamic-plugins` → `npx @red-hat-developer-hub/cli plugin package`
 >
 > For more information, visit: https://github.com/redhat-developer/rhdh-cli
 >
 > **📖 [View Migration Guide](./MIGRATION.md)** - Step-by-step instructions for migrating to the new CLI
+<!-- prettier-ignore-end -->
 
 This package provides a CLI for developing and exporting Backstage plugins as dynamic plugins. It implements a few new commands on top of the @backstage/cli codebase:
 

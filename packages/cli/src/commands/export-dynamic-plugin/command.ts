@@ -34,9 +34,19 @@ export async function command(opts: OptionValues): Promise<void> {
   // Display deprecation warning for this specific command
   console.log();
   console.log(chalk.yellow('⚠️  COMMAND DEPRECATED'));
-  console.log(chalk.yellow('This command has been moved to the new @red-hat-developer-hub/cli'));
-  console.log(chalk.white('Please use: ') + chalk.green('npx @red-hat-developer-hub/cli plugin export'));
-  console.log(chalk.yellow('For more information: ') + chalk.cyan('https://github.com/redhat-developer/rhdh-cli'));
+  console.log(
+    chalk.yellow(
+      'This command has been moved to the new @red-hat-developer-hub/cli',
+    ),
+  );
+  console.log(
+    chalk.white('Please use: ') +
+      chalk.green('npx @red-hat-developer-hub/cli plugin export'),
+  );
+  console.log(
+    chalk.yellow('For more information: ') +
+      chalk.cyan('https://github.com/redhat-developer/rhdh-cli'),
+  );
   console.log();
 
   const rawPkg = await fs.readJson(paths.resolveTarget('package.json'));
