@@ -1,5 +1,11 @@
 ## @janus-idp/cli 1.0.0 (2024-08-06)
 
+## 3.7.0
+
+### Minor Changes
+
+- d6c06fd: add deprecation warnings to package-dynamic-plugins and export-dynamic-plugin and point to new rhdh-cli
+
 ## 3.6.1
 
 ### Patch Changes

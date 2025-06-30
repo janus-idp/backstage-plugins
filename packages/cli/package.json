@@ -1,7 +1,7 @@
 {
   "name": "@janus-idp/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "3.6.1",
+  "version": "3.7.0",
   "deprecated": "This package is deprecated and will no longer receive updates. Please migrate to @red-hat-developer-hub/cli. See https://github.com/redhat-developer/rhdh-cli for more information.",
   "publishConfig": {
     "access": "public"
