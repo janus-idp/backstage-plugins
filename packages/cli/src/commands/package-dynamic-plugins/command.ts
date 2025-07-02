@@ -370,21 +370,16 @@ function discoverPluginConfigurationFile(
 ): string | undefined {
   // Possible file names, the first match will be used
   const supportedFilenames = [
+    'app-config.dynamic.example.yaml',
+    'app-config.dynamic.yaml',
     'app-config.janus-idp.yaml',
     'app-config.backstage-community.yaml',
+    'app-config.example.yaml',
     'app-config.yaml',
   ];
   return supportedFilenames
-    .map<boolean>((fileName: string) => {
-      const candidate = path.join(directory, fileName);
-      return fs.existsSync(candidate);
-    })
-    .reduce<string | undefined>((val, current, index) => {
-      if (typeof val === 'undefined' && current) {
-        return path.join(directory, supportedFilenames[index]);
-      }
-      return val;
-    }, undefined);
+    .map(fileName => path.join(directory, fileName))
+    .find(candidate => fs.existsSync(candidate));
 }
 
 /**
