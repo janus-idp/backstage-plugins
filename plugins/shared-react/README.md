@@ -1,6 +1,6 @@
 # ❗DEPRECATED❗
 
-This package is deprecated and no longer maintained. See https://issues.redhat.com/browse/RHIDP-5309 for tips/suggestions on how to migrate to something else.
+As of 2025/08/20, this package is deprecated and no longer maintained. See https://issues.redhat.com/browse/RHIDP-5309 for tips/suggestions on how to migrate to something else.
 
 ## Janus React Common
 
