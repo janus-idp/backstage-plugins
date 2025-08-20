@@ -1,4 +1,8 @@
-# Backstage Plugins by Janus IDP
+# ❗DEPRECATED❗
+
+As of 2025/08/20, this repo is deprecated and no longer maintained. 
+
+**Backstage Plugins by Janus IDP**
 
 ![Apache 2.0 license](https://img.shields.io/github/license/janus-idp/backstage-plugins)
 [![GitHub Workflow Status (Release)](https://img.shields.io/github/actions/workflow/status/janus-idp/backstage-plugins/push.yaml?label=Release)](https://github.com/janus-idp/backstage-plugins/actions/workflows/push.yaml)
