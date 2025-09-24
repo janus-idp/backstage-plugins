@@ -46,4 +46,4 @@ To try out the command locally, you can execute the following from the parent di
 
 ## Documentation
 
-- [Dynamic Plugins Documentation](https://github.com/janus-idp/backstage-showcase/blob/main/docs/dynamic-plugins.md#dynamic-plugins-support)
+- [Dynamic Plugins Documentation](https://github.com/janus-idp/backstage-showcase/blob/main/docs/dynamic-plugins/packaging-dynamic-plugins.md)
