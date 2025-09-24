@@ -74,7 +74,7 @@
     "swc-loader": "^0.2.3",
     "typescript-json-schema": "^0.64.0",
     "webpack": "^5.89.0",
-    "webpack-dev-server": "^4.15.1",
+    "webpack-dev-server": "^5.0.0",
     "yaml": "^2.5.1",
     "yml-loader": "^2.1.0",
     "yn": "^4.0.0"
