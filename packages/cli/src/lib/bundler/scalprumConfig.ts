@@ -10,10 +10,6 @@ import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
 import { DynamicPluginOptions } from './types';
 
-/**
- * TODO: Create a config API to configure and optimize dependency sharing
- * https://medium.com/@marvusm.mmi/webpack-module-federation-think-twice-before-sharing-a-dependency-18b3b0e352cb
- */
 export const sharedModules = {
   /**
    * Mandatory singleton packages for sharing
@@ -26,27 +22,11 @@ export const sharedModules = {
     singleton: true,
     requiredVersion: '*',
   },
-  'react-router-dom': {
-    singleton: true,
-    requiredVersion: '*',
-  },
   'react-router': {
     singleton: true,
     requiredVersion: '*',
   },
-  '@backstage/version-bridge': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@backstage/core-app-api': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@backstage/core-plugin-api': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  '@backstage/frontend-plugin-api': {
+  'react-router-dom': {
     singleton: true,
     requiredVersion: '*',
   },
